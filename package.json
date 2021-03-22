@@ -26,9 +26,8 @@
     "truffle": "^5.2.5"
   },
   "devDependencies": {
-    "@openzeppelin/cli": "^2.8.2",
-    "openzeppelin-test-helpers": "^0.4.3"
+    "openzeppelin-test-helpers": "^0.4.3",
     "chai": "^4.2.0",
-    "eth-gas-reporter": "^0.2.19",
+    "eth-gas-reporter": "^0.2.19"
   }
 }

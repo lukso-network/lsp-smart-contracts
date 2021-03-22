@@ -1,0 +1,3 @@
+[submodule "contracts/_ERCs/ERC725"]
+	path = contracts/_ERCs/ERC725
+	url = https://github.com/ERC725Alliance/ERC725.git
