@@ -21,11 +21,11 @@
   },
   "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
   "dependencies": {
-    "@openzeppelin/contracts-ethereum-package": "^3.0.0",
-    "eth-create2-calculator": "^1.1.5",
-    "truffle": "^5.2.5"
+    "eth-create2-calculator": "^1.1.5"
   },
   "devDependencies": {
+    "truffle": "^5.2.5",
+    "@openzeppelin/contracts": "^3.4.1",
     "openzeppelin-test-helpers": "^0.4.3",
     "chai": "^4.2.0",
     "eth-gas-reporter": "^0.2.19"
