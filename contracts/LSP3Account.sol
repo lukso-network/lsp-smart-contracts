@@ -13,7 +13,7 @@ import "./_LSPs/ILSP1_UniversalReceiver.sol";
 import "./_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
-import "./../submodules/ERC725/implementations/contracts/ERC725/ERC725Account.sol";
+import "../submodules/ERC725/implementations/contracts/ERC725/ERC725Account.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
 
 contract LSP3Account is ERC165, ERC725Account, ILSP1 {
@@ -25,6 +25,11 @@ contract LSP3Account is ERC165, ERC725Account, ILSP1 {
     0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47; // keccak256("LSP1UniversalReceiverDelegate")
 
     bytes32[] public dataKeys;
+
+    // Events from ERC725Account
+
+    // event ValueReceived(address indexed sender, uint256 indexed value);
+
 
     constructor(address _newOwner) ERC725Account(_newOwner) public {
 
@@ -69,6 +74,17 @@ contract LSP3Account is ERC165, ERC725Account, ILSP1 {
     }
 
     /* Public functions */
+
+    // -> Functions from ERC725Account
+
+    // receive() external payable
+
+    // function owner() public view returns(address)
+    // function getData(bytes32 _key) public view returns (bytes memory _value)
+    // function setData(bytes32 _key, bytes calldata _value) external onlyOwner
+    // function execute(uint256 _operation, address _to, uint256 _value, bytes calldata _data) external payable onlyOwner
+    // function isValidSignature(bytes32 _hash, bytes memory _signature) public view returns (bytes4 magicValue)
+
 
     function setData(bytes32 _key, bytes calldata _value)
     public
