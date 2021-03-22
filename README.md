@@ -4,6 +4,9 @@ The reference implementation for universal profiles smart contracts.
 ## Installation
 
 ```bash
+# install truffle globally
+$ npm install -g truffle
+
 $ git clone https://github.com/lukso-network/universalprofile-smart-contracts.git
 $ cd ./universalprofile-smart-contracts
 
