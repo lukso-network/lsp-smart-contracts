@@ -1,0 +1,34 @@
+{
+  "name": "universalprofile-smart-contracts",
+  "version": "1.0.0",
+  "description": "The reference implementation for universal profiles smart contracts",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukso-network/universalprofile-smart-contracts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/lukso-network/universalprofile-smart-contracts/issues"
+  },
+  "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
+  "dependencies": {
+    "@openzeppelin/contracts-ethereum-package": "^3.0.0",
+    "eth-create2-calculator": "^1.1.5",
+    "truffle": "^5.2.5"
+  },
+  "devDependencies": {
+    "@openzeppelin/cli": "^2.8.2",
+    "openzeppelin-test-helpers": "^0.4.3"
+    "chai": "^4.2.0",
+    "eth-gas-reporter": "^0.2.19",
+  }
+}
