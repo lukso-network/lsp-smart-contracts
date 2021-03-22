@@ -16,5 +16,5 @@ $ git submodule update --init --recursive
 # run npm install
 $ npm install
 # and also for the submododule
-$ cd ./contracts/_ERCs/ERC725/implementations && npm install
+$ cd ./submodules/ERC725/implementations && npm install
 ```
