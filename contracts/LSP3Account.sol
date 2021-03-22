@@ -26,9 +26,13 @@ contract LSP3Account is ERC165, ERC725Account, ILSP1 {
 
     bytes32[] public dataKeys;
 
+
     // Events from ERC725Account
 
-    // event ValueReceived(address indexed sender, uint256 indexed value);
+    // event ValueReceived(address indexed sender, uint256 indexed value)
+    // event DataChanged(bytes32 indexed key, bytes value)
+    // event ContractCreated(address indexed contractAddress)
+    // event Executed(uint256 indexed _operation, address indexed _to, uint256 indexed  _value, bytes _data)
 
 
     constructor(address _newOwner) ERC725Account(_newOwner) public {
