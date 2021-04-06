@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity >=0.5.0 <0.7.0;
+pragma solidity >=0.5.0 <0.9.0;
 
 /**
  * @dev Contract module that allows for an external universal receiver smart contract, that is the delegate of the initial universal receiver

@@ -5,8 +5,8 @@
  *
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
+//pragma experimental ABIEncoderV2;
 
 // interfaces
 import "./_LSPs/ILSP1_UniversalReceiver.sol";
@@ -14,9 +14,9 @@ import "./_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
 import "../submodules/ERC725/implementations/contracts/ERC725/ERC725Account.sol";
-import "@openzeppelin/contracts/introspection/ERC165.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract LSP3Account is ERC165, ERC725Account, ILSP1 {
+contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
 
     bytes4 _INTERFACE_ID_LSP1 = 0x6bb56a14;
     bytes4 _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
@@ -35,7 +35,7 @@ contract LSP3Account is ERC165, ERC725Account, ILSP1 {
     // event Executed(uint256 indexed _operation, address indexed _to, uint256 indexed  _value, bytes _data)
 
 
-    constructor(address _newOwner) ERC725Account(_newOwner) public {
+    constructor(address _newOwner) ERC725Account(_newOwner) {
 
         // Add the key of the SupportedStandards:ERC725Account set in the constructor of ERC725Account.sol
         dataKeys.push(0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6);

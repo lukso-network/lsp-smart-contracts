@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 import "../submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol";
 import "../submodules/ERC725/implementations/contracts/ERC725/IERC725Y.sol";

@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 // interfaces
 import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
-import "@openzeppelin/contracts/introspection/ERC165.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract ExternalERC777UniversalReceiverRejectTester is ERC165, ILSP1Delegate {
+contract ExternalERC777UniversalReceiverRejectTester is ERC165Storage, ILSP1Delegate {
 
     bytes4 _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 
-    constructor() public {
+    constructor() {
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 

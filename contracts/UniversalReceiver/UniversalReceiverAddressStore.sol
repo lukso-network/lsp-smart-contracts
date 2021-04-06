@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 // interfaces
 import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
 import "../Registries/AddressRegistry.sol";
-import "@openzeppelin/contracts/introspection/ERC165.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract UniversalReceiverAddressStore is ERC165, ILSP1Delegate, AddressRegistry {
+contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressRegistry {
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     bytes4 _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 
@@ -17,7 +18,7 @@ contract UniversalReceiverAddressStore is ERC165, ILSP1Delegate, AddressRegistry
 
     address public account;
 
-    constructor(address _account) public {
+    constructor(address _account) {
         account = _account;
 
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
@@ -30,7 +31,7 @@ contract UniversalReceiverAddressStore is ERC165, ILSP1Delegate, AddressRegistry
     onlyAccount
     returns(bool)
     {
-        return addressSet.add(_address);
+        return addressStore.add(_address);
     }
 
     function removeAddress(address _address)
@@ -39,7 +40,7 @@ contract UniversalReceiverAddressStore is ERC165, ILSP1Delegate, AddressRegistry
     onlyAccount
     returns(bool)
     {
-        return addressSet.remove(_address);
+        return addressStore.remove(_address);
     }
 
     function universalReceiverDelegate(address sender, bytes32 typeId, bytes memory)

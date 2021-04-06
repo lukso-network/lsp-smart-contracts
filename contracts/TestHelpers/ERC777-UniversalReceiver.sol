@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 // interfaces
 import "../_LSPs/ILSP1_UniversalReceiver.sol";
-import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 
 // modules
+import "@openzeppelin/contracts/utils/Address.sol";
 import "./ERC777.sol";
 
 
@@ -26,6 +27,7 @@ import "./ERC777.sol";
  * destroyed. This makes integration with ERC20 applications seamless.
  */
 contract ERC777UniversalReceiver is ERC777 {
+    using Address for address;
 
     bytes4 private constant _INTERFACE_ID_LSP1 = 0x6bb56a14;
 
@@ -42,7 +44,7 @@ contract ERC777UniversalReceiver is ERC777 {
         string memory name,
         string memory symbol,
         address[] memory defaultOperators
-    ) public {
+    ) {
         _name = name;
         _symbol = symbol;
 

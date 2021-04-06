@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 // modules
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
 import "./ERC777-UniversalReceiver.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 
 contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
@@ -27,7 +27,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
     )
     ERC725Y(newOwner)
     ERC777UniversalReceiver(name, symbol, defaultOperators)
-    public {
+    {
         // set the owner as minter
         minter = newOwner;
     }

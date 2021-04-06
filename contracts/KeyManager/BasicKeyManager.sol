@@ -6,43 +6,47 @@ import "../../submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol";
 import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 
 // modules
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-
-contract SimpleKeyManager is ERC165, IERC1271, AccessControl {
+contract BasicKeyManager is ERC165Storage, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
+
+    IERC725X public Account;
+    mapping (address => uint256) internal _nonceStore;
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
 
-    // keccak256("EXECUTOR_ROLE")
-    bytes32 public constant EXECUTOR_ROLE = 0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63;
-
-    IERC725X public Account;
-    mapping (address => uint256) private _nonceStore;
+    // ROLES
+    bytes1 internal constant ROLE_CHANGEKEYS = 0x01;
+    bytes1 internal constant ROLE_SETDATA = 0x01;
+    bytes1 internal constant ROLE_EXECUTE = 0x01;
+    bytes1 internal constant ROLE_TRANSFERVALUE = 0x01;
+    bytes1 internal constant ROLE_SIGN = 0x01;
 
     // EVENTS
     event Executed(uint256 indexed  _value, bytes _data);
 
+    // CONSTRUCTOR
     constructor(address _account, address _newOwner) {
-        // make owner an executor
-        _setupRole(DEFAULT_ADMIN_ROLE, _newOwner);
-        _setupRole(EXECUTOR_ROLE, _newOwner);
-
-        // allow execution itself
-        _setupRole(DEFAULT_ADMIN_ROLE, _account); // TODO only for UniversalProfile BETA
-        _setupRole(EXECUTOR_ROLE, _account);
+        _registerInterface(_INTERFACE_ID_ERC1271);
 
         // Link account
         Account = IERC725X(_account);
 
-//        _registerInterface(_INTERFACE_ID_ERC1271);
+        // make owner an executor
+        // set roles at once, to safe gas
+        _setRoles(0x1111, _newOwner);
+
+
+        // allow execution itself
+//        _setRole(DEFAULT_ADMIN_ROLE, _account); // TODO only for UniversalProfile BETA
+//        _setRole(EXECUTOR_ROLE, _account);
     }
 
 
@@ -58,7 +62,7 @@ contract SimpleKeyManager is ERC165, IERC1271, AccessControl {
     external
     payable
     {
-        require(hasRole(EXECUTOR_ROLE, _msgSender()), 'Only executors are allowed');
+//        require(hasRole(EXECUTOR_ROLE, _msgSender()), 'Only executors are allowed');
 
         address(Account).call{value: msg.value, gas: gasleft()}(_data); //(success, ) =
         emit Executed(msg.value, _data);
@@ -85,7 +89,7 @@ contract SimpleKeyManager is ERC165, IERC1271, AccessControl {
         // recover the signer
         address from = keccak256(blob).toEthSignedMessageHash().recover(_signature);
 
-        require(hasRole(EXECUTOR_ROLE, from), 'Only executors are allowed');
+//        require(hasRole(EXECUTOR_ROLE, from), 'Only executors are allowed');
         require(_nonceStore[from] == _nonce, 'Incorrect nonce');
 
         // increase the nonce
@@ -105,22 +109,30 @@ contract SimpleKeyManager is ERC165, IERC1271, AccessControl {
     function isValidSignature(bytes32 _hash, bytes memory _signature)
     override
     public
-    view
+    pure
     returns (bytes4 magicValue)
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
 
-        return (hasRole(EXECUTOR_ROLE, recoveredAddress) || hasRole(DEFAULT_ADMIN_ROLE, recoveredAddress))
+        return (true)//  _verifyRole([ROLE_SIGN], recoveredAddress)       hasRole(EXECUTOR_ROLE, recoveredAddress) || hasRole(DEFAULT_ADMIN_ROLE, recoveredAddress))
             ? _INTERFACE_ID_ERC1271
             : _ERC1271FAILVALUE;
     }
 
 
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, AccessControl) returns (bool) {
-        return interfaceId == _INTERFACE_ID_ERC1271
-        || super.supportsInterface(interfaceId);
+    // Internal functions
+
+    function _setRoles(bytes2 _roles, address _key) internal {
+
     }
+
+    function _verifyRole(bytes1[] memory _role, address _key) internal {
+
+    }
+
+    /* Modifers */
+//    modifier verifyRole() {
+//        require(msg.sender == account, 'Only the connected account call this function');
+//        _;
+//    }
 }

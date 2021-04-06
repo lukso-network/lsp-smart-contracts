@@ -24,11 +24,11 @@
     "eth-create2-calculator": "^1.1.5"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "^3.4.1",
+    "@openzeppelin/contracts": "^4.0.0",
     "openzeppelin-test-helpers": "^0.4.3",
     "solidity-bytes-utils": "0.0.9",
     "chai": "^4.2.0",
     "eth-gas-reporter": "^0.2.19",
-    "truffle": "^5.2.5"
+    "truffle": "^5.3.0"
   }
 }
