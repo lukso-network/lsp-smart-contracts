@@ -1,0 +1,51 @@
+const ERC165MappingImplementation = artifacts.require(
+    "ERC165MappingImplementation"
+);
+const Universal165Query = artifacts.require("Universal165Query");
+const ERC165Query = artifacts.require("ERC165Query");
+const Universal165 = artifacts.require("Universal165");
+
+const {
+    BN,
+    ether,
+    expectRevert,
+    expectEvent
+} = require("openzeppelin-test-helpers");
+
+contract("Registries", accounts => {
+    let erc156,
+        erc156Query,
+        uinversal165,
+        universal165Query = {};
+
+    const accountInterface = "0x80ac58cd";
+    const erc165InterfaceHash = web3.utils.soliditySha3("ERC165");
+    const erc165Invalid = "0xffffffffffffffffffffffffffff";
+    const accountInterfaceHash = web3.utils.soliditySha3("LSP3Account");
+
+    beforeEach(async () => {
+        erc156 = await ERC165MappingImplementation.new();
+        erc156Query = await ERC165Query.new();
+        universal165 = await Universal165.new();
+        universal165Query = await Universal165Query.new();
+    });
+
+    it("Gas comparison between querying with ERC165 vs Universal165", async () => {
+        let tx1 = await erc156Query.doesContractImplementInterface(
+            erc156.address,
+            accountInterface
+        );
+        console.log(
+            "Querying ERC165Query for supporting ERC725(account) costs: ",
+            tx1.receipt.gasUsed
+        );
+        let tx2 = await universal165Query.doesContractImplementInterface(
+            universal165.address,
+            accountInterfaceHash
+        );
+        console.log(
+            "Querying Universal165Query for supporting ERC725(account) costs: ",
+            tx2.receipt.gasUsed
+        );
+    });
+});

@@ -1,0 +1,925 @@
+{
+  "contractName": "IERC725X",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "contractAddress",
+          "type": "address"
+        }
+      ],
+      "name": "ContractCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_operation",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "_data",
+          "type": "bytes"
+        }
+      ],
+      "name": "Executed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "operationType",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "execute",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"ContractCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"_operation\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"_data\",\"type\":\"bytes\"}],\"name\":\"Executed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"operationType\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Contract module which provides the ability to call arbitrary functions at any other smart contract and itself, including using `delegatecall`, as well creating contracts using `create` and `create2`. This is the basis for a smart contract based account system, but could also be used as a proxy account system. ERC 165 interface id: 0x44c028fe `execute` should only be callable by the owner of the contract set via ERC173.\",\"events\":{\"ContractCreated(address)\":{\"details\":\"Emitted when a contract is created.\"},\"Executed(uint256,address,uint256,bytes)\":{\"details\":\"Emitted when a contract executed.\"}},\"kind\":\"dev\",\"methods\":{\"execute(uint256,address,uint256,bytes)\":{\"details\":\"Executes any other smart contract. SHOULD only be callable by the owner of the contract set via ERC173. Requirements: - `operationType`, the operation to execute. So far defined is:     CALL = 0;     DELEGATECALL = 1;     CREATE2 = 2;     CREATE = 3; - `data` the call data that will be used with the contract at `to` Emits a {ContractCreated} event, when a contract is created under `operationType` 2 and 3.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/frozeman/Sites/LUKSO/universalprofile-smart-contracts/submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol\":\"IERC725X\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/frozeman/Sites/LUKSO/universalprofile-smart-contracts/submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol\":{\"keccak256\":\"0x923fb2e7b10ddd847baeb6a58f65012446a19df8d3b1b060991c6c8b60a32c4b\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://2fffef0acf464557365fee3d155b47b73b8a854787a8d119c4739270322dd68e\",\"dweb:/ipfs/QmcCZ1e77duu7Na46aCYvVvEE2ag9EqsfQRX925845gaaa\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: CC0-1.0\npragma solidity >=0.5.0 <0.7.0;\n\n/**\n * @dev Contract module which provides the ability to call arbitrary functions at any other smart contract and itself,\n * including using `delegatecall`, as well creating contracts using `create` and `create2`.\n * This is the basis for a smart contract based account system, but could also be used as a proxy account system.\n *\n * ERC 165 interface id: 0x44c028fe\n *\n * `execute` should only be callable by the owner of the contract set via ERC173.\n */\ninterface IERC725X  /* is ERC165, ERC173 */ {\n\n    /**\n    * @dev Emitted when a contract is created.\n    */\n    event ContractCreated(address indexed contractAddress);\n\n    /**\n    * @dev Emitted when a contract executed.\n    */\n    event Executed(uint256 indexed _operation, address indexed _to, uint256 indexed  _value, bytes _data);\n\n\n    /**\n     * @dev Executes any other smart contract.\n     * SHOULD only be callable by the owner of the contract set via ERC173.\n     *\n     * Requirements:\n     *\n     * - `operationType`, the operation to execute. So far defined is:\n     *     CALL = 0;\n     *     DELEGATECALL = 1;\n     *     CREATE2 = 2;\n     *     CREATE = 3;\n     *\n     * - `data` the call data that will be used with the contract at `to`\n     *\n     * Emits a {ContractCreated} event, when a contract is created under `operationType` 2 and 3.\n     */\n    function execute(uint256 operationType, address to, uint256 value, bytes calldata data) external payable;\n}\n",
+  "sourcePath": "/Users/frozeman/Sites/LUKSO/universalprofile-smart-contracts/submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol",
+  "ast": {
+    "absolutePath": "/Users/frozeman/Sites/LUKSO/universalprofile-smart-contracts/submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol",
+    "exportedSymbols": {
+      "IERC725X": [
+        2882
+      ]
+    },
+    "id": 2883,
+    "license": "CC0-1.0",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2852,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.5",
+          ".0",
+          "<",
+          "0.7",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "36:31:25"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 2853,
+          "nodeType": "StructuredDocumentation",
+          "src": "69:456:25",
+          "text": " @dev Contract module which provides the ability to call arbitrary functions at any other smart contract and itself,\n including using `delegatecall`, as well creating contracts using `create` and `create2`.\n This is the basis for a smart contract based account system, but could also be used as a proxy account system.\n ERC 165 interface id: 0x44c028fe\n `execute` should only be callable by the owner of the contract set via ERC173."
+        },
+        "fullyImplemented": false,
+        "id": 2882,
+        "linearizedBaseContracts": [
+          2882
+        ],
+        "name": "IERC725X",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 2854,
+              "nodeType": "StructuredDocumentation",
+              "src": "577:57:25",
+              "text": " @dev Emitted when a contract is created."
+            },
+            "id": 2858,
+            "name": "ContractCreated",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2857,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2856,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "contractAddress",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2858,
+                  "src": "661:31:25",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2855,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "661:7:25",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "660:33:25"
+            },
+            "src": "639:55:25"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 2859,
+              "nodeType": "StructuredDocumentation",
+              "src": "700:55:25",
+              "text": " @dev Emitted when a contract executed."
+            },
+            "id": 2869,
+            "name": "Executed",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2868,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2861,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "_operation",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2869,
+                  "src": "775:26:25",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2860,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "775:7:25",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2863,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "_to",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2869,
+                  "src": "803:19:25",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2862,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "803:7:25",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2865,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "_value",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2869,
+                  "src": "824:23:25",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2864,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "824:7:25",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2867,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "_data",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2869,
+                  "src": "849:11:25",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 2866,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "849:5:25",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "774:87:25"
+            },
+            "src": "760:102:25"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 2870,
+              "nodeType": "StructuredDocumentation",
+              "src": "869:523:25",
+              "text": " @dev Executes any other smart contract.\n SHOULD only be callable by the owner of the contract set via ERC173.\n Requirements:\n - `operationType`, the operation to execute. So far defined is:\n     CALL = 0;\n     DELEGATECALL = 1;\n     CREATE2 = 2;\n     CREATE = 3;\n - `data` the call data that will be used with the contract at `to`\n Emits a {ContractCreated} event, when a contract is created under `operationType` 2 and 3."
+            },
+            "functionSelector": "44c028fe",
+            "id": 2881,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2879,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2872,
+                  "mutability": "mutable",
+                  "name": "operationType",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2881,
+                  "src": "1414:21:25",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2871,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1414:7:25",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2874,
+                  "mutability": "mutable",
+                  "name": "to",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2881,
+                  "src": "1437:10:25",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2873,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1437:7:25",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2876,
+                  "mutability": "mutable",
+                  "name": "value",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2881,
+                  "src": "1449:13:25",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2875,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1449:7:25",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2878,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2881,
+                  "src": "1464:19:25",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 2877,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1464:5:25",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1413:71:25"
+            },
+            "returnParameters": {
+              "id": 2880,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1501:0:25"
+            },
+            "scope": 2882,
+            "src": "1397:105:25",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2883,
+        "src": "526:978:25"
+      }
+    ],
+    "src": "36:1469:25"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/Users/frozeman/Sites/LUKSO/universalprofile-smart-contracts/submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol",
+      "exportedSymbols": {
+        "IERC725X": [
+          2882
+        ]
+      },
+      "license": "CC0-1.0"
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            ">=",
+            "0.5",
+            ".0",
+            "<",
+            "0.7",
+            ".0"
+          ]
+        },
+        "id": 2852,
+        "name": "PragmaDirective",
+        "src": "36:31:25"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            2882
+          ],
+          "name": "IERC725X",
+          "scope": 2883
+        },
+        "children": [
+          {
+            "attributes": {
+              "text": " @dev Contract module which provides the ability to call arbitrary functions at any other smart contract and itself,\n including using `delegatecall`, as well creating contracts using `create` and `create2`.\n This is the basis for a smart contract based account system, but could also be used as a proxy account system.\n ERC 165 interface id: 0x44c028fe\n `execute` should only be callable by the owner of the contract set via ERC173."
+            },
+            "id": 2853,
+            "name": "StructuredDocumentation",
+            "src": "69:456:25"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "ContractCreated"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Emitted when a contract is created."
+                },
+                "id": 2854,
+                "name": "StructuredDocumentation",
+                "src": "577:57:25"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "mutability": "mutable",
+                      "name": "contractAddress",
+                      "overrides": null,
+                      "scope": 2858,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 2855,
+                        "name": "ElementaryTypeName",
+                        "src": "661:7:25"
+                      }
+                    ],
+                    "id": 2856,
+                    "name": "VariableDeclaration",
+                    "src": "661:31:25"
+                  }
+                ],
+                "id": 2857,
+                "name": "ParameterList",
+                "src": "660:33:25"
+              }
+            ],
+            "id": 2858,
+            "name": "EventDefinition",
+            "src": "639:55:25"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "Executed"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Emitted when a contract executed."
+                },
+                "id": 2859,
+                "name": "StructuredDocumentation",
+                "src": "700:55:25"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "mutability": "mutable",
+                      "name": "_operation",
+                      "overrides": null,
+                      "scope": 2869,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 2860,
+                        "name": "ElementaryTypeName",
+                        "src": "775:7:25"
+                      }
+                    ],
+                    "id": 2861,
+                    "name": "VariableDeclaration",
+                    "src": "775:26:25"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "mutability": "mutable",
+                      "name": "_to",
+                      "overrides": null,
+                      "scope": 2869,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 2862,
+                        "name": "ElementaryTypeName",
+                        "src": "803:7:25"
+                      }
+                    ],
+                    "id": 2863,
+                    "name": "VariableDeclaration",
+                    "src": "803:19:25"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "mutability": "mutable",
+                      "name": "_value",
+                      "overrides": null,
+                      "scope": 2869,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 2864,
+                        "name": "ElementaryTypeName",
+                        "src": "824:7:25"
+                      }
+                    ],
+                    "id": 2865,
+                    "name": "VariableDeclaration",
+                    "src": "824:23:25"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "_data",
+                      "overrides": null,
+                      "scope": 2869,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bytes",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bytes",
+                          "type": "bytes"
+                        },
+                        "id": 2866,
+                        "name": "ElementaryTypeName",
+                        "src": "849:5:25"
+                      }
+                    ],
+                    "id": 2867,
+                    "name": "VariableDeclaration",
+                    "src": "849:11:25"
+                  }
+                ],
+                "id": 2868,
+                "name": "ParameterList",
+                "src": "774:87:25"
+              }
+            ],
+            "id": 2869,
+            "name": "EventDefinition",
+            "src": "760:102:25"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "44c028fe",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "execute",
+              "overrides": null,
+              "scope": 2882,
+              "stateMutability": "payable",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Executes any other smart contract.\n SHOULD only be callable by the owner of the contract set via ERC173.\n Requirements:\n - `operationType`, the operation to execute. So far defined is:\n     CALL = 0;\n     DELEGATECALL = 1;\n     CREATE2 = 2;\n     CREATE = 3;\n - `data` the call data that will be used with the contract at `to`\n Emits a {ContractCreated} event, when a contract is created under `operationType` 2 and 3."
+                },
+                "id": 2870,
+                "name": "StructuredDocumentation",
+                "src": "869:523:25"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "operationType",
+                      "overrides": null,
+                      "scope": 2881,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 2871,
+                        "name": "ElementaryTypeName",
+                        "src": "1414:7:25"
+                      }
+                    ],
+                    "id": 2872,
+                    "name": "VariableDeclaration",
+                    "src": "1414:21:25"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "to",
+                      "overrides": null,
+                      "scope": 2881,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 2873,
+                        "name": "ElementaryTypeName",
+                        "src": "1437:7:25"
+                      }
+                    ],
+                    "id": 2874,
+                    "name": "VariableDeclaration",
+                    "src": "1437:10:25"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "value",
+                      "overrides": null,
+                      "scope": 2881,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 2875,
+                        "name": "ElementaryTypeName",
+                        "src": "1449:7:25"
+                      }
+                    ],
+                    "id": 2876,
+                    "name": "VariableDeclaration",
+                    "src": "1449:13:25"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "data",
+                      "overrides": null,
+                      "scope": 2881,
+                      "stateVariable": false,
+                      "storageLocation": "calldata",
+                      "type": "bytes",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bytes",
+                          "type": "bytes"
+                        },
+                        "id": 2877,
+                        "name": "ElementaryTypeName",
+                        "src": "1464:5:25"
+                      }
+                    ],
+                    "id": 2878,
+                    "name": "VariableDeclaration",
+                    "src": "1464:19:25"
+                  }
+                ],
+                "id": 2879,
+                "name": "ParameterList",
+                "src": "1413:71:25"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 2880,
+                "name": "ParameterList",
+                "src": "1501:0:25"
+              }
+            ],
+            "id": 2881,
+            "name": "FunctionDefinition",
+            "src": "1397:105:25"
+          }
+        ],
+        "id": 2882,
+        "name": "ContractDefinition",
+        "src": "526:978:25"
+      }
+    ],
+    "id": 2883,
+    "name": "SourceUnit",
+    "src": "36:1469:25"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2021-03-22T15:21:59.035Z",
+  "devdoc": {
+    "details": "Contract module which provides the ability to call arbitrary functions at any other smart contract and itself, including using `delegatecall`, as well creating contracts using `create` and `create2`. This is the basis for a smart contract based account system, but could also be used as a proxy account system. ERC 165 interface id: 0x44c028fe `execute` should only be callable by the owner of the contract set via ERC173.",
+    "events": {
+      "ContractCreated(address)": {
+        "details": "Emitted when a contract is created."
+      },
+      "Executed(uint256,address,uint256,bytes)": {
+        "details": "Emitted when a contract executed."
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "execute(uint256,address,uint256,bytes)": {
+        "details": "Executes any other smart contract. SHOULD only be callable by the owner of the contract set via ERC173. Requirements: - `operationType`, the operation to execute. So far defined is:     CALL = 0;     DELEGATECALL = 1;     CREATE2 = 2;     CREATE = 3; - `data` the call data that will be used with the contract at `to` Emits a {ContractCreated} event, when a contract is created under `operationType` 2 and 3."
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
