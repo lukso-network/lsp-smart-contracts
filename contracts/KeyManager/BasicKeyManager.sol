@@ -6,13 +6,13 @@ import "../../submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol";
 import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 
 // modules
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract BasicKeyManager is ERC165Storage, IERC1271 {
+contract BasicKeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
 
@@ -21,6 +21,12 @@ contract BasicKeyManager is ERC165Storage, IERC1271 {
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
+
+    // ROLE KEYS
+    bytes12 internal constant ROLEKEY_ROLES =            0xd76bc04c00000000eced0000; // ERC725AccountKeyRoles:Roles:<address>
+    bytes12 internal constant ROLEKEY_ALLOWEDADDRESSES = 0xd76bc04c00000000c6dd0000; // ERC725AccountKeyRoles:AllowedAddresses:<address>
+    bytes12 internal constant ROLEKEY_ALLOWEDFUNCTIONS = 0xd76bc04c000000008efe0000; // ERC725AccountKeyRoles:AllowedFunctions:<address>
+    bytes12 internal constant ROLEKEY_ALLOWEDSTANDARDS = 0xd76bc04c000000003efa0000; // ERC725AccountKeyRoles:AllowedStandards:<address>
 
     // ROLES
     bytes1 internal constant ROLE_CHANGEKEYS = 0x01;
@@ -34,19 +40,22 @@ contract BasicKeyManager is ERC165Storage, IERC1271 {
 
     // CONSTRUCTOR
     constructor(address _account, address _newOwner) {
-        _registerInterface(_INTERFACE_ID_ERC1271);
 
         // Link account
         Account = IERC725X(_account);
 
-        // make owner an executor
-        // set roles at once, to safe gas
-        _setRoles(0x1111, _newOwner);
+        // give initial owner roles: ROLE_CHANGEKEYS, ROLE_SETDATA, ROLE_EXECUTE, ROLE_TRANSFERVALUE, ROLE_SIGN
+        bytes32 memory generatedKey = ROLEKEY_ROLES + bytes20(uint256(uint160(_address)));
+        Account.setData(generatedKey, 0x1111);
 
+    }
 
-        // allow execution itself
-//        _setRole(DEFAULT_ADMIN_ROLE, _account); // TODO only for UniversalProfile BETA
-//        _setRole(EXECUTOR_ROLE, _account);
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
+        return interfaceId == _INTERFACE_ID_ERC1271
+        || super.supportsInterface(interfaceId);
     }
 
 
@@ -121,12 +130,27 @@ contract BasicKeyManager is ERC165Storage, IERC1271 {
 
 
     // Internal functions
+    function _getData(bytes32 _key) returns(bytes) {
+        return Account.getData(_key);
+    }
 
-    function _setRoles(bytes2 _roles, address _key) internal {
+//    function _setRoles(address _key, bytes memory _roles) internal {
+//        Account.setData(generatedKey, _roles);
+//    }
+
+    function _verifyRole(address _key, bytes1[] memory _role) internal {
 
     }
 
-    function _verifyRole(bytes1[] memory _role, address _key) internal {
+    function _verifyStandard(address _key, address _standard) internal {
+
+    }
+
+    function _verifyFunctionCall(address _key, address _functionSignature) internal {
+
+    }
+
+    function _verifySmartContract(address _key, address _smartContract) internal {
 
     }
 

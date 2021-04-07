@@ -9,7 +9,7 @@ import "./AddressRegistry.sol";
 contract AddressRegistryRequiresERC725 is AddressRegistry {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    bytes4 _INTERFACE_ID_ERC725Y = 0x2bd57b73;
+    bytes4 constant internal _INTERFACE_ID_ERC725Y = 0x2bd57b73;
 
     function addAddress(address _address)
     public
