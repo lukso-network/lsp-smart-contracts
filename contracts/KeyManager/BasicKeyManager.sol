@@ -40,15 +40,10 @@ contract BasicKeyManager is ERC165, IERC1271 {
     event Executed(uint256 indexed  _value, bytes _data);
 
     // CONSTRUCTOR
-    constructor(address _account, address _newOwner) {
+    constructor(address _account) {
 
-        // Link account
+        // Set account
         Account = ERC725(_account);
-
-        // give initial owner roles: ROLE_CHANGEKEYS, ROLE_SETDATA, ROLE_EXECUTE, ROLE_TRANSFERVALUE, ROLE_SIGN
-        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(ROLEKEY_ROLES, bytes20(uint160(_newOwner))), 0);
-        Account.setData(generatedKey, '0x1111');
-
     }
 
     /**
@@ -135,9 +130,13 @@ contract BasicKeyManager is ERC165, IERC1271 {
 //        return Account.getData(_key);
 //    }
 
-//    function _setRoles(address _key, bytes memory _roles) internal {
-//        Account.setData(generatedKey, _roles);
-//    }
+    function setRoles(address _key, bytes memory _roles) public {
+        // give initial owner roles: ROLE_CHANGEKEYS, ROLE_SETDATA, ROLE_EXECUTE, ROLE_TRANSFERVALUE, ROLE_SIGN
+        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(ROLEKEY_ROLES, bytes20(uint160(_key))), 0);
+        bytes memory value = hex"1111";//"\x11\x11";
+
+        Account.setData(generatedKey, value);
+    }
 
     function _verifyRole(address _key, bytes1[] memory _role) internal {
 

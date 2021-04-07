@@ -3,10 +3,10 @@ const {expectRevert} = require("openzeppelin-test-helpers");
 const Account = artifacts.require("LSP3Account");
 const KeyManager = artifacts.require('BasicKeyManager');
 
-const ROLEKEY_ROLES =            0xd76bc04c00000000eced0000; // ERC725AccountKeyRoles:Roles:<address>
-const ROLEKEY_ALLOWEDADDRESSES = 0xd76bc04c00000000c6dd0000; // ERC725AccountKeyRoles:AllowedAddresses:<address>
-const ROLEKEY_ALLOWEDFUNCTIONS = 0xd76bc04c000000008efe0000; // ERC725AccountKeyRoles:AllowedFunctions:<address>
-const ROLEKEY_ALLOWEDSTANDARDS = 0xd76bc04c000000003efa0000; // ERC725AccountKeyRoles:AllowedStandards:<address>
+const ROLEKEY_ROLES =            '0xd76bc04c00000000eced0000'; // ERC725AccountKeyRoles:Roles:<address>
+const ROLEKEY_ALLOWEDADDRESSES = '0xd76bc04c00000000c6dd0000'; // ERC725AccountKeyRoles:AllowedAddresses:<address>
+const ROLEKEY_ALLOWEDFUNCTIONS = '0xd76bc04c000000008efe0000'; // ERC725AccountKeyRoles:AllowedFunctions:<address>
+const ROLEKEY_ALLOWEDSTANDARDS = '0xd76bc04c000000003efa0000'; // ERC725AccountKeyRoles:AllowedStandards:<address>
 
 
 contract("BasicKeyManager", async (accounts) => {
@@ -15,10 +15,16 @@ contract("BasicKeyManager", async (accounts) => {
 
     beforeEach(async () => {
         account = await Account.new(owner, {from: owner});
-        keyManager = await KeyManager.new(account.address, owner);
+
+        // owner sets himself all key roles
+        await account.setData(ROLEKEY_ROLES + owner.replace('0x', ''), '0x2222', {from: owner});
+
+        assert.equal(await account.getData(ROLEKEY_ROLES + owner.replace('0x', '')), '0x2222');
+
+        keyManager = await KeyManager.new(account.address);
 
         // make keyManager owner of the account
-        // await account.transferOwnership(keyManager.address, {from: owner});
+        await account.transferOwnership(keyManager.address, {from: owner});
     });
 
     it('check if owners are correct', async function() {
@@ -30,9 +36,9 @@ contract("BasicKeyManager", async (accounts) => {
     it('should be able to add second owner', async function() {
 
         // add owner
-        // await keyManager.grantRole(DEFAULT_ADMIN_ROLE, accounts[4], {from: owner});
+        await keyManager.setRoles(owner, '0x', {from: owner});
 
-        assert.isTrue(await account.getData(ROLEKEY_ROLES + owner.replace('0x', ''), '0x1111'));
+        assert.equal(await account.getData(ROLEKEY_ROLES + owner.replace('0x', '')), '0x1111');
     });
 
     // it('second owner should be be able to add executor', async function() {
