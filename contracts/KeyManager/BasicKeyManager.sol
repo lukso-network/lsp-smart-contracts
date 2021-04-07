@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../../submodules/ERC725/implementations/contracts/ERC725/IERC725X.sol";
+import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725.sol";
 import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 
 // modules
@@ -11,12 +11,13 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "solidity-bytes-utils/contracts/BytesLib.sol";
 
 contract BasicKeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
 
-    IERC725X public Account;
+    ERC725 public Account;
     mapping (address => uint256) internal _nonceStore;
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
@@ -42,11 +43,11 @@ contract BasicKeyManager is ERC165, IERC1271 {
     constructor(address _account, address _newOwner) {
 
         // Link account
-        Account = IERC725X(_account);
+        Account = ERC725(_account);
 
         // give initial owner roles: ROLE_CHANGEKEYS, ROLE_SETDATA, ROLE_EXECUTE, ROLE_TRANSFERVALUE, ROLE_SIGN
-        bytes32 memory generatedKey = ROLEKEY_ROLES + bytes20(uint256(uint160(_address)));
-        Account.setData(generatedKey, 0x1111);
+        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(ROLEKEY_ROLES, bytes20(uint160(_newOwner))), 0);
+        Account.setData(generatedKey, '0x1111');
 
     }
 
@@ -130,9 +131,9 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
 
     // Internal functions
-    function _getData(bytes32 _key) returns(bytes) {
-        return Account.getData(_key);
-    }
+//    function _getData(bytes32 _key) returns(bytes) {
+//        return Account.getData(_key);
+//    }
 
 //    function _setRoles(address _key, bytes memory _roles) internal {
 //        Account.setData(generatedKey, _roles);
