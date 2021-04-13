@@ -30,11 +30,40 @@ contract BasicKeyManager is ERC165, IERC1271 {
     bytes12 internal constant ROLEKEY_ALLOWEDSTANDARDS = 0xd76bc04c000000003efa0000; // ERC725AccountKeyRoles:AllowedStandards:<address>
 
     // ROLES
-    bytes1 internal constant ROLE_CHANGEKEYS = 0x01;
-    bytes1 internal constant ROLE_SETDATA = 0x01;
-    bytes1 internal constant ROLE_EXECUTE = 0x01;
-    bytes1 internal constant ROLE_TRANSFERVALUE = 0x01;
-    bytes1 internal constant ROLE_SIGN = 0x01;
+    // PERMISSION_CHANGE_KEYS e.g.
+    bytes1 internal constant PERMISSION_CHANGEKEYS = 0x01;    // 0000 0001
+    bytes1 internal constant PERMISSION_SETDATA = 0x02;       // 0000 0010
+    bytes1 internal constant PERMISSION_EXECUTE = 0x04;       // 0000 0100
+    bytes1 internal constant PERMISSION_TRANSFERVALUE = 0x08; // 0000 1000
+    bytes1 internal constant PERMISSION_SIGN = 0x10;          // 0001 0000
+
+
+    // bytes internal constant ROLE_ADMIN = 0xFF   // 1111 1111
+
+    // Set Permission Example
+    //
+    // PERMISSION_CHANGE_KEYS = 0x01
+    // PERMISSION_SET_DATA    = 0x08
+    //
+    // 0. Initial
+    // PermissionsOfUser = 0x00
+    //
+    // 1. Set SET_DATA Permission
+    // PermissionsOfUser = PermissionOfUser OR PERMISSION_SET_DATA
+    // now permission is 0x08    0000 1000
+    //
+    // 2. Set CHANGE_KEYS Permission
+    // PermissionsOfUser = PermissionOfUser OR PERMISSION_SET_DATA
+    // now permission is 0x09    0000 1001
+    //
+    // 3. Check If Has Permission SET_DATA
+    // PermissionOfUser AND PERMISSION_SET_DATA == PERMISSION_SET_DATA
+    // 0000 1001
+    // 0000 0001    AND
+    // 0000 0001
+    // 4. Delete Permission SET_DATA
+    // PermissionsOfUser = PermissionOfUser AND  NOT(PERMISSION_SET_DATA)
+    // permission is now 0x08
 
     // EVENTS
     event Executed(uint256 indexed  _value, bytes _data);

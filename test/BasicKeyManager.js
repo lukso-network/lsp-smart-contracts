@@ -17,9 +17,9 @@ contract("BasicKeyManager", async (accounts) => {
         account = await Account.new(owner, {from: owner});
 
         // owner sets himself all key roles
-        await account.setData(ROLEKEY_ROLES + owner.replace('0x', ''), '0x2222', {from: owner});
+        await account.setData(ROLEKEY_ROLES + owner.replace('0x', ''), '0xffff', {from: owner});
 
-        assert.equal(await account.getData(ROLEKEY_ROLES + owner.replace('0x', '')), '0x2222');
+        assert.equal(await account.getData(ROLEKEY_ROLES + owner.replace('0x', '')), '0xffff');
 
         keyManager = await KeyManager.new(account.address);
 
