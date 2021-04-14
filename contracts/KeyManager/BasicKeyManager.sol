@@ -24,10 +24,10 @@ contract BasicKeyManager is ERC165, IERC1271 {
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
 
     // ROLE KEYS
-    bytes12 internal constant ROLEKEY_ROLES =            0xd76bc04c00000000eced0000; // ERC725AccountKeyRoles:Roles:<address>
-    bytes12 internal constant ROLEKEY_ALLOWEDADDRESSES = 0xd76bc04c00000000c6dd0000; // ERC725AccountKeyRoles:AllowedAddresses:<address>
-    bytes12 internal constant ROLEKEY_ALLOWEDFUNCTIONS = 0xd76bc04c000000008efe0000; // ERC725AccountKeyRoles:AllowedFunctions:<address>
-    bytes12 internal constant ROLEKEY_ALLOWEDSTANDARDS = 0xd76bc04c000000003efa0000; // ERC725AccountKeyRoles:AllowedStandards:<address>
+    bytes12 internal constant KEY_PERMISSIONS =      0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address>
+    bytes12 internal constant KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address>
+    bytes12 internal constant KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address>
+    bytes12 internal constant KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address>
 
     // ROLES
     // PERMISSION_CHANGE_KEYS e.g.
@@ -161,25 +161,34 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
     function setRoles(address _key, bytes memory _roles) public {
         // give initial owner roles: ROLE_CHANGEKEYS, ROLE_SETDATA, ROLE_EXECUTE, ROLE_TRANSFERVALUE, ROLE_SIGN
-        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(ROLEKEY_ROLES, bytes20(uint160(_key))), 0);
-        bytes memory value = hex"1111";//"\x11\x11";
+        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(KEY_PERMISSIONS, bytes20(uint160(_key))), 0);
+        bytes memory value = hex"ffff";//"\x11\x11";
 
         Account.setData(generatedKey, value);
     }
 
-    function _verifyRole(address _key, bytes1[] memory _role) internal {
+    function _getPermissions(address _address) public view returns(uint256) {
+
+        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(KEY_PERMISSIONS, bytes20(uint160(_address))), 0);
+        bytes memory permissions = Account.getData(generatedKey);
+
+        return permissions.length;
+    }
+    
+    function _verifyPermissions(address _address, bytes2 _permissions, bytes1 _allowedPermission) internal returns(bool) {
+
+        return false;
+    }
+
+    function _verifyStandard(address _address, address _standard) internal {
 
     }
 
-    function _verifyStandard(address _key, address _standard) internal {
+    function _verifyFunctionCall(address _address, address _functionSignature) internal {
 
     }
 
-    function _verifyFunctionCall(address _key, address _functionSignature) internal {
-
-    }
-
-    function _verifySmartContract(address _key, address _smartContract) internal {
+    function _verifySmartContract(address _address, address _smartContract) internal {
 
     }
 

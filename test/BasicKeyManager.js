@@ -3,10 +3,10 @@ const {expectRevert} = require("openzeppelin-test-helpers");
 const Account = artifacts.require("LSP3Account");
 const KeyManager = artifacts.require('BasicKeyManager');
 
-const ROLEKEY_ROLES =            '0xd76bc04c00000000eced0000'; // ERC725AccountKeyRoles:Roles:<address>
-const ROLEKEY_ALLOWEDADDRESSES = '0xd76bc04c00000000c6dd0000'; // ERC725AccountKeyRoles:AllowedAddresses:<address>
-const ROLEKEY_ALLOWEDFUNCTIONS = '0xd76bc04c000000008efe0000'; // ERC725AccountKeyRoles:AllowedFunctions:<address>
-const ROLEKEY_ALLOWEDSTANDARDS = '0xd76bc04c000000003efa0000'; // ERC725AccountKeyRoles:AllowedStandards:<address>
+const KEY_PERMISSIONS =            '0x4b80742d0000000082ac0000'; // AddressPermissions:Roles:<address>
+const KEY_ALLOWEDADDRESSES = '0x4b80742d00000000c6dd0000'; // AddressPermissions:AllowedAddresses:<address>
+const KEY_ALLOWEDFUNCTIONS = '0x4b80742d000000008efe0000'; // AddressPermissions:AllowedFunctions:<address>
+const KEY_ALLOWEDSTANDARDS = '0x4b80742d000000003efa0000'; // AddressPermissions:AllowedStandards:<address>
 
 
 contract("BasicKeyManager", async (accounts) => {
@@ -17,9 +17,9 @@ contract("BasicKeyManager", async (accounts) => {
         account = await Account.new(owner, {from: owner});
 
         // owner sets himself all key roles
-        await account.setData(ROLEKEY_ROLES + owner.replace('0x', ''), '0xffff', {from: owner});
+        await account.setData(KEY_PERMISSIONS + owner.replace('0x', ''), '0xffff', {from: owner});
 
-        assert.equal(await account.getData(ROLEKEY_ROLES + owner.replace('0x', '')), '0xffff');
+        assert.equal(await account.getData(KEY_PERMISSIONS + owner.replace('0x', '')), '0xffff');
 
         keyManager = await KeyManager.new(account.address);
 
@@ -36,9 +36,11 @@ contract("BasicKeyManager", async (accounts) => {
     it('should be able to add second owner', async function() {
 
         // add owner
-        await keyManager.setRoles(owner, '0x', {from: owner});
+        // await keyManager.setRoles(owner, '0x', {from: owner});
+        let result = await keyManager._getPermissions(owner);
 
-        assert.equal(await account.getData(ROLEKEY_ROLES + owner.replace('0x', '')), '0x1111');
+
+        assert.equal(result.toString(), '0x1111');
     });
 
     // it('second owner should be be able to add executor', async function() {
