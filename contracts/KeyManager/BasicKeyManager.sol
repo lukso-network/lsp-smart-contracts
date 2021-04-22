@@ -32,11 +32,16 @@ contract BasicKeyManager is ERC165, IERC1271 {
     // ROLES
     // PERMISSION_CHANGE_KEYS e.g.
     bytes1 internal constant PERMISSION_CHANGEKEYS = 0x01;    // 0000 0001
+    bytes1 internal constant PERMISSION_CHANGEOWNER = 0x01;    // 0000 0001
     bytes1 internal constant PERMISSION_SETDATA = 0x02;       // 0000 0010
     bytes1 internal constant PERMISSION_EXECUTE = 0x04;       // 0000 0100
     bytes1 internal constant PERMISSION_TRANSFERVALUE = 0x08; // 0000 1000
     bytes1 internal constant PERMISSION_SIGN = 0x10;          // 0001 0000
 
+//
+//KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xffffffffffffffffffffff]
+//KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xcafecafecafe..., ]
+//KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > 0x
 
     // bytes internal constant ROLE_ADMIN = 0xFF   // 1111 1111
 
@@ -97,6 +102,8 @@ contract BasicKeyManager is ERC165, IERC1271 {
     payable
     {
 //        require(hasRole(EXECUTOR_ROLE, _msgSender()), 'Only executors are allowed');
+
+        // is trying to call exectue(operasiont, to, valuer, data )
 
         address(Account).call{value: msg.value, gas: gasleft()}(_data); //(success, ) =
         emit Executed(msg.value, _data);
