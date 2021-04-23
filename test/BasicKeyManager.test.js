@@ -16,6 +16,8 @@ const convertHexToBin = hexValue => parseInt(hexValue, 16).toString(2).substr(-8
 
 const ALL_ROLES = "0xffff"
 
+// test
+
 contract("BasicKeyManager", async (accounts) => {
 
     let keyManager, account;
