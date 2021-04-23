@@ -13,6 +13,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
+
 contract BasicKeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
@@ -38,10 +39,10 @@ contract BasicKeyManager is ERC165, IERC1271 {
     bytes1 internal constant PERMISSION_TRANSFERVALUE = 0x08; // 0000 1000
     bytes1 internal constant PERMISSION_SIGN = 0x10;          // 0001 0000
 
-//
-//KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xffffffffffffffffffffff]
-//KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xcafecafecafe..., ]
-//KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > 0x
+    //
+    //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xffffffffffffffffffffff]
+    //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xcafecafecafe..., ]
+    //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > 0x
 
     // bytes internal constant ROLE_ADMIN = 0xFF   // 1111 1111
 
@@ -75,7 +76,6 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
     // CONSTRUCTOR
     constructor(address _account) {
-
         // Set account
         Account = ERC725(_account);
     }
@@ -83,25 +83,24 @@ contract BasicKeyManager is ERC165, IERC1271 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) 
+        public 
+        view 
+        virtual override(ERC165) 
+        returns (bool) 
+    {
         return interfaceId == _INTERFACE_ID_ERC1271
         || super.supportsInterface(interfaceId);
     }
 
 
-    function getNonce(address _address)
-    public
-    view
-    returns (uint256) {
+    function getNonce(address _address) public view returns (uint256) {
         return _nonceStore[_address];
     }
 
 
-    function execute(bytes memory _data)
-    external
-    payable
-    {
-//        require(hasRole(EXECUTOR_ROLE, _msgSender()), 'Only executors are allowed');
+    function execute(bytes memory _data) external payable {
+        // require(hasRole(EXECUTOR_ROLE, _msgSender()), 'Only executors are allowed');
 
         // is trying to call exectue(operasiont, to, valuer, data )
 
@@ -117,7 +116,7 @@ contract BasicKeyManager is ERC165, IERC1271 {
         uint256 _nonce,
         bytes memory _signature
     )
-    external
+        external
     {
         require(signedFor == address(this), 'Message not signed for this keyManager');
 
@@ -130,7 +129,7 @@ contract BasicKeyManager is ERC165, IERC1271 {
         // recover the signer
         address from = keccak256(blob).toEthSignedMessageHash().recover(_signature);
 
-//        require(hasRole(EXECUTOR_ROLE, from), 'Only executors are allowed');
+        // require(hasRole(EXECUTOR_ROLE, from), 'Only executors are allowed');
         require(_nonceStore[from] == _nonce, 'Incorrect nonce');
 
         // increase the nonce
@@ -148,10 +147,10 @@ contract BasicKeyManager is ERC165, IERC1271 {
     * @param _signature owner's signature(s) of the data
     */
     function isValidSignature(bytes32 _hash, bytes memory _signature)
-    override
-    public
-    pure
-    returns (bytes4 magicValue)
+        override
+        public
+        pure
+        returns (bytes4 magicValue)
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
 
@@ -162,9 +161,9 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
 
     // Internal functions
-//    function _getData(bytes32 _key) returns(bytes) {
-//        return Account.getData(_key);
-//    }
+    // function _getData(bytes32 _key) returns(bytes) {
+    //     return Account.getData(_key);
+    // }
 
     function setRoles(address _key, bytes memory _roles) public {
         // give initial owner roles: ROLE_CHANGEKEYS, ROLE_SETDATA, ROLE_EXECUTE, ROLE_TRANSFERVALUE, ROLE_SIGN
@@ -181,14 +180,19 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
         return permissions.length;
     }
+
+    function _getPermission(address _address) public view returns (bytes memory) {
+        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(KEY_PERMISSIONS, bytes20(uint160(_address))), 0);    
+        bytes memory permission = Account.getData(generatedKey);
+        return permission;
+    }
     
     function _verifyPermissions(address _address, bytes2 _permissions, bytes1 _allowedPermission) internal returns(bool) {
-
         return false;
     }
 
     function _verifyStandard(address _address, address _standard) internal {
-
+        
     }
 
     function _verifyFunctionCall(address _address, address _functionSignature) internal {
@@ -200,8 +204,8 @@ contract BasicKeyManager is ERC165, IERC1271 {
     }
 
     /* Modifers */
-//    modifier verifyRole() {
-//        require(msg.sender == account, 'Only the connected account call this function');
-//        _;
-//    }
+    //    modifier verifyRole() {
+    //        require(msg.sender == account, 'Only the connected account call this function');
+    //        _;
+    //    }
 }

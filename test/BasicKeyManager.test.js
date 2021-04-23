@@ -1,15 +1,23 @@
+const { assert } = require("chai");
 const {expectRevert} = require("openzeppelin-test-helpers");
 
 const Account = artifacts.require("LSP3Account");
 const KeyManager = artifacts.require('BasicKeyManager');
 
-const KEY_PERMISSIONS =            '0x4b80742d0000000082ac0000'; // AddressPermissions:Roles:<address>
+const KEY_PERMISSIONS = '0x4b80742d0000000082ac0000'; // AddressPermissions:Roles:<address>
 const KEY_ALLOWEDADDRESSES = '0x4b80742d00000000c6dd0000'; // AddressPermissions:AllowedAddresses:<address>
 const KEY_ALLOWEDFUNCTIONS = '0x4b80742d000000008efe0000'; // AddressPermissions:AllowedFunctions:<address>
 const KEY_ALLOWEDSTANDARDS = '0x4b80742d000000003efa0000'; // AddressPermissions:AllowedStandards:<address>
 
+// Utilities
+const removeAddressPrefix = address => address.replace('0x', '')
+const convertDecimalsToHex = decimalValue => "0x" + decimalValue.toString(16)``
+const convertHexToBin = hexValue => parseInt(hexValue, 16).toString(2).substr(-8)
+
+const ALL_ROLES = "0xffff"
 
 contract("BasicKeyManager", async (accounts) => {
+
     let keyManager, account;
     const owner = accounts[2];
 
@@ -17,10 +25,8 @@ contract("BasicKeyManager", async (accounts) => {
         account = await Account.new(owner, {from: owner});
 
         // owner sets himself all key roles
-        await account.setData(KEY_PERMISSIONS + owner.replace('0x', ''), '0xffff', {from: owner});
+        await account.setData(KEY_PERMISSIONS + removeAddressPrefix(owner), ALL_ROLES, {from: owner});
         // await account.setData(KEY_ALLOWEDADDRESSES + owner.replace('0x', ''), ['0xffff....'], {from: owner});
-
-        assert.equal(await account.getData(KEY_PERMISSIONS + owner.replace('0x', '')), '0xffff');
 
         keyManager = await KeyManager.new(account.address);
 
@@ -34,12 +40,20 @@ contract("BasicKeyManager", async (accounts) => {
         // assert.isTrue(await keyManager.hasRole(EXECUTOR_ROLE, owner));
     });
 
-    it('should be able to add second owner', async function() {
+    it("check owner has all Roles sets", async () => {
+        let permissions = await account.getData(KEY_PERMISSIONS + removeAddressPrefix(owner))
+        assert.equal(permissions, ALL_ROLES, "Owner should have all permissions set")
+    })
 
+    it("shows owner permission", async () => {
+        let permission = await keyManager._getPermission(owner)
+        console.log("permission: ", permission.toString())
+    })
+
+    it('should be able to add second owner', async function() {
         // add owner
         // await keyManager.setRoles(owner, '0x', {from: owner});
         let result = await keyManager._getPermissions(owner);
-
 
         assert.equal(result.toString(), '0x1111');
     });
