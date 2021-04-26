@@ -173,22 +173,34 @@ contract BasicKeyManager is ERC165, IERC1271 {
         Account.setData(generatedKey, value);
     }
 
-    function _getPermissions(address _address) public view returns(uint256) {
-
-        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(KEY_PERMISSIONS, bytes20(uint160(_address))), 0);
-        bytes memory permissions = Account.getData(generatedKey);
-
-        return permissions.length;
-    }
-
-    function _getPermission(address _address) public view returns (bytes memory) {
+    function _getPermissions(address _address) public view returns (bytes memory) {
         bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(KEY_PERMISSIONS, bytes20(uint160(_address))), 0);    
-        bytes memory permission = Account.getData(generatedKey);
-        return permission;
+        bytes memory permissions = Account.getData(generatedKey);
+        return permissions;
     }
-    
-    function _verifyPermissions(address _address, bytes2 _permissions, bytes1 _allowedPermission) internal returns(bool) {
-        return false;
+
+    /// Functions below should be internal
+
+    function _verifyOnePermissionSet(bytes2 _permissions, bytes2 _allowedPermission) public returns(bool) {
+        require(
+            uint16(_allowedPermission) & (uint16(_allowedPermission)-1) == 0, 
+            "Trying to check more than one permission"
+        );
+        return (_permissions & _allowedPermission) != 0 ? true : false;
+    }
+
+    function _verifyAllPermissionsSet(bytes2 _permissions, bytes2 _allowedPermissions) public returns(bool) {
+        bytes2 result = _permissions & _allowedPermissions;
+
+        if (result == _allowedPermissions) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function _findPermissionsNotSet(bytes2 _initialCheck, bytes2 _previousResult) public returns (bytes2) {
+        return _initialCheck ^ _previousResult;
     }
 
     function _verifyStandard(address _address, address _standard) internal {

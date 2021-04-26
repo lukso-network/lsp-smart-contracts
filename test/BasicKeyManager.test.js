@@ -1,4 +1,5 @@
 const { assert } = require("chai");
+const truffleAssert = require('truffle-assertions');
 const {expectRevert} = require("openzeppelin-test-helpers");
 
 const Account = artifacts.require("LSP3Account");
@@ -15,6 +16,9 @@ const convertDecimalsToHex = decimalValue => "0x" + decimalValue.toString(16)``
 const convertHexToBin = hexValue => parseInt(hexValue, 16).toString(2).substr(-8)
 
 const ALL_ROLES = "0xffff"
+const PERMISSION_CHANGE_KEYS = "0x01"
+const PERMISSION_TRANSFER_VALUE = "0x08"
+const PERMISSION_CHANGE_KEYS_AND_TRANSFER_VALUE = "0x09"
 
 // test
 
@@ -42,24 +46,69 @@ contract("BasicKeyManager", async (accounts) => {
         // assert.isTrue(await keyManager.hasRole(EXECUTOR_ROLE, owner));
     });
 
-    it("check owner has all Roles sets", async () => {
+    it("check owner has all Roles sets (via ERC725Y)", async () => {
         let permissions = await account.getData(KEY_PERMISSIONS + removeAddressPrefix(owner))
         assert.equal(permissions, ALL_ROLES, "Owner should have all permissions set")
     })
-
-    it("shows owner permission", async () => {
-        let permission = await keyManager._getPermission(owner)
-        console.log("permission: ", permission.toString())
+    
+    it("check owner has all roles sets (via KeyManager)", async () => {
+        let permissions = await keyManager._getPermissions(owner)
+        assert.equal(permissions, ALL_ROLES, "Owner should have all permissions set")
     })
 
-    it('should be able to add second owner', async function() {
-        // add owner
-        // await keyManager.setRoles(owner, '0x', {from: owner});
-        let result = await keyManager._getPermissions(owner);
+    it("Check owner has permission CHANGE_KEYS", async () => {
+        let permissions = await keyManager._getPermissions(owner)
+        let result = await keyManager._verifyOnePermissionSet.call(
+            permissions.toString(), 
+            PERMISSION_CHANGE_KEYS, 
+            { from: owner }
+        )
+        assert.equal(result, true, "owner should be allowed to change keys")
+    })
 
-        assert.equal(result.toString(), '0x1111');
-    });
+    it("Check owner has permission PERMISSION_TRANSFER_VALUE", async () => {
+        let permissions = await keyManager._getPermissions(owner)
+        let result = await keyManager._verifyOnePermissionSet.call(
+            permissions.toString(), 
+            PERMISSION_TRANSFER_VALUE, 
+            { from: owner }
+        )
+        assert.equal(result, true, "owner should be allowed to transfer ethers")
+    })
+    
+    it("Check two permissions at once", async () => {
+        let permissions = await keyManager._getPermissions(owner)
+        let result = await keyManager._verifyAllPermissionsSet.call(
+            permissions.toString(), 
+            PERMISSION_CHANGE_KEYS_AND_TRANSFER_VALUE, 
+            { from: owner }
+        )
+        assert.equal(result, true, "owner should have both permissions CHANGE_KEYS & PERMISSION_TRANSFER_VALUE")
+    })
+        
+    it("Should not be allowed to verify two permissions", async () => {
+        let permissions = await keyManager._getPermissions(owner)
+ 
+        await truffleAssert.reverts(
+            keyManager._verifyOnePermissionSet.call(
+                permissions.toString(), 
+                PERMISSION_CHANGE_KEYS_AND_TRANSFER_VALUE, 
+                { from: owner }
+            ),
+            "Trying to check more than one permission"
+        )
+    })
 
+
+
+    // it('should be able to add second owner', async function() {
+    //     // add owner
+    //     // await keyManager.setRoles(owner, '0x', {from: owner});
+    //     let result = await keyManager._getPermissions(owner);
+
+    //     assert.equal(result.toString(), '0x1111');
+    // });
+    // 
     // it('second owner should be be able to add executor', async function() {
     //
     //     // add owner
