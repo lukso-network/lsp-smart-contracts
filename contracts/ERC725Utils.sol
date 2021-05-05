@@ -1,4 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
+
+/**
+ * @title ERC725 Utility library to encode key types
+ * @dev based on LSP2 - ERC725Y JSON Schema
+ *      https://github.com/lukso-network/LIPs/blob/master/LSPs/LSP-2-ERC725YJSONSchema.md#array
+ */
 pragma solidity >=0.7.0 <0.9.0;
 
 library ERC725Utils {
