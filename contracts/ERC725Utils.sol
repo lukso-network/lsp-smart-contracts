@@ -9,7 +9,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 library ERC725Utils {
 
-    function encodeSingletonKey(string memory _keyName)
+    function generateSingletonKey(string memory _keyName)
         public 
         pure
         returns (bytes32)
@@ -17,7 +17,7 @@ library ERC725Utils {
         return keccak256(bytes(_keyName));
     }   
 
-    function encodeArrayKey(string memory _keyName)
+    function generateArrayKey(string memory _keyName)
         public
         pure
         returns (bytes32)
@@ -33,7 +33,7 @@ library ERC725Utils {
         return keccak256(keyName);
     }
     
-    function encodeMappingKey(string memory _firstWord, string memory _lastWord)
+    function generateMappingKey(string memory _firstWord, string memory _lastWord)
         public
         pure
         returns (bytes32 key_)
@@ -53,7 +53,7 @@ library ERC725Utils {
     
     }
 
-    function encodeAddressMappingKey(string memory _firstWord, address _address)
+    function generateAddressMappingKey(string memory _firstWord, address _address)
         public 
         pure
         returns (bytes32 key_)
@@ -72,7 +72,7 @@ library ERC725Utils {
 
     }
 
-    function encodeAddressMappingGroupingKey(
+    function generateAddressMappingGroupingKey(
         string memory _firstWord, 
         string memory _secondWord, 
         address _address

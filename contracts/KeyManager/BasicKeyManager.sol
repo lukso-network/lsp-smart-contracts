@@ -12,11 +12,12 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
-
+import { ERC725Utils } from "../ERC725Utils.sol";
 
 contract BasicKeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
+    using ERC725Utils for *;
 
     ERC725 public Account;
     mapping (address => uint256) internal _nonceStore;
@@ -30,7 +31,7 @@ contract BasicKeyManager is ERC165, IERC1271 {
     bytes12 internal constant KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address>
     bytes12 internal constant KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address>
 
-    // ROLES
+    // ROLES VALUES
     // PERMISSION_CHANGE_KEYS e.g.
     bytes1 internal constant PERMISSION_CHANGEKEYS = 0x01;    // 0000 0001
     bytes1 internal constant PERMISSION_CHANGEOWNER = 0x01;    // 0000 0001
@@ -39,12 +40,12 @@ contract BasicKeyManager is ERC165, IERC1271 {
     bytes1 internal constant PERMISSION_TRANSFERVALUE = 0x08; // 0000 1000
     bytes1 internal constant PERMISSION_SIGN = 0x10;          // 0001 0000
 
-    //
     //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xffffffffffffffffffffff]
     //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xcafecafecafe..., ]
     //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > 0x
 
-    // bytes internal constant ROLE_ADMIN = 0xFF   // 1111 1111
+    bytes1 internal constant ROLE_ADMIN = 0xFF;   // 1111 1111
+    bytes1 internal constant ROLE_EXECUTOR = 0x04;  // 0000 0100 (What other roles an executor should have?)
 
     // Set Permission Example
     //
@@ -74,10 +75,19 @@ contract BasicKeyManager is ERC165, IERC1271 {
     // EVENTS
     event Executed(uint256 indexed  _value, bytes _data);
 
-    // CONSTRUCTOR
     constructor(address _account) {
         // Set account
         Account = ERC725(_account);
+    }
+
+    modifier isAdmin(address _address) {
+        /// TODO
+        _;
+    }
+
+    modifier isExecutor(address _user) {
+        /// TODO
+        _;
     }
 
     /**
@@ -98,6 +108,8 @@ contract BasicKeyManager is ERC165, IERC1271 {
         return _nonceStore[_address];
     }
 
+    // Execution
+    // --------------------
 
     function execute(bytes memory _data) external payable {
         // require(hasRole(EXECUTOR_ROLE, _msgSender()), 'Only executors are allowed');
@@ -159,19 +171,34 @@ contract BasicKeyManager is ERC165, IERC1271 {
             : _ERC1271FAILVALUE;
     }
 
+    // Roles
+    // --------------------
 
-    // Internal functions
-    // function _getData(bytes32 _key) returns(bytes) {
-    //     return Account.getData(_key);
-    // }
+    /// TODO
+    function getRoles(address _user) public view returns (bytes32) {
 
-    function setRoles(address _key, bytes memory _roles) public {
-        // give initial owner roles: ROLE_CHANGEKEYS, ROLE_SETDATA, ROLE_EXECUTE, ROLE_TRANSFERVALUE, ROLE_SIGN
-        bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(KEY_PERMISSIONS, bytes20(uint160(_key))), 0);
-        bytes memory value = hex"ffff";//"\x11\x11";
-
-        Account.setData(generatedKey, value);
     }
+
+    function setRole(address _user, bytes memory _role) public {
+        bytes32 generatedKey = string("AddressPermissions").generateAddressMappingGroupingKey({
+            _secondWord: "Permissions",
+            _address: _user
+        });
+        Account.setData(generatedKey, _role);
+    }
+
+    /// TODO
+    function grantRole(address _user, bytes2 _role) public returns (bool) {
+        
+    }
+
+    /// TODO
+    function revokeRole(address _user, bytes2 _role) public returns (bool) {
+    
+    }
+
+    // Permissions
+    // -------------------
 
     function _getPermissions(address _address) public view returns (bytes memory) {
         bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(KEY_PERMISSIONS, bytes20(uint160(_address))), 0);    
@@ -179,7 +206,10 @@ contract BasicKeyManager is ERC165, IERC1271 {
         return permissions;
     }
 
-    /// Functions below should be internal
+    /// TODO
+    function verifyPermissions(address _address, bytes2 _permissions) public returns (bool) {
+
+    }
 
     function _verifyOnePermissionSet(bytes2 _permissions, bytes2 _allowedPermission) public returns(bool) {
         require(
@@ -203,6 +233,9 @@ contract BasicKeyManager is ERC165, IERC1271 {
         return _initialCheck ^ _previousResult;
     }
 
+    // Others (Allowed Standards, Function calls, Smart contracts, ...)
+    // --------------------
+
     function _verifyStandard(address _address, address _standard) internal {
         
     }
@@ -215,9 +248,4 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
     }
 
-    /* Modifers */
-    //    modifier verifyRole() {
-    //        require(msg.sender == account, 'Only the connected account call this function');
-    //        _;
-    //    }
 }

@@ -15,12 +15,10 @@ const removeAddressPrefix = address => address.replace('0x', '')
 const convertDecimalsToHex = decimalValue => "0x" + decimalValue.toString(16)``
 const convertHexToBin = hexValue => parseInt(hexValue, 16).toString(2).substr(-8)
 
-const ALL_ROLES = "0xffff"
+const ALL_PERMISSIONS = "0xffff"
 const PERMISSION_CHANGE_KEYS = "0x01"
 const PERMISSION_TRANSFER_VALUE = "0x08"
 const PERMISSION_CHANGE_KEYS_AND_TRANSFER_VALUE = "0x09"
-
-// test
 
 contract("BasicKeyManager", async (accounts) => {
 
@@ -31,7 +29,7 @@ contract("BasicKeyManager", async (accounts) => {
         account = await Account.new(owner, {from: owner});
 
         // owner sets himself all key roles
-        await account.setData(KEY_PERMISSIONS + removeAddressPrefix(owner), ALL_ROLES, {from: owner});
+        await account.setData(KEY_PERMISSIONS + removeAddressPrefix(owner), ALL_PERMISSIONS, {from: owner});
         // await account.setData(KEY_ALLOWEDADDRESSES + owner.replace('0x', ''), ['0xffff....'], {from: owner});
 
         keyManager = await KeyManager.new(account.address);
@@ -40,20 +38,23 @@ contract("BasicKeyManager", async (accounts) => {
         await account.transferOwnership(keyManager.address, {from: owner});
     });
 
-    it('check if owners are correct', async function() {
+    it('check if owner are correct', async () => {
         assert.equal(await account.owner(), keyManager.address);
+    });
+    
+    it('check owner has the correct roles', async () => {
         // assert.isTrue(await keyManager.hasRole(DEFAULT_ADMIN_ROLE, owner));
         // assert.isTrue(await keyManager.hasRole(EXECUTOR_ROLE, owner));
-    });
+    })
 
     it("check owner has all Roles sets (via ERC725Y)", async () => {
         let permissions = await account.getData(KEY_PERMISSIONS + removeAddressPrefix(owner))
-        assert.equal(permissions, ALL_ROLES, "Owner should have all permissions set")
+        assert.equal(permissions, ALL_PERMISSIONS, "Owner should have all permissions set")
     })
     
     it("check owner has all roles sets (via KeyManager)", async () => {
         let permissions = await keyManager._getPermissions(owner)
-        assert.equal(permissions, ALL_ROLES, "Owner should have all permissions set")
+        assert.equal(permissions, ALL_PERMISSIONS, "Owner should have all permissions set")
     })
 
     it("Check owner has permission CHANGE_KEYS", async () => {
@@ -99,16 +100,11 @@ contract("BasicKeyManager", async (accounts) => {
         )
     })
 
-
-
-    // it('should be able to add second owner', async function() {
-    //     // add owner
-    //     // await keyManager.setRoles(owner, '0x', {from: owner});
-    //     let result = await keyManager._getPermissions(owner);
-
-    //     assert.equal(result.toString(), '0x1111');
-    // });
-    // 
+    it('should be able to add second owner', async function() {
+        // add owner
+        // await keyManager.setRoles(owner, '0x', {from: owner});
+    });
+    
     // it('second owner should be be able to add executor', async function() {
     //
     //     // add owner
@@ -135,8 +131,8 @@ contract("BasicKeyManager", async (accounts) => {
     //     );
     //
     // });
-    //
-    //
+    
+    
     // it('should be able to send value to the account and forward', async function() {
     //     let oneEth = web3.utils.toWei("1", 'ether');
     //
@@ -153,7 +149,7 @@ contract("BasicKeyManager", async (accounts) => {
     //
     //     assert.equal(await web3.eth.getBalance(account.address), '0');
     // });
-    //
+    
     // it('should fail to send value if not executor', async function() {
     //     let oneEth = web3.utils.toWei("1", 'ether');
     //
