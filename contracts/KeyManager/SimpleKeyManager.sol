@@ -42,21 +42,21 @@ contract SimpleKeyManager is ERC165, IERC1271, AccessControl {
         // Link account
         Account = IERC725X(_account);
 
-//        _registerInterface(_INTERFACE_ID_ERC1271);
+        // _registerInterface(_INTERFACE_ID_ERC1271);
     }
 
-
     function getNonce(address _address)
-    public
-    view
-    returns (uint256) {
+        public
+        view
+        returns (uint256) 
+    {
         return _nonceStore[_address];
     }
 
 
     function execute(bytes memory _data)
-    external
-    payable
+        external
+        payable
     {
         require(hasRole(EXECUTOR_ROLE, _msgSender()), 'Only executors are allowed');
 

@@ -187,6 +187,26 @@ contract BasicKeyManager is ERC165, IERC1271 {
         Account.setData(generatedKey, _role);
     }
 
+    /// Would be better to compare the hashes for same data, but not possible in our case
+    // bytes memory role = abi.encodePacked(_role);
+    // bool hasRole = keccak256(fetchedRolesFromGetData) == keccak256(role);
+    function hasRole(bytes2 _role, address _user) public returns (bool) {
+        bytes32 generatedKey = string("AddressPermissions").generateAddressMappingGroupingKey({
+            _secondWord: "Permissions",
+            _address: _user
+        });
+        
+        bytes memory currentRoles = Account.getData(generatedKey);
+        bytes32 decodedCurrentRoles;
+
+        assembly {
+            decodedCurrentRoles := mload(add(currentRoles, 32))
+        }
+
+        bool hasRole = _verifyAllPermissionsSet(_role, bytes2(decodedCurrentRoles));
+        return hasRole;
+    }
+
     /// TODO
     function grantRole(address _user, bytes2 _role) public returns (bool) {
         
