@@ -1,4 +1,5 @@
 const { assert } = require("chai");
+const { assertion } = require("openzeppelin-test-helpers/src/expectRevert");
 const truffleAssert = require('truffle-assertions');
 
 const Account = artifacts.require("LSP3Account");
@@ -22,17 +23,19 @@ const PERMISSION_TRANSFER_VALUE = "0x08"
 const PERMISSION_CHANGE_KEYS_AND_TRANSFER_VALUE = "0x09"
 
 // Roles
-const DEFAULT_ADMIN_ROLE = "0xffff"
+const ADMIN_ROLE = "0xffff"
 const EXECUTOR_ROLE = "0x0004"
 
 // keccak256("EXECUTOR_ROLE")
 // const EXECUTOR_ROLE = "0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63";
-// const DEFAULT_ADMIN_ROLE = "0x00";
+// const ADMIN_ROLE = "0x00";
 
 contract("BasicKeyManager", async (accounts) => {
 
     let keyManager, account;
     const owner = accounts[2];
+    const secondOwner = accounts[4];
+    const executor = accounts[5];
 
     beforeEach(async () => {
         account = await Account.new(owner, {from: owner});
@@ -59,24 +62,24 @@ contract("BasicKeyManager", async (accounts) => {
     })
     
     it("check owner has all roles sets (via KeyManager)", async () => {
-        let permissions = await keyManager._getPermissions(owner)
+        let permissions = await keyManager.getPermissions(owner)
         assert.equal(permissions, ALL_PERMISSIONS, "Owner should have all permissions set")
     })
 
     /** @dev test fails for executor */
-    xit('check owner has the roles DEFAULT_ADMIN_ROLE and EXECUTOR_ROLE', async () => {
+    xit('check owner has the roles ADMIN_ROLE and EXECUTOR_ROLE', async () => {
         assert.isTrue(
-            await keyManager.hasRole.call(DEFAULT_ADMIN_ROLE, owner),
+            await keyManager.hasRole.call(owner, ADMIN_ROLE),
             "owner does not have DEFAULT_ADMIN role"
         );
         assert.isTrue(
-            await keyManager.hasRole.call(EXECUTOR_ROLE, owner),
+            await keyManager.hasRole.call(owner, EXECUTOR_ROLE),
             "owner does not have EXECUTOR_ROLE role"    
         );
     })
 
     it("Check owner has permission CHANGE_KEYS", async () => {
-        let permissions = await keyManager._getPermissions(owner)
+        let permissions = await keyManager.getPermissions(owner)
         let result = await keyManager._verifyOnePermissionSet.call(
             permissions.toString(), 
             PERMISSION_CHANGE_KEYS, 
@@ -86,7 +89,7 @@ contract("BasicKeyManager", async (accounts) => {
     })
 
     it("Check owner has permission EXECUTE", async () => {
-        let permissions = await keyManager._getPermissions(owner)
+        let permissions = await keyManager.getPermissions(owner)
         let result = await keyManager._verifyOnePermissionSet.call(
             permissions.toString(), 
             PERMISSION_EXECUTE, 
@@ -96,7 +99,7 @@ contract("BasicKeyManager", async (accounts) => {
     })
 
     it("Check owner has permission PERMISSION_TRANSFER_VALUE", async () => {
-        let permissions = await keyManager._getPermissions(owner)
+        let permissions = await keyManager.getPermissions(owner)
         let result = await keyManager._verifyOnePermissionSet.call(
             permissions.toString(), 
             PERMISSION_TRANSFER_VALUE, 
@@ -106,7 +109,7 @@ contract("BasicKeyManager", async (accounts) => {
     })
     
     it("Check two permissions at once", async () => {
-        let permissions = await keyManager._getPermissions(owner)
+        let permissions = await keyManager.getPermissions(owner)
         let result = await keyManager._verifyAllPermissionsSet.call(
             permissions.toString(), 
             PERMISSION_CHANGE_KEYS_AND_TRANSFER_VALUE, 
@@ -116,7 +119,7 @@ contract("BasicKeyManager", async (accounts) => {
     })
         
     it("Should not be allowed to verify two permissions", async () => {
-        let permissions = await keyManager._getPermissions(owner)
+        let permissions = await keyManager.getPermissions(owner)
  
         await truffleAssert.reverts(
             keyManager._verifyOnePermissionSet.call(
@@ -128,9 +131,42 @@ contract("BasicKeyManager", async (accounts) => {
         )
     })
 
-    it('should be able to add second owner', async function() {
-        // add owner
-        // await keyManager.setRoles(owner, '0x', {from: owner});
+    it('should be able to add second owner', async () => {
+        await keyManager.setRole(secondOwner, ADMIN_ROLE, {from: owner});
+        let permissionsSecondOwner = await keyManager.getPermissions(secondOwner);
+        
+        assert.equal(
+            permissionsSecondOwner.toString(),
+            ADMIN_ROLE,
+            "not the right permissions set for second owner"
+        )
+        
+        assert.isTrue(
+            await keyManager.hasRole.call(secondOwner, ADMIN_ROLE),
+            "second owner should have ADMIN_ROLE"
+        )
+    })
+
+    it("second owner should be able to add executor", async () => {
+        await keyManager.setRole(executor, EXECUTOR_ROLE, {from: secondOwner});
+        let permissionsExecutor = await keyManager.getPermissions(executor);
+
+        console.log("permissions executor: ", permissionsExecutor.toString());
+
+        assert.equal(
+            permissionsExecutor.toString(),
+            EXECUTOR_ROLE,
+            "not the right permissions set for executor"
+        )
+
+        assert.isTrue(
+            await keyManager.hasRole.call(executor, EXECUTOR_ROLE),
+            "executor should have EXECUTOR_ROLE"
+        )
+    })
+
+    it.only("executor should not be allowed to add owner", async () => {
+        
     })
     
 });

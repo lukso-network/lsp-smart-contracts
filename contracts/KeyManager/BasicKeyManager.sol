@@ -27,9 +27,9 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
     // ROLE KEYS
     bytes12 internal constant KEY_PERMISSIONS =      0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address>
-    bytes12 internal constant KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address>
-    bytes12 internal constant KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address>
-    bytes12 internal constant KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address>
+    bytes12 internal constant KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
+    bytes12 internal constant KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+    bytes12 internal constant KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
 
     // ROLES VALUES
     // PERMISSION_CHANGE_KEYS e.g.
@@ -40,12 +40,17 @@ contract BasicKeyManager is ERC165, IERC1271 {
     bytes1 internal constant PERMISSION_TRANSFERVALUE = 0x08; // 0000 1000
     bytes1 internal constant PERMISSION_SIGN = 0x10;          // 0001 0000
 
+    bytes1 internal constant ADMIN_ROLE = 0xFF;   // 1111 1111
+    bytes1 internal constant EXECUTOR_ROLE = 0x04;  // 0000 0100 (What other roles an executor should have?)
+
+    // if using this structure, need additional security check for Role = 0 (ADMIN)
+    enum Role { 
+        ADMIN_ROLE,
+        EXECUTOR_ROLE
+    }
     //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xffffffffffffffffffffff]
     //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xcafecafecafe..., ]
     //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > 0x
-
-    bytes1 internal constant ROLE_ADMIN = 0xFF;   // 1111 1111
-    bytes1 internal constant ROLE_EXECUTOR = 0x04;  // 0000 0100 (What other roles an executor should have?)
 
     // Set Permission Example
     //
@@ -80,13 +85,28 @@ contract BasicKeyManager is ERC165, IERC1271 {
         Account = ERC725(_account);
     }
 
-    modifier isAdmin(address _address) {
-        /// TODO
+    modifier isAdmin(address _user) {
+        require(
+            hasRole(_user, ADMIN_ROLE),
+            "Only admin allowed"
+        );
         _;
     }
 
     modifier isExecutor(address _user) {
-        /// TODO
+        require(
+            hasRole(_user, EXECUTOR_ROLE),
+            "Only executors allowed"
+        );
+        _;
+    }
+
+    modifier canSetRoles(address _user) {
+        bytes2 userPermissions = getPermissions(_user);
+        require(
+            _verifyOnePermissionSet(userPermissions, PERMISSION_CHANGEKEYS) == true,
+            "user is not allowed to set roles"
+        );
         _;
     }
 
@@ -111,9 +131,11 @@ contract BasicKeyManager is ERC165, IERC1271 {
     // Execution
     // --------------------
 
-    function execute(bytes memory _data) external payable {
-        // require(hasRole(EXECUTOR_ROLE, _msgSender()), 'Only executors are allowed');
-
+    function execute(bytes memory _data) 
+        external 
+        payable 
+        isExecutor(msg.sender)
+    {
         // is trying to call exectue(operasiont, to, valuer, data )
 
         address(Account).call{value: msg.value, gas: gasleft()}(_data); //(success, ) =
@@ -179,7 +201,10 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
     }
 
-    function setRole(address _user, bytes memory _role) public {
+    function setRole(address _user, bytes memory _role) 
+        public
+        canSetRoles(msg.sender) 
+    {
         bytes32 generatedKey = string("AddressPermissions").generateAddressMappingGroupingKey({
             _secondWord: "Permissions",
             _address: _user
@@ -190,7 +215,7 @@ contract BasicKeyManager is ERC165, IERC1271 {
     /// Would be better to compare the hashes for same data, but not possible in our case
     // bytes memory role = abi.encodePacked(_role);
     // bool hasRole = keccak256(fetchedRolesFromGetData) == keccak256(role);
-    function hasRole(bytes2 _role, address _user) public returns (bool) {
+    function hasRole(address _user, bytes2 _role) public returns (bool) {
         bytes32 generatedKey = string("AddressPermissions").generateAddressMappingGroupingKey({
             _secondWord: "Permissions",
             _address: _user
@@ -214,15 +239,28 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
     /// TODO
     function revokeRole(address _user, bytes2 _role) public returns (bool) {
-    
+        
     }
 
     // Permissions
     // -------------------
 
-    function _getPermissions(address _address) public view returns (bytes memory) {
+    /// TODO
+    /// should also have the modifier isAdmin
+    function setPermission(address _address, bytes2 _permission) public view {
+
+    }
+
+    function getPermissions(address _address) public view returns (bytes2) {
         bytes32 generatedKey = BytesLib.toBytes32(abi.encodePacked(KEY_PERMISSIONS, bytes20(uint160(_address))), 0);    
-        bytes memory permissions = Account.getData(generatedKey);
+        bytes memory fetchedPermissions = Account.getData(generatedKey);
+        
+        bytes2 permissions;
+
+        assembly {
+            permissions := mload(add(fetchedPermissions, 32))
+        }
+
         return permissions;
     }
 
@@ -251,6 +289,20 @@ contract BasicKeyManager is ERC165, IERC1271 {
 
     function _findPermissionsNotSet(bytes2 _initialCheck, bytes2 _previousResult) public returns (bytes2) {
         return _initialCheck ^ _previousResult;
+    }
+
+    function retrievePermissionsFromRole(Role _role) internal pure returns (bytes4) {
+        bytes4 permissions;
+        assembly {
+            switch _role
+            case 0 {
+                permissions := 0xffff
+            }
+            case 1 {
+                permissions := 0x0004
+            }
+        }
+        return permissions;
     }
 
     // Others (Allowed Standards, Function calls, Smart contracts, ...)
