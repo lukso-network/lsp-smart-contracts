@@ -48,36 +48,6 @@ contract BasicKeyManager is ERC165, IERC1271 {
         ADMIN_ROLE,
         EXECUTOR_ROLE
     }
-    //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xffffffffffffffffffffff]
-    //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xcafecafecafe..., ]
-    //KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > 0x
-
-    // Set Permission Example
-    //
-    // PERMISSION_CHANGE_KEYS = 0x01
-    // PERMISSION_SET_DATA    = 0x08
-    //
-    // 0. Initial
-    // PermissionsOfUser = 0x00
-    //
-    // 1. Set SET_DATA Permission
-    // PermissionsOfUser = PermissionOfUser OR PERMISSION_SET_DATA
-    // now permission is 0x08    0000 1000
-    //
-    // 2. Set CHANGE_KEYS Permission
-    // PermissionsOfUser = PermissionOfUser OR PERMISSION_SET_DATA
-    // now permission is 0x09    0000 1001
-    //
-    // 3. Check If Has Permission SET_DATA
-    // PermissionOfUser AND PERMISSION_SET_DATA == PERMISSION_SET_DATA
-    // 0000 1001
-    // 0000 0001    AND
-    // 0000 0001
-    // 4. Delete Permission SET_DATA
-    // PermissionsOfUser = PermissionOfUser AND  NOT(PERMISSION_SET_DATA)
-    // permission is now 0x08
-
-    // EVENTS
     event Executed(uint256 indexed  _value, bytes _data);
 
     constructor(address _account) {
