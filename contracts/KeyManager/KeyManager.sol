@@ -30,7 +30,7 @@ contract KeyManager is ERC165, IERC1271 {
 
     // PERMISSIONS VALUES
     bytes1 internal constant PERMISSION_CHANGEOWNER   = 0x01;   // 0000 0001
-    bytes1 internal constant PERMISSION_CHANGKEYS     = 0x02;   // 0000 0010
+    bytes1 internal constant PERMISSION_CHANGEKEYS     = 0x02;   // 0000 0010
     bytes1 internal constant PERMISSION_SETDATA       = 0x04;   // 0000 0100
     bytes1 internal constant PERMISSION_CALL          = 0x08;   // 0000 1000
     bytes1 internal constant PERMISSION_DELEGATECALL  = 0x10;   // 0001 0000
@@ -87,36 +87,54 @@ contract KeyManager is ERC165, IERC1271 {
             : _ERC1271FAILVALUE;
     }
 
-    // Execution
-    // --------------------
-
     function execute(bytes calldata _data)
         external
         payable
+        returns (bool)
     {
         bytes4 ERC725Selector;
+        uint operation;
+        address recipient;
+
         assembly { 
             ERC725Selector := calldataload(68) 
+            operation := calldataload(72)
+            recipient := calldataload(104)
         }
-
 
         if (ERC725Selector == SETDATA_SELECTOR) {
             bool isAllowed = verifyPermission(PERMISSION_SETDATA, msg.sender);
+            return isAllowed;
         }
         
         if (ERC725Selector == EXECUTE_SELECTOR) {
-            
+            bytes1 permissionToVerify;
+            assembly {
+                switch operation
+                case 0 { permissionToVerify := PERMISSION_CALL } 
+                case 1 { permissionToVerify := PERMISSION_DELEGATECALL }
+                case 2 { permissionToVerify := PERMISSION_DEPLOY }
+                default { stop() }
+            }
+            bool isAllowed = verifyPermission(permissionToVerify, msg.sender);
+            return isAllowed;
         }
         
         if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
             bool isAllowed = verifyPermission(PERMISSION_CHANGEOWNER, msg.sender);
+            return isAllowed;
         }
     }
 
     function verifyPermission(bytes1 _permission, address _user) internal returns (bool) {
-        bytes32 permissionKey = abi.encodePacked(KEY_PERMISSIONS, _user);
-        bytes1 storedPermission;
+        bytes32 permissionKey;
+        bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _user);
         
+        assembly { 
+            permissionKey := mload(add(computedKey, 32))
+        }
+
+        bytes1 storedPermission;
         bytes memory result = Account.getData(permissionKey);
 
         assembly {

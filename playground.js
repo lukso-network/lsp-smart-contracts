@@ -63,7 +63,7 @@ let transferOwnershipSignature = web3.eth.abi.encodeFunctionSignature(transferOw
 // console.log("execute: ", executeSignature)
 // console.log("transferOwnership: ", transferOwnershipSignature)
 
-// 0x7f23690c
+// 0x7f23690c                                                           -> selector (setData)
 // 0x4b80742d0000000082ac0000cafecafecafecafecafecafecafecafecafecafe
 // 0x0000000000000000000000000000000000000000000000000000000000000040   -> memory pointer ???
 // 0x0000000000000000000000000000000000000000000000000000000000000001   -> bytes array length
@@ -71,14 +71,14 @@ let transferOwnershipSignature = web3.eth.abi.encodeFunctionSignature(transferOw
 let setDataPayload = ERC725.methods.setData("0x4b80742d0000000082ac0000cafecafecafecafecafecafecafecafecafecafe", "0x04").encodeABI()
 console.log("setData payload: ", setDataPayload)
 
-// 0x44c028fe
+// 0x44c028fe                                                         -> selector (execute)
 // 0x0000000000000000000000000000000000000000000000000000000000000001 -> arg 1 (_operation)
-// 0x000000000000000000000000beefbeefbeefbeefbeefbeefbeefbeefbeefbeef -> arg 2 (_to)
-// 0x0000000000000000000000000000000000000000000000000000000000000000 -> arg 3 (_value)
+// 0x000000000000000000000000c00ffeebeefbeefbeefbeefbeefbebeefc00ffee -> arg 2 (_to)
+// 0x0000000000000000000000000000000000000000000000000000000000000012 -> arg 3 (_value)
 // 0x0000000000000000000000000000000000000000000000000000000000000080 -> (???)
 // 0x0000000000000000000000000000000000000000000000000000000000000004 -> arg 4 length (_data.length)
 // 0xaabbccdd00000000000000000000000000000000000000000000000000000000 -> arg 4 (_data)
-let executeDataPayload = ERC725.methods.execute(1, "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef", 0, "0xaabbccdd").encodeABI()
+let executeDataPayload = ERC725.methods.execute(1, "0xc00ffeebeefbeefbeefbeefbeefbebeefc00ffee", 18, "0xaabbccdd").encodeABI()
 console.log("execute payload: ", executeDataPayload)
 
 // 0x100000000000000000000000000000000000000000000000000000000

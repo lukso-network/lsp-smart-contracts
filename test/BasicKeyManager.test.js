@@ -5,7 +5,7 @@ const truffleAssert = require('truffle-assertions');
 const Account = artifacts.require("LSP3Account");
 const KeyManager = artifacts.require('BasicKeyManager');
 
-const KEY_PERMISSIONS = '0x4b80742d0000000082ac0000'; // AddressPermissions:Roles:<address>
+const KEY_PERMISSIONS = '0x4b80742d0000000082ac0000'; // AddressPermissions:Permissions:<address>
 const KEY_ALLOWEDADDRESSES = '0x4b80742d00000000c6dd0000'; // AddressPermissions:AllowedAddresses:<address>
 const KEY_ALLOWEDFUNCTIONS = '0x4b80742d000000008efe0000'; // AddressPermissions:AllowedFunctions:<address>
 const KEY_ALLOWEDSTANDARDS = '0x4b80742d000000003efa0000'; // AddressPermissions:AllowedStandards:<address>
