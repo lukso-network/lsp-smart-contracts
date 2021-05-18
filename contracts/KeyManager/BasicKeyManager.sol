@@ -25,50 +25,26 @@ contract BasicKeyManager is ERC165, IERC1271 {
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
 
-    // ROLE KEYS
+    // PERMISSION KEYS
     bytes12 internal constant KEY_PERMISSIONS =      0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address>
     bytes12 internal constant KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
     bytes12 internal constant KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
     bytes12 internal constant KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
 
-    // ROLES VALUES
+    // PERMISSION VALUES
     // PERMISSION_CHANGE_KEYS e.g.
+    // bytes1 internal constant PERMISSION_CHANGEOWNER = 0x01;    // 0000 0001
     bytes1 internal constant PERMISSION_CHANGEKEYS = 0x01;    // 0000 0001
-    bytes1 internal constant PERMISSION_CHANGEOWNER = 0x01;    // 0000 0001
     bytes1 internal constant PERMISSION_SETDATA = 0x02;       // 0000 0010
     bytes1 internal constant PERMISSION_EXECUTE = 0x04;       // 0000 0100
     bytes1 internal constant PERMISSION_TRANSFERVALUE = 0x08; // 0000 1000
     bytes1 internal constant PERMISSION_SIGN = 0x10;          // 0001 0000
 
-    bytes1 internal constant ADMIN_ROLE = 0xFF;   // 1111 1111
-    bytes1 internal constant EXECUTOR_ROLE = 0x04;  // 0000 0100 (What other roles an executor should have?)
-
-    // if using this structure, need additional security check for Role = 0 (ADMIN)
-    enum Role { 
-        ADMIN_ROLE,
-        EXECUTOR_ROLE
-    }
     event Executed(uint256 indexed  _value, bytes _data);
 
     constructor(address _account) {
         // Set account
         Account = ERC725(_account);
-    }
-
-    modifier isAdmin(address _user) {
-        require(
-            hasRole(_user, ADMIN_ROLE),
-            "Only admin allowed"
-        );
-        _;
-    }
-
-    modifier isExecutor(address _user) {
-        require(
-            hasRole(_user, EXECUTOR_ROLE),
-            "Only executors allowed"
-        );
-        _;
     }
 
     modifier canSetRoles(address _user) {
@@ -104,11 +80,16 @@ contract BasicKeyManager is ERC165, IERC1271 {
     function execute(bytes memory _data) 
         external 
         payable 
-        isExecutor(msg.sender)
     {
         // is trying to call exectue(operasiont, to, valuer, data )
+        
+        // 0xfafafafafafafafafafafafafafaa
+        //   ^
 
         address(Account).call{value: msg.value, gas: gasleft()}(_data); //(success, ) =
+        // 0xaaaaaaaa
+        //   selector
+
         emit Executed(msg.value, _data);
     }
 
@@ -261,19 +242,7 @@ contract BasicKeyManager is ERC165, IERC1271 {
         return _initialCheck ^ _previousResult;
     }
 
-    function retrievePermissionsFromRole(Role _role) internal pure returns (bytes4) {
-        bytes4 permissions;
-        assembly {
-            switch _role
-            case 0 {
-                permissions := 0xffff
-            }
-            case 1 {
-                permissions := 0x0004
-            }
-        }
-        return permissions;
-    }
+
 
     // Others (Allowed Standards, Function calls, Smart contracts, ...)
     // --------------------
