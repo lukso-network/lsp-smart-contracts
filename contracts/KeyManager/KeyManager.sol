@@ -106,7 +106,7 @@ contract KeyManager is ERC165, IERC1271 {
             }
 
             if (key == 0x4b80742d00000000) {
-                isAllozed = verifyPermission(PERMISSION_CHANGE_KEYS, msg.sender);
+                isAllowed = verifyPermission(PERMISSION_CHANGE_KEYS, msg.sender);
             } else {
                 isAllowed = verifyPermission(PERMISSION_SETDATA, msg.sender);
             }
