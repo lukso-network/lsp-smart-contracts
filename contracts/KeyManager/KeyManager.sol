@@ -121,6 +121,7 @@ contract KeyManager is ERC165, IERC1271 {
             uint operationType;
             address recipient;
             uint value;
+            bytes4 functionSelector;
 
             // Check for CALL, DELEGATECALL or DEPLOY
             bytes1 permission;
@@ -147,6 +148,7 @@ contract KeyManager is ERC165, IERC1271 {
 
             for (uint ii = 0; ii < allowedAddresses.length - 1; ii++) {
                 addressAllowed = (recipient == allowedAddresses[ii]);
+                if (addressAllowed == true) break;
             }
             if (addressAllowed == false) revert('KeyManager:execute: Not authorized to interact with this address');
 
@@ -158,6 +160,21 @@ contract KeyManager is ERC165, IERC1271 {
                 transferAllowed = verifyPermission(PERMISSION_TRANSFERVALUE, msg.sender);
                 if (transferAllowed == false) revert("KeyManager:execute: Not authorized to transfer ethers");
             }
+
+            // Check for functions
+            // 1st 32 bytes = memory location
+            // 2nd 32 bytes = bytes array length
+            // remaining = the actual bytes array
+            assembly { functionSelector := calldataload(232) }
+
+            bytes4[] memory allowedFunctions = getAllowedFunctions(msg.sender);
+            bool functionAllowed;
+
+            for (uint ii = 0; ii < allowedFunctions.length - 1; ii++) {
+                functionAllowed = (functionSelector == allowedFunctions[ii]);
+                if (functionAllowed == true) break;
+            }
+            if (functionAllowed == false) revert("KeyManager:execute: Not authorised to run this function");
 
         }
         
@@ -202,6 +219,16 @@ contract KeyManager is ERC165, IERC1271 {
         }
         address[] memory allowedAddresses = abi.decode(Account.getData(allowedAddressesKey), (address[]));
         return allowedAddresses;
+    }
+
+    function getAllowedFunctions(address _user) public view returns (bytes4[] memory) {
+        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDFUNCTIONS, _user);
+        bytes32 allowedFunctionsKey;
+        assembly {
+            allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
+        }
+        bytes4[] memory allowedFunctions = abi.decode(Account.getData(allowedFunctionsKey), (bytes4[]));
+        return allowedFunctions;
     }
 
 }

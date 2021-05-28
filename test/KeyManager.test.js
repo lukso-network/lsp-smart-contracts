@@ -8,6 +8,7 @@ const SimpleContract = artifacts.require("SimpleContract")
 // permission keys
 const KEY_PERMISSIONS = '0x4b80742d0000000082ac0000';      // AddressPermissions:Permissions:<address> --> bytes1
 const KEY_ALLOWEDADDRESSES = '0x4b80742d00000000c6dd0000'; // AddressPermissions:AllowedAddresses:<address> --> address[]
+const KEY_ALLOWEDFUNCTIONS = '0x4b80742d000000008efe0000';
 
 // Permissions
 const ALL_PERMISSIONS = "0xff"
@@ -20,11 +21,21 @@ const OPERATION_DELEGATECALL = 1
 const OPERATION_DEPLOY       = 2
 
 // Other
-const DATA_PLACEHOLDER = "0xaabbccdd"
+const DATA_PLACEHOLDER = "0xaabbccdd123456780000000000"
 
 let computeKey = (key, address) => key + address.subtr(2)
 
-let allowedAddresses
+let allowedAddresses = [
+    web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe")
+]
+
+let allowedFunctions = [
+    "0xaabbccdd",
+    web3.eth.abi.encodeFunctionSignature('getName()'),
+    web3.eth.abi.encodeFunctionSignature('setName(string)'),
+    web3.eth.abi.encodeFunctionSignature('getNumber()'),
+    web3.eth.abi.encodeFunctionSignature('setNumber(uint)')
+]
 
 contract("KeyManager", async (accounts) => {
     
@@ -36,14 +47,18 @@ contract("KeyManager", async (accounts) => {
 
     beforeEach(async () => {
         simpleContract = await SimpleContract.deployed()
+        allowedAddresses.push(SimpleContract.address)
+
         // owner permissions
         erc725Account = await ERC725Account.new(owner, { from: owner })
         await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
-
-        allowedAddresses = [web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"), SimpleContract.address]
         await erc725Account.setData(
             KEY_ALLOWEDADDRESSES + owner.substr(2), 
             web3.eth.abi.encodeParameter('address[]', allowedAddresses)
+        )
+        await erc725Account.setData(
+            KEY_ALLOWEDFUNCTIONS + owner.substr(2),
+            web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions)
         )
 
         // default third party app permissions
@@ -53,30 +68,20 @@ contract("KeyManager", async (accounts) => {
             KEY_ALLOWEDADDRESSES + app.substr(2), 
             web3.eth.abi.encodeParameter('address[]', allowedAddresses)
         )
+        await erc725Account.setData( // do not allow the app to run get/setNumber on SimpleContract
+            KEY_ALLOWEDFUNCTIONS + app.substr(2),
+            web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions.slice(0, 2))
+        )
         
         keyManager = await KeyManager.new(erc725Account.address)
         await erc725Account.transferOwnership(keyManager.address, { from: owner })
     })
-
-    // 0x0000000000000000000000000000000000000000000000000000000000000020
-    // 0x0000000000000000000000000000000000000000000000000000000000000080
-    // 0x0000000000000000000000000000000000000000000000000000000000000020
-    // 0x0000000000000000000000000000000000000000000000000000000000000002 -> array length
-    // 0x000000000000000000000000ce3e75a43b0a29292219926eadc8c5585651219c -> first address
-    // 0x000000000000000000000000ba61a0b24a228807f23b46064773d28fe51da81c -> second address
-
-    
-    // 0x0000000000000000000000000000000000000000000000000000000000000020
-    // 0x0000000000000000000000000000000000000000000000000000000000000002
-    // 0x000000000000000000000000ce3e75a43b0a29292219926eadc8c5585651219c
-    // 0x000000000000000000000000ba61a0b24a228807f23b46064773d28fe51da81c
 
     it("ensures owner is still erc725Account\'s admin (=all permissions)", async () => {
         let permissions = await erc725Account.getData(KEY_PERMISSIONS + owner.substr(2))
         assert.equal(permissions, ALL_PERMISSIONS, "Owner should have all permissions set")
     })
 
-    /** @todo differentiate between the keys and a random setData */
     it("Owner should be allowed to change keys", async () => {
         let payload = erc725Account.contract.methods.setData(KEY_PERMISSIONS + app.substr(2), PERMISSION_SETDATA).encodeABI()
         
@@ -126,7 +131,7 @@ contract("KeyManager", async (accounts) => {
             OPERATION_CALL, 
             web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"), 
             0, 
-            DATA_PLACEHOLDER    // placeholder _data
+            DATA_PLACEHOLDER
         ).encodeABI()
         
         await truffleAssert.passes(
@@ -187,6 +192,20 @@ contract("KeyManager", async (accounts) => {
         )
     })
 
+    it("Owner should be allowed to interact with 1st allowed address from list", async () => {
+        let payload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            allowedAddresses[0],
+            0,
+            DATA_PLACEHOLDER
+        ).encodeABI()
+
+        await truffleAssert.passes(
+            keyManager.execute.call(payload, { from: owner }),
+            "Owner should be allowed to interact with the 1st address from the list"
+        )
+    })
+
     it("Owner should not be allowed to interact with a not allowed address", async () => {
         let payload = erc725Account.contract.methods.execute(
             OPERATION_CALL,
@@ -199,6 +218,21 @@ contract("KeyManager", async (accounts) => {
             keyManager.execute.call(payload, { from: owner }),
             truffleAssert.ErrorType.REVERT,
             "KeyManager:execute: Not authorized to interact with this address"
+        )
+    })
+
+    it("App should not be allowed to run function with signature `0xbeefbeef`", async () => {
+        let payload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            allowedAddresses[0],
+            0,
+            "0xbeefbeef123456780000000000"
+        ).encodeABI()
+
+        await truffleAssert.fails(
+            keyManager.execute.call(payload, { from: app }),
+            truffleAssert.ErrorType.REVERT,
+            "KeyManager:execute: Not authorised to run this function"
         )
     })
 })
