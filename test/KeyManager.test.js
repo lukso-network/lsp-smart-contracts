@@ -26,7 +26,8 @@ const DATA_PLACEHOLDER = "0xaabbccdd123456780000000000"
 let computeKey = (key, address) => key + address.subtr(2)
 
 let allowedAddresses = [
-    web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe")
+    web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"),
+    web3.utils.toChecksumAddress("0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd")
 ]
 
 let allowedFunctions = [
@@ -39,16 +40,17 @@ let allowedFunctions = [
 
 contract("KeyManager", async (accounts) => {
     
-    let keyManager, simpleContract,
+    let keyManager, 
+        simpleContract,
         erc725Account
 
     const owner = accounts[0]
     const app = accounts[1]
 
-    beforeEach(async () => {
+    before(async () => {
         simpleContract = await SimpleContract.deployed()
-        allowedAddresses.push(SimpleContract.address)
-
+        allowedAddresses.push(simpleContract.address)
+        
         // owner permissions
         erc725Account = await ERC725Account.new(owner, { from: owner })
         await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
@@ -206,6 +208,20 @@ contract("KeyManager", async (accounts) => {
         )
     })
 
+    it("Owner should be allowed to interact with 2nd address from the list", async () => {
+        let payload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            allowedAddresses[1],
+            0,
+            DATA_PLACEHOLDER
+        ).encodeABI()
+
+        await truffleAssert.passes(
+            keyManager.execute.call(payload, { from: owner }),
+            "Owner should be allowed to interact with the 2nd address from the list"
+        )
+    })
+
     it("Owner should not be allowed to interact with a not allowed address", async () => {
         let payload = erc725Account.contract.methods.execute(
             OPERATION_CALL,
@@ -234,5 +250,30 @@ contract("KeyManager", async (accounts) => {
             truffleAssert.ErrorType.REVERT,
             "KeyManager:execute: Not authorised to run this function"
         )
+    })
+
+    it("Owner should be allowed to set `name` variable in simple contract", async () => {        
+        let initialName = await simpleContract.getName()
+        let newName = "Updated Name"
+
+        let simpleContractPayload = simpleContract.contract.methods.setName(newName).encodeABI()
+        let executePayload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            simpleContract.address,
+            0,
+            simpleContractPayload
+        ).encodeABI()
+
+        let callResult = await keyManager.execute.call(executePayload, { from: owner })
+        assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for following chained calls: KeyManager > ERC725Account > SimpleContract")
+        
+        await truffleAssert.passes(
+            keyManager.execute(executePayload, { from: owner }),
+            "Should have not reverted"
+        )
+
+        let result = await simpleContract.getName()
+        assert.notEqual(result, initialName, "name variable in SimpleContract should have changed")
+        assert.equal(result, newName, `name variable in SimpleContract should now be ${newName}`)
     })
 })

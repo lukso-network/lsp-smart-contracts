@@ -90,6 +90,7 @@ contract KeyManager is ERC165, IERC1271 {
     function execute(bytes calldata _data)
         external
         payable
+        returns (bool)
     {
         // TODO implement an assembly function to move the calldata pointer?
         bytes4 ERC725Selector;
@@ -146,7 +147,7 @@ contract KeyManager is ERC165, IERC1271 {
             address[] memory allowedAddresses = getAllowedAddresses(msg.sender);
             bool addressAllowed;
 
-            for (uint ii = 0; ii < allowedAddresses.length - 1; ii++) {
+            for (uint ii = 0; ii <= allowedAddresses.length - 1; ii++) {
                 addressAllowed = (recipient == allowedAddresses[ii]);
                 if (addressAllowed == true) break;
             }
@@ -182,6 +183,10 @@ contract KeyManager is ERC165, IERC1271 {
             bool isAllowed = verifyPermission(PERMISSION_CHANGEOWNER, msg.sender);
             if (isAllowed == false) revert("KeyManager:execute: Not authorized to transfer ownership");
         }
+
+        (bool success, ) = address(Account).call{value: msg.value, gas: gasleft()}(_data); //(success, ) =
+        return success;
+        emit Executed(msg.value, _data);
     }
 
     function verifyPermission(bytes1 _permission, address _user) public view returns (bool) {
