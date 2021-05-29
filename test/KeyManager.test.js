@@ -276,4 +276,27 @@ contract("KeyManager", async (accounts) => {
         assert.notEqual(result, initialName, "name variable in SimpleContract should have changed")
         assert.equal(result, newName, `name variable in SimpleContract should now be ${newName}`)
     })
+
+    it.only("App should not be allowed to set `number` variable in simple contract", async () => {
+        let initialNumber = await simpleContract.getNumber()
+        let newNumber = 18
+
+        let simpleContractPayload = simpleContract.contract.methods.setNumber(newNumber).encodeABI()
+        let executePayload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            simpleContract.address,
+            0,
+            simpleContractPayload
+        ).encodeABI()
+
+        await truffleAssert.fails(
+            keyManager.execute(executePayload, { from: app }),
+            truffleAssert.ErrorType.REVERT,
+            "KeyManager:execute: Not authorised to run this function"
+        )
+
+        let result = await simpleContract.getNumber()
+        assert.notEqual(result, newNumber.toString(), "number variable in SimpleContract should not have changed")
+        assert.equal(result, initialNumber.toString(), "number variable in SimpleContract should have remained the same")
+    })
 })
