@@ -168,14 +168,17 @@ contract KeyManager is ERC165, IERC1271 {
             // remaining = the actual bytes array
             assembly { functionSelector := calldataload(232) }
 
-            bytes4[] memory allowedFunctions = getAllowedFunctions(msg.sender);
-            bool functionAllowed;
+            // empty _data means either sending ether to the address, or ?
+            if (functionSelector != 0x00000000) {
+                bytes4[] memory allowedFunctions = getAllowedFunctions(msg.sender);
+                bool functionAllowed;
 
-            for (uint ii = 0; ii <= allowedFunctions.length - 1; ii++) {
-                functionAllowed = (functionSelector == allowedFunctions[ii]);
-                if (functionAllowed == true) break;
+                for (uint ii = 0; ii <= allowedFunctions.length - 1; ii++) {
+                    functionAllowed = (functionSelector == allowedFunctions[ii]);
+                    if (functionAllowed == true) break;
+                }
+                if (functionAllowed == false) revert("KeyManager:execute: Not authorised to run this function");
             }
-            if (functionAllowed == false) revert("KeyManager:execute: Not authorised to run this function");
 
         }
         

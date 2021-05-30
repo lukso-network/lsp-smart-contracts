@@ -44,8 +44,11 @@ contract("KeyManager", async (accounts) => {
 
     const owner = accounts[0]
     const app = accounts[1]
-
+    const user = accounts[2]
+    
     before(async () => {
+        allowedAddresses.push(app)
+
         simpleContract = await SimpleContract.deployed()
         allowedAddresses.push(simpleContract.address)
         
@@ -62,6 +65,7 @@ contract("KeyManager", async (accounts) => {
         )
 
         // default third party app permissions
+        allowedAddresses.push(user)
         let appPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
         await erc725Account.setData(KEY_PERMISSIONS + app.substr(2), appPermissions, { from: owner })
         await erc725Account.setData(
@@ -75,6 +79,13 @@ contract("KeyManager", async (accounts) => {
         
         keyManager = await KeyManager.new(erc725Account.address)
         await erc725Account.transferOwnership(keyManager.address, { from: owner })
+
+        /** @todo find other way to ensure ERC725 Account has always 10 ethers before each test (and not transfer every time test is re-run) */
+        await web3.eth.sendTransaction({
+            from: owner,
+            to: erc725Account.address,
+            value: web3.utils.toWei("10", "ether")
+        })
     })
 
     // Always reset default values when deployed after each test
@@ -190,7 +201,7 @@ contract("KeyManager", async (accounts) => {
         )
     })
 
-    it("Owner allowed addresses to interact with should match", async () => {
+    xit("Owner allowed addresses to interact with should match", async () => {
         let allowedOwnerAddresses = await keyManager.getAllowedAddresses(owner);
         assert.deepEqual(
             allowedOwnerAddresses, 
@@ -352,6 +363,57 @@ contract("KeyManager", async (accounts) => {
         let result = await simpleContract.getNumber()
         assert.notEqual(parseInt(result,10), newNumber.toString(), "number variable in SimpleContract should not have changed")
         assert.equal(parseInt(result,10), initialNumber.toString(), "number variable in SimpleContract should have remained the same")
+    })
+
+    it("Owner should be allowed to transfer ethers to app", async () => {        
+        let initialAccountBalance = await web3.eth.getBalance(erc725Account.address)
+        let initialAppBalance = await web3.eth.getBalance(app)
+
+        let transferPayload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            app,
+            web3.utils.toWei("3", "ether"),
+            "0x"
+        ).encodeABI()
+
+        let callResult = await keyManager.execute.call(transferPayload, { from: owner })
+        assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
+
+        await truffleAssert.passes(
+            keyManager.execute(transferPayload, { from: owner }),
+            "Should have not reverted"
+        )
+
+        let newAccountBalance = await web3.eth.getBalance(erc725Account.address)
+        assert.isBelow(parseInt(newAccountBalance), parseInt(initialAccountBalance), "ERC725 Account's balance should have decreased")
+        
+        let newAppBalance = await web3.eth.getBalance(app)
+        assert.isAbove(parseInt(newAppBalance), parseInt(initialAppBalance), "ERC725 Account's balance should have decreased")
+    })
+
+    it("App should not be allowed to transfer ethers", async () => {
+
+        let initialAccountBalance = await web3.eth.getBalance(erc725Account.address)
+        let initialUserBalance = await web3.eth.getBalance(user)
+
+        let transferPayload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            user,
+            web3.utils.toWei("3", "ether"),
+            "0x"
+        ).encodeABI()
+
+        await truffleAssert.fails(
+            keyManager.execute(transferPayload, { from: app }),
+            truffleAssert.ErrorType.REVERT,
+            "KeyManager:execute: Not authorized to transfer ethers"
+        )
+
+        let newAccountBalance = await web3.eth.getBalance(erc725Account.address)
+        let newUserBalance = await web3.eth.getBalance(user)
+
+        assert.equal(initialAccountBalance, newAccountBalance, "ERC725 Account's balance should have remained the same")
+        assert.equal(initialUserBalance, newUserBalance, "User's balance should have remained the same")
     })
 
 })
