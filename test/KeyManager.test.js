@@ -31,11 +31,9 @@ let allowedAddresses = [
 ]
 
 let allowedFunctions = [
-    "0xaabbccdd",
-    web3.eth.abi.encodeFunctionSignature('getName()'),
+    "0xaabbccdd",   // placeholder
     web3.eth.abi.encodeFunctionSignature('setName(string)'),
-    web3.eth.abi.encodeFunctionSignature('getNumber()'),
-    web3.eth.abi.encodeFunctionSignature('setNumber(uint)')
+    web3.eth.abi.encodeFunctionSignature('setNumber(uint256)')
 ]
 
 contract("KeyManager", async (accounts) => {
@@ -70,13 +68,19 @@ contract("KeyManager", async (accounts) => {
             KEY_ALLOWEDADDRESSES + app.substr(2), 
             web3.eth.abi.encodeParameter('address[]', allowedAddresses)
         )
-        await erc725Account.setData( // do not allow the app to run get/setNumber on SimpleContract
+        await erc725Account.setData( // do not allow the app to `setNumber` on SimpleContract
             KEY_ALLOWEDFUNCTIONS + app.substr(2),
-            web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions.slice(0, 2))
+            web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions.slice(0, 1))
         )
         
         keyManager = await KeyManager.new(erc725Account.address)
         await erc725Account.transferOwnership(keyManager.address, { from: owner })
+    })
+
+    // Always reset default values when deployed after each test
+    beforeEach(async() => {
+        await simpleContract.setName("Simple Contract Name")
+        await simpleContract.setNumber(5)
     })
 
     it("ensures owner is still erc725Account\'s admin (=all permissions)", async () => {
@@ -265,11 +269,11 @@ contract("KeyManager", async (accounts) => {
         ).encodeABI()
 
         let callResult = await keyManager.execute.call(executePayload, { from: owner })
-        assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for following chained calls: KeyManager > ERC725Account > SimpleContract")
+        assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
         
         await truffleAssert.passes(
             keyManager.execute(executePayload, { from: owner }),
-            "Should have not reverted"
+            "Should not have reverted"
         )
 
         let result = await simpleContract.getName()
@@ -277,7 +281,57 @@ contract("KeyManager", async (accounts) => {
         assert.equal(result, newName, `name variable in SimpleContract should now be ${newName}`)
     })
 
-    it.only("App should not be allowed to set `number` variable in simple contract", async () => {
+    it("App should be allowed to set `name` variable in simple contract", async () => {
+        let initialName = await simpleContract.getName()
+        let newName = "Updated Name"
+
+        let simpleContractPayload = simpleContract.contract.methods.setName(newName).encodeABI()
+        let executePayload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            simpleContract.address,
+            0,
+            simpleContractPayload
+        ).encodeABI()
+
+        let callResult = await keyManager.execute.call(executePayload, { from: owner })
+        assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
+
+        await truffleAssert.passes(
+            keyManager.execute(executePayload, { from: owner }),
+            "Should not have reverted"
+        )
+
+        let result = await simpleContract.getName()
+        assert.notEqual(result, initialName, "name variable in SimpleContract should have changed")
+        assert.equal(result, newName, `name variable in SimpleContract should now be ${newName}`)
+    })
+
+    it("Owner should be allowed to set `number` variable from SimpleContract", async () => {
+        let initialNumber = await simpleContract.getNumber()
+        let newNumber = 18
+
+        let simpleContractPayload = simpleContract.contract.methods.setNumber(newNumber).encodeABI()
+        let executePayload = erc725Account.contract.methods.execute(
+            OPERATION_CALL,
+            simpleContract.address,
+            0,
+            simpleContractPayload
+        ).encodeABI()
+
+        let callResult = await keyManager.execute.call(executePayload, { from: owner })
+        assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
+
+        await truffleAssert.passes(
+            keyManager.execute(executePayload, { from: owner }),
+            "Should not have reverted"
+        )
+
+        let result = await simpleContract.getNumber()
+        assert.notEqual(parseInt(result, 10), initialNumber.toString(), "number variable in SimpleContract should have changed")
+        assert.equal(parseInt(result, 10), newNumber, `name variable in SimpleContract should now be ${newNumber}`)
+    })
+
+    it("App should not be allowed to set `number` variable in simple contract", async () => {
         let initialNumber = await simpleContract.getNumber()
         let newNumber = 18
 
@@ -296,7 +350,8 @@ contract("KeyManager", async (accounts) => {
         )
 
         let result = await simpleContract.getNumber()
-        assert.notEqual(result, newNumber.toString(), "number variable in SimpleContract should not have changed")
-        assert.equal(result, initialNumber.toString(), "number variable in SimpleContract should have remained the same")
+        assert.notEqual(parseInt(result,10), newNumber.toString(), "number variable in SimpleContract should not have changed")
+        assert.equal(parseInt(result,10), initialNumber.toString(), "number variable in SimpleContract should have remained the same")
     })
+
 })
