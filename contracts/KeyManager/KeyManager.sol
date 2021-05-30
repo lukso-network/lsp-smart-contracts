@@ -92,74 +92,50 @@ contract KeyManager is ERC165, IERC1271 {
         payable
         returns (bool success_)
     {
-        // TODO implement an assembly function to move the calldata pointer?
         bytes4 ERC725Selector;
-        
-        assembly { 
-            ERC725Selector := calldataload(68) 
-        }
+        assembly { ERC725Selector := calldataload(68) }
 
         if (ERC725Selector == SETDATA_SELECTOR) {
             bytes8 key;
-            bool isAllowed;
-            string memory failureMessage;
-            assembly {
-                key := calldataload(72)
-            }
+            assembly { key := calldataload(72) }
 
             if (key == 0x4b80742d00000000) {
-                isAllowed = verifyPermission(PERMISSION_CHANGEKEYS, msg.sender);
-                failureMessage = "KeyManager:execute: Not authorized to change keys";
+                require(_isAllowed(msg.sender, PERMISSION_CHANGEKEYS), "KeyManager:execute: Not authorized to change keys");
             } else {
-                isAllowed = verifyPermission(PERMISSION_SETDATA, msg.sender);
-                failureMessage = "KeyManager:execute: Not authorized to setData";
+                require(_isAllowed(msg.sender, PERMISSION_SETDATA), "KeyManager:execute: Not authorized to setData");
             }
-
-            if (!isAllowed) revert(failureMessage);
-        }
-        
-        if (ERC725Selector == EXECUTE_SELECTOR) {
-            uint operationType;
+        } else if (ERC725Selector == EXECUTE_SELECTOR) {
+            uint8 operationType;
             address recipient;
             uint value;
             bytes4 functionSelector;
 
             // Check for CALL, DELEGATECALL or DEPLOY
+            require(operationType < 4, 'KeyManager:execute: Invalid operation type');
             bytes1 permission;
-            string memory failureMessage;
             assembly {
                 operationType := calldataload(72)
                 switch operationType
                 case 0 { permission := PERMISSION_CALL } 
                 case 1 { permission := PERMISSION_DELEGATECALL }
-                case 2 { permission := PERMISSION_DEPLOY }
+                case 2 { permission := PERMISSION_DEPLOY }  // CREATE2
+                case 3 { permission := PERMISSION_DEPLOY }  // CREATE
                 // TODO: revert for any other invalid operation type
             }
-            bool operationAllowed = verifyPermission(permission, msg.sender);
+            bool operationAllowed = _isAllowed(msg.sender, permission);
 
-            if (!operationAllowed && permission == PERMISSION_CALL) revert("KeyManager:execute: not authorized to perform CALL");
-            if (!operationAllowed && permission == PERMISSION_DELEGATECALL) revert("KeyManager:execute: not authorized to perform DELEGATECALL");
-            if (!operationAllowed && permission == PERMISSION_DEPLOY) revert("KeyManager:execute: not authorized to perform DEPLOY");
+            if (!operationAllowed && permission == PERMISSION_CALL) revert('KeyManager:execute: not authorized to perform CALL');
+            if (!operationAllowed && permission == PERMISSION_DELEGATECALL) revert('KeyManager:execute: not authorized to perform DELEGATECALL');
+            if (!operationAllowed && permission == PERMISSION_DEPLOY) revert('KeyManager:execute: not authorized to perform DEPLOY');
 
             // Check for authorized addresses
             assembly { recipient := calldataload(104) }
-            
-            address[] memory allowedAddresses = getAllowedAddresses(msg.sender);
-            bool addressAllowed;
-
-            for (uint ii = 0; ii <= allowedAddresses.length - 1; ii++) {
-                addressAllowed = (recipient == allowedAddresses[ii]);
-                if (addressAllowed) break;
-            }
-            if (!addressAllowed) revert('KeyManager:execute: Not authorized to interact with this address');
+            require(_isAllowedAddress(msg.sender, recipient), 'KeyManager:execute: Not authorized to interact with this address');
 
             // Check for value
             assembly { value := calldataload(136) }
-
-            bool transferAllowed;
             if (value > 0) {
-                transferAllowed = verifyPermission(PERMISSION_TRANSFERVALUE, msg.sender);
-                if (!transferAllowed) revert("KeyManager:execute: Not authorized to transfer ethers");
+                require(_isAllowed(msg.sender, PERMISSION_TRANSFERVALUE), 'KeyManager:execute: Not authorized to transfer ethers');
             }
 
             // Check for functions
@@ -167,33 +143,61 @@ contract KeyManager is ERC165, IERC1271 {
             // 2nd 32 bytes = bytes array length
             // remaining = the actual bytes array
             assembly { functionSelector := calldataload(232) }
-
-            // empty _data means either sending ether to the address, or ?
+            // what to do if _data is empty and therefore we cannot decode the function selector?
             if (functionSelector != 0x00000000) {
-                bytes4[] memory allowedFunctions = getAllowedFunctions(msg.sender);
-                bool functionAllowed;
-
-                for (uint ii = 0; ii <= allowedFunctions.length - 1; ii++) {
-                    functionAllowed = (functionSelector == allowedFunctions[ii]);
-                    if (functionAllowed) break;
-                }
-                if (!functionAllowed) revert("KeyManager:execute: Not authorised to run this function");
+                require(_isAllowedFunction(msg.sender, functionSelector), 'KeyManager:execute: Not authorised to run this function');
             }
-
-        }
-        
-        if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
-            bool isAllowed = verifyPermission(PERMISSION_CHANGEOWNER, msg.sender);
-            if (!isAllowed) revert("KeyManager:execute: Not authorized to transfer ownership");
+        } else if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
+            require(_isAllowed(msg.sender, PERMISSION_CHANGEOWNER), 'KeyManager:execute: Not authorized to transfer ownership');
+        } else {
+            revert('KeyManager:execute: unknown function selector from ERC725 account');
         }
 
         (success_, ) = address(Account).call{value: msg.value, gas: gasleft()}(_data);
-        if (success_ == true) emit Executed(msg.value, _data);
+        if (success_) emit Executed(msg.value, _data);
     }
 
-    function verifyPermission(bytes1 _permission, address _user) public view returns (bool) {
+    function getAllowedAddresses(address _sender) public view returns (address[] memory) {
+        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDADDRESSES, _sender);
+        bytes32 allowedAddressesKey;
+        assembly {
+            allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
+        }
+        address[] memory allowedAddresses = abi.decode(Account.getData(allowedAddressesKey), (address[]));
+        return allowedAddresses;
+    }
+
+    function getAllowedFunctions(address _sender) public view returns (bytes4[] memory) {
+        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDFUNCTIONS, _sender);
+        bytes32 allowedFunctionsKey;
+        assembly {
+            allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
+        }
+        bytes4[] memory allowedFunctions = abi.decode(Account.getData(allowedFunctionsKey), (bytes4[]));
+        return allowedFunctions;
+    }
+
+    function _isAllowedAddress(address _sender, address _recipient) internal view returns (bool) {
+        address[] memory allowedAddresses = getAllowedAddresses(_sender);
+        
+        for (uint ii = 0; ii <= allowedAddresses.length - 1; ii++) {
+            if (_recipient == allowedAddresses[ii]) return true;
+        }
+        return false;
+    }
+
+    function _isAllowedFunction(address _sender, bytes4 _function) internal view returns (bool) {
+        bytes4[] memory allowedFunctions = getAllowedFunctions(_sender);
+
+        for (uint ii = 0; ii <= allowedFunctions.length - 1; ii++) {
+            if (_function == allowedFunctions[ii]) return true;
+        }
+        return false;
+    }
+
+    function _isAllowed(address _sender, bytes1 _permission) internal view returns (bool) {
         bytes32 permissionKey;
-        bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _user);
+        bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _sender);
         
         assembly { 
             permissionKey := mload(add(computedKey, 32))
@@ -216,26 +220,6 @@ contract KeyManager is ERC165, IERC1271 {
             // in this case, the user has part of the permissions, but not all of them
             return false;
         }
-    }
-
-    function getAllowedAddresses(address _user) public view returns (address[] memory) {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDADDRESSES, _user);
-        bytes32 allowedAddressesKey;
-        assembly {
-            allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
-        address[] memory allowedAddresses = abi.decode(Account.getData(allowedAddressesKey), (address[]));
-        return allowedAddresses;
-    }
-
-    function getAllowedFunctions(address _user) public view returns (bytes4[] memory) {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDFUNCTIONS, _user);
-        bytes32 allowedFunctionsKey;
-        assembly {
-            allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
-        bytes4[] memory allowedFunctions = abi.decode(Account.getData(allowedFunctionsKey), (bytes4[]));
-        return allowedFunctions;
     }
 
 }
