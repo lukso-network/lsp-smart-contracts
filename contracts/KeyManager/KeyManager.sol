@@ -115,7 +115,7 @@ contract KeyManager is ERC165, IERC1271 {
                 failureMessage = "KeyManager:execute: Not authorized to setData";
             }
 
-            if (isAllowed == false) revert(failureMessage);
+            if (!isAllowed) revert(failureMessage);
         }
         
         if (ERC725Selector == EXECUTE_SELECTOR) {
@@ -137,9 +137,9 @@ contract KeyManager is ERC165, IERC1271 {
             }
             bool operationAllowed = verifyPermission(permission, msg.sender);
 
-            if (operationAllowed == false && permission == PERMISSION_CALL) revert("KeyManager:execute: not authorized to perform CALL");
-            if (operationAllowed == false && permission == PERMISSION_DELEGATECALL) revert("KeyManager:execute: not authorized to perform DELEGATECALL");
-            if (operationAllowed == false && permission == PERMISSION_DEPLOY) revert("KeyManager:execute: not authorized to perform DEPLOY");
+            if (!operationAllowed && permission == PERMISSION_CALL) revert("KeyManager:execute: not authorized to perform CALL");
+            if (!operationAllowed && permission == PERMISSION_DELEGATECALL) revert("KeyManager:execute: not authorized to perform DELEGATECALL");
+            if (!operationAllowed && permission == PERMISSION_DEPLOY) revert("KeyManager:execute: not authorized to perform DEPLOY");
 
             // Check for authorized addresses
             assembly { recipient := calldataload(104) }
@@ -149,9 +149,9 @@ contract KeyManager is ERC165, IERC1271 {
 
             for (uint ii = 0; ii <= allowedAddresses.length - 1; ii++) {
                 addressAllowed = (recipient == allowedAddresses[ii]);
-                if (addressAllowed == true) break;
+                if (addressAllowed) break;
             }
-            if (addressAllowed == false) revert('KeyManager:execute: Not authorized to interact with this address');
+            if (!addressAllowed) revert('KeyManager:execute: Not authorized to interact with this address');
 
             // Check for value
             assembly { value := calldataload(136) }
@@ -159,7 +159,7 @@ contract KeyManager is ERC165, IERC1271 {
             bool transferAllowed;
             if (value > 0) {
                 transferAllowed = verifyPermission(PERMISSION_TRANSFERVALUE, msg.sender);
-                if (transferAllowed == false) revert("KeyManager:execute: Not authorized to transfer ethers");
+                if (!transferAllowed) revert("KeyManager:execute: Not authorized to transfer ethers");
             }
 
             // Check for functions
@@ -175,16 +175,16 @@ contract KeyManager is ERC165, IERC1271 {
 
                 for (uint ii = 0; ii <= allowedFunctions.length - 1; ii++) {
                     functionAllowed = (functionSelector == allowedFunctions[ii]);
-                    if (functionAllowed == true) break;
+                    if (functionAllowed) break;
                 }
-                if (functionAllowed == false) revert("KeyManager:execute: Not authorised to run this function");
+                if (!functionAllowed) revert("KeyManager:execute: Not authorised to run this function");
             }
 
         }
         
         if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
             bool isAllowed = verifyPermission(PERMISSION_CHANGEOWNER, msg.sender);
-            if (isAllowed == false) revert("KeyManager:execute: Not authorized to transfer ownership");
+            if (!isAllowed) revert("KeyManager:execute: Not authorized to transfer ownership");
         }
 
         (success_, ) = address(Account).call{value: msg.value, gas: gasleft()}(_data);
