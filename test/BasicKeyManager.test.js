@@ -66,18 +66,6 @@ contract("BasicKeyManager", async (accounts) => {
         assert.equal(permissions, ALL_PERMISSIONS, "Owner should have all permissions set")
     })
 
-    /** @dev test fails for executor */
-    xit('check owner has the roles ADMIN_ROLE and EXECUTOR_ROLE', async () => {
-        assert.isTrue(
-            await keyManager.hasRole.call(owner, ADMIN_ROLE),
-            "owner does not have DEFAULT_ADMIN role"
-        );
-        assert.isTrue(
-            await keyManager.hasRole.call(owner, EXECUTOR_ROLE),
-            "owner does not have EXECUTOR_ROLE role"    
-        );
-    })
-
     it("Check owner has permission CHANGE_KEYS", async () => {
         let permissions = await keyManager.getPermissions(owner)
         let result = await keyManager._verifyOnePermissionSet.call(
@@ -140,33 +128,18 @@ contract("BasicKeyManager", async (accounts) => {
             ADMIN_ROLE,
             "not the right permissions set for second owner"
         )
-        
-        assert.isTrue(
-            await keyManager.hasRole.call(secondOwner, ADMIN_ROLE),
-            "second owner should have ADMIN_ROLE"
-        )
+    
     })
 
     it("second owner should be able to add executor", async () => {
         await keyManager.setRole(executor, EXECUTOR_ROLE, {from: secondOwner});
         let permissionsExecutor = await keyManager.getPermissions(executor);
 
-        console.log("permissions executor: ", permissionsExecutor.toString());
-
         assert.equal(
             permissionsExecutor.toString(),
             EXECUTOR_ROLE,
             "not the right permissions set for executor"
         )
-
-        assert.isTrue(
-            await keyManager.hasRole.call(executor, EXECUTOR_ROLE),
-            "executor should have EXECUTOR_ROLE"
-        )
-    })
-
-    it.only("executor should not be allowed to add owner", async () => {
-        
     })
     
 });

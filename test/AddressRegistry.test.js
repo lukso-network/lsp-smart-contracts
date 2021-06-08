@@ -14,43 +14,34 @@ contract("Address Registry contracts", async (accounts) => {
             addressRegistry = await AddressRegistry.new();
         });
 
-        it('add address', async function () {
-
+        it('add address', async () => {
             await addressRegistry.addAddress(accounts[1]);
-
             assert.equal(await addressRegistry.getAddress(0), accounts[1]);
         });
 
-        it('add same address', async function () {
-
+        it('add same address', async () => {
             assert.isTrue(await addressRegistry.containsAddress(accounts[1]));
-
+            
             await addressRegistry.addAddress(accounts[1]);
-
             assert.equal(await addressRegistry.getAddress(0), accounts[1]);
         });
 
-        it('add and remove address', async function () {
-
+        it('should add and remove address', async () => {
             await addressRegistry.addAddress(accounts[4]);
-
             assert.isTrue(await addressRegistry.containsAddress(accounts[4]));
-
+            
             await addressRegistry.removeAddress(accounts[4]);
-
             assert.isFalse(await addressRegistry.containsAddress(accounts[4]));
         });
 
-        it('should give the right count', async function () {
+        it('should give the right count', async () => {
             assert.equal(await addressRegistry.length(), '1');
-
             // add new entry
             await addressRegistry.addAddress(accounts[2]);
-
             assert.equal(await addressRegistry.length(), '2');
         });
 
-        it('get correct index', async function () {
+        it('get correct index', async () => {
             assert.equal(await addressRegistry.getIndex(accounts[1]), '0');
             assert.equal(await addressRegistry.getIndex(accounts[2]), '1');
 
@@ -60,8 +51,7 @@ contract("Address Registry contracts", async (accounts) => {
             );
         });
 
-
-        it('can list all values of the registry', async function () {
+        it('can list all values of the registry', async () => {
             let length = await addressRegistry.length();
             let values = [];
 
@@ -75,14 +65,13 @@ contract("Address Registry contracts", async (accounts) => {
             ]);
         });
 
-        it('can get all raw values in one call', async function () {
+        it('can get all raw values in one call', async () => {
             assert.deepEqual(await addressRegistry.getAllRawValues(), [
                 '0x000000000000000000000000' + accounts[1].replace('0x', '').toLowerCase(),
                 '0x000000000000000000000000' + accounts[2].replace('0x', '').toLowerCase()
             ]);
         });
     });
-
 
     // Require ERC725
     context("AddressRegistryRequiresERC725", async () => {
@@ -96,30 +85,26 @@ contract("Address Registry contracts", async (accounts) => {
             addressRegistryRequireERC725 = await AddressRegistryRequiresERC725.new();
         });
 
-        it('add address', async function () {
-
+        it('add address', async () => {
             let abi = addressRegistryRequireERC725.contract.methods.addAddress(account.address).encodeABI();
 
             await account.execute(0, addressRegistryRequireERC725.address, 0, abi, {from: owner});
-
             assert.equal(await addressRegistryRequireERC725.getAddress(0), account.address);
         });
-        it('external account adds address', async function () {
 
+        it('external account adds address', async () => {
             await addressRegistryRequireERC725.addAddress(account.address, {from: accounts[5]});
-
             assert.equal(await addressRegistryRequireERC725.getAddress(0), account.address);
         });
-        it('remove address', async function () {
-
+        
+        it('remove address', async () => {
             let abi = addressRegistryRequireERC725.contract.methods.removeAddress(account.address).encodeABI();
 
             await account.execute(0, addressRegistryRequireERC725.address, 0, abi, {from: owner});
-
             assert.isFalse(await addressRegistryRequireERC725.containsAddress(account.address));
         });
-        it('should fail if called by a regular address', async function () {
 
+        it('should fail if called by a regular address', async () => {
             //simply reverts as no ERC165 is detected
             await expectRevert.unspecified(
                 addressRegistryRequireERC725.addAddress(accounts[5])

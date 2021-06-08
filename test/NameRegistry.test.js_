@@ -2,11 +2,9 @@ const {expectRevert} = require("openzeppelin-test-helpers");
 
 const NameRegistry = artifacts.require('NameRegistry');
 
-
 let name1 = web3.utils.utf8ToHex('Hello world!');
 let name2 = web3.utils.utf8ToHex('World hello!');
 let name3 = web3.utils.utf8ToHex('Hulahup!');
-
 
 contract("NameRegistry", async (accounts) => {
     let nameRegistry;
@@ -16,7 +14,6 @@ contract("NameRegistry", async (accounts) => {
     });
 
     it('sets name', async function() {
-
         await nameRegistry.setName(name1, {from: accounts[1]});
 
         assert.equal(await nameRegistry.getName(accounts[1]), name1);
@@ -24,7 +21,6 @@ contract("NameRegistry", async (accounts) => {
     });
 
     it('edits name', async function() {
-
         await nameRegistry.setName(name2, {from: accounts[1]});
 
         assert.equal(await nameRegistry.getName(accounts[1]), name2);
@@ -32,7 +28,6 @@ contract("NameRegistry", async (accounts) => {
     });
 
     it('should fail, if another address tries to set the same name', async function() {
-
         await expectRevert(
             nameRegistry.setName(name2, {from: accounts[2]}),
             "Only the initial setter can edit this name"
@@ -44,7 +39,6 @@ contract("NameRegistry", async (accounts) => {
 
         // add new entry
         await nameRegistry.setName(name3, {from: accounts[3]});
-
         assert.equal(await nameRegistry.length(), '2');
     });
 

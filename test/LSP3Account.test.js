@@ -26,6 +26,7 @@ const DUMMY_SIGNER = web3.eth.accounts.wallet.add(DUMMY_PRIVATEKEY);
 
 contract("LSP3Account", accounts => {
     let erc1820;
+
     beforeEach(async function () {
         erc1820 = await singletons.ERC1820Registry(accounts[1]);
     });
@@ -34,7 +35,6 @@ contract("LSP3Account", accounts => {
         it("Deploys correctly, and compare owners", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
-
             const idOwner = await account.owner.call();
 
             assert.equal(idOwner, owner, "Addresses should match");
@@ -42,6 +42,7 @@ contract("LSP3Account", accounts => {
     });
 
     context("ERC165", async () => {
+        
         it("Supports ERC165", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -51,6 +52,7 @@ contract("LSP3Account", accounts => {
 
             assert.isTrue(result);
         });
+
         it("Supports ERC725X", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -60,6 +62,7 @@ contract("LSP3Account", accounts => {
 
             assert.isTrue(result);
         });
+
         it("Supports ERC725Y", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -69,6 +72,7 @@ contract("LSP3Account", accounts => {
 
             assert.isTrue(result);
         });
+
         it("Supports ERC1271", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -78,6 +82,7 @@ contract("LSP3Account", accounts => {
 
             assert.isTrue(result);
         });
+
         it("Supports LSP1", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -96,6 +101,7 @@ contract("LSP3Account", accounts => {
     });
 
     context("ERC1271", async () => {
+
         it("Can verify signature from owner", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(DUMMY_SIGNER.address, {from: owner});
@@ -106,6 +112,7 @@ contract("LSP3Account", accounts => {
 
             assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid");
         });
+
         it("Should fail when verifying signature from not-owner", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -116,6 +123,7 @@ contract("LSP3Account", accounts => {
 
             assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid");
         });
+
     });
 
     context("Storage test", async () => {
@@ -128,6 +136,7 @@ contract("LSP3Account", accounts => {
 
             assert.equal(await account.owner.call(), owner);
         });
+
         it("Store 32 bytes item 1", async () => {
             let key = web3.utils.numberToHex(count++);
             let value = web3.utils.numberToHex(count++);
@@ -135,6 +144,7 @@ contract("LSP3Account", accounts => {
 
             assert.equal(await account.getData(key), value);
         });
+
         it("Store 32 bytes item 2", async () => {
             let key = web3.utils.numberToHex(count++);
             let value = web3.utils.numberToHex(count++);
@@ -149,6 +159,7 @@ contract("LSP3Account", accounts => {
 
             assert.equal(await account.getData(key), value);
         });
+
         it("Store 32 bytes item 4", async () => {
             let key = web3.utils.numberToHex(count++);
             let value = web3.utils.numberToHex(count++);
@@ -156,6 +167,7 @@ contract("LSP3Account", accounts => {
 
             assert.equal(await account.getData(key), value);
         });
+
         it("Store a long URL as bytes item 5: https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD", async () => {
             let key = web3.utils.numberToHex(count++);
             let value = web3.utils.utf8ToHex('https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD');
@@ -163,6 +175,7 @@ contract("LSP3Account", accounts => {
 
             assert.equal(await account.getData(key), value);
         });
+
         it("Store 32 bytes item 6", async () => {
             let key = web3.utils.numberToHex(count);
             let value = web3.utils.numberToHex(count);
@@ -170,10 +183,12 @@ contract("LSP3Account", accounts => {
 
             assert.equal(await account.getData(key), value);
         });
+
         it("dataCount should be 7", async () => {
             // 7 because the ERC725Type ios already set by the ERC725Account implementation
             assert.equal(await account.dataCount(), 7);
         });
+
         it("Update 32 bytes item 6", async () => {
             let key = web3.utils.numberToHex(count);
             let value = web3.utils.numberToHex(count);
@@ -181,6 +196,7 @@ contract("LSP3Account", accounts => {
 
             assert.equal(await account.getData(key), value);
         });
+
         it("dataCount should be 7", async () => {
             // 7 because the ERC725Type ios already set by the ERC725Account implementation
             assert.equal(await account.dataCount(), 7);
@@ -190,6 +206,7 @@ contract("LSP3Account", accounts => {
 
             console.log('Stored keys', keys);
         });
+
         it("Store multiple 32 bytes item 8-10", async () => {
             let keys = [];
             let values = [];
@@ -203,6 +220,7 @@ contract("LSP3Account", accounts => {
             console.log(await account.getDataMultiple(keys))
             assert.deepEqual(await account.getDataMultiple(keys), values);
         });
+
         it("dataCount should be 10", async () => {
             // 7 because the ERC725Type ios already set by the ERC725Account implementation
             assert.equal(await account.dataCount(), 10);
@@ -212,6 +230,7 @@ contract("LSP3Account", accounts => {
 
             console.log('Stored keys', keys);
         });
+
     });
 
     context("Interactions with Accounts contracts", async () => {
@@ -257,6 +276,7 @@ contract("LSP3Account", accounts => {
                 "Ownable: caller is not the owner"
             );
         });
+
         it("Fails when non-owner sets data multiple", async () => {
             const key = web3.utils.asciiToHex("Important Data");
             const data = web3.utils.asciiToHex("Important Data");
@@ -355,6 +375,7 @@ contract("LSP3Account", accounts => {
     }); //Context interactions
 
     context("Universal Receiver", async () => {
+
         it("Call account and check for 'UniversalReceiver' event", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -377,6 +398,7 @@ contract("LSP3Account", accounts => {
             // receivedData
             assert.equal(receipt.receipt.rawLogs[0].data, '0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000');
         });
+
         it("Call account and check for 'ReceivedERC777' event in external account", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -419,6 +441,7 @@ contract("LSP3Account", accounts => {
             assert.equal(receipt.receipt.rawLogs[1].data, '0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000');
 
         });
+
         it("Mint ERC777 and LSP4 to LSP3 account", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -441,6 +464,7 @@ contract("LSP3Account", accounts => {
             assert.equal(await digitalCertificate.balanceOf(account.address), '50');
 
         });
+
         it("Transfer ERC777 and LSP4 to LSP3 account", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -466,6 +490,7 @@ contract("LSP3Account", accounts => {
             assert.equal(await digitalCertificate.balanceOf(account.address), '100');
 
         });
+
         it("Mint ERC777 and LSP4 to LSP3 account and delegate to UniversalReceiverAddressStore", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -494,6 +519,7 @@ contract("LSP3Account", accounts => {
             assert.isTrue(await universalReceiverDelegate.containsAddress(digitalCertificate.address));
 
         });
+
         it("Transfer ERC777 and LSP4 from LSP3 account with delegate to UniversalReceiverAddressStore", async () => {
             const owner = accounts[2];
             const account = await LSP3Account.new(owner, {from: owner});
@@ -525,6 +551,7 @@ contract("LSP3Account", accounts => {
             assert.isTrue(await universalReceiverDelegate.containsAddress(digitalCertificate.address));
 
         });
+
         it("Transfer from ERC777 and LSP4 to account and delegate to UniversalReceiverAddressStore", async () => {
             const OPERATION_CALL = 0x0;
             const owner = accounts[2];
@@ -582,6 +609,7 @@ contract("LSP3Account", accounts => {
         });
 
         context("ERC1271 from KeyManager", async () => {
+
             it("Can verify signature from executor of keymanager", async () => {
                 const dataToSign = '0xcafecafe';
                 const signature = DUMMY_SIGNER.sign(dataToSign);
@@ -593,6 +621,7 @@ contract("LSP3Account", accounts => {
 
                 assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid");
             });
+
             it("Can verify signature from owner of keymanager", async () => {
 
                 account = await LSP3Account.new(owner, {from: owner});
@@ -606,6 +635,7 @@ contract("LSP3Account", accounts => {
 
                 assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid");
             });
+
             it("Should fail when verifying signature from not-owner", async () => {
                 const dataToSign = '0xcafecafe';
                 const signature = DUMMY_SIGNER.sign(dataToSign);
@@ -614,6 +644,7 @@ contract("LSP3Account", accounts => {
 
                 assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid");
             });
+            
         });
 
         it("Key manager can execute on behalf of Idenity", async () => {
