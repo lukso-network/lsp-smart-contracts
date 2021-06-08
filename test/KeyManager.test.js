@@ -435,19 +435,32 @@ contract("KeyManager", async (accounts) => {
 
     })
 
-    it("Should revert because of wrong operation type", async () => {
-        let payload = erc725Account.contract.methods.execute(
-            5648941657,
-            simpleContract.address,
-            0,
-            "0x"
-        ).encodeABI()
 
-        await truffleAssert.fails(
-            keyManager.execute(payload, { from: owner }),
-            truffleAssert.ErrorType.REVERT,
-            "KeyManager:execute: Invalid operation type"
-        )
+    context("> testing other revert causes", async () => {
+
+        it("Should revert because of wrong operation type", async () => {
+            let payload = erc725Account.contract.methods.execute(
+                5648941657,
+                simpleContract.address,
+                0,
+                "0x"
+            ).encodeABI()
+    
+            await truffleAssert.fails(
+                keyManager.execute(payload, { from: owner }),
+                truffleAssert.ErrorType.REVERT,
+                "KeyManager:execute: Invalid operation type"
+            )
+        })
+
+        it("Should revert because calling an unexisting function in ERC725", async () => {
+            await truffleAssert.fails(
+                keyManager.execute("0xbad0000000000000000000000000bad", { from: owner }),
+                truffleAssert.ErrorType.REVERT,
+                "KeyManager:execute: unknown function selector from ERC725 account"
+            )                
+        })
+
     })
 
 })

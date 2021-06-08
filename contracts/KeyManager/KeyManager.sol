@@ -111,16 +111,16 @@ contract KeyManager is ERC165, IERC1271 {
             bytes4 functionSelector;
 
             // Check for CALL, DELEGATECALL or DEPLOY
+            assembly { operationType := calldataload(72) }
             require(operationType < 4, 'KeyManager:execute: Invalid operation type');
+
             bytes1 permission;
             assembly {
-                operationType := calldataload(72)
                 switch operationType
                 case 0 { permission := PERMISSION_CALL } 
                 case 1 { permission := PERMISSION_DELEGATECALL }
                 case 2 { permission := PERMISSION_DEPLOY }  // CREATE2
                 case 3 { permission := PERMISSION_DEPLOY }  // CREATE
-                // TODO: revert for any other invalid operation type
             }
             bool operationAllowed = _isAllowed(msg.sender, permission);
 
@@ -198,7 +198,7 @@ contract KeyManager is ERC165, IERC1271 {
     function _isAllowed(address _sender, bytes1 _permission) internal view returns (bool) {
         bytes32 permissionKey;
         bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _sender);
-        
+
         assembly { 
             permissionKey := mload(add(computedKey, 32))
         }
