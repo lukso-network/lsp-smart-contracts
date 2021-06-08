@@ -83,12 +83,7 @@ contract BasicKeyManager is ERC165, IERC1271 {
     {
         // is trying to call exectue(operasiont, to, valuer, data )
         
-        // 0xfafafafafafafafafafafafafafaa
-        //   ^
-
         address(Account).call{value: msg.value, gas: gasleft()}(_data); //(success, ) =
-        // 0xaaaaaaaa
-        //   selector
 
         emit Executed(msg.value, _data);
     }
@@ -147,14 +142,8 @@ contract BasicKeyManager is ERC165, IERC1271 {
     // Roles
     // --------------------
 
-    /// TODO
-    function getRoles(address _user) public view returns (bytes32) {
-
-    }
-
     function setRole(address _user, bytes memory _role) 
         public
-        canSetRoles(msg.sender) 
     {
         bytes32 generatedKey = string("AddressPermissions").generateAddressMappingGroupingKey({
             _secondWord: "Permissions",
@@ -163,41 +152,9 @@ contract BasicKeyManager is ERC165, IERC1271 {
         Account.setData(generatedKey, _role);
     }
 
-    /// Would be better to compare the hashes for same data, but not possible in our case
-    // bytes memory role = abi.encodePacked(_role);
-    // bool hasRole = keccak256(fetchedRolesFromGetData) == keccak256(role);
-    function hasRole(address _user, bytes2 _role) public returns (bool) {
-        bytes32 generatedKey = string("AddressPermissions").generateAddressMappingGroupingKey({
-            _secondWord: "Permissions",
-            _address: _user
-        });
-        
-        bytes memory currentRoles = Account.getData(generatedKey);
-        bytes32 decodedCurrentRoles;
-
-        assembly {
-            decodedCurrentRoles := mload(add(currentRoles, 32))
-        }
-
-        bool hasRole = _verifyAllPermissionsSet(_role, bytes2(decodedCurrentRoles));
-        return hasRole;
-    }
-
-    /// TODO
-    function grantRole(address _user, bytes2 _role) public returns (bool) {
-        
-    }
-
-    /// TODO
-    function revokeRole(address _user, bytes2 _role) public returns (bool) {
-        
-    }
-
     // Permissions
     // -------------------
 
-    /// TODO
-    /// should also have the modifier isAdmin
     function setPermission(address _address, bytes2 _permission) public view {
 
     }
@@ -213,11 +170,6 @@ contract BasicKeyManager is ERC165, IERC1271 {
         }
 
         return permissions;
-    }
-
-    /// TODO
-    function verifyPermissions(address _address, bytes2 _permissions) public returns (bool) {
-
     }
 
     function _verifyOnePermissionSet(bytes2 _permissions, bytes2 _allowedPermission) public returns(bool) {
