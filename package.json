@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
   "dependencies": {
-    "eth-create2-calculator": "^1.1.5"
+    "eth-create2-calculator": "^1.1.5",
+    "solidity-patricia-tree": "^2.0.2"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.0.0",
