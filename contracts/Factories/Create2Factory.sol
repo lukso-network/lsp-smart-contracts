@@ -52,7 +52,7 @@ contract Create2Factory {
     function computeAddress(bytes32 salt, bytes32 bytecodeHash) public view returns (address) {
         return computeAddress(salt, bytecodeHash, address(this));
     }
-
+ 
     /**
      * @dev Returns the address where a contract will be stored if deployed via {deploy} from a contract located at
      * `deployer`. If `deployer` is this contract's address, returns the same value as {computeAddress}.
