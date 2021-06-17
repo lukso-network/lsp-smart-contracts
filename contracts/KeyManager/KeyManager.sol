@@ -92,6 +92,9 @@ contract KeyManager is ERC165, IERC1271 {
         payable
         returns (bool success_)
     {
+        // getData
+        bytes1 userPermissions = _getUserPermissions(msg.sender);
+
         bytes4 ERC725Selector;
         assembly { ERC725Selector := calldataload(68) }
 
@@ -100,9 +103,9 @@ contract KeyManager is ERC165, IERC1271 {
             assembly { key := calldataload(72) }
 
             if (key == 0x4b80742d00000000) {
-                require(_isAllowed(msg.sender, PERMISSION_CHANGEKEYS), "KeyManager:execute: Not authorized to change keys");
+                require(_isAllowed(PERMISSION_CHANGEKEYS, userPermissions), "KeyManager:execute: Not authorized to change keys");
             } else {
-                require(_isAllowed(msg.sender, PERMISSION_SETDATA), "KeyManager:execute: Not authorized to setData");
+                require(_isAllowed(PERMISSION_SETDATA, userPermissions), "KeyManager:execute: Not authorized to setData");
             }
         } else if (ERC725Selector == EXECUTE_SELECTOR) {
             uint8 operationType;
@@ -122,7 +125,7 @@ contract KeyManager is ERC165, IERC1271 {
                 case 2 { permission := PERMISSION_DEPLOY }  // CREATE2
                 case 3 { permission := PERMISSION_DEPLOY }  // CREATE
             }
-            bool operationAllowed = _isAllowed(msg.sender, permission);
+            bool operationAllowed = _isAllowed(permission, userPermissions);
 
             if (!operationAllowed && permission == PERMISSION_CALL) revert('KeyManager:execute: not authorized to perform CALL');
             if (!operationAllowed && permission == PERMISSION_DELEGATECALL) revert('KeyManager:execute: not authorized to perform DELEGATECALL');
@@ -135,7 +138,7 @@ contract KeyManager is ERC165, IERC1271 {
             // Check for value
             assembly { value := calldataload(136) }
             if (value > 0) {
-                require(_isAllowed(msg.sender, PERMISSION_TRANSFERVALUE), 'KeyManager:execute: Not authorized to transfer ethers');
+                require(_isAllowed(PERMISSION_TRANSFERVALUE, userPermissions), 'KeyManager:execute: Not authorized to transfer ethers');
             }
 
             // Check for functions
@@ -148,7 +151,7 @@ contract KeyManager is ERC165, IERC1271 {
                 require(_isAllowedFunction(msg.sender, functionSelector), 'KeyManager:execute: Not authorised to run this function');
             }
         } else if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
-            require(_isAllowed(msg.sender, PERMISSION_CHANGEOWNER), 'KeyManager:execute: Not authorized to transfer ownership');
+            require(_isAllowed(PERMISSION_CHANGEOWNER, userPermissions), 'KeyManager:execute: Not authorized to transfer ownership');
         } else {
             revert('KeyManager:execute: unknown function selector from ERC725 account');
         }
@@ -157,47 +160,9 @@ contract KeyManager is ERC165, IERC1271 {
         if (success_) emit Executed(msg.value, _data);
     }
 
-    function getAllowedAddresses(address _sender) public view returns (address[] memory) {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDADDRESSES, _sender);
-        bytes32 allowedAddressesKey;
-        assembly {
-            allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
-        address[] memory allowedAddresses = abi.decode(Account.getData(allowedAddressesKey), (address[]));
-        return allowedAddresses;
-    }
-
-    function getAllowedFunctions(address _sender) public view returns (bytes4[] memory) {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDFUNCTIONS, _sender);
-        bytes32 allowedFunctionsKey;
-        assembly {
-            allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
-        bytes4[] memory allowedFunctions = abi.decode(Account.getData(allowedFunctionsKey), (bytes4[]));
-        return allowedFunctions;
-    }
-
-    function _isAllowedAddress(address _sender, address _recipient) internal view returns (bool) {
-        address[] memory allowedAddresses = getAllowedAddresses(_sender);
-        
-        for (uint ii = 0; ii <= allowedAddresses.length - 1; ii++) {
-            if (_recipient == allowedAddresses[ii]) return true;
-        }
-        return false;
-    }
-
-    function _isAllowedFunction(address _sender, bytes4 _function) internal view returns (bool) {
-        bytes4[] memory allowedFunctions = getAllowedFunctions(_sender);
-
-        for (uint ii = 0; ii <= allowedFunctions.length - 1; ii++) {
-            if (_function == allowedFunctions[ii]) return true;
-        }
-        return false;
-    }
-
-    function _isAllowed(address _sender, bytes1 _permission) internal view returns (bool) {
+    function _getUserPermissions(address _user) internal view returns (bytes1) {
         bytes32 permissionKey;
-        bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _sender);
+        bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _user);
 
         assembly { 
             permissionKey := mload(add(computedKey, 32))
@@ -210,7 +175,65 @@ contract KeyManager is ERC165, IERC1271 {
             storedPermission := mload(add(fetchResult, 32))
         }
 
-        uint8 resultCheck = uint8(_permission) & uint8(storedPermission);
+        return storedPermission;
+    }
+
+    function _getAllowedAddresses(address _sender) internal view returns (bytes memory) {
+        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDADDRESSES, _sender);
+        bytes32 allowedAddressesKey;
+        assembly {
+            allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
+        }
+        return Account.getData(allowedAddressesKey);
+    }
+
+    function _getAllowedFunctions(address _sender) internal view returns (bytes memory) {
+        bytes memory allowedAddressesKeyComputed = abi.encodePacked(KEY_ALLOWEDFUNCTIONS, _sender);
+        bytes32 allowedFunctionsKey;
+        assembly {
+            allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
+        }
+        return Account.getData(allowedFunctionsKey);
+    }
+
+    function _isAllowedAddress(address _sender, address _recipient) internal view returns (bool) {
+        bytes memory allowedAddresses = _getAllowedAddresses(_sender);
+
+        if (allowedAddresses.length == 0) {
+            return true;
+        } else {
+            address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
+            if (allowedAddressesList.length == 0) {
+                return true;
+            } else {
+                for (uint ii = 0; ii <= allowedAddressesList.length - 1; ii++) {
+                    if (_recipient == allowedAddressesList[ii]) return true;
+                }
+                return false;
+            }
+        }
+    }
+
+    function _isAllowedFunction(address _sender, bytes4 _function) internal view returns (bool) {
+        bytes memory allowedFunctions = _getAllowedFunctions(_sender);
+
+        if (allowedFunctions.length == 0) {
+            return true;
+        } else {
+            bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
+            if (allowedFunctionsList.length == 0) {
+                return true;
+            } else {
+                for (uint ii  = 0; ii <= allowedFunctionsList.length - 1; ii++) {
+                    if (_function == allowedFunctionsList[ii]) return true;
+                }
+                return false;
+            }
+        }        
+    }
+
+    function _isAllowed(bytes1 _permission, bytes1 _userPermission) internal view returns (bool) {
+        uint8 resultCheck = uint8(_permission) & uint8(_userPermission);
 
         if (resultCheck == uint8(_permission)) { // pass
             return true;

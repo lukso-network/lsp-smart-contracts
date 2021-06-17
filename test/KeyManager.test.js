@@ -3,6 +3,7 @@ const truffleAssert = require('truffle-assertions');
 
 const ERC725Account = artifacts.require("LSP3Account");
 const KeyManager = artifacts.require("KeyManager");
+const KeyManagerHelper = artifacts.require("KeyManagerHelper");
 const SimpleContract = artifacts.require("SimpleContract")
 
 // permission keys
@@ -11,7 +12,7 @@ const KEY_ALLOWEDADDRESSES = '0x4b80742d00000000c6dd0000'; // AddressPermissions
 const KEY_ALLOWEDFUNCTIONS = '0x4b80742d000000008efe0000';
 
 // Permissions
-const ALL_PERMISSIONS = "0xff"
+const ALL_PERMISSIONS = 0xff
 const PERMISSION_SETDATA = 0x04;   // 0000 0100
 const PERMISSION_CALL    = 0x08;   // 0000 1000
 
@@ -33,6 +34,44 @@ let allowedFunctions = [
     web3.eth.abi.encodeFunctionSignature('setName(string)'),
     web3.eth.abi.encodeFunctionSignature('setNumber(uint256)')
 ]
+
+contract("KeyManagerHelper", async (accounts) => {
+
+    let keyManagerHelper,
+        erc725Account
+
+    const owner = accounts[0]
+    const app = accounts[1]
+    const user = accounts[2]
+
+    before(async () => {
+        erc725Account = await ERC725Account.new(owner, { from: owner })
+
+        keyManagerHelper = await KeyManagerHelper.deployed()
+        
+        await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
+        await erc725Account.setData(
+            KEY_ALLOWEDADDRESSES + owner.substr(2), 
+            web3.eth.abi.encodeParameter('address[]', allowedAddresses)
+        )
+
+        await erc725Account.transferOwnership(keyManagerHelper.address, { from: owner })
+    })
+
+    context("_getAllowedAddresses(...)", async () => {
+
+        xit("Should return the list of allowed addresses for owner", async () => {
+
+            let allowedOwnerAddresses = await keyManagerHelper.getAllowedAddresses(owner, { from: owner });
+            console.log(allowedOwnerAddresses.toString())
+            // assert.deepEqual(
+            //     allowedOwnerAddresses, 
+            //     allowedAddresses
+            // )
+        })
+    })
+
+})
 
 contract("KeyManager", async (accounts) => {
     
@@ -74,7 +113,12 @@ contract("KeyManager", async (accounts) => {
             KEY_ALLOWEDFUNCTIONS + app.substr(2),
             web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions.slice(0, 1))
         )
+
+        // user permissions
+        let userPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
+        await erc725Account.setData(KEY_PERMISSIONS + user.substr(2), userPermissions, { from: owner })
         
+        // switch account management to KeyManager
         keyManager = await KeyManager.new(erc725Account.address)
         await erc725Account.transferOwnership(keyManager.address, { from: owner })
 
@@ -312,7 +356,6 @@ contract("KeyManager", async (accounts) => {
 
     })
 
-    
     context("> testing permissions: ALLOWEDFUNCTIONS", async () => {
 
         it("App should not be allowed to run a non-allowed function (function signature = `0xbeefbeef`)", async () => {
@@ -332,6 +375,25 @@ contract("KeyManager", async (accounts) => {
 
     })
     
+    context("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", async () => {
+        it("Should pass if no addresses / functions are stored for a user", async () => {     
+            let simpleContractPayload = simpleContract.contract.methods.setName("New Name").encodeABI()
+            let executePayload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                simpleContract.address,
+                0,
+                simpleContractPayload
+            ).encodeABI()
+
+            let callResult = await keyManager.execute.call(executePayload, { from: user })
+            assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
+
+            await truffleAssert.passes(
+                keyManager.execute(executePayload, { from: user }),
+                "Should not have reverted"
+            )
+        })
+    })
 
     context("> testing external contract's state change", async () => {
 
@@ -464,15 +526,3 @@ contract("KeyManager", async (accounts) => {
     })
 
 })
-
-// contract("KeyManagerHelper", async (accounts) => {
-
-//     xit("Owner allowed addresses to interact with should match", async () => {
-//         let allowedOwnerAddresses = await keyManager._getAllowedAddresses(owner);
-//         assert.deepEqual(
-//             allowedOwnerAddresses, 
-//             allowedAddresses
-//         )
-//     })
-
-// })
