@@ -10,10 +10,12 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // libraries
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import { ERC725Utils } from "../ERC725Utils.sol";
 
 contract KeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
+    using SafeMath for uint256;
     using ERC725Utils for *;
 
     ERC725Y public Account;
@@ -92,12 +94,47 @@ contract KeyManager is ERC165, IERC1271 {
         payable
         returns (bool success_)
     {
-        // getData
-        bytes1 userPermissions = _getUserPermissions(msg.sender);
+        _execute(msg.sender, _data);
+        (success_, ) = address(Account).call{value: msg.value, gas: gasleft()}(_data);
+        if (success_) emit Executed(msg.value, _data);
+    }
+
+    // allows anybody to execute given they have a signed messaged from an executor
+    function executeRelayedCall(
+        bytes calldata _data,
+        address _signedFor,
+        uint256 _nonce,
+        bytes memory _signature
+    )
+        external
+        payable
+        returns (bool success_)
+    {
+        require(_signedFor == address(this), "KeyManager:executeRelayedCall: Message not signed for this keyManager");
+    
+        bytes memory blob = abi.encodePacked(
+            address(this), // needs to be signed for this keyManager
+            _data,
+            _nonce
+        );
+
+        // recover the signer
+        address from = keccak256(blob).toEthSignedMessageHash().recover(_signature);
+        // require(hasRole(EXECUTOR_ROLE, from), 'Only executors are allowed');
+        require(_nonceStore[from] == _nonce, "KeyManager:executeRelayedCall: Incorrect nonce");
+
+        // increase the nonce
+        _nonceStore[from] = _nonceStore[from].add(1);
+
+        (success_, ) = address(Account).call{value: 0, gas: gasleft()}(_data);
+        if (success_) emit Executed(msg.value, _data);
+    }
+
+    function _execute(address _user, bytes memory _data) internal view {
+        bytes1 userPermissions = _getUserPermissions(_user);
 
         bytes4 ERC725Selector;
         assembly { ERC725Selector := calldataload(68) }
-
         if (ERC725Selector == SETDATA_SELECTOR) {
             bytes8 key;
             assembly { key := calldataload(72) }
@@ -133,7 +170,7 @@ contract KeyManager is ERC165, IERC1271 {
 
             // Check for authorized addresses
             assembly { recipient := calldataload(104) }
-            require(_isAllowedAddress(msg.sender, recipient), 'KeyManager:execute: Not authorized to interact with this address');
+            require(_isAllowedAddress(_user, recipient), 'KeyManager:execute: Not authorized to interact with this address');
 
             // Check for value
             assembly { value := calldataload(136) }
@@ -148,16 +185,13 @@ contract KeyManager is ERC165, IERC1271 {
             assembly { functionSelector := calldataload(232) }
             // what to do if _data is empty and therefore we cannot decode the function selector?
             if (functionSelector != 0x00000000) {
-                require(_isAllowedFunction(msg.sender, functionSelector), 'KeyManager:execute: Not authorised to run this function');
+                require(_isAllowedFunction(_user, functionSelector), 'KeyManager:execute: Not authorised to run this function');
             }
         } else if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
             require(_isAllowed(PERMISSION_CHANGEOWNER, userPermissions), 'KeyManager:execute: Not authorized to transfer ownership');
         } else {
             revert('KeyManager:execute: unknown function selector from ERC725 account');
         }
-
-        (success_, ) = address(Account).call{value: msg.value, gas: gasleft()}(_data);
-        if (success_) emit Executed(msg.value, _data);
     }
 
     function _getUserPermissions(address _user) internal view returns (bytes1) {

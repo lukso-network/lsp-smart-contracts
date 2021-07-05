@@ -497,7 +497,6 @@ contract("KeyManager", async (accounts) => {
 
     })
 
-
     context("> testing other revert causes", async () => {
 
         it("Should revert because of wrong operation type", async () => {
@@ -523,6 +522,38 @@ contract("KeyManager", async (accounts) => {
             )                
         })
 
+    })
+
+    context("> testing `executeRelay` function", async () => {
+
+        it("should execute a signed tx successfully", async () => {
+
+            let externalApp = await web3.eth.accounts.create()
+
+            let simpleContractPayload = simpleContract.contract.methods.setName("Another name").encodeABI()    
+            let { signature } = await web3.eth.accounts.sign(simpleContractPayload, externalApp.privateKey)
+    
+            let executeRelayedCallPayload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                simpleContract.address,
+                0,
+                simpleContractPayload
+            ).encodeABI()
+
+            let result = await keyManager.executeRelayedCall.call(
+                executeRelayedCallPayload,
+                keyManager.address,
+                0,
+                signature
+            )
+            assert.isTrue(result, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
+
+            truffleAssert.passes(
+                await keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, 0, signature),
+                "Should not have reverted"
+            )
+        })
+        
     })
 
 })
