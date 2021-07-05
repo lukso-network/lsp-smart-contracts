@@ -4,7 +4,8 @@ const truffleAssert = require('truffle-assertions');
 const ERC725Account = artifacts.require("LSP3Account");
 const KeyManager = artifacts.require("KeyManager");
 const KeyManagerHelper = artifacts.require("KeyManagerHelper");
-const SimpleContract = artifacts.require("SimpleContract")
+const SimpleContract = artifacts.require("SimpleContract");
+const Reentrancy = artifacts.require("Reentrancy");
 
 // permission keys
 const KEY_PERMISSIONS = '0x4b80742d0000000082ac0000';      // AddressPermissions:Permissions:<address> --> bytes1
@@ -12,9 +13,10 @@ const KEY_ALLOWEDADDRESSES = '0x4b80742d00000000c6dd0000'; // AddressPermissions
 const KEY_ALLOWEDFUNCTIONS = '0x4b80742d000000008efe0000';
 
 // Permissions
-const ALL_PERMISSIONS = 0xff
-const PERMISSION_SETDATA = 0x04;   // 0000 0100
-const PERMISSION_CALL    = 0x08;   // 0000 1000
+const ALL_PERMISSIONS          = 0xff
+const PERMISSION_SETDATA       = 0x04;   // 0000 0100
+const PERMISSION_CALL          = 0x08;   // 0000 1000
+const PERMISSION_TRANSFERVALUE = 0x40;   // 0100 0000
 
 // Operations
 const OPERATION_CALL         = 0
@@ -76,21 +78,25 @@ contract("KeyManagerHelper", async (accounts) => {
 contract("KeyManager", async (accounts) => {
     
     let keyManager, 
-        simpleContract,
-        erc725Account
+        erc725Account,
+        maliciousContract,
+        simpleContract
 
     const owner = accounts[0]
     const app = accounts[1]
     const user = accounts[2]
     
     before(async () => {
-        allowedAddresses.push(app)
-
+        erc725Account = await ERC725Account.new(owner, { from: owner })
+        keyManager = await KeyManager.new(erc725Account.address)
+        maliciousContract = await Reentrancy.new(keyManager.address)
         simpleContract = await SimpleContract.deployed()
+
+        allowedAddresses.push(app)
         allowedAddresses.push(simpleContract.address)
+        allowedAddresses.push(maliciousContract.address)
         
         // owner permissions
-        erc725Account = await ERC725Account.new(owner, { from: owner })
         await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
         await erc725Account.setData(
             KEY_ALLOWEDADDRESSES + owner.substr(2), 
@@ -116,10 +122,16 @@ contract("KeyManager", async (accounts) => {
 
         // user permissions
         let userPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
-        await erc725Account.setData(KEY_PERMISSIONS + user.substr(2), userPermissions, { from: owner })
+        await erc725Account.setData(KEY_PERMISSIONS + user.substr(2), userPermissions, { from: owner })  
         
+        // Setups for security testing
+        await erc725Account.setData(
+            KEY_PERMISSIONS + maliciousContract.address.substr(2),
+            web3.utils.toHex(PERMISSION_CALL + PERMISSION_TRANSFERVALUE),
+            { from: owner }
+        ) 
+
         // switch account management to KeyManager
-        keyManager = await KeyManager.new(erc725Account.address)
         await erc725Account.transferOwnership(keyManager.address, { from: owner })
 
         /** @todo find other way to ensure ERC725 Account has always 10 ethers before each test (and not transfer every time test is re-run) */
@@ -554,6 +566,37 @@ contract("KeyManager", async (accounts) => {
             )
         })
         
+    })
+
+    context("> testing Security", async () => {
+
+        it.only('Should re-enter contract call and drain all the funds', async () => {
+            // we assume the owner is not aware of the malicious code present in the contract at the destination address
+            // and simply aim to transfer 1 eth from his ERC725 Account to destination address
+            let transferPayload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                maliciousContract.address,
+                web3.utils.toWei("1", "ether"),
+                "0x"
+            ).encodeABI()
+
+            let executePayload = keyManager.contract.methods.execute(transferPayload).encodeABI()
+            // load the malicious payload, that will be executed in the fallback function (every time the contract receives ethers)
+            await maliciousContract.loadPayload(executePayload)
+
+            let initialAccountBalance = await web3.eth.getBalance(erc725Account.address)
+            let initialAttackerBalance = await web3.eth.getBalance(maliciousContract.address)
+            console.log("ERC725 account balance: ", initialAccountBalance)  // 10 ethers
+            console.log("Attacker balance: ", initialAttackerBalance)   // 0 ethers
+
+            // start draining funds until empty
+            await keyManager.execute(transferPayload, { from: owner })
+
+            let newAccountBalance = await web3.eth.getBalance(erc725Account.address)
+            let newAttackerBalance = await web3.eth.getBalance(maliciousContract.address)
+            console.log("ERC725 account balance: ", newAccountBalance)  // 0 ethers
+            console.log("Attacker balance: ", newAttackerBalance)   // 10 ethers
+        })
     })
 
 })
