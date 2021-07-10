@@ -129,7 +129,7 @@ contract("KeyManager", async (accounts) => {
             KEY_PERMISSIONS + maliciousContract.address.substr(2),
             web3.utils.toHex(PERMISSION_CALL + PERMISSION_TRANSFERVALUE),
             { from: owner }
-        ) 
+        )
 
         // switch account management to KeyManager
         await erc725Account.transferOwnership(keyManager.address, { from: owner })
@@ -570,13 +570,14 @@ contract("KeyManager", async (accounts) => {
 
     context("> testing Security", async () => {
 
-        it.only('Should re-enter contract call and drain all the funds', async () => {
+        it.only('ReEntrancy Guard should prevent contract from calling and transfering ETH again.', async () => {
+            const ONE_ETH = web3.utils.toWei("1", "ether")
             // we assume the owner is not aware of the malicious code present in the contract at the destination address
             // and simply aim to transfer 1 eth from his ERC725 Account to destination address
             let transferPayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
                 maliciousContract.address,
-                web3.utils.toWei("1", "ether"),
+                ONE_ETH,
                 "0x"
             ).encodeABI()
 
@@ -586,16 +587,19 @@ contract("KeyManager", async (accounts) => {
 
             let initialAccountBalance = await web3.eth.getBalance(erc725Account.address)
             let initialAttackerBalance = await web3.eth.getBalance(maliciousContract.address)
-            console.log("ERC725 account balance: ", initialAccountBalance)  // 10 ethers
-            console.log("Attacker balance: ", initialAttackerBalance)   // 0 ethers
+            console.log("ERC725's initial account balance: ", initialAccountBalance)
+            console.log("Attacker's initial balance: ", initialAttackerBalance)
 
-            // start draining funds until empty
+            // try to drain funds via ReEntrancy
             await keyManager.execute(transferPayload, { from: owner })
 
             let newAccountBalance = await web3.eth.getBalance(erc725Account.address)
             let newAttackerBalance = await web3.eth.getBalance(maliciousContract.address)
-            console.log("ERC725 account balance: ", newAccountBalance)  // 0 ethers
-            console.log("Attacker balance: ", newAttackerBalance)   // 10 ethers
+            console.log("ERC725 account balance: ", newAccountBalance)
+            console.log("Attacker balance: ", newAttackerBalance)
+
+            assert.equal(newAccountBalance, initialAccountBalance - ONE_ETH, "ERC725's account sent more than one ETH!")
+            assert.equal(newAttackerBalance, ONE_ETH, "Attacker's account received more than one ETH!")
         })
     })
 

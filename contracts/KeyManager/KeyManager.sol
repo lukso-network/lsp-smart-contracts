@@ -7,19 +7,21 @@ import { IERC1271 } from "../../submodules/ERC725/implementations/contracts/IERC
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 // libraries
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import { ERC725Utils } from "../ERC725Utils.sol";
 
-contract KeyManager is ERC165, IERC1271 {
+contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
     using ECDSA for bytes32;
     using SafeMath for uint256;
     using ERC725Utils for *;
 
     ERC725Y public Account;
     mapping (address => uint256) internal _nonceStore;
+    mapping (address => bool) internal _locks;
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
@@ -92,6 +94,7 @@ contract KeyManager is ERC165, IERC1271 {
     function execute(bytes calldata _data)
         external
         payable
+        nonReentrant
         returns (bool success_)
     {
         _execute(msg.sender, _data);
@@ -131,6 +134,7 @@ contract KeyManager is ERC165, IERC1271 {
     }
 
     function _execute(address _user, bytes memory _data) internal view {
+        require(!_locks[_user], "KeyManager:_execute: ");
         bytes1 userPermissions = _getUserPermissions(_user);
 
         bytes4 ERC725Selector;
