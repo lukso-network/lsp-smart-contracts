@@ -209,6 +209,8 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
         bytes1 storedPermission;
         bytes memory fetchResult = Account.getData(permissionKey);
 
+        if (fetchResult.length == 0) revert("KeyManager:_getUserPermissions: no permissions set for this user / caller");
+
         assembly {
             storedPermission := mload(add(fetchResult, 32))
         }

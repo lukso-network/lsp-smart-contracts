@@ -24,7 +24,8 @@ const OPERATION_DELEGATECALL = 1
 const OPERATION_DEPLOY       = 2
 
 // Other
-const DATA_PLACEHOLDER = "0xaabbccdd123456780000000000"
+const EMPTY_PAYLOAD = "0x"
+const DUMMY_PAYLOAD = "0xaabbccdd123456780000000000"
 
 let allowedAddresses = [
     web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"),
@@ -49,28 +50,117 @@ contract("KeyManagerHelper", async (accounts) => {
     before(async () => {
         erc725Account = await ERC725Account.new(owner, { from: owner })
 
-        keyManagerHelper = await KeyManagerHelper.deployed()
+        keyManagerHelper = await KeyManagerHelper.new(erc725Account.address)
         
         await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
         await erc725Account.setData(
             KEY_ALLOWEDADDRESSES + owner.substr(2), 
             web3.eth.abi.encodeParameter('address[]', allowedAddresses)
         )
+        await erc725Account.setData(
+            KEY_ALLOWEDFUNCTIONS + owner.substr(2), 
+            web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions)
+        )
 
-        await erc725Account.transferOwnership(keyManagerHelper.address, { from: owner })
     })
 
-    context("_getAllowedAddresses(...)", async () => {
+    context("Reading ERC725's account storage", async () => {
 
-        xit("Should return the list of allowed addresses for owner", async () => {
+        it("_getAllowedAddresses(...) - Should return list of owner's allowed addresses", async () => {
+            let bytesResult = await keyManagerHelper.getAllowedAddresses(owner, { from: owner });
+            let allowedOwnerAddresses = web3.eth.abi.decodeParameter('address[]', bytesResult)
 
-            let allowedOwnerAddresses = await keyManagerHelper.getAllowedAddresses(owner, { from: owner });
-            console.log(allowedOwnerAddresses.toString())
-            // assert.deepEqual(
-            //     allowedOwnerAddresses, 
-            //     allowedAddresses
-            // )
+            assert.deepEqual(
+                allowedOwnerAddresses, 
+                allowedAddresses
+            )
         })
+
+        it("_getAllowedAddresses(...) - Should return no addresses for app", async () => {
+            let bytesResult = await keyManagerHelper.getAllowedAddresses(app);
+            assert.isNull(bytesResult)
+
+            let resultFromAccount = await erc725Account.getData(KEY_ALLOWEDADDRESSES + app.substr(2))
+            assert.isNull(resultFromAccount)
+        })
+
+        it("_getAllowedFunctions(...) - Should return list of owner's allowed functions", async () => {
+            let bytesResult = await keyManagerHelper.getAllowedFunctions(owner);
+            let allowedOwnerFunctions = web3.eth.abi.decodeParameter('bytes4[]', bytesResult)
+
+            assert.deepEqual(
+                allowedOwnerFunctions,
+                allowedFunctions,
+                "not the same result fetched from KeyManager"
+            )
+
+            let resultFromAccount = await erc725Account.getData(KEY_ALLOWEDFUNCTIONS + owner.substr(2))
+            let decodedResultFromAccount = web3.eth.abi.decodeParameter('bytes4[]', resultFromAccount)
+
+            assert.deepEqual(
+                decodedResultFromAccount,
+                allowedFunctions,
+                "not the same result fetched from ERC725Y"
+            )
+
+            // also make sure that both functions from keyManager and from erc725 account return the same thing
+            assert.equal(bytesResult, resultFromAccount, "KeyManager and ERC725 account do not return the same result")
+        })
+
+        it("_getAllowedFunctions(...) - Should return no functions selectors for app.", async () => {
+            let bytesResult = await keyManagerHelper.getAllowedFunctions(app);
+            assert.isNull(bytesResult)
+
+            let resultFromAccount = await erc725Account.getData(KEY_ALLOWEDFUNCTIONS + app.substr(2))
+            assert.isNull(resultFromAccount)
+        })
+
+    })
+
+    context("Reading User's permissions", async () => {
+
+        it("Should return 0xff for owner", async () => {
+            assert.equal(
+                await keyManagerHelper.getUserPermissions(owner),
+                ALL_PERMISSIONS
+            ) 
+        })
+
+        // it.only("Should return 0x00 for user", async () => {
+        //     let result = await keyManagerHelper.getUserPermissions(user)
+        //     console.log(result)
+        //     // assert.equal(
+        //     //     await keyManagerHelper.getUserPermissions(owner),
+        //     //     ALL_PERMISSIONS
+        //     // ) 
+        // })
+    })
+
+    context("Testing permissions for allowed addresses / function", async () => {
+
+        it("_isAllowedAddress(...) - Should return `true` for address listed in owner's allowed addresses", async () => {
+            assert.isTrue(
+                await keyManagerHelper.isAllowedAddress.call(
+                    owner,
+                    web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe")
+                )
+            )
+        })
+
+        it("_isAllowedAddress(...) - Should return `false` for address not listed in owner's allowed addresses", async () => {
+            assert.isFalse(
+                await keyManagerHelper.isAllowedAddress.call(
+                    owner,
+                    web3.utils.toChecksumAddress("0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead")
+                )
+            )
+        })
+
+        it("_isAllowedAddress(...) - Should return `true`, user has all addresses whitelisted (= no list of allowed address)", async () => {
+            // assuming a scenario user wants to interact with app on via ERC725 account
+            assert.isTrue(await keyManagerHelper.isAllowedAddress.call(user, app))
+        })
+
     })
 
 })
@@ -92,32 +182,32 @@ contract("KeyManager", async (accounts) => {
         maliciousContract = await Reentrancy.new(keyManager.address)
         simpleContract = await SimpleContract.deployed()
 
-        allowedAddresses.push(app)
-        allowedAddresses.push(simpleContract.address)
-        allowedAddresses.push(maliciousContract.address)
+        // allowedAddresses.push(app)
+        // allowedAddresses.push(simpleContract.address)
+        // allowedAddresses.push(maliciousContract.address)
         
         // owner permissions
         await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
-        await erc725Account.setData(
-            KEY_ALLOWEDADDRESSES + owner.substr(2), 
-            web3.eth.abi.encodeParameter('address[]', allowedAddresses)
-        )
-        await erc725Account.setData(
-            KEY_ALLOWEDFUNCTIONS + owner.substr(2),
-            web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions)
-        )
+        // await erc725Account.setData(
+        //     KEY_ALLOWEDADDRESSES + owner.substr(2), 
+        //     web3.eth.abi.encodeParameter('address[]', allowedAddresses)
+        // )
+        // await erc725Account.setData(
+        //     KEY_ALLOWEDFUNCTIONS + owner.substr(2),
+        //     web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions)
+        // )
 
         // default third party app permissions
-        allowedAddresses.push(user)
+        // allowedAddresses.push(user)
         let appPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
         await erc725Account.setData(KEY_PERMISSIONS + app.substr(2), appPermissions, { from: owner })
         await erc725Account.setData(
             KEY_ALLOWEDADDRESSES + app.substr(2), 
-            web3.eth.abi.encodeParameter('address[]', allowedAddresses)
+            web3.eth.abi.encodeParameter('address[]', [simpleContract.address, user])
         )
         await erc725Account.setData( // do not allow the app to `setNumber` on SimpleContract
             KEY_ALLOWEDFUNCTIONS + app.substr(2),
-            web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions.slice(0, 1))
+            web3.eth.abi.encodeParameter('bytes4[]', [web3.eth.abi.encodeFunctionSignature('setName(string)')])
         )
 
         // user permissions
@@ -125,6 +215,7 @@ contract("KeyManager", async (accounts) => {
         await erc725Account.setData(KEY_PERMISSIONS + user.substr(2), userPermissions, { from: owner })  
         
         // Setups for security testing
+        // `maliciousContract` contains a payload that is executed once it receive ether via its fallback function
         await erc725Account.setData(
             KEY_PERMISSIONS + maliciousContract.address.substr(2),
             web3.utils.toHex(PERMISSION_CALL + PERMISSION_TRANSFERVALUE),
@@ -209,7 +300,7 @@ contract("KeyManager", async (accounts) => {
                 OPERATION_CALL, 
                 web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"), 
                 0, 
-                DATA_PLACEHOLDER
+                DUMMY_PAYLOAD
             ).encodeABI()
             
             await truffleAssert.passes(
@@ -221,9 +312,9 @@ contract("KeyManager", async (accounts) => {
         it("App should be allowed to make a CALL", async () => {
             let executePayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL, 
-                web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"), 
+                web3.utils.toChecksumAddress(simpleContract.address), 
                 0, 
-                DATA_PLACEHOLDER
+                simpleContract.contract.methods.setName("Example").encodeABI()
             ).encodeABI()
     
             await truffleAssert.passes(
@@ -237,7 +328,7 @@ contract("KeyManager", async (accounts) => {
                 OPERATION_DELEGATECALL, 
                 web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"), 
                 0, 
-                DATA_PLACEHOLDER
+                DUMMY_PAYLOAD
             ).encodeABI()
     
             await truffleAssert.fails(
@@ -252,7 +343,7 @@ contract("KeyManager", async (accounts) => {
                 OPERATION_DEPLOY, 
                 "0x0000000000000000000000000000000000000000", 
                 0, 
-                DATA_PLACEHOLDER
+                DUMMY_PAYLOAD
             ).encodeABI()
     
             await truffleAssert.fails(
@@ -302,12 +393,12 @@ contract("KeyManager", async (accounts) => {
                 OPERATION_CALL,
                 user,
                 web3.utils.toWei("3", "ether"),
-                "0x"
+                EMPTY_PAYLOAD
             ).encodeABI()
     
             await truffleAssert.fails(
                 keyManager.execute(transferPayload, { from: app }),
-                truffleAssert.ErrorType.REVERT,
+                // truffleAssert.ErrorType.REVERT,
                 "KeyManager:execute: Not authorized to transfer ethers"
             )
     
@@ -323,45 +414,70 @@ contract("KeyManager", async (accounts) => {
 
     context("> testing permissions: ALLOWEDADDRESSES", async () => {
     
-        it("Owner should be allowed to interact with 1st allowed address from list", async () => {
+        it("All addresses whitelisted = Owner should be allowed to interact with any address", async () => {
             let payload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
-                allowedAddresses[0],
+                web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"),
                 0,
-                DATA_PLACEHOLDER
+                DUMMY_PAYLOAD
             ).encodeABI()
     
             await truffleAssert.passes(
                 keyManager.execute.call(payload, { from: owner }),
-                "Owner should be allowed to interact with the 1st address from the list"
+                "Could not interact with 0xcafecafe... - Owner should be allowed to interact with any address"
             )
-        })
-    
-        it("Owner should be allowed to interact with 2nd address from the list", async () => {
-            let payload = erc725Account.contract.methods.execute(
+
+            let secondPayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
-                allowedAddresses[1],
+                web3.utils.toChecksumAddress("0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd"),
                 0,
-                DATA_PLACEHOLDER
+                DUMMY_PAYLOAD
             ).encodeABI()
     
             await truffleAssert.passes(
-                keyManager.execute.call(payload, { from: owner }),
-                "Owner should be allowed to interact with the 2nd address from the list"
+                keyManager.execute.call(secondPayload, { from: owner }),
+                "Could not interact with 0xabcdabcd... - Owner should be allowed to interact with any address"
             )
         })
     
-        it("Owner should not be allowed to interact with a not allowed address", async () => {
+        it("App should be allowed to interact with `SimpleContract`", async () => {
             let payload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
-                web3.utils.toChecksumAddress("0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef"), 
+                simpleContract.address, 
                 0, 
-                DATA_PLACEHOLDER
+                EMPTY_PAYLOAD
+            ).encodeABI()
+    
+            await truffleAssert.passes(
+                keyManager.execute.call(payload, { from: app }),
+                "Could not interact with SimpleContract - App should be allowed to interact with this contract"
+            )
+        })
+
+        it("App should be allowed to interact with `user`", async () => {
+            let payload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                user, 
+                0, 
+                EMPTY_PAYLOAD
+            ).encodeABI()
+    
+            await truffleAssert.passes(
+                keyManager.execute.call(payload, { from: app }),
+                "Could not interact with `user` - App should be allowed to interact with this EOA"
+            )
+        })
+
+        it("App should not be allowed to interact with `0xdeadbeef...` (not allowed address)", async () => {
+            let payload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                web3.utils.toChecksumAddress("0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"), 
+                0, 
+                DUMMY_PAYLOAD
             ).encodeABI()
     
             await truffleAssert.fails(
-                keyManager.execute.call(payload, { from: owner }),
-                truffleAssert.ErrorType.REVERT,
+                keyManager.execute.call(payload, { from: app }),
                 "KeyManager:execute: Not authorized to interact with this address"
             )
         })
@@ -373,32 +489,37 @@ contract("KeyManager", async (accounts) => {
         it("App should not be allowed to run a non-allowed function (function signature = `0xbeefbeef`)", async () => {
             let payload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
-                allowedAddresses[0],
+                simpleContract.address,
                 0,
                 "0xbeefbeef123456780000000000"
             ).encodeABI()
     
             await truffleAssert.fails(
                 keyManager.execute.call(payload, { from: app }),
-                truffleAssert.ErrorType.REVERT,
+                // truffleAssert.ErrorType.REVERT,
                 "KeyManager:execute: Not authorised to run this function"
             )
+        })
+
+        // 
+        it("All functions whitelisted = owner should be allowed to call any functions in SimpleContract", async () => {
+
         })
 
     })
     
     context("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", async () => {
         it("Should pass if no addresses / functions are stored for a user", async () => {     
-            let simpleContractPayload = simpleContract.contract.methods.setName("New Name").encodeABI()
+            let randomPayload = "0xfafbfcfd1201456875dd"
             let executePayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
-                simpleContract.address,
+                web3.eth.accounts.create().address,
                 0,
-                simpleContractPayload
+                randomPayload
             ).encodeABI()
 
             let callResult = await keyManager.execute.call(executePayload, { from: user })
-            assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
+            assert.isTrue(callResult, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > RandomAddress")
 
             await truffleAssert.passes(
                 keyManager.execute(executePayload, { from: user }),
@@ -498,7 +619,7 @@ contract("KeyManager", async (accounts) => {
     
             await truffleAssert.fails(
                 keyManager.execute(executePayload, { from: app }),
-                truffleAssert.ErrorType.REVERT,
+                // truffleAssert.ErrorType.REVERT,
                 "KeyManager:execute: Not authorised to run this function"
             )
     
@@ -521,7 +642,7 @@ contract("KeyManager", async (accounts) => {
     
             await truffleAssert.fails(
                 keyManager.execute(payload, { from: owner }),
-                truffleAssert.ErrorType.REVERT,
+                // truffleAssert.ErrorType.REVERT,
                 "KeyManager:execute: Invalid operation type"
             )
         })
@@ -529,14 +650,14 @@ contract("KeyManager", async (accounts) => {
         it("Should revert because calling an unexisting function in ERC725", async () => {
             await truffleAssert.fails(
                 keyManager.execute("0xbad0000000000000000000000000bad", { from: owner }),
-                truffleAssert.ErrorType.REVERT,
+                // truffleAssert.ErrorType.REVERT,
                 "KeyManager:execute: unknown function selector from ERC725 account"
             )                
         })
 
     })
 
-    context("> testing `executeRelay` function", async () => {
+    context("> testing `executeRelay(...)`", async () => {
 
         it("should execute a signed tx successfully", async () => {
 
@@ -570,15 +691,30 @@ contract("KeyManager", async (accounts) => {
 
     context("> testing Security", async () => {
 
-        it.only('ReEntrancy Guard should prevent contract from calling and transfering ETH again.', async () => {
+        it("Should revert because caller has no permissions set", async () => {
+            let simpleContractPayload = simpleContract.contract.methods.setName("Another name").encodeABI()
+            let executePayload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                simpleContract.address,
+                0,
+                simpleContractPayload
+            ).encodeABI()
+
+            await truffleAssert.fails(
+                keyManager.execute(executePayload, { from: accounts[3] }),
+                "KeyManager:_getUserPermissions: no permissions set for this user / caller"
+            )
+        })
+
+        it('ReEntrancy Guard should prevent contract from re-calling and transfering ETH again.', async () => {
             const ONE_ETH = web3.utils.toWei("1", "ether")
-            // we assume the owner is not aware of the malicious code present in the contract at the destination address
-            // and simply aim to transfer 1 eth from his ERC725 Account to destination address
+            // we assume the owner is not aware that some malicious code is present at the recipient address (the recipient being a smart contract)
+            // the owner simply aims to transfer 1 ether from his ERC725 Account to the recipient address (= the malicious contract)
             let transferPayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
                 maliciousContract.address,
                 ONE_ETH,
-                "0x"
+                EMPTY_PAYLOAD
             ).encodeABI()
 
             let executePayload = keyManager.contract.methods.execute(transferPayload).encodeABI()
@@ -600,6 +736,40 @@ contract("KeyManager", async (accounts) => {
 
             assert.equal(newAccountBalance, initialAccountBalance - ONE_ETH, "ERC725's account sent more than one ETH!")
             assert.equal(newAttackerBalance, ONE_ETH, "Attacker's account received more than one ETH!")
+        })
+
+        it("Replay Attack should fail because of invalid nonce", async () => {
+            const ONE_ETH = web3.utils.toWei("1", "ether")
+            
+            let externalApp = await web3.eth.accounts.create()
+            let nonce = await keyManager.getNonce.call(externalApp.address)
+            let { signature } = await web3.eth.accounts.sign(DUMMY_PAYLOAD, externalApp.privateKey)
+    
+            let executeRelayedCallPayload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                maliciousContract.address,
+                ONE_ETH,
+                DUMMY_PAYLOAD
+            ).encodeABI()
+
+            // first call
+            let result = await keyManager.executeRelayedCall.call(
+                executeRelayedCallPayload,
+                keyManager.address,
+                nonce,
+                signature
+            )
+            assert.isTrue(result, "Low Level Call failed (=returned `false`) for: KeyManager:executeRelay > ERC725Account")
+            await truffleAssert.passes(
+                keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, nonce, signature),
+                "Should not have reverted"
+            )
+
+            // 2nd call = replay attack
+            await truffleAssert.fails(
+                keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, nonce, signature),
+                "KeyManager:executeRelayedCall: Incorrect nonce"
+            )
         })
     })
 
