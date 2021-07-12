@@ -1,9 +1,27 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import { PatriciaTree } from "solidity-patricia-tree/contracts/tree.sol";
 
-contract NFTStorage {
+
+contract NFTStorageMerkle {
+    using MerkleProof for *;
+
+    function verifyNFTProof(
+        bytes32[] memory _proof,
+        bytes32 _root,
+        bytes32 _leaf
+    )
+        public
+        pure
+        returns (bool)
+    {
+        return _proof.verify(_root, _leaf);
+    }
+}
+
+contract NFTStoragePatricia {
     using PatriciaTree for PatriciaTree.Tree;
 
     PatriciaTree.Tree _storage;
