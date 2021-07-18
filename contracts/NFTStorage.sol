@@ -6,9 +6,8 @@ import { PatriciaTree } from "solidity-patricia-tree/contracts/tree.sol";
 
 
 contract NFTStorageMerkle {
-    using MerkleProof for *;
 
-    function verifyNFTProof(
+    function verifyMerkleProof(
         bytes32[] memory _proof,
         bytes32 _root,
         bytes32 _leaf
@@ -17,8 +16,9 @@ contract NFTStorageMerkle {
         pure
         returns (bool)
     {
-        return _proof.verify(_root, _leaf);
+        return MerkleProof.verify(_proof, _root, _leaf);
     }
+
 }
 
 contract NFTStoragePatricia {
@@ -41,5 +41,26 @@ contract NFTStoragePatricia {
     // the key for an nft is represented by the keccak256 hash of its address
     function createNFTKey(address _nftAddress) public pure returns (bytes32) {
         return keccak256(abi.encode(_nftAddress));
+    }
+
+    function getProof(bytes memory _nftKey) public view returns (uint branchMask, bytes32[] memory siblings) {
+        (branchMask, siblings) = _storage.getProof(_nftKey);
+    }
+
+    function getRootHash() public view returns (bytes32) {
+        return _storage.getRootHash();
+    }
+
+    function verifyPatriciaProof(
+        bytes32 _rootHash, 
+        bytes memory _key,
+        bytes memory _value,
+        uint _branchMask,
+        bytes32[] memory _siblings
+    ) 
+        public
+        view
+    {
+        PatriciaTree.verifyProof(_rootHash, _key, _value, _branchMask, _siblings);
     }
 }

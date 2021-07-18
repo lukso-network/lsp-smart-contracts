@@ -1,16 +1,10 @@
 const { assert } = require('chai')
-const MerkleTools = require('merkle-tools');
+const { MerkleTree } = require('merkletreejs')
+const keccak256 = require('keccak256')
+const truffleAssert = require('truffle-assertions');
+
 const NFTStorageMerkle = artifacts.require('NFTStorageMerkle')
 const NFTStoragePatricia = artifacts.require('NFTStoragePatricia')
-
-
-const treeOptions = {
-    hashType: 'SHA3-256'
-}
-
-var merkleTree = new MerkleTools()
-
-String.prototype.hex = () => { return web3.utils.stringToHex(this) }
 
 contract('NFTStorageMerkle', async (accounts) => {
 
@@ -29,115 +23,162 @@ contract('NFTStorageMerkle', async (accounts) => {
         ]
 
         let nftStorage
+        let leaves
+        let merkletree
+
+        console.log("nft list:", nftList)
 
         before(async () => {
             nftStorage = await NFTStorageMerkle.new({ from: owner })
 
-            merkleTree.addLeaves(nftList, true)
-            merkleTree.makeTree()
+            leaves = nftList.map(x => keccak256(x))
+            merkletree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+
+        })
+
+        it("Display Merkle Tree in CLI", async () => {
+            console.log(merkletree.toString())
         })
 
         it("Should return 8 for leaves count", async () => {
-            let count = merkleTree.getLeafCount()
+            let count = merkletree.getHexLeaves().length
             assert.equal(count, 8, "not the same number of leaves")
         })
 
-        it.only("Should return the right address", async () => {
-            let firstNFT = merkleTree.getLeaf(0)
-
-            console.log("nftList[0]: ", nftList[0])
-            console.log("nftList[0] hash: ", web3.utils.sha3(nftList[0]))
-            console.log("firstNFT: ", firstNFT)
-            console.log("firstNFT: ", firstNFT.toString('hex'))
-
-            // assert.equal(
-            //     web3.utils.sha3(firstNFT.toString('hex')), 
-            //     web3.utils.sha3(web3.utils.toChecksumAddress(nftList[0])),
-            //     "Not the same NFT address retrieved"
-            // )
+        it("Keccak256 hash should match for the first NFT address", async () => {
+            let firstNFT = merkletree.getHexLeaves()[0]
+            
+            assert.equal(
+                firstNFT,
+                web3.utils.sha3(nftList[0]),
+                "Not the same keccak256 hash"
+            )
         })
 
-        xit("Should verify the proof in the smart contract", async () => {
-            let root = merkleTree.getMerkleRoot()
-            console.log("root: ", root)
+        it("Should verify the proof in the smart contract", async () => {
+            let root = merkletree.getHexRoot()
+            // console.log("root: ", root)
 
-            let leaf = nftList[3]
-            console.log("leaf: ", leaf)
+            let leaf = merkletree.getHexLeaves()[3]
+            // console.log("leaf: ", leaf)
 
-            let proof = merkleTree.getProof(3)
-            console.log("proof: ", proof)
+            const proof = merkletree.getHexProof(leaf)
+            // console.log(proof)
+
+            let result = await nftStorage.verifyMerkleProof(proof, root, leaf)
+            assert.isTrue(result, "Merkle Proof invalid")
+            
         })
     })
 })
 
-// contract('NFTStoragePatricia', async (accounts) => {
+contract('NFTStoragePatricia', async (accounts) => {
 
-//     context('Testing Patricia Tree', async () => {
+    context('Testing Patricia Tree', async () => {
 
-//         let owner = accounts[0]
-//         let nftList = {
-//             'nft1': web3.utils.toChecksumAddress(accounts[1]),
-//             'nft2': web3.utils.toChecksumAddress(accounts[2]),
-//             'nft3': web3.utils.toChecksumAddress(accounts[3]),
-//             'nft4': web3.utils.toChecksumAddress(accounts[4]),
-//             'nft5': web3.utils.toChecksumAddress(accounts[5]),
-//         }
+        let owner = accounts[0]
+        let nftList = {
+            'nft1': web3.utils.toChecksumAddress(accounts[1]),
+            'nft2': web3.utils.toChecksumAddress(accounts[2]),
+            'nft3': web3.utils.toChecksumAddress(accounts[3]),
+            'nft4': web3.utils.toChecksumAddress(accounts[4]),
+            'nft5': web3.utils.toChecksumAddress(accounts[5]),
+        }
     
-//         let nftStorage
+        let nftStorage
     
-//         before(async () => {
-//             nftStorage = await NFTStoragePatricia.new({ from: owner })
-//         })
+        before(async () => {
+            nftStorage = await NFTStoragePatricia.new({ from: owner })
+        })
 
-//         describe("insert()", async () => {
-//             it('should insert a nft address in the patricia tree', async () => {
-//                 let key = web3.utils.sha3(nftList['nft1'])
-//                 let value = nftList['nft1']
-//                 await nftStorage.addNFT(key, value, { from: owner })
+        describe("insert()", async () => {
+            it('should insert a nft address in the patricia tree', async () => {
+                let key = web3.utils.sha3(nftList['nft1'])
+                let value = nftList['nft1']
+                await nftStorage.addNFT(key, value, { from: owner })
     
-//                 let result = web3.utils.toChecksumAddress(
-//                     await nftStorage.getNFT(key)
-//                 )
+                let result = web3.utils.toChecksumAddress(
+                    await nftStorage.getNFT(key)
+                )
     
-//                 assert.equal(result, value, "Not the same data")
-//             })
+                assert.equal(result, value, "Not the same data")
+            })
     
-//             it('should insert 50 NFTs at once in the patricia tree', async () => {
-//                 for (let ii = 1; ii <= 50; ii++) {
-//                     let value = web3.eth.accounts.create().address
-//                     let key = web3.utils.sha3(value)
-//                     await nftStorage.addNFT(key, value, { from: owner })
-//                 }
-//             })
-//         })
+            it('should insert 50 NFTs at once in the patricia tree', async () => {
+                for (let ii = 1; ii <= 50; ii++) {
+                    let value = web3.eth.accounts.create().address
+                    let key = web3.utils.sha3(value)
+                    await nftStorage.addNFT(key, value, { from: owner })
+                }
+            })
+        })
     
-//         describe("doesInclude()", async () => {
+        describe("doesInclude()", async () => {
             
-//             it('should return true for an included NFT', async () => {
-//                 let key = web3.utils.sha3(nftList['nft2'])
-//                 let value = nftList['nft2']
-//                 await nftStorage.addNFT(key, value, { from: owner })
+            it('should return true for an included NFT', async () => {
+                let key = web3.utils.sha3(nftList['nft2'])
+                let value = nftList['nft2']
+                await nftStorage.addNFT(key, value, { from: owner })
 
-//                 let result = await nftStorage.doesInclude.call(key)
-//                 assert.isTrue(result, "Should have returned true, as the NFT was inserted in the Patricia tree before")
-//             })
+                let result = await nftStorage.doesInclude.call(key)
+                assert.isTrue(result, "Should have returned true, as the NFT was inserted in the Patricia tree before")
+            })
 
-//             it('should return false for a non included NFT', async () => {
-//                 let key = web3.utils.sha3(nftList['nft3'])
-//                 let result = await nftStorage.doesInclude.call(key)
-//                 assert.isFalse(result, "Should have returned false, as the NFT was never included in the Patricia tree")
-//             })
+            it('should return false for a non included NFT', async () => {
+                let key = web3.utils.sha3(nftList['nft3'])
+                let result = await nftStorage.doesInclude.call(key)
+                assert.isFalse(result, "Should have returned false, as the NFT was never included in the Patricia tree")
+            })
 
-//         })
+        })
 
-//         describe("verifying proof", async () => {
+        describe("verifying proof", async () => {
 
-//         })
+            it("Should verify the proof for an included NFT", async () => {
+                let rootHash = await nftStorage.getRootHash.call()
+
+                let key = web3.utils.sha3(nftList['nft2'])
+                let fetched = await nftStorage.getProof.call(key)
+
+                let branchMask = fetched[0]
+                let siblings = fetched[1]
+
+                await truffleAssert.passes(
+                    nftStorage.verifyPatriciaProof(
+                        rootHash, 
+                        key, 
+                        nftList['nft2'],
+                        branchMask,
+                        siblings
+                    )
+                )
+                
+            })
+        })
+
+        it("Should fail to verify the proof for a non-included NFT", async () => {
+            let rootHash = await nftStorage.getRootHash.call()
+
+            let key = web3.utils.sha3("0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef")
+            let fetched = await nftStorage.getProof.call(key)
+
+            let branchMask = fetched[0]
+            let siblings = fetched[1]
+
+            await truffleAssert.fails(
+                nftStorage.verifyPatriciaProof(
+                    rootHash, 
+                    key, 
+                    "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+                    branchMask,
+                    siblings
+                )
+            )
+            
+        })
 
 
-//     })
+    })
 
-    
 
-   
-// })
+})

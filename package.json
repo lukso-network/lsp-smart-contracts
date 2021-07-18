@@ -22,7 +22,8 @@
   "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
   "dependencies": {
     "eth-create2-calculator": "^1.1.5",
-    "merkle-tools": "^1.4.1",
+    "keccak256": "^1.0.3",
+    "merkletreejs": "^0.2.23",
     "solidity-patricia-tree": "^2.0.2"
   },
   "devDependencies": {
