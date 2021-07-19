@@ -133,9 +133,9 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
         if (success_) emit Executed(msg.value, _data);
     }
 
-    function _execute(address _user, bytes memory _data) internal view {
-        require(!_locks[_user], "KeyManager:_execute: ");
-        bytes1 userPermissions = _getUserPermissions(_user);
+    function _execute(address _address, bytes memory _data) internal view {
+        require(!_locks[_address], "KeyManager:_execute: ");
+        bytes1 userPermissions = _getUserPermissions(_address);
 
         bytes4 ERC725Selector;
         assembly { ERC725Selector := calldataload(68) }
@@ -174,7 +174,7 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
 
             // Check for authorized addresses
             assembly { recipient := calldataload(104) }
-            require(_isAllowedAddress(_user, recipient), 'KeyManager:execute: Not authorized to interact with this address');
+            require(_isAllowedAddress(_address, recipient), 'KeyManager:execute: Not authorized to interact with this address');
 
             // Check for value
             assembly { value := calldataload(136) }
@@ -189,7 +189,7 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
             assembly { functionSelector := calldataload(232) }
             // what to do if _data is empty and therefore we cannot decode the function selector?
             if (functionSelector != 0x00000000) {
-                require(_isAllowedFunction(_user, functionSelector), 'KeyManager:execute: Not authorised to run this function');
+                require(_isAllowedFunction(_address, functionSelector), 'KeyManager:execute: Not authorised to run this function');
             }
         } else if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
             require(_isAllowed(PERMISSION_CHANGEOWNER, userPermissions), 'KeyManager:execute: Not authorized to transfer ownership');
@@ -198,9 +198,9 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
         }
     }
 
-    function _getUserPermissions(address _user) internal view returns (bytes1) {
+    function _getUserPermissions(address _address) internal view returns (bytes1) {
         bytes32 permissionKey;
-        bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _user);
+        bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _address);
 
         assembly { 
             permissionKey := mload(add(computedKey, 32))
@@ -272,8 +272,8 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
         }        
     }
 
-    function _isAllowed(bytes1 _permission, bytes1 _userPermission) internal view returns (bool) {
-        uint8 resultCheck = uint8(_permission) & uint8(_userPermission);
+    function _isAllowed(bytes1 _permission, bytes1 _addressPermission) internal view returns (bool) {
+        uint8 resultCheck = uint8(_permission) & uint8(_addressPermission);
 
         if (resultCheck == uint8(_permission)) { // pass
             return true;
