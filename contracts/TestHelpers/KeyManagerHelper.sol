@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
  * Helper contract to test internal functions of the KeyManager
  */
 
-import { KeyManager } from './KeyManager.sol';
+import { KeyManager } from '../KeyManager/KeyManager.sol';
 
 contract KeyManagerHelper is KeyManager {
 

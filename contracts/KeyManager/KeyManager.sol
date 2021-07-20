@@ -12,12 +12,12 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 // libraries
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import { ERC725Utils } from "../ERC725Utils.sol";
+// import { ERC725Utils } from "../ERC725Utils.sol";
 
 contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
     using ECDSA for bytes32;
     using SafeMath for uint256;
-    using ERC725Utils for *;
+    // using ERC725Utils for *;
 
     ERC725Y public Account;
     mapping (address => uint256) internal _nonceStore;
