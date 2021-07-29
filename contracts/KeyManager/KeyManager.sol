@@ -7,21 +7,20 @@ import { IERC1271 } from "../../submodules/ERC725/implementations/contracts/IERC
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 // libraries
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
-// import { ERC725Utils } from "../ERC725Utils.sol";
 
-contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
+/// @title contract to manage permissions when interacting with ERC725 Accounts
+/// @author Lukso's team (Fabian Vogelsteller, Jean Cavallera)
+/// @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
+contract KeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
-    // using ERC725Utils for *;
 
     ERC725Y public Account;
     mapping (address => uint256) internal _nonceStore;
-    mapping (address => bool) internal _locks;
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
@@ -67,6 +66,8 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
         || super.supportsInterface(interfaceId);
     }
 
+    /// @notice returns the nonce for a specific _address
+    /// @dev used to prevent replay attacks
     function getNonce(address _address) public view returns (uint256) {
         return _nonceStore[_address];
     }
@@ -91,18 +92,28 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
             : _ERC1271FAILVALUE;
     }
 
+    /**
+    * @dev execute the payload _data on the ERC725 Account
+    * @param _data obtained via encodeABI() in web3
+    * @return true if the call on ERC725 Account succeeded, false otherwise
+    */
     function execute(bytes calldata _data)
         external
         payable
-        nonReentrant
         returns (bool success_)
     {
-        _execute(msg.sender, _data);
+        _checkPermissions(msg.sender, _data);
         (success_, ) = address(Account).call{value: msg.value, gas: gasleft()}(_data);
         if (success_) emit Executed(msg.value, _data);
     }
 
-    // allows anybody to execute given they have a signed messaged from an executor
+    /**
+    * @dev allows anybody to execute given they have a signed messaged from an executor
+    * @param _data obtained via encodeABI() in web3
+    * @param _signedFor this KeyManager
+    * @param _nonce the address' nonce, obtained via `getNonce(...)`. Used to prevent replay attack
+    * @param _signature 
+    */
     function executeRelayedCall(
         bytes calldata _data,
         address _signedFor,
@@ -129,12 +140,13 @@ contract KeyManager is ERC165, IERC1271, ReentrancyGuard {
         // increase the nonce
         _nonceStore[from] = _nonceStore[from].add(1);
 
+        _checkPermissions(from, _data);
+
         (success_, ) = address(Account).call{value: 0, gas: gasleft()}(_data);
         if (success_) emit Executed(msg.value, _data);
     }
 
-    function _execute(address _address, bytes memory _data) internal view {
-        require(!_locks[_address], "KeyManager:_execute: ");
+    function _checkPermissions(address _address, bytes calldata _data) internal view {
         bytes1 userPermissions = _getUserPermissions(_address);
 
         bytes4 ERC725Selector;
