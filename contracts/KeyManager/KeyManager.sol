@@ -199,7 +199,7 @@ contract KeyManager is ERC165, IERC1271 {
             // 2nd 32 bytes = bytes array length
             // remaining = the actual bytes array
             assembly { functionSelector := calldataload(232) }
-            // what to do if _data is empty and therefore we cannot decode the function selector?
+            
             if (functionSelector != 0x00000000) {
                 require(_isAllowedFunction(_address, functionSelector), 'KeyManager:execute: Not authorised to run this function');
             }
