@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
-import { ERC725Utils } from "../ERC725Utils.sol";
+import { ERC725Utils } from "../TestHelpers/ERC725Utils.sol";
 
 contract BasicKeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
