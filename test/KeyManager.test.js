@@ -170,7 +170,8 @@ contract("KeyManager", async (accounts) => {
     let keyManager, 
         erc725Account,
         maliciousContract,
-        simpleContract
+        simpleContract,
+        externalApp
 
     const owner = accounts[0]
     const app = accounts[1]
@@ -182,23 +183,12 @@ contract("KeyManager", async (accounts) => {
         maliciousContract = await Reentrancy.new(keyManager.address)
         simpleContract = await SimpleContract.deployed()
 
-        // allowedAddresses.push(app)
-        // allowedAddresses.push(simpleContract.address)
-        // allowedAddresses.push(maliciousContract.address)
-        
+        externalApp = await web3.eth.accounts.create()
+
         // owner permissions
         await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
-        // await erc725Account.setData(
-        //     KEY_ALLOWEDADDRESSES + owner.substr(2), 
-        //     web3.eth.abi.encodeParameter('address[]', allowedAddresses)
-        // )
-        // await erc725Account.setData(
-        //     KEY_ALLOWEDFUNCTIONS + owner.substr(2),
-        //     web3.eth.abi.encodeParameter('bytes4[]', allowedFunctions)
-        // )
 
-        // default third party app permissions
-        // allowedAddresses.push(user)
+        // app permissions
         let appPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
         await erc725Account.setData(KEY_PERMISSIONS + app.substr(2), appPermissions, { from: owner })
         await erc725Account.setData(
@@ -214,12 +204,16 @@ contract("KeyManager", async (accounts) => {
         let userPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
         await erc725Account.setData(KEY_PERMISSIONS + user.substr(2), userPermissions, { from: owner })  
         
-        // Setups for security testing
-        // `maliciousContract` contains a payload that is executed once it receive ether via its fallback function
+        // externalApp permissions
+        let externalAppPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
+        await erc725Account.setData(KEY_PERMISSIONS + externalApp.address.substr(2), externalAppPermissions, { from: owner })
         await erc725Account.setData(
-            KEY_PERMISSIONS + maliciousContract.address.substr(2),
-            web3.utils.toHex(PERMISSION_CALL + PERMISSION_TRANSFERVALUE),
-            { from: owner }
+            KEY_ALLOWEDADDRESSES + externalApp.address.substr(2), 
+            web3.eth.abi.encodeParameter('address[]', [simpleContract.address, user])
+        )
+        await erc725Account.setData( // do not allow the externalApp to `setNumber` on SimpleContract
+            KEY_ALLOWEDFUNCTIONS + externalApp.address.substr(2),
+            web3.eth.abi.encodeParameter('bytes4[]', [web3.eth.abi.encodeFunctionSignature('setName(string)')])
         )
 
         // switch account management to KeyManager
@@ -661,8 +655,6 @@ contract("KeyManager", async (accounts) => {
 
         it("should execute a signed tx successfully", async () => {
 
-            let externalApp = await web3.eth.accounts.create()
-
             let simpleContractPayload = simpleContract.contract.methods.setName("Another name").encodeABI()    
             let { signature } = await web3.eth.accounts.sign(simpleContractPayload, externalApp.privateKey)
     
@@ -685,6 +677,37 @@ contract("KeyManager", async (accounts) => {
                 await keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, 0, signature),
                 "Should not have reverted"
             )
+        })
+
+        it("Should allow to change a state variable on another contract via `executeRelay`", async () => {
+            let newName = "Another Name"
+
+            let simpleContractPayload = simpleContract.contract.methods.setName(newName).encodeABI()    
+            let { signature } = await web3.eth.accounts.sign(simpleContractPayload, externalApp.privateKey)
+    
+            let executeRelayedCallPayload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                simpleContract.address,
+                0,
+                simpleContractPayload
+            ).encodeABI()
+
+            let result = await keyManager.executeRelayedCall.call(
+                executeRelayedCallPayload,
+                keyManager.address,
+                0,
+                signature
+            )
+            assert.isTrue(result, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
+
+            truffleAssert.passes(
+                await keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, 0, signature),
+                "Should not have reverted"
+            )
+
+            let endResult = await simpleContract.getName.call()
+
+            assert.equal(endResult, newName, "Name on simpleContract has not changed")
         })
         
     })
