@@ -136,24 +136,30 @@ contract KeyManagerV2 is ERC165, IERC1271 {
     }
 
     function _checkPermissions(address _address, bytes calldata _data) internal view {
-        bytes4 ERC725Selector = bytes4(_data[68:72]);
+        bytes1 userPermissions = _getUserPermissions(_address);
+        // bytes4 ERC725Selector = bytes4(_data[68:72]);
+        bytes4 ERC725Selector = bytes4(_data[:4]);
         
         if (ERC725Selector == SETDATA_SELECTOR) {
-            bytes8 setDataKey = bytes8(_data[72:80]);
+            // bytes8 setDataKey = bytes8(_data[72:80]);
+            bytes8 setDataKey = bytes8(_data[4:12]);
 
-            if (key == SET_PERMISSIONS) {
+            if (setDataKey == SET_PERMISSIONS) {
                 require(_isAllowed(PERMISSION_CHANGEKEYS, userPermissions), "KeyManager:_checkPermissions: Not authorized to change keys");
             } else {
                 require(_isAllowed(PERMISSION_SETDATA, userPermissions), "KeyManager:_checkPermissions: Not authorized to setData");
             }
         } else if (ERC725Selector == EXECUTE_SELECTOR) {
-            uint8 operationType = uint8(bytes1(_data[103:104]));
-            address recipient = address(bytes20(_data[115:135]));
-            uint value = uint8(bytes1(_data[136:137]));
+            // uint8 operationType = uint8(bytes1(_data[103:104]));
+            uint8 operationType = uint8(bytes1(_data[35:36]));
+            // address recipient = address(bytes20(_data[115:135]));
+            address recipient = address(bytes20(_data[48:68]));
+            // uint value = uint8(bytes1(_data[136:137]));
+            uint value = uint(bytes32(_data[68:100]));
             // 1st 32 bytes = memory location
             // 2nd 32 bytes = bytes array length
             // remaining = actual bytes array
-            bytes4 functionSelector = bytes4(_data[232:236]);
+            // bytes4 functionSelector = bytes4(_data[232:236]);
 
             // Check for CALL, DELEGATECALL or DEPLOY
             require(operationType < 4, 'KeyManager:_checkPermissions: Invalid operation type');
@@ -173,16 +179,19 @@ contract KeyManagerV2 is ERC165, IERC1271 {
             if (!operationAllowed && permission == PERMISSION_DEPLOY) revert('KeyManager:_checkPermissions: not authorized to perform DEPLOY');
         
             // Check for authorized addresses
-            require(_isAllowedAddress(_address, recipient), 'KeyManager:execute: Not authorized to interact with this address');
+            require(_isAllowedAddress(_address, recipient), 'KeyManager:_checkPermissions: Not authorized to interact with this address');
         
             // Check for value
             if (value > 0) {
-                require(_isAllowed(PERMISSION_TRANSFERVALUE, userPermissions), 'KeyManager:execute: Not authorized to transfer ethers');
+                require(_isAllowed(PERMISSION_TRANSFERVALUE, userPermissions), 'KeyManager:_checkPermissions: Not authorized to transfer ethers');
             }
 
             // Check for functions
-            if (functionSelector != 0x00000000) {
-                require(_isAllowedFunction(_address, functionSelector), 'KeyManager:execute: Not authorised to run this function');
+            if (_data.length > 164) {
+                bytes4 functionSelector = bytes4(_data[164:168]);
+                if (functionSelector != 0x00000000) {
+                    require(_isAllowedFunction(_address, functionSelector), 'KeyManager:_checkPermissions: Not authorised to run this function');
+                }
             }
         } else if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
             require(_isAllowed(PERMISSION_CHANGEOWNER, userPermissions), 'KeyManager:_checkPermissions: Not authorized to transfer ownership');
