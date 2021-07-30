@@ -95,7 +95,7 @@ contract KeyManager is ERC165, IERC1271 {
     /**
     * @dev execute the payload _data on the ERC725 Account
     * @param _data obtained via encodeABI() in web3
-    * @return true if the call on ERC725 Account succeeded, false otherwise
+    * @return success_ true if the call on ERC725 Account succeeded, false otherwise
     */
     function execute(bytes calldata _data)
         external
@@ -112,7 +112,7 @@ contract KeyManager is ERC165, IERC1271 {
     * @param _data obtained via encodeABI() in web3
     * @param _signedFor this KeyManager
     * @param _nonce the address' nonce, obtained via `getNonce(...)`. Used to prevent replay attack
-    * @param _signature 
+    * @param _signature bytes32 ethereum signature
     */
     function executeRelayedCall(
         bytes calldata _data,
@@ -156,9 +156,9 @@ contract KeyManager is ERC165, IERC1271 {
             assembly { key := calldataload(72) }
 
             if (key == 0x4b80742d00000000) {
-                require(_isAllowed(PERMISSION_CHANGEKEYS, userPermissions), "KeyManager:execute: Not authorized to change keys");
+                require(_isAllowed(PERMISSION_CHANGEKEYS, userPermissions), "KeyManager:_checkPermissions: Not authorized to change keys");
             } else {
-                require(_isAllowed(PERMISSION_SETDATA, userPermissions), "KeyManager:execute: Not authorized to setData");
+                require(_isAllowed(PERMISSION_SETDATA, userPermissions), "KeyManager:_checkPermissions: Not authorized to setData");
             }
         } else if (ERC725Selector == EXECUTE_SELECTOR) {
             uint8 operationType;
@@ -168,7 +168,7 @@ contract KeyManager is ERC165, IERC1271 {
 
             // Check for CALL, DELEGATECALL or DEPLOY
             assembly { operationType := calldataload(72) }
-            require(operationType < 4, 'KeyManager:execute: Invalid operation type');
+            require(operationType < 4, 'KeyManager:_checkPermissions: Invalid operation type');
 
             bytes1 permission;
             assembly {
@@ -180,33 +180,35 @@ contract KeyManager is ERC165, IERC1271 {
             }
             bool operationAllowed = _isAllowed(permission, userPermissions);
 
-            if (!operationAllowed && permission == PERMISSION_CALL) revert('KeyManager:execute: not authorized to perform CALL');
-            if (!operationAllowed && permission == PERMISSION_DELEGATECALL) revert('KeyManager:execute: not authorized to perform DELEGATECALL');
-            if (!operationAllowed && permission == PERMISSION_DEPLOY) revert('KeyManager:execute: not authorized to perform DEPLOY');
+            if (!operationAllowed && permission == PERMISSION_CALL) revert('KeyManager:_checkPermissions: not authorized to perform CALL');
+            if (!operationAllowed && permission == PERMISSION_DELEGATECALL) revert('KeyManager:_checkPermissions: not authorized to perform DELEGATECALL');
+            if (!operationAllowed && permission == PERMISSION_DEPLOY) revert('KeyManager:_checkPermissions: not authorized to perform DEPLOY');
 
             // Check for authorized addresses
             assembly { recipient := calldataload(104) }
-            require(_isAllowedAddress(_address, recipient), 'KeyManager:execute: Not authorized to interact with this address');
+            require(_isAllowedAddress(_address, recipient), 'KeyManager:_checkPermissions: Not authorized to interact with this address');
 
             // Check for value
             assembly { value := calldataload(136) }
             if (value > 0) {
-                require(_isAllowed(PERMISSION_TRANSFERVALUE, userPermissions), 'KeyManager:execute: Not authorized to transfer ethers');
+                require(_isAllowed(PERMISSION_TRANSFERVALUE, userPermissions), 'KeyManager:_checkPermissions: Not authorized to transfer ethers');
             }
 
             // Check for functions
             // 1st 32 bytes = memory location
             // 2nd 32 bytes = bytes array length
             // remaining = the actual bytes array
-            assembly { functionSelector := calldataload(232) }
-            
-            if (functionSelector != 0x00000000) {
-                require(_isAllowedFunction(_address, functionSelector), 'KeyManager:execute: Not authorised to run this function');
+            if (_data.length > 164) {
+                assembly { functionSelector := calldataload(232) }
+                
+                if (functionSelector != 0x00000000) {
+                    require(_isAllowedFunction(_address, functionSelector), 'KeyManager:_checkPermissions: Not authorised to run this function');
+                }
             }
         } else if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
-            require(_isAllowed(PERMISSION_CHANGEOWNER, userPermissions), 'KeyManager:execute: Not authorized to transfer ownership');
+            require(_isAllowed(PERMISSION_CHANGEOWNER, userPermissions), 'KeyManager:_checkPermissions: Not authorized to transfer ownership');
         } else {
-            revert('KeyManager:execute: unknown function selector from ERC725 account');
+            revert('KeyManager:_checkPermissions: unknown function selector from ERC725 account');
         }
     }
 
