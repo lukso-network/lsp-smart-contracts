@@ -286,7 +286,7 @@ contract KeyManager is ERC165, IERC1271 {
         }        
     }
 
-    function _isAllowed(bytes1 _permission, bytes1 _addressPermission) internal view returns (bool) {
+    function _isAllowed(bytes1 _permission, bytes1 _addressPermission) internal pure returns (bool) {
         uint8 resultCheck = uint8(_permission) & uint8(_addressPermission);
 
         if (resultCheck == uint8(_permission)) { // pass

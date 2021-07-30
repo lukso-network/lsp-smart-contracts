@@ -59,7 +59,7 @@ contract NFTStoragePatricia {
         bytes32[] memory _siblings
     ) 
         public
-        view
+        pure
     {
         PatriciaTree.verifyProof(_rootHash, _key, _value, _branchMask, _siblings);
     }
