@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.7.0 <=0.9.0;
 
-contract SimpleContract {
+contract SimpleTargetContract {
 
     uint number = 5;
     string name = "Simple Contract Name";

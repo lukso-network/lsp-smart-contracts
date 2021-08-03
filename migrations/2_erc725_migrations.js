@@ -3,7 +3,7 @@ const KeyManager = artifacts.require("KeyManager")
 const KeyManagerHelper = artifacts.require("KeyManagerHelper")
 
 const ERC725Utils = artifacts.require("ERC725Utils")
-const SimpleContract = artifacts.require("SimpleContract")
+const SimpleTargetContract = artifacts.require("SimpleTargetContract")
 
 module.exports = function (deployer, network, accounts) {
 
@@ -20,5 +20,5 @@ module.exports = function (deployer, network, accounts) {
     deployer.deploy(KeyManager, owner)
     deployer.deploy(KeyManagerHelper, owner)
 
-    deployer.deploy(SimpleContract)
+    deployer.deploy(SimpleTargetContract)
 };

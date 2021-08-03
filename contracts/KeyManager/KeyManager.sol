@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity 0.8.6;
 
 // interfaces
 import { ERC725Y } from "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
@@ -12,8 +12,8 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-/// @title contract to manage permissions when interacting with ERC725 Accounts
-/// @author Lukso's team (Fabian Vogelsteller, Jean Cavallera)
+/// @title contract to manage permissions when interacting with ERC725 Account
+/// @author Fabian Vogelsteller, Jean Cavallera
 /// @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
 contract KeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
@@ -26,6 +26,7 @@ contract KeyManager is ERC165, IERC1271 {
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
 
     // PERMISSION KEYS
+    bytes8 internal constant SET_PERMISSIONS       = 0x4b80742d00000000; // AddressPermissions:<...>
     bytes12 internal constant KEY_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
     bytes12 internal constant KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
     bytes12 internal constant KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
@@ -66,8 +67,6 @@ contract KeyManager is ERC165, IERC1271 {
         || super.supportsInterface(interfaceId);
     }
 
-    /// @notice returns the nonce for a specific _address
-    /// @dev used to prevent replay attacks
     function getNonce(address _address) public view returns (uint256) {
         return _nonceStore[_address];
     }
@@ -87,6 +86,7 @@ contract KeyManager is ERC165, IERC1271 {
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
 
+        // check if has permission to sign
         return (true)
             ? _INTERFACE_ID_ERC1271
             : _ERC1271FAILVALUE;
@@ -146,50 +146,24 @@ contract KeyManager is ERC165, IERC1271 {
         if (success_) emit Executed(msg.value, _data);
     }
 
-    function recoverSigner(
-        bytes calldata _data,
-        // address _signedFor,
-        uint256 _nonce,
-        bytes memory _signature
-    )
-        external
-        payable
-        returns (address)
-    {
-        bytes memory blob = abi.encodePacked(
-            address(this), // needs to be signed for this keyManager
-            _data,
-            _nonce
-        );
-
-        // recover the signer
-        address from = keccak256(blob).toEthSignedMessageHash().recover(_signature);
-
-        return from;
-    }
-
     function _checkPermissions(address _address, bytes calldata _data) internal view {
         bytes1 userPermissions = _getUserPermissions(_address);
-
-        bytes4 ERC725Selector;
-        assembly { ERC725Selector := calldataload(68) }
+        bytes4 ERC725Selector = bytes4(_data[:4]);
+        
         if (ERC725Selector == SETDATA_SELECTOR) {
-            bytes8 key;
-            assembly { key := calldataload(72) }
+            bytes8 setDataKey = bytes8(_data[4:12]);
 
-            if (key == 0x4b80742d00000000) {
+            if (setDataKey == SET_PERMISSIONS) {
                 require(_isAllowed(PERMISSION_CHANGEKEYS, userPermissions), "KeyManager:_checkPermissions: Not authorized to change keys");
             } else {
                 require(_isAllowed(PERMISSION_SETDATA, userPermissions), "KeyManager:_checkPermissions: Not authorized to setData");
             }
         } else if (ERC725Selector == EXECUTE_SELECTOR) {
-            uint8 operationType;
-            address recipient;
-            uint value;
-            bytes4 functionSelector;
+            uint8 operationType = uint8(bytes1(_data[35:36]));
+            address recipient = address(bytes20(_data[48:68]));
+            uint value = uint(bytes32(_data[68:100]));
 
             // Check for CALL, DELEGATECALL or DEPLOY
-            assembly { operationType := calldataload(72) }
             require(operationType < 4, 'KeyManager:_checkPermissions: Invalid operation type');
 
             bytes1 permission;
@@ -205,24 +179,18 @@ contract KeyManager is ERC165, IERC1271 {
             if (!operationAllowed && permission == PERMISSION_CALL) revert('KeyManager:_checkPermissions: not authorized to perform CALL');
             if (!operationAllowed && permission == PERMISSION_DELEGATECALL) revert('KeyManager:_checkPermissions: not authorized to perform DELEGATECALL');
             if (!operationAllowed && permission == PERMISSION_DEPLOY) revert('KeyManager:_checkPermissions: not authorized to perform DEPLOY');
-
+        
             // Check for authorized addresses
-            assembly { recipient := calldataload(104) }
             require(_isAllowedAddress(_address, recipient), 'KeyManager:_checkPermissions: Not authorized to interact with this address');
-
+        
             // Check for value
-            assembly { value := calldataload(136) }
             if (value > 0) {
                 require(_isAllowed(PERMISSION_TRANSFERVALUE, userPermissions), 'KeyManager:_checkPermissions: Not authorized to transfer ethers');
             }
 
             // Check for functions
-            // 1st 32 bytes = memory location
-            // 2nd 32 bytes = bytes array length
-            // remaining = the actual bytes array
             if (_data.length > 164) {
-                assembly { functionSelector := calldataload(232) }
-                
+                bytes4 functionSelector = bytes4(_data[164:168]);
                 if (functionSelector != 0x00000000) {
                     require(_isAllowedFunction(_address, functionSelector), 'KeyManager:_checkPermissions: Not authorised to run this function');
                 }
@@ -305,18 +273,15 @@ contract KeyManager is ERC165, IERC1271 {
                 }
                 return false;
             }
-        }        
+        }   
     }
 
     function _isAllowed(bytes1 _permission, bytes1 _addressPermission) internal pure returns (bool) {
         uint8 resultCheck = uint8(_permission) & uint8(_addressPermission);
 
-        if (resultCheck == uint8(_permission)) { // pass
+        if (resultCheck == uint8(_permission)) {
             return true;
-        } else if (resultCheck == 0) {  // fail 
-            return false;
-        } else {    // refer
-            // in this case, the user has part of the permissions, but not all of them
+        } else {
             return false;
         }
     }

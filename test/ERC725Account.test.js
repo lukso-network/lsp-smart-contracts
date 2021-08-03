@@ -27,8 +27,6 @@ contract("ERC725 Account", async (accounts) => {
                 web3.eth.abi.encodeParameter('address[]', LSP2IssuedAssets)
             )
         )
-
-        console.log(LSP2IssuedAssets.length)
     })
 
     it("Add one more LSP2IssuedAssets[]", async () => {
@@ -41,7 +39,5 @@ contract("ERC725 Account", async (accounts) => {
                 web3.eth.abi.encodeParameter('address[]', LSP2IssuedAssets)
             )
         )
-
-        console.log(LSP2IssuedAssets.length)  
     })
 })

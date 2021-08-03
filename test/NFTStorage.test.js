@@ -26,8 +26,6 @@ contract('NFTStorageMerkle', async (accounts) => {
         let leaves
         let merkletree
 
-        console.log("nft list:", nftList)
-
         before(async () => {
             nftStorage = await NFTStorageMerkle.new({ from: owner })
 
@@ -57,13 +55,8 @@ contract('NFTStorageMerkle', async (accounts) => {
 
         it("Should verify the proof in the smart contract", async () => {
             let root = merkletree.getHexRoot()
-            // console.log("root: ", root)
-
             let leaf = merkletree.getHexLeaves()[3]
-            // console.log("leaf: ", leaf)
-
-            const proof = merkletree.getHexProof(leaf)
-            // console.log(proof)
+            let proof = merkletree.getHexProof(leaf)
 
             let result = await nftStorage.verifyMerkleProof(proof, root, leaf)
             assert.isTrue(result, "Merkle Proof invalid")

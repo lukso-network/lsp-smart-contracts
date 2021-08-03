@@ -128,30 +128,3 @@ For a calldata with an empty payload as the 4th parameter, it would look like th
 (100) 0x0000000000000000000000000000000000000000000000000000000000000080
 (132) 0x0000000000000000000000000000000000000000000000000000000000000000
 ```
-
-## Smart Weakness List to test
-
-Below a list of vulnerabilities to try on KeyManager + ERC725 Account + Universal Receiver.
-List is based on https://swcregistry.io/
-
-* SWC-135: Code With No Effects
-* SWC-133: Hash Collisions With Multiple Variable Length Arguments
-* SWC-131: Presence of unused variables
-* SWC-130: Right-To-Left-Override control character (U+202E)
-* SWC-126: Insufficient Gas Griefing **(test on executeRelay(...))**
-* SWC-125: Incorrect Inheritance Order (double check this)
-* SWC-124: Write to Arbitrary Storage Location **(make sure you there are no cases like this on ERC725 account)**
-* SWC-123: Requirement violation
-* SWC-121: missing protection against Signature Replay Attacks
-* SWC-119: Shadowing State Variables **(verify)**
-* SWC-117: Signature Malleability **(not sure to understand)**
-* SWC-109: Uninitialized storage pointer
-* SWC-108: State Variable Default Visibility **(check all state variables visibilities across all contracts)**
-* SWC-105: Unprotected Ether Withdrawal **(check across the contracts that some functions cannot exposed this potentially)**
-* SWC-104: Unchecked Call Return Value **(verify if in some functions, not checking can lead to unintentional contract behaviour)**
-* SWC-102: Outdated Compiler Version **(verify if any old contract or library being used implement a very old prama version. Make a list of them)**
-* SWC-101: Integer Overflow and Underflow **(Look for potential cases across contracts)**
-
-Not sure:
-
-* SWC-132: Unexpected Ether balance
