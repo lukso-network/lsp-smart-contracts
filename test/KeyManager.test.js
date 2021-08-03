@@ -2,7 +2,7 @@ const { assert } = require("chai");
 const truffleAssert = require('truffle-assertions');
 
 const ERC725Account = artifacts.require("LSP3Account");
-const KeyManager = artifacts.require("KeyManager");
+const KeyManager = artifacts.require("KeyManagerV2");
 const KeyManagerHelper = artifacts.require("KeyManagerHelper");
 const SimpleContract = artifacts.require("SimpleContract");
 const Reentrancy = artifacts.require("Reentrancy");
@@ -183,7 +183,7 @@ contract("KeyManager", async (accounts) => {
         simpleContract = await SimpleContract.deployed()
         maliciousContract = await Reentrancy.new(keyManager.address)
 
-        externalApp = await web3.eth.accounts.create()
+        externalApp = await web3.eth.accounts.wallet.create(1)[0].address
 
         // owner permissions
         await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
@@ -206,13 +206,13 @@ contract("KeyManager", async (accounts) => {
         
         // externalApp permissions
         let externalAppPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
-        await erc725Account.setData(KEY_PERMISSIONS + externalApp.address.substr(2), externalAppPermissions, { from: owner })
+        await erc725Account.setData(KEY_PERMISSIONS + externalApp.substr(2), externalAppPermissions, { from: owner })
         await erc725Account.setData(
-            KEY_ALLOWEDADDRESSES + externalApp.address.substr(2), 
+            KEY_ALLOWEDADDRESSES + externalApp.substr(2), 
             web3.eth.abi.encodeParameter('address[]', [simpleContract.address, user])
         )
         await erc725Account.setData( // do not allow the externalApp to `setNumber` on SimpleContract
-            KEY_ALLOWEDFUNCTIONS + externalApp.address.substr(2),
+            KEY_ALLOWEDFUNCTIONS + externalApp.substr(2),
             web3.eth.abi.encodeParameter('bytes4[]', [web3.eth.abi.encodeFunctionSignature('setName(string)')])
         )
 
@@ -651,12 +651,29 @@ contract("KeyManager", async (accounts) => {
 
     })
 
-    context.skip("> testing `executeRelay(...)`", async () => {
+    context.only("> testing `executeRelay(...)`", async () => {
 
+        xit("Should return the same address", async () => {
+            let simpleContractPayload = simpleContract.contract.methods.setName("Another name").encodeABI()    
+            let nonce = await keyManager.getNonce.call(externalApp)
+            let signature = web3.eth.accounts.wallet[externalApp].sign(
+                web3.utils.soliditySha3(keyManager.address, { t: 'bytes', v: simpleContractPayload }, nonce)
+            ).signature
+
+            let recoveredAddress = await keyManager.recoverSigner.call(
+                simpleContractPayload,
+                nonce,
+                signature
+            )
+                
+            console.log("recoveredAddress ===> ", recoveredAddress)
+            console.log("externalApp ========> ", externalApp)
+        })
+            
         it("should execute a signed tx successfully", async () => {
 
             let simpleContractPayload = simpleContract.contract.methods.setName("Another name").encodeABI()    
-            let { signature } = await web3.eth.accounts.sign(simpleContractPayload, externalApp.privateKey)
+            let nonce = await keyManager.getNonce.call(externalApp)
     
             let executeRelayedCallPayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
@@ -665,25 +682,30 @@ contract("KeyManager", async (accounts) => {
                 simpleContractPayload
             ).encodeABI()
 
+            let signature = web3.eth.accounts.wallet[externalApp].sign(
+                web3.utils.soliditySha3(keyManager.address, { t: 'bytes', v: executeRelayedCallPayload }, nonce)
+            ).signature
+
             let result = await keyManager.executeRelayedCall.call(
                 executeRelayedCallPayload,
                 keyManager.address,
-                0,
+                nonce,
                 signature
             )
             assert.isTrue(result, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
 
-            truffleAssert.passes(
-                await keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, 0, signature),
+            await truffleAssert.passes(
+                keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, nonce, signature),
                 "Should not have reverted"
             )
         })
 
-        it("Should allow to change a state variable on another contract via `executeRelay`", async () => {
-            let newName = "Another Name"
+        it("Should allow to `setName` via `executeRelay`", async () => {
+
+            let newName = "Dagobah"
 
             let simpleContractPayload = simpleContract.contract.methods.setName(newName).encodeABI()    
-            let { signature } = await web3.eth.accounts.sign(simpleContractPayload, externalApp.privateKey)
+            let nonce = await keyManager.getNonce.call(externalApp)
     
             let executeRelayedCallPayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
@@ -692,22 +714,55 @@ contract("KeyManager", async (accounts) => {
                 simpleContractPayload
             ).encodeABI()
 
+            let signature = web3.eth.accounts.wallet[externalApp].sign(
+                web3.utils.soliditySha3(keyManager.address, { t: 'bytes', v: executeRelayedCallPayload }, nonce)
+            ).signature
+
             let result = await keyManager.executeRelayedCall.call(
                 executeRelayedCallPayload,
                 keyManager.address,
-                0,
+                nonce,
                 signature
             )
             assert.isTrue(result, "Low Level Call failed (=returned `false`) for: KeyManager > ERC725Account > SimpleContract")
 
-            truffleAssert.passes(
-                await keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, 0, signature),
+            await truffleAssert.passes(
+                keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, nonce, signature),
                 "Should not have reverted"
             )
 
             let endResult = await simpleContract.getName.call()
 
             assert.equal(endResult, newName, "Name on simpleContract has not changed")
+        })
+
+        it("Should not allow to `setNumber` via `executeRelay`", async () => {
+
+            let currentNumber = await simpleContract.getNumber.call()
+            console.log("currentNumber: ", currentNumber)
+
+            let simpleContractPayload = simpleContract.contract.methods.setNumber(2354).encodeABI()    
+            let nonce = await keyManager.getNonce.call(externalApp)
+    
+            let executeRelayedCallPayload = erc725Account.contract.methods.execute(
+                OPERATION_CALL,
+                simpleContract.address,
+                0,
+                simpleContractPayload
+            ).encodeABI()
+
+            let signature = web3.eth.accounts.wallet[externalApp].sign(
+                web3.utils.soliditySha3(keyManager.address, { t: 'bytes', v: executeRelayedCallPayload }, nonce)
+            ).signature
+
+            await truffleAssert.fails(
+                keyManager.executeRelayedCall(executeRelayedCallPayload, keyManager.address, nonce, signature),
+                "KeyManager:_checkPermissions: Not authorised to run this function"
+            )
+
+            let endResult = await simpleContract.getNumber.call()
+            console.log("endResult: ", endResult)
+            assert.equal(endResult.toString(), currentNumber.toString(), "Number on simpleContract should have not changed")
         })
         
     })

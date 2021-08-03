@@ -146,6 +146,28 @@ contract KeyManager is ERC165, IERC1271 {
         if (success_) emit Executed(msg.value, _data);
     }
 
+    function recoverSigner(
+        bytes calldata _data,
+        // address _signedFor,
+        uint256 _nonce,
+        bytes memory _signature
+    )
+        external
+        payable
+        returns (address)
+    {
+        bytes memory blob = abi.encodePacked(
+            address(this), // needs to be signed for this keyManager
+            _data,
+            _nonce
+        );
+
+        // recover the signer
+        address from = keccak256(blob).toEthSignedMessageHash().recover(_signature);
+
+        return from;
+    }
+
     function _checkPermissions(address _address, bytes calldata _data) internal view {
         bytes1 userPermissions = _getUserPermissions(_address);
 
