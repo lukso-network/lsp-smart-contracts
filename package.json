@@ -22,6 +22,7 @@
   "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
   "dependencies": {
     "@openzeppelin/contracts-upgradeable": "^4.2.0",
+    "@openzeppelin/test-helpers": "^0.5.12",
     "@openzeppelin/upgrades": "^2.8.0",
     "eth-create2-calculator": "^1.1.5",
     "keccak256": "^1.0.3",

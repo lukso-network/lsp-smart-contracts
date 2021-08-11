@@ -242,7 +242,7 @@ contract("LSP3Account", accounts => {
             account = await LSP3Account.new(owner, {from: owner});
         });
 
-        it("Uprade ownership correctly", async () => {
+        it("Upgrade ownership correctly", async () => {
             await account.transferOwnership(newOwner, {from: owner});
             const idOwner = await account.owner.call();
 

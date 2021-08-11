@@ -1,6 +1,8 @@
-const { assert } = require("chai");
+const { assert, expect } = require("chai");
 const { web3 } = require("openzeppelin-test-helpers/src/setup");
+const { BN, ether } = require("@openzeppelin/test-helpers");
 const truffleAssert = require('truffle-assertions');
+const { calculateCreate2 } = require('eth-create2-calculator')
 
 const LSP3Account = artifacts.require("LSP3Account");
 const LSP3AccountInit = artifacts.require("LSP3AccountInit");
@@ -9,11 +11,42 @@ const LSP3AccountInit = artifacts.require("LSP3AccountInit");
 
 /**
  * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
- *                      10 x Opcodes (in hex) to copy runtime code 
+ *                      10 x hex Opcodes to copy runtime code 
  *                           into memory and return it
  *                             |                  |
  *///                          V                  V
 const runtimeCodeTemplate = "0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3"
+
+// Interfaces IDs
+const ERC165_INTERFACE_ID = "0x01ffc9a7"
+const ERC725X_INTERFACE_ID = "0x44c028fe"
+const ERC725Y_INTERFACE_ID = "0x2bd57b73"
+const ERC1271_INTERFACE_ID = "0x1626ba7e"
+const LSP1_INTERFACE_ID = "0x6bb56a14"
+
+// From LSP3Account.test.js
+const ERC1271_MAGIC_VALUE = '0x1626ba7e';
+const ERC1271_FAIL_VALUE = '0xffffffff';
+const DUMMY_PRIVATEKEY = '0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe';
+const DUMMY_SIGNER = web3.eth.accounts.wallet.add(DUMMY_PRIVATEKEY);
+
+async function deployMinimalProxy(_lsp3AccountInitInstance, _lsp3AccountInitAddress, _deployer) {
+    // give +3% more gas to ensure it deploys
+    let deploymentCost = parseInt(await _lsp3AccountInitInstance.new.estimateGas() * 1.03)
+    let proxyRuntimeCode = runtimeCodeTemplate.replace(
+        "bebebebebebebebebebebebebebebebebebebebe", 
+        _lsp3AccountInitAddress.substr(2)
+    )
+
+    let transaction = await web3.eth.sendTransaction({ 
+        from: _deployer, 
+        data: proxyRuntimeCode, 
+        gas: deploymentCost 
+    })
+
+    let proxyContract = await _lsp3AccountInitInstance.at(transaction.contractAddress)
+    return proxyContract
+}
 
 contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (accounts) => {
     
@@ -24,14 +57,8 @@ contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async 
 
     before(async() => {
         lsp3Account = await LSP3AccountInit.new()
-        
-        let proxyRuntimeCode = runtimeCodeTemplate.replace("bebebebebebebebebebebebebebebebebebebebe", lsp3Account.address.substr(2))
-        let transaction = await web3.eth.sendTransaction({
-            from: owner,
-            data: proxyRuntimeCode
-        })
-
-        minimalProxy = await LSP3AccountInit.at(transaction.contractAddress)
+        minimalProxy = await deployMinimalProxy(LSP3AccountInit, lsp3Account.address, owner)
+        await web3.eth.sendTransaction({ from: owner, to: DUMMY_SIGNER.address, value: web3.utils.toWei("10", "ether") })
     })
 
     context("> Accounts Deployment", async () => {
@@ -80,7 +107,7 @@ contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async 
         it("Should not allow to initialize twice", async () => {
             await truffleAssert.fails(
                 minimalProxy.initialize("0xcafecafecafecafecafecafecafecafecafecafe"),
-                truffleAssert.ErrorType.REVERT
+                "Contract instance has already been initialized"
             )
         })
 
@@ -98,21 +125,162 @@ contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async 
         })
     })
 
-    xcontext("> ERC165 (supported standards)", async () => {
+    context("> ERC165 (supported standards)", async () => {
+        it("Should support ERC165", async () => {
+            let result = await minimalProxy.supportsInterface.call(ERC165_INTERFACE_ID)
+            assert.isTrue(result, "does not support interface `ERC165`")
+        })
 
+        it("Should support ERC725X", async () => {
+            let result = await minimalProxy.supportsInterface.call(ERC725X_INTERFACE_ID)
+            assert.isTrue(result, "does not support interface `ERC725X`")    
+        })
+
+        it("Should support ERC725Y", async () => {
+            let result = await minimalProxy.supportsInterface.call(ERC725Y_INTERFACE_ID)
+            assert.isTrue(result, "does not support interface `ERC725Y`")    
+        })
+
+        it("Should support ERC1271", async () => {
+            let result = await minimalProxy.supportsInterface.call(ERC1271_INTERFACE_ID)
+            assert.isTrue(result, "does not support interface `ERC1271`")    
+        })
+
+        xit("Should support LSP1", async () => {
+            let result = await minimalProxy.supportsInterface.call(LSP1_INTERFACE_ID)
+            assert.isTrue(result, "does not support interface `LSP1`")    
+        })
     })
 
-    xcontext("> ERC1271 (signatures)", async () => {
+    context("> ERC1271 (signatures)", async () => {
 
+        it("Can verify signature from owner", async () => {
+            const proxy = await deployMinimalProxy(LSP3AccountInit, lsp3Account.address, DUMMY_SIGNER.address)
+            await proxy.initialize(DUMMY_SIGNER.address)
+            const dataToSign = '0xcafecafe';
+            const signature = DUMMY_SIGNER.sign(dataToSign)
+
+            const result = await proxy.isValidSignature.call(signature.messageHash, signature.signature)
+            assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid")
+        })
+
+        it("Should fail when verifying signature from not-owner", async () => {
+            const proxy = await deployMinimalProxy(LSP3AccountInit, lsp3Account.address, owner)
+            await proxy.initialize(owner)
+            const dataToSign = '0xcafecafe';
+            const signature = DUMMY_SIGNER.sign(dataToSign)
+
+            const result = await proxy.isValidSignature.call(signature.messageHash, signature.signature)
+            assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid");
+        })
     })
 
     xcontext("> Storages test", async () => {
+        
+    })
 
+    context("Interactions with Accounts contracts", async () => {
+        const newOwner = accounts[1]
+        let LSP3Proxy
+
+        beforeEach(async () => {
+            LSP3Proxy = await deployMinimalProxy(LSP3AccountInit, lsp3Account.address, owner)
+            await LSP3Proxy.initialize(owner)
+        })
+
+        it("Upgrade ownership correctly", async () => {
+            await LSP3Proxy.transferOwnership(newOwner, { from: owner })
+            const lsp3ProxyOwner = await LSP3Proxy.owner.call()
+            assert.equal(lsp3ProxyOwner, newOwner, "Address should match")
+        })
+
+        it("Refuse upgrades from non-onwer", async () => {
+            await truffleAssert.reverts(
+                LSP3Proxy.transferOwnership(newOwner, { from: newOwner, gas: 100000 }),
+            )
+        })
+
+        it("Owner can set data", async () => {
+            const key = web3.utils.asciiToHex("Important Data");
+            const value = web3.utils.asciiToHex("Important Data");
+
+            await LSP3Proxy.setData(key, value, { from: owner })
+
+            let fetchedValue = await LSP3Proxy.getData.call(key)
+            assert.equal(fetchedValue, value);
+        })
+
+        it("Fails when non-owner sets data", async () => {
+            const key = web3.utils.asciiToHex("Important Data");
+            const value = web3.utils.asciiToHex("Important Data");
+
+            await truffleAssert.reverts(
+                LSP3Proxy.setData(key, value, { from: newOwner })
+            )
+        })
+
+        it("Fails when non-owner sets data multiple", async () => {
+            const key = web3.utils.asciiToHex("Important Data");
+            const value = web3.utils.asciiToHex("Important Data");
+
+            await truffleAssert.reverts(
+                LSP3Proxy.setDataMultiple([key], [value], { from: newOwner })
+            )
+        })
+
+        it("Allows owner to execute calls", async () => {
+            const recipient = accounts[6];
+            const amount = ether("3");
+            const OPERATION_CALL = 0x0;
+
+            await web3.eth.sendTransaction({ from: owner, to: LSP3Proxy.address, value: amount })
+            
+            const recipientBalanceBefore = await web3.eth.getBalance(recipient);
+            await LSP3Proxy.execute(OPERATION_CALL, recipient, amount, "0x0", { from: owner })
+            const recipientBalanceAfter = await web3.eth.getBalance(recipient);
+
+            assert.isTrue(
+                new BN(recipientBalanceBefore).add(amount)
+                    .eq(new BN(recipientBalanceAfter))
+            )
+        })
+
+        it("Fails with non-owner executing", async () => {
+            const recipient = accounts[6];
+            const amount = ether("3");
+            const OPERATION_CALL = 0x0;
+
+            await web3.eth.sendTransaction({ from: owner, to: LSP3Proxy.address, value: amount })
+            
+            await truffleAssert.reverts(
+                LSP3Proxy.execute(OPERATION_CALL, recipient, amount, "0x0", { from: newOwner })
+            )
+        })
+
+        it("Allows owner to execute create", async () => {
+            const OPERATION_CREATE2 = 0x2
+            const bytecode = "0x608060405234801561001057600080fd5b506040516105f93803806105f98339818101604052602081101561003357600080fd5b810190808051906020019092919050505080600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050610564806100956000396000f3fe60806040526004361061003f5760003560e01c806344c028fe1461004157806354f6127f146100fb578063749ebfb81461014a5780638da5cb5b1461018f575b005b34801561004d57600080fd5b506100f96004803603608081101561006457600080fd5b8101908080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803590602001906401000000008111156100b557600080fd5b8201836020820111156100c757600080fd5b803590602001918460018302840111640100000000831117156100e957600080fd5b90919293919293905050506101e6565b005b34801561010757600080fd5b506101346004803603602081101561011e57600080fd5b81019080803590602001909291905050506103b7565b6040518082815260200191505060405180910390f35b34801561015657600080fd5b5061018d6004803603604081101561016d57600080fd5b8101908080359060200190929190803590602001909291905050506103d3565b005b34801561019b57600080fd5b506101a46104df565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146102a9576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f6f6e6c792d6f776e65722d616c6c6f776564000000000000000000000000000081525060200191505060405180910390fd5b600085141561030757610301848484848080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f82011690508083019250505050505050610505565b506103b0565b60018514156103aa57600061035f83838080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f8201169050808301925050505050505061051d565b90508073ffffffffffffffffffffffffffffffffffffffff167fcf78cf0d6f3d8371e1075c69c492ab4ec5d8cf23a1a239b6a51a1d00be7ca31260405160405180910390a2506103af565b600080fd5b5b5050505050565b6000806000838152602001908152602001600020549050919050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610496576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f6f6e6c792d6f776e65722d616c6c6f776564000000000000000000000000000081525060200191505060405180910390fd5b806000808481526020019081526020016000208190555080827f35553580e4553c909abeb5764e842ce1f93c45f9f614bde2a2ca5f5b7b7dc0fb60405160405180910390a35050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600080600083516020850186885af190509392505050565b60008151602083016000f0905091905056fea265627a7a723158207fb9c8d804ca4e17aec99dbd7aab0a61583b56ebcbcb7e05589f97043968644364736f6c634300051100320000000000000000000000009501234ef8368466383d698c7fe7bd5ded85b4f6"
+            const salt = "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe"
+            
+            const expectedAddress = calculateCreate2(LSP3Proxy.address, salt, bytecode)
+
+            // deploy with added 32 byte salt
+            let receipt = await LSP3Proxy.execute(
+                OPERATION_CREATE2,
+                '0x0000000000000000000000000000000000000000', // zero address
+                '0', // value
+                bytecode + salt.substr(2), // contract bytecode + 32 bytes salt
+                { from: owner }
+            )
+
+            assert.equal(receipt.logs[1].event, 'ContractCreated');
+            assert.equal(receipt.logs[1].args.contractAddress, expectedAddress);
+        })
     })
     
 })
 
-contract("> LSP3Account via EIP1167 Proxy + initializer (using Web3)", async (accounts) => {
+contract.skip("> LSP3Account via EIP1167 Proxy + initializer (using Web3)", async (accounts) => {
 
     let lsp3Account,
         minimalProxy
