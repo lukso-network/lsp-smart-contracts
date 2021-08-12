@@ -15,7 +15,7 @@ contract("ERC725 Account", async (accounts) => {
         erc725Account = await ERC725Account.new(owner, { from: owner })
     })
 
-    it("should add 100 LSP2IssuedAssets[]", async () => {
+    it("should add 100 LSP3IssuedAssets[]", async () => {
         for (let ii = 0; ii < 100; ii++) {
             let newAsset = web3.eth.accounts.create().address
             LSP2IssuedAssets.push(newAsset)
@@ -29,7 +29,7 @@ contract("ERC725 Account", async (accounts) => {
         )
     })
 
-    it("Add one more LSP2IssuedAssets[]", async () => {
+    it("Add one more LSP3IssuedAssets[]", async () => {
         let newAsset = web3.eth.accounts.create().address
         LSP2IssuedAssets.push(newAsset)
 

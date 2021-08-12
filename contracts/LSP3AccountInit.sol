@@ -62,8 +62,8 @@ contract LSP3AccountInit is ERC165Storage, ERC725AccountInit, ILSP1 {
     }
 
     function setDataMultiple(bytes32[] calldata _keys, bytes[] calldata _values)
-    public
-    onlyOwner
+        public
+        onlyOwner
     {
         for (uint256 i = 0; i < _keys.length; i++) {
             setData(_keys[i], _values[i]);
@@ -71,9 +71,9 @@ contract LSP3AccountInit is ERC165Storage, ERC725AccountInit, ILSP1 {
     }
 
     function getDataMultiple(bytes32[] calldata _keys)
-    public
-    view
-    returns(bytes[] memory)
+        public
+        view
+        returns(bytes[] memory)
     {
         uint256 length = _keys.length;
         bytes[] memory values = new bytes[](length);
@@ -98,9 +98,9 @@ contract LSP3AccountInit is ERC165Storage, ERC725AccountInit, ILSP1 {
 
 
     function setData(bytes32 _key, bytes calldata _value)
-    public
-    override
-    onlyOwner
+        public
+        override
+        onlyOwner
     {
         if(store[_key].length == 0) {
             dataKeys.push(_key); // 30k more gas on initial set
@@ -117,10 +117,10 @@ contract LSP3AccountInit is ERC165Storage, ERC725AccountInit, ILSP1 {
     * @param _data The data received
     */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
-    external
-    override
-    virtual
-    returns (bytes32 returnValue)
+        external
+        override
+        virtual
+        returns (bytes32 returnValue)
     {
         bytes memory receiverData = getData(_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         returnValue = "";

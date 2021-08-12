@@ -30,9 +30,9 @@ const ERC1271_FAIL_VALUE = '0xffffffff';
 const DUMMY_PRIVATEKEY = '0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe';
 const DUMMY_SIGNER = web3.eth.accounts.wallet.add(DUMMY_PRIVATEKEY);
 
-async function deployMinimalProxy(_lsp3AccountInitInstance, _lsp3AccountInitAddress, _deployer) {
+async function deployLSP3Proxy(_lsp3AccountInitArtifact, _lsp3AccountInitAddress, _deployer) {
     // give +3% more gas to ensure it deploys
-    let deploymentCost = parseInt(await _lsp3AccountInitInstance.new.estimateGas() * 1.03)
+    let deploymentCost = parseInt(await _lsp3AccountInitArtifact.new.estimateGas() * 1.03)
     let proxyRuntimeCode = runtimeCodeTemplate.replace(
         "bebebebebebebebebebebebebebebebebebebebe", 
         _lsp3AccountInitAddress.substr(2)
@@ -44,21 +44,34 @@ async function deployMinimalProxy(_lsp3AccountInitInstance, _lsp3AccountInitAddr
         gas: deploymentCost 
     })
 
-    let proxyContract = await _lsp3AccountInitInstance.at(transaction.contractAddress)
+    let proxyContract = await _lsp3AccountInitArtifact.at(transaction.contractAddress)
     return proxyContract
 }
 
-contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (accounts) => {
+contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (accounts) => {
     
     let lsp3Account,
-        minimalProxy
+        proxy
 
     const owner = accounts[0]
 
     before(async() => {
         lsp3Account = await LSP3AccountInit.new()
-        minimalProxy = await deployMinimalProxy(LSP3AccountInit, lsp3Account.address, owner)
+        proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, owner)
+        // fund with some money for testing `execute`
         await web3.eth.sendTransaction({ from: owner, to: DUMMY_SIGNER.address, value: web3.utils.toWei("10", "ether") })
+    })
+
+    it("Should replace `bebebebebebe...` with LSP3Account address", async () => {
+        let result = runtimeCodeTemplate.replace(
+            "bebebebebebebebebebebebebebebebebebebebe",
+            lsp3Account.address
+        )
+
+        assert.equal(
+            result,
+            "0x3d602d80600a3d3981f3363d3d373d3d3d363d73" + lsp3Account.address + "5af43d82803e903d91602b57fd5bf3"
+        )
     })
 
     context("> Accounts Deployment", async () => {
@@ -96,58 +109,46 @@ contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async 
         })
 
         it("Should call the `initialize(...)` function and return the right owner", async () => {
-            let currentOwner = await minimalProxy.owner.call()
+            let currentOwner = await proxy.owner.call()
             // `initialize` function as constructor
-            await minimalProxy.initialize(owner)
-            let newOwner = await minimalProxy.owner.call()
+            await proxy.initialize(owner)
+            let newOwner = await proxy.owner.call()
             assert.notEqual(newOwner, currentOwner, "Contract owner has not changed")
             assert.equal(newOwner, owner, "Contract owner should be `accounts[0]`")
         })
 
         it("Should not allow to initialize twice", async () => {
             await truffleAssert.fails(
-                minimalProxy.initialize("0xcafecafecafecafecafecafecafecafecafecafe"),
-                "Contract instance has already been initialized"
+                proxy.initialize("0xcafecafecafecafecafecafecafecafecafecafe"),
+                "Initializable: contract is already initialized"
             )
         })
 
-        it("Should `setData` in Key-Value store via proxy", async () => {
-            let key = "0xcafe"
-            let value = "0xbeef"
-
-            let initialValue = await minimalProxy.getData(key)
-            assert.isNull(initialValue, "there should be no value initially set for key '0xcafe'")
-
-            await minimalProxy.setData(key, value)
-
-            let result = await minimalProxy.getData(key)
-            assert.equal(result, value, "not the same value in storage for key '0xcafe'")
-        })
     })
 
     context("> ERC165 (supported standards)", async () => {
         it("Should support ERC165", async () => {
-            let result = await minimalProxy.supportsInterface.call(ERC165_INTERFACE_ID)
+            let result = await proxy.supportsInterface.call(ERC165_INTERFACE_ID)
             assert.isTrue(result, "does not support interface `ERC165`")
         })
 
         it("Should support ERC725X", async () => {
-            let result = await minimalProxy.supportsInterface.call(ERC725X_INTERFACE_ID)
+            let result = await proxy.supportsInterface.call(ERC725X_INTERFACE_ID)
             assert.isTrue(result, "does not support interface `ERC725X`")    
         })
 
         it("Should support ERC725Y", async () => {
-            let result = await minimalProxy.supportsInterface.call(ERC725Y_INTERFACE_ID)
+            let result = await proxy.supportsInterface.call(ERC725Y_INTERFACE_ID)
             assert.isTrue(result, "does not support interface `ERC725Y`")    
         })
 
         it("Should support ERC1271", async () => {
-            let result = await minimalProxy.supportsInterface.call(ERC1271_INTERFACE_ID)
+            let result = await proxy.supportsInterface.call(ERC1271_INTERFACE_ID)
             assert.isTrue(result, "does not support interface `ERC1271`")    
         })
 
         xit("Should support LSP1", async () => {
-            let result = await minimalProxy.supportsInterface.call(LSP1_INTERFACE_ID)
+            let result = await proxy.supportsInterface.call(LSP1_INTERFACE_ID)
             assert.isTrue(result, "does not support interface `LSP1`")    
         })
     })
@@ -155,7 +156,7 @@ contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async 
     context("> ERC1271 (signatures)", async () => {
 
         it("Can verify signature from owner", async () => {
-            const proxy = await deployMinimalProxy(LSP3AccountInit, lsp3Account.address, DUMMY_SIGNER.address)
+            const proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, DUMMY_SIGNER.address)
             await proxy.initialize(DUMMY_SIGNER.address)
             const dataToSign = '0xcafecafe';
             const signature = DUMMY_SIGNER.sign(dataToSign)
@@ -165,26 +166,136 @@ contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async 
         })
 
         it("Should fail when verifying signature from not-owner", async () => {
-            const proxy = await deployMinimalProxy(LSP3AccountInit, lsp3Account.address, owner)
+            const proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, owner)
             await proxy.initialize(owner)
-            const dataToSign = '0xcafecafe';
+            const dataToSign = '0xcafecafe'
             const signature = DUMMY_SIGNER.sign(dataToSign)
 
             const result = await proxy.isValidSignature.call(signature.messageHash, signature.signature)
-            assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid");
+            assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid")
         })
     })
 
-    xcontext("> Storages test", async () => {
+    context("> Testing storage", async () => {
         
+        let count = 1000000000;
+
+        it("Should `setData` in Key-Value store via proxy (item 1)", async () => {
+            let key = "0xcafe"
+            let value = "0xbeef"
+
+            let initialValue = await proxy.getData(key)
+            assert.isNull(initialValue, "there should be no value initially set for key '0xcafe'")
+
+            await proxy.setData(key, value)
+
+            let result = await proxy.getData(key)
+            assert.equal(result, value, "not the same value in storage for key '0xcafe'")
+        })
+        
+        it("Store 32 bytes item 2", async () => {
+            let key = web3.utils.numberToHex(count++)
+            let value = web3.utils.numberToHex(count++)
+            await proxy.setData(key, value, { from: owner })
+
+            assert.equal(await proxy.getData(key), value)
+        })
+
+        it("Store 32 bytes item 3", async () => {
+            let key = web3.utils.numberToHex(count++)
+            let value = web3.utils.numberToHex(count++)
+            await proxy.setData(key, value, { from: owner })
+
+            assert.equal(await proxy.getData(key), value)
+        })
+
+        it("Store 32 bytes item 4", async () => {
+            let key = web3.utils.numberToHex(count++)
+            let value = web3.utils.numberToHex(count++)
+            await proxy.setData(key, value, { from: owner })
+
+            assert.equal(await proxy.getData(key), value)
+        })
+
+        it("Store 32 bytes item 5", async () => {
+            let key = web3.utils.numberToHex(count++)
+            let value = web3.utils.numberToHex(count++)
+            await proxy.setData(key, value, { from: owner })
+
+            assert.equal(await proxy.getData(key), value)
+        })
+
+        it("Store a long URL as bytes item 6", async () => {
+            let url = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD'
+            let key = web3.utils.numberToHex(count++)
+            let value = web3.utils.utf8ToHex(url)
+            await proxy.setData(key, value, { from: owner })
+
+            assert.equal(await proxy.getData(key), value)
+        })
+
+        it("Store 32 bytes item 7", async () => {
+            let key = web3.utils.numberToHex(count)
+            let value = web3.utils.numberToHex(count)
+            await proxy.setData(key, value, { from: owner })
+
+            assert.equal(await proxy.getData(key), value)
+        })
+
+        it("dataCount should be 8", async () => {
+            // 8 because the ERC725Type is already set by the ERC725Account implementation
+            assert.equal(await proxy.dataCount(), 8);
+        })
+
+        it("Update 32 bytes item 7", async () => {
+            let key = web3.utils.numberToHex(count)
+            let value = web3.utils.numberToHex(count)
+            await proxy.setData(key, value, { from: owner })
+
+            assert.equal(await proxy.getData(key), value)
+        })
+
+        it("dataCount should remain 8 (after updating item 7)", async () => {
+            assert.equal(await proxy.dataCount(), 8)
+
+            let keys = await proxy.allDataKeys()
+            assert.equal(keys.length, 8)
+
+            // console.log('Stored keys', keys)
+        })
+
+        it("Store multiple 32 bytes item 9-11", async () => {
+            let keys = [];
+            let values = [];
+            // increase
+            count++
+            for (let i = 9; i <= 11; i++) {
+                keys.push(web3.utils.numberToHex(count++))
+                values.push(web3.utils.numberToHex(count + 1000))
+            }
+            await proxy.setDataMultiple(keys, values, { from: owner })
+            // console.log(await proxy.getDataMultiple(keys))
+            assert.deepEqual(await proxy.getDataMultiple(keys), values)
+        })
+
+        it("dataCount should be 11", async () => {
+            assert.equal(await proxy.dataCount(), 11)
+
+            let keys = await proxy.allDataKeys()
+            assert.equal(keys.length, 11)
+
+            // console.log('Stored keys', keys)
+        })
+
+
     })
 
-    context("Interactions with Accounts contracts", async () => {
+    context("> Interactions with Accounts contracts", async () => {
         const newOwner = accounts[1]
         let LSP3Proxy
 
         beforeEach(async () => {
-            LSP3Proxy = await deployMinimalProxy(LSP3AccountInit, lsp3Account.address, owner)
+            LSP3Proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, owner)
             await LSP3Proxy.initialize(owner)
         })
 
@@ -277,10 +388,41 @@ contract("> LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async 
             assert.equal(receipt.logs[1].args.contractAddress, expectedAddress);
         })
     })
+
+    context.skip( "> Universal Receiver", async () => {
+        
+        it("Call account and check for 'UniversalReceiver' event", async () => {
+            
+        })
+
+        it("Call account and check for 'ReceivedERC777' event in external account", async () => {
+
+        })
+
+        it("Mint ERC777 and LSP4 to LSP3 account", async () => {
+
+        })
+
+        it("Transfer ERC777 and LSP4 to LSP3 account", async () => {
+
+        })
+
+        it("Mint ERC777 and LSP4 to LSP3 account and delegate to UniversalReceiverAddressStore", async () => {
+
+        })
+
+        it("Transfer ERC777 and LSP4 from LSP3 account with delegate to UniversalReceiverAddressStore", async () => {
+
+        })
+
+        it("Transfer from ERC777 and LSP4 to account and delegate to UniversalReceiverAddressStore", async () => {
+
+        })
+    })
     
 })
 
-contract.skip("> LSP3Account via EIP1167 Proxy + initializer (using Web3)", async (accounts) => {
+contract("> LSP3Account via EIP1167 Proxy + initializer (using Web3)", async (accounts) => {
 
     let lsp3Account,
         minimalProxy
@@ -303,87 +445,10 @@ contract.skip("> LSP3Account via EIP1167 Proxy + initializer (using Web3)", asyn
     })
 
     it("Should initialize via Web3", async () => {
-        console.log(minimalProxy.handleRevert)
         let gasCost = await minimalProxy.methods.initialize(owner).estimateGas({ from: owner })
         console.log("gasCost: ", gasCost)
         await minimalProxy.methods.initialize(owner).send({ from: owner, gas: 260_000 })
         let result = await minimalProxy.methods.owner().call()
         console.log("result: ", result)
     })
-})
-
-contract.skip("EIP1167 Proxy Contract", async (accounts) => {
-    
-    let erc725Account,
-        minimalProxy
-
-    let oldERC725Address
-
-    const owner = accounts[0]
-
-    before(async () => {
-        erc725Account = await ERC725Account.new(owner, { from: owner })
-        // oldERC725Address = erc725Account.address
-
-        let dataABI = runtimeCodeTemplate.replace(
-            "bebebebebebebebebebebebebebebebebebebebe",
-            erc725Account.address.substr(2)
-        )
-
-        console.log(dataABI)
-        console.log(erc725Account.address)
-        
-        let tx = await web3.eth.sendTransaction({
-            from: owner,
-            data: dataABI
-        })
-
-        minimalProxy = tx.contractAddress
-    })
-
-    it("Should replace `bebe...` with erc725 account address", async () => {
-        let result = runtimeCodeTemplate.replace(
-            "bebebebebebebebebebebebebebebebebebebebe",
-            erc725Account.address
-        )
-
-        assert.equal(
-            result,
-            "0x3d602d80600a3d3981f3363d3d373d3d3d363d73" + erc725Account.address + "5af43d82803e903d91602b57fd5bf3"
-        )
-    })
-
-    it("Should have deployed the minimal proxy", async () => {
-        console.log("minimalProxy: ", minimalProxy)
-    })
-
-    xit("Should interact via minimal proxy", async () => {
-        erc725AccountInit.contract.options.address = minimalProxy
-        erc725AccountInit.contract._address = minimalProxy
-        erc725AccountInit.address = minimalProxy
-        await erc725AccountInit.setData('0xcafe', '0xbeef')
-
-        let result = await erc725AccountInit.getData.call('0xcafe')
-        console.log("result: ", result)
-        assert.equal(result, '0xbeef')
-    })
-
-    xit("Should work", async () => {
-        erc725AccountInit.contract.options.address = oldERC725Address
-        erc725AccountInit.contract._address = oldERC725Address
-        erc725AccountInit.address = oldERC725Address
-        let result = await erc725AccountInit.getData.call('0xcafe')
-        console.log("result: ", result)
-    })
-
-    it("Should interact with erc725 via minimalProxy", async () => {
-        let myProxy = new web3.eth.Contract(ERC725Account.abi, minimalProxy)
-        // call init function
-        await myProxy.methods.setData('0xcafe', '0xbeef').send({ from: owner })
-
-        let result = await myProxy.methods.getData('0xcafe').call()
-        console.log("result: ", result)
-        assert.equal(result, '0xbeef')
-    })
-
 })
