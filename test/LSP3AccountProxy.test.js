@@ -30,25 +30,25 @@ const ERC1271_FAIL_VALUE = '0xffffffff';
 const DUMMY_PRIVATEKEY = '0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe';
 const DUMMY_SIGNER = web3.eth.accounts.wallet.add(DUMMY_PRIVATEKEY);
 
-async function deployLSP3Proxy(_lsp3AccountInitArtifact, _lsp3AccountInitAddress, _deployer) {
-    // give +3% more gas to ensure it deploys
-    let deploymentCost = parseInt(await _lsp3AccountInitArtifact.new.estimateGas() * 1.03)
-    let proxyRuntimeCode = runtimeCodeTemplate.replace(
-        "bebebebebebebebebebebebebebebebebebebebe", 
-        _lsp3AccountInitAddress.substr(2)
-    )
-
-    let transaction = await web3.eth.sendTransaction({ 
-        from: _deployer, 
-        data: proxyRuntimeCode, 
-        gas: deploymentCost 
-    })
-
-    let proxyContract = await _lsp3AccountInitArtifact.at(transaction.contractAddress)
-    return proxyContract
-}
-
 contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (accounts) => {
+
+    const deployLSP3Proxy = async (_lsp3AccountInitJSONInterface, _lsp3AccountInitAddress, _deployer) => {
+        // give +3% more gas to ensure it deploys
+        let deploymentCost = parseInt(await _lsp3AccountInitJSONInterface.new.estimateGas() * 1.03)
+        let proxyRuntimeCode = runtimeCodeTemplate.replace(
+            "bebebebebebebebebebebebebebebebebebebebe", 
+            _lsp3AccountInitAddress.substr(2)
+        )
+    
+        let transaction = await web3.eth.sendTransaction({ 
+            from: _deployer, 
+            data: proxyRuntimeCode, 
+            gas: deploymentCost 
+        })
+    
+        let proxyContract = await _lsp3AccountInitJSONInterface.at(transaction.contractAddress)
+        return proxyContract
+    }
     
     let lsp3Account,
         proxy
@@ -389,7 +389,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
         })
     })
 
-    context.skip( "> Universal Receiver", async () => {
+    context.skip("> Universal Receiver", async () => {
         
         it("Call account and check for 'UniversalReceiver' event", async () => {
             
@@ -422,12 +422,34 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
     
 })
 
-contract("> LSP3Account via EIP1167 Proxy + initializer (using Web3)", async (accounts) => {
+contract.only("> LSP3Account via EIP1167 Proxy + initializer (using Web3)", async (accounts) => {
 
-    let lsp3Account,
-        minimalProxy
+    const deployLSP3Proxy = async (_lsp3AccountInitJSONInterface, _lsp3AccountInitAddress, _deployer) => {
+        let lsp3LogicAccount = new web3.eth.Contract(_lsp3AccountInitJSONInterface.abi)
+        let expectedDeploymentCost = await lsp3LogicAccount.deploy({ data: _lsp3AccountInitJSONInterface.bytecode }).estimateGas({ from: owner })
+        // give +3% more gas to ensure it deploys
+        let deploymentCost = parseInt(expectedDeploymentCost * 1.03)
+        let proxyRuntimeCode = runtimeCodeTemplate.replace(
+            "bebebebebebebebebebebebebebebebebebebebe", 
+            _lsp3AccountInitAddress.substr(2)
+        )
+    
+        let transaction = await web3.eth.sendTransaction({ 
+            from: _deployer, 
+            data: proxyRuntimeCode, 
+            gas: deploymentCost 
+        })
+    
+        let proxyContract = await new web3.eth.Contract(_lsp3AccountInitJSONInterface.abi, transaction.contractAddress)
+        return proxyContract
+    }
 
     const owner = accounts[0]
+    // when doing .send() on proxy, always add this amount to .estimateGas() to make sure it goes through
+    const extraSafetyGas = 10_000   
+    
+    let lsp3Account,
+        proxy
 
     before(async() => {
         lsp3Account = await LSP3AccountInit.new()
@@ -438,17 +460,166 @@ contract("> LSP3Account via EIP1167 Proxy + initializer (using Web3)", async (ac
             data: proxyRuntimeCode
         })
 
-        minimalProxy = await new web3.eth.Contract(LSP3AccountInit.abi, transaction.contractAddress)
-
-        // enable to return error reason string
-        minimalProxy.handleRevert = true
+        proxy = await new web3.eth.Contract(LSP3AccountInit.abi, transaction.contractAddress)
+        // fund with some money for testing `execute`
+        await web3.eth.sendTransaction({ from: owner, to: DUMMY_SIGNER.address, value: web3.utils.toWei("10", "ether") })
+        // enable return error reason string
+        proxy.handleRevert = true
     })
 
-    it("Should initialize via Web3", async () => {
-        let gasCost = await minimalProxy.methods.initialize(owner).estimateGas({ from: owner })
-        console.log("gasCost: ", gasCost)
-        await minimalProxy.methods.initialize(owner).send({ from: owner, gas: 260_000 })
-        let result = await minimalProxy.methods.owner().call()
-        console.log("result: ", result)
+    context("> Account deployment", async () => {
+        
+        it("Should be cheaper to deploy via proxy", async () => {
+                // Deploying whole LSP3 Account (not using `initialize` function)
+                let newLSP3Account = new web3.eth.Contract(LSP3Account.abi)
+                let lsp3DeploymentCost = await newLSP3Account.deploy({ data: LSP3Account.bytecode, arguments: [owner] }).estimateGas({ from: owner })
+
+                // Deploying via Proxy
+
+                // 1) deploy logic contract
+                let lsp3LogicAccount = new web3.eth.Contract(LSP3AccountInit.abi)
+                let expectedDeploymentCost = await lsp3LogicAccount.deploy({ data: LSP3AccountInit.bytecode }).estimateGas({ from: owner })
+                let lsp3LogicAccountAddress = await lsp3LogicAccount.deploy({ data: LSP3AccountInit.bytecode })
+                    // .estimateGas({ from: owner })
+                    .send({ from: owner, gas: expectedDeploymentCost + extraSafetyGas })
+                    .then(instance => instance.options.address)
+
+                // 2) setup proxy contract code + deploy
+                let proxyRuntimeCode = runtimeCodeTemplate.replace(
+                    "bebebebebebebebebebebebebebebebebebebebe", 
+                    lsp3LogicAccountAddress.substr(2)
+                )
+                let transaction = await web3.eth.sendTransaction({ 
+                    // do not specify `to`, so it defaults to zero address
+                    from: owner, 
+                    data: proxyRuntimeCode 
+                })
+                
+                // 3) initialize contract (alternative to constructors)
+                let proxy = new web3.eth.Contract(LSP3AccountInit.abi, transaction.contractAddress)
+                let proxyDeploymentCost = transaction.gasUsed
+                let initializeGasCost = await proxy.methods.initialize(owner).estimateGas() 
+                let totalProxyCost = proxyDeploymentCost + initializeGasCost
+                console.log("totalProxyCost: ", totalProxyCost)
+
+                assert.isBelow(totalProxyCost, lsp3DeploymentCost, "Deploying via proxy not cheaper in gas")
+
+                console.log("LSP3Account deployment cost: ", lsp3DeploymentCost, "\n")
+
+                console.log("proxy deployment cost: ", proxyDeploymentCost)
+                console.log("initialize gas cost: ", initializeGasCost)
+                console.log("--------------------------------------------------")
+                console.log("total: ", totalProxyCost)
+                console.log("\n > Gas saved = ", lsp3DeploymentCost - totalProxyCost, "(", parseInt(((totalProxyCost * 100) / lsp3DeploymentCost) - 100), "%)")
+                console.log(`\n NB: logic contract \`LSP3AccountInit\` deployment cost: `,
+                    await lsp3LogicAccount.deploy({ data: LSP3AccountInit.bytecode })
+                        .estimateGas({ from: owner })
+                    , " (only once)"
+                )
+        })                
+        
+        it("Should call the `initialize(...)` function and return the right owner", async () => {
+            let currentOwner = await proxy.methods.owner().call()
+
+            // `initialize` function as constructor
+            let expectedGas = await proxy.methods.initialize(owner).estimateGas({ from: owner })
+            await proxy.methods.initialize(owner).send({ from: owner, gas: expectedGas + extraSafetyGas })
+            let newOwner = await proxy.methods.owner().call()
+
+            assert.notEqual(newOwner, currentOwner, "Contract owner has not changed")
+            assert.equal(newOwner, owner, "Contract owner should be `accounts[0]`")
+        })            
+        
+        xit("Should not allow to initialize twice", async () => {
+            let newOwner = "0xcafecafecafecafecafecafecafecafecafecafe"
+            let expectedGas = await proxy.methods.initialize(newOwner).estimateGas({ from: owner })
+
+            // let result = await proxy.methods.initialize(newOwner).send({ from: owner, gas: expectedGas + extraSafetyGas })
+            // await truffleAssert.fails(
+            //     proxy.methods.initialize(newOwner).send({ from: owner, gas: expectedGas + extraSafetyGas })
+            // )
+            // to test revert with web3, try that: 
+            expect(
+                await proxy.methods.initialize(newOwner).send({ from: owner, gas: expectedGas + extraSafetyGas })
+            ).to.throw(
+                new Error("Error: Returned error: VM Exception while processing transaction: revert Initializable: contract is already initialized")
+            )
+        })                
+
+        // test that account owner can transferOwnership, so
+        // 1) transferOwnership call from owner should pass
+        // 2) transferOwnership call from non-owner should fail
+    
     })
+
+    context("> ERC165 (supported standards)", async () => {
+
+        it("Should support ERC165", async () => {
+            let result = await proxy.methods.supportsInterface(ERC165_INTERFACE_ID).call()
+            assert.isTrue(result, "does not support interface `ERC165`")
+        })
+
+        it("Should support ERC725X", async () => {
+            let result = await proxy.methods.supportsInterface(ERC725X_INTERFACE_ID).call()
+            assert.isTrue(result, "does not support interface `ERC725X`")
+        })
+
+        it("Should support ERC725Y", async () => {
+            let result = await proxy.methods.supportsInterface(ERC725Y_INTERFACE_ID).call()
+            assert.isTrue(result, "does not support interface `ERC725Y`")
+        })
+
+        it("Should support ERC1271", async () => {
+            let result = await proxy.methods.supportsInterface(ERC1271_INTERFACE_ID).call()
+            assert.isTrue(result, "does not support interface `ERC1271`")
+        })
+
+        xit("Should support LSP1", async () => {
+            let result = await proxy.methods.supportsInterface(LSP1_INTERFACE_ID).call()
+            assert.isTrue(result, "does not support interface `LSP1`")
+        })
+
+    })
+
+    context("> ERC1271 (signature)", async () => {
+        
+        it("Can verify signature from owner", async () => {
+            const proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, DUMMY_SIGNER.address)
+
+            let executionCost = await proxy.methods.initialize(owner).estimateGas({ from: DUMMY_SIGNER.address })
+            await proxy.methods.initialize(DUMMY_SIGNER.address).send({ from: DUMMY_SIGNER.address, gas: executionCost + extraSafetyGas })
+            const dataToSign = '0xcafecafe';
+            const signature = DUMMY_SIGNER.sign(dataToSign)
+
+            const result = await proxy.methods.isValidSignature(signature.messageHash, signature.signature).call()
+            assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid")
+        })
+        
+        it("Should fail when verifying signature from not-owner", async () => {
+            const proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, owner)
+
+            let executionCost = await proxy.methods.initialize(owner).estimateGas({ from: DUMMY_SIGNER.address })
+            await proxy.methods.initialize(owner).send({ from: DUMMY_SIGNER.address, gas: executionCost + extraSafetyGas })
+            const dataToSign = '0xcafecafe'
+            const signature = DUMMY_SIGNER.sign(dataToSign)
+
+            const result = await proxy.methods.isValidSignature(signature.messageHash, signature.signature).call()
+            assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid")
+        })
+    })
+
+    context.skip("> Testing storage", async () => {
+
+    })
+
+    context.skip("> Interactions with Accounts contracts", async () => {
+        
+    })
+
+    context.skip("> Universal Receiver", async () => {
+        
+    })  
+
+
+
 })
