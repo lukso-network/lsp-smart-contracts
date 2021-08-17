@@ -108,7 +108,7 @@ contract KeyManager is ERC165, IERC1271 {
     }
 
     /**
-    * @dev allows anybody to execute given they have a signed messaged from an executor
+    * @dev allows anybody to execute given they have a signed message from an executor
     * @param _data obtained via encodeABI() in web3
     * @param _signedFor this KeyManager
     * @param _nonce the address' nonce, obtained via `getNonce(...)`. Used to prevent replay attack

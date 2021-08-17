@@ -73,7 +73,7 @@ let transferOwnershipSignature = web3.eth.abi.encodeFunctionSignature(transferOw
 // 0x0000000000000000000000000000000000000000000000000000000000000001   -> bytes array length
 // 0x0400000000000000000000000000000000000000000000000000000000000000   -> bytes array itself
 let setDataPayload = ERC725.methods.setData("0x4b80742d0000000082ac0000cafecafecafecafecafecafecafecafecafecafe", "0x04").encodeABI()
-// console.log("setData payload: ", setDataPayload)
+console.log("setData payload: ", setDataPayload)
 
 // 0x44c028fe                                                         -> selector (execute)
 // 0x0000000000000000000000000000000000000000000000000000000000000001 -> arg 1 (_operation)
@@ -106,6 +106,6 @@ const deployerContract = '0x0a481e47Fcf329d0CafDd74A46f54f21eeDF5d68'
 // console.log(calculateCreate2(deployerContract, '', someByteCode))
 
 let newAccount = web3.eth.accounts.create()
-let executeRelayedCallPayload = KeyManager.methods.executeRelayedCall()
+// let executeRelayedCallPayload = KeyManager.methods.executeRelayedCall()
 // 0x44c028fe
 // 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c00ffeebeefbeefbeefbeefbeefbebeefc00ffee0000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004aabbccdd00000000000000000000000000000000000000000000000000000000
