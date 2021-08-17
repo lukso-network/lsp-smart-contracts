@@ -1,6 +1,6 @@
 {
   "name": "universalprofile-smart-contracts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The reference implementation for universal profiles smart contracts",
   "main": "truffle-config.js",
   "directories": {
