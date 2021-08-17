@@ -7,8 +7,9 @@ import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 // modules
 import "../Registries/AddressRegistry.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressRegistry {
+contract UniversalReceiverAddressStoreInit is Initializable, ERC165Storage, ILSP1Delegate, AddressRegistry {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     bytes4 _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
@@ -18,12 +19,10 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
 
     address public account;
 
-    constructor(address _account) {
+    function initialize(address _account) public initializer {
         account = _account;
-
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
-
 
     function addAddress(address _address)
         public

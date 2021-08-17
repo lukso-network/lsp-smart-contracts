@@ -16,7 +16,6 @@ import "./_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 import { ERC725AccountInit } from "../submodules/ERC725/implementations/contracts/ERC725/ERC725AccountInit.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
-// import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 contract LSP3AccountInit is ERC165Storage, ERC725AccountInit, ILSP1 {
 
