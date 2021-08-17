@@ -80,7 +80,8 @@ module.exports = {
     reporter: "eth-gas-reporter",
     reporterOptions : {
       currency: 'USD'
-    }
+    },
+    spec: "test/*.test.js"
   },
 
   // Configure your compilers

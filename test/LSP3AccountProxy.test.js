@@ -90,7 +90,6 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
 
     context("> Accounts Deployment", async () => {
         
-        // test that it cost less gas to deploy via proxy than the whole contract
         it("Should be cheaper to deploy via proxy", async () => {
             // Deploying whole LSP3 Account (not using `initialize` function)
             let lsp3DeploymentCost = await LSP3Account.new.estimateGas(owner)
