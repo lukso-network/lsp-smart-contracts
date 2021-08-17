@@ -105,5 +105,4 @@ dist
 # TernJS port file
 .tern-port
 
-# Smart Contracts ABIs
-build/
+build
