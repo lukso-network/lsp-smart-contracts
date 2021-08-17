@@ -1,6 +1,9 @@
 # universalprofile-smart-contracts
 The reference implementation for universal profiles smart contracts.
 
+| :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
+| :-------: | :----------------------------------------------------------------------------------------------------------------- |
+
 ## Installation
 
 ```bash
