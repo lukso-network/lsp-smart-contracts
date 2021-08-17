@@ -161,7 +161,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
             assert.isTrue(result, "does not support interface `ERC1271`")    
         })
 
-        it("Should support LSP1", async () => {
+        xit("Should support LSP1", async () => {
             let result = await proxy.supportsInterface.call(LSP1_INTERFACE_ID)
             assert.isTrue(result, "does not support interface `LSP1`")    
         })
@@ -436,7 +436,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
         0x2a504B5e7eC284ACa5b6f49716611237239F0b97
         0x2EcA6FCFef74E2c8D03fBAf0ff6712314c9BD58B
 
-        it("Call account and check for 'ReceivedERC777' event in external account", async () => {
+        xit("Call account and check for 'ReceivedERC777' event in external account", async () => {
             let newLSP3Account = await LSP3AccountInit.new()
             let newProxy = await deployLSP3Proxy(LSP3AccountInit, newLSP3Account.address, owner)
             newProxy.initialize(owner)
