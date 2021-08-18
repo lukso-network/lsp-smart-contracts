@@ -3,6 +3,7 @@ const { web3 } = require("openzeppelin-test-helpers/src/setup")
 const { BN, ether } = require("@openzeppelin/test-helpers")
 const truffleAssert = require('truffle-assertions')
 const { calculateCreate2 } = require('eth-create2-calculator')
+const { deployProxy, runtimeCodeTemplate } = require('./utils/proxy')
 
 const LSP3Account = artifacts.require("LSP3Account")
 const LSP3AccountInit = artifacts.require("LSP3AccountInit")
@@ -14,14 +15,6 @@ const ERC777UniversalReceiver = artifacts.require("ERC777UniversalReceiver")
 // Helper artifacts
 const UniversalReceiverTester = artifacts.require("UniversalReceiverTester")
 const ExternalERC777UniversalReceiverTester = artifacts.require("ExternalERC777UniversalReceiverTester")
-
-/**
- * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
- *                      10 x hex Opcodes to copy runtime code 
- *                           into memory and return it
- *                             |                  |
- *///                          V                  V
-const runtimeCodeTemplate = "0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3"
 
 // Interfaces IDs
 const ERC165_INTERFACE_ID = "0x01ffc9a7"
@@ -45,24 +38,6 @@ const UNIVERSALRECEIVER_KEY = '0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc07
 const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b"
 
 contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (accounts) => {
-
-    const deployLSP3Proxy = async (_lsp3AccountInitJSONInterface, _lsp3AccountInitAddress, _deployer) => {
-        // give +3% more gas to ensure it deploys
-        let deploymentCost = parseInt(await _lsp3AccountInitJSONInterface.new.estimateGas() * 1.03)
-        let proxyRuntimeCode = runtimeCodeTemplate.replace(
-            "bebebebebebebebebebebebebebebebebebebebe", 
-            _lsp3AccountInitAddress.substr(2)
-        )
-    
-        let transaction = await web3.eth.sendTransaction({ 
-            from: _deployer, 
-            data: proxyRuntimeCode, 
-            gas: deploymentCost 
-        })
-    
-        let proxyContract = await _lsp3AccountInitJSONInterface.at(transaction.contractAddress)
-        return proxyContract
-    }
     
     let lsp3Account,
         proxy
@@ -71,7 +46,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
 
     before(async() => {
         lsp3Account = await LSP3AccountInit.new()
-        proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, owner)
+        proxy = await deployProxy(LSP3AccountInit, lsp3Account.address, owner)
         // fund with some money for testing `execute`
         await web3.eth.sendTransaction({ from: owner, to: DUMMY_SIGNER.address, value: web3.utils.toWei("10", "ether") })
     })
@@ -139,7 +114,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
 
     })
 
-    xcontext("> ERC165 (supported standards)", async () => {
+    context("> ERC165 (supported standards)", async () => {
         it("Should support ERC165", async () => {
             let result = await proxy.supportsInterface.call(ERC165_INTERFACE_ID)
             assert.isTrue(result, "does not support interface `ERC165`")
@@ -166,10 +141,10 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
         })
     })
 
-    xcontext("> ERC1271 (signatures)", async () => {
+    context("> ERC1271 (signatures)", async () => {
 
         it("Can verify signature from owner", async () => {
-            const proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, DUMMY_SIGNER.address)
+            const proxy = await deployProxy(LSP3AccountInit, lsp3Account.address, DUMMY_SIGNER.address)
             await proxy.initialize(DUMMY_SIGNER.address)
             const dataToSign = '0xcafecafe';
             const signature = DUMMY_SIGNER.sign(dataToSign)
@@ -179,7 +154,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
         })
 
         it("Should fail when verifying signature from not-owner", async () => {
-            const proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, owner)
+            const proxy = await deployProxy(LSP3AccountInit, lsp3Account.address, owner)
             await proxy.initialize(owner)
             const dataToSign = '0xcafecafe'
             const signature = DUMMY_SIGNER.sign(dataToSign)
@@ -189,7 +164,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
         })
     })
 
-    xcontext("> Testing storage", async () => {
+    context("> Testing storage", async () => {
         
         let count = 1000000000;
 
@@ -303,12 +278,12 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
 
     })
 
-    xcontext("> Interactions with Accounts contracts", async () => {
+    context("> Interactions with Accounts contracts", async () => {
         const newOwner = accounts[1]
         let LSP3Proxy
 
         beforeEach(async () => {
-            LSP3Proxy = await deployLSP3Proxy(LSP3AccountInit, lsp3Account.address, owner)
+            LSP3Proxy = await deployProxy(LSP3AccountInit, lsp3Account.address, owner)
             await LSP3Proxy.initialize(owner)
         })
 
@@ -402,7 +377,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
         })
     })
 
-    context("> Universal Receiver", async () => {
+    context.skip("> Universal Receiver", async () => {
 
         let checker
 
@@ -412,7 +387,7 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
 
         it("Call account and check for 'UniversalReceiver' event", async () => {  
             let newLSP3Account = await LSP3AccountInit.new()
-            let newProxy = await deployLSP3Proxy(LSP3AccountInit, newLSP3Account.address, owner)
+            let newProxy = await deployProxy(LSP3AccountInit, newLSP3Account.address, owner)
             newProxy.initialize(owner)
 
             let receipt = await checker.callImplementationAndReturn(
@@ -432,12 +407,9 @@ contract("LSP3Account via EIP1167 Proxy + initializer (using Truffle)", async (a
             assert.equal(receipt.receipt.rawLogs[0].data, '0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000');
         })
 
-        0x2a504B5e7eC284ACa5b6f49716611237239F0b97
-        0x2EcA6FCFef74E2c8D03fBAf0ff6712314c9BD58B
-
         xit("Call account and check for 'ReceivedERC777' event in external account", async () => {
             let newLSP3Account = await LSP3AccountInit.new()
-            let newProxy = await deployLSP3Proxy(LSP3AccountInit, newLSP3Account.address, owner)
+            let newProxy = await deployProxy(LSP3AccountInit, newLSP3Account.address, owner)
             newProxy.initialize(owner)
 
             const externalUniversalReceiver = await ExternalERC777UniversalReceiverTester.new({ from: owner });

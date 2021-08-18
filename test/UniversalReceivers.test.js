@@ -87,7 +87,6 @@ contract("Receivers", accounts => {
         // set uni receiver delegate
         account.setData(UNIVERSALRECEIVER_KEY, delegate.address, {from: accounts[1]});
 
-
         await checker.lowLevelCheckImplementation(
             account.address,
             TOKENS_RECIPIENT_INTERFACE_HASH
