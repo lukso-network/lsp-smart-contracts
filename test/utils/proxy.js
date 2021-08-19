@@ -27,8 +27,8 @@ async function deployProxy(_masterInterface, _masterAddress, _deployer) {
 }
 
 async function deployProxyWeb3(_masterInterface, _masterAddress, _deployer) {
-    let masterContract = new web3.eth.contractAddress(_masterInterface.abi)
-    let expectedDeploymentCost = await masterContract.deployProxy()
+    // let masterContract = new web3.eth.contractAddress(_masterInterface.abi)
+    // let expectedDeploymentCost = await masterContract.deployProxy()
 }
 
 module.exports = {
