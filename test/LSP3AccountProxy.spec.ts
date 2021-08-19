@@ -93,13 +93,13 @@ describe("> LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       );
     });
 
-    it.only("Should call the `initialize(...)` function and return the right owner", async () => {
+    it("Should call the `initialize(...)` function and return the right owner", async () => {
       let currentOwner = await proxy.owner();
 
       // `initialize` function as constructor
       const tx = await proxy.initialize(ownerAddress);
       const { gasUsed } = await getDeploymentCost(tx);
-      console.log(gasUsed + 1);
+      console.log(gasUsed + 100);
 
       let newOwner = await proxy.owner();
 
