@@ -18,6 +18,7 @@ const config: HardhatUserConfig = {
   },
   paths: {
     artifacts: "build/artifacts",
+    tests: "tests_hardhat",
   },
   typechain: {
     outDir: "build/types",

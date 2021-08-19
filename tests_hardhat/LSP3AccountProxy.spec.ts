@@ -1,6 +1,7 @@
-import { LSP3Account, LSP3AccountInit, LSP3AccountInit__factory, LSP3Account__factory } from "../build/types";
+import { LSP3AccountInit, LSP3AccountInit__factory, LSP3Account__factory } from "../build/types";
 import { ethers } from "hardhat";
-import { Contract, ContractTransaction, Signer, Transaction } from "ethers";
+import { Signer } from "ethers";
+import { getDeploymentCost } from "./utils/helpers";
 
 const { runtimeCodeTemplate } = require("./utils/proxy");
 
@@ -111,20 +112,3 @@ describe("> LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     // 2) transferOwnership call from non-owner should fail
   });
 });
-
-async function getDeploymentCost(contractOrTransaction: Contract | ContractTransaction) {
-  let gasUsed: number;
-  let receipt: any;
-
-  if ("deployTransaction" in contractOrTransaction) {
-    receipt = await contractOrTransaction.deployTransaction.wait();
-  } else {
-    receipt = await contractOrTransaction.wait();
-  }
-  gasUsed = receipt.gasUsed.toNumber();
-
-  return {
-    receipt,
-    gasUsed,
-  };
-}

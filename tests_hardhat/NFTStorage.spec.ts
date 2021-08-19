@@ -50,7 +50,7 @@ describe("NFTStorageMerkle", () => {
       expect(firstNFT).toEqual(keccak256(nftList[0]));
     });
 
-    it("Should verify the proof in the smart contract", async () => {
+    xit("Should verify the proof in the smart contract", async () => {
       let root = merkletree.getHexRoot(); // .?
       let leaf = merkletree.getHexLeaves()[3]; // ?.
       let proof = merkletree.getHexProof(leaf); // .
