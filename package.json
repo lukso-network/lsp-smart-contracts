@@ -11,7 +11,7 @@
     "/build/types"
   ],
   "scripts": {
-    "test": "truffle test && jest",
+    "test": "truffle test && NODE_NO_WARNINGS=1 jest",
     "build": "npx hardhat compile",
     "package": "npx hardhat prepare-package",
     "release": "run-s clean build package && npx standard-version",
