@@ -21,7 +21,7 @@ module.exports = async () => {
     logHeapUsage: true,
     testEnvironment: "node",
     setupFilesAfterEnv: ["./jest.setup.ts"],
-    maxWorkers: 32,
+    maxWorkers: "50%",
     maxConcurrency: 10,
     reporters: ["default"],
     verbose: true,
