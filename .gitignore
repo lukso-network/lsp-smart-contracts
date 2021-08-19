@@ -36,6 +36,10 @@ bower_components
 # node-waf configuration
 .lock-wscript
 
+# Generated jar files
+jar/
+src/
+
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
