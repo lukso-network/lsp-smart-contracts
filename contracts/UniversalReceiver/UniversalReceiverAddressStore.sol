@@ -24,7 +24,6 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 
-
     function addAddress(address _address)
         public
         override

@@ -1,3 +1,5 @@
+const { web3 } = require("openzeppelin-test-helpers/src/setup");
+
 /**
  * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
  *                      10 x hex Opcodes to copy runtime code
@@ -22,6 +24,11 @@ async function deployProxy(_masterInterface, _masterAddress, _deployer) {
 
     let proxyContract = await _masterInterface.new(tx.contractAddress)
     return proxyContract
+}
+
+async function deployProxyWeb3(_masterInterface, _masterAddress, _deployer) {
+    let masterContract = new web3.eth.contractAddress(_masterInterface.abi)
+    let expectedDeploymentCost = await masterContract.deployProxy()
 }
 
 module.exports = {

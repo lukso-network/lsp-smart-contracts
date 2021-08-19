@@ -122,3 +122,10 @@ contract("Receivers with Proxy (using Truffle)", accounts => {
     })
 
 })
+
+contract ("Receivers with Proxy (using Web3)", async () => {
+
+    before(async () => {
+        
+    })
+})
