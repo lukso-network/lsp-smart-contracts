@@ -1,5 +1,5 @@
 import { encodeData, ERC725JSONSchema, flattenEncodedData, KeyValuePair } from "@erc725/erc725.js";
-import { Signer } from "@ethersproject/abstract-signer";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { ERC725Account, ERC725Account__factory } from "../build/types";
 
@@ -18,13 +18,13 @@ const schema: ERC725JSONSchema[] = [
 describe("ERC725 Account", () => {
   let erc725Account: ERC725Account;
   let lsp3IssuedAssets = [];
-  let accounts: Signer[];
+  let accounts: SignerWithAddress[];
   let owner;
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
-    erc725Account = await new ERC725Account__factory(owner).deploy(await owner.getAddress());
+    erc725Account = await new ERC725Account__factory(owner).deploy(owner.address);
   });
 
   it("should add 100 LSP3IssuedAssets[]", async () => {

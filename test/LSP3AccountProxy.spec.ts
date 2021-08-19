@@ -2,8 +2,7 @@ import { LSP3Account, LSP3AccountInit, LSP3AccountInit__factory, LSP3Account__fa
 import { ethers } from "hardhat";
 import { Contract, ContractTransaction, Signer, Transaction } from "ethers";
 
-const { calculateCreate2 } = require("eth-create2-calculator");
-const { deployProxy, runtimeCodeTemplate } = require("./utils/proxy");
+const { runtimeCodeTemplate } = require("./utils/proxy");
 
 // Interfaces IDs
 const ERC165_INTERFACE_ID = "0x01ffc9a7";
@@ -105,25 +104,6 @@ describe("> LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
 
       expect(newOwner).not.toEqual(currentOwner);
       expect(newOwner).toEqual(ownerAddress);
-    });
-
-    xit("Should not allow to initialize twice", async () => {
-      let newOwner = "0xcafecafecafecafecafecafecafecafecafecafe";
-      let expectedGas = await proxy.methods.initialize(newOwner).estimateGas({ from: owner });
-
-      /** @todo how to test web3 revert? truffleAssert.fails not working */
-      // let result = await proxy.methods.initialize(newOwner).send({ from: owner, gas: expectedGas + extraSafetyGas })
-      // await truffleAssert.fails(
-      //     proxy.methods.initialize(newOwner).send({ from: owner, gas: expectedGas + extraSafetyGas })
-      // )
-      // to test revert with web3, try that:
-      expect(
-        await proxy.methods.initialize(newOwner).send({ from: owner, gas: expectedGas + extraSafetyGas })
-      ).to.throw(
-        new Error(
-          "Error: Returned error: VM Exception while processing transaction: revert Initializable: contract is already initialized"
-        )
-      );
     });
 
     // test that account owner can transferOwnership, so
