@@ -33,7 +33,7 @@
     "eth-create2-calculator": "^1.1.5",
     "keccak256": "^1.0.3",
     "merkletreejs": "^0.2.23",
-    "web3-eth-contract": "^1.5.2"
+    "web3-eth-contract": "1.4.0"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.0.0",
@@ -45,7 +45,7 @@
     "openzeppelin-test-helpers": "^0.4.3",
     "solidity-bytes-utils": "0.8.0",
     "standard-version": "^9.3.1",
-    "truffle": "^5.3.0",
+    "truffle": "5.3.0",
     "truffle-assertions": "^0.9.2",
     "typechain": "^5.1.2"
   }
