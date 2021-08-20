@@ -2,13 +2,15 @@
 
 set -e
 
-# sudo add-apt-repository ppa:ethereum/ethereum
-# sudo apt-get update
-# sudo apt-get install solc
+sudo add-apt-repository ppa:ethereum/ethereum
+sudo apt-get update
+sudo apt-get install solc
+
+curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
 solc --abi --bin @openzeppelin/="$(pwd)"/node_modules/@openzeppelin/ ../submodules="$(pwd)"/submodules solidity-bytes-utils/="$(pwd)"/node_modules/solidity-bytes-utils/ -o ./output/ contracts/LSP3Account.sol contracts/KeyManager/KeyManager.sol contracts/UniversalReceiver/BasicUniversalReceiver.sol
 
-export destination=./src/main/java
+export destination=./java/src/main/java/network/lukso/up/contracts
 export package=network.lukso.up.contracts
 
 FILES=(KeyManager LSP3Account BasicUniversalReceiver ERC725Account)
@@ -31,9 +33,3 @@ web3j generate solidity --abiFile=$abiSource --binFile=$binSource -o $destinatio
 
 rm -Rf ./output
 
-export inputsPath=./src/main/java/network/lukso/up/contracts/
-
-jar cf ./jar/BasicUniversalReceiver.jar $inputsPath/BasicUniversalReceiver.java
-jar cf ./jar/ERC725Account.jar $inputsPath/ERC725Account.java
-jar cf ./jar/KeyManager.jar $inputsPath/KeyManager.java
-jar cf ./jar/LSP3Account.jar $inputsPath/LSP3Account.java

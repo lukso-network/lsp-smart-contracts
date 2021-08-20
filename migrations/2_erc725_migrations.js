@@ -1,9 +1,8 @@
-const BasicKeyManager = artifacts.require("BasicKeyManager")
 const KeyManager = artifacts.require("KeyManager")
 const KeyManagerHelper = artifacts.require("KeyManagerHelper")
 
 const ERC725Utils = artifacts.require("ERC725Utils")
-const SimpleTargetContract = artifacts.require("SimpleTargetContract")
+const TargetContract = artifacts.require("TargetContract")
 
 module.exports = function (deployer, network, accounts) {
 
@@ -12,13 +11,11 @@ module.exports = function (deployer, network, accounts) {
 
     // BasicKeyManager = old version
     // KeyManager = new version
-    deployer.link(ERC725Utils, BasicKeyManager)
     deployer.link(ERC725Utils, KeyManager)
     deployer.link(ERC725Utils, KeyManagerHelper)
 
-    deployer.deploy(BasicKeyManager, owner)
     deployer.deploy(KeyManager, owner)
     deployer.deploy(KeyManagerHelper, owner)
 
-    deployer.deploy(SimpleTargetContract)
+    deployer.deploy(TargetContract)
 };

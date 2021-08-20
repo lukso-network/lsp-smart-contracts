@@ -116,3 +116,10 @@ node_modules
 cache
 artifacts
 typechain
+
+# JAVA
+java/github.properties
+java/.gradle
+java/.idea
+
+.idea
