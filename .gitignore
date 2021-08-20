@@ -116,3 +116,5 @@ types
 java/github.properties
 java/.gradle
 java/.idea
+
+.idea
