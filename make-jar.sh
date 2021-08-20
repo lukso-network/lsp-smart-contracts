@@ -10,7 +10,11 @@ curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
 solc --abi --bin @openzeppelin/="$(pwd)"/node_modules/@openzeppelin/ ../submodules="$(pwd)"/submodules solidity-bytes-utils/="$(pwd)"/node_modules/solidity-bytes-utils/ -o ./output/ contracts/LSP3Account.sol contracts/KeyManager/KeyManager.sol contracts/UniversalReceiver/BasicUniversalReceiver.sol
 
+<<<<<<< HEAD
 export destination=./java/src/main/java/network/up/contracts
+=======
+export destination=.java/src/main/java/network/up/contracts
+>>>>>>> afa3c709155a3841d37951dd067399bd303a0ebe
 export package=network.lukso.up.contracts
 
 FILES=(KeyManager LSP3Account BasicUniversalReceiver ERC725Account)

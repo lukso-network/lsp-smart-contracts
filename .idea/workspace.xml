@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0c8dceed-9a01-4bf7-a8c5-f75fa323647a" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+=======
+>>>>>>> afa3c709155a3841d37951dd067399bd303a0ebe
       <change afterPath="$PROJECT_DIR$/java/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.github/workflows/publish-artifacts.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/publish-artifacts.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
@@ -70,7 +73,11 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1629452440919</updated>
+<<<<<<< HEAD
       <workItem from="1629452443716" duration="3109000" />
+=======
+      <workItem from="1629452443716" duration="2711000" />
+>>>>>>> afa3c709155a3841d37951dd067399bd303a0ebe
     </task>
     <servers />
   </component>
