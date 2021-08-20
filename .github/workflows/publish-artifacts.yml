@@ -1,0 +1,33 @@
+# Upload Github artifacts
+
+name: Upload Github artifacts CD
+
+# Controls when the workflow will run
+on:
+  # Triggers the worflow on push or pull request events but only for the main branch
+  push:
+    branches:
+      - "permissions"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs: 
+  # This workflow contains a single job called "build"
+  archive-build-artifacts:
+   # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Step 1 - Generate artifacts using shell
+        run: bash make-jar.sh
+
+      - name: Step 2 - Use the Upload artifact Github Action
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-jar
+          path: jar
