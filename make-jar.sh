@@ -33,6 +33,7 @@ rm -Rf ./output
 
 export inputsPath=./src/main/java/network/lukso/up/contracts/
 
+mkdir jar
 jar cf ./jar/BasicUniversalReceiver.jar $inputsPath/BasicUniversalReceiver.java
 jar cf ./jar/ERC725Account.jar $inputsPath/ERC725Account.java
 jar cf ./jar/KeyManager.jar $inputsPath/KeyManager.java
