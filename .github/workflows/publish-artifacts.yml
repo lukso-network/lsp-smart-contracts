@@ -34,3 +34,24 @@ jobs:
         with:
           name: android-jar
           path: jar
+
+      - name: Set up our JDK environment
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 1.11
+
+      - name: Grant rights
+        run: chmod +x java/build.gradle
+
+      - name: Build jar
+        working-directory: ./java
+        run: gradle build
+
+      - name: Publish jar
+        working-directory: ./java
+        run: gradle publish
+        env:
+          # https://github.com/actions/setup-node/issues/49
+          # Have to use my personal access token until the issue is resolved
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          GITHUB_ACTOR: ${{ secrets.PERSONAL_ACTOR }}
