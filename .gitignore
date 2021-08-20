@@ -111,3 +111,10 @@ dist
 
 build
 types
+
+# JAVA
+java/github.properties
+java/.gradle
+java/.idea
+
+.idea

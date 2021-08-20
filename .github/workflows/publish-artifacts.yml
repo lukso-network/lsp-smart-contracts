@@ -4,10 +4,8 @@ name: Upload Github artifacts CD
 
 # Controls when the workflow will run
 on:
-  # Triggers the worflow on push or pull request events but only for the main branch
-  push:
-    branches:
-      - "permissions"
+  release:
+    types: [created]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,13 +21,38 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
-          submodules: recursive
+          submodules: true
+          
+      - name: Use Node.js '14.16.0'
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.16.0'
+          cache: "npm"
+      
+      # - run: git submodule update --init --recursive
+      - run: npm ci
+      - run: cd ./submodules/ERC725/implementations && npm install
       
       - name: Step 1 - Generate artifacts using shell
         run: bash make-jar.sh
 
-      - name: Step 2 - Use the Upload artifact Github Action
-        uses: actions/upload-artifact@v2
+      - name: Set up our JDK environment
+        uses: actions/setup-java@v1.4.3
         with:
-          name: android-jar
-          path: jar
+          java-version: 1.11
+
+      - name: Grant rights
+        run: chmod +x java/build.gradle
+
+      - name: Build jar
+        working-directory: ./java
+        run: gradle build
+
+      - name: Publish jar
+        working-directory: ./java
+        run: gradle publish
+        env:
+          # https://github.com/actions/setup-node/issues/49
+          # Have to use my personal access token until the issue is resolved
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          GITHUB_ACTOR: ${{ secrets.PERSONAL_ACTOR }}
