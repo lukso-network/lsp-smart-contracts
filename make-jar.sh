@@ -5,6 +5,8 @@ set -e
 sudo add-apt-repository ppa:ethereum/ethereum
 sudo apt-get update
 sudo apt-get install solc
+# Install web3j
+curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
 solc --abi --bin @openzeppelin/="$(pwd)"/node_modules/@openzeppelin/ ../submodules="$(pwd)"/submodules solidity-bytes-utils/="$(pwd)"/node_modules/solidity-bytes-utils/ -o ./output/ contracts/LSP3Account.sol contracts/KeyManager/KeyManager.sol contracts/UniversalReceiver/BasicUniversalReceiver.sol
 
