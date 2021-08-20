@@ -15,10 +15,7 @@ $ cd ./universalprofile-smart-contracts
 
 # make sure to download the ERC725 submodule
 $ git submodule update --init --recursive
-
-# install dependencies
 $ npm install
-# and also for the submododule
 $ cd ./submodules/ERC725/implementations && npm install
 ```
 

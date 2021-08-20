@@ -25,6 +25,6 @@ module.exports = async () => {
     maxConcurrency: 10,
     reporters: ["default"],
     verbose: true,
-    silent: true,
+    // silent: true,
   };
 };
