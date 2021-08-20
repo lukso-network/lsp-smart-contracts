@@ -29,12 +29,6 @@ jobs:
       - name: Step 1 - Generate artifacts using shell
         run: bash make-jar.sh
 
-      - name: Step 2 - Use the Upload artifact Github Action
-        uses: actions/upload-artifact@v2
-        with:
-          name: android-jar
-          path: jar
-
       - name: Set up our JDK environment
         uses: actions/setup-java@v1.4.3
         with:
