@@ -35,11 +35,13 @@ jobs:
           mkdir ios
           node make-ios.js
 
-      - name: checkout iOS repository
+      - name: Checkout iOS repository
         uses: actions/checkout@v2
         with:
           repository: 'https://github.com/lukso-network/universalprofile-ios-sdk'
           ref: 'abi-update-release'
+
+      - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         run: |
           cd universalprofile-ios-sdk
           cp ../ios/UpContractAbi.swift UpContractAbi.swift
