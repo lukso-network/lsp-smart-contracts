@@ -38,7 +38,7 @@ jobs:
       - name: Checkout iOS repository
         uses: actions/checkout@v2
         with:
-          repository: 'https://github.com/lukso-network/universalprofile-ios-sdk'
+          repository: 'lukso-network/universalprofile-ios-sdk'
           ref: 'abi-update-release'
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
