@@ -39,11 +39,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: 'lukso-network/universalprofile-ios-sdk'
-          ref: 'abi-update-release'
+          ref: 'main'
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         run: |
           cd universalprofile-ios-sdk
+          git checkout -b abi-update-release
           cp ../ios/UpContractAbi.swift UpContractAbi.swift
           git add .
           git commit -m "new contracts abis"
