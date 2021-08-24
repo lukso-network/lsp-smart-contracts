@@ -14,16 +14,19 @@ const lsp3ABI = JSON.parse(lsp3Account).abi;
 const universalReceiverABI = JSON.parse(universalReceiver).abi;
 const keyManagerABI = JSON.parse(keyManager).abi;
 
-let filesData = {
-    './ios/erc725_abi.txt': JSON.stringify(erc725ABI).replace(/"/g, '\\"'),
-    './ios/lsp3_abi.txt': JSON.stringify(lsp3ABI).replace(/"/g, '\\"'),
-    './ios/universalreceiver_abi.txt': JSON.stringify(universalReceiverABI).replace(/"/g, '\\"'),
-    './ios/keymanager_abi.txt': JSON.stringify(keyManagerABI).replace(/"/g, '\\"'),
+let upSwiftFile = './ios/upcontracts.swift';
+
+let fileContents = 
+`
+public final class UpContractAbi : String {
+    public static let ERC_725_ABI = "${JSON.stringify(erc725ABI).replace(/"/g, '\\"')}"
+    public static let KEY_MANAGER_ABI = "${JSON.stringify(lsp3ABI).replace(/"/g, '\\"')}"
+    public static let LSP3_ABI = "${JSON.stringify(universalReceiverABI).replace(/"/g, '\\"')}"
+    public static let UNIVERSAL_RECEIVER_ABI = "${JSON.stringify(keyManagerABI).replace(/"/g, '\\"')}"
 }
+`
 
 // 3) Save to these files
-for (let [file, content] of Object.entries(filesData)) {
-    fs.appendFile(file, content, (err) => {
-        if (err) console.log(err)
-    });
-}
+fs.appendFile(upSwiftFile, fileContents, (err) => {
+    if (err) console.log(err)
+});
