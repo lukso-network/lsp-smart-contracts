@@ -43,7 +43,7 @@ jobs:
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         run: |
-          git clone https://github.com/lukso-network/universalprofile-ios-sdk.git
+          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/lukso-network/universalprofile-ios-sdk
           cd universalprofile-ios-sdk
           git checkout -b abi-update-release
           cp ../ios/UpContractAbi.swift UpContractAbi.swift
