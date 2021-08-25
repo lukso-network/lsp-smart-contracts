@@ -43,7 +43,7 @@ jobs:
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         run: |
-          git remote add origin 'git@github.com:lukso-network/universalprofile-ios-sdk.git'
+          git clone https://.:${{ secrets.IOSSDK_GITHUB_REPO_KEY }}@github.com/lukso-network/universalprofile-ios-sdk.git
           cd universalprofile-ios-sdk
           git config --global user.email "jean@lukso.io"
           git config --global user.name "Jean Cavallera"
