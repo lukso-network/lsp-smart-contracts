@@ -12,7 +12,7 @@ const lsp3ABI = JSON.parse(lsp3Account).abi;
 const universalReceiverABI = JSON.parse(universalReceiver).abi;
 const keyManagerABI = JSON.parse(keyManager).abi;
 
-let upSwiftFile = './ios/upcontracts.swift';
+let upSwiftFile = './ios/UpContractAbi.swift';
 
 let fileContents = 
 `
