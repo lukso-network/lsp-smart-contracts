@@ -34,19 +34,19 @@ jobs:
         run: |
           mkdir ios
           node make-ios.js
-          pwd && ls -lahG
 
-      - name: Checkout iOS repository
-        uses: actions/checkout@v2
-        with:
-          repository: 'lukso-network/universalprofile-ios-sdk'
-          ref: 'main'
+      # - name: Checkout iOS repository
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: 'lukso-network/universalprofile-ios-sdk'
+      #     ref: 'main'
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         run: |
+          git clone git@github.com:lukso-network/universalprofile-ios-sdk.git
+          cd universalprofile-ios-sdk
           git checkout -b abi-update-release
-          pwd && ls -lahG
           cp ../ios/UpContractAbi.swift UpContractAbi.swift
           git add .
-          git commit -m "new contracts abis"
+          git commit -m "Automatic publish new contracts abis from lukso-network/universalprofile-smart-contracts"
           git push origin
