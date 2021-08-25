@@ -44,6 +44,7 @@ jobs:
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         run: |
           git checkout -b abi-update-release
+          pwd && ls -lahG
           cp ../ios/UpContractAbi.swift UpContractAbi.swift
           git add .
           git commit -m "new contracts abis"
