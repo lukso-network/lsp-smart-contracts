@@ -51,4 +51,4 @@ jobs:
           cp ../ios/UpContractAbi.swift UpContractAbi.swift
           git add .
           git commit -m "Automatic publish new contracts abis from lukso-network/universalprofile-smart-contracts"
-          git push origin
+          git push --set-upstream origin abi-update-release
