@@ -40,9 +40,6 @@ bower_components
 jar/
 src/
 
-# Generated ios files
-ios/
-
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
