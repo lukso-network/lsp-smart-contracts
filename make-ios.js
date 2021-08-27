@@ -12,11 +12,20 @@ const lsp3ABI = JSON.parse(lsp3Account).abi;
 const universalReceiverABI = JSON.parse(universalReceiver).abi;
 const keyManagerABI = JSON.parse(keyManager).abi;
 
-let upSwiftFile = './ios/UpContractAbi.swift';
+let upSwiftFile = './ios/UPContractsAbi.swift';
 
 let fileContents = 
 `
-public final class UpContractAbi : String {
+//
+//  UPContractsAbi.swift
+//  universalprofile-ios-sdk
+//
+//  Created by lukso-network.
+//  LUKSO Blockchain GmbH © ${new Date().getFullYear()}
+//
+import Foundation
+
+public final class UPContractsAbi {
     public static let ERC_725_ABI = "${JSON.stringify(erc725ABI).replace(/"/g, '\\"')}"
     public static let KEY_MANAGER_ABI = "${JSON.stringify(lsp3ABI).replace(/"/g, '\\"')}"
     public static let LSP3_ABI = "${JSON.stringify(universalReceiverABI).replace(/"/g, '\\"')}"
