@@ -18,6 +18,7 @@ describe("Address Registry contracts", () => {
 
     addressRegistry = await new AddressRegistry__factory(accounts[1]).deploy();
   });
+
   describe("AddressRegistry", () => {
     it("add address", async () => {
       await addressRegistry.addAddress(accounts[1].address);
@@ -82,6 +83,7 @@ describe("Address Registry contracts", () => {
       addressRegistryRequireERC725 = await new AddressRegistryRequiresERC725__factory(accounts[0]).deploy();
     });
 
+    /** @todo */
     xit("add address", async () => {
       let abi = addressRegistryRequireERC725.interface.encodeFunctionData("addAddress", [account.address]);
 
@@ -89,7 +91,8 @@ describe("Address Registry contracts", () => {
         from: ownerAddress,
       });
 
-      expect(await addressRegistryRequireERC725.getAddress(0)).toEqual(account.address);
+      let result = await addressRegistryRequireERC725.callStatic.getAddress(0)
+      //   expect().toEqual(account.address);
     });
 
     it("external account adds address", async () => {
