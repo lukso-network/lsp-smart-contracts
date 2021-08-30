@@ -8,7 +8,37 @@ import "@typechain/hardhat";
 import "hardhat-packager";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.6",
+  defaultNetwork: "hardhat",
+  networks: {
+    hardhat: {
+    },
+    // public L14 test network
+    l14: {
+      url: "http://34.76.61.201:8545", // bootnode
+      chainId: 22
+      // accounts: [privateKey1, privateKey2, ...]
+    },
+    // ephemeral network
+    // l15: {
+    //   url: "",
+    //   chainId: null
+    // }
+  },
+  solidity: {
+    version: "0.8.6",
+    settings: {
+      optimizer: {
+        enabled: true,
+        /**
+         * Optimize for how many times you intend to run the code.
+         * Lower values will optimize more for initial deployment cost, higher
+         * values will optimize more for high-frequency usage.
+         * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
+         */
+         runs: 1000
+      }
+    }
+  },
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: ["LSP3Account", "KeyManager", "BasicUniversalReceiver", "ERC725Account"],
@@ -24,6 +54,9 @@ const config: HardhatUserConfig = {
     outDir: "build/types",
     target: "ethers-v5",
   },
+  mocha: {
+    timeout: 20000
+  }
 };
 
 export default config;
