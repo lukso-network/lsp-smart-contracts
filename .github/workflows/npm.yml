@@ -1,0 +1,33 @@
+# This workflow build and publish NPM artifacts
+
+name: Publish NPM artifacts
+
+on:
+  # release:
+  #   type: [created]
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  npm-build-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Use Node.js '14.16.0'
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.16.0'
+          cache: "npm"
+      - run: git submodule update --init --recursive
+      - run: npm ci
+      - run: cd ./submodules/ERC725/implementations && npm install
+      - run: npm run test
+      - run: npm run package
