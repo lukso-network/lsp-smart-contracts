@@ -32,4 +32,3 @@ export abiSource=./output/ERC725Account.abi
 web3j generate solidity --abiFile=$abiSource --binFile=$binSource -o $destination -p $package
 
 rm -Rf ./output
-
