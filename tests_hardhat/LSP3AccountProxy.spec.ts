@@ -22,7 +22,7 @@ const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc
 const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
 const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 
-describe("> LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
+describe.skip("> LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
   let accounts: Signer[];
   let owner: Signer, ownerAddress;
 
@@ -68,7 +68,9 @@ describe("> LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       );
 
       let transaction = await owner.sendTransaction({ data: proxyRuntimeCode });
-      const { receipt: txReceipt, gasUsed: proxyDeploymentCost } = await getDeploymentCost(transaction);
+      const { receipt: txReceipt, gasUsed: proxyDeploymentCost } = await getDeploymentCost(
+        transaction
+      );
 
       // 3) initialize contract (alternative to constructors)
       proxy = await new LSP3AccountInit__factory(owner).attach(txReceipt.contractAddress);

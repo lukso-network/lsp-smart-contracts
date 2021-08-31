@@ -84,9 +84,9 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
     /* Public functions */
 
     function setData(bytes32 _key, bytes memory _value)
-        public
-        override
-        onlyOwner
+    public
+    override
+    onlyOwner
     {
         if (store[_key].length == 0) {
             dataKeys.push(_key); // 30k more gas on initial set

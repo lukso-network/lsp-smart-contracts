@@ -15,7 +15,7 @@ module.exports = {
     },
     // ephemeral network
     l15: {
-      url: "",
+      url: "http://35.198.139.247:8565",
       chainId: ""
     }
   },

@@ -2,9 +2,7 @@ const { expectRevert } = require("openzeppelin-test-helpers");
 
 const Account = artifacts.require("LSP3Account");
 const AddressRegistry = artifacts.require("AddressRegistry");
-const AddressRegistryRequiresERC725 = artifacts.require(
-  "AddressRegistryRequiresERC725"
-);
+const AddressRegistryRequiresERC725 = artifacts.require("AddressRegistryRequiresERC725");
 
 contract("Address Registry contracts", async (accounts) => {
   context("AddressRegistry", async () => {
@@ -45,10 +43,7 @@ contract("Address Registry contracts", async (accounts) => {
       assert.equal(await addressRegistry.getIndex(accounts[1]), "0");
       assert.equal(await addressRegistry.getIndex(accounts[2]), "1");
 
-      expectRevert(
-        addressRegistry.getIndex(accounts[4]),
-        "EnumerableSet: Index not found"
-      );
+      expectRevert(addressRegistry.getIndex(accounts[4]), "EnumerableSet: Index not found");
     });
 
     it("can list all values of the registry", async () => {
@@ -64,10 +59,8 @@ contract("Address Registry contracts", async (accounts) => {
 
     it("can get all raw values in one call", async () => {
       assert.deepEqual(await addressRegistry.getAllRawValues(), [
-        "0x000000000000000000000000" +
-          accounts[1].replace("0x", "").toLowerCase(),
-        "0x000000000000000000000000" +
-          accounts[2].replace("0x", "").toLowerCase(),
+        "0x000000000000000000000000" + accounts[1].replace("0x", "").toLowerCase(),
+        "0x000000000000000000000000" + accounts[2].replace("0x", "").toLowerCase(),
       ]);
     });
   });
@@ -86,24 +79,13 @@ contract("Address Registry contracts", async (accounts) => {
       let abi = addressRegistryRequireERC725.contract.methods
         .addAddress(account.address)
         .encodeABI();
-
-      await account.execute(0, addressRegistryRequireERC725.address, 0, abi, {
-        from: owner,
-      });
-      assert.equal(
-        await addressRegistryRequireERC725.getAddress(0),
-        account.address
-      );
+      await account.execute(0, addressRegistryRequireERC725.address, 0, abi, { from: owner });
+      assert.equal(await addressRegistryRequireERC725.getAddress(0), account.address);
     });
 
     it("external account adds address", async () => {
-      await addressRegistryRequireERC725.addAddress(account.address, {
-        from: accounts[5],
-      });
-      assert.equal(
-        await addressRegistryRequireERC725.getAddress(0),
-        account.address
-      );
+      await addressRegistryRequireERC725.addAddress(account.address, { from: accounts[5] });
+      assert.equal(await addressRegistryRequireERC725.getAddress(0), account.address);
     });
 
     it("remove address", async () => {
@@ -111,19 +93,13 @@ contract("Address Registry contracts", async (accounts) => {
         .removeAddress(account.address)
         .encodeABI();
 
-      await account.execute(0, addressRegistryRequireERC725.address, 0, abi, {
-        from: owner,
-      });
-      assert.isFalse(
-        await addressRegistryRequireERC725.containsAddress(account.address)
-      );
+      await account.execute(0, addressRegistryRequireERC725.address, 0, abi, { from: owner });
+      assert.isFalse(await addressRegistryRequireERC725.containsAddress(account.address));
     });
 
     it("should fail if called by a regular address", async () => {
       //simply reverts as no ERC165 is detected
-      await expectRevert.unspecified(
-        addressRegistryRequireERC725.addAddress(accounts[5])
-      );
+      await expectRevert.unspecified(addressRegistryRequireERC725.addAddress(accounts[5]));
     });
   });
 });
