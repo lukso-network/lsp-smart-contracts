@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-
 contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -18,15 +17,14 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
     bytes32[] public dataKeys;
     address public minter;
 
-
     constructor(
         address newOwner,
         string memory name,
         string memory symbol,
         address[] memory defaultOperators
     )
-    ERC725Y(newOwner)
-    ERC777UniversalReceiver(name, symbol, defaultOperators)
+        ERC725Y(newOwner)
+        ERC777UniversalReceiver(name, symbol, defaultOperators)
     {
         // set the owner as minter
         minter = newOwner;
@@ -39,27 +37,21 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
     }
 
     function mint(address _address, uint256 _amount)
-    external
-    override
-    onlyMinter
+        external
+        override
+        onlyMinter
     {
         tokenHolders.add(_address);
 
         _mint(_address, _amount, "", "");
     }
 
-    function removeMinter()
-    external
-    onlyMinter
-    {
+    function removeMinter() external onlyMinter {
         minter = address(0);
     }
 
     // Stops account recovery possibility
-    function removeDefaultOperators()
-    external
-    onlyDefaultOperators
-    {
+    function removeDefaultOperators() external onlyDefaultOperators {
         for (uint256 i = 0; i < _defaultOperatorsArray.length; i++) {
             _defaultOperators[_defaultOperatorsArray[i]] = false;
         }
@@ -67,20 +59,12 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
     }
 
     // Here to track allow future migration TODO remove in main chain
-    function pause()
-    external
-    whenNotPaused
-    onlyDefaultOperators
-    {
+    function pause() external whenNotPaused onlyDefaultOperators {
         _pause();
     }
 
     // Here to track allow future migration TODO remove in main chain
-    function unpause()
-    external
-    whenPaused
-    onlyDefaultOperators
-    {
+    function unpause() external whenPaused onlyDefaultOperators {
         _unpause();
     }
 
@@ -97,22 +81,19 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         return tokenHolders._inner._values;
     }
 
-
-
     /* Public functions */
 
     function setData(bytes32 _key, bytes memory _value)
-    external
-    override
-    onlyOwner
+        public
+        override
+        onlyOwner
     {
-        if(store[_key].length == 0) {
+        if (store[_key].length == 0) {
             dataKeys.push(_key); // 30k more gas on initial set
         }
         store[_key] = _value;
         emit DataChanged(_key, _value);
     }
-
 
     /* Internal functions */
 
@@ -120,15 +101,11 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      * Can only be called by the current owner.
      */
-    function transferOwnership(address newOwner)
-    public
-    override
-    onlyOwner
-    {
+    function transferOwnership(address newOwner) public override onlyOwner {
         Ownable.transferOwnership(newOwner);
 
         // also set new minter, if it was not removed before
-        if(minter != address(0)) {
+        if (minter != address(0)) {
             minter = newOwner;
         }
     }
@@ -140,26 +117,30 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         uint256 amount,
         bytes memory userData,
         bytes memory operatorData
-    )
-    internal
-    override
-    whenNotPaused
-    {
-
+    ) internal override whenNotPaused {
         tokenHolders.add(to);
 
-        ERC777UniversalReceiver._move(operator, from, to, amount, userData, operatorData);
+        ERC777UniversalReceiver._move(
+            operator,
+            from,
+            to,
+            amount,
+            userData,
+            operatorData
+        );
     }
-
 
     /* Modifers */
     modifier onlyDefaultOperators() {
-        require(_defaultOperators[_msgSender()], 'Only default operators can call this function');
+        require(
+            _defaultOperators[_msgSender()],
+            "Only default operators can call this function"
+        );
         _;
     }
 
     modifier onlyMinter() {
-        require(_msgSender() == minter, 'Only minter can call this function');
+        require(_msgSender() == minter, "Only minter can call this function");
         _;
     }
 }
