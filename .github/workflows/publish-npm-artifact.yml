@@ -25,6 +25,7 @@ jobs:
       - run: git submodule update --init --recursive
       - run: npm ci
       - run: cd ./submodules/ERC725/implementations && npm install
+      - run: npm run generate-types
       - run: npm run test
       - run: npm run package
       - run: npm publish --access public
