@@ -1,4 +1,5 @@
 # universalprofile-smart-contracts
+
 The reference implementation for universal profiles smart contracts.
 
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
@@ -7,9 +8,6 @@ The reference implementation for universal profiles smart contracts.
 ## Installation
 
 ```bash
-# install truffle globally
-$ npm install -g truffle
-
 $ git clone https://github.com/lukso-network/universalprofile-smart-contracts.git
 $ cd ./universalprofile-smart-contracts
 
@@ -27,27 +25,7 @@ To run all the tests, you can run:
 $ npm test
 ```
 
-To run specific tests files:
-* run a local network
-* deploy the smart contracts
-* specify the test file to run
-
-```bash
-# run a blockchain locally
-$ truffle develop
-
-# compile all contracts
-> compile --all
-
-# deploy all contracts
-> migrate --reset
-
-# run tests
-> test test/<test-file>.test.js
-```
-
 ## Examples
-
 
 This is an example of the steps to do to set a permission.
 
@@ -93,13 +71,10 @@ KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > 0x
 For the following payload:
 
 ```javascript
-let simpleContractPayload = simpleContract.contract.methods.setName("Test").encodeABI()
-let executePayload = erc725Account.contract.methods.execute(
-    OPERATION_CALL,
-    simpleContract.address,
-    0,
-    simpleContractPayload
-).encodeABI()
+let simpleContractPayload = simpleContract.contract.methods.setName("Test").encodeABI();
+let executePayload = erc725Account.contract.methods
+  .execute(OPERATION_CALL, simpleContract.address, 0, simpleContractPayload)
+  .encodeABI();
 ```
 
 Here is a detail of the layout of the calldata.

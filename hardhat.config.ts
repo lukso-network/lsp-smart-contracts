@@ -1,7 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 
 import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-truffle5";
 import "@nomiclabs/hardhat-web3";
 
 import "@typechain/hardhat";
@@ -10,12 +9,11 @@ import "hardhat-packager";
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {
-    },
+    hardhat: {},
     // public L14 test network
     l14: {
       url: "http://34.76.61.201:8545", // bootnode
-      chainId: 22
+      chainId: 22,
       // accounts: [privateKey1, privateKey2, ...]
     },
     // ephemeral network
@@ -35,28 +33,30 @@ const config: HardhatUserConfig = {
          * values will optimize more for high-frequency usage.
          * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
          */
-         runs: 1000
-      }
-    }
+        runs: 1000,
+      },
+    },
   },
   packager: {
     // What contracts to keep the artifacts and the bindings for.
-    contracts: ["LSP3Account", "KeyManager", "BasicUniversalReceiver", "UniversalReceiverAddressStore", "ERC725Account"],
+    contracts: [
+      "LSP3Account",
+      "KeyManager",
+      "BasicUniversalReceiver",
+      "UniversalReceiverAddressStore",
+      "ERC725Account",
+    ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
     includeFactories: true,
   },
   paths: {
     artifacts: "build/artifacts",
-    tests: "tests_hardhat",
   },
   typechain: {
     outDir: "build/types",
     target: "ethers-v5",
   },
-  mocha: {
-    timeout: 20000
-  }
 };
 
 export default config;
