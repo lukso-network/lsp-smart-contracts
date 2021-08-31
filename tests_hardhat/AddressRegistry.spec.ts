@@ -15,7 +15,6 @@ describe("Address Registry contracts", () => {
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
-
     addressRegistry = await new AddressRegistry__factory(accounts[1]).deploy();
   });
 
@@ -51,7 +50,9 @@ describe("Address Registry contracts", () => {
       expect(await addressRegistry.getIndex(accounts[1].address)).toEqBN("0");
       expect(await addressRegistry.getIndex(accounts[2].address)).toEqBN("1");
 
-      await expect(addressRegistry.getIndex(accounts[4].address)).toBeRevertedWith("EnumerableSet: Index not found");
+      await expect(addressRegistry.getIndex(accounts[4].address)).toBeRevertedWith(
+        "EnumerableSet: Index not found"
+      );
     });
 
     it("can list all values of the registry", async () => {
@@ -75,24 +76,28 @@ describe("Address Registry contracts", () => {
 
   // Require ERC725
   describe("AddressRegistryRequiresERC725", () => {
-    let addressRegistryRequireERC725: AddressRegistryRequiresERC725, account: LSP3Account, ownerAddress;
+    let addressRegistryRequireERC725: AddressRegistryRequiresERC725,
+      account: LSP3Account,
+      owner: SignerWithAddress;
 
     beforeEach(async () => {
-      ownerAddress = accounts[3].address;
-      account = await new LSP3Account__factory(accounts[3]).deploy(ownerAddress);
-      addressRegistryRequireERC725 = await new AddressRegistryRequiresERC725__factory(accounts[0]).deploy();
+      owner = accounts[3];
+      account = await new LSP3Account__factory(owner).deploy(owner.address);
+      addressRegistryRequireERC725 = await new AddressRegistryRequiresERC725__factory(
+        owner
+      ).deploy();
     });
 
-    /** @todo */
-    xit("add address", async () => {
-      let abi = addressRegistryRequireERC725.interface.encodeFunctionData("addAddress", [account.address]);
+    it("add address", async () => {
+      let abi = addressRegistryRequireERC725.interface.encodeFunctionData("addAddress", [
+        account.address,
+      ]);
 
       await account.execute(0, addressRegistryRequireERC725.address, 0, abi, {
-        from: ownerAddress,
+        from: owner.address,
+        gasLimit: 3_000_000,
       });
-
-      let result = await addressRegistryRequireERC725.callStatic.getAddress(0)
-      //   expect().toEqual(account.address);
+      expect(await addressRegistryRequireERC725.getAddress(0)).toEqual(account.address);
     });
 
     it("external account adds address", async () => {
@@ -101,7 +106,9 @@ describe("Address Registry contracts", () => {
     });
 
     it("remove address", async () => {
-      let abi = addressRegistryRequireERC725.interface.encodeFunctionData("removeAddress", [account.address]);
+      let abi = addressRegistryRequireERC725.interface.encodeFunctionData("removeAddress", [
+        account.address,
+      ]);
 
       await account.execute(0, addressRegistryRequireERC725.address, 0, abi);
       expect(await addressRegistryRequireERC725.containsAddress(account.address)).toEqual(false);

@@ -9,7 +9,8 @@ import {
 } from "../build/types";
 
 // keccak256("ERC777TokensRecipient")
-const TOKENS_RECIPIENT_INTERFACE_HASH = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+const TOKENS_RECIPIENT_INTERFACE_HASH =
+  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 
 // keccak256("LSP1UniversalReceiverDelegate")
 const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
@@ -32,7 +33,10 @@ describe("Receivers", () => {
     let tx = await uni.universalReceiver(TOKENS_RECIPIENT_INTERFACE_HASH, "0x");
     let txReceipt = await tx.wait();
 
-    console.log("Directly checking for implementing interface costs: ", txReceipt.gasUsed.toNumber());
+    console.log(
+      "Directly checking for implementing interface costs: ",
+      txReceipt.gasUsed.toNumber()
+    );
 
     let result = await uni.callStatic.universalReceiver(TOKENS_RECIPIENT_INTERFACE_HASH, "0x");
 
@@ -51,24 +55,42 @@ describe("Receivers", () => {
 
   it("Contract can check for implementing interface with Bytes32", async () => {
     let checker = await new UniversalReceiverTester__factory(signer).deploy();
-    let tx = await checker.functions.checkImplementation(uni.address, TOKENS_RECIPIENT_INTERFACE_HASH);
+    let tx = await checker.functions.checkImplementation(
+      uni.address,
+      TOKENS_RECIPIENT_INTERFACE_HASH
+    );
     let txReceipt = await tx.wait();
 
-    console.log("Contract checking for implementing interface using bytes32 costs: ", txReceipt.gasUsed);
+    console.log(
+      "Contract checking for implementing interface using bytes32 costs: ",
+      txReceipt.gasUsed
+    );
 
-    let res = await checker.callStatic.checkImplementation(uni.address, TOKENS_RECIPIENT_INTERFACE_HASH);
-    expect(res).toBe(true);
+    let res = await checker.callStatic.checkImplementation(
+      uni.address,
+      TOKENS_RECIPIENT_INTERFACE_HASH
+    );
+    expect(res).toBeTruthy();
   });
 
   it("Contract can check for implementing interface with Low Level call", async () => {
     let checker = await new UniversalReceiverTester__factory(signer).deploy();
-    let tx = await checker.lowLevelCheckImplementation(uni.address, TOKENS_RECIPIENT_INTERFACE_HASH);
+    let tx = await checker.lowLevelCheckImplementation(
+      uni.address,
+      TOKENS_RECIPIENT_INTERFACE_HASH
+    );
     let txReceipt = await tx.wait();
 
-    console.log("Contract checking for implementing interface using low level and bytes32 costs: ", txReceipt.gasUsed);
+    console.log(
+      "Contract checking for implementing interface using low level and bytes32 costs: ",
+      txReceipt.gasUsed
+    );
 
-    let res = await checker.callStatic.lowLevelCheckImplementation(uni.address, TOKENS_RECIPIENT_INTERFACE_HASH);
-    expect(res).toBe(true);
+    let res = await checker.callStatic.lowLevelCheckImplementation(
+      uni.address,
+      TOKENS_RECIPIENT_INTERFACE_HASH
+    );
+    expect(res).toBeTruthy();
   });
 
   it("Use delegate and test if it can store addresses", async () => {
@@ -89,9 +111,9 @@ describe("Receivers", () => {
     await checker2.checkImplementation(account.address, TOKENS_RECIPIENT_INTERFACE_HASH);
     await checker3.checkImplementation(account.address, TOKENS_RECIPIENT_INTERFACE_HASH);
 
-    expect(await delegate.callStatic.containsAddress(checker.address)).toBe(true);
-    expect(await delegate.callStatic.containsAddress(checker2.address)).toBe(true);
-    expect(await delegate.callStatic.containsAddress(checker3.address)).toBe(true);
+    expect(await delegate.callStatic.containsAddress(checker.address)).toBeTruthy();
+    expect(await delegate.callStatic.containsAddress(checker2.address)).toBeTruthy();
+    expect(await delegate.callStatic.containsAddress(checker3.address)).toBeTruthy();
     expect(await (await delegate.callStatic.getIndex(checker2.address)).toNumber()).toEqual(1);
   });
 

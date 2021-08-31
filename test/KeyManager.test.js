@@ -27,6 +27,7 @@ const OPERATION_DEPLOY       = 2
 const EMPTY_PAYLOAD = "0x"
 const DUMMY_PAYLOAD = "0xaabbccdd123456780000000000"
 const ONE_ETH = web3.utils.toWei("1", "ether")
+const DUMMY_PRIVATEKEY = '0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe';
 
 let allowedAddresses = [
     web3.utils.toChecksumAddress("0xcafecafecafecafecafecafecafecafecafecafe"),
@@ -177,8 +178,9 @@ contract("KeyManager", async (accounts) => {
         targetContract = await TargetContract.deployed()
         maliciousContract = await Reentrancy.new(keyManager.address)
 
-        externalApp = await web3.eth.accounts.wallet.create(1)[0].address
-
+        // externalApp = await web3.eth.accounts.wallet.create(1)[0].address
+        externalApp = await web3.eth.accounts.privateKeyToAccount(DUMMY_PRIVATEKEY)
+        console.log("externalApp", externalApp)
         // owner permissions
         await erc725Account.setData(KEY_PERMISSIONS + owner.substr(2), ALL_PERMISSIONS, { from: owner })
 
@@ -200,24 +202,24 @@ contract("KeyManager", async (accounts) => {
         
         // externalApp permissions
         let externalAppPermissions = web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL)
-        await erc725Account.setData(KEY_PERMISSIONS + externalApp.substr(2), externalAppPermissions, { from: owner })
+        await erc725Account.setData(KEY_PERMISSIONS + externalApp.address.substr(2), externalAppPermissions, { from: owner })
         await erc725Account.setData(
-            KEY_ALLOWEDADDRESSES + externalApp.substr(2), 
+            KEY_ALLOWEDADDRESSES + externalApp.address.substr(2), 
             web3.eth.abi.encodeParameter('address[]', [targetContract.address, user])
         )
         await erc725Account.setData( // do not allow the externalApp to `setNumber` on TargetContract
-            KEY_ALLOWEDFUNCTIONS + externalApp.substr(2),
+            KEY_ALLOWEDFUNCTIONS + externalApp.address.substr(2),
             web3.eth.abi.encodeParameter('bytes4[]', [web3.eth.abi.encodeFunctionSignature('setName(string)')])
         )
         
         // workaround to test security
-        await web3.eth.accounts.wallet.add('0x09e910621c2e988e9f7f6ffcd7024f54ec1461fa6e86a4b545e9e1fe21c28866')
-        newUser = await web3.eth.accounts.wallet[1].address
-        await erc725Account.setData(
-            KEY_PERMISSIONS + newUser.substr(2), 
-            web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL + PERMISSION_TRANSFERVALUE), 
-            { from: owner }
-        )
+        // await web3.eth.accounts.wallet.add('0x09e910621c2e988e9f7f6ffcd7024f54ec1461fa6e86a4b545e9e1fe21c28866')
+        // newUser = await web3.eth.accounts.wallet[1].address
+        // await erc725Account.setData(
+        //     KEY_PERMISSIONS + newUser.substr(2), 
+        //     web3.utils.toHex(PERMISSION_SETDATA + PERMISSION_CALL + PERMISSION_TRANSFERVALUE), 
+        //     { from: owner }
+        // )
 
         // switch account management to KeyManager
         await erc725Account.transferOwnership(keyManager.address, { from: owner })
@@ -653,22 +655,48 @@ contract("KeyManager", async (accounts) => {
     })
 
     context("> testing `executeRelay(...)`", async () => {
+
+        it.only("Compare signature", async () => {
+            let staticAddress = "0xcafecafecafecafecafecafecafecafecafecafe";
+            let payload = `0x44c028fe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000009fbda871d559710256a2502a2517b794b482db40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000064c47f00270000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c416e6f74686572206e616d65000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`;
+            let nonce = 0;
+            let output = web3.utils.soliditySha3(staticAddress, { t: 'bytes', v: payload }, nonce);
+            
+            let signature = web3.eth.accounts.sign(
+                web3.utils.soliditySha3(staticAddress, { t: 'bytes', v: payload }, nonce),
+                DUMMY_PRIVATEKEY
+            ).signature
+
+            let hashStaticAddress 
+
+
+            console.log(output);
+            // console.log(web3.utils.toHex(output, true));
+            // console.log(web3.utils.toHex(staticAddress, true));
+            // console.log(web3.utils.toHex({ t: 'bytes', v: payload }, true));
+            // console.log(web3.utils.toHex(nonce, true));
+            console.log("signature: ", signature)
+        })
             
         it("should execute a signed tx successfully", async () => {
 
             let targetContractPayload = targetContract.contract.methods.setName("Another name").encodeABI()    
-            let nonce = await keyManager.getNonce.call(externalApp)
-    
+            let nonce = await keyManager.getNonce.call(externalApp.address)
+            console.log("nonce: ", nonce)
             let executeRelayedCallPayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
                 targetContract.address,
                 0,
                 targetContractPayload
             ).encodeABI()
-
-            let signature = web3.eth.accounts.wallet[externalApp].sign(
-                web3.utils.soliditySha3(keyManager.address, { t: 'bytes', v: executeRelayedCallPayload }, nonce)
+            console.log("executeRelayedCallPayload: ", executeRelayedCallPayload)
+                
+            let signature = web3.eth.accounts.sign(
+                web3.utils.soliditySha3(keyManager.address, { t: 'bytes', v: executeRelayedCallPayload }, nonce),
+                DUMMY_PRIVATEKEY
             ).signature
+
+            console.log("signature: ", signature)
 
             let result = await keyManager.executeRelayedCall.call(
                 executeRelayedCallPayload,
@@ -689,7 +717,7 @@ contract("KeyManager", async (accounts) => {
             let newName = "Dagobah"
 
             let targetContractPayload = targetContract.contract.methods.setName(newName).encodeABI()    
-            let nonce = await keyManager.getNonce.call(externalApp)
+            let nonce = await keyManager.getNonce.call(externalApp.address)
     
             let executeRelayedCallPayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
@@ -698,8 +726,9 @@ contract("KeyManager", async (accounts) => {
                 targetContractPayload
             ).encodeABI()
 
-            let signature = web3.eth.accounts.wallet[externalApp].sign(
-                web3.utils.soliditySha3(keyManager.address, { t: 'bytes', v: executeRelayedCallPayload }, nonce)
+            let signature = web3.eth.accounts.sign(
+                web3.utils.soliditySha3(keyManager.address, { t: 'bytes', v: executeRelayedCallPayload }, nonce),
+                DUMMY_PRIVATEKEY
             ).signature
 
             let result = await keyManager.executeRelayedCall.call(
@@ -725,7 +754,7 @@ contract("KeyManager", async (accounts) => {
             let currentNumber = await targetContract.getNumber.call()
 
             let targetContractPayload = targetContract.contract.methods.setNumber(2354).encodeABI()    
-            let nonce = await keyManager.getNonce.call(externalApp)
+            let nonce = await keyManager.getNonce.call(externalApp.address)
     
             let executeRelayedCallPayload = erc725Account.contract.methods.execute(
                 OPERATION_CALL,
