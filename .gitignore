@@ -40,6 +40,9 @@ bower_components
 jar/
 src/
 
+# Generated swift files
+ios/
+
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
@@ -118,3 +121,6 @@ java/.gradle
 java/.idea
 
 .idea
+
+# Solidity Flattener
+out/
