@@ -1,3 +1,20 @@
 {
-  "extends": "solhint:default"
+  "extends": "solhint:default",
+  "rules": {
+    "avoid-call-value": "off",
+    "avoid-low-level-calls": "off",
+    "avoid-sha3": "error",
+    "avoid-suicide": "error",
+    "avoid-throw": "error",
+    "avoid-tx-origin": "error",
+    "check-send-result": "error",
+    "func-visibility": "error",
+    "multiple-sends": "error",
+    "no-complex-fallback": "warning",
+    "no-inline-assembly": "off",
+    "not-rely-on-block-hash": "error",
+    "not-rely-on-time": "error",
+    "reentrancy": "error",
+    "state-visibility": "warning"
+  }
 }
