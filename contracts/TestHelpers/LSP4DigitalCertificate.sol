@@ -23,6 +23,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         string memory symbol,
         address[] memory defaultOperators
     )
+        public
         ERC725Y(newOwner)
         ERC777UniversalReceiver(name, symbol, defaultOperators)
     {

@@ -17,7 +17,7 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
     bytes32 constant internal _TOKENS_RECIPIENT_INTERFACE_HASH =
     0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b; // keccak256("ERC777TokensRecipient")
 
-    constructor() {
+    constructor() public {
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 

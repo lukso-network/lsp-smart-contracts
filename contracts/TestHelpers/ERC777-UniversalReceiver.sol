@@ -44,7 +44,7 @@ contract ERC777UniversalReceiver is ERC777 {
         string memory name,
         string memory symbol,
         address[] memory defaultOperators
-    ) {
+    ) public {
         _name = name;
         _symbol = symbol;
 

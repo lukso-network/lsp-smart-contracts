@@ -53,7 +53,7 @@ contract KeyManager is ERC165, IERC1271 {
 
     event Executed(uint256 indexed _value, bytes _data);
 
-    constructor(address _account) {
+    constructor(address _account) public {
         // Set account
         Account = ERC725Y(_account);
     }
@@ -191,18 +191,10 @@ contract KeyManager is ERC165, IERC1271 {
             bytes1 permission;
             assembly {
                 switch operationType
-                case 0 {
-                    permission := PERMISSION_CALL
-                }
-                case 1 {
-                    permission := PERMISSION_DELEGATECALL
-                }
-                case 2 {
-                    permission := PERMISSION_DEPLOY
-                } // CREATE2
-                case 3 {
-                    permission := PERMISSION_DEPLOY
-                } // CREATE
+                case 0 { permission := PERMISSION_CALL }
+                case 1 { permission := PERMISSION_DELEGATECALL }
+                case 2 { permission := PERMISSION_DEPLOY } // CREATE2
+                case 3 { permission := PERMISSION_DEPLOY } // CREATE
             }
             bool operationAllowed = _isAllowed(permission, userPermissions);
 

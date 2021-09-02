@@ -11,7 +11,7 @@ contract ExternalERC777UniversalReceiverRejectTester is ERC165Storage, ILSP1Dele
 
     bytes4 _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 
-    constructor() {
+    constructor() public {
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 

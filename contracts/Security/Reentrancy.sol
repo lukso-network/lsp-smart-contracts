@@ -6,7 +6,7 @@ contract Reentrancy {
     bytes payload;
     address target;
 
-    constructor(address _keyManager) {
+    constructor(address _keyManager) public {
         target = _keyManager;
     }
 
