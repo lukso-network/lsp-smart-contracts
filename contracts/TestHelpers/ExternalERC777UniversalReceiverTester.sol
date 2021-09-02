@@ -21,9 +21,23 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 
-    event ReceivedERC777(address indexed token, address indexed _operator, address indexed _from, address _to, uint256 _amount);
+    event ReceivedERC777(
+        address indexed token, 
+        address indexed _operator, 
+        address indexed _from, 
+        address _to, 
+        uint256 _amount
+    );
 
-    function universalReceiverDelegate(address sender, bytes32 typeId, bytes memory data) external override returns(bytes32){
+    function universalReceiverDelegate(
+        address sender, 
+        bytes32 typeId, 
+        bytes memory data
+    ) 
+        external 
+        override 
+        returns(bytes32)
+    {
 
         if(typeId == _TOKENS_RECIPIENT_INTERFACE_HASH) {
             (address _operator, address _from, address _to, uint256 _amount) = toERC777Data(data);
@@ -42,7 +56,16 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
     }
 
 
-    function toERC777Data(bytes memory _bytes) internal pure returns(address _operator, address _from, address _to, uint256 _amount) {
+    function toERC777Data(bytes memory _bytes) 
+        internal 
+        pure 
+        returns(
+            address _operator, 
+            address _from, 
+            address _to, 
+            uint256 _amount
+        ) 
+    {
         // solium-disable-next-line security/no-inline-assembly
         assembly {
             _operator := mload(add(add(_bytes, 0x14), 0x0))

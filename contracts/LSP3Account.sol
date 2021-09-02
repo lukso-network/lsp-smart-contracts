@@ -81,13 +81,14 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
 
     // -> Functions from ERC725Account
 
+    /* solhint-disable */
     // receive() external payable
     // function owner() public view returns(address)
     // function isValidSignature(bytes32 _hash, bytes memory _signature) public view returns (bytes4 magicValue)
     // function getData(bytes32 _key) public view returns (bytes memory _value)
     // function setData(bytes32 _key, bytes calldata _value) external onlyOwner
     // function execute(uint256 _operation, address _to, uint256 _value, bytes calldata _data) external payable onlyOwner
-
+    /* solhint-enable */
 
     function setData(bytes32 _key, bytes calldata _value)
     public
@@ -122,7 +123,11 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
             address universalReceiverAddress = BytesLib.toAddress(receiverData, 0);
 
             if(ERC165(universalReceiverAddress).supportsInterface(_INTERFACE_ID_LSP1DELEGATE)) {
-                returnValue = ILSP1Delegate(universalReceiverAddress).universalReceiverDelegate(_msgSender(), _typeId, _data);
+                returnValue = ILSP1Delegate(universalReceiverAddress).universalReceiverDelegate(
+                    _msgSender(), 
+                    _typeId, 
+                    _data
+                );
             }
         }
 

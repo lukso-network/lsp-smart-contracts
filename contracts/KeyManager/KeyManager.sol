@@ -26,12 +26,14 @@ contract KeyManager is ERC165, IERC1271 {
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
 
     // prettier-ignore
+    /* solhint-disable */
     // PERMISSION KEYS
     bytes8 internal constant SET_PERMISSIONS       = 0x4b80742d00000000; // AddressPermissions:<...>
     bytes12 internal constant KEY_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
     bytes12 internal constant KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
     bytes12 internal constant KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
     bytes12 internal constant KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+    /* solhint-enable */
 
     // prettier-ignore
     // PERMISSIONS VALUES
