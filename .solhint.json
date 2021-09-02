@@ -13,6 +13,9 @@
     "not-rely-on-block-hash": "error",
     "not-rely-on-time": "error",
     "reentrancy": "error",
-    "state-visibility": "warning"
+    "state-visibility": "warning",
+    "code-complexity": ["warn", 4],
+    "no-empty-block": "error",
+    "constructor-syntax": "error"
   }
 }
