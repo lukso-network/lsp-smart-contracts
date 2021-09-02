@@ -8,6 +8,10 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
  * @dev Required interface of an ERC721 compliant contract.
  */
 interface IERC721LSPX is IERC165 {
+    //
+    // --- Events
+    //
+
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
      */
@@ -36,9 +40,60 @@ interface IERC721LSPX is IERC165 {
     );
 
     /**
-     * @dev Returns the number of tokens in ``owner``'s account.
+     * @dev Emitted when `tokenId` has a metadata contract created at `storageContract`
      */
-    function balanceOf(address owner) external view returns (uint256 balance);
+    event MetadataCreated(
+        bytes32 indexed tokenId,
+        address indexed storageContract
+    );
+
+    //
+    // --- Token queries
+    //
+
+    /**
+     * @dev Returns the name of the token.
+     */
+    function name() external view returns (string memory);
+
+    /**
+     * @dev Returns the symbol of the token, usually a shorter version of the
+     * name.
+     */
+    function symbol() external view returns (string memory);
+
+    /**
+     * @dev Returns the total amount of tokens stored by the contract.
+     */
+    function totalSupply() external view returns (uint256);
+
+    /**
+     * @dev Returns the number of tokens that have been minted.
+     */
+    function mintedSupply() external view returns (uint256);
+
+    /**
+     * @dev Returns the number of tokens available to be minted.
+     */
+    function mintableSupply() external view returns (uint256);
+
+    /**
+     * @dev Returns a bytes32 array of all token holder addresses
+     */
+    function allTokenHolders() external view returns (bytes32[] memory);
+
+    //
+    // --- Token ID queries
+    //
+
+    /**
+     * @dev Returns the number of tokens in ``owner``'s account.
+     *
+     * * Requirements:
+     *
+     * - `owner` cannot be the zero address.
+     */
+    function balanceOf(address owner) external view returns (uint256);
 
     /**
      * @dev Returns the owner of the `tokenId` token.
@@ -47,82 +102,24 @@ interface IERC721LSPX is IERC165 {
      *
      * - `tokenId` must exist.
      */
-    function ownerOf(uint256 tokenId) external view returns (address owner);
+    function ownerOf(bytes32 tokenId) external view returns (address);
+
+    //
+    // --- Metadata functionality
+    //
 
     /**
-     * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
-     * are aware of the ERC721 protocol to prevent tokens from being forever locked.
+     * @dev Returns the metadata address of the `tokenId` token;
      *
-     * Requirements:
+     * * Requirements:
      *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     * - `tokenId` token must exist and be owned by `from`.
-     * - If the caller is not `from`, it must be have been allowed to move this token by either {approve} or {setApprovalForAll}.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-     *
-     * Emits a {Transfer} event.
-     */
-    function safeTransferFrom(
-        address from,
-        address to,
-        bytes32 tokenId
-    ) external;
-
-    /**
-     * @dev Safely transfers `tokenId` token from `from` to `to`.
-     *
-     * Requirements:
-     *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     * - `tokenId` token must exist and be owned by `from`.
-     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-     *
-     * Emits a {Transfer} event.
-     */
-    function safeTransferFrom(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bytes calldata data
-    ) external;
-
-    /**
-     * @dev Transfers `tokenId` token from `from` to `to`.
-     *
-     * WARNING: Usage of this method is discouraged, use {safeTransferFrom} whenever possible.
-     *
-     * Requirements:
-     *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     * - `tokenId` token must be owned by `from`.
-     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
-     *
-     * Emits a {Transfer} event.
-     */
-    function transferFrom(
-        address from,
-        address to,
-        bytes32 tokenId
-    ) external;
-
-    /**
-     * @dev Gives permission to `to` to transfer `tokenId` token to another account.
-     * The approval is cleared when the token is transferred.
-     *
-     * Only a single account can be approved at a time, so approving the zero address clears previous approvals.
-     *
-     * Requirements:
-     *
-     * - The caller must own the token or be an approved operator.
      * - `tokenId` must exist.
-     *
-     * Emits an {Approval} event.
      */
-    function approve(address to, bytes32 tokenId) external;
+    function metadataOf(bytes32 tokenId) external view returns (address);
+
+    //
+    // --- Approval functionality
+    //
 
     /**
      * @dev Returns the account approved for `tokenId` token.
@@ -131,14 +128,11 @@ interface IERC721LSPX is IERC165 {
      *
      * - `tokenId` must exist.
      */
-    function getApproved(bytes32 tokenId)
-        external
-        view
-        returns (address operator);
+    function getApproved(bytes32 tokenId) external view returns (address);
 
     /**
      * @dev Approve or remove `operator` as an operator for the caller.
-     * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.
+     * Operators can call {transferFrom} for any token owned by the caller.
      *
      * Requirements:
      *
@@ -157,4 +151,60 @@ interface IERC721LSPX is IERC165 {
         external
         view
         returns (bool);
+
+    /**
+     * @dev Gives permission to `to` to transfer `tokenId` token to another account.
+     * The approval is cleared when the token is transferred.
+     *
+     * Only a single account can be approved at a time, so approving the zero address clears previous approvals.
+     *
+     * Requirements:
+     *
+     * - The caller must own the token or be an approved operator.
+     * - `tokenId` must exist.
+     *
+     * Emits an {Approval} event.
+     */
+    function approve(address to, bytes32 tokenId) external;
+
+    //
+    // --- Transfer functionality
+    //
+
+    /**
+     * @dev Transfers `tokenId` token from `from` to `to`.
+     *
+     * Requirements:
+     *
+     * - `from` cannot be the zero address.
+     * - `to` cannot be the zero address.
+     * - `tokenId` token must be owned by `from`.
+     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
+     *
+     * Emits a {Transfer} event.
+     */
+    function transferFrom(
+        address from,
+        address to,
+        bytes32 tokenId
+    ) external;
+
+    /**
+     * @dev Transfers `tokenId` token from `from` to `to`.
+     *
+     * Requirements:
+     *
+     * - `from` cannot be the zero address.
+     * - `to` cannot be the zero address.
+     * - `tokenId` token must be owned by `from`.
+     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
+     *
+     * Emits a {Transfer} event.
+     */
+    function transferFrom(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bytes calldata data
+    ) external;
 }
