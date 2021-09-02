@@ -569,11 +569,11 @@ contract ERC721LSPX is Pausable, ERC725Y, IERC721LSPX {
         bytes memory data
     ) private {
         if (
-            ERC165Checker.supportsERC165(to) &&
-            ERC165Checker.supportsInterface(to, _INTERFACE_ID_LSP1)
+            ERC165Checker.supportsERC165(from) &&
+            ERC165Checker.supportsInterface(from, _INTERFACE_ID_LSP1)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
-            ILSP1(to).universalReceiver(
+            ILSP1(from).universalReceiver(
                 _TOKENS_SENDER_INTERFACE_HASH,
                 packedData
             );
