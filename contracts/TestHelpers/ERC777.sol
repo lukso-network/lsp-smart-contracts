@@ -491,5 +491,6 @@ contract ERC777 is Context, IERC777, IERC20 {
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
+     /* solhint-disable no-empty-blocks */
     function _beforeTokenTransfer(address operator, address from, address to, uint256 amount) internal virtual { }
 }

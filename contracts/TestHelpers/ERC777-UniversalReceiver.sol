@@ -55,7 +55,7 @@ contract ERC777UniversalReceiver is ERC777 {
     }
 
     function mint(address _address, uint256 _amount) external virtual {
-        require(_defaultOperators[_msgSender()], 'Only default operators can mint');
+        require(_defaultOperators[_msgSender()], "Only default operators can mint");
 
         _mint(_address, _amount, "", "");
     }

@@ -18,8 +18,8 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
 
-    bytes4 _INTERFACE_ID_LSP1 = 0x6bb56a14;
-    bytes4 _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
+    bytes4 constant _INTERFACE_ID_LSP1 = 0x6bb56a14;
+    bytes4 constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 
     bytes32 constant private _UNIVERSAL_RECEIVER_DELEGATE_KEY =
     0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47; // keccak256("LSP1UniversalReceiverDelegate")
@@ -35,7 +35,7 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
     // event Executed(uint256 indexed _operation, address indexed _to, uint256 indexed  _value, bytes _data)
 
 
-    constructor(address _newOwner) ERC725Account(_newOwner) public {
+    constructor(address _newOwner) public ERC725Account(_newOwner) {
 
         // Add the key of the SupportedStandards:ERC725Account set in the constructor of ERC725Account.sol
         dataKeys.push(0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6);
@@ -54,8 +54,8 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
     }
 
     function setDataMultiple(bytes32[] calldata _keys, bytes[] calldata _values)
-    public
-    onlyOwner
+        public
+        onlyOwner
     {
         for (uint256 i = 0; i < _keys.length; i++) {
             setData(_keys[i], _values[i]);
@@ -63,9 +63,9 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
     }
 
     function getDataMultiple(bytes32[] calldata _keys)
-    public
-    view
-    returns(bytes[] memory)
+        public
+        view
+        returns(bytes[] memory)
     {
         uint256 length = _keys.length;
         bytes[] memory values = new bytes[](length);
@@ -91,9 +91,9 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
     /* solhint-enable */
 
     function setData(bytes32 _key, bytes calldata _value)
-    public
-    override
-    onlyOwner
+        public
+        override
+        onlyOwner
     {
         if(store[_key].length == 0) {
             dataKeys.push(_key); // 30k more gas on initial set
@@ -110,10 +110,10 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
     * @param _data The data received
     */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
-    external
-    override
-    virtual
-    returns (bytes32 returnValue)
+        external
+        override
+        virtual
+        returns (bytes32 returnValue)
     {
         bytes memory receiverData = getData(_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         returnValue = "";

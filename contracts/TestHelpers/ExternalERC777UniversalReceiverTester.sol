@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
 
-    bytes4 _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
+    bytes4 constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 
     bytes32 constant internal _TOKENS_SENDER_INTERFACE_HASH =
     0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895; // keccak256("ERC777TokensSender")

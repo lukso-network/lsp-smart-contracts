@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 contract ExternalERC777UniversalReceiverRejectTester is ERC165Storage, ILSP1Delegate {
 
-    bytes4 _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
+    bytes4 constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 
     constructor() public {
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
