@@ -8,7 +8,7 @@
     "avoid-throw": "error",
     "avoid-tx-origin": "error",
     "check-send-result": "error",
-    "compiler-version": ["error", "^0.8.6"],
+    "compiler-version": ["error", "^0.8.0"],
     "func-visibility": "error",
     "not-rely-on-block-hash": "error",
     "not-rely-on-time": "error",
