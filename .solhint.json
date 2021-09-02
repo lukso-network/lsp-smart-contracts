@@ -1,5 +1,5 @@
 {
-  "extends": "solhint:default",
+  "extends": "solhint:recommended",
   "rules": {
     "avoid-call-value": "off",
     "avoid-low-level-calls": "off",
@@ -8,10 +8,8 @@
     "avoid-throw": "error",
     "avoid-tx-origin": "error",
     "check-send-result": "error",
+    "compiler-version": ["error", "^0.8.6"],
     "func-visibility": "error",
-    "multiple-sends": "error",
-    "no-complex-fallback": "warning",
-    "no-inline-assembly": "off",
     "not-rely-on-block-hash": "error",
     "not-rely-on-time": "error",
     "reentrancy": "error",
