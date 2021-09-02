@@ -102,22 +102,23 @@ contract ERC777UniversalReceiver is ERC777 {
             ILSP1(from).universalReceiver(_TOKENS_SENDER_INTERFACE_HASH, data);
         }
 
-
-        bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
-        (bool succ, bytes memory ret) = to.call(
-            abi.encodeWithSignature("universalReceiver(bytes32,bytes)", 
-            _TOKENS_SENDER_INTERFACE_HASH,data)
-        );
-        if(requireReceptionAck && from.isContract()) {
-            bytes32 returnHash;
-            assembly {
-                returnHash := mload(add(ret, 32))
-            }
-            require(
-                succ && returnHash == _TOKENS_SENDER_INTERFACE_HASH,
-                "ERC777: token recipient contract has no implementer for ERC777TokensSender"
-            );
-        }
+        /* solhint-disable */
+        // bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
+        // (bool succ, bytes memory ret) = to.call(
+        //     abi.encodeWithSignature("universalReceiver(bytes32,bytes)", 
+        //     _TOKENS_SENDER_INTERFACE_HASH,data)
+        // );
+        // if(requireReceptionAck && from.isContract()) {
+        //     bytes32 returnHash;
+        //     assembly {
+        //         returnHash := mload(add(ret, 32))
+        //     }
+        //     require(
+        //         succ && returnHash == _TOKENS_SENDER_INTERFACE_HASH,
+        //         "ERC777: token recipient contract has no implementer for ERC777TokensSender"
+        //     );
+        // }
+        /** solhint-enable */
     }
 
     /**
