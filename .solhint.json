@@ -14,12 +14,11 @@
     "not-rely-on-time": "error",
     "reentrancy": "error",
     "state-visibility": "warning",
-    "code-complexity": ["warn", 4],
     "no-empty-block": "error",
     "constructor-syntax": "error",
     "func-param-name-mixedcase": "warn",
     "modifier-name-mixedcase": "warn",
-    "private-vars-leading-underscore": "error",
+    "private-vars-leading-underscore": ["error", { "strict": true }],
     "use-forbidden-name": "error",
     "imports-on-top": "error",
     "visibility-modifier-order": "error"

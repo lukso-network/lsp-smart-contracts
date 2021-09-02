@@ -40,7 +40,7 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
     {
 
         if(typeId == _TOKENS_RECIPIENT_INTERFACE_HASH) {
-            (address _operator, address _from, address _to, uint256 _amount) = toERC777Data(data);
+            (address _operator, address _from, address _to, uint256 _amount) = _toERC777Data(data);
 
             emit ReceivedERC777(sender, _operator, _from, _to, _amount);
 
@@ -56,7 +56,7 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
     }
 
 
-    function toERC777Data(bytes memory _bytes) 
+    function _toERC777Data(bytes memory _bytes) 
         internal 
         pure 
         returns(

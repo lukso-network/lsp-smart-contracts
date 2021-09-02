@@ -8,34 +8,34 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 contract AddressRegistry is ERC165Storage {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    EnumerableSet.AddressSet internal addressStore;
+    EnumerableSet.AddressSet internal _addressStore;
 
     function addAddress(address _address) public virtual returns (bool) {
-        return addressStore.add(_address);
+        return _addressStore.add(_address);
     }
 
     function removeAddress(address _address) public virtual returns (bool) {
-        return addressStore.remove(_address);
+        return _addressStore.remove(_address);
     }
 
     function getAddress(uint256 _index) public view returns (address) {
-        return addressStore.at(_index);
+        return _addressStore.at(_index);
     }
 
     function getIndex(address _address) public view returns (uint256) {
-        require(addressStore.contains(_address), "EnumerableSet: Index not found");
-        return addressStore._inner._indexes[bytes32(uint256(uint160(_address)))] - 1;
+        require(_addressStore.contains(_address), "EnumerableSet: Index not found");
+        return _addressStore._inner._indexes[bytes32(uint256(uint160(_address)))] - 1;
     }
 
     function getAllRawValues() public view returns (bytes32[] memory) {
-        return addressStore._inner._values;
+        return _addressStore._inner._values;
     }
 
     function containsAddress(address _address) public view returns (bool) {
-        return addressStore.contains(_address);
+        return _addressStore.contains(_address);
     }
 
     function length() public view returns (uint256) {
-        return addressStore.length();
+        return _addressStore.length();
     }
 }
