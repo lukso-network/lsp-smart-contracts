@@ -18,7 +18,7 @@
     "constructor-syntax": "error",
     "func-param-name-mixedcase": "warn",
     "modifier-name-mixedcase": "warn",
-    "private-vars-leading-underscore": ["error", { "strict": true }],
+    "private-vars-leading-underscore": ["error", { "strict": false }],
     "use-forbidden-name": "error",
     "imports-on-top": "error",
     "visibility-modifier-order": "error"
