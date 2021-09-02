@@ -422,6 +422,7 @@ contract ERC721LSPX is Pausable, ERC725Y, IERC721LSPX {
      *
      * Requirements:
      *
+     * - `mintableSupply()` must be greater than zero.
      * - `tokenId` must not exist.
      * - `to` cannot be the zero address.
      *
@@ -432,6 +433,7 @@ contract ERC721LSPX is Pausable, ERC725Y, IERC721LSPX {
         bytes32 tokenId,
         bytes memory data
     ) internal virtual {
+        require(mintableSupply() > 0, "ERC721-LSPX: mintableSupply is zero");
         require(to != address(0), "ERC721-LSPX: mint to the zero address");
         require(!_exists(tokenId), "ERC721-LSPX: token already minted");
 
