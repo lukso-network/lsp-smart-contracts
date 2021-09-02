@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: solhint
-        uses: contractshark/inject-solhint-ci@1.0.0
+        uses: contractshark/inject-solhint-ci@latest
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # reporter: github-pr-review # Change reporter.
