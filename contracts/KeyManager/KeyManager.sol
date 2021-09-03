@@ -119,7 +119,7 @@ contract KeyManager is ERC165, IERC1271 {
      * @param _nonce the address' nonce, obtained via `getNonce(...)`. Used to prevent replay attack
      * @param _signature bytes32 ethereum signature
      */
-    function executeRelayedCall(
+    function executeRelayCall(
         bytes calldata _data,
         address _signedFor,
         uint256 _nonce,
@@ -127,7 +127,7 @@ contract KeyManager is ERC165, IERC1271 {
     ) external payable returns (bool success_) {
         require(
             _signedFor == address(this),
-            "KeyManager:executeRelayedCall: Message not signed for this keyManager"
+            "KeyManager:executeRelayCall: Message not signed for this keyManager"
         );
 
         bytes memory blob = abi.encodePacked(
@@ -143,7 +143,7 @@ contract KeyManager is ERC165, IERC1271 {
         // require(hasRole(EXECUTOR_ROLE, from), 'Only executors are allowed');
         require(
             _nonceStore[from] == _nonce,
-            "KeyManager:executeRelayedCall: Incorrect nonce"
+            "KeyManager:executeRelayCall: Incorrect nonce"
         );
 
         // increase the nonce

@@ -566,7 +566,7 @@ describe("KeyManager", () => {
       ]);
       let nonce = await keyManager.callStatic.getNonce(externalApp.address);
 
-      let executeRelayedCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
         targetContract.address,
         0,
@@ -575,13 +575,13 @@ describe("KeyManager", () => {
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "bytes", "uint256"],
-        [keyManager.address, executeRelayedCallPayload, nonce]
+        [keyManager.address, executeRelayCallPayload, nonce]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-      let result = await keyManager.callStatic.executeRelayedCall(
-        executeRelayedCallPayload,
+      let result = await keyManager.callStatic.executeRelayCall(
+        executeRelayCallPayload,
         keyManager.address,
         nonce,
         signature
@@ -596,7 +596,7 @@ describe("KeyManager", () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
       let nonce = await keyManager.callStatic.getNonce(externalApp.address);
 
-      let executeRelayedCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
         targetContract.address,
         0,
@@ -605,21 +605,21 @@ describe("KeyManager", () => {
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "bytes", "uint256"],
-        [keyManager.address, executeRelayedCallPayload, nonce]
+        [keyManager.address, executeRelayCallPayload, nonce]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-      let result = await keyManager.callStatic.executeRelayedCall(
-        executeRelayedCallPayload,
+      let result = await keyManager.callStatic.executeRelayCall(
+        executeRelayCallPayload,
         keyManager.address,
         nonce,
         signature
       );
       expect(result).toBeTruthy();
 
-      await keyManager.executeRelayedCall(
-        executeRelayedCallPayload,
+      await keyManager.executeRelayCall(
+        executeRelayCallPayload,
         keyManager.address,
         nonce,
         signature,
@@ -635,7 +635,7 @@ describe("KeyManager", () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [2354]);
       let nonce = await keyManager.callStatic.getNonce(externalApp.address);
 
-      let executeRelayedCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
         targetContract.address,
         0,
@@ -644,18 +644,13 @@ describe("KeyManager", () => {
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "bytes", "uint256"],
-        [keyManager.address, executeRelayedCallPayload, nonce]
+        [keyManager.address, executeRelayCallPayload, nonce]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
       await expectRevert.unspecified(
-        keyManager.executeRelayedCall(
-          executeRelayedCallPayload,
-          keyManager.address,
-          nonce,
-          signature
-        )
+        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature)
         // "KeyManager:_checkPermissions: Not authorised to run this function"
       );
       ``;
@@ -722,7 +717,7 @@ describe("KeyManager", () => {
     it("Replay Attack should fail because of invalid nonce", async () => {
       let nonce = await keyManager.callStatic.getNonce(newUser.address);
 
-      let executeRelayedCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
         maliciousContract.address,
         ONE_ETH,
@@ -731,22 +726,22 @@ describe("KeyManager", () => {
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "bytes", "uint256"],
-        [keyManager.address, executeRelayedCallPayload, nonce]
+        [keyManager.address, executeRelayCallPayload, nonce]
       );
 
       let signature = await newUser.signMessage(ethers.utils.arrayify(hash));
 
       // first call
-      let result = await keyManager.callStatic.executeRelayedCall(
-        executeRelayedCallPayload,
+      let result = await keyManager.callStatic.executeRelayCall(
+        executeRelayCallPayload,
         keyManager.address,
         nonce,
         signature
       );
       expect(result).toBeTruthy();
 
-      await keyManager.executeRelayedCall(
-        executeRelayedCallPayload,
+      await keyManager.executeRelayCall(
+        executeRelayCallPayload,
         keyManager.address,
         nonce,
         signature
@@ -754,14 +749,10 @@ describe("KeyManager", () => {
 
       // 2nd call = replay attack
       await expectRevert.unspecified(
-        keyManager.executeRelayedCall(
-          executeRelayedCallPayload,
-          keyManager.address,
-          nonce,
-          signature,
-          { gasLimit: 3_000_000 }
-        )
-        // "KeyManager:executeRelayedCall: Incorrect nonce"
+        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature, {
+          gasLimit: 3_000_000,
+        })
+        // "KeyManager:executeRelayCall: Incorrect nonce"
       );
     });
   });
