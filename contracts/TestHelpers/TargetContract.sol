@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.7.0 <=0.9.0;
+pragma solidity ^0.8.0;
 
 contract TargetContract {
 
+    /* solhint-disable */
     uint number = 5;
     string name = "Simple Contract Name";
+    /* solhint-enable */
 
     function getNumber() public view returns (uint) {
         return number;

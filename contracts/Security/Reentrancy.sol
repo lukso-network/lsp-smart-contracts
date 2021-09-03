@@ -3,18 +3,18 @@ pragma solidity ^0.8.0;
 
 contract Reentrancy {
 
-    bytes payload;
-    address target;
+    bytes _payload;
+    address _target;
 
-    constructor(address _keyManager) {
-        target = _keyManager;
+    constructor(address _keyManager) public {
+        _target = _keyManager;
     }
 
     function loadPayload(bytes memory _payload) public {
-        payload = _payload;
+        _payload = _payload;
     }
 
     fallback() external payable {
-        target.call(payload);
+        _target.call(_payload);
     }
 }

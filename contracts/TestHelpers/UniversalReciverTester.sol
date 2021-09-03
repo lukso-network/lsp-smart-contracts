@@ -16,20 +16,28 @@ contract UniversalReceiverTester {
         return ret == typeId;
     }
 
-//    function checkImplementationBytes(address target, bytes32 typeId) external returns (bool) {
-//        bytes memory ret = ILSP1(target).universalReceiverBytes(typeId, "");
-//        return AssertBytes.equal(ret, abi.encodePacked(typeId), "");
-//    }
+    // function checkImplementationBytes(address target, bytes32 typeId) external returns (bool) {
+    //     bytes memory ret = ILSP1(target).universalReceiverBytes(typeId, "");
+    //     return AssertBytes.equal(ret, abi.encodePacked(typeId), "");
+    // }
 
     function lowLevelCheckImplementation(address target, bytes32 typeId) external returns (bool) {
-        (bool succ, bytes memory ret) = target.call(abi.encodeWithSignature("universalReceiver(bytes32,bytes)", typeId, ""));
+        (bool succ, bytes memory ret) = target.call(
+            abi.encodeWithSignature(
+                "universalReceiver(bytes32,bytes)", 
+                typeId, 
+                ""
+            )
+        );
         bytes32 response = BytesLib.toBytes32(ret, 0);
         return succ && response == typeId;
     }
 
-//    function lowLevelCheckImplementationBytes(address target, bytes32 typeId) external returns (bool) {
-//        (bool succ, bytes memory ret) = target.call(abi.encodeWithSignature("universalReceiverBytes(bytes32,bytes)", typeId, ""));
-//        return succ && AssertBytes.equal(ret, abi.encodePacked(typeId), "");
-//    }
+    /* solhint-disable */
+    // function lowLevelCheckImplementationBytes(address target, bytes32 typeId) external returns (bool) {
+    //     (bool succ, bytes memory ret) = target.call(abi.encodeWithSignature("universalReceiverBytes(bytes32,bytes)", typeId, ""));
+    //     return succ && AssertBytes.equal(ret, abi.encodePacked(typeId), "");
+    // }
+    /* solhint-enable */
 
 }

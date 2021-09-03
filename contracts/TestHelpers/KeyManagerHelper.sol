@@ -5,12 +5,12 @@ pragma solidity ^0.8.0;
  * Helper contract to test internal functions of the KeyManager
  */
 
-import { KeyManager } from '../KeyManager/KeyManager.sol';
+import "../KeyManager/KeyManager.sol";
 
 contract KeyManagerHelper is KeyManager {
 
-    constructor(address _account)
-        KeyManager(_account) {}
+    /* solhint-disable no-empty-blocks */
+    constructor(address _account) public KeyManager(_account) {}
 
     function getUserPermissions(address _user) public view returns (bytes1) {
         return super._getUserPermissions(_user);

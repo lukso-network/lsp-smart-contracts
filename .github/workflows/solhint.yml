@@ -1,0 +1,36 @@
+name: Solhint CI
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+jobs:
+  solhint:
+    name: runner / solhint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Use Node.js '14.16.0'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14.16.0"
+          cache: "npm"
+
+      - run: npm ci
+      - run: cd ./submodules/ERC725/implementations && npm install
+
+      - name: solhint
+        run: |
+          npm install -g solhint
+          solhint 'contracts/**/*.sol'
+
+        # uses: contractshark/inject-solhint-ci@latest
+        # with:
+        #   github_token: ${{ secrets.GITHUB_TOKEN }}
+        #   # reporter: github-pr-review # Change reporter.
+        #   solhint_input: "contracts/**/*.sol"

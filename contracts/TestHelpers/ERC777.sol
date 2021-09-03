@@ -223,7 +223,12 @@ contract ERC777 is Context, IERC777, IERC20 {
      *
      * Emits {Burned} and {IERC20-Transfer} events.
      */
-    function operatorBurn(address account, uint256 amount, bytes memory data, bytes memory operatorData) public override {
+    function operatorBurn(
+        address account,
+        uint256 amount, 
+        bytes memory data, 
+        bytes memory operatorData
+    ) public override {
         require(isOperatorFor(_msgSender(), account), "ERC777: caller is not an operator for holder");
         _burn(account, amount, data, operatorData);
     }
@@ -268,7 +273,11 @@ contract ERC777 is Context, IERC777, IERC20 {
         _callTokensToSend(spender, holder, recipient, amount, "", "");
 
         _move(spender, holder, recipient, amount, "", "");
-        _approve(holder, spender, _allowances[holder][spender].sub(amount, "ERC777: transfer amount exceeds allowance"));
+        _approve(
+            holder, 
+            spender, 
+            _allowances[holder][spender].sub(amount, "ERC777: transfer amount exceeds allowance")
+        );
 
         _callTokensReceived(spender, holder, recipient, amount, "", "", false);
 
@@ -482,5 +491,6 @@ contract ERC777 is Context, IERC777, IERC20 {
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
+     /* solhint-disable no-empty-blocks */
     function _beforeTokenTransfer(address operator, address from, address to, uint256 amount) internal virtual { }
 }

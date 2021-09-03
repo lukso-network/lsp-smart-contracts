@@ -44,7 +44,7 @@ contract ERC777UniversalReceiver is ERC777 {
         string memory name,
         string memory symbol,
         address[] memory defaultOperators
-    ) {
+    ) public {
         _name = name;
         _symbol = symbol;
 
@@ -55,7 +55,7 @@ contract ERC777UniversalReceiver is ERC777 {
     }
 
     function mint(address _address, uint256 _amount) external virtual {
-        require(_defaultOperators[_msgSender()], 'Only default operators can mint');
+        require(_defaultOperators[_msgSender()], "Only default operators can mint");
 
         _mint(_address, _amount, "", "");
     }
@@ -102,15 +102,23 @@ contract ERC777UniversalReceiver is ERC777 {
             ILSP1(from).universalReceiver(_TOKENS_SENDER_INTERFACE_HASH, data);
         }
 
-//        bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
-//        (bool succ, bytes memory ret) = to.call(abi.encodeWithSignature("universalReceiver(bytes32,bytes)", _TOKENS_SENDER_INTERFACE_HASH,data));
-//        if(requireReceptionAck && from.isContract()) {
-//            bytes32 returnHash;
-//            assembly {
-//                returnHash := mload(add(ret, 32))
-//            }
-//            require(succ && returnHash == _TOKENS_SENDER_INTERFACE_HASH ,"ERC777: token recipient contract has no implementer for ERC777TokensSender");
-//        }
+        /* solhint-disable */
+        // bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
+        // (bool succ, bytes memory ret) = to.call(
+        //     abi.encodeWithSignature("universalReceiver(bytes32,bytes)", 
+        //     _TOKENS_SENDER_INTERFACE_HASH,data)
+        // );
+        // if(requireReceptionAck && from.isContract()) {
+        //     bytes32 returnHash;
+        //     assembly {
+        //         returnHash := mload(add(ret, 32))
+        //     }
+        //     require(
+        //         succ && returnHash == _TOKENS_SENDER_INTERFACE_HASH,
+        //         "ERC777: token recipient contract has no implementer for ERC777TokensSender"
+        //     );
+        // }
+        /** solhint-enable */
     }
 
     /**
@@ -140,7 +148,10 @@ contract ERC777UniversalReceiver is ERC777 {
             bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
             ILSP1(to).universalReceiver(_TOKENS_RECIPIENT_INTERFACE_HASH, data);
         } else if (requireReceptionAck) {
-            require(!to.isContract(), "ERC777: token recipient contract has no universal receiver for 'ERC777TokensRecipient'");
+            require(
+                !to.isContract(), 
+                "ERC777: token recipient contract has no universal receiver for 'ERC777TokensRecipient'"
+            );
         }
     }
 }

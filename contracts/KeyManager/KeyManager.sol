@@ -19,41 +19,42 @@ contract KeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
 
-    ERC725Y public Account;
+    ERC725Y public account;
     mapping(address => uint256) internal _nonceStore;
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
 
     // prettier-ignore
+    /* solhint-disable */
     // PERMISSION KEYS
-    bytes8 internal constant SET_PERMISSIONS       = 0x4b80742d00000000; // AddressPermissions:<...>
-    bytes12 internal constant KEY_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
-    bytes12 internal constant KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
-    bytes12 internal constant KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
-    bytes12 internal constant KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+    bytes8 internal constant _SET_PERMISSIONS       = 0x4b80742d00000000; // AddressPermissions:<...>
+    bytes12 internal constant _KEY_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
+    bytes12 internal constant _KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
+    bytes12 internal constant _KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+    bytes12 internal constant _KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+    /* solhint-enable */
 
     // prettier-ignore
     // PERMISSIONS VALUES
-    bytes1 internal constant PERMISSION_CHANGEOWNER   = 0x01;   // 0000 0001
-    bytes1 internal constant PERMISSION_CHANGEKEYS    = 0x02;   // 0000 0010
-    bytes1 internal constant PERMISSION_SETDATA       = 0x04;   // 0000 0100
-    bytes1 internal constant PERMISSION_CALL          = 0x08;   // 0000 1000
-    bytes1 internal constant PERMISSION_DELEGATECALL  = 0x10;   // 0001 0000
-    bytes1 internal constant PERMISSION_DEPLOY        = 0x20;   // 0010 0000
-    bytes1 internal constant PERMISSION_TRANSFERVALUE = 0x40;   // 0100 0000
-    bytes1 internal constant PERMISSION_SIGN          = 0x80;   // 1000 0000
+    bytes1 internal constant _PERMISSION_CHANGEOWNER   = 0x01;   // 0000 0001
+    bytes1 internal constant _PERMISSION_CHANGEKEYS    = 0x02;   // 0000 0010
+    bytes1 internal constant _PERMISSION_SETDATA       = 0x04;   // 0000 0100
+    bytes1 internal constant _PERMISSION_CALL          = 0x08;   // 0000 1000
+    bytes1 internal constant _PERMISSION_DELEGATECALL  = 0x10;   // 0001 0000
+    bytes1 internal constant _PERMISSION_DEPLOY        = 0x20;   // 0010 0000
+    bytes1 internal constant _PERMISSION_TRANSFERVALUE = 0x40;   // 0100 0000
+    bytes1 internal constant _PERMISSION_SIGN          = 0x80;   // 1000 0000
 
     // selectors
-    bytes4 internal constant SETDATA_SELECTOR = 0x7f23690c;
-    bytes4 internal constant EXECUTE_SELECTOR = 0x44c028fe;
-    bytes4 internal constant TRANSFEROWNERSHIP_SELECTOR = 0xf2fde38b;
+    bytes4 internal constant _SETDATA_SELECTOR = 0x7f23690c;
+    bytes4 internal constant _EXECUTE_SELECTOR = 0x44c028fe;
+    bytes4 internal constant _TRANSFEROWNERSHIP_SELECTOR = 0xf2fde38b;
 
     event Executed(uint256 indexed _value, bytes _data);
 
     constructor(address _account) {
-        // Set account
-        Account = ERC725Y(_account);
+        account = ERC725Y(_account);
     }
 
     /**
@@ -105,7 +106,7 @@ contract KeyManager is ERC165, IERC1271 {
         returns (bool success_)
     {
         _checkPermissions(msg.sender, _data);
-        (success_, ) = address(Account).call{value: msg.value, gas: gasleft()}(
+        (success_, ) = address(account).call{value: msg.value, gas: gasleft()}(
             _data
         );
         if (success_) emit Executed(msg.value, _data);
@@ -150,7 +151,7 @@ contract KeyManager is ERC165, IERC1271 {
 
         _checkPermissions(from, _data);
 
-        (success_, ) = address(Account).call{value: 0, gas: gasleft()}(_data);
+        (success_, ) = address(account).call{value: 0, gas: gasleft()}(_data);
         if (success_) emit Executed(msg.value, _data);
     }
 
@@ -159,23 +160,23 @@ contract KeyManager is ERC165, IERC1271 {
         view
     {
         bytes1 userPermissions = _getUserPermissions(_address);
-        bytes4 ERC725Selector = bytes4(_data[:4]);
+        bytes4 erc725Selector = bytes4(_data[:4]);
 
-        if (ERC725Selector == SETDATA_SELECTOR) {
+        if (erc725Selector == _SETDATA_SELECTOR) {
             bytes8 setDataKey = bytes8(_data[4:12]);
 
-            if (setDataKey == SET_PERMISSIONS) {
+            if (setDataKey == _SET_PERMISSIONS) {
                 require(
-                    _isAllowed(PERMISSION_CHANGEKEYS, userPermissions),
+                    _isAllowed(_PERMISSION_CHANGEKEYS, userPermissions),
                     "KeyManager:_checkPermissions: Not authorized to change keys"
                 );
             } else {
                 require(
-                    _isAllowed(PERMISSION_SETDATA, userPermissions),
+                    _isAllowed(_PERMISSION_SETDATA, userPermissions),
                     "KeyManager:_checkPermissions: Not authorized to setData"
                 );
             }
-        } else if (ERC725Selector == EXECUTE_SELECTOR) {
+        } else if (erc725Selector == _EXECUTE_SELECTOR) {
             uint8 operationType = uint8(bytes1(_data[35:36]));
             address recipient = address(bytes20(_data[48:68]));
             uint256 value = uint256(bytes32(_data[68:100]));
@@ -189,30 +190,22 @@ contract KeyManager is ERC165, IERC1271 {
             bytes1 permission;
             assembly {
                 switch operationType
-                case 0 {
-                    permission := PERMISSION_CALL
-                }
-                case 1 {
-                    permission := PERMISSION_DELEGATECALL
-                }
-                case 2 {
-                    permission := PERMISSION_DEPLOY
-                } // CREATE2
-                case 3 {
-                    permission := PERMISSION_DEPLOY
-                } // CREATE
+                case 0 { permission := _PERMISSION_CALL }
+                case 1 { permission := _PERMISSION_DELEGATECALL }
+                case 2 { permission := _PERMISSION_DEPLOY } // CREATE2
+                case 3 { permission := _PERMISSION_DEPLOY } // CREATE
             }
             bool operationAllowed = _isAllowed(permission, userPermissions);
 
-            if (!operationAllowed && permission == PERMISSION_CALL)
+            if (!operationAllowed && permission == _PERMISSION_CALL)
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform CALL"
                 );
-            if (!operationAllowed && permission == PERMISSION_DELEGATECALL)
+            if (!operationAllowed && permission == _PERMISSION_DELEGATECALL)
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
                 );
-            if (!operationAllowed && permission == PERMISSION_DEPLOY)
+            if (!operationAllowed && permission == _PERMISSION_DEPLOY)
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
                 );
@@ -226,7 +219,7 @@ contract KeyManager is ERC165, IERC1271 {
             // Check for value
             if (value > 0) {
                 require(
-                    _isAllowed(PERMISSION_TRANSFERVALUE, userPermissions),
+                    _isAllowed(_PERMISSION_TRANSFERVALUE, userPermissions),
                     "KeyManager:_checkPermissions: Not authorized to transfer ethers"
                 );
             }
@@ -241,9 +234,9 @@ contract KeyManager is ERC165, IERC1271 {
                     );
                 }
             }
-        } else if (ERC725Selector == TRANSFEROWNERSHIP_SELECTOR) {
+        } else if (erc725Selector == _TRANSFEROWNERSHIP_SELECTOR) {
             require(
-                _isAllowed(PERMISSION_CHANGEOWNER, userPermissions),
+                _isAllowed(_PERMISSION_CHANGEOWNER, userPermissions),
                 "KeyManager:_checkPermissions: Not authorized to transfer ownership"
             );
         } else {
@@ -259,14 +252,14 @@ contract KeyManager is ERC165, IERC1271 {
         returns (bytes1)
     {
         bytes32 permissionKey;
-        bytes memory computedKey = abi.encodePacked(KEY_PERMISSIONS, _address);
+        bytes memory computedKey = abi.encodePacked(_KEY_PERMISSIONS, _address);
 
         assembly {
             permissionKey := mload(add(computedKey, 32))
         }
 
         bytes1 storedPermission;
-        bytes memory fetchResult = Account.getData(permissionKey);
+        bytes memory fetchResult = account.getData(permissionKey);
 
         if (fetchResult.length == 0)
             revert(
@@ -286,14 +279,14 @@ contract KeyManager is ERC165, IERC1271 {
         returns (bytes memory)
     {
         bytes memory allowedAddressesKeyComputed = abi.encodePacked(
-            KEY_ALLOWEDADDRESSES,
+            _KEY_ALLOWEDADDRESSES,
             _sender
         );
         bytes32 allowedAddressesKey;
         assembly {
             allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
         }
-        return Account.getData(allowedAddressesKey);
+        return account.getData(allowedAddressesKey);
     }
 
     function _getAllowedFunctions(address _sender)
@@ -302,14 +295,14 @@ contract KeyManager is ERC165, IERC1271 {
         returns (bytes memory)
     {
         bytes memory allowedAddressesKeyComputed = abi.encodePacked(
-            KEY_ALLOWEDFUNCTIONS,
+            _KEY_ALLOWEDFUNCTIONS,
             _sender
         );
         bytes32 allowedFunctionsKey;
         assembly {
             allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
         }
-        return Account.getData(allowedFunctionsKey);
+        return account.getData(allowedFunctionsKey);
     }
 
     function _isAllowedAddress(address _sender, address _recipient)
