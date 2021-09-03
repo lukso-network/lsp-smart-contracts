@@ -35,7 +35,7 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
     // event Executed(uint256 indexed _operation, address indexed _to, uint256 indexed  _value, bytes _data)
 
 
-    constructor(address _newOwner) public ERC725Account(_newOwner) {
+    constructor(address _newOwner) ERC725Account(_newOwner) {
 
         // Add the key of the SupportedStandards:ERC725Account set in the constructor of ERC725Account.sol
         dataKeys.push(0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6);

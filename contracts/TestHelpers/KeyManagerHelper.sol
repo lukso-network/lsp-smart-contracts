@@ -10,7 +10,7 @@ import "../KeyManager/KeyManager.sol";
 contract KeyManagerHelper is KeyManager {
 
     /* solhint-disable no-empty-blocks */
-    constructor(address _account) public KeyManager(_account) {}
+    constructor(address _account) KeyManager(_account) {}
 
     function getUserPermissions(address _user) public view returns (bytes1) {
         return super._getUserPermissions(_user);
