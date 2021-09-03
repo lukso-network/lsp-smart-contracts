@@ -30,7 +30,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         onlyAccount
         returns(bool)
     {
-        return addressStore.add(_address);
+        return _addressStore.add(_address);
     }
 
     function removeAddress(address _address)
@@ -39,7 +39,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         onlyAccount
         returns(bool)
     {
-        return addressStore.remove(_address);
+        return _addressStore.remove(_address);
     }
 
     function universalReceiverDelegate(address sender, bytes32 typeId, bytes memory)
