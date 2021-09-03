@@ -85,14 +85,14 @@ contract KeyManager is ERC165, IERC1271 {
      */
     function isValidSignature(bytes32 _hash, bytes memory _signature)
         public
-        pure
+        view
         override
         returns (bytes4 magicValue)
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
 
         // check if has permission to sign
-        return (true) ? _INTERFACE_ID_ERC1271 : _ERC1271FAILVALUE;
+        return (_PERMISSION_SIGN & _getUserPermissions(recoveredAddress)) == _PERMISSION_SIGN ? _INTERFACE_ID_ERC1271 : _ERC1271FAILVALUE;
     }
 
     /**
