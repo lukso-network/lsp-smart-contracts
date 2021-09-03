@@ -9,7 +9,7 @@
     "avoid-tx-origin": "error",
     "check-send-result": "error",
     "compiler-version": ["error", "^0.8.0"],
-    "func-visibility": "error",
+    "func-visibility": ["error", { "ignoreConstructors": false }],
     "not-rely-on-block-hash": "error",
     "not-rely-on-time": "error",
     "reentrancy": "error",

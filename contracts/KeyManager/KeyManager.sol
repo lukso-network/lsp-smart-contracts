@@ -53,7 +53,7 @@ contract KeyManager is ERC165, IERC1271 {
 
     event Executed(uint256 indexed _value, bytes _data);
 
-    constructor(address _account) public {
+    constructor(address _account) {
         account = ERC725Y(_account);
     }
 
