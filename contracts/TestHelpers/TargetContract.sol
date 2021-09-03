@@ -3,8 +3,10 @@ pragma solidity ^0.8.0;
 
 contract TargetContract {
 
+    /* solhint-disable */
     uint number = 5;
     string name = "Simple Contract Name";
+    /* solhint-enable */
 
     function getNumber() public view returns (uint) {
         return number;

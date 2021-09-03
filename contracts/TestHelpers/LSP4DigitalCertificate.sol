@@ -13,7 +13,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
 
     // Here to track token holders, for future migration TODO remove in main chain
     // makes transfers to expensive
-    EnumerableSet.AddressSet internal tokenHolders;
+    EnumerableSet.AddressSet internal _tokenHolders;
     bytes32[] public dataKeys;
     address public minter;
 
@@ -42,7 +42,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         override
         onlyMinter
     {
-        tokenHolders.add(_address);
+        _tokenHolders.add(_address);
 
         _mint(_address, _amount, "", "");
     }
@@ -79,7 +79,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
 
     // returns the bytes32 of all token holder addresses
     function allTokenHolders() public view returns (bytes32[] memory) {
-        return tokenHolders._inner._values;
+        return _tokenHolders._inner._values;
     }
 
     /* Public functions */
@@ -119,7 +119,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         bytes memory userData,
         bytes memory operatorData
     ) internal override whenNotPaused {
-        tokenHolders.add(to);
+        _tokenHolders.add(to);
 
         ERC777UniversalReceiver._move(
             operator,
