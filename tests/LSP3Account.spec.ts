@@ -1,8 +1,8 @@
-// import {singletons, BN, ether, expectRevert} from "openzeppelin-test-helpers";
-
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
+  KeyManager,
+  KeyManager__factory,
   LSP3Account,
   LSP3Account__factory,
   ERC777UniversalReceiver__factory,
@@ -13,6 +13,8 @@ import {
   UniversalReceiverTester__factory,
 } from "../build/types";
 
+import { KEY_PERMISSIONS, ALL_PERMISSIONS, PERMISSION_SIGN } from "./utils/keymanager";
+
 const SupportedStandardsERC725Account_KEY =
   "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
 // Get key: bytes4(keccak256('ERC725Account'))
@@ -20,14 +22,11 @@ const ERC725Account_VALUE = "0xafdeb5d6";
 // Get key: keccak256('LSP1UniversalReceiverDelegate')
 const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
 // keccak256("EXECUTOR_ROLE")
-const EXECUTOR_ROLE = "0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63";
+// const EXECUTOR_ROLE = "0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63";
 const ERC1271_MAGIC_VALUE = "0x1626ba7e";
 const ERC1271_FAIL_VALUE = "0xffffffff";
 const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-const DUMMY_PRIVATEKEY = "0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe";
-// generate an account
-// const DUMMY_SIGNER = web3.eth.accounts.wallet.add(DUMMY_PRIVATEKEY);
 
 describe("LSP3Account", () => {
   let erc1820;
@@ -122,7 +121,7 @@ describe("LSP3Account", () => {
 
       const account = await new LSP3Account__factory(owner).deploy(signer.address);
       const dataToSign = "0xcafecafe";
-      const messageHash = ethers.utils.hashMessage("0xcafecafe");
+      const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
       const result = await account.callStatic.isValidSignature(messageHash, signature);
@@ -137,7 +136,7 @@ describe("LSP3Account", () => {
 
       const account = await new LSP3Account__factory(owner).deploy(owner.address);
       const dataToSign = "0xcafecafe";
-      const messageHash = ethers.utils.hashMessage("0xcafecafe");
+      const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
       const result = await account.callStatic.isValidSignature(messageHash, signature);
@@ -783,62 +782,100 @@ describe("LSP3Account", () => {
     });
   }); //Context Universal Receiver
 
-  // xdescribe("Using key manager as owner", () => {
-  //     let manager,
-  //         account = {};
-  //     const owner = accounts[6];
+  describe("Using KeyManager as owner", () => {
+    let keyManager: KeyManager;
+    let lsp3Account: LSP3Account;
+    let owner: SignerWithAddress;
+    let signer: SignerWithAddress;
 
-  //     beforeEach(async () => {
+    beforeEach(async () => {
+      owner = accounts[6];
+      signer = accounts[9];
+      lsp3Account = await new LSP3Account__factory(owner).deploy(owner.address);
+      keyManager = await new KeyManager__factory(owner).deploy(lsp3Account.address);
+
+      // give all permissions to owner
+      await lsp3Account
+        .connect(owner)
+        .setData(KEY_PERMISSIONS + owner.address.substr(2), ALL_PERMISSIONS);
+
+      // give SIGN permission to signer
+      await lsp3Account.setData(KEY_PERMISSIONS + signer.address.substr(2), "0x80");
+
+      await lsp3Account.transferOwnership(keyManager.address);
+    });
+
+    it("Accounts should have owner as KeyManager", async () => {
+      const idOwner = await lsp3Account.callStatic.owner();
+      expect(idOwner).toEqual(keyManager.address);
+    });
+
+    describe("ERC1271 from KeyManager", () => {
+      it("Can verify signature from owner on KeyManager", async () => {
+        const dataToSign = "0xcafecafe";
+        const messageHash = ethers.utils.hashMessage(dataToSign);
+        const signature = await owner.signMessage(dataToSign);
+
+        const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
+
+        expect(result).toEqual(ERC1271_MAGIC_VALUE);
+      });
+
+      it("Can verify signature from signer on KeyManager", async () => {
+        const dataToSign = "0xbeefbeef";
+        const messageHash = ethers.utils.hashMessage(dataToSign);
+        const signature = await signer.signMessage(dataToSign);
+
+        const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
+
+        expect(result).toEqual(ERC1271_MAGIC_VALUE);
+      });
+
+      it("Should fail when verifying signature from address with no SIGN permission", async () => {
+        const nonSignerAddress = accounts[3];
+        const dataToSign = "abcdabcd";
+        const messageHash = ethers.utils.hashMessage(dataToSign);
+        const signature = await nonSignerAddress.signMessage(dataToSign);
+
+        const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
+
+        expect(result).toEqual(ERC1271_FAIL_VALUE);
+      });
+
+      //
+    });
+
+    // KeyManager can execute on behalf of identity
+  });
+
+  // context("ERC1271 from KeyManager", async () => {
+
+  //     it("Can verify signature from owner of keymanager", async () => {
+
   //         account = await LSP3Account.new(owner, {from: owner});
-  //         manager = await KeyManager.new(account.address, owner, {from: owner});
+  //         manager = await KeyManager.new(account.address, DUMMY_SIGNER.address, {from: owner});
   //         await account.transferOwnership(manager.address, {from: owner});
+
+  //         const dataToSign = '0xcafecafe';
+  //         const signature = DUMMY_SIGNER.sign(dataToSign);
+
+  //         const result = await account.isValidSignature.call(signature.messageHash, signature.signature);
+
+  //         assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid");
   //     });
 
-  //     it("Accounts should have owner as manager", async () => {
-  //         const idOwner = await account.owner.call();
-  //         assert.equal(idOwner, manager.address, "Addresses should match");
+  //     it("Should fail when verifying signature from not-owner", async () => {
+  //         const dataToSign = '0xcafecafe';
+  //         const signature = DUMMY_SIGNER.sign(dataToSign);
+
+  //         const result = await manager.isValidSignature.call(signature.messageHash, signature.signature);
+
+  //         assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid");
   //     });
 
-  //     // context("ERC1271 from KeyManager", async () => {
+  // });
 
-  //     //     it("Can verify signature from executor of keymanager", async () => {
-  //     //         const dataToSign = '0xcafecafe';
-  //     //         const signature = DUMMY_SIGNER.sign(dataToSign);
-
-  //     //         // add new owner to keyManager
-  //     //         await manager.grantRole(EXECUTOR_ROLE, DUMMY_SIGNER.address, {from: owner});
-
-  //     //         const result = await account.isValidSignature.call(signature.messageHash, signature.signature);
-
-  //     //         assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid");
-  //     //     });
-
-  //     //     it("Can verify signature from owner of keymanager", async () => {
-
-  //     //         account = await LSP3Account.new(owner, {from: owner});
-  //     //         manager = await KeyManager.new(account.address, DUMMY_SIGNER.address, {from: owner});
-  //     //         await account.transferOwnership(manager.address, {from: owner});
-
-  //     //         const dataToSign = '0xcafecafe';
-  //     //         const signature = DUMMY_SIGNER.sign(dataToSign);
-
-  //     //         const result = await account.isValidSignature.call(signature.messageHash, signature.signature);
-
-  //     //         assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid");
-  //     //     });
-
-  //     //     it("Should fail when verifying signature from not-owner", async () => {
-  //     //         const dataToSign = '0xcafecafe';
-  //     //         const signature = DUMMY_SIGNER.sign(dataToSign);
-
-  //     //         const result = await manager.isValidSignature.call(signature.messageHash, signature.signature);
-
-  //     //         assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid");
-  //     //     });
-
-  //     // });
-
-  //     it("Key manager can execute on behalf of Idenity", async () => {
+  //     it("Key manager can execute on behalf of Identity", async () => {
   //         const dest = accounts[1];
   //         const amount = ether("10");
   //         const OPERATION_CALL = 0x0;
