@@ -1,3 +1,4 @@
+import { VoidSigner } from "@ethersproject/abstract-signer";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
@@ -783,14 +784,18 @@ describe("LSP3Account", () => {
   }); //Context Universal Receiver
 
   describe("Using KeyManager as owner", () => {
+    let provider = ethers.provider;
+
     let keyManager: KeyManager;
     let lsp3Account: LSP3Account;
     let owner: SignerWithAddress;
     let signer: SignerWithAddress;
+    let thirdParty: SignerWithAddress;
 
     beforeEach(async () => {
       owner = accounts[6];
-      signer = accounts[9];
+      signer = accounts[7];
+      thirdParty = accounts[8];
       lsp3Account = await new LSP3Account__factory(owner).deploy(owner.address);
       keyManager = await new KeyManager__factory(owner).deploy(lsp3Account.address);
 
@@ -801,6 +806,8 @@ describe("LSP3Account", () => {
 
       // give SIGN permission to signer
       await lsp3Account.setData(KEY_PERMISSIONS + signer.address.substr(2), "0x80");
+      // give CALL permission to non-signer
+      await lsp3Account.setData(KEY_PERMISSIONS + thirdParty.address.substr(2), "0x08");
 
       await lsp3Account.transferOwnership(keyManager.address);
     });
@@ -817,7 +824,6 @@ describe("LSP3Account", () => {
         const signature = await owner.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-
         expect(result).toEqual(ERC1271_MAGIC_VALUE);
       });
 
@@ -827,97 +833,56 @@ describe("LSP3Account", () => {
         const signature = await signer.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-
         expect(result).toEqual(ERC1271_MAGIC_VALUE);
       });
 
       it("Should fail when verifying signature from address with no SIGN permission", async () => {
-        const nonSignerAddress = accounts[3];
-        const dataToSign = "abcdabcd";
+        // console.log("nonSignerAddress: ", nonSignerAddress);
+        const dataToSign = "0xabcdabcd";
         const messageHash = ethers.utils.hashMessage(dataToSign);
-        const signature = await nonSignerAddress.signMessage(dataToSign);
+        const signature = await thirdParty.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-
         expect(result).toEqual(ERC1271_FAIL_VALUE);
       });
-
-      //
     });
 
     // KeyManager can execute on behalf of identity
+    it("Keymanager can execute on behalf of identity", async () => {
+      const dest = accounts[1];
+      const amount = ethers.utils.parseEther("3");
+      const OPERATION_CALL = 0x0;
+
+      // Fund Accounts contract
+      await owner.sendTransaction({
+        to: lsp3Account.address,
+        value: amount,
+      });
+
+      //   Initial Balances
+      const destBalance = await provider.getBalance(dest.address);
+      const idBalance = await provider.getBalance(lsp3Account.address);
+      const managerBalance = await provider.getBalance(keyManager.address);
+      console.log("destBalance: ", destBalance);
+      console.log("idBalance: ", idBalance);
+      console.log("managerBalance: ", managerBalance);
+
+      let abi = lsp3Account.interface.encodeFunctionData("execute", [
+        OPERATION_CALL,
+        dest.address,
+        amount,
+        "0x00",
+      ]);
+
+      await keyManager.connect(owner).execute(abi);
+
+      const destBalanceFinal = await provider.getBalance(dest.address);
+      const idBalanceFinal = await provider.getBalance(lsp3Account.address);
+      const managerBalanceFinal = await provider.getBalance(keyManager.address);
+
+      expect(managerBalance).toEqual(managerBalanceFinal); // "manager balance shouldn't have changed"
+      expect(destBalance.add(amount)).toEqual(destBalanceFinal); // "Destination address should have recived amount"
+      expect(idBalance.sub(amount)).toEqual(idBalanceFinal);
+    });
   });
-
-  // context("ERC1271 from KeyManager", async () => {
-
-  //     it("Can verify signature from owner of keymanager", async () => {
-
-  //         account = await LSP3Account.new(owner, {from: owner});
-  //         manager = await KeyManager.new(account.address, DUMMY_SIGNER.address, {from: owner});
-  //         await account.transferOwnership(manager.address, {from: owner});
-
-  //         const dataToSign = '0xcafecafe';
-  //         const signature = DUMMY_SIGNER.sign(dataToSign);
-
-  //         const result = await account.isValidSignature.call(signature.messageHash, signature.signature);
-
-  //         assert.equal(result, ERC1271_MAGIC_VALUE, "Should define the signature as valid");
-  //     });
-
-  //     it("Should fail when verifying signature from not-owner", async () => {
-  //         const dataToSign = '0xcafecafe';
-  //         const signature = DUMMY_SIGNER.sign(dataToSign);
-
-  //         const result = await manager.isValidSignature.call(signature.messageHash, signature.signature);
-
-  //         assert.equal(result, ERC1271_FAIL_VALUE, "Should define the signature as invalid");
-  //     });
-
-  // });
-
-  //     it("Key manager can execute on behalf of Identity", async () => {
-  //         const dest = accounts[1];
-  //         const amount = ether("10");
-  //         const OPERATION_CALL = 0x0;
-
-  //         //Fund Accounts contract
-  //         await web3.eth.sendTransaction({
-  //             from: owner,
-  //             to: account.address,
-  //             value: amount
-  //         });
-
-  //         // Initial Balances
-  //         const destBalance = await web3.eth.getBalance(dest);
-  //         const idBalance = await web3.eth.getBalance(account.address);
-  //         const managerBalance = await web3.eth.getBalance(manager.address);
-
-  //         let abi = account.contract.methods.execute(OPERATION_CALL, dest, amount.toString(), "0x00").encodeABI();
-
-  //         await manager.execute(abi, {
-  //             from: owner
-  //         });
-
-  //         //Final Balances
-  //         const destBalanceFinal = await web3.eth.getBalance(dest);
-  //         const idBalanceFinal = await web3.eth.getBalance(account.address);
-  //         const managerBalanceFinal = await web3.eth.getBalance(manager.address);
-
-  //         assert.equal(
-  //             managerBalance,
-  //             managerBalanceFinal,
-  //             "manager balance shouldn't have changed"
-  //         );
-
-  //         assert.isTrue(
-  //             new BN(destBalance).add(amount).eq(new BN(destBalanceFinal)),
-  //             "Destination address should have recived amount"
-  //         );
-
-  //         assert.isTrue(
-  //             new BN(idBalance).sub(amount).eq(new BN(idBalanceFinal)),
-  //             "Accounts should have spent amount"
-  //         );
-  //     });
-  // }); //Context key manager
 });
