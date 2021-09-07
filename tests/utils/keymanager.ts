@@ -14,6 +14,12 @@ const PERMISSION_CALL = ethers.BigNumber.from(0x08).toNumber(); // 0000 1000
 const PERMISSION_TRANSFERVALUE = ethers.BigNumber.from(0x40).toNumber(); // 0100 0000
 const PERMISSION_SIGN = ethers.BigNumber.from(0x80).toNumber(); // 1000 0000
 
+export const enum OPERATIONS {
+  CALL = 0,
+  DELEGATECALL = 1,
+  DEPLOY = 2,
+}
+
 module.exports = {
   KEY_PERMISSIONS,
   KEY_ALLOWEDADDRESSES,

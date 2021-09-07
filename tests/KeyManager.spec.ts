@@ -295,7 +295,6 @@ describe("KeyManager", () => {
       expect(parseInt(newAppBalance)).toBeGreaterThan(parseInt(initialAppBalance));
     });
 
-    /** @debug fix error with provider to get balances */
     it("App should not be allowed to transfer ethers", async () => {
       let initialAccountBalance = await provider.getBalance(erc725Account.address);
       let initialUserBalance = await provider.getBalance(user.address);
@@ -646,11 +645,9 @@ describe("KeyManager", () => {
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-      await expectRevert.unspecified(
+      await expect(
         keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature)
-        // "KeyManager:_checkPermissions: Not authorised to run this function"
-      );
-      ``;
+      ).toBeRevertedWith("KeyManager:_checkPermissions: Not authorised to run this function");
 
       let endResult = await targetContract.callStatic.getNumber();
       expect(endResult.toString()).toEqual(currentNumber.toString());
@@ -672,9 +669,8 @@ describe("KeyManager", () => {
         targetContractPayload,
       ]);
 
-      await expectRevert.unspecified(
-        keyManager.connect(accounts[6].address).execute(executePayload)
-        // "KeyManager:_getUserPermissions: no permissions set for this user / caller"
+      await expect(keyManager.connect(accounts[6]).execute(executePayload)).toBeRevertedWith(
+        "KeyManager:_getUserPermissions: no permissions set for this user / caller"
       );
     });
 

@@ -59,7 +59,7 @@ async function deployLSP3Proxy(masterContractAddress: string, deployer: SignerWi
   return receipt.contractAddress;
 }
 
-describe("> LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
+describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
   let accounts: SignerWithAddress[];
   let owner: SignerWithAddress;
 
@@ -134,8 +134,6 @@ describe("> LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     });
 
     it("Should not allow to initialize twice", async () => {
-      let currentOwner = await proxy.owner();
-      console.log("currentOwner: ", currentOwner);
       await expect(proxy.initialize("0xdead0dead0dead0dead0dead0dead0dead0dead0")).toBeRevertedWith(
         "Initializable: contract is already initialized"
       );
