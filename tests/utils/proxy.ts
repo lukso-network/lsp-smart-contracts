@@ -6,10 +6,14 @@ import { ContractFactory, Signer } from "ethers";
  *                           into memory and return it
  *                             |                  |
  * //                          V                  V            */
-const runtimeCodeTemplate = "0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3";
+const proxyRuntimeCodeTemplate = "0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3";
 
-async function deployProxy(masterContractFactory: ContractFactory, masterAddress: string, deployer: Signer) {
-  const proxyRuntimeCode = runtimeCodeTemplate.replace(
+async function deployProxy(
+  masterContractFactory: ContractFactory,
+  masterAddress: string,
+  deployer: Signer
+) {
+  const proxyRuntimeCode = proxyRuntimeCodeTemplate.replace(
     "bebebebebebebebebebebebebebebebebebebebe",
     masterAddress.substr(2)
   );
@@ -24,6 +28,6 @@ async function deployProxy(masterContractFactory: ContractFactory, masterAddress
 }
 
 module.exports = {
-  runtimeCodeTemplate,
+  proxyRuntimeCodeTemplate,
   deployProxy,
 };

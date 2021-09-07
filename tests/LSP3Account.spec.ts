@@ -130,7 +130,6 @@ describe("LSP3Account", () => {
       expect(result).toEqual(ERC1271_MAGIC_VALUE);
     });
 
-    /** @debug */
     it("Should fail when verifying signature from not-owner", async () => {
       const owner = accounts[2];
       const signer = accounts[9];
@@ -247,7 +246,7 @@ describe("LSP3Account", () => {
     it("dataCount should be 7", async () => {
       // 7 because the ERC725Type ios already set by the ERC725Account implementation
       let result = await lsp3Account.callStatic.dataCount();
-      expect(ethers.BigNumber.from(result).toNumber()).toEqual(7);
+      expect(result.toNumber()).toEqual(7);
     });
 
     it("Update 32 bytes item 6", async () => {
@@ -270,6 +269,7 @@ describe("LSP3Account", () => {
       expect(ethers.BigNumber.from(result).toNumber()).toEqual(7);
     });
 
+    /** @refactor with new ERC725 setdata breaking change */
     it("Store multiple 32 bytes item 8-10", async () => {
       let owner = accounts[2];
       let keys = [];
@@ -287,7 +287,7 @@ describe("LSP3Account", () => {
         values.push(value);
       }
       await lsp3Account.setDataMultiple(keys, values, { from: owner.address });
-      //   expect(await lsp3Account.getDataMultiple(keys)).toDeepEqual(values);
+      expect(await lsp3Account.callStatic.getDataMultiple(keys)).toEqual(values);
     });
 
     it("dataCount should be 10", async () => {
@@ -322,11 +322,10 @@ describe("LSP3Account", () => {
       expect(idOwner).toEqual(newOwner.address);
     });
 
-    /** @todo check the right error reason string */
     it("Refuse upgrades from non-onwer", async () => {
-      await expect(
-        account.connect(newOwner.address).transferOwnership(newOwner.address)
-      ).toBeRevertedWith("Ownable: caller is not the owner");
+      await expect(account.connect(newOwner).transferOwnership(newOwner.address)).toBeRevertedWith(
+        "Ownable: caller is not the owner"
+      );
     });
 
     it("Owner can set data", async () => {
@@ -348,7 +347,6 @@ describe("LSP3Account", () => {
       expect(data).toEqual(fetchedData);
     });
 
-    /** @debug revert reason string does not affect test */
     it("Fails when non-owner sets data", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
@@ -361,12 +359,11 @@ describe("LSP3Account", () => {
       );
       let data = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data"));
 
-      await expect(account.connect(newOwner.address).setData(key, data)).toBeRevertedWith(
+      await expect(account.connect(newOwner).setData(key, data)).toBeRevertedWith(
         "Ownable: caller is not the owner"
       );
     });
 
-    /** @debug revert reason string does not affect test */
     it("Fails when non-owner sets data multiple", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
@@ -379,9 +376,9 @@ describe("LSP3Account", () => {
       );
       let data = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data"));
 
-      await expect(
-        account.connect(newOwner.address).setDataMultiple([key], [data])
-      ).toBeRevertedWith("Ownable: caller is not the owner");
+      await expect(account.connect(newOwner).setDataMultiple([key], [data])).toBeRevertedWith(
+        "Ownable: caller is not the owner"
+      );
     });
 
     it("Allows owner to execute calls", async () => {
@@ -721,7 +718,6 @@ describe("LSP3Account", () => {
       ).toBeTruthy();
     });
 
-    /** @debug need to wait that transaction get mined for balance changes to appear? */
     it("Transfer from ERC777 and LSP4 to account and delegate to UniversalReceiverAddressStore", async () => {
       const OPERATION_CALL = 0x0;
       const owner = accounts[2];
