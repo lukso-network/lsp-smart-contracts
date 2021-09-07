@@ -54,7 +54,7 @@ describe("KeyManager", () => {
   let owner: SignerWithAddress,
     app: SignerWithAddress,
     user: SignerWithAddress,
-    externalApp,
+    externalApp: SignerWithAddress,
     newUser: SignerWithAddress;
 
   beforeAll(async () => {
@@ -64,7 +64,6 @@ describe("KeyManager", () => {
     owner = accounts[0];
     app = accounts[1];
     user = accounts[2];
-    // externalApp = accounts[3];
     externalApp = new ethers.Wallet(DUMMY_PRIVATEKEY, ethers.provider);
     user = accounts[4];
     newUser = accounts[5];
@@ -116,7 +115,7 @@ describe("KeyManager", () => {
       abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])
     );
 
-    // workaround to test security
+    // test security
     await erc725Account.setData(
       KEY_PERMISSIONS + newUser.address.substr(2),
       ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL + PERMISSION_TRANSFERVALUE)
@@ -161,6 +160,14 @@ describe("KeyManager", () => {
       await keyManager.execute(payload, { from: owner.address });
       let fetchedResult = await erc725Account.callStatic.getData(key);
       expect(Number(fetchedResult)).toEqual(PERMISSION_SETDATA);
+
+      // reset app permissions
+      await keyManager.execute(
+        erc725Account.interface.encodeFunctionData("setData", [
+          key,
+          ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL),
+        ])
+      );
     });
 
     it("App should not be allowed to change keys", async () => {
@@ -170,9 +177,8 @@ describe("KeyManager", () => {
         ALL_PERMISSIONS,
       ]);
 
-      await expectRevert.unspecified(
-        keyManager.connect(app.address).execute(dangerousPayload)
-        // "KeyManager:_checkPermissions: Not authorized to change keys"
+      await expect(keyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Not authorized to change keys"
       );
     });
 
@@ -235,8 +241,7 @@ describe("KeyManager", () => {
         targetContract.interface.encodeFunctionData("setName", ["Example"]),
       ]);
 
-      keyManager.connect(app.address);
-      let executeResult = await keyManager.callStatic.execute(executePayload);
+      let executeResult = await keyManager.connect(app).callStatic.execute(executePayload);
       expect(executeResult).toBeTruthy();
     });
 
@@ -248,9 +253,8 @@ describe("KeyManager", () => {
         DUMMY_PAYLOAD,
       ]);
 
-      await expectRevert.unspecified(
-        keyManager.connect(app.address).execute(executePayload)
-        // "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
+      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
       );
     });
 
@@ -262,9 +266,8 @@ describe("KeyManager", () => {
         DUMMY_PAYLOAD,
       ]);
 
-      await expectRevert.unspecified(
-        keyManager.connect(app.address).execute(executePayload)
-        // "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
+      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
       );
     });
   });
@@ -353,8 +356,7 @@ describe("KeyManager", () => {
         EMPTY_PAYLOAD,
       ]);
 
-      keyManager.connect(app.address);
-      let result = await keyManager.callStatic.execute(payload);
+      let result = await keyManager.connect(app).callStatic.execute(payload);
       expect(result).toBeTruthy();
     });
 
@@ -366,8 +368,7 @@ describe("KeyManager", () => {
         EMPTY_PAYLOAD,
       ]);
 
-      keyManager.connect(app.address);
-      let result = await keyManager.callStatic.execute(payload);
+      let result = await keyManager.connect(app).callStatic.execute(payload);
       expect(result).toBeTruthy();
     });
 
@@ -379,9 +380,8 @@ describe("KeyManager", () => {
         DUMMY_PAYLOAD,
       ]);
 
-      await expectRevert.unspecified(
-        keyManager.connect(app.address).execute(payload)
-        // "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
+      await expect(keyManager.connect(app).execute(payload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Not authorized to interact with this address"
       );
     });
   });
@@ -395,9 +395,8 @@ describe("KeyManager", () => {
         "0xbeefbeef123456780000000000",
       ]);
 
-      await expectRevert.unspecified(
-        keyManager.connect(app.address).execute(payload)
-        // "KeyManager:_checkPermissions: Not authorised to run this function"
+      await expect(keyManager.connect(app).execute(payload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Not authorised to run this function"
       );
     });
   });
@@ -412,8 +411,7 @@ describe("KeyManager", () => {
         randomPayload,
       ]);
 
-      keyManager.connect(user.address);
-      let callResult = await keyManager.callStatic.execute(executePayload);
+      let callResult = await keyManager.connect(user).callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
     });
   });
@@ -501,7 +499,9 @@ describe("KeyManager", () => {
         targetContractPayload,
       ]);
 
-      await expectRevert.unspecified(keyManager.connect(app.address).execute(executePayload));
+      await expect(keyManager.connect(app.address).execute(executePayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Not authorised to run this function"
+      );
 
       let result = await targetContract.callStatic.getNumber();
       expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10) !== newNumber);
@@ -520,16 +520,14 @@ describe("KeyManager", () => {
         "0x",
       ]);
 
-      await expectRevert.unspecified(
-        keyManager.execute(payload)
-        // "KeyManager:_checkPermissions: Invalid operation type"
+      await expect(keyManager.execute(payload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Invalid operation type"
       );
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
-      await expectRevert.unspecified(
-        keyManager.execute("0xbad000000000000000000000000bad")
-        // "KeyManager:_checkPermissions: unknown function selector from ERC725 account"
+      await expect(keyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
+        "KeyManager:_checkPermissions: unknown function selector from ERC725 account"
       );
     });
   });
@@ -741,12 +739,9 @@ describe("KeyManager", () => {
       );
 
       // 2nd call = replay attack
-      await expectRevert.unspecified(
-        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature, {
-          gasLimit: 3_000_000,
-        })
-        // "KeyManager:executeRelayCall: Incorrect nonce"
-      );
+      await expect(
+        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature)
+      ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");
     });
   });
 });
