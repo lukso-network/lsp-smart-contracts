@@ -4,7 +4,9 @@ import {
   BasicUniversalReceiver,
   BasicUniversalReceiver__factory,
   LSP3Account__factory,
+  UniversalReceiverAddressStore,
   UniversalReceiverAddressStore__factory,
+  UniversalReceiverTester,
   UniversalReceiverTester__factory,
 } from "../build/types";
 
@@ -18,7 +20,7 @@ const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc07
 describe("Receivers", () => {
   let uni: BasicUniversalReceiver;
   let accounts: SignerWithAddress[] = [];
-  let signer;
+  let signer: SignerWithAddress;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
