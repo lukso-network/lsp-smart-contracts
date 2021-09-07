@@ -6,12 +6,12 @@ contract Reentrancy {
     bytes _payload;
     address _target;
 
-    constructor(address _keyManager) public {
+    constructor(address _keyManager) {
         _target = _keyManager;
     }
 
-    function loadPayload(bytes memory _payload) public {
-        _payload = _payload;
+    function loadPayload(bytes memory _dataPayload) public {
+        _payload = _dataPayload;
     }
 
     fallback() external payable {
