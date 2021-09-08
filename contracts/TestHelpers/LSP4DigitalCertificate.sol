@@ -26,7 +26,6 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         ERC725Y(newOwner)
         ERC777UniversalReceiver(name, symbol, defaultOperators)
     {
-        // set the owner as minter
         minter = newOwner;
     }
 
@@ -42,7 +41,6 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         onlyMinter
     {
         _tokenHolders.add(_address);
-
         _mint(_address, _amount, "", "");
     }
 
@@ -84,12 +82,12 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
     /* Public functions */
 
     function setData(bytes32 _key, bytes memory _value)
-    public
-    override
-    onlyOwner
+        public
+        override
+        onlyOwner
     {
         if (store[_key].length == 0) {
-            dataKeys.push(_key); // 30k more gas on initial set
+            dataKeys.push(_key);
         }
         store[_key] = _value;
         emit DataChanged(_key, _value);
@@ -103,11 +101,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
      */
     function transferOwnership(address newOwner) public override onlyOwner {
         Ownable.transferOwnership(newOwner);
-
-        // also set new minter, if it was not removed before
-        if (minter != address(0)) {
-            minter = newOwner;
-        }
+        if (minter != address(0)) minter = newOwner;
     }
 
     function _move(

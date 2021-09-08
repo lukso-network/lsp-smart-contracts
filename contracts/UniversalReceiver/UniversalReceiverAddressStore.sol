@@ -27,7 +27,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         public
         override
         onlyAccount
-        returns(bool)
+        returns (bool)
     {
         return _addressStore.add(_address);
     }
@@ -36,7 +36,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         public
         override
         onlyAccount
-        returns(bool)
+        returns (bool)
     {
         return _addressStore.remove(_address);
     }

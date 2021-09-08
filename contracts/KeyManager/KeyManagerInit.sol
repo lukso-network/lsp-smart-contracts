@@ -13,9 +13,11 @@ import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-/// @title contract to manage permissions when interacting with ERC725 Account
-/// @author Fabian Vogelsteller, Jean Cavallera
-/// @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
+/**
+ * @title Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
+ * @author Fabian Vogelsteller, Jean Cavallera
+ * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
+ */
 contract KeyManagerInit is Initializable, ERC165, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
@@ -29,7 +31,7 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
     // prettier-ignore
     /* solhint-disable */
     // PERMISSION KEYS
-    bytes8 internal constant _SET_PERMISSIONS       = 0x4b80742d00000000; // AddressPermissions:<...>
+    bytes8 internal constant _SET_PERMISSIONS       = 0x4b80742d00000000;         // AddressPermissions:<...>
     bytes12 internal constant _KEY_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
     bytes12 internal constant _KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
     bytes12 internal constant _KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
@@ -91,8 +93,6 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
         returns (bytes4 magicValue)
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
-
-        // check if has permission to sign
         return (_PERMISSION_SIGN & _getUserPermissions(recoveredAddress)) == _PERMISSION_SIGN ? _INTERFACE_ID_ERC1271 : _ERC1271FAILVALUE;
     }
 
@@ -137,17 +137,15 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
             _nonce
         );
 
-        // recover the signer
         address from = keccak256(blob).toEthSignedMessageHash().recover(
             _signature
         );
-        // require(hasRole(EXECUTOR_ROLE, from), 'Only executors are allowed');
+
         require(
             _nonceStore[from] == _nonce,
             "KeyManager:executeRelayCall: Incorrect nonce"
         );
 
-        // increase the nonce
         _nonceStore[from] = _nonceStore[from].add(1);
 
         _checkPermissions(from, _data);
@@ -182,9 +180,8 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
             address recipient = address(bytes20(_data[48:68]));
             uint256 value = uint256(bytes32(_data[68:100]));
 
-            // Check for CALL, DELEGATECALL or DEPLOY
             require(
-                operationType < 4,
+                operationType < 4, // Check for CALL, DELEGATECALL or DEPLOY
                 "KeyManager:_checkPermissions: Invalid operation type"
             );
 
@@ -198,26 +195,27 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
             }
             bool operationAllowed = _isAllowed(permission, userPermissions);
 
-            if (!operationAllowed && permission == _PERMISSION_CALL)
+            if (!operationAllowed && permission == _PERMISSION_CALL) {
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform CALL"
                 );
-            if (!operationAllowed && permission == _PERMISSION_DELEGATECALL)
+            }
+            if (!operationAllowed && permission == _PERMISSION_DELEGATECALL) {
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
                 );
-            if (!operationAllowed && permission == _PERMISSION_DEPLOY)
+            }
+            if (!operationAllowed && permission == _PERMISSION_DEPLOY) {
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
                 );
+            }
 
-            // Check for authorized addresses
             require(
                 _isAllowedAddress(_address, recipient),
                 "KeyManager:_checkPermissions: Not authorized to interact with this address"
             );
 
-            // Check for value
             if (value > 0) {
                 require(
                     _isAllowed(_PERMISSION_TRANSFERVALUE, userPermissions),
@@ -225,7 +223,6 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
                 );
             }
 
-            // Check for functions
             if (_data.length > 164) {
                 bytes4 functionSelector = bytes4(_data[164:168]);
                 if (functionSelector != 0x00000000) {
@@ -262,10 +259,11 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
         bytes1 storedPermission;
         bytes memory fetchResult = account.getData(permissionKey);
 
-        if (fetchResult.length == 0)
+        if (fetchResult.length == 0) {
             revert(
                 "KeyManager:_getUserPermissions: no permissions set for this user / caller"
             );
+        }
 
         assembly {
             storedPermission := mload(add(fetchResult, 32))

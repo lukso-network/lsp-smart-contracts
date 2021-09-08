@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+import "../KeyManager/KeyManager.sol";
+
 /**
  * Helper contract to test internal functions of the KeyManager
  */
-
-import "../KeyManager/KeyManager.sol";
-
 contract KeyManagerHelper is KeyManager {
 
     /* solhint-disable no-empty-blocks */

@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-
 // libraries
 import "./AddressRegistry.sol";
-
 
 contract AddressRegistryRequiresERC725 is AddressRegistry {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -14,7 +12,7 @@ contract AddressRegistryRequiresERC725 is AddressRegistry {
     function addAddress(address _address)
         public
         override
-        returns(bool)
+        returns (bool)
     {
         require(ERC165(_address).supportsInterface(_INTERFACE_ID_ERC725Y), "Only ERC725Y addresses can be added");
         return _addressStore.add(_address);
@@ -23,7 +21,7 @@ contract AddressRegistryRequiresERC725 is AddressRegistry {
     function removeAddress(address _address)
         public
         override
-        returns(bool)
+        returns (bool)
     {
         require(ERC165(msg.sender).supportsInterface(_INTERFACE_ID_ERC725Y), "Only ERC725Y can call this function");
         require(msg.sender == _address, "Only an address can remove itself.");
