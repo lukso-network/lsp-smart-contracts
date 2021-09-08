@@ -23,7 +23,7 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
     using SafeMath for uint256;
 
     ERC725Y public account;
-    mapping(address => uint256) internal _nonceStore;
+    mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
@@ -75,8 +75,33 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
             super.supportsInterface(interfaceId);
     }
 
-    function getNonce(address _address) public view returns (uint256) {
-        return _nonceStore[_address];
+    /**
+     * Get latest nonce for `_from` in a specific channel (`_channelId`)
+     *
+     * @param _from caller address
+     * @param _channelId channel id
+     */
+    function getNonce(address _from, uint128 _channelId) public view returns (uint256) {
+        uint128 nonceId = uint128(_nonceStore[_from][_channelId]);
+        return uint256(_channelId) << 128 | nonceId;
+    }
+
+    /**
+     * @dev "idx" is a 256bits (unsigned) integer, where:
+     *          - the 128 leftmost bits = channelId
+     *      and - the 128 rightmost bits = nonce within the channel
+     * @param _from caller address
+     * @param _idx (channel id + nonce within the channel)
+     */
+    function _verifyNonce(address _from, uint256 _idx) 
+        internal 
+        view 
+        returns (bool) 
+    {
+        // idx % (1 << 128) = nonce
+        // (idx >> 128) = channel
+        // equivalent to: return (nonce == _nonceStore[_from][channel]
+        return (_idx % (1 << 128)) == (_nonceStore[_from][_idx >> 128]);
     }
 
     /**
@@ -117,13 +142,15 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
      * @dev allows anybody to execute given they have a signed message from an executor
      * @param _data obtained via encodeABI() in web3
      * @param _signedFor this KeyManager
-     * @param _nonce the address' nonce, obtained via `getNonce(...)`. Used to prevent replay attack
+     * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
+     * @param _channel the channel to use to verify the nonce
      * @param _signature bytes32 ethereum signature
      */
     function executeRelayCall(
         bytes calldata _data,
         address _signedFor,
         uint256 _nonce,
+        uint256 _channel,
         bytes memory _signature
     ) external payable returns (bool success_) {
         require(
@@ -142,11 +169,11 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
         );
 
         require(
-            _nonceStore[from] == _nonce,
+            _verifyNonce(from, _nonce),
             "KeyManager:executeRelayCall: Incorrect nonce"
         );
 
-        _nonceStore[from] = _nonceStore[from].add(1);
+        _nonceStore[from][_channel] = _nonceStore[from][_channel].add(1);
 
         _checkPermissions(from, _data);
 

@@ -2,16 +2,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 import {
-  KEY_PERMISSIONS,
-  KEY_ALLOWEDADDRESSES,
-  KEY_ALLOWEDFUNCTIONS,
-  ALL_PERMISSIONS,
-  PERMISSION_SETDATA,
-  PERMISSION_CALL,
-  PERMISSION_TRANSFERVALUE,
-} from "./utils/keymanager";
-
-import {
   LSP3AccountInit,
   LSP3AccountInit__factory,
   KeyManagerInit,
@@ -21,6 +11,15 @@ import {
   Reentrancy,
   Reentrancy__factory,
 } from "../build/types";
+import {
+  KEY_PERMISSIONS,
+  KEY_ALLOWEDADDRESSES,
+  KEY_ALLOWEDFUNCTIONS,
+  ALL_PERMISSIONS,
+  PERMISSION_SETDATA,
+  PERMISSION_CALL,
+  PERMISSION_TRANSFERVALUE,
+} from "./utils/keymanager";
 
 import { solidityKeccak256 } from "ethers/lib/utils";
 
@@ -589,6 +588,9 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
   });
 
   describe("> testing `executeRelay(...)`", () => {
+    // Use channelId = 0 for sequential nonce
+    let channelId = 0;
+
     it("Compare signature", async () => {
       let staticAddress = "0xcafecafecafecafecafecafecafecafecafecafe";
       let payload = `0x44c028fe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000009fbda871d559710256a2502a2517b794b482db40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000064c47f00270000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c416e6f74686572206e616d65000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`;
@@ -614,7 +616,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
         "Another name",
       ]);
-      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address);
+      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
       let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
@@ -634,17 +636,17 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        channelId,
         signature
       );
       expect(result).toBeTruthy();
     });
 
-    /** @debug concatenate the hex in the message for the signature correctly */
     it("Should allow to `setName` via `executeRelay`", async () => {
       let newName = "Dagobah";
 
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address);
+      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
       let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
@@ -664,6 +666,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -672,6 +675,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        channelId,
         signature,
         { gasLimit: 3_000_000 }
       );
@@ -683,7 +687,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let currentNumber = await targetContract.callStatic.getNumber();
 
       let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [2354]);
-      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address);
+      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
       let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
@@ -704,6 +708,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonce,
+          channelId,
           signature
         )
       ).toBeRevertedWith("KeyManager:_checkPermissions: Not authorised to run this function");
@@ -713,8 +718,341 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
+  describe("> testing sequential nonces (= channel 0)", () => {
+    let channelId = 0;
+    let latestNonce;
+
+    beforeEach(async () => {
+      latestNonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+    });
+
+    it.each([
+      { callNb: "First", newName: "Yamen", expectedNonce: latestNonce + 1 },
+      { callNb: "Second", newName: "Nour", expectedNonce: latestNonce + 1 },
+      { callNb: "Third", newName: "Huss", expectedNonce: latestNonce + 1 },
+      { callNb: "Fourth", newName: "Moussa", expectedNonce: latestNonce + 1 },
+    ])(
+      "$callNb call > nonce should increment from $latestNonce to $expectedNonce",
+      async ({ callNb, newName, expectedNonce }) => {
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [proxyKeyManager.address, executeRelayCallPayload, latestNonce]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await proxyKeyManager.executeRelayCall(
+          executeRelayCallPayload,
+          proxyKeyManager.address,
+          latestNonce,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, 0);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(latestNonce.add(1)); // ensure the nonce incremented
+      }
+    );
+  });
+
+  describe("> testing multi-channel nonces (= channel n)", () => {
+    let nonces = [0, 1];
+
+    describe("channel 1", () => {
+      let channelId = 1;
+      let names = ["Fabian", "Yamen"];
+
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+        let newName = names[0];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await proxyKeyManager.executeRelayCall(
+          executeRelayCallPayload,
+          proxyKeyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+        let newName = names[1];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await proxyKeyManager.executeRelayCall(
+          executeRelayCallPayload,
+          proxyKeyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+    });
+
+    describe("channel 2", () => {
+      let channelId = 2;
+      let names = ["Hugo", "Reto"];
+
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+        let newName = names[0];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await proxyKeyManager.executeRelayCall(
+          executeRelayCallPayload,
+          proxyKeyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+        let newName = names[1];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await proxyKeyManager.executeRelayCall(
+          executeRelayCallPayload,
+          proxyKeyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+    });
+
+    describe("channel 3", () => {
+      let channelId = 3;
+      let names = ["Jean", "Lenny"];
+
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+        let newName = names[0];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await proxyKeyManager.executeRelayCall(
+          executeRelayCallPayload,
+          proxyKeyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+        let newName = names[1];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await proxyKeyManager.executeRelayCall(
+          executeRelayCallPayload,
+          proxyKeyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+    });
+
+    describe("channel 15", () => {
+      let channelId = 15;
+      it("First call > nonce should increment from 0 to 1", async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+        let newName = "Lukasz";
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await proxyKeyManager.executeRelayCall(
+          executeRelayCallPayload,
+          proxyKeyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+    });
+  });
+
   describe("> testing Security", () => {
     let provider = ethers.provider;
+    let channelId = 0;
 
     it("Should revert because caller has no permissions set", async () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
@@ -769,7 +1107,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
 
     it("Replay Attack should fail because of invalid nonce", async () => {
-      let nonce = await proxyKeyManager.callStatic.getNonce(newUser.address);
+      let nonce = await proxyKeyManager.callStatic.getNonce(newUser.address, channelId);
 
       let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
@@ -790,6 +1128,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -798,6 +1137,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        channelId,
         signature
       );
 
@@ -807,6 +1147,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonce,
+          channelId,
           signature
         )
       ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");

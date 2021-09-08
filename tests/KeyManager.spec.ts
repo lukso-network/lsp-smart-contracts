@@ -533,6 +533,9 @@ describe("KeyManager", () => {
   });
 
   describe("> testing `executeRelay(...)`", () => {
+    // Use channelId = 0 for sequential nonce
+    let channelId = 0;
+
     it("Compare signature", async () => {
       let staticAddress = "0xcafecafecafecafecafecafecafecafecafecafe";
       let payload = `0x44c028fe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000009fbda871d559710256a2502a2517b794b482db40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000064c47f00270000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c416e6f74686572206e616d65000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`;
@@ -553,12 +556,11 @@ describe("KeyManager", () => {
       );
     });
 
-    /** @debug concatenate the hex in the message for the signature correctly */
     it("should execute a signed tx successfully", async () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
         "Another name",
       ]);
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address);
+      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
 
       let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
@@ -578,17 +580,17 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
+        channelId,
         signature
       );
       expect(result).toBeTruthy();
     });
 
-    /** @debug concatenate the hex in the message for the signature correctly */
     it("Should allow to `setName` via `executeRelay`", async () => {
       let newName = "Dagobah";
 
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address);
+      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
 
       let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
@@ -608,6 +610,7 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
+        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -616,6 +619,7 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
+        channelId,
         signature,
         { gasLimit: 3_000_000 }
       );
@@ -626,8 +630,8 @@ describe("KeyManager", () => {
     it("Should not allow to `setNumber` via `executeRelay`", async () => {
       let currentNumber = await targetContract.callStatic.getNumber();
 
+      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
       let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [2354]);
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address);
 
       let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
@@ -644,7 +648,13 @@ describe("KeyManager", () => {
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
       await expect(
-        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature)
+        keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonce,
+          channelId,
+          signature
+        )
       ).toBeRevertedWith("KeyManager:_checkPermissions: Not authorised to run this function");
 
       let endResult = await targetContract.callStatic.getNumber();
@@ -652,8 +662,341 @@ describe("KeyManager", () => {
     });
   });
 
+  describe("> testing sequential nonces (= channel 0)", () => {
+    let channelId = 0;
+    let latestNonce;
+
+    beforeEach(async () => {
+      latestNonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+    });
+
+    it.each([
+      { callNb: "First", newName: "Yamen", expectedNonce: latestNonce + 1 },
+      { callNb: "Second", newName: "Nour", expectedNonce: latestNonce + 1 },
+      { callNb: "Third", newName: "Huss", expectedNonce: latestNonce + 1 },
+      { callNb: "Fourth", newName: "Moussa", expectedNonce: latestNonce + 1 },
+    ])(
+      "$callNb call > nonce should increment from $latestNonce to $expectedNonce",
+      async ({ callNb, newName, expectedNonce }) => {
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [keyManager.address, executeRelayCallPayload, latestNonce]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          latestNonce,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, 0);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(latestNonce.add(1)); // ensure the nonce incremented
+      }
+    );
+  });
+
+  describe("> testing multi-channel nonces (= channel n)", () => {
+    let nonces = [0, 1];
+
+    describe("channel 1", () => {
+      let channelId = 1;
+      let names = ["Fabian", "Yamen"];
+
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let newName = names[0];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [keyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let newName = names[1];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [keyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+    });
+
+    describe("channel 2", () => {
+      let channelId = 2;
+      let names = ["Hugo", "Reto"];
+
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let newName = names[0];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [keyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let newName = names[1];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [keyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+    });
+
+    describe("channel 3", () => {
+      let channelId = 3;
+      let names = ["Jean", "Lenny"];
+
+      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
+        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let newName = names[0];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [keyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+
+      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
+        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let newName = names[1];
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [keyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+    });
+
+    describe("channel 15", () => {
+      let channelId = 15;
+      it("First call > nonce should increment from 0 to 1", async () => {
+        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let newName = "Lukasz";
+
+        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+          newName,
+        ]);
+        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+          OPERATION_CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+        let hash = ethers.utils.solidityKeccak256(
+          ["address", "bytes", "uint256"],
+          [keyManager.address, executeRelayCallPayload, nonceBefore]
+        );
+
+        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+
+        await keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonceBefore,
+          channelId,
+          signature,
+          { gasLimit: 3_000_000 }
+        );
+
+        let fetchedName = await targetContract.callStatic.getName();
+        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+
+        expect(fetchedName).toEqual(newName);
+        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+      });
+    });
+  });
+
   describe("> testing Security", () => {
     let provider = ethers.provider;
+    let channelId = 0;
 
     it("Should revert because caller has no permissions set", async () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
@@ -706,7 +1049,7 @@ describe("KeyManager", () => {
     });
 
     it("Replay Attack should fail because of invalid nonce", async () => {
-      let nonce = await keyManager.callStatic.getNonce(newUser.address);
+      let nonce = await keyManager.callStatic.getNonce(newUser.address, channelId);
 
       let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
         OPERATION_CALL,
@@ -727,6 +1070,7 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
+        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -735,12 +1079,19 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
+        channelId,
         signature
       );
 
       // 2nd call = replay attack
       await expect(
-        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature)
+        keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonce,
+          channelId,
+          signature
+        )
       ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");
     });
   });
