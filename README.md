@@ -11,7 +11,7 @@ The reference implementation for universal profiles smart contracts.
 
 #### via NPM
 
-Universal Profile smart contracts are available as a npm package.
+Universal Profile smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts).
 
 ```bash
 npm install @lukso/universalprofile-smart-contracts --save
