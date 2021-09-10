@@ -11,6 +11,7 @@ import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "../Utils/ERC725Utils.sol";
 
 /**
  * @title Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -20,6 +21,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 contract KeyManager is ERC165, IERC1271 {
     using ECDSA for bytes32;
     using SafeMath for uint256;
+    using ERC725Utils for ERC725Y;
 
     ERC725Y public account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
@@ -49,7 +51,7 @@ contract KeyManager is ERC165, IERC1271 {
     bytes1 internal constant _PERMISSION_SIGN          = 0x80;   // 1000 0000
 
     // selectors
-    bytes4 internal constant _SETDATA_SELECTOR = 0x7f23690c;
+    bytes4 internal constant _SETDATA_SELECTOR = 0x14a6e293;
     bytes4 internal constant _EXECUTE_SELECTOR = 0x44c028fe;
     bytes4 internal constant _TRANSFEROWNERSHIP_SELECTOR = 0xf2fde38b;
 
@@ -142,14 +144,12 @@ contract KeyManager is ERC165, IERC1271 {
      * @param _data obtained via encodeABI() in web3
      * @param _signedFor this KeyManager
      * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
-     * @param _channel the channel to use to verify the nonce
      * @param _signature bytes32 ethereum signature
      */
     function executeRelayCall(
         bytes calldata _data,
         address _signedFor,
         uint256 _nonce,
-        uint256 _channel,
         bytes memory _signature
     ) external payable returns (bool success_) {
         require(
@@ -172,7 +172,7 @@ contract KeyManager is ERC165, IERC1271 {
             "KeyManager:executeRelayCall: Incorrect nonce"
         );
 
-        _nonceStore[from][_channel] = _nonceStore[from][_channel].add(1);
+        _nonceStore[from][_nonce >> 128] = _nonceStore[from][_nonce >> 128].add(1);
 
         _checkPermissions(from, _data);
 
@@ -283,7 +283,7 @@ contract KeyManager is ERC165, IERC1271 {
         }
 
         bytes1 storedPermission;
-        bytes memory fetchResult = account.getData(permissionKey);
+        bytes memory fetchResult = account.getDataSingle(permissionKey);
 
         if (fetchResult.length == 0) {
             revert(
@@ -311,7 +311,7 @@ contract KeyManager is ERC165, IERC1271 {
         assembly {
             allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
         }
-        return account.getData(allowedAddressesKey);
+        return account.getDataSingle(allowedAddressesKey);
     }
 
     function _getAllowedFunctions(address _sender)
@@ -327,7 +327,7 @@ contract KeyManager is ERC165, IERC1271 {
         assembly {
             allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
         }
-        return account.getData(allowedFunctionsKey);
+        return account.getDataSingle(allowedFunctionsKey);
     }
 
     function _isAllowedAddress(address _sender, address _recipient)
