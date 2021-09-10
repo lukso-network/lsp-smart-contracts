@@ -2,6 +2,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 import {
+  ERC725Utils,
+  ERC725Utils__factory,
   ERC725Account,
   ERC725Account__factory,
   KeyManager,
@@ -46,7 +48,8 @@ describe("KeyManager", () => {
   let abiCoder;
   let accounts: SignerWithAddress[] = [];
 
-  let erc725Account: ERC725Account,
+  let erc725Utils: ERC725Utils,
+    erc725Account: ERC725Account,
     keyManager: KeyManager,
     targetContract: TargetContract,
     maliciousContract: Reentrancy;
@@ -68,57 +71,61 @@ describe("KeyManager", () => {
     user = accounts[4];
     newUser = accounts[5];
 
+    erc725Utils = await new ERC725Utils__factory(owner).deploy();
     erc725Account = await new ERC725Account__factory(owner).deploy(owner.address);
-    keyManager = await new KeyManager__factory(owner).deploy(erc725Account.address);
+    keyManager = await new KeyManager__factory(
+      { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
+      owner
+    ).deploy(erc725Account.address);
     targetContract = await new TargetContract__factory(owner).deploy();
     maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(keyManager.address);
     // owner permissions
-    await erc725Account.setData(KEY_PERMISSIONS + owner.address.substr(2), ALL_PERMISSIONS, {
+    await erc725Account.setData([KEY_PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS], {
       from: owner.address,
     });
 
     // app permissions
     let appPermissions = ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL);
-    await erc725Account.setData(KEY_PERMISSIONS + app.address.substr(2), appPermissions, {
+    await erc725Account.setData([KEY_PERMISSIONS + app.address.substr(2)], [appPermissions], {
       from: owner.address,
     });
     await erc725Account.setData(
-      KEY_ALLOWEDADDRESSES + app.address.substr(2),
-      abiCoder.encode(["address[]"], [[targetContract.address, user.address]])
+      [KEY_ALLOWEDADDRESSES + app.address.substr(2)],
+      [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
     );
     await erc725Account.setData(
       // do not allow the app to `setNumber` on TargetContract
-      KEY_ALLOWEDFUNCTIONS + app.address.substr(2),
-      abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])
+      [KEY_ALLOWEDFUNCTIONS + app.address.substr(2)],
+      [abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])]
     );
 
     // user permissions
     let userPermissions = ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL);
-    await erc725Account.setData(KEY_PERMISSIONS + user.address.substr(2), userPermissions, {
+    await erc725Account.setData([KEY_PERMISSIONS + user.address.substr(2)], [userPermissions], {
       from: owner.address,
     });
 
     // externalApp permissions
     let externalAppPermissions = ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL);
     await erc725Account.setData(
-      KEY_PERMISSIONS + externalApp.address.substr(2),
-      externalAppPermissions,
+      [KEY_PERMISSIONS + externalApp.address.substr(2)],
+      [externalAppPermissions],
       { from: owner.address }
     );
     await erc725Account.setData(
-      KEY_ALLOWEDADDRESSES + externalApp.address.substr(2),
-      abiCoder.encode(["address[]"], [[targetContract.address, user.address]])
+      [KEY_ALLOWEDADDRESSES + externalApp.address.substr(2)],
+      [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
     );
     await erc725Account.setData(
       // do not allow the externalApp to `setNumber` on TargetContract
-      KEY_ALLOWEDFUNCTIONS + externalApp.address.substr(2),
-      abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])
+      [KEY_ALLOWEDFUNCTIONS + externalApp.address.substr(2)],
+      [abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])]
     );
 
     // test security
     await erc725Account.setData(
-      KEY_PERMISSIONS + newUser.address.substr(2),
-      ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL + PERMISSION_TRANSFERVALUE)
+      [KEY_PERMISSIONS + newUser.address.substr(2)],
+      [ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL + PERMISSION_TRANSFERVALUE)]
     );
 
     // switch account management to KeyManager
@@ -141,8 +148,13 @@ describe("KeyManager", () => {
 
   // ensures owner is still erc725Account\'s admin (=all permissions)
   it("ensures owner is still erc725Account's admin (=all permissions)", async () => {
-    let permissions = await erc725Account.getData(KEY_PERMISSIONS + owner.address.substr(2));
+    let [permissions] = await erc725Account.getData([KEY_PERMISSIONS + owner.address.substr(2)]);
     expect(permissions).toEqual("0xff", "Owner should have all permissions set");
+  });
+
+  it("get app permissions", async () => {
+    let [permissions] = await erc725Account.getData([KEY_PERMISSIONS + app.address.substr(2)]);
+    expect(permissions).toEqual("0x0c", "Owner should have all permissions set");
   });
 
   describe("> testing permissions: CHANGEKEYS, SETDATA", () => {
@@ -150,36 +162,77 @@ describe("KeyManager", () => {
       let key = KEY_PERMISSIONS + app.address.substr(2);
 
       let payload = erc725Account.interface.encodeFunctionData("setData", [
-        key,
-        PERMISSION_SETDATA,
+        [key],
+        [PERMISSION_SETDATA],
       ]);
 
       let result = await keyManager.callStatic.execute(payload, { from: owner.address });
       expect(result).toBeTruthy();
 
       await keyManager.execute(payload, { from: owner.address });
-      let fetchedResult = await erc725Account.callStatic.getData(key);
+      let fetchedResult = await erc725Account.callStatic.getData([key]);
       expect(Number(fetchedResult)).toEqual(PERMISSION_SETDATA);
 
       // reset app permissions
       await keyManager.execute(
         erc725Account.interface.encodeFunctionData("setData", [
-          key,
-          ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL),
+          [key],
+          [ethers.utils.hexZeroPad(PERMISSION_SETDATA + PERMISSION_CALL)],
         ])
       );
     });
 
-    it("App should not be allowed to change keys", async () => {
+    it.only("App should not be allowed to change keys", async () => {
+      let [permissionsBefore] = await erc725Account.getData([
+        KEY_PERMISSIONS + app.address.substr(2),
+      ]);
+      console.log("permissionsBefore:", permissionsBefore);
+
       // malicious app trying to set all permissions
       let dangerousPayload = erc725Account.interface.encodeFunctionData("setData", [
-        KEY_PERMISSIONS + app.address.substr(2),
-        ALL_PERMISSIONS,
+        [KEY_PERMISSIONS + app.address.substr(2)],
+        [ALL_PERMISSIONS],
       ]);
 
+      console.log("dangerous payload: ", dangerousPayload);
+
+      // calldata (read only)
+      // 0xakbdiavysagohdgbuowdihvivwvvnwbwb...
+
+      // 0x0000000000000000000000000000000000000000000000000000000000000004 -> position in memory
+      //   0000000000000000000000000000000000000000000000000000000000000008 -> length of the _data
+      //   abcdef... -> data itself
+
+      // 0x14a6e293 -> function selector
+      // 0x0000000000000000000000000000000000000000000000000000000000000004 -> position in memory
+      // 0x0000000000000000000000000000000000000000000000000000000000000008 -> length of the _data
+      // 0x0000000000000000000000000000000000000000000000000000000000000000 -> operation type
+      // 0x14b80742d0000000082ac000070997970c51812dc3a010c7d01b50e0d17dc79c -> recipient
+      // 0x8000000000000000000000000000000000000000000000000000000000000000
+      // 0x1000000000000000000000000000000000000000000000000000000000000002
+      // 0x0000000000000000000000000000000000000000000000000000000000000001
+      // 0xff00000000000000000000000000000000000000000000000000000000000000
+
+      // (0)   0x44c028fe
+      // (4)   0x0000000000000000000000000000000000000000000000000000000000000000 -> operation type
+      // (36)  0x0000000000000000000000002c2b9c9a4a25e24b174f26114e8926a9f2128fe4 -> recipient
+      // (68)  0x0000000000000000000000000000000000000000000000000000000000000000
+      // (100) 0x0000000000000000000000000000000000000000000000000000000000000080
+      // (132) 0x0000000000000000000000000000000000000000000000000000000000000064
+      // (164) 0xc47f0027
+      // (168) 0x0000000000000000000000000000000000000000000000000000000000000020
+      // (200) 0x0000000000000000000000000000000000000000000000000000000000000004
+      // (232) 0x5465737400000000000000000000000000000000000000000000000000000000
+      // (xxx) 0x00000000000000000000000000000000000000000000000000000000
+
+      //   let result = await keyManager.connect(app).execute(dangerousPayload);
+      //   console.log(result);
       await expect(keyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to change keys"
       );
+
+      let [permissions] = await erc725Account.getData([KEY_PERMISSIONS + app.address.substr(2)]);
+      console.log(permissions);
     });
 
     it("Owner should be allowed to setData", async () => {
@@ -190,13 +243,13 @@ describe("KeyManager", () => {
         )
       );
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [key, value]);
+      let payload = erc725Account.interface.encodeFunctionData("setData", [[key], [value]]);
 
       let callResult = await keyManager.callStatic.execute(payload, { from: owner.address });
       expect(callResult).toBeTruthy();
 
       await keyManager.execute(payload, { from: owner.address });
-      let fetchedResult = await erc725Account.callStatic.getData(key);
+      let [fetchedResult] = await erc725Account.callStatic.getData([key]);
       expect(fetchedResult).toEqual(value);
     });
 
@@ -208,14 +261,14 @@ describe("KeyManager", () => {
         )
       );
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [key, value]);
+      let payload = erc725Account.interface.encodeFunctionData("setData", [[key], [value]]);
 
       keyManager.connect(app.address);
       let callResult = await keyManager.callStatic.execute(payload);
       expect(callResult).toBeTruthy();
 
       await keyManager.execute(payload);
-      let fetchedResult = await erc725Account.callStatic.getData(key);
+      let [fetchedResult] = await erc725Account.callStatic.getData([key]);
       expect(fetchedResult).toEqual(value);
     });
   });
@@ -580,7 +633,6 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
-        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -610,7 +662,6 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
-        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -619,7 +670,6 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
-        channelId,
         signature,
         { gasLimit: 3_000_000 }
       );
@@ -699,7 +749,6 @@ describe("KeyManager", () => {
           executeRelayCallPayload,
           keyManager.address,
           latestNonce,
-          channelId,
           signature,
           { gasLimit: 3_000_000 }
         );
@@ -745,7 +794,6 @@ describe("KeyManager", () => {
           executeRelayCallPayload,
           keyManager.address,
           nonceBefore,
-          channelId,
           signature,
           { gasLimit: 3_000_000 }
         );
@@ -782,7 +830,6 @@ describe("KeyManager", () => {
           executeRelayCallPayload,
           keyManager.address,
           nonceBefore,
-          channelId,
           signature,
           { gasLimit: 3_000_000 }
         );
@@ -824,7 +871,6 @@ describe("KeyManager", () => {
           executeRelayCallPayload,
           keyManager.address,
           nonceBefore,
-          channelId,
           signature,
           { gasLimit: 3_000_000 }
         );
@@ -861,7 +907,6 @@ describe("KeyManager", () => {
           executeRelayCallPayload,
           keyManager.address,
           nonceBefore,
-          channelId,
           signature,
           { gasLimit: 3_000_000 }
         );
@@ -903,7 +948,6 @@ describe("KeyManager", () => {
           executeRelayCallPayload,
           keyManager.address,
           nonceBefore,
-          channelId,
           signature,
           { gasLimit: 3_000_000 }
         );
@@ -940,7 +984,6 @@ describe("KeyManager", () => {
           executeRelayCallPayload,
           keyManager.address,
           nonceBefore,
-          channelId,
           signature,
           { gasLimit: 3_000_000 }
         );
@@ -980,7 +1023,6 @@ describe("KeyManager", () => {
           executeRelayCallPayload,
           keyManager.address,
           nonceBefore,
-          channelId,
           signature,
           { gasLimit: 3_000_000 }
         );
@@ -1070,7 +1112,6 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
-        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -1079,19 +1120,12 @@ describe("KeyManager", () => {
         executeRelayCallPayload,
         keyManager.address,
         nonce,
-        channelId,
         signature
       );
 
       // 2nd call = replay attack
       await expect(
-        keyManager.executeRelayCall(
-          executeRelayCallPayload,
-          keyManager.address,
-          nonce,
-          channelId,
-          signature
-        )
+        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature)
       ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");
     });
   });

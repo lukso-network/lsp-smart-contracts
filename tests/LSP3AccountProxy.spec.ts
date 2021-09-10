@@ -343,8 +343,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
         keys.push(key);
         values.push(value);
       }
-      await proxy.setDataMultiple(keys, values);
-      let result = await proxy.callStatic.getDataMultiple(keys);
+      await proxy.setData(keys, values);
+      let result = await proxy.callStatic.getData(keys);
       expect(result).toEqual(values);
     });
 

@@ -41,11 +41,11 @@ describe("ERC725 Account", () => {
 
     await Promise.all(
       flattenedEncodedData.map(async (a) => {
-        return erc725Account.setData(a.key, a.value);
+        return erc725Account.setData([a.key], [a.value]);
       })
     );
 
-    const length = await erc725Account.getData(schema[0].key);
+    const [length] = await erc725Account.getData([schema[0].key]);
     expect(parseInt(length)).toEqual(50);
   });
 
@@ -62,11 +62,11 @@ describe("ERC725 Account", () => {
 
     await Promise.all(
       flattenedEncodedData.map(async (a) => {
-        return erc725Account.setData(a.key, a.value);
+        return erc725Account.setData([a.key], [a.value]);
       })
     );
 
-    const length = await erc725Account.getData(schema[0].key);
+    const [length] = await erc725Account.getData([schema[0].key]);
     expect(parseInt(length)).toEqual(51);
   });
 });
