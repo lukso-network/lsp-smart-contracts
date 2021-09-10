@@ -9,12 +9,16 @@ import "./_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 import "../submodules/ERC725/implementations/contracts/ERC725/ERC725Account.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
+// libraries
+import "./Utils/ERC725Utils.sol";
+
 /**
  * @title LSP3Account implementation for LUKSO
  * @author Fabian Vogelsteller <fabian@lukso.network>
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
 contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
+    using ERC725Utils for ERC725Y;
 
     bytes4 constant _INTERFACE_ID_LSP1 = 0x6bb56a14;
     bytes4 constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
@@ -42,42 +46,18 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
         return dataKeys;
     }
 
-    function setDataMultiple(bytes32[] calldata _keys, bytes[] calldata _values)
-        public
-        onlyOwner
-    {
-        for (uint256 i = 0; i < _keys.length; i++) {
-            setData(_keys[i], _values[i]);
-        }
-    }
-
-    function getDataMultiple(bytes32[] calldata _keys)
-        public
-        view
-        returns(bytes[] memory)
-    {
-        uint256 length = _keys.length;
-        bytes[] memory values = new bytes[](length);
-
-        for (uint256 i=0; i < length; i++) {
-            values[i] = getData(_keys[i]);
-        }
-
-        return values;
-    }
-
-    /* Public functions */
-
-    function setData(bytes32 _key, bytes calldata _value)
+    function setData(bytes32[] calldata _keys, bytes[] calldata _values)
         public
         override
         onlyOwner
     {
-        if(store[_key].length == 0) {
-            dataKeys.push(_key);
+        require(_keys.length == _values.length, "Keys length not equal to values length");
+        for (uint256 ii = 0; ii < _keys.length; ii++) {
+            if (store[_keys[ii]].length == 0) {
+                dataKeys.push(_keys[ii]);
+            }
+            _setData(_keys[ii], _values[ii]);
         }
-        store[_key] = _value;
-        emit DataChanged(_key, _value);
     }
 
     /**
@@ -93,7 +73,7 @@ contract LSP3Account is ERC165Storage, ERC725Account, ILSP1 {
         virtual
         returns (bytes32 returnValue)
     {
-        bytes memory receiverData = getData(_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory receiverData = ERC725Y(this).getDataSingle(_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         returnValue = "";
 
         // call external contract

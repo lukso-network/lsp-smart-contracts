@@ -23,7 +23,7 @@ const config: HardhatUserConfig = {
     // }
   },
   solidity: {
-    version: "0.8.6",
+    version: "0.8.7",
     settings: {
       optimizer: {
         enabled: true,
