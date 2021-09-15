@@ -59,6 +59,7 @@ contract KeyManager is ERC165, IERC1271 {
 
     constructor(address _account) {
         account = ERC725Y(_account);
+        // todo register interface id for KeyManager
     }
 
     /**
@@ -172,7 +173,8 @@ contract KeyManager is ERC165, IERC1271 {
             "KeyManager:executeRelayCall: Incorrect nonce"
         );
 
-        _nonceStore[from][_nonce >> 128] = _nonceStore[from][_nonce >> 128].add(1);
+        // increase nonce after successful verification
+        _nonceStore[from][_nonce >> 128]++;
 
         _checkPermissions(from, _data);
 
@@ -188,7 +190,9 @@ contract KeyManager is ERC165, IERC1271 {
         bytes4 erc725Selector = bytes4(_data[:4]);
 
         if (erc725Selector == _SETDATA_SELECTOR) {
-            bytes8 setDataKey = bytes8(_data[4:12]);
+            bytes8 setDataKey = bytes8(_data[4:11]);
+
+            // todo check in loop
 
             if (setDataKey == _SET_PERMISSIONS) {
                 require(
@@ -202,9 +206,9 @@ contract KeyManager is ERC165, IERC1271 {
                 );
             }
         } else if (erc725Selector == _EXECUTE_SELECTOR) {
-            uint8 operationType = uint8(bytes1(_data[35:36]));
-            address recipient = address(bytes20(_data[48:68]));
-            uint256 value = uint256(bytes32(_data[68:100]));
+            uint8 operationType = uint8(bytes1(_data[35]));
+            address recipient = address(bytes20(_data[48:67]));
+            uint256 value = uint256(bytes32(_data[68:99]));
 
             require(
                 operationType < 4, // Check for CALL, DELEGATECALL or DEPLOY
@@ -250,7 +254,7 @@ contract KeyManager is ERC165, IERC1271 {
             }
 
             if (_data.length > 164) {
-                bytes4 functionSelector = bytes4(_data[164:168]);
+                bytes4 functionSelector = bytes4(_data[164:167]);
                 if (functionSelector != 0x00000000) {
                     require(
                         _isAllowedFunction(_address, functionSelector),
