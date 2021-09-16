@@ -32,7 +32,6 @@
     "url": "https://github.com/lukso-network/universalprofile-smart-contracts/issues"
   },
   "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
-  "dependencies": {},
   "devDependencies": {
     "@erc725/erc725.js": "0.6.2-beta.4",
     "@ethereum-waffle/jest": "^3.3.0",
