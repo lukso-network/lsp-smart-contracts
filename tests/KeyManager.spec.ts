@@ -6,6 +6,8 @@ import {
   ERC725Utils__factory,
   ERC725Account,
   ERC725Account__factory,
+  KeyManagerHelper,
+  KeyManagerHelper__factory,
   KeyManager,
   KeyManager__factory,
   TargetContract,
@@ -17,6 +19,7 @@ import {
 import { expectRevert } from "@openzeppelin/test-helpers";
 import { Signer, Wallet } from "ethers";
 import { hashMessage, solidityKeccak256 } from "ethers/lib/utils";
+import { generateKeysAndValues } from "./utils/helpers";
 
 import {
   KEY_PERMISSIONS,
@@ -43,6 +46,133 @@ let allowedAddresses = [
   "0xcafecafecafecafecafecafecafecafecafecafe",
   "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
 ];
+
+describe("KeyManagerHelper", () => {
+  let erc725Account: ERC725Account,
+    keyManagerHelper: KeyManagerHelper,
+    targetContract: TargetContract,
+    erc725Utils: ERC725Utils;
+  let abiCoder;
+  let accounts: SignerWithAddress[] = [];
+  let owner: SignerWithAddress, app: SignerWithAddress, user: SignerWithAddress;
+
+  beforeAll(async () => {
+    abiCoder = await ethers.utils.defaultAbiCoder;
+    accounts = await ethers.getSigners();
+    owner = accounts[0];
+    app = accounts[1];
+    user = accounts[2];
+
+    targetContract = await new TargetContract__factory(owner).deploy();
+
+    erc725Account = await new ERC725Account__factory(owner).deploy(owner.address);
+    erc725Utils = await new ERC725Utils__factory(owner).deploy();
+    keyManagerHelper = await new KeyManagerHelper__factory(
+      { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
+      owner
+    ).deploy(erc725Account.address);
+
+    await erc725Account.setData([KEY_PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS], {
+      from: owner.address,
+    });
+
+    let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
+
+    await erc725Account.setData(
+      [KEY_ALLOWEDADDRESSES + owner.address.substr(2)],
+      [abiCoder.encode(["address[]"], [allowedAddresses])]
+    );
+
+    await erc725Account.setData(
+      [KEY_ALLOWEDFUNCTIONS + owner.address.substr(2)],
+      [abiCoder.encode(["bytes4[]"], [allowedFunctions])]
+    );
+  });
+
+  describe("Reading ERC725's account storage", () => {
+    it("_getAllowedAddresses(...) - Should return list of owner's allowed addresses", async () => {
+      let bytesResult = await keyManagerHelper.getAllowedAddresses(owner.address, {
+        from: owner.address,
+      });
+      let allowedOwnerAddresses = abiCoder.decode(["address[]"], bytesResult);
+      let CheckSummedAllowedAddress = [
+        await ethers.utils.getAddress(allowedAddresses[0]),
+        await ethers.utils.getAddress(allowedAddresses[1]),
+      ];
+      expect(allowedOwnerAddresses).toEqual([CheckSummedAllowedAddress]);
+    });
+
+    it("_getAllowedAddresses(...) - Should return no addresses for app", async () => {
+      let bytesResult = await keyManagerHelper.getAllowedAddresses(app.address);
+      expect([bytesResult]).toEqual(["0x"]);
+
+      let resultFromAccount = await erc725Account.getData([
+        KEY_ALLOWEDADDRESSES + app.address.substr(2),
+      ]);
+      expect(resultFromAccount).toEqual(["0x"]);
+    });
+
+    it("_getAllowedFunctions(...) - Should return list of owner's allowed functions", async () => {
+      let bytesResult = await keyManagerHelper.callStatic.getAllowedFunctions(owner.address);
+      let allowedOwnerFunctions = abiCoder.decode(["bytes4[]"], bytesResult);
+      let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
+      expect(allowedOwnerFunctions).toEqual([allowedFunctions]);
+
+      let resultFromAccount = await erc725Account.getData([
+        KEY_ALLOWEDFUNCTIONS + owner.address.substr(2),
+      ]);
+      let decodedResultFromAccount = abiCoder.decode(["bytes4[]"], resultFromAccount[0]);
+
+      expect(decodedResultFromAccount).toEqual([allowedFunctions]);
+
+      // also make sure that both functions from keyManager and from erc725 account return the same thing
+      expect([bytesResult]).toEqual(resultFromAccount);
+    });
+
+    it("_getAllowedFunctions(...) - Should return no functions selectors for app.", async () => {
+      let bytesResult = await keyManagerHelper.getAllowedFunctions(app.address);
+      expect([bytesResult]).toEqual(["0x"]);
+
+      let resultFromAccount = await erc725Account.getData([
+        KEY_ALLOWEDFUNCTIONS + app.address.substr(2),
+      ]);
+      expect(resultFromAccount).toEqual(["0x"]);
+    });
+  });
+
+  describe("Reading User's permissions", () => {
+    it("Should return 0xff for owner", async () => {
+      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual("0xff"); // ALL_PERMISSIONS = "0xff"
+    });
+  });
+
+  describe("Testing permissions for allowed addresses / function", () => {
+    it("_isAllowedAddress(...) - Should return `true` for address listed in owner's allowed addresses", async () => {
+      expect(
+        await keyManagerHelper.callStatic.isAllowedAddress(
+          owner.address,
+          "0xcafecafecafecafecafecafecafecafecafecafe"
+        )
+      ).toBeTruthy();
+    });
+
+    it("_isAllowedAddress(...) - Should return `false` for address not listed in owner's allowed addresses", async () => {
+      expect(
+        await keyManagerHelper.callStatic.isAllowedAddress(
+          owner.address,
+          "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
+        )
+      ).toBeFalsy();
+    });
+
+    it("_isAllowedAddress(...) - Should return `true`, user has all addresses whitelisted (= no list of allowed address)", async () => {
+      // assuming a scenario user wants to interact with app on via ERC725 account
+      expect(
+        await keyManagerHelper.callStatic.isAllowedAddress(user.address, app.address)
+      ).toBeTruthy();
+    });
+  });
+});
 
 describe("KeyManager", () => {
   let abiCoder;
@@ -182,51 +312,13 @@ describe("KeyManager", () => {
       );
     });
 
-    it.only("App should not be allowed to change keys", async () => {
-      let [permissionsBefore] = await erc725Account.getData([
-        KEY_PERMISSIONS + app.address.substr(2),
-      ]);
-      console.log("permissionsBefore:", permissionsBefore);
-
+    it("App should not be allowed to change keys", async () => {
       // malicious app trying to set all permissions
       let dangerousPayload = erc725Account.interface.encodeFunctionData("setData", [
         [KEY_PERMISSIONS + app.address.substr(2)],
         [ALL_PERMISSIONS],
       ]);
 
-      console.log("dangerous payload: ", dangerousPayload);
-
-      // calldata (read only)
-      // 0xakbdiavysagohdgbuowdihvivwvvnwbwb...
-
-      // 0x0000000000000000000000000000000000000000000000000000000000000004 -> position in memory
-      //   0000000000000000000000000000000000000000000000000000000000000008 -> length of the _data
-      //   abcdef... -> data itself
-
-      // 0x14a6e293 -> function selector
-      // 0x0000000000000000000000000000000000000000000000000000000000000004 -> position in memory
-      // 0x0000000000000000000000000000000000000000000000000000000000000008 -> length of the _data
-      // 0x0000000000000000000000000000000000000000000000000000000000000000 -> operation type
-      // 0x14b80742d0000000082ac000070997970c51812dc3a010c7d01b50e0d17dc79c -> recipient
-      // 0x8000000000000000000000000000000000000000000000000000000000000000
-      // 0x1000000000000000000000000000000000000000000000000000000000000002
-      // 0x0000000000000000000000000000000000000000000000000000000000000001
-      // 0xff00000000000000000000000000000000000000000000000000000000000000
-
-      // (0)   0x44c028fe
-      // (4)   0x0000000000000000000000000000000000000000000000000000000000000000 -> operation type
-      // (36)  0x0000000000000000000000002c2b9c9a4a25e24b174f26114e8926a9f2128fe4 -> recipient
-      // (68)  0x0000000000000000000000000000000000000000000000000000000000000000
-      // (100) 0x0000000000000000000000000000000000000000000000000000000000000080
-      // (132) 0x0000000000000000000000000000000000000000000000000000000000000064
-      // (164) 0xc47f0027
-      // (168) 0x0000000000000000000000000000000000000000000000000000000000000020
-      // (200) 0x0000000000000000000000000000000000000000000000000000000000000004
-      // (232) 0x5465737400000000000000000000000000000000000000000000000000000000
-      // (xxx) 0x00000000000000000000000000000000000000000000000000000000
-
-      //   let result = await keyManager.connect(app).execute(dangerousPayload);
-      //   console.log(result);
       await expect(keyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to change keys"
       );
@@ -271,6 +363,41 @@ describe("KeyManager", () => {
       let [fetchedResult] = await erc725Account.callStatic.getData([key]);
       expect(fetchedResult).toEqual(value);
     });
+  });
+
+  describe("> testing permissions: App not allowed to CHANGEKEYS (setting multiple mixed keys)", () => {
+    xit("(should pass): adding one singleton key", async () => {});
+    xit("(should pass): adding 5 singleton keys", async () => {});
+    xit("(should pass): adding 10 LSP3IssuedAssets", async () => {});
+    xit("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {});
+    xit("(should fail): give admin permission to an address", async () => {});
+    xit("(should fail): set permissions to 3 addresses", async () => {});
+
+    it("(should fail): set 3 keys + 1 permission", async () => {
+      // prettier-ignore
+      let permissionKeyDisallowed = KEY_PERMISSIONS + user.address.substr(2)
+      let permissionValueDisallowed = ethers.utils.hexZeroPad(
+        PERMISSION_CALL + PERMISSION_TRANSFERVALUE
+      );
+
+      let elements = {
+        KeyOne: "1111111111",
+        KeyTwo: "2222222222",
+        KeyThree: "3333333333",
+      };
+      let [keys, values] = generateKeysAndValues(elements);
+
+      keys.push(permissionKeyDisallowed);
+      values.push(permissionValueDisallowed);
+
+      let failingPayload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+
+      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Not authorized to change keys"
+      );
+    });
+
+    xit("(should fail): set 3 keys + 3 permissions", async () => {});
   });
 
   describe("> testing permissions: CALL, DELEGATECALL, DEPLOY", () => {

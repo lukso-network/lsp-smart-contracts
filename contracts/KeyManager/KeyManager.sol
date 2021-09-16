@@ -190,25 +190,37 @@ contract KeyManager is ERC165, IERC1271 {
         bytes4 erc725Selector = bytes4(_data[:4]);
 
         if (erc725Selector == _SETDATA_SELECTOR) {
-            bytes8 setDataKey = bytes8(_data[4:11]);
+            uint256 keyCount = uint256(bytes32(_data[68:100]));
 
-            // todo check in loop
+            // loop through the keys
+            for (uint256 ii = 0; ii <= keyCount - 1; ii++) {
+                // move calldata pointers
+                uint256 ptrStart = 100 + (32 * ii);
+                uint256 ptrEnd = (100 + (32 * (ii + 1)) - 1);
+                
+                // extract the key
+                bytes32 setDataKey = bytes32(_data[ptrStart:ptrEnd]);
 
-            if (setDataKey == _SET_PERMISSIONS) {
-                require(
-                    _isAllowed(_PERMISSION_CHANGEKEYS, userPermissions),
-                    "KeyManager:_checkPermissions: Not authorized to change keys"
-                );
-            } else {
-                require(
-                    _isAllowed(_PERMISSION_SETDATA, userPermissions),
-                    "KeyManager:_checkPermissions: Not authorized to setData"
-                );
+                // check if we try to change permissions
+                if (bytes8(setDataKey) == _SET_PERMISSIONS) {
+                    require(
+                        _isAllowed(_PERMISSION_CHANGEKEYS, userPermissions),
+                        "KeyManager:_checkPermissions: Not authorized to change keys"
+                    );
+                } 
+                else {
+                    require(
+                        _isAllowed(_PERMISSION_SETDATA, userPermissions),
+                        "KeyManager:_checkPermissions: Not authorized to setData"
+                    );
+                }
+                
             }
+            
         } else if (erc725Selector == _EXECUTE_SELECTOR) {
-            uint8 operationType = uint8(bytes1(_data[35]));
-            address recipient = address(bytes20(_data[48:67]));
-            uint256 value = uint256(bytes32(_data[68:99]));
+            uint8 operationType = uint8(bytes1(_data[35:36]));
+            address recipient = address(bytes20(_data[48:68]));
+            uint256 value = uint256(bytes32(_data[68:100]));
 
             require(
                 operationType < 4, // Check for CALL, DELEGATECALL or DEPLOY
@@ -254,7 +266,7 @@ contract KeyManager is ERC165, IERC1271 {
             }
 
             if (_data.length > 164) {
-                bytes4 functionSelector = bytes4(_data[164:167]);
+                bytes4 functionSelector = bytes4(_data[164:168]);
                 if (functionSelector != 0x00000000) {
                     require(
                         _isAllowedFunction(_address, functionSelector),
