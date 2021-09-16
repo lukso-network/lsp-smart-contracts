@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
 
 import {
   ERC725Utils,
@@ -19,7 +20,7 @@ import {
 import { expectRevert } from "@openzeppelin/test-helpers";
 import { Signer, Wallet } from "ethers";
 import { hashMessage, solidityKeccak256 } from "ethers/lib/utils";
-import { generateKeysAndValues } from "./utils/helpers";
+import { getRandomAddresses, generateKeysAndValues, SCHEMA } from "./utils/helpers";
 
 import {
   KEY_PERMISSIONS,
@@ -29,6 +30,7 @@ import {
   PERMISSION_SETDATA,
   PERMISSION_CALL,
   PERMISSION_TRANSFERVALUE,
+  PERMISSION_SIGN,
 } from "./utils/keymanager";
 
 // Operations
@@ -355,8 +357,7 @@ describe("KeyManager", () => {
 
       let payload = erc725Account.interface.encodeFunctionData("setData", [[key], [value]]);
 
-      keyManager.connect(app.address);
-      let callResult = await keyManager.callStatic.execute(payload);
+      let callResult = await keyManager.connect(app).callStatic.execute(payload);
       expect(callResult).toBeTruthy();
 
       await keyManager.execute(payload);
@@ -366,12 +367,150 @@ describe("KeyManager", () => {
   });
 
   describe("> testing permissions: App not allowed to CHANGEKEYS (setting multiple mixed keys)", () => {
-    xit("(should pass): adding one singleton key", async () => {});
-    xit("(should pass): adding 5 singleton keys", async () => {});
-    xit("(should pass): adding 10 LSP3IssuedAssets", async () => {});
-    xit("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {});
-    xit("(should fail): give admin permission to an address", async () => {});
-    xit("(should fail): set permissions to 3 addresses", async () => {});
+    it("(should pass): adding one singleton key", async () => {
+      let elements = { MyFirstKey: "Hello Lukso!" };
+      let [keys, values] = generateKeysAndValues(elements);
+
+      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+
+      let callResult = await keyManager.connect(app).callStatic.execute(payload);
+      expect(callResult).toBeTruthy();
+
+      await keyManager.connect(app).execute(payload);
+      let fetchedResult = await erc725Account.callStatic.getData(keys);
+      expect(fetchedResult).toEqual(
+        Object.values(elements).map((value) =>
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
+        )
+      );
+    });
+
+    it("(should pass): adding 5 singleton keys", async () => {
+      // prettier-ignore
+      let elements = {
+        "MyFirstKey":   "aaaaaaaaaa",
+        "MySecondKey":  "bbbbbbbbbb",
+        "MyThirdKey":   "cccccccccc",
+        "MyFourthKey":  "dddddddddd",
+        "MyFifthKey":   "eeeeeeeeee",
+      };
+
+      let [keys, values] = generateKeysAndValues(elements);
+
+      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+
+      let callResult = await keyManager.connect(app).callStatic.execute(payload);
+      expect(callResult).toBeTruthy();
+
+      await keyManager.connect(app).execute(payload);
+      let fetchedResult = await erc725Account.callStatic.getData(keys);
+      expect(fetchedResult).toEqual(
+        Object.values(elements).map((value) =>
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
+        )
+      );
+    });
+
+    it("(should pass): adding 10 LSP3IssuedAssets", async () => {
+      let lsp3IssuedAssets = getRandomAddresses(10);
+
+      const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
+
+      const encodedData = encodeData(data, SCHEMA);
+      const flattenedEncodedData = flattenEncodedData(encodedData);
+
+      let keys = [];
+      let values = [];
+
+      flattenedEncodedData.map((data) => {
+        keys.push(data.key);
+        values.push(data.value);
+      });
+
+      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+
+      let callResult = await keyManager.connect(app).callStatic.execute(payload);
+      expect(callResult).toBeTruthy();
+
+      await keyManager.connect(app).execute(payload);
+      let fetchedResult = await erc725Account.callStatic.getData(keys);
+      expect(fetchedResult).toEqual(values);
+    });
+
+    it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+      const basicUPSetup = {
+        LSP3Profile: {
+          hashFunction: "keccak256(utf8)",
+          hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+          url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+        },
+        "LSP3IssuedAssets[]": [
+          "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
+          "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
+        ],
+        LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+      };
+
+      let encodedData = encodeData(basicUPSetup, SCHEMA);
+      let flattenedEncodedData = flattenEncodedData(encodedData);
+
+      let keys = [];
+      let values = [];
+
+      flattenedEncodedData.map((data) => {
+        keys.push(data.key);
+        values.push(data.value);
+      });
+
+      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+
+      let callResult = await keyManager.connect(app).callStatic.execute(payload);
+      expect(callResult).toBeTruthy();
+
+      await keyManager.connect(app).execute(payload);
+      let fetchedResult = await erc725Account.callStatic.getData(keys);
+      expect(fetchedResult).toEqual(values);
+    });
+
+    it("(should fail): give admin permission to an address", async () => {
+      let keys = [
+        KEY_PERMISSIONS + user.address.substr(2),
+        KEY_PERMISSIONS + newUser.address.substr(2),
+        KEY_PERMISSIONS + accounts[6].address.substr(2),
+      ];
+
+      let values = [
+        ethers.utils.hexZeroPad(PERMISSION_SETDATA),
+        ethers.utils.hexZeroPad(PERMISSION_CALL + PERMISSION_TRANSFERVALUE),
+        ethers.utils.hexZeroPad(PERMISSION_SIGN),
+      ];
+
+      let failingPayload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+
+      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Not authorized to change keys"
+      );
+    });
+
+    it("(should fail): set permissions to 3 addresses", async () => {
+      let keys = [
+        KEY_PERMISSIONS + user.address.substr(2),
+        KEY_PERMISSIONS + newUser.address.substr(2),
+        KEY_PERMISSIONS + accounts[6].address.substr(2),
+      ];
+
+      let values = [
+        ethers.utils.hexZeroPad(PERMISSION_SETDATA),
+        ethers.utils.hexZeroPad(PERMISSION_CALL + PERMISSION_TRANSFERVALUE),
+        ethers.utils.hexZeroPad(PERMISSION_SIGN),
+      ];
+
+      let failingPayload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+
+      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Not authorized to change keys"
+      );
+    });
 
     it("(should fail): set 3 keys + 1 permission", async () => {
       // prettier-ignore
@@ -397,7 +536,33 @@ describe("KeyManager", () => {
       );
     });
 
-    xit("(should fail): set 3 keys + 3 permissions", async () => {});
+    it("(should fail): set 3 keys + 3 permissions", async () => {
+      let elements = {
+        KeyOne: "1111111111",
+        KeyTwo: "2222222222",
+        KeyThree: "3333333333",
+      };
+
+      let [keys, values] = generateKeysAndValues(elements);
+
+      keys = keys.concat([
+        KEY_PERMISSIONS + user.address.substr(2),
+        KEY_PERMISSIONS + newUser.address.substr(2),
+        KEY_PERMISSIONS + accounts[6].address.substr(2),
+      ]);
+
+      values = values.concat([
+        ethers.utils.hexZeroPad(PERMISSION_SETDATA),
+        ethers.utils.hexZeroPad(PERMISSION_CALL + PERMISSION_TRANSFERVALUE),
+        ethers.utils.hexZeroPad(PERMISSION_SIGN),
+      ]);
+
+      let failingPayload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+
+      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: Not authorized to change keys"
+      );
+    });
   });
 
   describe("> testing permissions: CALL, DELEGATECALL, DEPLOY", () => {
