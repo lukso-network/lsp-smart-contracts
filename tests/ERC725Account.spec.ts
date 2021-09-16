@@ -48,7 +48,7 @@ describe("ERC725 Account", () => {
     //
     it("> adding 10 x LSP3IssuedAssets", async () => {
       lsp3IssuedAssets = getRandomAddresses(10);
-
+      // prettier-ignore
       const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
 
       const encodedData = encodeData(data, SCHEMA);
