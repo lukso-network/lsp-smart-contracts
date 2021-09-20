@@ -4,19 +4,21 @@ import { ethers } from "hardhat";
 import {
   ERC725Utils,
   ERC725Utils__factory,
-  KeyManager,
-  KeyManager__factory,
   LSP3Account,
   LSP3Account__factory,
-  ERC777UniversalReceiver__factory,
-  ExternalERC777UniversalReceiverTester__factory,
-  LSP4DigitalCertificate__factory,
+  KeyManager,
+  KeyManager__factory,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
   UniversalReceiverTester__factory,
+  ERC777UniversalReceiver__factory,
+  ExternalERC777UniversalReceiverTester__factory,
+  LSP4DigitalCertificate__factory,
 } from "../build/types";
 
+// custom utils
 import { KEY_PERMISSIONS, ALL_PERMISSIONS, PERMISSION_SIGN } from "./utils/keymanager";
+import { deployLSP3Account } from "./utils/helpers";
 
 const SupportedStandardsERC725Account_KEY =
   "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
@@ -24,16 +26,15 @@ const SupportedStandardsERC725Account_KEY =
 const ERC725Account_VALUE = "0xafdeb5d6";
 // Get key: keccak256('LSP1UniversalReceiverDelegate')
 const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
-// keccak256("EXECUTOR_ROLE")
-// const EXECUTOR_ROLE = "0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63";
+
 const ERC1271_MAGIC_VALUE = "0x1626ba7e";
 const ERC1271_FAIL_VALUE = "0xffffffff";
+
+// Universal Receiver
 const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 
 describe("LSP3Account", () => {
-  let erc1820;
-
   let accounts: SignerWithAddress[] = [];
   let lsp3Account: LSP3Account;
   let erc725Utils: ERC725Utils;
@@ -44,24 +45,12 @@ describe("LSP3Account", () => {
     accounts = await ethers.getSigners();
     owner = accounts[2];
     erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-    lsp3Account = await getLsp3Account(erc725Utils, owner);
-  });
-
-  beforeEach(async function () {
-    // erc1820 = await singletons.ERC1820Registry(accounts[1]);
+    lsp3Account = await deployLSP3Account(erc725Utils, owner);
   });
 
   describe("Accounts Deployment", () => {
     it("Deploys correctly, and compare owners", async () => {
-      //   const owner = accounts[2];
-      //   let library = await new ERC725Utils__factory(accounts[0]).deploy();
-      // const account = await getLsp3Account(erc725Utils, owner);
-      //   const account = await new LSP3Account__factory(
-      //     { "contracts/TestHelpers/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-      //     owner
-      //   ).deploy(owner.address);
       const idOwner = await lsp3Account.callStatic.owner();
-
       expect(idOwner).toEqual(owner.address);
     });
   });
@@ -69,7 +58,6 @@ describe("LSP3Account", () => {
   describe("ERC165", () => {
     it("Supports ERC165", async () => {
       const interfaceID = "0x01ffc9a7";
-
       const result = await lsp3Account.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();
@@ -77,7 +65,6 @@ describe("LSP3Account", () => {
 
     it("Supports ERC725X", async () => {
       const interfaceID = "0x44c028fe";
-
       const result = await lsp3Account.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();
@@ -85,7 +72,6 @@ describe("LSP3Account", () => {
 
     it("Supports ERC725Y", async () => {
       const interfaceID = "0x5a988c0f";
-
       const result = await lsp3Account.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();
@@ -93,7 +79,6 @@ describe("LSP3Account", () => {
 
     it("Supports ERC1271", async () => {
       const interfaceID = "0x1626ba7e";
-
       const result = await lsp3Account.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();
@@ -101,7 +86,6 @@ describe("LSP3Account", () => {
 
     it("Supports LSP1", async () => {
       const interfaceID = "0x6bb56a14";
-
       const result = await lsp3Account.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();
@@ -109,7 +93,6 @@ describe("LSP3Account", () => {
 
     it("Has SupportedStandardsERC725Account_KEY set to ERC725Account_VALUE", async () => {
       const owner = accounts[2];
-      //   const account = await new LSP3Account__factory(owner).deploy(owner.address);
       let [result] = await lsp3Account.callStatic.getData([SupportedStandardsERC725Account_KEY]);
       expect(result).toEqual(ERC725Account_VALUE);
     });
@@ -118,14 +101,13 @@ describe("LSP3Account", () => {
   describe("ERC1271", () => {
     it("Can verify signature from owner", async () => {
       const signer = accounts[9];
-      const account = await getLsp3Account(erc725Utils, signer);
+      const account = await deployLSP3Account(erc725Utils, signer);
 
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
       const result = await account.callStatic.isValidSignature(messageHash, signature);
-
       expect(result).toEqual(ERC1271_MAGIC_VALUE);
     });
 
@@ -133,13 +115,12 @@ describe("LSP3Account", () => {
       const owner = accounts[2];
       const signer = accounts[9];
 
-      const account = await getLsp3Account(erc725Utils, owner);
+      const account = await deployLSP3Account(erc725Utils, owner);
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
 
       const result = await account.callStatic.isValidSignature(messageHash, signature);
-
       expect(result).toEqual(ERC1271_FAIL_VALUE);
     });
   });
@@ -150,8 +131,7 @@ describe("LSP3Account", () => {
 
     it("Create account", async () => {
       const owner = accounts[2];
-      //   const newaccount = await new LSP3Account__factory(owner).deploy(owner.address);
-      const newaccount = await getLsp3Account(erc725Utils, owner);
+      const newaccount = await deployLSP3Account(erc725Utils, owner);
 
       expect(await newaccount.callStatic.owner()).toEqual(owner.address);
     });
@@ -161,7 +141,6 @@ describe("LSP3Account", () => {
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
       );
-
       let value = "0x" + (count++).toString(16);
 
       await lsp3Account.setData([key], [value], { from: owner.address });
@@ -175,8 +154,8 @@ describe("LSP3Account", () => {
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
       );
-
       let value = "0x" + (count++).toString(16);
+
       await lsp3Account.setData([key], [value], { from: owner.address });
 
       let [result] = await lsp3Account.callStatic.getData([key]);
@@ -188,8 +167,8 @@ describe("LSP3Account", () => {
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
       );
-
       let value = "0x" + (count++).toString(16);
+
       await lsp3Account.setData([key], [value], { from: owner.address });
 
       let [result] = await lsp3Account.callStatic.getData([key]);
@@ -203,8 +182,8 @@ describe("LSP3Account", () => {
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
       );
-
       let value = "0x" + (count++).toString(16);
+
       await lsp3Account.setData([key], [value], { from: owner.address });
 
       let [result] = await lsp3Account.callStatic.getData([key]);
@@ -232,7 +211,6 @@ describe("LSP3Account", () => {
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]
       );
-
       let value = "0x" + count.toString(16);
 
       await lsp3Account.setData([key], [value], { from: owner.address });
@@ -295,7 +273,7 @@ describe("LSP3Account", () => {
       let keys = await lsp3Account.allDataKeys();
       expect(keys.length).toEqual(10);
 
-      console.log("Stored keys", keys);
+      //   console.log("Stored keys", keys);
     });
   });
 
@@ -312,7 +290,7 @@ describe("LSP3Account", () => {
       owner = accounts[3];
       newOwner = accounts[5];
       erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      account = await getLsp3Account(erc725Utils, owner);
+      account = await deployLSP3Account(erc725Utils, owner);
     });
 
     it("Upgrade ownership correctly", async () => {
@@ -477,7 +455,7 @@ describe("LSP3Account", () => {
     it("Call account and check for 'UniversalReceiver' event", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await getLsp3Account(erc725Utils, owner);
+      const account = await deployLSP3Account(erc725Utils, owner);
       //   const account = await new LSP3Account__factory(owner).deploy(owner.address);
 
       // use the checker contract to call account
@@ -506,7 +484,7 @@ describe("LSP3Account", () => {
     it("Call account and check for 'ReceivedERC777' event in external account", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await getLsp3Account(erc725Utils, owner);
+      const account = await deployLSP3Account(erc725Utils, owner);
       // const account = await new LSP3Account__factory(owner).deploy(owner.address);
       const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
         owner
@@ -565,7 +543,7 @@ describe("LSP3Account", () => {
     it("Mint ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await getLsp3Account(erc725Utils, owner);
+      const account = await deployLSP3Account(erc725Utils, owner);
       // const account = await new LSP3Account__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
@@ -600,7 +578,7 @@ describe("LSP3Account", () => {
     it("Transfer ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await getLsp3Account(erc725Utils, owner);
+      const account = await deployLSP3Account(erc725Utils, owner);
       // const account = await new LSP3Account__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
@@ -645,7 +623,7 @@ describe("LSP3Account", () => {
     it("Mint ERC777 and LSP4 to LSP3 account and delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await getLsp3Account(erc725Utils, owner);
+      const account = await deployLSP3Account(erc725Utils, owner);
       // const account = await new LSP3Account__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
@@ -686,7 +664,7 @@ describe("LSP3Account", () => {
     it("Transfer ERC777 and LSP4 from LSP3 account with delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await getLsp3Account(erc725Utils, owner);
+      const account = await deployLSP3Account(erc725Utils, owner);
       // const account = await new LSP3Account__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
@@ -733,7 +711,7 @@ describe("LSP3Account", () => {
       const OPERATION_CALL = 0x0;
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await getLsp3Account(erc725Utils, owner);
+      const account = await deployLSP3Account(erc725Utils, owner);
       // const account = await new LSP3Account__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
@@ -807,7 +785,7 @@ describe("LSP3Account", () => {
       signer = accounts[7];
       thirdParty = accounts[8];
       erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      lsp3Account = await getLsp3Account(erc725Utils, owner);
+      lsp3Account = await deployLSP3Account(erc725Utils, owner);
       //   lsp3Account = await new LSP3Account__factory(owner).deploy(owner.address);
       keyManager = await getKeyManager(erc725Utils, owner, lsp3Account);
 
@@ -908,11 +886,4 @@ async function getKeyManager(
     { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
     owner
   ).deploy(lsp3Account.address);
-}
-
-async function getLsp3Account(erc725Utils: ERC725Utils, owner: SignerWithAddress) {
-  return await new LSP3Account__factory(
-    { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-    owner
-  ).deploy(owner.address);
 }
