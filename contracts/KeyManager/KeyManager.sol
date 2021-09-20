@@ -237,17 +237,17 @@ contract KeyManager is ERC165, IERC1271 {
             }
             bool operationAllowed = _isAllowed(permission, userPermissions);
 
-            if (!operationAllowed && permission == _PERMISSION_CALL) {
+            if (!operationAllowed && (permission == _PERMISSION_CALL)) {
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform CALL"
                 );
             }
-            if (!operationAllowed && permission == _PERMISSION_DELEGATECALL) {
+            if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
                 );
             }
-            if (!operationAllowed && permission == _PERMISSION_DEPLOY) {
+            if (!operationAllowed && (permission == _PERMISSION_DEPLOY)) {
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
                 );
@@ -284,6 +284,7 @@ contract KeyManager is ERC165, IERC1271 {
                 "KeyManager:_checkPermissions: unknown function selector from ERC725 account"
             );
         }
+
     }
 
     function _getUserPermissions(address _address)
