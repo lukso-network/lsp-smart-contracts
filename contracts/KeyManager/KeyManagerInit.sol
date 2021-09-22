@@ -52,7 +52,7 @@ contract KeyManagerInit is Initializable, ERC165, IERC1271 {
     bytes1 internal constant _PERMISSION_SIGN          = 0x80;   // 1000 0000
 
     // selectors
-    bytes4 internal constant _SETDATA_SELECTOR = 0x7f23690c;
+    bytes4 internal constant _SETDATA_SELECTOR = 0x14a6e293;
     bytes4 internal constant _EXECUTE_SELECTOR = 0x44c028fe;
     bytes4 internal constant _TRANSFEROWNERSHIP_SELECTOR = 0xf2fde38b;
 
