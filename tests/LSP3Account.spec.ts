@@ -17,8 +17,10 @@ import {
 } from "../build/types";
 
 // custom utils
-import { KEY_PERMISSIONS, ALL_PERMISSIONS, PERMISSION_SIGN } from "./utils/keymanager";
-import { deployLSP3Account } from "./utils/helpers";
+import { KEYS, PERMISSIONS } from "./utils/keymanager";
+import { deployLSP3Account, deployKeyManager } from "./utils/deploy";
+
+/** @todo put all of these in constant file */
 
 const SupportedStandardsERC725Account_KEY =
   "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
@@ -786,18 +788,17 @@ describe("LSP3Account", () => {
       thirdParty = accounts[8];
       erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
       lsp3Account = await deployLSP3Account(erc725Utils, owner);
-      //   lsp3Account = await new LSP3Account__factory(owner).deploy(owner.address);
-      keyManager = await getKeyManager(erc725Utils, owner, lsp3Account);
+      keyManager = await deployKeyManager(erc725Utils, owner, lsp3Account);
 
       // give all permissions to owner
       await lsp3Account
         .connect(owner)
-        .setData([KEY_PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS]);
+        .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [PERMISSIONS.ALL]);
 
       // give SIGN permission to signer
-      await lsp3Account.setData([KEY_PERMISSIONS + signer.address.substr(2)], ["0x80"]);
+      await lsp3Account.setData([KEYS.PERMISSIONS + signer.address.substr(2)], ["0x80"]);
       // give CALL permission to non-signer
-      await lsp3Account.setData([KEY_PERMISSIONS + thirdParty.address.substr(2)], ["0x08"]);
+      await lsp3Account.setData([KEYS.PERMISSIONS + thirdParty.address.substr(2)], ["0x08"]);
 
       await lsp3Account.transferOwnership(keyManager.address);
     });
@@ -827,7 +828,6 @@ describe("LSP3Account", () => {
       });
 
       it("Should fail when verifying signature from address with no SIGN permission", async () => {
-        // console.log("nonSignerAddress: ", nonSignerAddress);
         const dataToSign = "0xabcdabcd";
         const messageHash = ethers.utils.hashMessage(dataToSign);
         const signature = await thirdParty.signMessage(dataToSign);
@@ -876,14 +876,3 @@ describe("LSP3Account", () => {
     });
   });
 });
-
-async function getKeyManager(
-  erc725Utils: ERC725Utils,
-  owner: SignerWithAddress,
-  lsp3Account: LSP3Account
-) {
-  return await new KeyManager__factory(
-    { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-    owner
-  ).deploy(lsp3Account.address);
-}

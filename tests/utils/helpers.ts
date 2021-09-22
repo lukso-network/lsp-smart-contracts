@@ -1,6 +1,11 @@
 import { ethers } from "hardhat";
-import { Contract, ContractTransaction } from "ethers";
 import { ERC725JSONSchema } from "@erc725/erc725.js";
+
+export const EMPTY_PAYLOAD = "0x";
+export const DUMMY_PAYLOAD = "0xaabbccdd123456780000000000";
+export const ONE_ETH = ethers.utils.parseEther("1");
+export const DUMMY_PRIVATEKEY =
+  "0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe";
 
 export const SCHEMA: ERC725JSONSchema[] = [
   {
@@ -27,23 +32,6 @@ export const SCHEMA: ERC725JSONSchema[] = [
     elementValueType: "address",
   },
 ];
-
-export async function getDeploymentCost(contractOrTransaction: Contract | ContractTransaction) {
-  let gasUsed: number;
-  let receipt: any;
-
-  if ("deployTransaction" in contractOrTransaction) {
-    receipt = await contractOrTransaction.deployTransaction.wait();
-  } else {
-    receipt = await contractOrTransaction.wait();
-  }
-  gasUsed = receipt.gasUsed.toNumber();
-
-  return {
-    receipt,
-    gasUsed,
-  };
-}
 
 export function getRandomAddresses(count) {
   let base = "0xa56039d89BD9451A1ac94a680a20302da2dE92";

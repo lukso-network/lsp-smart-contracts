@@ -1,20 +1,30 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
-  ERC777UniversalReceiver__factory,
-  ExternalERC777UniversalReceiverTester__factory,
+  ERC725Utils,
+  ERC725Utils__factory,
   LSP3Account,
+  LSP3Account__factory,
   LSP3AccountInit,
   LSP3AccountInit__factory,
-  LSP3Account__factory,
-  LSP4DigitalCertificate__factory,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester__factory,
+  ERC777UniversalReceiver__factory,
+  ExternalERC777UniversalReceiverTester__factory,
+  LSP4DigitalCertificate__factory,
 } from "../build/types";
-import { ContractFactory, SignerWithAddress } from "ethers";
-import { getDeploymentCost } from "./utils/helpers";
+import { ContractFactory } from "ethers";
 
-const { proxyRuntimeCodeTemplate } = require("./utils/proxy");
+// custom utils
+import { getDeploymentCost, deployLSP3Account } from "./utils/deploy";
+import {
+  proxyRuntimeCodeTemplate,
+  deployProxy,
+  deployBaseLSP3Account,
+  attachLSP3AccountProxy,
+} from "./utils/proxy";
+
+/** @todo put all of these in constant file */
 
 const SupportedStandardsERC725Account_KEY =
   "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
@@ -24,7 +34,7 @@ const ERC725Account_VALUE = "0xafdeb5d6";
 // Interfaces IDs
 const ERC165_INTERFACE_ID = "0x01ffc9a7";
 const ERC725X_INTERFACE_ID = "0x44c028fe";
-const ERC725Y_INTERFACE_ID = "0x2bd57b73";
+const ERC725Y_INTERFACE_ID = "0x5a988c0f";
 const ERC1271_INTERFACE_ID = "0x1626ba7e";
 const LSP1_INTERFACE_ID = "0x6bb56a14";
 
@@ -38,54 +48,39 @@ const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc
 const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
 const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 
-/**
- * Deploy an LSP3 Account as proxy, referencing to masterContractAddress via delegateCall
- *
- * @param masterContractAddress
- * @param deployer
- * @returns
- */
-async function deployLSP3Proxy(masterContractAddress: string, deployer: SignerWithAddress) {
-  // deploy proxy contract
-  let proxyRuntimeCode = proxyRuntimeCodeTemplate.replace(
-    "bebebebebebebebebebebebebebebebebebebebe",
-    masterContractAddress.substr(2)
-  );
-  let tx = await deployer.sendTransaction({
-    data: proxyRuntimeCode,
-  });
-  let receipt = await tx.wait();
-
-  return receipt.contractAddress;
-}
-
 describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
   let accounts: SignerWithAddress[];
   let owner: SignerWithAddress;
 
   let lsp3Account: LSP3Account;
   let proxy: LSP3AccountInit;
+  let erc725Utils: ERC725Utils;
 
   describe("> Account deployment", () => {
     beforeAll(async () => {
       accounts = await ethers.getSigners();
       owner = accounts[0];
 
-      lsp3Account = await new LSP3AccountInit__factory(owner).deploy();
+      erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
+      lsp3Account = await deployBaseLSP3Account(erc725Utils, owner);
 
-      let proxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      proxy = await new LSP3AccountInit__factory(owner).attach(proxyAddress);
+      let proxyAddress = await deployProxy(lsp3Account.address, owner);
+      proxy = await new LSP3AccountInit__factory(
+        { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
+        owner
+      ).attach(proxyAddress);
     });
 
     it("Should be cheaper to deploy via proxy", async () => {
       // Deploying whole LSP3 Account (not using `initialize` function)
-      const lsp3Account = await new LSP3Account__factory(owner).deploy(owner.address);
+      const lsp3Account = await deployLSP3Account(erc725Utils, owner);
       const { gasUsed: lsp3AccountDeploymentCost } = await getDeploymentCost(lsp3Account);
+      console.log("lsp3AccountDeploymentCost: ", lsp3AccountDeploymentCost);
 
       // Deploying via Proxy
 
       // 1) deploy logic contract
-      let lsp3LogicAccount = await new LSP3AccountInit__factory(owner).deploy();
+      let lsp3LogicAccount = await deployBaseLSP3Account(erc725Utils, owner);
       let lsp3LogicAccountAddress = lsp3LogicAccount.address;
 
       // 2) setup proxy contract code + deploy
@@ -100,7 +95,7 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       );
 
       // 3) initialize contract (alternative to constructors)
-      let testProxy = await new LSP3AccountInit__factory(owner).attach(txReceipt.contractAddress);
+      let testProxy = await attachLSP3AccountProxy(erc725Utils, owner, txReceipt.contractAddress);
 
       const initializeTx = await testProxy.initialize(owner.address);
       const { gasUsed: initializeCost } = await getDeploymentCost(initializeTx);
@@ -108,18 +103,18 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
 
       expect(totalProxyCost).toBeLessThan(lsp3AccountDeploymentCost);
 
-      //   console.log("LSP3Account deployment cost: ", lsp3AccountDeploymentCost, "\n");
-      //   console.log("proxy deployment cost: ", proxyDeploymentCost);
-      //   console.log("initialize gas cost: ", initializeCost);
-      //   console.log("--------------------------------------------------");
-      //   console.log("total: ", totalProxyCost);
-      //   console.log(
-      //     "\n > Gas saved = ",
-      //     lsp3AccountDeploymentCost - totalProxyCost,
-      //     "(",
-      //     (totalProxyCost * 100) / lsp3AccountDeploymentCost - 100,
-      //     "%)"
-      //   );
+      console.log("LSP3Account deployment cost: ", lsp3AccountDeploymentCost, "\n");
+      console.log("proxy deployment cost: ", proxyDeploymentCost);
+      console.log("initialize gas cost: ", initializeCost);
+      console.log("--------------------------------------------------");
+      console.log("total: ", totalProxyCost);
+      console.log(
+        "\n > Gas saved = ",
+        lsp3AccountDeploymentCost - totalProxyCost,
+        "(",
+        (totalProxyCost * 100) / lsp3AccountDeploymentCost - 100,
+        "%)"
+      );
     });
 
     it("Should call the `initialize(...)` function and return the right owner", async () => {
@@ -171,20 +166,13 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     });
 
     it("Has SupportedStandardsERC725Account_KEY set to ERC725Account_VALUE", async () => {
-      expect(await proxy.callStatic.getData(SupportedStandardsERC725Account_KEY)).toEqual(
-        ERC725Account_VALUE
-      );
+      let [result] = await proxy.callStatic.getData([SupportedStandardsERC725Account_KEY]);
+      expect(result).toEqual(ERC725Account_VALUE);
     });
   });
 
   describe("> ERC1271 (signatures)", () => {
     it("Can verify signature from owner", async () => {
-      // const proxy = await deployProxy(
-      //   LSP3AccountInit,
-      //   lsp3Account.address,
-      //   DUMMY_SIGNER.address
-      // );
-      // await proxy.initialize(DUMMY_SIGNER.address);
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await owner.signMessage(dataToSign);
@@ -195,8 +183,6 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     });
 
     it("Should fail when verifying signature from not-owner", async () => {
-      //   const proxy = await deployProxy(LSP3AccountInit, lsp3Account.address, owner);
-      //   await proxy.initialize(owner);
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await accounts[1].signMessage(dataToSign);
@@ -212,97 +198,93 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
 
     it("Create account", async () => {
       const owner = accounts[2];
-      const newProxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      const newProxyAccount = await new LSP3AccountInit__factory(owner).attach(newProxyAddress);
+      const newProxyAddress = await deployProxy(lsp3Account.address, owner);
+      const newProxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, newProxyAddress);
       await newProxyAccount.initialize(owner.address);
 
       expect(await newProxyAccount.callStatic.owner()).toEqual(owner.address);
     });
 
     it("Should `setData` in Key-Value store via proxy (item 1)", async () => {
-      let key = abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0xcafe", 32)]);
-      let value = "0xbeef";
+      let keys = [abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0xcafe", 32)])];
+      let values = ["0xbeef"];
 
-      let initialValue = await proxy.callStatic.getData(key);
+      let [initialValue] = await proxy.callStatic.getData(keys);
       expect(initialValue).toEqual("0x");
       //   "there should be no value initially set for key '0xcafe'"
 
-      await proxy.setData(key, value);
+      await proxy.setData(keys, values);
 
-      let result = await proxy.getData(key);
+      let result = await proxy.getData(keys);
 
-      expect(result).toEqual(value);
+      expect(result).toEqual(values);
       //   "not the same value in storage for key '0xcafe'"
     });
 
     it("Store 32 bytes item 2", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = "0x" + (count++).toString(16);
-      await proxy.setData(key, value);
+      let keys = [
+        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]),
+      ];
+      let values = ["0x" + (count++).toString(16)];
+      await proxy.setData(keys, values);
 
-      expect(await proxy.callStatic.getData(key)).toEqual(value);
+      expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
     it("Store 32 bytes item 3", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = "0x" + (count++).toString(16);
-      await proxy.setData(key, value);
+      let keys = [
+        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]),
+      ];
+      let values = ["0x" + (count++).toString(16)];
+      await proxy.setData(keys, values);
 
-      expect(await proxy.callStatic.getData(key)).toEqual(value);
+      expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
     it("Store 32 bytes item 4", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = "0x" + (count++).toString(16);
-      await proxy.setData(key, value);
+      let keys = [
+        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]),
+      ];
+      let values = ["0x" + (count++).toString(16)];
+      await proxy.setData(keys, values);
 
-      expect(await proxy.callStatic.getData(key)).toEqual(value);
+      expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
     it("Store 32 bytes item 5", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = "0x" + (count++).toString(16);
-      await proxy.setData(key, value);
+      let keys = [
+        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]),
+      ];
+      let values = ["0x" + (count++).toString(16)];
+      await proxy.setData(keys, values);
 
-      expect(await proxy.callStatic.getData(key)).toEqual(value);
+      expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
     it("Store a long URL as bytes item 6", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes(
-          "https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD"
-        )
-      );
-      await proxy.setData(key, value);
+      let keys = [
+        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]),
+      ];
+      let values = [
+        ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes(
+            "https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD"
+          )
+        ),
+      ];
+      await proxy.setData(keys, values);
 
-      expect(await proxy.getData(key)).toEqual(value);
+      expect(await proxy.getData(keys)).toEqual(values);
     });
 
     it("Store 32 bytes item 7", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]
-      );
-      let value = "0x" + count.toString(16);
-      await proxy.setData(key, value);
+      let keys = [
+        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]),
+      ];
+      let values = ["0x" + count.toString(16)];
+      await proxy.setData(keys, values);
 
-      expect(await proxy.callStatic.getData(key)).toEqual(value);
+      expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
     it("dataCount should be 8", async () => {
@@ -312,15 +294,14 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     });
 
     it("Update 32 bytes item 7", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]
-      );
+      let keys = [
+        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]),
+      ];
 
-      let value = "0x" + count.toString(16);
-      await proxy.setData(key, value);
+      let values = ["0x" + count.toString(16)];
+      await proxy.setData(keys, values);
 
-      expect(await proxy.getData(key)).toEqual(value);
+      expect(await proxy.getData(keys)).toEqual(values);
     });
 
     it("dataCount should remain 8 (after updating item 7)", async () => {
@@ -371,9 +352,9 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       owner = accounts[3];
       newOwner = accounts[5];
 
-      const newProxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      proxy = await new LSP3AccountInit__factory(owner).attach(newProxyAddress);
-      proxy.initialize(owner.address, { gasLimit: 3_000_000 });
+      const newProxyAddress = await deployProxy(lsp3Account.address, owner);
+      proxy = await attachLSP3AccountProxy(erc725Utils, owner, newProxyAddress);
+      await proxy.initialize(owner.address);
     });
 
     it("Upgrade ownership correctly", async () => {
@@ -392,54 +373,83 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     });
 
     it("Owner can set data", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [
-          ethers.utils.hexZeroPad(
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data")),
-            32
-          ),
-        ]
-      );
-      let data = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data"));
+      let keys = [
+        abiCoder.encode(
+          ["bytes32"],
+          [
+            ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data")),
+              32
+            ),
+          ]
+        ),
+      ];
+      let data = [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data"))];
 
-      await proxy.setData(key, data, { from: owner.address });
+      await proxy.setData(keys, data, { from: owner.address });
 
-      let fetchedData = await proxy.getData(key);
+      let fetchedData = await proxy.getData(keys);
 
       expect(data).toEqual(fetchedData);
     });
 
     it("Fails when non-owner sets data", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [
-          ethers.utils.hexZeroPad(
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data")),
-            32
-          ),
-        ]
-      );
-      let data = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data"));
+      let keys = [
+        abiCoder.encode(
+          ["bytes32"],
+          [
+            ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data")),
+              32
+            ),
+          ]
+        ),
+      ];
+      let data = [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data"))];
 
-      await expect(proxy.connect(newOwner).setData(key, data)).toBeRevertedWith(
+      await expect(proxy.connect(newOwner).setData(keys, data)).toBeRevertedWith(
         "Ownable: caller is not the owner"
       );
     });
 
     it("Fails when non-owner sets data multiple", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [
-          ethers.utils.hexZeroPad(
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data")),
-            32
-          ),
-        ]
-      );
-      let data = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data"));
+      let keys = [
+        abiCoder.encode(
+          ["bytes32"],
+          [
+            ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data")),
+              32
+            ),
+          ]
+        ),
+        abiCoder.encode(
+          ["bytes32"],
+          [
+            ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Another important data")),
+              32
+            ),
+          ]
+        ),
+        abiCoder.encode(
+          ["bytes32"],
+          [
+            ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("more important data")),
+              32
+            ),
+          ]
+        ),
+      ];
+      console.log("show me the keys: ", keys);
+      let data = [
+        ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data")),
+        ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Another important data")),
+        ethers.utils.hexlify(ethers.utils.toUtf8Bytes("more important data")),
+      ];
 
-      await expect(proxy.connect(newOwner).setDataMultiple([key], [data])).toBeRevertedWith(
+      await expect(proxy.connect(newOwner).setData(keys, data)).toBeRevertedWith(
         "Ownable: caller is not the owner"
       );
     });
@@ -535,12 +545,13 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       expect(await provider.getBalance(proxy.address)).toEqual(amount);
     });
   });
+
   describe("> Universal Receiver", () => {
     it("Call account and check for 'UniversalReceiver' event", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      const proxyAccount = await new LSP3AccountInit__factory(owner).attach(proxyAddress);
+      const proxyAddress = await deployProxy(lsp3Account.address, owner);
+      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       // use the checker contract to call account
@@ -569,8 +580,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Call account and check for 'ReceivedERC777' event in external account", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      const proxyAccount = await new LSP3AccountInit__factory(owner).attach(proxyAddress);
+      const proxyAddress = await deployProxy(lsp3Account.address, owner);
+      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
@@ -578,7 +589,7 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       ).deploy();
 
       // set account2 as new receiver for account1
-      await proxyAccount.setData(UNIVERSALRECEIVER_KEY, externalUniversalReceiver.address, {
+      await proxyAccount.setData([UNIVERSALRECEIVER_KEY], [externalUniversalReceiver.address], {
         from: owner.address,
       });
 
@@ -630,8 +641,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Mint ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      const proxyAccount = await new LSP3AccountInit__factory(owner).attach(proxyAddress);
+      const proxyAddress = await deployProxy(lsp3Account.address, owner);
+      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -669,8 +680,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Transfer ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      const proxyAccount = await new LSP3AccountInit__factory(owner).attach(proxyAddress);
+      const proxyAddress = await deployProxy(lsp3Account.address, owner);
+      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -716,8 +727,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Mint ERC777 and LSP4 to LSP3 account and delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      const proxyAccount = await new LSP3AccountInit__factory(owner).attach(proxyAddress);
+      const proxyAddress = await deployProxy(lsp3Account.address, owner);
+      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -725,7 +736,7 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       ).deploy(proxyAccount.address);
 
       // set account2 as new receiver for account1
-      await proxyAccount.setData(UNIVERSALRECEIVER_KEY, universalReceiverDelegate.address, {
+      await proxyAccount.setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address], {
         from: owner.address,
       });
 
@@ -759,8 +770,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Transfer ERC777 and LSP4 from LSP3 account with delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      const proxyAccount = await new LSP3AccountInit__factory(owner).attach(proxyAddress);
+      const proxyAddress = await deployProxy(lsp3Account.address, owner);
+      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -768,7 +779,7 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       ).deploy(proxyAccount.address);
 
       // set account2 as new receiver for account1
-      await proxyAccount.setData(UNIVERSALRECEIVER_KEY, universalReceiverDelegate.address, {
+      await proxyAccount.setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address], {
         from: owner.address,
       });
 
@@ -808,8 +819,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       const OPERATION_CALL = 0x0;
       const owner = accounts[2];
 
-      const proxyAddress = await deployLSP3Proxy(lsp3Account.address, owner);
-      const proxyAccount = await new LSP3AccountInit__factory(owner).attach(proxyAddress);
+      const proxyAddress = await deployProxy(lsp3Account.address, owner);
+      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -817,7 +828,7 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       ).deploy(proxyAccount.address);
 
       // set account2 as new receiver for account1
-      await proxyAccount.setData(UNIVERSALRECEIVER_KEY, universalReceiverDelegate.address, {
+      await proxyAccount.setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address], {
         from: owner.address,
       });
 

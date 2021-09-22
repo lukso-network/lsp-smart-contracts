@@ -1,22 +1,22 @@
-import { ethers } from "hardhat";
+// prettier-ignore
+export const enum KEYS {
+       PERMISSIONS = "0x4b80742d0000000082ac0000", // AddressPermissions:Permissions:<address> --> bytes1
+  ALLOWEDADDRESSES = "0x4b80742d00000000c6dd0000", // AddressPermissions:AllowedAddresses:<address> --> address[]
+  ALLOWEDFUNCTIONS = "0x4b80742d000000008efe0000",
+}
 
 // prettier-ignore
-// Permission keys
-const KEY_PERMISSIONS = "0x4b80742d0000000082ac0000"; // AddressPermissions:Permissions:<address> --> bytes1
-const KEY_ALLOWEDADDRESSES = "0x4b80742d00000000c6dd0000"; // AddressPermissions:AllowedAddresses:<address> --> address[]
-const KEY_ALLOWEDFUNCTIONS = "0x4b80742d000000008efe0000";
-
-// prettier-ignore
-// Permissions
-const ALL_PERMISSIONS = ethers.BigNumber.from(0xff).toNumber();
-const PERMISSION_CHANGEOWNER = ethers.BigNumber.from(0x01).toNumber(); // 0000 0001
-const PERMISSION_CHANGEKEYS = ethers.BigNumber.from(0x02).toNumber(); // 0000 0010
-const PERMISSION_SETDATA = ethers.BigNumber.from(0x04).toNumber(); // 0000 0100
-const PERMISSION_CALL = ethers.BigNumber.from(0x08).toNumber(); // 0000 1000
-const PERMISSION_DELEGATECALL = ethers.BigNumber.from(0x10).toNumber(); // 0001 0000
-const PERMISSION_DEPLOY = ethers.BigNumber.from(0x20).toNumber(); // 0010 0000
-const PERMISSION_TRANSFERVALUE = ethers.BigNumber.from(0x40).toNumber(); // 0100 0000
-const PERMISSION_SIGN = ethers.BigNumber.from(0x80).toNumber(); // 1000 0000
+export const enum PERMISSIONS {
+    ALL = 0xff,           // 1111 1111
+    CHANGEOWNER = 0x01,   // 0000 0001
+    CHANGEKEYS = 0x02,    // 0000 0010
+    SETDATA = 0x04,       // 0000 0100
+    CALL = 0x08,          // 0000 1000
+    DELEGATECALL = 0x10,  // 0001 0000
+    DEPLOY = 0x20,        // 0010 0000
+    TRANSFERVALUE = 0x40, // 0100 0000
+    SIGN = 0x80           // 1000 0000
+}
 
 export const enum OPERATIONS {
   CALL = 0,
@@ -24,13 +24,7 @@ export const enum OPERATIONS {
   DEPLOY = 2,
 }
 
-module.exports = {
-  KEY_PERMISSIONS,
-  KEY_ALLOWEDADDRESSES,
-  KEY_ALLOWEDFUNCTIONS,
-  ALL_PERMISSIONS,
-  PERMISSION_SETDATA,
-  PERMISSION_CALL,
-  PERMISSION_TRANSFERVALUE,
-  PERMISSION_SIGN,
-};
+export const allowedAddresses = [
+  "0xcafecafecafecafecafecafecafecafecafecafe",
+  "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+];
