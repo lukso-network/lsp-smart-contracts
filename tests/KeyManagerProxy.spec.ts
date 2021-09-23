@@ -228,25 +228,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       );
     });
 
-    /** @debug interesting, the revert error via proxy does not bubble up */
-    xit("App should not be allowed to change keys", async () => {
-      let [before] = await proxyLsp3Account.getData([KEYS.PERMISSIONS + app.address.substr(2)]);
-      console.log("before: ", before);
+    it("App should not be allowed to change keys", async () => {
       // malicious app trying to set all permissions
       let dangerousPayload = proxyLsp3Account.interface.encodeFunctionData("setData", [
         [KEYS.PERMISSIONS + app.address.substr(2)],
         [PERMISSIONS.ALL],
       ]);
 
-      //   proxyKeyManager.connect(app).execute(dangerousPayload)
       await expect(proxyKeyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to change keys"
       );
-
-      let [permissions] = await proxyLsp3Account.getData([
-        KEYS.PERMISSIONS + app.address.substr(2),
-      ]);
-      console.log("after: ", permissions);
     });
 
     it("Owner should be allowed to setData", async () => {
@@ -287,7 +278,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing permissions: CALL, DELEGATECALL, DEPLOY", () => {
+  describe("> testing permissions: CALL, DELEGATECALL, DEPLOY", () => {
     it("Owner should be allowed to make a CALL", async () => {
       let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
@@ -344,7 +335,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing permission: TRANSFERVALUE", () => {
+  describe("> testing permission: TRANSFERVALUE", () => {
     let provider = ethers.provider;
 
     it("Owner should be allowed to transfer ethers to app", async () => {
@@ -397,7 +388,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing permissions: ALLOWEDADDRESSES", () => {
+  describe("> testing permissions: ALLOWEDADDRESSES", () => {
     it("All addresses whitelisted = Owner should be allowed to interact with any address", async () => {
       let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
@@ -458,7 +449,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing permissions: ALLOWEDFUNCTIONS", () => {
+  describe("> testing permissions: ALLOWEDFUNCTIONS", () => {
     it("App should not be allowed to run a non-allowed function (function signature = `0xbeefbeef`)", async () => {
       let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
@@ -473,7 +464,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", () => {
+  describe("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", () => {
     it("Should pass if no addresses / functions are stored for a user", async () => {
       let randomPayload = "0xfafbfcfd1201456875dd";
       let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
@@ -488,7 +479,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing external contract's state change", () => {
+  describe("> testing external contract's state change", () => {
     it("Owner should be allowed to set `name` variable in simple contract", async () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
@@ -583,7 +574,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing other revert causes", () => {
+  describe("> testing other revert causes", () => {
     it("Should revert because of wrong operation type", async () => {
       let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         5648941657,
@@ -604,7 +595,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing `executeRelay(...)`", () => {
+  describe("> testing `executeRelay(...)`", () => {
     // Use channelId = 0 for sequential nonce
     let channelId = 0;
 
@@ -653,7 +644,6 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
-        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -683,7 +673,6 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
-        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -692,9 +681,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
-        channelId,
-        signature,
-        { gasLimit: 3_000_000 }
+        signature
       );
       let endResult = await targetContract.callStatic.getName();
       expect(endResult).toEqual(newName);
@@ -735,7 +722,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing sequential nonces (= channel 0)", () => {
+  describe("> testing sequential nonces (= channel 0)", () => {
     let channelId = 0;
     let latestNonce;
 
@@ -772,9 +759,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           latestNonce,
-          channelId,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -786,7 +771,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     );
   });
 
-  describe.skip("> testing multi-channel nonces (= channel n)", () => {
+  describe("> testing multi-channel nonces (= channel n)", () => {
     let nonces = [0, 1];
 
     describe("channel 1", () => {
@@ -818,9 +803,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
-          channelId,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -855,9 +838,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
-          channelId,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -897,9 +878,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
-          channelId,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -934,9 +913,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
-          channelId,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -976,9 +953,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
-          channelId,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1013,9 +988,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
-          channelId,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1053,9 +1026,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
-          channelId,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1067,7 +1038,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe.skip("> testing Security", () => {
+  describe("> testing Security", () => {
     let provider = ethers.provider;
     let channelId = 0;
 
@@ -1145,7 +1116,6 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
-        channelId,
         signature
       );
       expect(result).toBeTruthy();
@@ -1154,7 +1124,6 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
-        channelId,
         signature
       );
 
@@ -1164,7 +1133,6 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           proxyKeyManager.address,
           nonce,
-          channelId,
           signature
         )
       ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");

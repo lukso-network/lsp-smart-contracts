@@ -645,7 +645,7 @@ describe("KeyManager", () => {
         EMPTY_PAYLOAD,
       ]);
 
-      await expect(keyManager.connect(app.address).execute(transferPayload)).toBeRevertedWith(
+      await expect(keyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to transfer ethers"
       );
 
