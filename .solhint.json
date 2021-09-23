@@ -21,6 +21,7 @@
     "private-vars-leading-underscore": ["error", { "strict": false }],
     "use-forbidden-name": "error",
     "imports-on-top": "error",
-    "visibility-modifier-order": "error"
+    "visibility-modifier-order": "error",
+    "reason-string": ["warn", { "maxLength": 64 }]
   }
 }
