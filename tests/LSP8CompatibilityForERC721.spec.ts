@@ -231,7 +231,7 @@ describe("LSP8CompatibilityForERC721", () => {
 
     describe("transferFrom", () => {
       const transferFn = "transferFrom";
-      const expectedData = ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("compat-transferFrom"));
+      const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("compat-transferFrom"));
 
       describe("when `to` is an EOA", () => {
         it("should allow transfering the tokenId", async () => {
@@ -277,7 +277,7 @@ describe("LSP8CompatibilityForERC721", () => {
 
     describe("safeTransferFrom", () => {
       const transferFn = "safeTransferFrom";
-      const expectedData = ethers.utils.hexConcat(
+      const expectedData = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes("compat-safeTransferFrom")
       );
 
