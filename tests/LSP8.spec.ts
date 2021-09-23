@@ -453,7 +453,7 @@ describe("LSP8", () => {
 
         describe("when using force=true", () => {
           const force = true;
-          const data = ethers.utils.hexConcat(
+          const data = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("doing a transfer with force")
           );
 
@@ -518,7 +518,7 @@ describe("LSP8", () => {
 
         describe("when force=false", () => {
           const force = false;
-          const data = ethers.utils.hexConcat(
+          const data = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("doing a transfer without force")
           );
 
@@ -600,7 +600,7 @@ describe("LSP8", () => {
               accounts.tokenReceiver.address,
               mintedTokenId,
               true,
-              ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("should revert"))
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))
             )
           ).toBeRevertedWith("LSP8: transfer of tokenId from incorrect owner");
         });
@@ -616,7 +616,7 @@ describe("LSP8", () => {
                 accounts.tokenReceiver.address,
                 mintedTokenId,
                 true,
-                ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("should revert"))
+                ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))
               )
           ).toBeRevertedWith("LSP8: transfer caller is not owner or operator of tokenId");
         });
@@ -630,7 +630,7 @@ describe("LSP8", () => {
               accounts.tokenReceiver.address,
               neverMintedTokenId,
               true,
-              ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("should revert"))
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))
             )
           ).toBeRevertedWith("LSP8: tokenOwner query for nonexistent token");
         });
@@ -644,7 +644,7 @@ describe("LSP8", () => {
               ethers.constants.AddressZero,
               mintedTokenId,
               true,
-              ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("should revert"))
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))
             )
           ).toBeRevertedWith("LSP8: transfer to the zero address");
         });
@@ -781,7 +781,7 @@ describe("LSP8", () => {
 
         describe("when using force=true", () => {
           const force = true;
-          const data = ethers.utils.hexConcat(
+          const data = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("doing a transfer with force")
           );
 
@@ -860,7 +860,7 @@ describe("LSP8", () => {
 
         describe("when force=false", () => {
           const force = false;
-          const data = ethers.utils.hexConcat(
+          const data = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("doing a transfer without force")
           );
 
@@ -934,7 +934,7 @@ describe("LSP8", () => {
               [accounts.tokenReceiver.address],
               [mintedTokenId],
               true,
-              [ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("should revert"))]
+              [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))]
             )
           ).toBeRevertedWith("LSP8: transfer of tokenId from incorrect owner");
         });
@@ -950,7 +950,7 @@ describe("LSP8", () => {
                 [accounts.tokenReceiver.address],
                 [mintedTokenId],
                 true,
-                [ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("should revert"))]
+                [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))]
               )
           ).toBeRevertedWith("LSP8: transfer caller is not owner or operator of tokenId");
         });
@@ -964,7 +964,7 @@ describe("LSP8", () => {
               [accounts.tokenReceiver.address],
               [neverMintedTokenId],
               true,
-              [ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("should revert"))]
+              [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))]
             )
           ).toBeRevertedWith("LSP8: tokenOwner query for nonexistent token");
         });
@@ -978,7 +978,7 @@ describe("LSP8", () => {
               [ethers.constants.AddressZero],
               [mintedTokenId],
               true,
-              [ethers.utils.hexConcat(ethers.utils.toUtf8Bytes("should revert"))]
+              [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))]
             )
           ).toBeRevertedWith("LSP8: transfer to the zero address");
         });
