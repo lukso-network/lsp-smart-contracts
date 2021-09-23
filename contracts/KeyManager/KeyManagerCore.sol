@@ -29,7 +29,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
 
-    bytes4 public constant _INTERFACE_ID_LSP6 = type(ILSP6).interfaceId;
+    bytes4 internal constant _INTERFACE_ID_LSP6 = type(ILSP6).interfaceId;
 
     // prettier-ignore
     /* solhint-disable */
