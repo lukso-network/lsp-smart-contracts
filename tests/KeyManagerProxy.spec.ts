@@ -612,20 +612,19 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
       // right hashing method with etherjs
       let hash = solidityKeccak256(
-        ["address", "bytes", "uint256"],
-        [staticAddress, payload, nonce]
+        ["address", "uint256", "bytes"],
+        [staticAddress, nonce, payload]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-      expect(hash).toEqual("0x15f469cb343cc40aadc99db1d7707087bdb4f721787e80901d6dfabded8e45c7");
-      // expect: 0x15f469cb343cc40aadc99db1d7707087bdb4f721787e80901d6dfabded8e45c7
+      expect(hash).toEqual("0xb491e88483d56b1143c783cb4b60a85632f831e36147670bffc61bc57d7dad86");
+      // expect: 0xb491e88483d56b1143c783cb4b60a85632f831e36147670bffc61bc57d7dad86
       expect(signature).toEqual(
-        "0xea8970e8307d7746e34f2713016d0cabd9842f69765bd916d513c88d21f392ea75a24f05675cf59171758d6e9f7d3a9e620e73b2ba41b23c41ff868fe0b797381b"
+        "0x82544c08b894ebeb5c2beffd586e48860a39e11ea7e3bf9cf0c66062470b72695724b8a85902cb5433945cca7d0eeae2eef2265fac2e9e730ecd68df6dda9a181c"
       );
     });
 
-    /** @debug concatenate the hex in the message for the signature correctly */
     it("should execute a signed tx successfully", async () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
         "Another name",
@@ -640,16 +639,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       let hash = ethers.utils.solidityKeccak256(
-        ["address", "bytes", "uint256"],
-        [proxyKeyManager.address, executeRelayCallPayload, nonce]
+        ["address", "uint256", "bytes"],
+        [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
       let result = await proxyKeyManager.callStatic.executeRelayCall(
-        executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        executeRelayCallPayload,
         signature
       );
       expect(result).toBeTruthy();
@@ -669,24 +668,24 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       let hash = ethers.utils.solidityKeccak256(
-        ["address", "bytes", "uint256"],
-        [proxyKeyManager.address, executeRelayCallPayload, nonce]
+        ["address", "uint256", "bytes"],
+        [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
       let result = await proxyKeyManager.callStatic.executeRelayCall(
-        executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        executeRelayCallPayload,
         signature
       );
       expect(result).toBeTruthy();
 
       await proxyKeyManager.executeRelayCall(
-        executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        executeRelayCallPayload,
         signature
       );
       let endResult = await targetContract.callStatic.getName();
@@ -707,18 +706,17 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       let hash = ethers.utils.solidityKeccak256(
-        ["address", "bytes", "uint256"],
-        [proxyKeyManager.address, executeRelayCallPayload, nonce]
+        ["address", "uint256", "bytes"],
+        [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
       await expect(
         proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonce,
-          channelId,
+          executeRelayCallPayload,
           signature
         )
       ).toBeRevertedWith("KeyManager:_checkPermissions: Not authorised to run this function");
@@ -755,16 +753,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]);
 
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "bytes", "uint256"],
-          [proxyKeyManager.address, executeRelayCallPayload, latestNonce]
+          ["address", "uint256", "bytes"],
+          [proxyKeyManager.address, latestNonce, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
         await proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           latestNonce,
+          executeRelayCallPayload,
           signature
         );
 
@@ -799,16 +797,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]);
 
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "bytes", "uint256"],
-          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+          ["address", "uint256", "bytes"],
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
         await proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
+          executeRelayCallPayload,
           signature
         );
 
@@ -834,16 +832,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]);
 
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "bytes", "uint256"],
-          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+          ["address", "uint256", "bytes"],
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
         await proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
+          executeRelayCallPayload,
           signature
         );
 
@@ -874,16 +872,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]);
 
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "bytes", "uint256"],
-          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+          ["address", "uint256", "bytes"],
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
         await proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
+          executeRelayCallPayload,
           signature
         );
 
@@ -909,16 +907,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]);
 
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "bytes", "uint256"],
-          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+          ["address", "uint256", "bytes"],
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
         await proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
+          executeRelayCallPayload,
           signature
         );
 
@@ -949,16 +947,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]);
 
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "bytes", "uint256"],
-          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+          ["address", "uint256", "bytes"],
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
         await proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
+          executeRelayCallPayload,
           signature
         );
 
@@ -984,16 +982,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]);
 
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "bytes", "uint256"],
-          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+          ["address", "uint256", "bytes"],
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
         await proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
+          executeRelayCallPayload,
           signature
         );
 
@@ -1022,16 +1020,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]);
 
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "bytes", "uint256"],
-          [proxyKeyManager.address, executeRelayCallPayload, nonceBefore]
+          ["address", "uint256", "bytes"],
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
         await proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonceBefore,
+          executeRelayCallPayload,
           signature
         );
 
@@ -1111,34 +1109,34 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       let hash = ethers.utils.solidityKeccak256(
-        ["address", "bytes", "uint256"],
-        [proxyKeyManager.address, executeRelayCallPayload, nonce]
+        ["address", "uint256", "bytes"],
+        [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
       let signature = await newUser.signMessage(ethers.utils.arrayify(hash));
 
       // first call
       let result = await proxyKeyManager.callStatic.executeRelayCall(
-        executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        executeRelayCallPayload,
         signature
       );
       expect(result).toBeTruthy();
 
       await proxyKeyManager.executeRelayCall(
-        executeRelayCallPayload,
         proxyKeyManager.address,
         nonce,
+        executeRelayCallPayload,
         signature
       );
 
       // 2nd call = replay attack
       await expect(
         proxyKeyManager.executeRelayCall(
-          executeRelayCallPayload,
           proxyKeyManager.address,
           nonce,
+          executeRelayCallPayload,
           signature
         )
       ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");

@@ -18,6 +18,6 @@ interface ILSP6 is IERC1271 /* is ERC165 */ {
     
     function execute(bytes calldata _data) external payable returns (bool);
     
-    function executeRelayCall(bytes calldata _data, address _signedFor, uint256 _nonce, bytes memory _signature) external payable returns (bool);
+    function executeRelayCall(address _signedFor, uint256 _nonce, bytes calldata _data, bytes memory _signature) external payable returns (bool);
  
 }

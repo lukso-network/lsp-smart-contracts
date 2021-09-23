@@ -138,15 +138,15 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
 
     /**
      * @dev allows anybody to execute given they have a signed message from an executor
-     * @param _data obtained via encodeABI() in web3
      * @param _signedFor this KeyManager
      * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
+     * @param _data obtained via encodeABI() in web3
      * @param _signature bytes32 ethereum signature
      */
     function executeRelayCall(
-        bytes calldata _data,
         address _signedFor,
         uint256 _nonce,
+        bytes calldata _data,
         bytes memory _signature
     ) external payable override returns (bool success_) {
         require(
@@ -156,8 +156,8 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
 
         bytes memory blob = abi.encodePacked(
             address(this), // needs to be signed for this keyManager
-            _data,
-            _nonce
+            _nonce,
+            _data
         );
 
         address from = keccak256(blob).toEthSignedMessageHash().recover(
