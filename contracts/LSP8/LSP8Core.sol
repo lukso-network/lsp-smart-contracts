@@ -183,11 +183,7 @@ abstract contract LSP8Core is Context, ERC725YCore, ILSP8 {
             "LSP8: metadata creation for nonexistent token"
         );
 
-        bytes32 metadataKeyForTokenId = bytes32(abi.encodePacked(
-            bytes8(keccak256("LSP8MetaData")),
-            bytes4(0),
-            bytes20(keccak256(abi.encodePacked(tokenId)))
-        ));
+        bytes32 metadataKeyForTokenId = _buildMetadataKey(tokenId);
 
         bytes memory existingMetadataValue = getData(metadataKeyForTokenId);
         address existingMetadataAddress = abi.decode(existingMetadataValue, (address));
@@ -202,6 +198,18 @@ abstract contract LSP8Core is Context, ERC725YCore, ILSP8 {
         setDataFromMemory(metadataKeyForTokenId, metadataAddressBytes);
 
         return metadataAddress;
+    }
+
+    function _buildMetadataKey(bytes32 tokenId)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return bytes32(abi.encodePacked(
+            bytes8(keccak256("LSP8MetaData")),
+            bytes4(0),
+            bytes20(keccak256(abi.encodePacked(tokenId)))
+        ));
     }
 
     //
