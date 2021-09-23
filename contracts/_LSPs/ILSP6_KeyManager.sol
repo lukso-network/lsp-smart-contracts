@@ -14,7 +14,7 @@ interface ILSP6 is IERC1271 /* is ERC165 */ {
     event Executed(uint256 indexed  _value, bytes _data); 
     
     
-    function getNonce(address _address, uint128 _channelId) external view returns (uint256);
+    function getNonce(address _address, uint256 _channel) external view returns (uint256);
     
     function execute(bytes calldata _data) external payable returns (bool);
     

@@ -79,6 +79,7 @@ describe("KeyManagerHelper", () => {
 
   it("Shows the interfaceId for LSP6", async () => {
     let lsp6InterfaceId = await keyManagerHelper.getInterfaceId();
+    console.log("LSP6 InterfaceId: ", lsp6InterfaceId);
     expect(lsp6InterfaceId).toEqual(INTERFACE_IDS.LSP6);
   });
 

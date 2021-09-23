@@ -76,11 +76,11 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
      * Get latest nonce for `_from` in a specific channel (`_channelId`)
      *
      * @param _from caller address
-     * @param _channelId channel id
+     * @param _channel channel id
      */
-    function getNonce(address _from, uint128 _channelId) public view override returns (uint256) {
-        uint128 nonceId = uint128(_nonceStore[_from][_channelId]);
-        return uint256(_channelId) << 128 | nonceId;
+    function getNonce(address _from, uint256 _channel) public view override returns (uint256) {
+        uint128 nonceId = uint128(_nonceStore[_from][_channel]);
+        return uint256(_channel) << 128 | nonceId;
     }
 
     /**
