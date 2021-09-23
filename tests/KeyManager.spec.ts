@@ -29,6 +29,7 @@ import {
   getRandomAddresses,
   generateKeysAndValues,
 } from "./utils/helpers";
+import { INTERFACE_IDS } from "./utils/constants";
 
 import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
 
@@ -265,6 +266,11 @@ describe("KeyManager", () => {
 
     await targetContract.setName("Simple Contract Name");
     await targetContract.setNumber(5);
+  });
+
+  it("Should support LSP6", async () => {
+    let result = await keyManager.callStatic.supportsInterface(INTERFACE_IDS.LSP6);
+    expect(result).toBeTruthy();
   });
 
   // ensures owner is still erc725Account\'s admin (=all permissions)

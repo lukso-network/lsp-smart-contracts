@@ -4,12 +4,12 @@ pragma solidity ^0.8.6;
 import "./KeyManagerCore.sol";
 
 // modules
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract KeyManagerInit is KeyManagerCore, Initializable {
+contract KeyManagerInit is Initializable, KeyManagerCore {
 
     function initialize(address _account) public initializer {
         account = ERC725Y(_account);
-        // todo register interface id for KeyManager
+        _registerInterface(_INTERFACE_ID_LSP6);
     }
 }

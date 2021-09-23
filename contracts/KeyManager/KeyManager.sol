@@ -7,7 +7,7 @@ contract KeyManager is KeyManagerCore {
 
     constructor(address _account) {
         account = ERC725Y(_account);
-        // todo register interface id for KeyManager
+        _registerInterface(_INTERFACE_ID_LSP6);
     }
     
 }

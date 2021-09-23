@@ -26,6 +26,7 @@ import {
   attachLSP3AccountProxy,
   attachKeyManagerProxy,
 } from "./utils/proxy";
+import { INTERFACE_IDS } from "./utils/constants";
 
 // /**
 //  * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
@@ -178,6 +179,11 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     await expect(
       proxyKeyManager.initialize("0xdead0dead0dead0dead0dead0dead0dead0dead0")
     ).toBeRevertedWith("Initializable: contract is already initialized");
+  });
+
+  it("Should support LSP6", async () => {
+    let result = await proxyKeyManager.callStatic.supportsInterface(INTERFACE_IDS.LSP6);
+    expect(result).toBeTruthy();
   });
 
   describe("> verify permissions", () => {

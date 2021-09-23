@@ -2,11 +2,11 @@
 pragma solidity ^0.8.6;
 
 // modules
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // interfaces
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
-import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
+import "../_LSPs/ILSP6_KeyManager.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -18,7 +18,7 @@ import "../Utils/ERC725Utils.sol";
  * @author Fabian Vogelsteller, Jean Cavallera
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-abstract contract KeyManagerCore is ERC165, IERC1271 {
+abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     using ECDSA for bytes32;
     using SafeMath for uint256;
     using ERC725Utils for ERC725Y;
@@ -28,6 +28,8 @@ abstract contract KeyManagerCore is ERC165, IERC1271 {
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
+
+    bytes4 public constant _INTERFACE_ID_LSP6 = type(ILSP6).interfaceId;
 
     // prettier-ignore
     /* solhint-disable */
@@ -55,8 +57,6 @@ abstract contract KeyManagerCore is ERC165, IERC1271 {
     bytes4 internal constant _EXECUTE_SELECTOR = 0x44c028fe;
     bytes4 internal constant _TRANSFEROWNERSHIP_SELECTOR = 0xf2fde38b;
 
-    event Executed(uint256 indexed _value, bytes _data);
-
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -64,7 +64,7 @@ abstract contract KeyManagerCore is ERC165, IERC1271 {
         public
         view
         virtual
-        override(ERC165)
+        override(ERC165Storage)
         returns (bool)
     {
         return
@@ -78,7 +78,7 @@ abstract contract KeyManagerCore is ERC165, IERC1271 {
      * @param _from caller address
      * @param _channelId channel id
      */
-    function getNonce(address _from, uint128 _channelId) public view returns (uint256) {
+    function getNonce(address _from, uint128 _channelId) public view override returns (uint256) {
         uint128 nonceId = uint128(_nonceStore[_from][_channelId]);
         return uint256(_channelId) << 128 | nonceId;
     }
@@ -126,6 +126,7 @@ abstract contract KeyManagerCore is ERC165, IERC1271 {
     function execute(bytes calldata _data)
         external
         payable
+        override
         returns (bool success_)
     {
         _checkPermissions(msg.sender, _data);
@@ -147,7 +148,7 @@ abstract contract KeyManagerCore is ERC165, IERC1271 {
         address _signedFor,
         uint256 _nonce,
         bytes memory _signature
-    ) external payable returns (bool success_) {
+    ) external payable override returns (bool success_) {
         require(
             _signedFor == address(this),
             "KeyManager:executeRelayCall: Message not signed for this keyManager"
