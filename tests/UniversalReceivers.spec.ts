@@ -1,6 +1,8 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
+  ERC725Utils,
+  ERC725Utils__factory,
   BasicUniversalReceiver,
   BasicUniversalReceiver__factory,
   LSP3Account__factory,
@@ -9,6 +11,8 @@ import {
   UniversalReceiverTester,
   UniversalReceiverTester__factory,
 } from "../build/types";
+
+import { deployLSP3Account } from "./utils/deploy";
 
 // keccak256("ERC777TokensRecipient")
 const TOKENS_RECIPIENT_INTERFACE_HASH =
@@ -21,10 +25,12 @@ describe("Receivers", () => {
   let uni: BasicUniversalReceiver;
   let accounts: SignerWithAddress[] = [];
   let signer: SignerWithAddress;
+  let library: ERC725Utils;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
     signer = accounts[1];
+    library = await new ERC725Utils__factory(accounts[0]).deploy();
   });
 
   beforeEach(async () => {
@@ -97,14 +103,14 @@ describe("Receivers", () => {
 
   it("Use delegate and test if it can store addresses", async () => {
     const signerAddress = accounts[1].address;
-    let account = await new LSP3Account__factory(signer).deploy(signerAddress);
+    let account = await deployLSP3Account(library, signer);
     let checker = await new UniversalReceiverTester__factory(signer).deploy();
     let checker2 = await new UniversalReceiverTester__factory(signer).deploy();
     let checker3 = await new UniversalReceiverTester__factory(signer).deploy();
     let delegate = await new UniversalReceiverAddressStore__factory(signer).deploy(account.address);
 
     // set uni receiver delegate
-    await account.setData(UNIVERSALRECEIVER_KEY, delegate.address, {
+    await account.setData([UNIVERSALRECEIVER_KEY], [delegate.address], {
       from: signerAddress,
     });
 
