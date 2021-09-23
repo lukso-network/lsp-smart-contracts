@@ -23,7 +23,7 @@ abstract contract LSP8CappedSupply is ILSP8CappedSupply, LSP8 {
     //
 
     constructor(uint256 tokenSupplyCap_) {
-      require(tokenSupplyCap_ > 0, "LSP8Capped: tokenSupplyCap is zero");
+      require(tokenSupplyCap_ > 0, "LSP8CappedSupply: tokenSupplyCap is zero");
       _tokenSupplyCap = tokenSupplyCap_;
     }
 
