@@ -11,6 +11,10 @@ contract KeyManagerHelper is KeyManager {
     /* solhint-disable no-empty-blocks */
     constructor(address _account) KeyManager(_account) {}
 
+    function getInterfaceId() public pure returns (bytes4) {
+        return _INTERFACE_ID_LSP6;
+    }
+
     function getUserPermissions(address _user) public view returns (bytes1) {
         return super._getUserPermissions(_user);
     }
