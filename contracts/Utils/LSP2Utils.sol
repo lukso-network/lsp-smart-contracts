@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 /**
  * @title ERC725 Utility library to encode key types
+ * @author Jean Cavallera (CJ-42)
  * @dev based on LSP2 - ERC725Y JSON Schema
  *      https://github.com/lukso-network/LIPs/blob/master/LSPs/LSP-2-ERC725YJSONSchema.md#array
  */
@@ -71,7 +72,7 @@ library LSP2Utils {
 
     }
 
-    function generateAddressMappingGroupingKey(
+    function generateAddressMappingWithGroupingKey(
         string memory _firstWord, 
         string memory _secondWord, 
         address _address
@@ -94,6 +95,44 @@ library LSP2Utils {
         assembly {
             key_ := mload(add(temporaryBytes, 32))
         }
+    }
+
+    function generateJSONURLValue(
+        string memory _hashFunction, 
+        string memory _json, 
+        string memory _url
+    ) 
+        public
+        pure
+        returns (bytes memory key_)
+    {
+        bytes32 hashFunctionDigest = keccak256(bytes(_hashFunction));
+        bytes32 jsonDigest = keccak256(bytes(_json));
+
+        key_ = abi.encodePacked(
+            bytes4(hashFunctionDigest),
+            jsonDigest,
+            _url
+        );
+    }
+
+    function generateASSETURLValue(
+        string memory _hashFunction, 
+        string memory _assetBytes, 
+        string memory _url
+    )
+        public
+        pure
+        returns (bytes memory key_)
+    {
+        bytes32 hashFunctionDigest = keccak256(bytes(_hashFunction));
+        bytes32 jsonDigest = keccak256(bytes(_assetBytes));
+
+        key_ = abi.encodePacked(
+            bytes4(hashFunctionDigest),
+            jsonDigest,
+            _url
+        );
     }
 
 }
