@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
-import "../_LSPs/KeyManager/KeyManager.sol";
+import "../_LSPs/ILSP6_KeyManager.sol";
 import "../_LSPs/ILSP1_UniversalReceiver.sol";
 import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 
@@ -19,7 +19,7 @@ contract CalculateERC165Selectors {
     }
 
     function calculateSelectorLSP6KeyManager() public pure returns (bytes4) {
-        KeyManager i;
+        ILSP6 i;
 
         return i.execute.selector
             ^ i.executeRelayCall.selector
