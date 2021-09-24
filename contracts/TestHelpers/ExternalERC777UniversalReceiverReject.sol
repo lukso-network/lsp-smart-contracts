@@ -15,7 +15,7 @@ contract ExternalERC777UniversalReceiverRejectTester is ERC165Storage, ILSP1Dele
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 
-    function universalReceiverDelegate(address, bytes32, bytes memory) external override returns(bytes32){
+    function universalReceiverDelegate(address, bytes32, bytes memory) external pure override returns(bytes32){
         require(false, "We reject everything");
         return "";
     }

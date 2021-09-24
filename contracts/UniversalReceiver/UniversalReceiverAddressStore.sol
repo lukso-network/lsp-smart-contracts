@@ -18,7 +18,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
 
     address public account;
 
-    constructor(address _account) public {
+    constructor(address _account) {
         account = _account;
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
@@ -27,7 +27,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         public
         override
         onlyAccount
-        returns(bool)
+        returns (bool)
     {
         return _addressStore.add(_address);
     }
@@ -36,7 +36,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         public
         override
         onlyAccount
-        returns(bool)
+        returns (bool)
     {
         return _addressStore.remove(_address);
     }

@@ -5,11 +5,9 @@ pragma solidity ^0.8.0;
 import "../_LSPs/ILSP1_UniversalReceiver.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
-
 // modules
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./ERC777.sol";
-
 
 /**
  * @dev Implementation of the `IERC777` interface. WITHOUT the use of ERC1820, but LSP1UniversalReceiver.
@@ -56,7 +54,6 @@ contract ERC777UniversalReceiver is ERC777 {
 
     function mint(address _address, uint256 _amount) external virtual {
         require(_defaultOperators[_msgSender()], "Only default operators can mint");
-
         _mint(_address, _amount, "", "");
     }
 
@@ -69,9 +66,9 @@ contract ERC777UniversalReceiver is ERC777 {
         bytes memory userData,
         bytes memory operatorData
     )
-    internal
-    virtual
-    override
+        internal
+        virtual
+        override
     {
         ERC777._move(operator, from, to, amount, userData, operatorData);
     }
@@ -93,8 +90,8 @@ contract ERC777UniversalReceiver is ERC777 {
         bytes memory userData,
         bytes memory operatorData
     )
-    internal
-    override
+        internal
+        override
     {
 
         if (ERC165Checker.supportsERC165(from) && ERC165Checker.supportsInterface(from, _INTERFACE_ID_LSP1)) {
@@ -141,8 +138,8 @@ contract ERC777UniversalReceiver is ERC777 {
         bytes memory operatorData,
         bool requireReceptionAck
     )
-    internal
-    override
+        internal
+        override
     {
         if (ERC165Checker.supportsERC165(to) && ERC165Checker.supportsInterface(to, _INTERFACE_ID_LSP1)) {
             bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);

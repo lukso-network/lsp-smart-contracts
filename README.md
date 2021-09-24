@@ -5,7 +5,21 @@ The reference implementation for universal profiles smart contracts.
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
 
-## Installation
+## Overview
+
+### Installation
+
+#### via NPM
+
+Universal Profile smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts).
+
+```bash
+npm install @lukso/universalprofile-smart-contracts --save
+```
+
+#### via cloning the repository
+
+Alternatively can also pull the repository and install its dependencies to use the smart contracts.
 
 ```bash
 $ git clone https://github.com/lukso-network/universalprofile-smart-contracts.git
@@ -17,89 +31,28 @@ $ npm install
 $ cd ./submodules/ERC725/implementations && npm install
 ```
 
-## Running tests
+### Usage
 
-To run all the tests, you can run:
+#### in Javascript
+
+You can use the contracts by importing them as follow:
+
+```javascript
+import LSP3Account from "@lukso/universalprofile-smart-contracts/build/contracts/LSP3Account.json";
+
+const LSP3AccountContract = new this.web3.eth.Contract(LSP3Account.abi, "", defaultOptions);
+```
+
+#### in Solidity
+
+```solidity
+import LSP3Account from "@lukso/universalprofile-smart-contracts/build/contracts/LSP3Account.sol";
+```
+
+## Testing
+
+Jest contract tests are defined under the tests directory. To run all the tests, run:
 
 ```bash
 $ npm test
-```
-
-## Examples
-
-This is an example of the steps to do to set a permission.
-
-```
-// Set Permission Example
-//
-// PERMISSION_CHANGE_KEYS = 0x01
-// PERMISSION_SET_DATA    = 0x08
-//
-// 0. Initial
-// PermissionsOfUser = 0x00
-//
-// 1. Set SET_DATA Permission
-// PermissionsOfUser = PermissionOfUser OR PERMISSION_SET_DATA
-// now permission is 0x08    0000 1000
-//
-// 2. Set CHANGE_KEYS Permission
-// PermissionsOfUser = PermissionOfUser OR PERMISSION_SET_DATA
-// now permission is 0x09    0000 1001
-//
-// 3. Check If Has Permission SET_DATA
-// PermissionOfUser AND PERMISSION_SET_DATA == PERMISSION_SET_DATA
-// 0000 1001
-// 0000 0001    AND
-// 0000 0001
-// 4. Delete Permission SET_DATA
-// PermissionsOfUser = PermissionOfUser AND  NOT(PERMISSION_SET_DATA)
-// permission is now 0x08
-```
-
-### AddressPermissions:AllowedFunctions:<address> --> bytes4[]
-
-Returns an array of `bytes4[]`, corresponding to **functions signatures**.
-
-```
-KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xffffffffffffffffffffff]
-KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > [0xcafecafecafe..., ]
-KEY_ALLOWEDFUNCTIONS > abi.decode(data, 'array') > 0x
-```
-
-### Payload example
-
-For the following payload:
-
-```javascript
-let simpleContractPayload = simpleContract.contract.methods.setName("Test").encodeABI();
-let executePayload = erc725Account.contract.methods
-  .execute(OPERATION_CALL, simpleContract.address, 0, simpleContractPayload)
-  .encodeABI();
-```
-
-Here is a detail of the layout of the calldata.
-
-```
-(0)   0x44c028fe
-(4)   0x0000000000000000000000000000000000000000000000000000000000000000
-(36)  0x0000000000000000000000002c2b9c9a4a25e24b174f26114e8926a9f2128fe4
-(68)  0x0000000000000000000000000000000000000000000000000000000000000000
-(100) 0x0000000000000000000000000000000000000000000000000000000000000080
-(132) 0x0000000000000000000000000000000000000000000000000000000000000064
-(164) 0xc47f0027
-(168) 0x0000000000000000000000000000000000000000000000000000000000000020
-(200) 0x0000000000000000000000000000000000000000000000000000000000000004
-(232) 0x5465737400000000000000000000000000000000000000000000000000000000
-(xxx) 0x00000000000000000000000000000000000000000000000000000000
-```
-
-For a calldata with an empty payload as the 4th parameter, it would look like this:
-
-```
-(0)   0x44c028fe
-(4)   0x0000000000000000000000000000000000000000000000000000000000000000
-(36)  0x000000000000000000000000f17f52151ebef6c7334fad080c5704d77216b732
-(68)  0x00000000000000000000000000000000000000000000000029a2241af62c0000
-(100) 0x0000000000000000000000000000000000000000000000000000000000000080
-(132) 0x0000000000000000000000000000000000000000000000000000000000000000
 ```

@@ -1,6 +1,8 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
+  ERC725Utils,
+  ERC725Utils__factory,
   AddressRegistry,
   AddressRegistryRequiresERC725,
   AddressRegistryRequiresERC725__factory,
@@ -8,6 +10,8 @@ import {
   LSP3Account,
   LSP3Account__factory,
 } from "../build/types";
+
+import { deployLSP3Account } from "./utils/deploy";
 
 describe("Address Registry contracts", () => {
   let addressRegistry: AddressRegistry;
@@ -77,12 +81,14 @@ describe("Address Registry contracts", () => {
   // Require ERC725
   describe("AddressRegistryRequiresERC725", () => {
     let addressRegistryRequireERC725: AddressRegistryRequiresERC725,
+      erc725Utils: ERC725Utils,
       account: LSP3Account,
       owner: SignerWithAddress;
 
     beforeEach(async () => {
       owner = accounts[3];
-      account = await new LSP3Account__factory(owner).deploy(owner.address);
+      erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
+      account = await deployLSP3Account(erc725Utils, owner);
       addressRegistryRequireERC725 = await new AddressRegistryRequiresERC725__factory(
         owner
       ).deploy();

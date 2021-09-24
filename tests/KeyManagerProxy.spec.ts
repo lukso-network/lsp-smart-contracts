@@ -1,16 +1,13 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
 
 import {
   ERC725Utils,
   ERC725Utils__factory,
-  ERC725Account,
-  ERC725Account__factory,
-  KeyManagerHelper,
-  KeyManagerHelper__factory,
-  KeyManager,
-  KeyManager__factory,
+  LSP3AccountInit,
+  LSP3AccountInit__factory,
+  KeyManagerInit,
+  KeyManagerInit__factory,
   TargetContract,
   TargetContract__factory,
   Reentrancy,
@@ -20,163 +17,50 @@ import {
 import { solidityKeccak256 } from "ethers/lib/utils";
 
 // custom helpers
+import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
+import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
 import {
-  EMPTY_PAYLOAD,
-  DUMMY_PAYLOAD,
-  DUMMY_PRIVATEKEY,
-  ONE_ETH,
-  SCHEMA,
-  getRandomAddresses,
-  generateKeysAndValues,
-} from "./utils/helpers";
+  deployProxy,
+  deployBaseLSP3Account,
+  deployBaseKeyManager,
+  attachLSP3AccountProxy,
+  attachKeyManagerProxy,
+} from "./utils/proxy";
 import { INTERFACE_IDS } from "./utils/constants";
 
-import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
+// /**
+//  * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
+//  *
+//  * @param baseContractAddress
+//  * @param deployer
+//  * @returns
+//  */
+// async function deployProxy(baseContractAddress: string, deployer: SignerWithAddress) {
+//   // deploy proxy contract
+//   let proxyRuntimeCode = proxyRuntimeCodeTemplate.replace(
+//     "bebebebebebebebebebebebebebebebebebebebe",
+//     baseContractAddress.substr(2)
+//   );
+//   let tx = await deployer.sendTransaction({
+//     data: proxyRuntimeCode,
+//   });
+//   let receipt = await tx.wait();
 
-describe("KeyManagerHelper", () => {
+//   return receipt.contractAddress;
+// }
+
+describe("KeyManager + LSP3 Account as Proxies", () => {
   let abiCoder;
   let accounts: SignerWithAddress[] = [];
 
-  let erc725Account: ERC725Account,
-    keyManagerHelper: KeyManagerHelper,
-    targetContract: TargetContract,
-    erc725Utils: ERC725Utils;
+  // core contracts
+  let baseLsp3Account: LSP3AccountInit,
+    baseKeyManager: KeyManagerInit,
+    proxyLsp3Account: LSP3AccountInit,
+    proxyKeyManager: KeyManagerInit;
 
-  let owner: SignerWithAddress, app: SignerWithAddress, user: SignerWithAddress;
-
-  beforeAll(async () => {
-    abiCoder = await ethers.utils.defaultAbiCoder;
-    accounts = await ethers.getSigners();
-    owner = accounts[0];
-    app = accounts[1];
-    user = accounts[2];
-
-    targetContract = await new TargetContract__factory(owner).deploy();
-
-    erc725Account = await new ERC725Account__factory(owner).deploy(owner.address);
-    erc725Utils = await new ERC725Utils__factory(owner).deploy();
-    keyManagerHelper = await new KeyManagerHelper__factory(
-      { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-      owner
-    ).deploy(erc725Account.address);
-
-    await erc725Account.setData([KEYS.PERMISSIONS + owner.address.substr(2)], [PERMISSIONS.ALL], {
-      from: owner.address,
-    });
-
-    let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
-
-    await erc725Account.setData(
-      [KEYS.ALLOWEDADDRESSES + owner.address.substr(2)],
-      [abiCoder.encode(["address[]"], [allowedAddresses])]
-    );
-
-    await erc725Account.setData(
-      [KEYS.ALLOWEDFUNCTIONS + owner.address.substr(2)],
-      [abiCoder.encode(["bytes4[]"], [allowedFunctions])]
-    );
-  });
-
-  it("Shows the interfaceId for LSP6", async () => {
-    let lsp6InterfaceId = await keyManagerHelper.getInterfaceId();
-    console.log("LSP6 InterfaceId: ", lsp6InterfaceId);
-    expect(lsp6InterfaceId).toEqual(INTERFACE_IDS.LSP6);
-  });
-
-  describe("Reading ERC725's account storage", () => {
-    it("_getAllowedAddresses(...) - Should return list of owner's allowed addresses", async () => {
-      let bytesResult = await keyManagerHelper.getAllowedAddresses(owner.address, {
-        from: owner.address,
-      });
-      let allowedOwnerAddresses = abiCoder.decode(["address[]"], bytesResult);
-      let CheckSummedAllowedAddress = [
-        await ethers.utils.getAddress(allowedAddresses[0]),
-        await ethers.utils.getAddress(allowedAddresses[1]),
-      ];
-      expect(allowedOwnerAddresses).toEqual([CheckSummedAllowedAddress]);
-    });
-
-    it("_getAllowedAddresses(...) - Should return no addresses for app", async () => {
-      let bytesResult = await keyManagerHelper.getAllowedAddresses(app.address);
-      expect([bytesResult]).toEqual(["0x"]);
-
-      let resultFromAccount = await erc725Account.getData([
-        KEYS.ALLOWEDADDRESSES + app.address.substr(2),
-      ]);
-      expect(resultFromAccount).toEqual(["0x"]);
-    });
-
-    it("_getAllowedFunctions(...) - Should return list of owner's allowed functions", async () => {
-      let bytesResult = await keyManagerHelper.callStatic.getAllowedFunctions(owner.address);
-      let allowedOwnerFunctions = abiCoder.decode(["bytes4[]"], bytesResult);
-      let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
-      expect(allowedOwnerFunctions).toEqual([allowedFunctions]);
-
-      let resultFromAccount = await erc725Account.getData([
-        KEYS.ALLOWEDFUNCTIONS + owner.address.substr(2),
-      ]);
-      let decodedResultFromAccount = abiCoder.decode(["bytes4[]"], resultFromAccount[0]);
-
-      expect(decodedResultFromAccount).toEqual([allowedFunctions]);
-
-      // also make sure that both functions from keyManager and from erc725 account return the same thing
-      expect([bytesResult]).toEqual(resultFromAccount);
-    });
-
-    it("_getAllowedFunctions(...) - Should return no functions selectors for app.", async () => {
-      let bytesResult = await keyManagerHelper.getAllowedFunctions(app.address);
-      expect([bytesResult]).toEqual(["0x"]);
-
-      let resultFromAccount = await erc725Account.getData([
-        KEYS.ALLOWEDFUNCTIONS + app.address.substr(2),
-      ]);
-      expect(resultFromAccount).toEqual(["0x"]);
-    });
-  });
-
-  describe("Reading User's permissions", () => {
-    it("Should return 0xff for owner", async () => {
-      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual("0xff"); // ALL_PERMISSIONS = "0xff"
-    });
-  });
-
-  describe("Testing permissions for allowed addresses / function", () => {
-    it("_isAllowedAddress(...) - Should return `true` for address listed in owner's allowed addresses", async () => {
-      expect(
-        await keyManagerHelper.callStatic.isAllowedAddress(
-          owner.address,
-          "0xcafecafecafecafecafecafecafecafecafecafe"
-        )
-      ).toBeTruthy();
-    });
-
-    it("_isAllowedAddress(...) - Should return `false` for address not listed in owner's allowed addresses", async () => {
-      expect(
-        await keyManagerHelper.callStatic.isAllowedAddress(
-          owner.address,
-          "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
-        )
-      ).toBeFalsy();
-    });
-
-    it("_isAllowedAddress(...) - Should return `true`, user has all addresses whitelisted (= no list of allowed address)", async () => {
-      // assuming a scenario user wants to interact with app on via ERC725 account
-      expect(
-        await keyManagerHelper.callStatic.isAllowedAddress(user.address, app.address)
-      ).toBeTruthy();
-    });
-  });
-});
-
-describe("KeyManager", () => {
-  let abiCoder;
-  let accounts: SignerWithAddress[] = [];
-
-  let erc725Utils: ERC725Utils,
-    erc725Account: ERC725Account,
-    keyManager: KeyManager,
-    targetContract: TargetContract,
-    maliciousContract: Reentrancy;
+  // library + helpers contracts
+  let erc725Utils: ERC725Utils, targetContract: TargetContract, maliciousContract: Reentrancy;
 
   let owner: SignerWithAddress,
     app: SignerWithAddress,
@@ -195,32 +79,43 @@ describe("KeyManager", () => {
     user = accounts[4];
     newUser = accounts[5];
 
+    // 1. deploy base contracts
     erc725Utils = await new ERC725Utils__factory(owner).deploy();
-    erc725Account = await new ERC725Account__factory(owner).deploy(owner.address);
-    keyManager = await new KeyManager__factory(
-      { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-      owner
-    ).deploy(erc725Account.address);
+    baseLsp3Account = await deployBaseLSP3Account(erc725Utils, owner);
+    baseKeyManager = await deployBaseKeyManager(erc725Utils, owner);
+
+    // 2. deploy proxy contracts
+    let proxyLsp3AccountAddress = await deployProxy(baseLsp3Account.address, owner);
+    let proxyKeyManagerAddress = await deployProxy(baseKeyManager.address, owner);
+    proxyLsp3Account = await attachLSP3AccountProxy(erc725Utils, owner, proxyLsp3AccountAddress);
+    proxyKeyManager = await attachKeyManagerProxy(erc725Utils, owner, proxyKeyManagerAddress);
+
+    // 3. initialize them
+    await proxyLsp3Account.initialize(owner.address);
+    await proxyKeyManager.initialize(proxyLsp3Account.address);
+
+    // Other test contracts
     targetContract = await new TargetContract__factory(owner).deploy();
-    maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(keyManager.address);
+    maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(proxyKeyManager.address);
+
     // owner permissions
-    await erc725Account
+    await proxyLsp3Account
       .connect(owner)
       .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [PERMISSIONS.ALL]);
 
     // app permissions
     let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL);
-    await erc725Account
+    await proxyLsp3Account
       .connect(owner)
       .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
-    await erc725Account
+    await proxyLsp3Account
       .connect(owner)
       .setData(
         [KEYS.ALLOWEDADDRESSES + app.address.substr(2)],
         [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
       );
     // do not allow the app to `setNumber` on TargetContract
-    await erc725Account
+    await proxyLsp3Account
       .connect(owner)
       .setData(
         [KEYS.ALLOWEDFUNCTIONS + app.address.substr(2)],
@@ -229,65 +124,88 @@ describe("KeyManager", () => {
 
     // user permissions
     let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL);
-    await erc725Account
+    await proxyLsp3Account
       .connect(owner)
       .setData([KEYS.PERMISSIONS + user.address.substr(2)], [userPermissions]);
 
     // externalApp permissions
     let externalAppPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL);
-    await erc725Account
+    await proxyLsp3Account
       .connect(owner)
       .setData([KEYS.PERMISSIONS + externalApp.address.substr(2)], [externalAppPermissions]);
-    await erc725Account
+    await proxyLsp3Account
       .connect(owner)
       .setData(
         [KEYS.ALLOWEDADDRESSES + externalApp.address.substr(2)],
         [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
       );
-    await erc725Account.setData(
-      // do not allow the externalApp to `setNumber` on TargetContract
-      [KEYS.ALLOWEDFUNCTIONS + externalApp.address.substr(2)],
-      [abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])]
-    );
+    // do not allow the externalApp to `setNumber` on TargetContract
+    await proxyLsp3Account
+      .connect(owner)
+      .setData(
+        [KEYS.ALLOWEDFUNCTIONS + externalApp.address.substr(2)],
+        [abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])]
+      );
 
     // test security
-    await erc725Account.setData(
-      [KEYS.PERMISSIONS + newUser.address.substr(2)],
-      [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE)]
-    );
+    await proxyLsp3Account
+      .connect(owner)
+      .setData(
+        [KEYS.PERMISSIONS + newUser.address.substr(2)],
+        [
+          ethers.utils.hexZeroPad(
+            PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE
+          ),
+        ]
+      );
 
     // switch account management to KeyManager
-    await erc725Account.connect(owner).transferOwnership(keyManager.address);
+    await proxyLsp3Account.connect(owner).transferOwnership(proxyKeyManager.address);
 
     /** @todo find other way to ensure ERC725 Account has always 10 ethers before each test (and not transfer every time test is re-run) */
     await owner.sendTransaction({
-      to: erc725Account.address,
+      to: proxyLsp3Account.address,
       value: ethers.utils.parseEther("10"),
     });
   });
 
-  beforeEach(async () => {
-    erc725Account.connect(owner.address);
-    keyManager.connect(owner.address);
+  it("Cannot `initalize` LSP3 Account proxy twice", async () => {
+    await expect(
+      proxyLsp3Account.initialize("0xdead0dead0dead0dead0dead0dead0dead0dead0")
+    ).toBeRevertedWith("Initializable: contract is already initialized");
+  });
 
-    await targetContract.setName("Simple Contract Name");
-    await targetContract.setNumber(5);
+  it("Cannot `initialize` KeyManager proxy twice", async () => {
+    await expect(
+      proxyKeyManager.initialize("0xdead0dead0dead0dead0dead0dead0dead0dead0")
+    ).toBeRevertedWith("Initializable: contract is already initialized");
   });
 
   it("Should support LSP6", async () => {
-    let result = await keyManager.callStatic.supportsInterface(INTERFACE_IDS.LSP6);
+    let result = await proxyKeyManager.callStatic.supportsInterface(INTERFACE_IDS.LSP6);
     expect(result).toBeTruthy();
   });
 
-  // ensures owner is still erc725Account\'s admin (=all permissions)
-  it("ensures owner is still erc725Account's admin (=all permissions)", async () => {
-    let [permissions] = await erc725Account.getData([KEYS.PERMISSIONS + owner.address.substr(2)]);
-    expect(permissions).toEqual("0xff", "Owner should have all permissions set");
-  });
+  describe("> verify permissions", () => {
+    it("Owner should have ALL PERMISSIONS (= admin)", async () => {
+      let [permissions] = await proxyLsp3Account.getData([
+        KEYS.PERMISSIONS + owner.address.substr(2),
+      ]);
+      expect(permissions).toEqual(
+        ethers.utils.hexZeroPad(PERMISSIONS.ALL),
+        "Owner should have all permissions set"
+      );
+    });
 
-  it("get app permissions", async () => {
-    let [permissions] = await erc725Account.getData([KEYS.PERMISSIONS + app.address.substr(2)]);
-    expect(permissions).toEqual("0x0c", "Owner should have all permissions set");
+    it("App should have permissions SETDATA and CALL", async () => {
+      let [permissions] = await proxyLsp3Account.getData([
+        KEYS.PERMISSIONS + app.address.substr(2),
+      ]);
+      expect(permissions).toEqual(
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL),
+        "Owner should have all permissions set"
+      );
+    });
   });
 
   describe("> testing permissions: CHANGEKEYS, SETDATA", () => {
@@ -295,21 +213,21 @@ describe("KeyManager", () => {
       // change app's permissions
       let key = KEYS.PERMISSIONS + app.address.substr(2);
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [
+      let payload = proxyLsp3Account.interface.encodeFunctionData("setData", [
         [key],
         [PERMISSIONS.SETDATA],
       ]);
 
-      let result = await keyManager.connect(owner).callStatic.execute(payload);
+      let result = await proxyKeyManager.connect(owner).callStatic.execute(payload);
       expect(result).toBeTruthy();
 
-      await keyManager.connect(owner).execute(payload);
-      let fetchedResult = await erc725Account.callStatic.getData([key]);
+      await proxyKeyManager.connect(owner).execute(payload);
+      let fetchedResult = await proxyLsp3Account.callStatic.getData([key]);
       expect(Number(fetchedResult)).toEqual(PERMISSIONS.SETDATA);
 
       // reset app permissions
-      await keyManager.execute(
-        erc725Account.interface.encodeFunctionData("setData", [
+      await proxyKeyManager.execute(
+        proxyLsp3Account.interface.encodeFunctionData("setData", [
           [key],
           [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL)],
         ])
@@ -318,16 +236,14 @@ describe("KeyManager", () => {
 
     it("App should not be allowed to change keys", async () => {
       // malicious app trying to set all permissions
-      let dangerousPayload = erc725Account.interface.encodeFunctionData("setData", [
+      let dangerousPayload = proxyLsp3Account.interface.encodeFunctionData("setData", [
         [KEYS.PERMISSIONS + app.address.substr(2)],
         [PERMISSIONS.ALL],
       ]);
 
-      await expect(keyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
+      await expect(proxyKeyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to change keys"
       );
-
-      let [permissions] = await erc725Account.getData([KEYS.PERMISSIONS + app.address.substr(2)]);
     });
 
     it("Owner should be allowed to setData", async () => {
@@ -338,13 +254,14 @@ describe("KeyManager", () => {
         )
       );
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [[key], [value]]);
+      let payload = proxyLsp3Account.interface.encodeFunctionData("setData", [[key], [value]]);
 
-      let callResult = await keyManager.connect(owner).callStatic.execute(payload);
+      let callResult = await proxyKeyManager.connect(owner).callStatic.execute(payload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.connect(owner).execute(payload);
-      let [fetchedResult] = await erc725Account.callStatic.getData([key]);
+      await proxyKeyManager.connect(owner).execute(payload, { gasLimit: 3_000_000 });
+      let [fetchedResult] = await proxyLsp3Account.callStatic.getData([key]);
+
       expect(fetchedResult).toEqual(value);
     });
 
@@ -356,263 +273,69 @@ describe("KeyManager", () => {
         )
       );
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [[key], [value]]);
+      let payload = proxyLsp3Account.interface.encodeFunctionData("setData", [[key], [value]]);
 
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
+      let callResult = await proxyKeyManager.connect(app).callStatic.execute(payload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.connect(app).execute(payload);
-      let [fetchedResult] = await erc725Account.callStatic.getData([key]);
+      await proxyKeyManager.connect(app).execute(payload);
+      let [fetchedResult] = await proxyLsp3Account.callStatic.getData([key]);
       expect(fetchedResult).toEqual(value);
-    });
-  });
-
-  describe("> testing permissions: App not allowed to CHANGEKEYS (setting multiple mixed keys)", () => {
-    it("(should pass): adding one singleton key", async () => {
-      let elements = { MyFirstKey: "Hello Lukso!" };
-      let [keys, values] = generateKeysAndValues(elements);
-
-      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(payload);
-      let fetchedResult = await erc725Account.callStatic.getData(keys);
-      expect(fetchedResult).toEqual(
-        Object.values(elements).map((value) =>
-          ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
-        )
-      );
-    });
-
-    it("(should pass): adding 5 singleton keys", async () => {
-      // prettier-ignore
-      let elements = {
-        "MyFirstKey":   "aaaaaaaaaa",
-        "MySecondKey":  "bbbbbbbbbb",
-        "MyThirdKey":   "cccccccccc",
-        "MyFourthKey":  "dddddddddd",
-        "MyFifthKey":   "eeeeeeeeee",
-      };
-
-      let [keys, values] = generateKeysAndValues(elements);
-
-      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(payload);
-      let fetchedResult = await erc725Account.callStatic.getData(keys);
-      expect(fetchedResult).toEqual(
-        Object.values(elements).map((value) =>
-          ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
-        )
-      );
-    });
-
-    it("(should pass): adding 10 LSP3IssuedAssets", async () => {
-      let lsp3IssuedAssets = getRandomAddresses(10);
-
-      const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
-
-      const encodedData = encodeData(data, SCHEMA);
-      const flattenedEncodedData = flattenEncodedData(encodedData);
-
-      let keys = [];
-      let values = [];
-
-      flattenedEncodedData.map((data) => {
-        keys.push(data.key);
-        values.push(data.value);
-      });
-
-      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(payload);
-      let fetchedResult = await erc725Account.callStatic.getData(keys);
-      expect(fetchedResult).toEqual(values);
-    });
-
-    it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
-      const basicUPSetup = {
-        LSP3Profile: {
-          hashFunction: "keccak256(utf8)",
-          hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
-          url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
-        },
-        "LSP3IssuedAssets[]": [
-          "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
-          "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
-        ],
-        LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
-      };
-
-      let encodedData = encodeData(basicUPSetup, SCHEMA);
-      let flattenedEncodedData = flattenEncodedData(encodedData);
-
-      let keys = [];
-      let values = [];
-
-      flattenedEncodedData.map((data) => {
-        keys.push(data.key);
-        values.push(data.value);
-      });
-
-      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(payload);
-      let fetchedResult = await erc725Account.callStatic.getData(keys);
-      expect(fetchedResult).toEqual(values);
-    });
-
-    it("(should fail): give admin permission to an address", async () => {
-      let keys = [
-        KEYS.PERMISSIONS + user.address.substr(2),
-        KEYS.PERMISSIONS + newUser.address.substr(2),
-        KEYS.PERMISSIONS + accounts[6].address.substr(2),
-      ];
-
-      let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN),
-      ];
-
-      let failingPayload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-
-      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to change keys"
-      );
-    });
-
-    it("(should fail): set permissions to 3 addresses", async () => {
-      let keys = [
-        KEYS.PERMISSIONS + user.address.substr(2),
-        KEYS.PERMISSIONS + newUser.address.substr(2),
-        KEYS.PERMISSIONS + accounts[6].address.substr(2),
-      ];
-
-      let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN),
-      ];
-
-      let failingPayload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-
-      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to change keys"
-      );
-    });
-
-    it("(should fail): set 3 keys + 1 permission", async () => {
-      // prettier-ignore
-      let permissionKeyDisallowed = KEYS.PERMISSIONS + user.address.substr(2)
-      let permissionValueDisallowed = ethers.utils.hexZeroPad(
-        PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE
-      );
-
-      let elements = {
-        KeyOne: "1111111111",
-        KeyTwo: "2222222222",
-        KeyThree: "3333333333",
-      };
-      let [keys, values] = generateKeysAndValues(elements);
-
-      keys.push(permissionKeyDisallowed);
-      values.push(permissionValueDisallowed);
-
-      let failingPayload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-
-      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to change keys"
-      );
-    });
-
-    it("(should fail): set 3 keys + 3 permissions", async () => {
-      let elements = {
-        KeyOne: "1111111111",
-        KeyTwo: "2222222222",
-        KeyThree: "3333333333",
-      };
-
-      let [keys, values] = generateKeysAndValues(elements);
-
-      keys = keys.concat([
-        KEYS.PERMISSIONS + user.address.substr(2),
-        KEYS.PERMISSIONS + newUser.address.substr(2),
-        KEYS.PERMISSIONS + accounts[6].address.substr(2),
-      ]);
-
-      values = values.concat([
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN),
-      ]);
-
-      let failingPayload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-
-      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to change keys"
-      );
     });
   });
 
   describe("> testing permissions: CALL, DELEGATECALL, DEPLOY", () => {
     it("Owner should be allowed to make a CALL", async () => {
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         "0xcafecafecafecafecafecafecafecafecafecafe",
         0,
         DUMMY_PAYLOAD,
       ]);
 
-      let result = await keyManager.callStatic.execute(executePayload, { from: owner.address });
+      let result = await proxyKeyManager.callStatic.execute(executePayload, {
+        from: owner.address,
+      });
       expect(result).toBeTruthy();
     });
 
     it("App should be allowed to make a CALL", async () => {
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
         targetContract.interface.encodeFunctionData("setName", ["Example"]),
       ]);
 
-      let executeResult = await keyManager.connect(app).callStatic.execute(executePayload);
+      console.log("accounts[0] (owner)", accounts[0].address);
+      console.log("accounts[1] (app)", accounts[1].address);
+
+      let executeResult = await proxyKeyManager.connect(app).callStatic.execute(executePayload);
       expect(executeResult).toBeTruthy();
     });
 
     it("App should not be allowed to make a DELEGATECALL", async () => {
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.DELEGATECALL,
         "0xcafecafecafecafecafecafecafecafecafecafe",
         0,
         DUMMY_PAYLOAD,
       ]);
 
-      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
+      await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
       );
     });
 
     it("App should not be allowed to DEPLOY a contract", async () => {
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.DEPLOY,
         "0x0000000000000000000000000000000000000000",
         0,
         DUMMY_PAYLOAD,
       ]);
 
-      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
+      await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
       );
     });
@@ -622,22 +345,22 @@ describe("KeyManager", () => {
     let provider = ethers.provider;
 
     it("Owner should be allowed to transfer ethers to app", async () => {
-      let initialAccountBalance = await provider.getBalance(erc725Account.address);
+      let initialAccountBalance = await provider.getBalance(proxyLsp3Account.address);
       let initialAppBalance = await provider.getBalance(app.address);
 
-      let transferPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let transferPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         app.address,
         ethers.utils.parseEther("3"),
         EMPTY_PAYLOAD,
       ]);
 
-      let callResult = await keyManager.callStatic.execute(transferPayload);
+      let callResult = await proxyKeyManager.callStatic.execute(transferPayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.execute(transferPayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.execute(transferPayload, { gasLimit: 3_000_000 });
 
-      let newAccountBalance = await provider.getBalance(erc725Account.address);
+      let newAccountBalance = await provider.getBalance(proxyLsp3Account.address);
       expect(parseInt(newAccountBalance)).toBeLessThan(parseInt(initialAccountBalance));
 
       let newAppBalance = await provider.getBalance(app.address);
@@ -645,23 +368,23 @@ describe("KeyManager", () => {
     });
 
     it("App should not be allowed to transfer ethers", async () => {
-      let initialAccountBalance = await provider.getBalance(erc725Account.address);
+      let initialAccountBalance = await provider.getBalance(proxyLsp3Account.address);
       let initialUserBalance = await provider.getBalance(user.address);
       // console.log("initialAccountBalance: ", initialAccountBalance)
       // console.log("initialUserBalance: ", initialUserBalance)
 
-      let transferPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let transferPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         user.address,
         ethers.utils.parseEther("3"),
         EMPTY_PAYLOAD,
       ]);
 
-      await expect(keyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
+      await expect(proxyKeyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to transfer ethers"
       );
 
-      let newAccountBalance = await provider.getBalance(erc725Account.address);
+      let newAccountBalance = await provider.getBalance(proxyLsp3Account.address);
       let newUserBalance = await provider.getBalance(user.address);
       // console.log("newAccountBalance: ", newAccountBalance);
       // console.log("newUserBalance: ", newUserBalance);
@@ -673,60 +396,60 @@ describe("KeyManager", () => {
 
   describe("> testing permissions: ALLOWEDADDRESSES", () => {
     it("All addresses whitelisted = Owner should be allowed to interact with any address", async () => {
-      let payload = erc725Account.interface.encodeFunctionData("execute", [
+      let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         "0xcafecafecafecafecafecafecafecafecafecafe",
         0,
         DUMMY_PAYLOAD,
       ]);
 
-      let result = await keyManager.callStatic.execute(payload);
+      let result = await proxyKeyManager.callStatic.execute(payload);
       expect(result).toBeTruthy();
 
-      let secondPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let secondPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
         0,
         DUMMY_PAYLOAD,
       ]);
 
-      let secondResult = await keyManager.callStatic.execute(secondPayload);
+      let secondResult = await proxyKeyManager.callStatic.execute(secondPayload);
       expect(secondResult).toBeTruthy();
     });
 
     it("App should be allowed to interact with `TargetContract`", async () => {
-      let payload = erc725Account.interface.encodeFunctionData("execute", [
+      let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
         EMPTY_PAYLOAD,
       ]);
 
-      let result = await keyManager.connect(app).callStatic.execute(payload);
+      let result = await proxyKeyManager.connect(app).callStatic.execute(payload);
       expect(result).toBeTruthy();
     });
 
     it("App should be allowed to interact with `user`", async () => {
-      let payload = erc725Account.interface.encodeFunctionData("execute", [
+      let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         user.address,
         0,
         EMPTY_PAYLOAD,
       ]);
 
-      let result = await keyManager.connect(app).callStatic.execute(payload);
+      let result = await proxyKeyManager.connect(app).callStatic.execute(payload);
       expect(result).toBeTruthy();
     });
 
     it("App should not be allowed to interact with `0xdeadbeef...` (not allowed address)", async () => {
-      let payload = erc725Account.interface.encodeFunctionData("execute", [
+      let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
         0,
         DUMMY_PAYLOAD,
       ]);
 
-      await expect(keyManager.connect(app).execute(payload)).toBeRevertedWith(
+      await expect(proxyKeyManager.connect(app).execute(payload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to interact with this address"
       );
     });
@@ -734,14 +457,14 @@ describe("KeyManager", () => {
 
   describe("> testing permissions: ALLOWEDFUNCTIONS", () => {
     it("App should not be allowed to run a non-allowed function (function signature = `0xbeefbeef`)", async () => {
-      let payload = erc725Account.interface.encodeFunctionData("execute", [
+      let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
         "0xbeefbeef123456780000000000",
       ]);
 
-      await expect(keyManager.connect(app).execute(payload)).toBeRevertedWith(
+      await expect(proxyKeyManager.connect(app).execute(payload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorised to run this function"
       );
     });
@@ -750,14 +473,14 @@ describe("KeyManager", () => {
   describe("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", () => {
     it("Should pass if no addresses / functions are stored for a user", async () => {
       let randomPayload = "0xfafbfcfd1201456875dd";
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         "0xcafecafecafecafecafecafecafecafecafecafe",
         0,
         randomPayload,
       ]);
 
-      let callResult = await keyManager.connect(user).callStatic.execute(executePayload);
+      let callResult = await proxyKeyManager.connect(user).callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
     });
   });
@@ -768,17 +491,17 @@ describe("KeyManager", () => {
       let newName = "Updated Name";
 
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
         targetContractPayload,
       ]);
 
-      let callResult = await keyManager.callStatic.execute(executePayload);
+      let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.execute(executePayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.execute(executePayload, { gasLimit: 3_000_000 });
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
       expect(result).toEqual(newName, `name variable in TargetContract should now be ${newName}`);
@@ -789,17 +512,17 @@ describe("KeyManager", () => {
       let newName = "Updated Name";
 
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
         targetContractPayload,
       ]);
 
-      let callResult = await keyManager.callStatic.execute(executePayload);
+      let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.execute(executePayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.execute(executePayload, { gasLimit: 3_000_000 });
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
       expect(result).toEqual(newName);
@@ -812,17 +535,17 @@ describe("KeyManager", () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [
         newNumber,
       ]);
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
         targetContractPayload,
       ]);
 
-      let callResult = await keyManager.callStatic.execute(executePayload);
+      let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.execute(executePayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.execute(executePayload, { gasLimit: 3_000_000 });
       let result = await targetContract.callStatic.getNumber();
       expect(
         parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
@@ -838,14 +561,14 @@ describe("KeyManager", () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [
         newNumber,
       ]);
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
         targetContractPayload,
       ]);
 
-      await expect(keyManager.connect(app.address).execute(executePayload)).toBeRevertedWith(
+      await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorised to run this function"
       );
 
@@ -859,20 +582,20 @@ describe("KeyManager", () => {
 
   describe("> testing other revert causes", () => {
     it("Should revert because of wrong operation type", async () => {
-      let payload = erc725Account.interface.encodeFunctionData("execute", [
+      let payload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         5648941657,
         targetContract.address,
         0,
         "0x",
       ]);
 
-      await expect(keyManager.execute(payload)).toBeRevertedWith(
+      await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Invalid operation type"
       );
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
-      await expect(keyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
+      await expect(proxyKeyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
         "KeyManager:_checkPermissions: unknown function selector from ERC725 account"
       );
     });
@@ -906,9 +629,9 @@ describe("KeyManager", () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
         "Another name",
       ]);
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
-      let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
@@ -917,13 +640,13 @@ describe("KeyManager", () => {
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
-        [keyManager.address, nonce, executeRelayCallPayload]
+        [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-      let result = await keyManager.callStatic.executeRelayCall(
-        keyManager.address,
+      let result = await proxyKeyManager.callStatic.executeRelayCall(
+        proxyKeyManager.address,
         nonce,
         executeRelayCallPayload,
         signature
@@ -935,9 +658,9 @@ describe("KeyManager", () => {
       let newName = "Dagobah";
 
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
-      let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
@@ -946,25 +669,24 @@ describe("KeyManager", () => {
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
-        [keyManager.address, nonce, executeRelayCallPayload]
+        [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-      let result = await keyManager.callStatic.executeRelayCall(
-        keyManager.address,
+      let result = await proxyKeyManager.callStatic.executeRelayCall(
+        proxyKeyManager.address,
         nonce,
         executeRelayCallPayload,
         signature
       );
       expect(result).toBeTruthy();
 
-      await keyManager.executeRelayCall(
-        keyManager.address,
+      await proxyKeyManager.executeRelayCall(
+        proxyKeyManager.address,
         nonce,
         executeRelayCallPayload,
-        signature,
-        { gasLimit: 3_000_000 }
+        signature
       );
       let endResult = await targetContract.callStatic.getName();
       expect(endResult).toEqual(newName);
@@ -973,10 +695,10 @@ describe("KeyManager", () => {
     it("Should not allow to `setNumber` via `executeRelay`", async () => {
       let currentNumber = await targetContract.callStatic.getNumber();
 
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
       let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [2354]);
+      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
-      let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
@@ -985,13 +707,18 @@ describe("KeyManager", () => {
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
-        [keyManager.address, nonce, executeRelayCallPayload]
+        [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
       let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
       await expect(
-        keyManager.executeRelayCall(keyManager.address, nonce, executeRelayCallPayload, signature)
+        proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
+          nonce,
+          executeRelayCallPayload,
+          signature
+        )
       ).toBeRevertedWith("KeyManager:_checkPermissions: Not authorised to run this function");
 
       let endResult = await targetContract.callStatic.getNumber();
@@ -1004,7 +731,7 @@ describe("KeyManager", () => {
     let latestNonce;
 
     beforeEach(async () => {
-      latestNonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+      latestNonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
     });
 
     it.each([
@@ -1018,7 +745,7 @@ describe("KeyManager", () => {
         let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
           newName,
         ]);
-        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           targetContract.address,
           0,
@@ -1027,21 +754,20 @@ describe("KeyManager", () => {
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
-          [keyManager.address, latestNonce, executeRelayCallPayload]
+          [proxyKeyManager.address, latestNonce, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-        await keyManager.executeRelayCall(
-          keyManager.address,
+        await proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
           latestNonce,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, 0);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, 0);
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(latestNonce.add(1)); // ensure the nonce incremented
@@ -1057,13 +783,13 @@ describe("KeyManager", () => {
       let names = ["Fabian", "Yamen"];
 
       it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
           newName,
         ]);
-        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           targetContract.address,
           0,
@@ -1072,34 +798,33 @@ describe("KeyManager", () => {
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
-          [keyManager.address, nonceBefore, executeRelayCallPayload]
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-        await keyManager.executeRelayCall(
-          keyManager.address,
+        await proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
           newName,
         ]);
-        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           targetContract.address,
           0,
@@ -1108,21 +833,20 @@ describe("KeyManager", () => {
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
-          [keyManager.address, nonceBefore, executeRelayCallPayload]
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-        await keyManager.executeRelayCall(
-          keyManager.address,
+        await proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1134,13 +858,13 @@ describe("KeyManager", () => {
       let names = ["Hugo", "Reto"];
 
       it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
           newName,
         ]);
-        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           targetContract.address,
           0,
@@ -1149,34 +873,33 @@ describe("KeyManager", () => {
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
-          [keyManager.address, nonceBefore, executeRelayCallPayload]
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-        await keyManager.executeRelayCall(
-          keyManager.address,
+        await proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
           newName,
         ]);
-        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           targetContract.address,
           0,
@@ -1185,21 +908,20 @@ describe("KeyManager", () => {
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
-          [keyManager.address, nonceBefore, executeRelayCallPayload]
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-        await keyManager.executeRelayCall(
-          keyManager.address,
+        await proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1211,13 +933,13 @@ describe("KeyManager", () => {
       let names = ["Jean", "Lenny"];
 
       it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
         let newName = names[0];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
           newName,
         ]);
-        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           targetContract.address,
           0,
@@ -1226,34 +948,33 @@ describe("KeyManager", () => {
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
-          [keyManager.address, nonceBefore, executeRelayCallPayload]
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-        await keyManager.executeRelayCall(
-          keyManager.address,
+        await proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
         let newName = names[1];
 
         let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
           newName,
         ]);
-        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           targetContract.address,
           0,
@@ -1262,21 +983,20 @@ describe("KeyManager", () => {
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
-          [keyManager.address, nonceBefore, executeRelayCallPayload]
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-        await keyManager.executeRelayCall(
-          keyManager.address,
+        await proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1286,13 +1006,13 @@ describe("KeyManager", () => {
     describe("channel 15", () => {
       let channelId = 15;
       it("First call > nonce should increment from 0 to 1", async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
         let newName = "Lukasz";
 
         let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
           newName,
         ]);
-        let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+        let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           targetContract.address,
           0,
@@ -1301,21 +1021,20 @@ describe("KeyManager", () => {
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
-          [keyManager.address, nonceBefore, executeRelayCallPayload]
+          [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
         let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
 
-        await keyManager.executeRelayCall(
-          keyManager.address,
+        await proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1332,14 +1051,14 @@ describe("KeyManager", () => {
         "New Contract Name",
       ]);
 
-      let executePayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executePayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
         targetContractPayload,
       ]);
 
-      await expect(keyManager.connect(accounts[6]).execute(executePayload)).toBeRevertedWith(
+      await expect(proxyKeyManager.connect(accounts[6]).execute(executePayload)).toBeRevertedWith(
         "KeyManager:_getUserPermissions: no permissions set for this user / caller"
       );
     });
@@ -1347,26 +1066,28 @@ describe("KeyManager", () => {
     it("Permissions should prevent ReEntrancy and stop contract from re-calling and re-transfering ETH.", async () => {
       // we assume the owner is not aware that some malicious code is present at the recipient address (the recipient being a smart contract)
       // the owner simply aims to transfer 1 ether from his ERC725 Account to the recipient address (= the malicious contract)
-      let transferPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let transferPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         maliciousContract.address,
         ONE_ETH,
         EMPTY_PAYLOAD,
       ]);
 
-      let executePayload = keyManager.interface.encodeFunctionData("execute", [transferPayload]);
+      let executePayload = proxyKeyManager.interface.encodeFunctionData("execute", [
+        transferPayload,
+      ]);
       // load the malicious payload, that will be executed in the fallback function (every time the contract receives ethers)
       await maliciousContract.loadPayload(executePayload);
 
-      let initialAccountBalance = await provider.getBalance(erc725Account.address);
+      let initialAccountBalance = await provider.getBalance(proxyLsp3Account.address);
       let initialAttackerBalance = await provider.getBalance(maliciousContract.address);
       // console.log("ERC725's initial account balance: ", initialAccountBalance)
       // console.log("Attacker's initial balance: ", initialAttackerBalance)
 
       // try to drain funds via ReEntrancy
-      await keyManager.connect(owner).execute(transferPayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.connect(owner).execute(transferPayload, { gasLimit: 3_000_000 });
 
-      let newAccountBalance = await provider.getBalance(erc725Account.address);
+      let newAccountBalance = await provider.getBalance(proxyLsp3Account.address);
       let newAttackerBalance = await provider.getBalance(maliciousContract.address);
       // console.log("ERC725 account balance: ", newAccountBalance)
       // console.log("Attacker balance: ", newAttackerBalance)
@@ -1378,9 +1099,9 @@ describe("KeyManager", () => {
     });
 
     it("Replay Attack should fail because of invalid nonce", async () => {
-      let nonce = await keyManager.callStatic.getNonce(newUser.address, channelId);
+      let nonce = await proxyKeyManager.callStatic.getNonce(newUser.address, channelId);
 
-      let executeRelayCallPayload = erc725Account.interface.encodeFunctionData("execute", [
+      let executeRelayCallPayload = proxyLsp3Account.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         maliciousContract.address,
         ONE_ETH,
@@ -1389,22 +1110,22 @@ describe("KeyManager", () => {
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
-        [keyManager.address, nonce, executeRelayCallPayload]
+        [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
       let signature = await newUser.signMessage(ethers.utils.arrayify(hash));
 
       // first call
-      let result = await keyManager.callStatic.executeRelayCall(
-        keyManager.address,
+      let result = await proxyKeyManager.callStatic.executeRelayCall(
+        proxyKeyManager.address,
         nonce,
         executeRelayCallPayload,
         signature
       );
       expect(result).toBeTruthy();
 
-      await keyManager.executeRelayCall(
-        keyManager.address,
+      await proxyKeyManager.executeRelayCall(
+        proxyKeyManager.address,
         nonce,
         executeRelayCallPayload,
         signature
@@ -1412,7 +1133,12 @@ describe("KeyManager", () => {
 
       // 2nd call = replay attack
       await expect(
-        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature)
+        proxyKeyManager.executeRelayCall(
+          proxyKeyManager.address,
+          nonce,
+          executeRelayCallPayload,
+          signature
+        )
       ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");
     });
   });
