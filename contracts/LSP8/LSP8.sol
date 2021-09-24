@@ -33,6 +33,40 @@ contract LSP8 is ERC725Y, LSP8Core {
     }
 
     //
+    // --- Metadata functionality
+    //
+
+    /**
+     * @dev Create a ERC725Y contract to be used for metadata storage of `tokenId`.
+     */
+    function _createMetadataFor(bytes32 tokenId)
+        internal
+        virtual
+        returns (address)
+    {
+        require(
+            _exists(tokenId),
+            "LSP8: metadata creation for nonexistent token"
+        );
+
+        bytes32 metadataKeyForTokenId = _buildMetadataKey(tokenId);
+
+        bytes memory existingMetadataValue = ERC725Utils.getDataSingle(this, metadataKeyForTokenId);
+        address existingMetadataAddress = abi.decode(existingMetadataValue, (address));
+        if (existingMetadataAddress != address(0)) {
+            return existingMetadataAddress;
+        }
+
+        // TODO: can use a proxy pattern here
+        address metadataAddress = address(new ERC725Y(_msgSender()));
+
+        bytes memory metadataAddressBytes = abi.encodePacked(metadataAddress);
+        setDataFromMemory(metadataKeyForTokenId, metadataAddressBytes);
+
+        return metadataAddress;
+    }
+
+    //
     // --- Overrides
     //
 
@@ -40,25 +74,9 @@ contract LSP8 is ERC725Y, LSP8Core {
         public
         view
         virtual
-        override(ERC165Storage, LSP8Core)
+        override(ERC165Storage, IERC165)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
-
-    function setData(bytes32 _key, bytes calldata _value)
-        public
-        virtual
-        override(ERC725YCore, ERC725Y)
-     {
-        super.setData(_key, _value);
-    }
-
-    function setDataFromMemory(bytes32 _key, bytes memory _value)
-        public
-        virtual
-        override(ERC725YCore, ERC725Y)
-     {
-        super.setDataFromMemory(_key, _value);
     }
 }
