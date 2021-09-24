@@ -56,17 +56,11 @@ describe("LSP8", () => {
 
       await expect(lsp8.deployTransaction).toHaveEmittedWith(lsp8, "DataChanged", [
         nameKey,
-        ethers.utils.defaultAbiCoder.encode(
-          ["bytes"],
-          [ethers.utils.toUtf8Bytes(deployParams.name)]
-        ),
+        ethers.utils.hexlify(ethers.utils.toUtf8Bytes(deployParams.name)),
       ]);
       await expect(lsp8.deployTransaction).toHaveEmittedWith(lsp8, "DataChanged", [
         symbolKey,
-        ethers.utils.defaultAbiCoder.encode(
-          ["bytes"],
-          [ethers.utils.toUtf8Bytes(deployParams.symbol)]
-        ),
+        ethers.utils.hexlify(ethers.utils.toUtf8Bytes(deployParams.symbol)),
       ]);
     });
   });

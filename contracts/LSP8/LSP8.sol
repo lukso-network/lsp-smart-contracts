@@ -28,8 +28,8 @@ contract LSP8 is ERC725Y, LSP8Core {
         // values.push(bytes(symbol_));
         //
         // setDataFromMemory(keys, values);
-        setDataFromMemory(_LSP4_METADATA_TOKEN_NAME_KEY, abi.encode(name_));
-        setDataFromMemory(_LSP4_METADATA_TOKEN_SYMBOL_KEY, abi.encode(symbol_));
+        setDataFromMemory(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name_));
+        setDataFromMemory(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol_));
     }
 
     //
