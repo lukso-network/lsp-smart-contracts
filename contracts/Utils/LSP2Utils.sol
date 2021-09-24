@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
  * @title ERC725 Utility library to encode key types
  * @author Jean Cavallera (CJ-42)
  * @dev based on LSP2 - ERC725Y JSON Schema
- *      https://github.com/lukso-network/LIPs/blob/master/LSPs/LSP-2-ERC725YJSONSchema.md#array
+ *      https://github.com/lukso-network/LIPs/blob/master/LSPs/LSP-2-ERC725YJSONSchema.md
  */
 library LSP2Utils {
 
