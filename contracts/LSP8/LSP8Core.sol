@@ -4,6 +4,9 @@ pragma solidity ^0.8.0;
 // constants
 import "../LSP4/LSP4Constants.sol";
 
+// libraries
+import "../Utils/ERC725Utils.sol";
+
 // interfaces
 import "../_LSPs/ILSP1_UniversalReceiver.sol";
 import "./ILSP8.sol";
@@ -14,7 +17,6 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725YCore.sol";
 
 // library
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -22,7 +24,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 /**
  * @dev Implementation of a LSP8 compliant contract.
  */
-abstract contract LSP8Core is Context, ERC725YCore, ILSP8 {
+abstract contract LSP8Core is Context, ILSP8 {
     // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -164,40 +166,6 @@ abstract contract LSP8Core is Context, ERC725YCore, ILSP8 {
         );
 
         return _ownedTokens[tokenOwner].values();
-    }
-
-    //
-    // --- Metadata functionality
-    //
-
-    /**
-     * @dev Create a ERC725Y contract to be used for metadata storage of `tokenId`.
-     */
-    function _createMetadataFor(bytes32 tokenId)
-        internal
-        virtual
-        returns (address)
-    {
-        require(
-            _exists(tokenId),
-            "LSP8: metadata creation for nonexistent token"
-        );
-
-        bytes32 metadataKeyForTokenId = _buildMetadataKey(tokenId);
-
-        bytes memory existingMetadataValue = getData(metadataKeyForTokenId);
-        address existingMetadataAddress = abi.decode(existingMetadataValue, (address));
-        if (existingMetadataAddress != address(0)) {
-            return existingMetadataAddress;
-        }
-
-        // TODO: can use a proxy pattern here
-        address metadataAddress = address(new ERC725Y(_msgSender()));
-
-        bytes memory metadataAddressBytes = abi.encodePacked(metadataAddress);
-        setDataFromMemory(metadataKeyForTokenId, metadataAddressBytes);
-
-        return metadataAddress;
     }
 
     function _buildMetadataKey(bytes32 tokenId)
@@ -640,21 +608,5 @@ abstract contract LSP8Core is Context, ERC725YCore, ILSP8 {
                 revert('LSP8: token receiver contract missing LSP1 interface');
             }
         }
-    }
-
-    //
-    // --- ERC165 functionality
-    //
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC165Storage, IERC165)
-        returns (bool)
-    {
-        return
-            interfaceId == type(ILSP8).interfaceId ||
-            super.supportsInterface(interfaceId);
     }
 }

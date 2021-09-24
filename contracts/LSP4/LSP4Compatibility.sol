@@ -4,6 +4,9 @@ pragma solidity ^0.8.0;
 // constants
 import "./LSP4Constants.sol";
 
+// libraries
+import "../Utils/ERC725Utils.sol";
+
 // interfaces
 import "./ILSP4Compatibility.sol";
 
@@ -28,9 +31,7 @@ abstract contract LSP4Compatibility is ERC725Y, ILSP4Compatibility {
         view
         returns(string memory)
     {
-        // TODO: when ERC725Y has been updated
-        // bytes memory data = _getData(_LSP4_METADATA_TOKEN_NAME_KEY);
-        bytes memory data = getData(_LSP4_METADATA_TOKEN_NAME_KEY);
+        bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_TOKEN_NAME_KEY);
         return string(data);
     }
 
@@ -44,9 +45,7 @@ abstract contract LSP4Compatibility is ERC725Y, ILSP4Compatibility {
         view
         returns(string memory)
     {
-        // TODO: when ERC725Y has been updated
-        // bytes memory data = _getData(_LSP4_METADATA_TOKEN_SYMBOL_KEY);
-        bytes memory data = getData(_LSP4_METADATA_TOKEN_SYMBOL_KEY);
+        bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_TOKEN_SYMBOL_KEY);
         return string(data);
     }
 }
