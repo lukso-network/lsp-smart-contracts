@@ -25,7 +25,13 @@ abstract contract LSP8CappedSupplyCore is ILSP8CappedSupply, LSP8Core {
     /**
      * @dev Returns the number of tokens that have been minted.
      */
-    function tokenSupplyCap() public view virtual override returns (uint256) {
+    function tokenSupplyCap()
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _tokenSupplyCap;
     }
 
@@ -49,7 +55,11 @@ abstract contract LSP8CappedSupplyCore is ILSP8CappedSupply, LSP8Core {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) internal virtual override {
+    )
+        internal
+        virtual
+        override
+    {
         require(tokenSupplyCap() - totalSupply() > 0, "LSP8CappedSupply: tokenSupplyCap reached");
         super._mint(to, tokenId, force, data);
     }

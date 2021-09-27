@@ -17,7 +17,11 @@ contract LSP8Init is Initializable, ERC725YInit, LSP8Core {
         string memory name_,
         string memory symbol_,
         address newOwner_
-    )  public virtual initializer {
+    )
+        public
+        virtual
+        initializer
+    {
         ERC725YInit.initialize(newOwner_);
 
         // TODO: when ERC725Y has been updated
