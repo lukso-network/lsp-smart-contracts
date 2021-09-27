@@ -289,8 +289,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
 
     it("dataCount should be 8", async () => {
       // 8 because the ERC725Type is already set by the ERC725Account implementation
-      let result = await proxy.dataCount();
-      expect(result.toNumber()).toEqual(8);
+      let result = await proxy.allDataKeys();
+      expect(result.length).toEqual(8);
     });
 
     it("Update 32 bytes item 7", async () => {
@@ -305,8 +305,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     });
 
     it("dataCount should remain 8 (after updating item 7)", async () => {
-      let result = await proxy.callStatic.dataCount();
-      expect(result.toNumber()).toEqual(8);
+      let result = await proxy.callStatic.allDataKeys();
+      expect(result.length).toEqual(8);
     });
 
     it("Store multiple 32 bytes item 9-11", async () => {
@@ -330,9 +330,6 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     });
 
     it("dataCount should be 11", async () => {
-      let count = await proxy.callStatic.dataCount();
-      expect(count.toNumber()).toEqual(11);
-
       let keys = await proxy.allDataKeys();
       expect(keys.length).toEqual(11);
 

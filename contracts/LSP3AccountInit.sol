@@ -40,10 +40,6 @@ contract LSP3AccountInit is ERC165Storage, ERC725AccountInit, ILSP1 {
 
     /* non-standard public functions */
 
-    function dataCount() public view returns (uint256) {
-        return dataKeys.length;
-    }
-
     function allDataKeys() public view returns (bytes32[] memory) {
         return dataKeys;
     }
