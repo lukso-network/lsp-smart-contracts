@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 // constants
 import "../LSP1/LSP1Constants.sol";
 import "../LSP4/LSP4Constants.sol";
-import "./LSP8Constants.sol";
 
 // libraries
 import "../Utils/ERC725Utils.sol";
@@ -550,7 +549,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1(from).universalReceiver(
-                _LSP8_TOKENS_SENDER_INTERFACE_HASH,
+                _LSP4_NOTIFY_TOKENS_SENDER_TYPE_ID,
                 packedData
             );
         }
@@ -578,7 +577,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1(to).universalReceiver(
-                _LSP8_TOKENS_RECIPIENT_INTERFACE_HASH,
+                _LSP4_NOTIFY_TOKENS_RECIPIENT_TYPE_ID,
                 packedData
             );
         } else if (!force) {
