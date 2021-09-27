@@ -19,7 +19,7 @@
     "generate-types": "run-p generate-types:*",
     "generate-types:web3": "typechain --target=web3-v1 'build/contracts/*.json'",
     "generate-types:ethers": "typechain --target=ethers-v5 'build/contracts/*.json'",
-    "remixd": "remixd -s ."
+    "remixd": "remixd -s . --remix-ide"
   },
   "repository": {
     "type": "git",
@@ -46,6 +46,8 @@
     "@typechain/web3-v1": "^3.1.0",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.4",
+    "axios": "^0.21.4",
+    "curl-to-node": "^0.1.0",
     "esbuild": "^0.12.24",
     "esbuild-jest": "^0.5.0",
     "eth-create2-calculator": "^1.1.5",
