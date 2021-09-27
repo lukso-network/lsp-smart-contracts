@@ -2,9 +2,11 @@
 
 pragma solidity ^0.8.0;
 
+// modules
 import '../LSP8/extensions/LSP8CompatibilityForERC721.sol';
+import '../LSP8/LSP8.sol';
 
-contract LSP8CompatibilityForERC721Tester is LSP8CompatibilityForERC721 {
+contract LSP8CompatibilityForERC721Tester is LSP8, LSP8CompatibilityForERC721 {
     constructor(
       string memory name,
       string memory symbol
