@@ -225,8 +225,8 @@ describe("LSP3Account", () => {
 
     it("dataCount should be 7", async () => {
       // 7 because the ERC725Type ios already set by the ERC725Account implementation
-      let result = await lsp3Account.callStatic.dataCount();
-      expect(result.toNumber()).toEqual(7);
+      let result = await lsp3Account.callStatic.allDataKeys();
+      expect(result.length).toEqual(7);
     });
 
     it("Update 32 bytes item 6", async () => {
@@ -242,10 +242,10 @@ describe("LSP3Account", () => {
       expect(result).toEqual(value);
     });
 
-    it("dataCount should be 7", async () => {
+    it("dataCount should remain 7", async () => {
       // 7 because the ERC725Type ios already set by the ERC725Account implementation
-      let result = await lsp3Account.callStatic.dataCount();
-      expect(ethers.BigNumber.from(result).toNumber()).toEqual(7);
+      let result = await lsp3Account.callStatic.allDataKeys();
+      expect(result.length).toEqual(7);
     });
 
     it("Store multiple 32 bytes item 8-10", async () => {
@@ -272,8 +272,6 @@ describe("LSP3Account", () => {
 
     it("dataCount should be 10", async () => {
       // 7 because the ERC725Type ios already set by the ERC725Account implementation
-      expect(await lsp3Account.dataCount()).toEqBN(10);
-
       let keys = await lsp3Account.allDataKeys();
       expect(keys.length).toEqual(10);
 
