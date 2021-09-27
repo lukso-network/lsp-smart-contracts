@@ -5,4 +5,6 @@ export const INTERFACE_IDS = {
   ERC1271: "0x1626ba7e",
   LSP1: "0x6bb56a14",
   LSP6: "0x6f4df48b",
+  ERC725Account: "0x63cb749b",
+  LSP0: "",
 };
