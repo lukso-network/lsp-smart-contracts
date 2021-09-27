@@ -13,7 +13,7 @@ import "../LSP8Init.sol";
  */
 abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, ILSP8CappedSupply {
     //
-    // --- Storage: Fixed
+    // --- Storage
     //
 
     uint256 private _tokenSupplyCap;

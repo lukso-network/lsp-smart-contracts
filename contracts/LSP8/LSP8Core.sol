@@ -2,7 +2,9 @@
 pragma solidity ^0.8.0;
 
 // constants
+import "../LSP1/LSP1Constants.sol";
 import "../LSP4/LSP4Constants.sol";
+import "./LSP8Constants.sol";
 
 // libraries
 import "../Utils/ERC725Utils.sol";
@@ -31,34 +33,10 @@ abstract contract LSP8Core is Context, ILSP8 {
     using Address for address;
 
     //
-    // --- Storage: Fixed
+    // --- Storage
     //
-
-    // TODO: we should change this to something unique like `keccak256("ERC721TokensRecipient")`.
-    //
-    // We are including this so we can use the existing `UniversalReceiverAddressStore` which only
-    // works with `ERC777UniversalReceiver`.. so we spoof it
-    //
-    // keccak256("ERC777TokensRecipient")
-    bytes32 internal constant _TOKENS_RECIPIENT_INTERFACE_HASH =
-        0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b;
-
-    // TODO: we should change this to something unique like `keccak256("ERC721TokensSender")`.
-    //
-    // We are including this as a placeholder until `UniversalReceiverAddressStore` can handle more
-    // than one hardcoded `typeId`.
-    //
-    // keccak256("ERC777TokensRecipient")
-    bytes32 internal constant _TOKENS_SENDER_INTERFACE_HASH =
-        0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895; // keccak256("ERC777TokensSender")
-
-    bytes4 private constant _INTERFACE_ID_LSP1 = 0x6bb56a14;
 
     uint256 private _mintedTokens;
-
-    //
-    // --- Storage: Dynamic
-    //
 
     // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
     EnumerableSet.AddressSet private _tokenHolders;
@@ -567,11 +545,11 @@ abstract contract LSP8Core is Context, ILSP8 {
     {
         if (
             ERC165Checker.supportsERC165(from) &&
-            ERC165Checker.supportsInterface(from, _INTERFACE_ID_LSP1)
+            ERC165Checker.supportsInterface(from, _LSP1_INTERFACE_ID)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1(from).universalReceiver(
-                _TOKENS_SENDER_INTERFACE_HASH,
+                _LSP8_TOKENS_SENDER_INTERFACE_HASH,
                 packedData
             );
         }
@@ -594,11 +572,11 @@ abstract contract LSP8Core is Context, ILSP8 {
     {
         if (
             ERC165Checker.supportsERC165(to) &&
-            ERC165Checker.supportsInterface(to, _INTERFACE_ID_LSP1)
+            ERC165Checker.supportsInterface(to, _LSP1_INTERFACE_ID)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1(to).universalReceiver(
-                _TOKENS_RECIPIENT_INTERFACE_HASH,
+                _LSP8_TOKENS_RECIPIENT_INTERFACE_HASH,
                 packedData
             );
         } else if (!force) {
