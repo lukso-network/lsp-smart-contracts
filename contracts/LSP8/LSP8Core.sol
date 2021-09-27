@@ -13,7 +13,6 @@ import "../_LSPs/ILSP1_UniversalReceiver.sol";
 import "./ILSP8.sol";
 
 // modules
-// TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
@@ -26,7 +25,6 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
  * @dev Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8Core is Context, ILSP8 {
-    // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Address for address;
@@ -36,9 +34,6 @@ abstract contract LSP8Core is Context, ILSP8 {
     //
 
     uint256 internal _mintedTokens;
-
-    // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
-    EnumerableSet.AddressSet internal _tokenHolders;
 
     // Mapping from `tokenId` to `tokenOwner`
     mapping(bytes32 => address) internal _tokenOwners;
@@ -69,19 +64,6 @@ abstract contract LSP8Core is Context, ILSP8 {
         returns (uint256)
     {
         return _mintedTokens;
-    }
-
-    /**
-     * @dev Returns a bytes32 array of all token holder addresses
-     */
-    function allTokenHolders()
-        public
-        view
-        returns (bytes32[] memory)
-    {
-        // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
-        // as its marked in implementation with "TODO remove in main chain makes transfers to expensive"
-        return _tokenHolders._inner._values;
     }
 
     //
@@ -402,9 +384,6 @@ abstract contract LSP8Core is Context, ILSP8 {
 
         _notifyTokenReceiver(address(0), to, tokenId, force, data);
 
-        // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
-        _tokenHolders.add(to);
-
         emit Transfer(operator, address(0), to, tokenId, data);
     }
 
@@ -434,11 +413,6 @@ abstract contract LSP8Core is Context, ILSP8 {
 
         _ownedTokens[tokenOwner].remove(tokenId);
         delete _tokenOwners[tokenId];
-
-        // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
-        if (balanceOf(tokenOwner) == 0) {
-            _tokenHolders.remove(tokenOwner);
-        }
 
         emit Transfer(operator, tokenOwner, address(0), tokenId, data);
     }
@@ -483,12 +457,6 @@ abstract contract LSP8Core is Context, ILSP8 {
         _tokenOwners[tokenId] = to;
 
         _notifyTokenReceiver(from, to, tokenId, force, data);
-
-        // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
-        _tokenHolders.add(to);
-        if (balanceOf(from) == 0) {
-            _tokenHolders.remove(from);
-        }
 
         emit Transfer(operator, from, to, tokenId, data);
     }
