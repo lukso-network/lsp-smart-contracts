@@ -1,6 +1,8 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { LSP4CompatibilityTester, LSP4CompatibilityTester__factory } from "../build/types";
+import { deployERC725Utils } from "./utils/deploy";
+
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("LSP4Compatibility", () => {
   type TestAccounts = {
@@ -18,10 +20,11 @@ describe("LSP4Compatibility", () => {
     const [owner] = await ethers.getSigners();
     accounts = { owner };
 
-    lsp4Compatibility = await new LSP4CompatibilityTester__factory(owner).deploy(
-      deployParams.name,
-      deployParams.symbol
-    );
+    const erc725Utils = await deployERC725Utils(owner);
+    lsp4Compatibility = await new LSP4CompatibilityTester__factory(
+      { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
+      owner
+    ).deploy(deployParams.name, deployParams.symbol);
   });
 
   it("should allow reading name", async () => {
@@ -30,9 +33,10 @@ describe("LSP4Compatibility", () => {
     expect(nameAsString).toEqual(deployParams.name);
 
     // using getData -> returns(bytes)
-    const nameAsBytes = await lsp4Compatibility.getData(
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName"))
-    );
+    const data = await lsp4Compatibility.getData([
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")),
+    ]);
+    const nameAsBytes = data[0];
     expect(ethers.utils.toUtf8String(nameAsBytes)).toEqual(deployParams.name);
   });
 
@@ -42,9 +46,10 @@ describe("LSP4Compatibility", () => {
     expect(symbolAsString).toEqual(deployParams.symbol);
 
     // using getData -> returns(bytes)
-    const symbolAsBytes = await lsp4Compatibility.getData(
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol"))
-    );
+    const data = await lsp4Compatibility.getData([
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")),
+    ]);
+    const symbolAsBytes = data[0];
     expect(ethers.utils.toUtf8String(symbolAsBytes)).toEqual(deployParams.symbol);
   });
 });
