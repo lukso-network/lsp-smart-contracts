@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.0;
 
+// modules
 import '../LSP8/extensions/LSP8CappedSupply.sol';
 
 contract LSP8CappedSupplyTester is LSP8CappedSupply {

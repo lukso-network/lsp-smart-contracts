@@ -2,22 +2,14 @@
 
 pragma solidity ^0.8.0;
 
-// interfaces
-import "./ILSP8CappedSupply.sol";
-
 // modules
+import "./LSP8CappedSupplyCore.sol";
 import "../LSP8Init.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, ILSP8CappedSupply {
-    //
-    // --- Storage
-    //
-
-    uint256 private _tokenSupplyCap;
-
+abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, LSP8CappedSupplyCore {
     //
     // --- Initialize
     //
@@ -28,25 +20,7 @@ abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, ILSP8CappedSu
     }
 
     //
-    // --- Token queries
-    //
-
-    /**
-     * @dev Returns the number of tokens that have been minted.
-     */
-    function tokenSupplyCap() public view virtual override returns (uint256) {
-        return _tokenSupplyCap;
-    }
-
-    /**
-     * @dev Returns the number of tokens available to be minted.
-     */
-    function mintableSupply() public view virtual override returns (uint256) {
-        return tokenSupplyCap() - totalSupply();
-    }
-
-    //
-    // --- Transfer functionality
+    // --- Overrides
     //
 
     /**
@@ -54,7 +28,7 @@ abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, ILSP8CappedSu
      *
      * Requirements:
      *
-     * - `mintableSupply()` must be greater than zero.
+     * - `tokenSupplyCap() - totalSupply()` must be greater than zero.
      * - `tokenId` must not exist.
      * - `to` cannot be the zero address.
      *
@@ -65,8 +39,27 @@ abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, ILSP8CappedSu
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) internal virtual override {
-        require(mintableSupply() > 0, "LSP8CappedSupply: mintableSupply is zero");
+    ) internal virtual override(LSP8Core, LSP8CappedSupplyCore) {
         super._mint(to, tokenId, force, data);
+    }
+
+    function _msgData()
+        internal
+        view
+        virtual
+        override(Context, LSP8Init)
+        returns (bytes calldata)
+    {
+        return super._msgData();
+    }
+
+    function _msgSender()
+        internal
+        view
+        virtual
+        override(Context, LSP8Init)
+        returns (address)
+    {
+        return super._msgSender();
     }
 }

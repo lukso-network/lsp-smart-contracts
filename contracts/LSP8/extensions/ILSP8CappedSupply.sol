@@ -13,9 +13,4 @@ interface ILSP8CappedSupply is ILSP8 {
    * @dev Returns the number of tokens that have been minted.
    */
   function tokenSupplyCap() external view returns (uint256);
-
-  /**
-   * @dev Returns the number of tokens available to be minted.
-   */
-  function mintableSupply() external view returns (uint256);
 }

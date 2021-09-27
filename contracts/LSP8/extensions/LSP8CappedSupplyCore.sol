@@ -2,25 +2,35 @@
 
 pragma solidity ^0.8.0;
 
+// interfaces
+import "./ILSP8CappedSupply.sol";
+
 // modules
-import "./LSP8CappedSupplyCore.sol";
-import "../LSP8.sol";
+import "../LSP8Core.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupply is LSP8, LSP8CappedSupplyCore {
+abstract contract LSP8CappedSupplyCore is ILSP8CappedSupply, LSP8Core {
     //
-    // --- Initialize
+    // --- Storage
     //
 
-    constructor(uint256 tokenSupplyCap_) {
-      require(tokenSupplyCap_ > 0, "LSP8CappedSupply: tokenSupplyCap is zero");
-      _tokenSupplyCap = tokenSupplyCap_;
+    uint256 internal _tokenSupplyCap;
+
+    //
+    // --- Token queries
+    //
+
+    /**
+     * @dev Returns the number of tokens that have been minted.
+     */
+    function tokenSupplyCap() public view virtual override returns (uint256) {
+        return _tokenSupplyCap;
     }
 
     //
-    // --- Overrides
+    // --- Transfer functionality
     //
 
     /**
@@ -39,7 +49,8 @@ abstract contract LSP8CappedSupply is LSP8, LSP8CappedSupplyCore {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) internal virtual override(LSP8Core, LSP8CappedSupplyCore) {
+    ) internal virtual override {
+        require(tokenSupplyCap() - totalSupply() > 0, "LSP8CappedSupply: tokenSupplyCap reached");
         super._mint(to, tokenId, force, data);
     }
 }

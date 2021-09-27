@@ -12,7 +12,7 @@ import "../LSP8.sol";
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC20/721.
  */
-abstract contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP8 {
+abstract contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP8Core {
   using EnumerableSet for EnumerableSet.AddressSet;
 
   /*
