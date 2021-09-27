@@ -1,9 +1,9 @@
-import { ethers } from "hardhat";
 import { Contract, ContractTransaction } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
   ERC725Utils,
+  ERC725Utils__factory,
   KeyManager__factory,
   LSP3Account,
   LSP3Account__factory,
@@ -24,6 +24,10 @@ export async function getDeploymentCost(contractOrTransaction: Contract | Contra
     receipt,
     gasUsed,
   };
+}
+
+export async function deployERC725Utils(owner: SignerWithAddress) {
+  return await new ERC725Utils__factory(owner).deploy();
 }
 
 export async function deployLSP3Account(erc725Utils: ERC725Utils, owner: SignerWithAddress) {
