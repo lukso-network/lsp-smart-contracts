@@ -50,14 +50,22 @@ describe("LSP8", () => {
   });
 
   describe("when deployed", () => {
-    it("should have set name and symbol with ERC725Y.setData", async () => {
-      const nameKey = "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
-      const symbolKey = "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
+    it("should have set expected entries with ERC725Y.setData", async () => {
+      const lsp8SupportedStandardsKey =
+        "0xeafec4d89fa9619884b6b89135626455000000000000000000000000d9bfeb57";
+      const lsp8SupportedStandardsValue = "0xd9bfeb57";
+      await expect(lsp8.deployTransaction).toHaveEmittedWith(lsp8, "DataChanged", [
+        lsp8SupportedStandardsKey,
+        lsp8SupportedStandardsValue,
+      ]);
 
+      const nameKey = "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
       await expect(lsp8.deployTransaction).toHaveEmittedWith(lsp8, "DataChanged", [
         nameKey,
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes(deployParams.name)),
       ]);
+
+      const symbolKey = "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
       await expect(lsp8.deployTransaction).toHaveEmittedWith(lsp8, "DataChanged", [
         symbolKey,
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes(deployParams.symbol)),
@@ -479,7 +487,7 @@ describe("LSP8", () => {
 
                 const tx = await transferSuccessScenario(txParams, operator);
 
-                const typeId = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+                const typeId = "0x709ce9002dd788b112f726e7b11ccffd8afa9c1339adf2c86a8089be7f81c507";
                 const packedData = ethers.utils.solidityPack(
                   ["address", "address", "bytes32", "bytes"],
                   [txParams.from, txParams.to, txParams.tokenId, txParams.data]
@@ -545,7 +553,7 @@ describe("LSP8", () => {
 
                 const tx = await transferSuccessScenario(txParams, operator);
 
-                const typeId = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+                const typeId = "0x709ce9002dd788b112f726e7b11ccffd8afa9c1339adf2c86a8089be7f81c507";
                 const packedData = ethers.utils.solidityPack(
                   ["address", "address", "bytes32", "bytes"],
                   [txParams.from, txParams.to, txParams.tokenId, txParams.data]
