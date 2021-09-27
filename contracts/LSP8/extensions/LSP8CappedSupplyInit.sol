@@ -14,7 +14,11 @@ abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, LSP8CappedSup
     // --- Initialize
     //
 
-    function initialize(uint256 tokenSupplyCap_) public virtual initializer {
+    function initialize(uint256 tokenSupplyCap_)
+        public
+        virtual
+        initializer
+    {
       require(tokenSupplyCap_ > 0, "LSP8Capped: tokenSupplyCap is zero");
       _tokenSupplyCap = tokenSupplyCap_;
     }
@@ -39,7 +43,11 @@ abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, LSP8CappedSup
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) internal virtual override(LSP8Core, LSP8CappedSupplyCore) {
+    )
+        internal
+        virtual
+        override(LSP8Core, LSP8CappedSupplyCore)
+    {
         super._mint(to, tokenId, force, data);
     }
 

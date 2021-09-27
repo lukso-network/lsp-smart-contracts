@@ -39,7 +39,11 @@ abstract contract LSP8CappedSupply is LSP8, LSP8CappedSupplyCore {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) internal virtual override(LSP8Core, LSP8CappedSupplyCore) {
+    )
+      internal
+      virtual
+      override(LSP8Core, LSP8CappedSupplyCore)
+    {
         super._mint(to, tokenId, force, data);
     }
 }

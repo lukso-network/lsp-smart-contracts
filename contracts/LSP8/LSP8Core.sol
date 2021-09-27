@@ -36,25 +36,25 @@ abstract contract LSP8Core is Context, ILSP8 {
     // --- Storage
     //
 
-    uint256 private _mintedTokens;
+    uint256 internal _mintedTokens;
 
     // TODO: only here to satisfy LSP4DigitalCertificate `_tokenHolders`, possibly drops for mainnet
-    EnumerableSet.AddressSet private _tokenHolders;
+    EnumerableSet.AddressSet internal _tokenHolders;
 
     // Mapping from `tokenId` to `tokenOwner`
-    mapping(bytes32 => address) private _tokenOwners;
+    mapping(bytes32 => address) internal _tokenOwners;
 
     // Mapping `tokenOwner` to owned tokenIds
-    mapping(address => EnumerableSet.Bytes32Set) private _ownedTokens;
+    mapping(address => EnumerableSet.Bytes32Set) internal _ownedTokens;
 
     // Mapping a `tokenId` to its authorized operator addresses.
     mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
     // Mapping a `tokenId` to its index in the _tokenIdOperatorsList;
-    mapping(bytes32 => uint256) private _tokenIdOperatorIndex;
+    mapping(bytes32 => uint256) internal _tokenIdOperatorIndex;
 
     // A list of AddressSet, one per existing tokenId;
-    EnumerableSet.AddressSet[] private _tokenIdOperatorsList;
+    EnumerableSet.AddressSet[] internal _tokenIdOperatorsList;
 
     //
     // --- Token queries
@@ -541,7 +541,8 @@ abstract contract LSP8Core is Context, ILSP8 {
         bytes32 tokenId,
         bytes memory data
     )
-        private
+        internal
+        virtual
     {
         if (
             ERC165Checker.supportsERC165(from) &&
@@ -568,7 +569,8 @@ abstract contract LSP8Core is Context, ILSP8 {
         bool force,
         bytes memory data
     )
-        private
+        internal
+        virtual
     {
         if (
             ERC165Checker.supportsERC165(to) &&
