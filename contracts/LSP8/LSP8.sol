@@ -7,12 +7,13 @@ import "../LSP4/LSP4Constants.sol";
 
 // modules
 import "./LSP8Core.sol";
+import "../LSP4/LSP4.sol";
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
 
 /**
  * @dev Implementation of a LSP8 compliant contract.
  */
-contract LSP8 is ERC725Y, LSP8Core {
+contract LSP8 is LSP4, LSP8Core {
     //
     // --- Initialize
     //
@@ -20,23 +21,15 @@ contract LSP8 is ERC725Y, LSP8Core {
     constructor(
         string memory name_,
         string memory symbol_
-    ) ERC725Y(msg.sender) {
+    ) LSP4(name_, symbol_) {
         // TODO: when ERC725Y has been updated
         // bytes32[] keys = new bytes32[](2);
         // bytes[] values = new bytes[](2);
-        //
-        // keys.push(_LSP4_METADATA_TOKEN_NAME_KEY);
-        // values.push(bytes(name_));
-        //
-        // keys.push(_LSP4_METADATA_TOKEN_SYMBOL_KEY);
-        // values.push(bytes(symbol_));
         //
         // keys.push(_LSP8_SUPPORTED_STANDARD_KEY);
         // values.push(abi.encodePacked(_LSP8_SUPPORTED_STANDARD_VALUE));
         //
         // setDataFromMemory(keys, values);
-        setDataFromMemory(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name_));
-        setDataFromMemory(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol_));
         setDataFromMemory(_LSP8_SUPPORTED_STANDARDS_KEY, abi.encodePacked(_LSP8_SUPPORTED_STANDARDS_VALUE));
     }
 

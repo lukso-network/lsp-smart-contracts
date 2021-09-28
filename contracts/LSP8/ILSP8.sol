@@ -48,7 +48,7 @@ interface ILSP8 is IERC165, IERC725Y {
     //
 
     /**
-     * @dev Returns the number of tokens minted by the contract.
+     * @dev Returns the number of existing tokens.
      */
     function totalSupply() external view returns (uint256);
 
@@ -59,7 +59,7 @@ interface ILSP8 is IERC165, IERC725Y {
     /**
      * @dev Returns the number of tokens owned by `tokenOwner`.
      *
-     * * Requirements:
+     * Requirements:
      *
      * - `tokenOwner` cannot be the zero address.
      */
@@ -111,7 +111,7 @@ interface ILSP8 is IERC165, IERC725Y {
      *
      * Emits a {RevokedOperator} event.
      */
-    function revokeOperator(address to, bytes32 tokenId) external;
+    function revokeOperator(address operator, bytes32 tokenId) external;
 
     /**
      * @dev Returns whether `operator` address is an operator of `tokenId`.
@@ -125,9 +125,7 @@ interface ILSP8 is IERC165, IERC725Y {
     function isOperatorFor(address operator, bytes32 tokenId) external view returns (bool);
 
     /**
-     * @dev Returns whether `operator` address is an operator of `tokenId`.
-     * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
-     * operator.
+     * @dev Returns all `operator` addresses of `tokenId`.
      *
      * Requirements
      *
@@ -160,7 +158,8 @@ interface ILSP8 is IERC165, IERC725Y {
     ) external;
 
     /**
-     * @dev Transfers many tokens based on the list `from`, `to`, `tokenId`.
+     * @dev Transfers many tokens based on the list `from`, `to`, `tokenId`. If any transfer fails
+     * the call will revert.
      *
      * Requirements:
      *
@@ -168,7 +167,7 @@ interface ILSP8 is IERC165, IERC725Y {
      * - no values in `from` can be the zero address.
      * - no values in `to` can be the zero address.
      * - each `tokenId` token must be owned by `from`.
-     * - If the caller is not `from`, it must be an operator of `tokenId`.
+     * - If the caller is not `from`, it must be an operator of each `tokenId`.
      *
      * Emits {Transfer} events.
      */
@@ -179,5 +178,4 @@ interface ILSP8 is IERC165, IERC725Y {
         bool force,
         bytes[] calldata data
     ) external;
-
 }
