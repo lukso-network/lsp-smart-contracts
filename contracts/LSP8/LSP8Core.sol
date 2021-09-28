@@ -33,7 +33,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     // --- Storage
     //
 
-    uint256 internal _mintedTokens;
+    uint256 internal _existingTokens;
 
     // Mapping from `tokenId` to `tokenOwner`
     mapping(bytes32 => address) internal _tokenOwners;
@@ -55,7 +55,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     //
 
     /**
-     * @dev Returns the number of tokens minted by the contract.
+     * @dev Returns the number of existing tokens.
      */
     function totalSupply()
         public
@@ -63,7 +63,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         override
         returns (uint256)
     {
-        return _mintedTokens;
+        return _existingTokens;
     }
 
     //
@@ -310,7 +310,8 @@ abstract contract LSP8Core is Context, ILSP8 {
     }
 
     /**
-     * @dev Transfers many tokens based on the list `from`, `to`, `tokenId`.
+     * @dev Transfers many tokens based on the list `from`, `to`, `tokenId`. If any transfer fails,
+     * the call will revert.
      *
      * Requirements:
      *
@@ -320,7 +321,7 @@ abstract contract LSP8Core is Context, ILSP8 {
      * - each `tokenId` token must be owned by `from`.
      * - If the caller is not `from`, it must be an operator of `tokenId`.
      *
-     * Emits {Transfer} events.
+     * Emits {Transfer} event for each transfered token.
      */
     function transferBatch(
         address[] calldata from,
@@ -487,12 +488,12 @@ abstract contract LSP8Core is Context, ILSP8 {
 
         // token being minted
         if (from == address(0)) {
-            _mintedTokens += 1;
+            _existingTokens += 1;
         }
 
         // token being burned
         if (to == address(0)) {
-            _mintedTokens -= 1;
+            _existingTokens -= 1;
         }
     }
 
