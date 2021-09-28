@@ -19,7 +19,7 @@ import "./Utils/ERC725Utils.sol";
  * @author Fabian Vogelsteller <fabian@lukso.network>
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
-contract LUniversalProfileInit is ERC165Storage, ERC725AccountInit, ILSP1 {
+contract UniversalProfileInit is ERC165Storage, ERC725AccountInit, ILSP1 {
     using ERC725Utils for ERC725YInit;
 
     bytes4 constant _INTERFACE_ID_LSP1 = 0x6bb56a14;
