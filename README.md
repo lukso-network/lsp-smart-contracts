@@ -38,15 +38,15 @@ $ cd ./submodules/ERC725/implementations && npm install
 You can use the contracts by importing them as follow:
 
 ```javascript
-import LSP3Account from "@lukso/universalprofile-smart-contracts/build/contracts/LSP3Account.json";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/build/contracts/UniversalProfile.json";
 
-const LSP3AccountContract = new this.web3.eth.Contract(LSP3Account.abi, "", defaultOptions);
+const UniversalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
 ```
 
 #### in Solidity
 
 ```solidity
-import LSP3Account from "@lukso/universalprofile-smart-contracts/build/contracts/LSP3Account.sol";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/build/contracts/UniversalProfile.sol";
 ```
 
 ## Testing
