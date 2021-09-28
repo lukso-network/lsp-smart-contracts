@@ -5,8 +5,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   ERC725Utils,
   KeyManager__factory,
-  LSP3Account,
-  LSP3Account__factory,
+  UniversalProfile,
+  UniversalProfile__factory,
 } from "../../build/types";
 
 export async function getDeploymentCost(contractOrTransaction: Contract | ContractTransaction) {
@@ -26,8 +26,8 @@ export async function getDeploymentCost(contractOrTransaction: Contract | Contra
   };
 }
 
-export async function deployLSP3Account(erc725Utils: ERC725Utils, owner: SignerWithAddress) {
-  return await new LSP3Account__factory(
+export async function deployUniversalProfile(erc725Utils: ERC725Utils, owner: SignerWithAddress) {
+  return await new UniversalProfile__factory(
     { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
     owner
   ).deploy(owner.address);
@@ -36,11 +36,11 @@ export async function deployLSP3Account(erc725Utils: ERC725Utils, owner: SignerW
 export async function deployKeyManager(
   erc725Utils: ERC725Utils,
   owner: SignerWithAddress,
-  lsp3Account: LSP3Account
+  universalProfile: UniversalProfile
 ) {
   return await new KeyManager__factory(
     { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
     owner
-  ).deploy(lsp3Account.address);
+  ).deploy(universalProfile.address);
 }
 export async function deployUniversalReceiver() {}

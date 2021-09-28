@@ -7,11 +7,11 @@ import {
   AddressRegistryRequiresERC725,
   AddressRegistryRequiresERC725__factory,
   AddressRegistry__factory,
-  LSP3Account,
-  LSP3Account__factory,
+  UniversalProfile,
+  UniversalProfile__factory,
 } from "../build/types";
 
-import { deployLSP3Account } from "./utils/deploy";
+import { deployUniversalProfile } from "./utils/deploy";
 
 describe("Address Registry contracts", () => {
   let addressRegistry: AddressRegistry;
@@ -82,13 +82,13 @@ describe("Address Registry contracts", () => {
   describe("AddressRegistryRequiresERC725", () => {
     let addressRegistryRequireERC725: AddressRegistryRequiresERC725,
       erc725Utils: ERC725Utils,
-      account: LSP3Account,
+      account: UniversalProfile,
       owner: SignerWithAddress;
 
     beforeEach(async () => {
       owner = accounts[3];
       erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      account = await deployLSP3Account(erc725Utils, owner);
+      account = await deployUniversalProfile(erc725Utils, owner);
       addressRegistryRequireERC725 = await new AddressRegistryRequiresERC725__factory(
         owner
       ).deploy();
