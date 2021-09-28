@@ -3,10 +3,10 @@ import { ethers } from "hardhat";
 import {
   ERC725Utils,
   ERC725Utils__factory,
-  LSP3Account,
-  LSP3Account__factory,
-  LSP3AccountInit,
-  LSP3AccountInit__factory,
+  UniversalProfile,
+  UniversalProfile__factory,
+  UniversalProfileInit,
+  UniversalProfileInit__factory,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester__factory,
   ERC777UniversalReceiver__factory,
@@ -16,12 +16,12 @@ import {
 import { ContractFactory } from "ethers";
 
 // custom utils
-import { getDeploymentCost, deployLSP3Account } from "./utils/deploy";
+import { getDeploymentCost, deployUniversalProfile } from "./utils/deploy";
 import {
   proxyRuntimeCodeTemplate,
   deployProxy,
-  deployBaseLSP3Account,
-  attachLSP3AccountProxy,
+  deployBaseUniversalProfile,
+  attachUniversalProfileProxy,
 } from "./utils/proxy";
 
 /** @todo put all of these in constant file */
@@ -48,12 +48,12 @@ const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc
 const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
 const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 
-describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
+describe("UniversalProfile via EIP1167 Proxy + initializer (using ethers)", () => {
   let accounts: SignerWithAddress[];
   let owner: SignerWithAddress;
 
-  let lsp3Account: LSP3Account;
-  let proxy: LSP3AccountInit;
+  let UniversalProfile: UniversalProfile;
+  let proxy: UniversalProfileInit;
   let erc725Utils: ERC725Utils;
 
   describe("> Account deployment", () => {
@@ -62,10 +62,10 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       owner = accounts[0];
 
       erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      lsp3Account = await deployBaseLSP3Account(erc725Utils, owner);
+      UniversalProfile = await deployBaseUniversalProfile(erc725Utils, owner);
 
-      let proxyAddress = await deployProxy(lsp3Account.address, owner);
-      proxy = await new LSP3AccountInit__factory(
+      let proxyAddress = await deployProxy(UniversalProfile.address, owner);
+      proxy = await new UniversalProfileInit__factory(
         { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
         owner
       ).attach(proxyAddress);
@@ -73,14 +73,14 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
 
     it("Should be cheaper to deploy via proxy", async () => {
       // Deploying whole LSP3 Account (not using `initialize` function)
-      const lsp3Account = await deployLSP3Account(erc725Utils, owner);
-      const { gasUsed: lsp3AccountDeploymentCost } = await getDeploymentCost(lsp3Account);
-      console.log("lsp3AccountDeploymentCost: ", lsp3AccountDeploymentCost);
+      const UniversalProfile = await deployUniversalProfile(erc725Utils, owner);
+      const { gasUsed: UniversalProfileDeploymentCost } = await getDeploymentCost(UniversalProfile);
+      console.log("UniversalProfileDeploymentCost: ", UniversalProfileDeploymentCost);
 
       // Deploying via Proxy
 
       // 1) deploy logic contract
-      let lsp3LogicAccount = await deployBaseLSP3Account(erc725Utils, owner);
+      let lsp3LogicAccount = await deployBaseUniversalProfile(erc725Utils, owner);
       let lsp3LogicAccountAddress = lsp3LogicAccount.address;
 
       // 2) setup proxy contract code + deploy
@@ -95,24 +95,28 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       );
 
       // 3) initialize contract (alternative to constructors)
-      let testProxy = await attachLSP3AccountProxy(erc725Utils, owner, txReceipt.contractAddress);
+      let testProxy = await attachUniversalProfileProxy(
+        erc725Utils,
+        owner,
+        txReceipt.contractAddress
+      );
 
       const initializeTx = await testProxy.initialize(owner.address);
       const { gasUsed: initializeCost } = await getDeploymentCost(initializeTx);
       const totalProxyCost = proxyDeploymentCost + initializeCost;
 
-      expect(totalProxyCost).toBeLessThan(lsp3AccountDeploymentCost);
+      expect(totalProxyCost).toBeLessThan(UniversalProfileDeploymentCost);
 
-      console.log("LSP3Account deployment cost: ", lsp3AccountDeploymentCost, "\n");
+      console.log("UniversalProfile deployment cost: ", UniversalProfileDeploymentCost, "\n");
       console.log("proxy deployment cost: ", proxyDeploymentCost);
       console.log("initialize gas cost: ", initializeCost);
       console.log("--------------------------------------------------");
       console.log("total: ", totalProxyCost);
       console.log(
         "\n > Gas saved = ",
-        lsp3AccountDeploymentCost - totalProxyCost,
+        UniversalProfileDeploymentCost - totalProxyCost,
         "(",
-        (totalProxyCost * 100) / lsp3AccountDeploymentCost - 100,
+        (totalProxyCost * 100) / UniversalProfileDeploymentCost - 100,
         "%)"
       );
     });
@@ -198,8 +202,12 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
 
     it("Create account", async () => {
       const owner = accounts[2];
-      const newProxyAddress = await deployProxy(lsp3Account.address, owner);
-      const newProxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, newProxyAddress);
+      const newProxyAddress = await deployProxy(UniversalProfile.address, owner);
+      const newProxyAccount = await attachUniversalProfileProxy(
+        erc725Utils,
+        owner,
+        newProxyAddress
+      );
       await newProxyAccount.initialize(owner.address);
 
       expect(await newProxyAccount.callStatic.owner()).toEqual(owner.address);
@@ -343,14 +351,14 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
 
     let owner: SignerWithAddress;
     let newOwner: SignerWithAddress;
-    let proxy: LSP3AccountInit;
+    let proxy: UniversalProfileInit;
 
     beforeEach(async () => {
       owner = accounts[3];
       newOwner = accounts[5];
 
-      const newProxyAddress = await deployProxy(lsp3Account.address, owner);
-      proxy = await attachLSP3AccountProxy(erc725Utils, owner, newProxyAddress);
+      const newProxyAddress = await deployProxy(UniversalProfile.address, owner);
+      proxy = await attachUniversalProfileProxy(erc725Utils, owner, newProxyAddress);
       await proxy.initialize(owner.address);
     });
 
@@ -547,8 +555,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Call account and check for 'UniversalReceiver' event", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployProxy(lsp3Account.address, owner);
-      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
+      const proxyAddress = await deployProxy(UniversalProfile.address, owner);
+      const proxyAccount = await attachUniversalProfileProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       // use the checker contract to call account
@@ -577,8 +585,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Call account and check for 'ReceivedERC777' event in external account", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployProxy(lsp3Account.address, owner);
-      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
+      const proxyAddress = await deployProxy(UniversalProfile.address, owner);
+      const proxyAccount = await attachUniversalProfileProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
@@ -638,8 +646,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Mint ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployProxy(lsp3Account.address, owner);
-      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
+      const proxyAddress = await deployProxy(UniversalProfile.address, owner);
+      const proxyAccount = await attachUniversalProfileProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -677,8 +685,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Transfer ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployProxy(lsp3Account.address, owner);
-      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
+      const proxyAddress = await deployProxy(UniversalProfile.address, owner);
+      const proxyAccount = await attachUniversalProfileProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -724,8 +732,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Mint ERC777 and LSP4 to LSP3 account and delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployProxy(lsp3Account.address, owner);
-      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
+      const proxyAddress = await deployProxy(UniversalProfile.address, owner);
+      const proxyAccount = await attachUniversalProfileProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -767,8 +775,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
     it("Transfer ERC777 and LSP4 from LSP3 account with delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
 
-      const proxyAddress = await deployProxy(lsp3Account.address, owner);
-      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
+      const proxyAddress = await deployProxy(UniversalProfile.address, owner);
+      const proxyAccount = await attachUniversalProfileProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -816,8 +824,8 @@ describe("LSP3Account via EIP1167 Proxy + initializer (using ethers)", () => {
       const OPERATION_CALL = 0x0;
       const owner = accounts[2];
 
-      const proxyAddress = await deployProxy(lsp3Account.address, owner);
-      const proxyAccount = await attachLSP3AccountProxy(erc725Utils, owner, proxyAddress);
+      const proxyAddress = await deployProxy(UniversalProfile.address, owner);
+      const proxyAccount = await attachUniversalProfileProxy(erc725Utils, owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(

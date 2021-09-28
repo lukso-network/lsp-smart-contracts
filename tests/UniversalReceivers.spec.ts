@@ -5,14 +5,14 @@ import {
   ERC725Utils__factory,
   BasicUniversalReceiver,
   BasicUniversalReceiver__factory,
-  LSP3Account__factory,
+  UniversalProfile__factory,
   UniversalReceiverAddressStore,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
   UniversalReceiverTester__factory,
 } from "../build/types";
 
-import { deployLSP3Account } from "./utils/deploy";
+import { deployUniversalProfile } from "./utils/deploy";
 
 // keccak256("ERC777TokensRecipient")
 const TOKENS_RECIPIENT_INTERFACE_HASH =
@@ -103,7 +103,7 @@ describe("Receivers", () => {
 
   it("Use delegate and test if it can store addresses", async () => {
     const signerAddress = accounts[1].address;
-    let account = await deployLSP3Account(library, signer);
+    let account = await deployUniversalProfile(library, signer);
     let checker = await new UniversalReceiverTester__factory(signer).deploy();
     let checker2 = await new UniversalReceiverTester__factory(signer).deploy();
     let checker3 = await new UniversalReceiverTester__factory(signer).deploy();

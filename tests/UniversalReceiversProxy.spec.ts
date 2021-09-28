@@ -2,8 +2,8 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
-  LSP3AccountInit,
-  LSP3AccountInit__factory,
+  UniversalProfileInit,
+  UniversalProfileInit__factory,
   UniversalReceiverAddressStoreInit,
   UniversalReceiverAddressStoreInit__factory,
 } from "../build/types";
@@ -14,7 +14,7 @@ const { deployProxy, runtimeCodeTemplate } = require("./utils/proxy");
 // const UniversalReceiverTester = artifacts.require("UniversalReceiverTester");
 // const UniversalReceiverAddressStore = artifacts.require("UniversalReceiverAddressStore");
 // const UniversalReceiverAddressStoreInit = artifacts.require("UniversalReceiverAddressStoreInit");
-// const Account = artifacts.require("LSP3Account");
+// const Account = artifacts.require("UniversalProfile");
 
 // keccak256("ERC777TokensRecipient")
 const TOKENS_RECIPIENT_INTERFACE_HASH =
@@ -27,9 +27,9 @@ describe.skip("Receivers as Proxies", () => {
 
   let owner: SignerWithAddress, signer: SignerWithAddress;
 
-  let lsp3AccountMaster: LSP3AccountInit,
+  let UniversalProfileMaster: UniversalProfileInit,
     uniAddressStoreMaster: UniversalReceiverAddressStoreInit,
-    proxyLsp3Account: LSP3AccountInit,
+    proxyUniversalProfile: UniversalProfileInit,
     proxyUniAddressStore: UniversalReceiverAddressStoreInit;
 
   beforeAll(async () => {
