@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // interfaces
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
+import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725.sol";
 import "../_LSPs/ILSP6_KeyManager.sol";
 
 // libraries
@@ -23,7 +24,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     using SafeMath for uint256;
     using ERC725Utils for ERC725Y;
 
-    ERC725Y public account;
+    ERC725 public account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
@@ -53,9 +54,9 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     bytes1 internal constant _PERMISSION_SIGN          = 0x80;   // 1000 0000
 
     // selectors
-    bytes4 internal constant _SETDATA_SELECTOR = 0x14a6e293;
-    bytes4 internal constant _EXECUTE_SELECTOR = 0x44c028fe;
-    bytes4 internal constant _TRANSFEROWNERSHIP_SELECTOR = 0xf2fde38b;
+    bytes4 internal immutable _SETDATA_SELECTOR = account.setData.selector; // 0x14a6e293
+    bytes4 internal immutable _EXECUTE_SELECTOR = account.execute.selector; // 0x44c028fe
+    bytes4 internal immutable _TRANSFEROWNERSHIP_SELECTOR = account.transferOwnership.selector; // 0xf2fde38b;
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -296,7 +297,8 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         }
 
         bytes1 storedPermission;
-        bytes memory fetchResult = account.getDataSingle(permissionKey);
+        // this might cost more gas? Does contract type casting cost more gas?
+        bytes memory fetchResult = ERC725Y(account).getDataSingle(permissionKey);
 
         if (fetchResult.length == 0) {
             revert(
@@ -324,7 +326,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         assembly {
             allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
         }
-        return account.getDataSingle(allowedAddressesKey);
+        return ERC725Y(account).getDataSingle(allowedAddressesKey);
     }
 
     function _getAllowedFunctions(address _sender)
@@ -340,7 +342,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         assembly {
             allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
         }
-        return account.getDataSingle(allowedFunctionsKey);
+        return ERC725Y(account).getDataSingle(allowedFunctionsKey);
     }
 
     function _isAllowedAddress(address _sender, address _recipient)
