@@ -8,15 +8,15 @@ sudo apt-get install solc
 
 curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
-solc --abi --bin @openzeppelin/="$(pwd)"/node_modules/@openzeppelin/ ../submodules="$(pwd)"/submodules solidity-bytes-utils/="$(pwd)"/node_modules/solidity-bytes-utils/ -o ./output/ contracts/LSP3Account.sol contracts/KeyManager/KeyManager.sol contracts/UniversalReceiver/BasicUniversalReceiver.sol
+solc --abi --bin @openzeppelin/="$(pwd)"/node_modules/@openzeppelin/ ../submodules="$(pwd)"/submodules solidity-bytes-utils/="$(pwd)"/node_modules/solidity-bytes-utils/ -o ./output/ contracts/UniversalProfile.sol contracts/KeyManager/KeyManager.sol contracts/UniversalReceiver/BasicUniversalReceiver.sol
 
 export destination=./java/src/main/java/network/lukso/up/contracts
 export package=network.lukso.up.contracts
 
-FILES=(KeyManager LSP3Account BasicUniversalReceiver ERC725Account)
+FILES=(KeyManager UniversalProfile BasicUniversalReceiver ERC725Account)
 
-export binSource=./output/LSP3Account.bin # source of compiled contracts
-export abiSource=./output/LSP3Account.abi
+export binSource=./output/UniversalProfile.bin # source of compiled contracts
+export abiSource=./output/UniversalProfile.abi
 web3j generate solidity --abiFile=$abiSource --binFile=$binSource -o $destination -p $package
 
 export binSource=./output/KeyManager.bin # source of compiled contracts
