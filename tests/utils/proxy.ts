@@ -1,8 +1,8 @@
 import { ContractFactory, SignerWithAddress } from "ethers";
 import {
   ERC725Utils,
-  LSP3AccountInit,
-  LSP3AccountInit__factory,
+  UniversalProfileInit,
+  UniversalProfileInit__factory,
   KeyManagerInit__factory,
 } from "../../build/types";
 // prettier-ignore
@@ -35,19 +35,22 @@ export async function deployProxy(baseContractAddress: string, deployer: SignerW
   return receipt.contractAddress;
 }
 
-export async function deployBaseLSP3Account(erc725Utils: ERC725Utils, deployer: SignerWithAddress) {
-  return await new LSP3AccountInit__factory(
+export async function deployBaseUniversalProfile(
+  erc725Utils: ERC725Utils,
+  deployer: SignerWithAddress
+) {
+  return await new UniversalProfileInit__factory(
     { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
     deployer
   ).deploy();
 }
 
-export async function attachLSP3AccountProxy(
+export async function attachUniversalProfileProxy(
   erc725Utils: ERC725Utils,
   deployer: SignerWithAddress,
   proxyAddress: string
 ) {
-  return await new LSP3AccountInit__factory(
+  return await new UniversalProfileInit__factory(
     { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
     deployer
   ).attach(proxyAddress);
