@@ -2,6 +2,8 @@
 
 The reference implementation for universal profiles smart contracts.
 
+Code improvements worked seperately from the source repo. See folder /improvements for more details.
+
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
 
