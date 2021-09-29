@@ -17,8 +17,9 @@ abstract contract LSP4 is ERC725Y {
 
     constructor(
         string memory name_,
-        string memory symbol_
-    ) ERC725Y(msg.sender) {
+        string memory symbol_,
+        address newOwner_
+    ) ERC725Y(newOwner_) {
         // TODO: when ERC725Y has been updated
         // bytes32[] keys = new bytes32[](2);
         // bytes[] values = new bytes[](2);
