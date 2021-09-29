@@ -32,9 +32,6 @@ contract UniversalProfileInit is ERC165Storage, ERC725AccountInit, ILSP1 {
 
     function initialize(address _newOwner) virtual override public {
         ERC725AccountInit.initialize(_newOwner);
-        // Add the key of the SupportedStandards:ERC725Account set in the constructor of ERC725Account.sol
-        dataKeys.push(0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6);
-
         _registerInterface(_INTERFACE_ID_LSP1);
     }
 
