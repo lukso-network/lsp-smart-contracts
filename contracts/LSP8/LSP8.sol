@@ -20,8 +20,9 @@ contract LSP8 is LSP4, LSP8Core {
 
     constructor(
         string memory name_,
-        string memory symbol_
-    ) LSP4(name_, symbol_) {
+        string memory symbol_,
+        address newOwner_
+    ) LSP4(name_, symbol_, newOwner_) {
         // TODO: when ERC725Y has been updated
         // bytes32[] keys = new bytes32[](2);
         // bytes[] values = new bytes[](2);

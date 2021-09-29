@@ -39,7 +39,11 @@ describe("LSP8", () => {
     const [owner, tokenReceiver, operator, anotherOperator, anyone] = await ethers.getSigners();
     accounts = { owner, tokenReceiver, operator, anotherOperator, anyone };
 
-    lsp8 = await new LSP8Tester__factory(owner).deploy(deployParams.name, deployParams.symbol);
+    lsp8 = await new LSP8Tester__factory(owner).deploy(
+      deployParams.name,
+      deployParams.symbol,
+      owner.address
+    );
 
     await lsp8.mint(
       owner.address,

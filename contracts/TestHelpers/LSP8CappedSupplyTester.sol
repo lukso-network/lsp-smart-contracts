@@ -10,7 +10,7 @@ contract LSP8CappedSupplyTester is LSP8CappedSupply {
       string memory name,
       string memory symbol,
       uint256 tokenSupplyCap
-    ) LSP8(name, symbol) LSP8CappedSupply(tokenSupplyCap) {}
+    ) LSP8(name, symbol, msg.sender) LSP8CappedSupply(tokenSupplyCap) {}
 
     function mint(address to, bytes32 tokenId) public {
         _mint(to, tokenId, true, "token printer go brrr");
