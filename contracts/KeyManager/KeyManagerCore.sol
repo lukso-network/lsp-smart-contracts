@@ -35,10 +35,10 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     /* solhint-disable */
     // PERMISSION KEYS
     bytes8 internal constant _SET_PERMISSIONS       = 0x4b80742d00000000;         // AddressPermissions:<...>
-    bytes12 internal constant _KEY_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
-    bytes12 internal constant _KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
-    bytes12 internal constant _KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
-    bytes12 internal constant _KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+    bytes12 internal constant _ADDRESS_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
+    bytes12 internal constant _ADDRESS_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
+    bytes12 internal constant _ADDRESS_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+    bytes12 internal constant _ADDRESS_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
     /* solhint-enable */
 
     // prettier-ignore
@@ -123,7 +123,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
      * @param _data obtained via encodeABI() in web3
      * @return success_ true if the call on ERC725 Account succeeded, false otherwise
      */
-    function execute(bytes calldata _data)
+    function execute(bytes memory _data)
         external
         payable
         override
@@ -178,7 +178,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         if (success_) emit Executed(msg.value, _data);
     }
 
-    function _checkPermissions(address _address, bytes calldata _data)
+    function _checkPermissions(address _address, bytes memory _data)
         internal
         view
     {
@@ -289,7 +289,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         returns (bytes1)
     {
         bytes32 permissionKey;
-        bytes memory computedKey = abi.encodePacked(_KEY_PERMISSIONS, _address);
+        bytes memory computedKey = abi.encodePacked(_ADDRESS_PERMISSIONS, _address);
 
         assembly {
             permissionKey := mload(add(computedKey, 32))
@@ -317,7 +317,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         returns (bytes memory)
     {
         bytes memory allowedAddressesKeyComputed = abi.encodePacked(
-            _KEY_ALLOWEDADDRESSES,
+            _ADDRESS_ALLOWEDADDRESSES,
             _sender
         );
         bytes32 allowedAddressesKey;
@@ -333,7 +333,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         returns (bytes memory)
     {
         bytes memory allowedAddressesKeyComputed = abi.encodePacked(
-            _KEY_ALLOWEDFUNCTIONS,
+            _ADDRESS_ALLOWEDFUNCTIONS,
             _sender
         );
         bytes32 allowedFunctionsKey;
