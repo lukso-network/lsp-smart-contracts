@@ -57,7 +57,7 @@ contract LSP8Init is Initializable, LSP4Init, LSP8Core {
             "LSP8: metadata creation for nonexistent token"
         );
 
-        bytes32 metadataKeyForTokenId = _buildMetadataKey(tokenId);
+        bytes32 metadataKeyForTokenId = _buildMetadataKey(tokenId, true);
 
         bytes memory existingMetadataValue = ERC725Utils.getDataSingle(this, metadataKeyForTokenId);
         address existingMetadataAddress = abi.decode(existingMetadataValue, (address));

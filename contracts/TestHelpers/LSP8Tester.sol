@@ -18,4 +18,8 @@ contract LSP8Tester is LSP8 {
     function burn(bytes32 tokenId, bytes memory data) public {
         _burn(bytes32(tokenId), data);
     }
+
+    function buildMetadataKey(bytes32 tokenId, bool buildAddressKey) public pure returns (bytes32) {
+        return _buildMetadataKey(tokenId, buildAddressKey);
+    }
 }

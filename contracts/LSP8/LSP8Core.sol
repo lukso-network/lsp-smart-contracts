@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 // constants
+import "./LSP8Constants.sol";
 import "../LSP1/LSP1Constants.sol";
 import "../LSP4/LSP4Constants.sol";
 
@@ -127,14 +128,13 @@ abstract contract LSP8Core is Context, ILSP8 {
         return _ownedTokens[tokenOwner].values();
     }
 
-    function _buildMetadataKey(bytes32 tokenId)
+    function _buildMetadataKey(bytes32 tokenId, bool buildAddressKey)
         internal
         pure
         returns (bytes32)
     {
         return bytes32(abi.encodePacked(
-            bytes8(keccak256("LSP8MetaData")),
-            bytes4(0),
+            buildAddressKey ? _LSP8_METADATA_ADDRESS_KEY_PREFIX : _LSP8_METADATA_JSON_KEY_PREFIX,
             bytes20(keccak256(abi.encodePacked(tokenId)))
         ));
     }

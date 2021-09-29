@@ -13,6 +13,11 @@ bytes32 constant _LSP8_SUPPORTED_STANDARDS_KEY =
 bytes4 constant _LSP8_SUPPORTED_STANDARDS_VALUE =
   0xd9bfeb57;
 
+// bytes8('LSP8MetadataAddress') + bytes4(0)
+bytes12 constant _LSP8_METADATA_ADDRESS_KEY_PREFIX = 0x73dcc7c3c4096cdc00000000;
+
+// bytes8('LSP8MetadataJSON') + bytes4(0)
+bytes12 constant _LSP8_METADATA_JSON_KEY_PREFIX = 0x9a26b4060ae7f7d500000000;
 
 //
 // --- ERC165 interface ids
