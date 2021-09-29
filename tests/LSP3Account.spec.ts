@@ -225,10 +225,10 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("dataCount should be 7", async () => {
-      // 7 because the ERC725Type ios already set by the ERC725Account implementation
+    it("dataCount should be 6", async () => {
+      // 6 because the ERC725Type ios already set by the ERC725Account implementation
       let result = await UniversalProfile.callStatic.allDataKeys();
-      expect(result.length).toEqual(7);
+      expect(result.length).toEqual(6);
     });
 
     it("Update 32 bytes item 6", async () => {
@@ -244,18 +244,17 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("dataCount should remain 7", async () => {
-      // 7 because the ERC725Type ios already set by the ERC725Account implementation
+    it("dataCount should remain 6", async () => {
       let result = await UniversalProfile.callStatic.allDataKeys();
-      expect(result.length).toEqual(7);
+      expect(result.length).toEqual(6);
     });
 
-    it("Store multiple 32 bytes item 8-10", async () => {
+    it("Store multiple 32 bytes item 7-9", async () => {
       let keys = [];
       let values = [];
       // increase
       count++;
-      for (let i = 8; i <= 10; i++) {
+      for (let i = 7; i <= 9; i++) {
         let key = abiCoder.encode(
           ["bytes32"],
           [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
@@ -272,10 +271,9 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(values);
     });
 
-    it("dataCount should be 10", async () => {
-      // 7 because the ERC725Type ios already set by the ERC725Account implementation
+    it("dataCount should be 9", async () => {
       let keys = await UniversalProfile.allDataKeys();
-      expect(keys.length).toEqual(10);
+      expect(keys.length).toEqual(9);
 
       //   console.log("Stored keys", keys);
     });

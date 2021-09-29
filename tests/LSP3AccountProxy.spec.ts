@@ -295,10 +295,9 @@ describe("UniversalProfile via EIP1167 Proxy + initializer (using ethers)", () =
       expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
-    it("dataCount should be 8", async () => {
-      // 8 because the ERC725Type is already set by the ERC725Account implementation
+    it("dataCount should be 7", async () => {
       let result = await proxy.allDataKeys();
-      expect(result.length).toEqual(8);
+      expect(result.length).toEqual(7);
     });
 
     it("Update 32 bytes item 7", async () => {
@@ -312,17 +311,17 @@ describe("UniversalProfile via EIP1167 Proxy + initializer (using ethers)", () =
       expect(await proxy.getData(keys)).toEqual(values);
     });
 
-    it("dataCount should remain 8 (after updating item 7)", async () => {
+    it("dataCount should remain 7 (after updating item 7)", async () => {
       let result = await proxy.callStatic.allDataKeys();
-      expect(result.length).toEqual(8);
+      expect(result.length).toEqual(7);
     });
 
-    it("Store multiple 32 bytes item 9-11", async () => {
+    it("Store multiple 32 bytes item 8-10", async () => {
       let keys = [];
       let values = [];
       // increase
       count++;
-      for (let i = 9; i <= 11; i++) {
+      for (let i = 8; i <= 10; i++) {
         let key = abiCoder.encode(
           ["bytes32"],
           [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
@@ -337,9 +336,9 @@ describe("UniversalProfile via EIP1167 Proxy + initializer (using ethers)", () =
       expect(result).toEqual(values);
     });
 
-    it("dataCount should be 11", async () => {
+    it("dataCount should be 10", async () => {
       let keys = await proxy.allDataKeys();
-      expect(keys.length).toEqual(11);
+      expect(keys.length).toEqual(10);
 
       // console.log('Stored keys', keys)
     });
