@@ -230,6 +230,10 @@ abstract contract LSP8Core is Context, ILSP8 {
      * @dev Returns whether `operator` address is an operator of `tokenId`.
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
+     *
+     * Requirements
+     *
+     * - `tokenId` must exist.
      */
     function isOperatorFor(address operator, bytes32 tokenId)
         public
@@ -248,6 +252,10 @@ abstract contract LSP8Core is Context, ILSP8 {
 
     /**
      * @dev Returns all `operator` addresses of `tokenId`.
+     *
+     * Requirements
+     *
+     * - `tokenId` must exist.
      */
     function getOperatorsOf(bytes32 tokenId)
         public
@@ -405,7 +413,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         address tokenOwner = tokenOwnerOf(tokenId);
         address operator = _msgSender();
 
-        _notifyTokenOwner(tokenOwner, address(0), tokenId, data);
+        _notifyTokenSender(tokenOwner, address(0), tokenId, data);
 
         _beforeTokenTransfer(tokenOwner, address(0), tokenId);
 
@@ -446,7 +454,7 @@ abstract contract LSP8Core is Context, ILSP8 {
 
         address operator = _msgSender();
 
-        _notifyTokenOwner(from, to, tokenId, data);
+        _notifyTokenSender(from, to, tokenId, data);
 
         _beforeTokenTransfer(from, to, tokenId);
 
@@ -498,12 +506,10 @@ abstract contract LSP8Core is Context, ILSP8 {
     }
 
     /**
-     * @dev We are using this hook from ERC777 to provide some parity for checks. The usual ERC721
-     * hook `_beforeTokenTransfer` doesn't seem correct for this use case as it is not called when
-     * receiver is address(0) in ERC777.
-     *
+     * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using
+     * LSP1 interface.
      */
-    function _notifyTokenOwner(
+    function _notifyTokenSender(
         address from,
         address to,
         bytes32 tokenId,
@@ -525,10 +531,10 @@ abstract contract LSP8Core is Context, ILSP8 {
     }
 
     /**
-     * @dev We are using this hook from ERC777 to provide some parity for hooks. The usual ERC721
-     * hook `_beforeTokenTransfer` doesn't seem correct for this use case, as this hook is run
-     * after the transfer of tokens has occured & is not called when receiver is address(0) in
-     * ERC777.
+     * @dev An attempt is made to notify the token receiver about the `tokenId` changing owners
+     * using LSP1 interface. When `force=true` the token receiver MUST support LSP1.
+     *
+     * The receiver may revert when the token being sent is not wanted.
      */
     function _notifyTokenReceiver(
         address from,
