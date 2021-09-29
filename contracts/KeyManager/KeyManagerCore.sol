@@ -123,7 +123,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
      * @param _data obtained via encodeABI() in web3
      * @return success_ true if the call on ERC725 Account succeeded, false otherwise
      */
-    function execute(bytes memory _data)
+    function execute(bytes calldata _data)
         external
         payable
         override
@@ -178,7 +178,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         if (success_) emit Executed(msg.value, _data);
     }
 
-    function _checkPermissions(address _address, bytes memory _data)
+    function _checkPermissions(address _address, bytes calldata _data)
         internal
         view
     {
