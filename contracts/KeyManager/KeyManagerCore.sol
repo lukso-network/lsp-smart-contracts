@@ -11,7 +11,7 @@ import "../_LSPs/ILSP6_KeyManager.sol";
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "../Utils/ERC725Utils.sol";
+import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
 
 /**
  * @title Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
