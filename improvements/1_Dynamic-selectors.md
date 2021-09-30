@@ -2,12 +2,13 @@
 
 ## Problem
 
-Currently, function selectors for the ERC725 / LSP3 account (setData, execute, transferOwnership) are hardcoded in the KeyManager.
-This might cause conflict. The selectors on the actual ERC725 / LSP3 contract might not match if:
-- an extended version of ERC725 is used: sinc these 3 functions are marked as `virtual`, they can be overwritten with different param types. This would then change their function selectors)
-- the core ERC725 contract (X or Y) introduces new breaking change.
+Currently, ERC725 Account's function selectors (`setData`, `execute`, `transferOwnership`) are hardcoded in the KeyManager.
+This might cause conflict in the future. 
 
-This lead to make it hard to keep track of them manually.
+The selectors on the actual ERC725 / LSP3 contract might not match if **the core ERC725 contract (X or Y) introduces new breaking change.**.
+
+There would be the need to recalculate + add the new selectors manually every time ERC725 changes.
+This makes it hard to keep track of.
 
 ## Proposed Solution
 
@@ -16,8 +17,8 @@ Define these variables as `immutable` and compute their value using the Solidity
 ## What has changed?
 
 - Selectors are now defined as `account.setData.selector`, instead of being hardcoded
-- The `account` variable is now of type `ERC725`, not `ERC725Y` (see also constructor / initiliazer)
-- The `account` variable is wrapped around `ERC725Y` so that it can be used by the library `ERC725Utils`
+- The `account` variable is now of type `ERC725`, not `ERC725Y` (so to compute the selectors of both X and Y)
+- The `account` variable is wrapped around `ERC725Y` so it can be used by the `ERC725Utils` library
 
 ## To test
 
