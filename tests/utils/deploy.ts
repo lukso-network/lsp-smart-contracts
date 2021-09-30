@@ -4,10 +4,12 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
   ERC725Utils,
+  ERC725Utils__factory,
   KeyManager__factory,
   UniversalProfile,
   UniversalProfile__factory,
 } from "../../build/types";
+import { LSP3AccountLibraryAddresses } from "../../build/types/factories/LSP3Account__factory";
 
 export async function getDeploymentCost(contractOrTransaction: Contract | ContractTransaction) {
   let gasUsed: number;
