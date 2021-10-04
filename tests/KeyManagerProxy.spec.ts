@@ -3,11 +3,8 @@ import { ethers } from "hardhat";
 
 import {
   ERC725Utils,
-  ERC725Utils__factory,
-  UniversalProfile,
-  UniversalProfile__factory,
+  UniversalProfileInit,
   KeyManagerInit,
-  KeyManagerInit__factory,
   TargetContract,
   TargetContract__factory,
   Reentrancy,
@@ -17,8 +14,6 @@ import {
 import { solidityKeccak256 } from "ethers/lib/utils";
 
 // custom helpers
-import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
-import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
 import {
   deployProxy,
   deployBaseUniversalProfile,
@@ -26,37 +21,21 @@ import {
   attachUniversalProfileProxy,
   attachKeyManagerProxy,
 } from "./utils/proxy";
+import { deployERC725Utils } from "./utils/deploy";
+
+// constants
+import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
+import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
 import { INTERFACE_IDS } from "./utils/constants";
-
-// /**
-//  * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
-//  *
-//  * @param baseContractAddress
-//  * @param deployer
-//  * @returns
-//  */
-// async function deployProxy(baseContractAddress: string, deployer: SignerWithAddress) {
-//   // deploy proxy contract
-//   let proxyRuntimeCode = proxyRuntimeCodeTemplate.replace(
-//     "bebebebebebebebebebebebebebebebebebebebe",
-//     baseContractAddress.substr(2)
-//   );
-//   let tx = await deployer.sendTransaction({
-//     data: proxyRuntimeCode,
-//   });
-//   let receipt = await tx.wait();
-
-//   return receipt.contractAddress;
-// }
 
 describe("KeyManager + LSP3 Account as Proxies", () => {
   let abiCoder;
   let accounts: SignerWithAddress[] = [];
 
   // core contracts
-  let baseUniversalProfile: UniversalProfile,
+  let baseUniversalProfile: UniversalProfileInit,
     baseKeyManager: KeyManagerInit,
-    proxyUniversalProfile: UniversalProfile,
+    proxyUniversalProfile: UniversalProfileInit,
     proxyKeyManager: KeyManagerInit;
 
   // library + helpers contracts
@@ -80,19 +59,18 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     newUser = accounts[5];
 
     // 1. deploy base contracts
-    erc725Utils = await new ERC725Utils__factory(owner).deploy();
-    baseUniversalProfile = await deployBaseUniversalProfile(erc725Utils, owner);
-    baseKeyManager = await deployBaseKeyManager(erc725Utils, owner);
+    erc725Utils = await deployERC725Utils();
+    baseUniversalProfile = await deployBaseUniversalProfile(erc725Utils.address);
+    baseKeyManager = await deployBaseKeyManager(erc725Utils.address);
 
     // 2. deploy proxy contracts
     let proxyUniversalProfileAddress = await deployProxy(baseUniversalProfile.address, owner);
     let proxyKeyManagerAddress = await deployProxy(baseKeyManager.address, owner);
     proxyUniversalProfile = await attachUniversalProfileProxy(
-      erc725Utils,
-      owner,
+      erc725Utils.address,
       proxyUniversalProfileAddress
     );
-    proxyKeyManager = await attachKeyManagerProxy(erc725Utils, owner, proxyKeyManagerAddress);
+    proxyKeyManager = await attachKeyManagerProxy(erc725Utils.address, proxyKeyManagerAddress);
 
     // 3. initialize them
     await proxyUniversalProfile.initialize(owner.address);
@@ -422,11 +400,13 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
 
     it("App should be allowed to interact with `TargetContract`", async () => {
+      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", ["Test"]);
+
       let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         targetContract.address,
         0,
-        EMPTY_PAYLOAD,
+        targetContractPayload,
       ]);
 
       let result = await proxyKeyManager.connect(app).callStatic.execute(payload);

@@ -1,10 +1,7 @@
-import { ContractFactory, SignerWithAddress } from "ethers";
-import {
-  ERC725Utils,
-  UniversalProfileInit,
-  UniversalProfileInit__factory,
-  KeyManagerInit__factory,
-} from "../../build/types";
+import { ethers } from "hardhat";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { UniversalProfileInit, KeyManagerInit } from "../../build/types";
+
 // prettier-ignore
 /**
  * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
@@ -36,44 +33,42 @@ export async function deployProxy(baseContractAddress: string, deployer: SignerW
 }
 
 export async function deployBaseUniversalProfile(
-  erc725Utils: ERC725Utils,
-  deployer: SignerWithAddress
-) {
-  return await new UniversalProfileInit__factory(
-    { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-    deployer
-  ).deploy();
+  erc725UtilsAddress: string
+): Promise<UniversalProfileInit> {
+  const universalProfileInitFactory = await ethers.getContractFactory("UniversalProfileInit", {
+    libraries: {
+      ERC725Utils: erc725UtilsAddress,
+    },
+  });
+  return await universalProfileInitFactory.deploy();
 }
 
 export async function attachUniversalProfileProxy(
-  erc725Utils: ERC725Utils,
-  deployer: SignerWithAddress,
+  erc725UtilsAddress: string,
   proxyAddress: string
-) {
-  return await new UniversalProfileInit__factory(
-    { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-    deployer
-  ).attach(proxyAddress);
+): Promise<UniversalProfileInit> {
+  const universalProfileInitFactory = await ethers.getContractFactory("UniversalProfileInit", {
+    libraries: {
+      ERC725Utils: erc725UtilsAddress,
+    },
+  });
+  return await universalProfileInitFactory.attach(proxyAddress);
 }
 
-export async function deployBaseKeyManager(erc725Utils: ERC725Utils, deployer: SignerWithAddress) {
-  return await new KeyManagerInit__factory(
-    { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-    deployer
-  ).deploy();
+export async function deployBaseKeyManager(erc725UtilsAddress: string): Promise<KeyManagerInit> {
+  const keyManagerInitFactory = await ethers.getContractFactory("KeyManagerInit", {
+    libraries: {
+      ERC725Utils: erc725UtilsAddress,
+    },
+  });
+  return await keyManagerInitFactory.deploy();
 }
 
-export async function attachKeyManagerProxy(
-  erc725Utils: ERC725Utils,
-  deployer: SignerWithAddress,
-  proxyAddress: string
-) {
-  return await new KeyManagerInit__factory(
-    { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
-    deployer
-  ).attach(proxyAddress);
+export async function attachKeyManagerProxy(erc725UtilsAddress: string, proxyAddress: string) {
+  const keyManagerInitFactory = await ethers.getContractFactory("KeyManagerInit", {
+    libraries: {
+      ERC725Utils: erc725UtilsAddress,
+    },
+  });
+  return await keyManagerInitFactory.attach(proxyAddress);
 }
-
-async function deployBaseUniversalReceiver() {}
-
-async function deployBaseUniversalReceiverDelegate() {}

@@ -1,19 +1,25 @@
 import { encodeData, flattenEncodedData, KeyValuePair } from "@erc725/erc725.js";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { ERC725Account, ERC725Account__factory } from "../build/types";
+import { ERC725Account, ERC725Utils } from "../build/types";
 import { SCHEMA, getRandomAddresses, generateKeysAndValues } from "./utils/helpers";
+import { deployERC725Utils, deployERC725Account } from "./utils/deploy";
 
 describe("ERC725 Account", () => {
-  let erc725Account: ERC725Account;
-  let lsp3IssuedAssets = [];
   let accounts: SignerWithAddress[];
-  let owner;
+  let owner: SignerWithAddress;
+
+  let erc725Utils: ERC725Utils;
+  let erc725Account: ERC725Account;
+
+  let lsp3IssuedAssets = [];
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
-    erc725Account = await new ERC725Account__factory(owner).deploy(owner.address);
+
+    erc725Utils = await deployERC725Utils();
+    erc725Account = await deployERC725Account(erc725Utils.address, owner);
   });
 
   describe("Display encoded abi for `setData`", () => {
