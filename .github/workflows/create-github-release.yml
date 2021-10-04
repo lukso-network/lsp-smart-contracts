@@ -1,4 +1,4 @@
-# This workflow creates a release it Github with changelog
+# This workflow creates a Github release with changelog and release notes
 name: Create Github Release
 
 on:
