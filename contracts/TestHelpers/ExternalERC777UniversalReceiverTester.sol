@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
+import "../../submodules/ERC725/implementations/contracts/ILSP1/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
@@ -36,7 +36,7 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
     ) 
         external 
         override 
-        returns (bytes32)
+        returns (bytes memory)
     {
 
         if (typeId == _TOKENS_RECIPIENT_INTERFACE_HASH) {

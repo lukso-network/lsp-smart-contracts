@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
+import "../../submodules/ERC725/implementations/contracts/ILSP1/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
@@ -15,7 +15,7 @@ contract ExternalERC777UniversalReceiverRejectTester is ERC165Storage, ILSP1Dele
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 
-    function universalReceiverDelegate(address, bytes32, bytes memory) external pure override returns(bytes32){
+    function universalReceiverDelegate(address, bytes32, bytes memory) external pure override returns(bytes memory){
         require(false, "We reject everything");
         return "";
     }
