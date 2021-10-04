@@ -54,37 +54,4 @@ contract UniversalProfileInit is ERC165Storage, ERC725AccountInit {
         }
     }
 
-    /**
-    * @notice Notify the smart contract about any received asset
-    * LSP1 interface
-    *
-    * @param _typeId The type of transfer received
-    * @param _data The data received
-    */
-    function universalReceiver(bytes32 _typeId, bytes calldata _data)
-        external
-        override
-        virtual
-        returns (bytes memory returnValue)
-    {
-        bytes memory receiverData = ERC725YInit(this).getDataSingle(_UNIVERSAL_RECEIVER_DELEGATE_KEY);
-        returnValue = "";
-
-        // call external contract
-        if (receiverData.length == 20) {
-            address universalReceiverAddress = BytesLib.toAddress(receiverData, 0);
-
-            if(ERC165(universalReceiverAddress).supportsInterface(_INTERFACE_ID_LSP1DELEGATE)) {
-                returnValue = ILSP1Delegate(universalReceiverAddress).universalReceiverDelegate(
-                    _msgSender(), 
-                    _typeId, 
-                    _data
-                );
-            }
-        }
-
-        emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
-
-        return returnValue;
-    }
 }
