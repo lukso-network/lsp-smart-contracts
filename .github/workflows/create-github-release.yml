@@ -1,0 +1,68 @@
+# This workflow creates a release it Github with changelog
+name: Create Github Release
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  github-release:
+      runs-on: ubuntu-latest
+      steps: 
+      - uses: actions/checkout@v2
+        with: 
+          fetch-depth: 0 
+      
+      - name: Check if version changed
+        uses: EndBug/version-check@v1
+        id: check
+
+      - name: Use Node.js '14.16.0'
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14.16.0"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@lukso"
+          cache: "npm"
+      
+      - name: Git Config
+        if: steps.check.outputs.changed == 'true'
+        run: |- 
+          git config --global user.email "release@lukso.network"
+          git config --global user.name "Lukso Bot"
+
+      - name: Set Version
+        if: steps.check.outputs.changed == 'true'
+        run : |- 
+          APP_VERSION="v$(node -pe "require('./package.json').version")"
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+
+      - name: Git Tag
+        if: steps.check.outputs.changed == 'true'
+        run : git tag -a ${{ env.APP_VERSION }} -m "Release Version ${{ env.APP_VERSION }}"
+
+      # Change Branches here so we dont push directly to main
+      - uses: actions/checkout@v2
+        with: 
+          ref: develop 
+
+      - name: Push Tag
+        if: steps.check.outputs.changed == 'true'
+        run : |- 
+          git push --set-upstream origin develop tag ${{ env.APP_VERSION }}
+
+      - name: Extract release notes
+        if: steps.check.outputs.changed == 'true'
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
+        with:
+          release_notes_file: RELEASENOTES.md
+
+      - uses: ncipollo/release-action@v1
+        if: steps.check.outputs.changed == 'true'
+        with:
+          bodyFile: "RELEASENOTES.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.APP_VERSION }}
