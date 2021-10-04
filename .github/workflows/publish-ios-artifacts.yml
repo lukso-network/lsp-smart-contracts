@@ -50,8 +50,8 @@ jobs:
         run: |
           git clone https://.:${{ secrets.IOSSDK_GITHUB_REPO_KEY }}@github.com/lukso-network/universalprofile-ios-sdk.git
           cd universalprofile-ios-sdk
-          git config --global user.email "jean@lukso.io"
-          git config --global user.name "Jean Cavallera"
+          git config --global user.email "release@lukso.network"
+          git config --global user.name "Lukso Bot"
           git checkout -b abi-update-release
           cp ../ios/UPContractsAbi.swift universalprofile-ios-sdk/UPContractsAbi.swift
           git add .
