@@ -7,9 +7,8 @@ import {
   ERC725Utils,
   ERC725Utils__factory,
   UniversalProfile,
-  UniversalProfile__factory,
   KeyManager,
-  KeyManager__factory,
+  UniversalReceiverAddressStore,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
   UniversalReceiverTester__factory,
@@ -20,7 +19,7 @@ import {
 
 // custom utils
 import { KEYS, PERMISSIONS } from "./utils/keymanager";
-import { deployUniversalProfile, deployKeyManager } from "./utils/deploy";
+import { deployERC725Utils, deployUniversalProfile, deployKeyManager } from "./utils/deploy";
 
 /** @todo put all of these in constant file */
 
@@ -37,6 +36,8 @@ const ERC1271_FAIL_VALUE = "0xffffffff";
 // Universal Receiver
 const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+// keccak256("UniversalReceiver(address,bytes32,bytes,bytes)")
+const EVENT_SIGNATURE = "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3";
 
 describe("UniversalProfile", () => {
   let accounts: SignerWithAddress[] = [];
@@ -48,8 +49,8 @@ describe("UniversalProfile", () => {
   beforeAll(async () => {
     accounts = await ethers.getSigners();
     owner = accounts[2];
-    erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-    UniversalProfile = await deployUniversalProfile(erc725Utils, owner);
+    erc725Utils = await deployERC725Utils();
+    UniversalProfile = await deployUniversalProfile(erc725Utils.address, owner);
   });
 
   describe("Accounts Deployment", () => {
@@ -107,7 +108,7 @@ describe("UniversalProfile", () => {
   describe("ERC1271", () => {
     it("Can verify signature from owner", async () => {
       const signer = accounts[9];
-      const account = await deployUniversalProfile(erc725Utils, signer);
+      const account = await deployUniversalProfile(erc725Utils.address, signer);
 
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
@@ -121,7 +122,7 @@ describe("UniversalProfile", () => {
       const owner = accounts[2];
       const signer = accounts[9];
 
-      const account = await deployUniversalProfile(erc725Utils, owner);
+      const account = await deployUniversalProfile(erc725Utils.address, owner);
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
@@ -137,7 +138,7 @@ describe("UniversalProfile", () => {
 
     it("Create account", async () => {
       const owner = accounts[2];
-      const newaccount = await deployUniversalProfile(erc725Utils, owner);
+      const newaccount = await deployUniversalProfile(erc725Utils.address, owner);
 
       expect(await newaccount.callStatic.owner()).toEqual(owner.address);
     });
@@ -149,7 +150,7 @@ describe("UniversalProfile", () => {
       );
       let value = "0x" + (count++).toString(16);
 
-      await UniversalProfile.setData([key], [value], { from: owner.address });
+      await UniversalProfile.connect(owner).setData([key], [value]);
 
       let [result] = await UniversalProfile.callStatic.getData([key]);
       expect(result).toEqual(value);
@@ -162,7 +163,7 @@ describe("UniversalProfile", () => {
       );
       let value = "0x" + (count++).toString(16);
 
-      await UniversalProfile.setData([key], [value], { from: owner.address });
+      await UniversalProfile.connect(owner).setData([key], [value]);
 
       let [result] = await UniversalProfile.callStatic.getData([key]);
       expect(result).toEqual(value);
@@ -175,7 +176,7 @@ describe("UniversalProfile", () => {
       );
       let value = "0x" + (count++).toString(16);
 
-      await UniversalProfile.setData([key], [value], { from: owner.address });
+      await UniversalProfile.connect(owner).setData([key], [value]);
 
       let [result] = await UniversalProfile.callStatic.getData([key]);
       expect(result).toEqual(value);
@@ -190,7 +191,7 @@ describe("UniversalProfile", () => {
       );
       let value = "0x" + (count++).toString(16);
 
-      await UniversalProfile.setData([key], [value], { from: owner.address });
+      await UniversalProfile.connect(owner).setData([key], [value]);
 
       let [result] = await UniversalProfile.callStatic.getData([key]);
       expect(result).toEqual(value);
@@ -206,7 +207,7 @@ describe("UniversalProfile", () => {
           "https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD"
         )
       );
-      await UniversalProfile.setData([key], [value], { from: owner.address });
+      await UniversalProfile.connect(owner).setData([key], [value]);
 
       let [result] = await UniversalProfile.getData([key]);
       expect(result).toEqual(value);
@@ -219,7 +220,7 @@ describe("UniversalProfile", () => {
       );
       let value = "0x" + count.toString(16);
 
-      await UniversalProfile.setData([key], [value], { from: owner.address });
+      await UniversalProfile.connect(owner).setData([key], [value]);
 
       let [result] = await UniversalProfile.getData([key]);
       expect(result).toEqual(value);
@@ -238,7 +239,7 @@ describe("UniversalProfile", () => {
       );
 
       let value = "0x" + count.toString(16);
-      await UniversalProfile.setData([key], [value], { from: owner.address });
+      await UniversalProfile.connect(owner).setData([key], [value]);
 
       let [result] = await UniversalProfile.getData([key]);
       expect(result).toEqual(value);
@@ -266,7 +267,7 @@ describe("UniversalProfile", () => {
       }
 
       // no need to wrap in square brackets here, as `keys` and `values` are arrays
-      await UniversalProfile.setData(keys, values, { from: owner.address });
+      await UniversalProfile.connect(owner).setData(keys, values);
       let result = await UniversalProfile.callStatic.getData(keys);
       expect(result).toEqual(values);
     });
@@ -291,12 +292,12 @@ describe("UniversalProfile", () => {
     beforeEach(async () => {
       owner = accounts[3];
       newOwner = accounts[5];
-      erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      account = await deployUniversalProfile(erc725Utils, owner);
+      erc725Utils = await deployERC725Utils();
+      account = await deployUniversalProfile(erc725Utils.address, owner);
     });
 
     it("Upgrade ownership correctly", async () => {
-      await account.transferOwnership(newOwner.address, { from: owner.address });
+      await account.connect(owner).transferOwnership(newOwner.address);
       const idOwner = await account.callStatic.owner();
 
       expect(idOwner).toEqual(newOwner.address);
@@ -320,7 +321,7 @@ describe("UniversalProfile", () => {
       );
       let data = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data"));
 
-      await account.setData([key], [data], { from: owner.address });
+      await account.connect(owner).setData([key], [data]);
 
       let [fetchedData] = await account.getData([key]);
 
@@ -373,9 +374,7 @@ describe("UniversalProfile", () => {
 
       const destBalance = await provider.getBalance(dest.address);
 
-      await account.execute(OPERATION_CALL, dest.address, amount, "0x00", {
-        from: owner.address,
-      });
+      await account.connect(owner).execute(OPERATION_CALL, dest.address, amount, "0x00");
 
       const finalBalance = await provider.getBalance(dest.address);
 
@@ -404,15 +403,14 @@ describe("UniversalProfile", () => {
     it("Allows owner to execute create", async () => {
       const OPERATION_CREATE = 0x3;
 
-      let transaction = await account.execute(
-        OPERATION_CREATE,
-        "0x0000000000000000000000000000000000000000",
-        "0",
-        "0x608060405234801561001057600080fd5b506040516105f93803806105f98339818101604052602081101561003357600080fd5b810190808051906020019092919050505080600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050610564806100956000396000f3fe60806040526004361061003f5760003560e01c806344c028fe1461004157806354f6127f146100fb578063749ebfb81461014a5780638da5cb5b1461018f575b005b34801561004d57600080fd5b506100f96004803603608081101561006457600080fd5b8101908080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803590602001906401000000008111156100b557600080fd5b8201836020820111156100c757600080fd5b803590602001918460018302840111640100000000831117156100e957600080fd5b90919293919293905050506101e6565b005b34801561010757600080fd5b506101346004803603602081101561011e57600080fd5b81019080803590602001909291905050506103b7565b6040518082815260200191505060405180910390f35b34801561015657600080fd5b5061018d6004803603604081101561016d57600080fd5b8101908080359060200190929190803590602001909291905050506103d3565b005b34801561019b57600080fd5b506101a46104df565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146102a9576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f6f6e6c792d6f776e65722d616c6c6f776564000000000000000000000000000081525060200191505060405180910390fd5b600085141561030757610301848484848080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f82011690508083019250505050505050610505565b506103b0565b60018514156103aa57600061035f83838080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f8201169050808301925050505050505061051d565b90508073ffffffffffffffffffffffffffffffffffffffff167fcf78cf0d6f3d8371e1075c69c492ab4ec5d8cf23a1a239b6a51a1d00be7ca31260405160405180910390a2506103af565b600080fd5b5b5050505050565b6000806000838152602001908152602001600020549050919050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610496576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f6f6e6c792d6f776e65722d616c6c6f776564000000000000000000000000000081525060200191505060405180910390fd5b806000808481526020019081526020016000208190555080827f35553580e4553c909abeb5764e842ce1f93c45f9f614bde2a2ca5f5b7b7dc0fb60405160405180910390a35050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600080600083516020850186885af190509392505050565b60008151602083016000f0905091905056fea265627a7a723158207fb9c8d804ca4e17aec99dbd7aab0a61583b56ebcbcb7e05589f97043968644364736f6c634300051100320000000000000000000000009501234ef8368466383d698c7fe7bd5ded85b4f6",
-        {
-          from: owner.address,
-        }
-      );
+      let transaction = await account
+        .connect(owner)
+        .execute(
+          OPERATION_CREATE,
+          "0x0000000000000000000000000000000000000000",
+          "0",
+          "0x608060405234801561001057600080fd5b506040516105f93803806105f98339818101604052602081101561003357600080fd5b810190808051906020019092919050505080600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050610564806100956000396000f3fe60806040526004361061003f5760003560e01c806344c028fe1461004157806354f6127f146100fb578063749ebfb81461014a5780638da5cb5b1461018f575b005b34801561004d57600080fd5b506100f96004803603608081101561006457600080fd5b8101908080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803590602001906401000000008111156100b557600080fd5b8201836020820111156100c757600080fd5b803590602001918460018302840111640100000000831117156100e957600080fd5b90919293919293905050506101e6565b005b34801561010757600080fd5b506101346004803603602081101561011e57600080fd5b81019080803590602001909291905050506103b7565b6040518082815260200191505060405180910390f35b34801561015657600080fd5b5061018d6004803603604081101561016d57600080fd5b8101908080359060200190929190803590602001909291905050506103d3565b005b34801561019b57600080fd5b506101a46104df565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146102a9576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f6f6e6c792d6f776e65722d616c6c6f776564000000000000000000000000000081525060200191505060405180910390fd5b600085141561030757610301848484848080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f82011690508083019250505050505050610505565b506103b0565b60018514156103aa57600061035f83838080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f8201169050808301925050505050505061051d565b90508073ffffffffffffffffffffffffffffffffffffffff167fcf78cf0d6f3d8371e1075c69c492ab4ec5d8cf23a1a239b6a51a1d00be7ca31260405160405180910390a2506103af565b600080fd5b5b5050505050565b6000806000838152602001908152602001600020549050919050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610496576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f6f6e6c792d6f776e65722d616c6c6f776564000000000000000000000000000081525060200191505060405180910390fd5b806000808481526020019081526020016000208190555080827f35553580e4553c909abeb5764e842ce1f93c45f9f614bde2a2ca5f5b7b7dc0fb60405160405180910390a35050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600080600083516020850186885af190509392505050565b60008151602083016000f0905091905056fea265627a7a723158207fb9c8d804ca4e17aec99dbd7aab0a61583b56ebcbcb7e05589f97043968644364736f6c634300051100320000000000000000000000009501234ef8368466383d698c7fe7bd5ded85b4f6"
+        );
 
       let receipt = await transaction.wait();
       expect(receipt.events[1].event).toEqual("ContractCreated");
@@ -456,23 +454,27 @@ describe("UniversalProfile", () => {
   });
 
   describe("Universal Receiver", () => {
+    /**
+     * @debug
+     * Expected: "0x54b98940949b5ac0325c889c84db302d4e18faec431b48bdc81706bfe482cfbd"
+     * Received: "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3"
+     */
     it("Call account and check for 'UniversalReceiver' event", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils, owner);
-      //   const account = await new UniversalProfile__factory(owner).deploy(owner.address);
-
+      const account = await deployUniversalProfile(erc725Utils.address, owner);
       // use the checker contract to call account
       let checker = await new UniversalReceiverTester__factory(owner).deploy();
-      let transaction = await checker.callImplementationAndReturn(account.address, RANDOM_BYTES32);
+
+      let transaction = await checker
+        .connect(owner)
+        .callImplementationAndReturn(account.address, RANDOM_BYTES32);
       let receipt = await transaction.wait();
 
       // event should come from account
       expect(receipt.logs[0].address).toEqual(account.address);
       // event signature
-      expect(receipt.logs[0].topics[0]).toEqual(
-        "0x54b98940949b5ac0325c889c84db302d4e18faec431b48bdc81706bfe482cfbd"
-      );
+      expect(receipt.logs[0].topics[0]).toEqual(EVENT_SIGNATURE);
       // from
       expect(receipt.logs[0].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -485,19 +487,23 @@ describe("UniversalProfile", () => {
       );
     });
 
+    /**
+     * @debug
+     * Expected: "0x54b98940949b5ac0325c889c84db302d4e18faec431b48bdc81706bfe482cfbd"
+     * Received: "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3"
+     */
     it("Call account and check for 'ReceivedERC777' event in external account", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils, owner);
-      // const account = await new UniversalProfile__factory(owner).deploy(owner.address);
+      const account = await deployUniversalProfile(erc725Utils.address, owner);
       const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
         owner
       ).deploy();
 
       // set account2 as new receiver for account1
-      await account.setData([UNIVERSALRECEIVER_KEY], [externalUniversalReceiver.address], {
-        from: owner.address,
-      });
+      await account
+        .connect(owner)
+        .setData([UNIVERSALRECEIVER_KEY], [externalUniversalReceiver.address]);
 
       // use the checker contract to call account
       let checker = await new UniversalReceiverTester__factory(owner).deploy();
@@ -506,6 +512,11 @@ describe("UniversalProfile", () => {
         ERC777TokensRecipient
       );
       let receipt = await transaction.wait();
+
+      console.log("accounts[2] (owner): ", owner.address);
+      console.log("account (UP): ", account.address);
+      console.log("externalUniversalReceiver: ", externalUniversalReceiver.address);
+      console.log("checker: ", checker.address);
 
       // event signature "event ReceivedERC777(address indexed token, address indexed _operator, address indexed _from, address _to, uint256 _amount)"
       // event should come from account externalUniversalReceiver
@@ -529,9 +540,7 @@ describe("UniversalProfile", () => {
       // event should come from account account
       expect(receipt.logs[1].address).toEqual(account.address);
       // signature
-      expect(receipt.logs[1].topics[0]).toEqual(
-        "0x54b98940949b5ac0325c889c84db302d4e18faec431b48bdc81706bfe482cfbd"
-      );
+      expect(receipt.logs[1].topics[0]).toEqual(EVENT_SIGNATURE);
       // "from" is the checker
       expect(receipt.logs[1].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -547,8 +556,7 @@ describe("UniversalProfile", () => {
     it("Mint ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils, owner);
-      // const account = await new UniversalProfile__factory(owner).deploy(owner.address);
+      const account = await deployUniversalProfile(erc725Utils.address, owner);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(owner.address);
@@ -581,9 +589,8 @@ describe("UniversalProfile", () => {
 
     it("Transfer ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
-      const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils, owner);
-      // const account = await new UniversalProfile__factory(owner).deploy(owner.address);
+      const erc725Utils = await deployERC725Utils();
+      const account = await deployUniversalProfile(erc725Utils.address, owner);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
@@ -626,25 +633,24 @@ describe("UniversalProfile", () => {
 
     it("Mint ERC777 and LSP4 to LSP3 account and delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
-      const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils, owner);
-      // const account = await new UniversalProfile__factory(owner).deploy(owner.address);
+      const erc725Utils = await deployERC725Utils();
+      const account = await deployUniversalProfile(erc725Utils.address, owner);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
 
       // set account2 as new receiver for account1
-      await account.setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address], {
-        from: owner.address,
-      });
+      await account
+        .connect(owner)
+        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
 
-      let tokenOwner = accounts[2].address;
+      let tokenOwner = accounts[2];
 
       let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner,
+        tokenOwner.address,
       ]);
       let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner,
+        tokenOwner.address,
         "MyDigitalCloth",
         "DIGICLOTH01",
         []
@@ -653,10 +659,10 @@ describe("UniversalProfile", () => {
       expect(await erc777.balanceOf(account.address)).toEqBN(0);
       expect(await digitalCertificate.balanceOf(account.address)).toEqBN(0);
 
-      await erc777.mint(account.address, "50", { from: tokenOwner });
+      await erc777.connect(tokenOwner).mint(account.address, "50");
       expect(await erc777.balanceOf(account.address)).toEqBN(50);
 
-      await digitalCertificate.mint(account.address, "50", { from: tokenOwner });
+      await digitalCertificate.connect(tokenOwner).mint(account.address, "50");
       expect(await digitalCertificate.balanceOf(account.address)).toEqBN(50);
 
       expect(await universalReceiverDelegate.containsAddress(erc777.address)).toBeTruthy();
@@ -667,40 +673,39 @@ describe("UniversalProfile", () => {
 
     it("Transfer ERC777 and LSP4 from LSP3 account with delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
-      const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils, owner);
-      // const account = await new UniversalProfile__factory(owner).deploy(owner.address);
+      const erc725Utils = await deployERC725Utils();
+      const account = await deployUniversalProfile(erc725Utils.address, owner);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
 
       // set account2 as new receiver for account1
-      await account.setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address], {
-        from: owner.address,
-      });
+      await account
+        .connect(owner)
+        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
 
-      let tokenOwner = accounts[2].address;
+      let tokenOwner = accounts[2];
 
       let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner,
+        tokenOwner.address,
       ]);
       let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner,
+        tokenOwner.address,
         "MyDigitalCloth",
         "DIGICLOTH01",
         []
       );
 
-      await erc777.mint(tokenOwner, "100", { from: tokenOwner });
-      await digitalCertificate.mint(tokenOwner, "100", { from: tokenOwner });
+      await erc777.connect(tokenOwner).mint(tokenOwner.address, "100");
+      await digitalCertificate.connect(tokenOwner).mint(tokenOwner.address, "100");
 
       expect(await erc777.balanceOf(account.address)).toEqBN(0);
       expect(await digitalCertificate.balanceOf(account.address)).toEqBN(0);
 
-      await erc777.send(account.address, "50", "0x", { from: tokenOwner });
-      await erc777.transfer(account.address, "50", { from: tokenOwner });
-      await digitalCertificate.send(account.address, "50", "0x", { from: tokenOwner });
-      await digitalCertificate.transfer(account.address, "50", { from: tokenOwner });
+      await erc777.connect(tokenOwner).send(account.address, "50", "0x");
+      await erc777.connect(tokenOwner).transfer(account.address, "50");
+      await digitalCertificate.connect(tokenOwner).send(account.address, "50", "0x");
+      await digitalCertificate.connect(tokenOwner).transfer(account.address, "50");
 
       expect(await erc777.balanceOf(account.address)).toEqBN("100");
       expect(await digitalCertificate.balanceOf(account.address)).toEqBN("100");
@@ -711,20 +716,20 @@ describe("UniversalProfile", () => {
       ).toBeTruthy();
     });
 
+    /** @debug Transaction reverted: function returned an unexpected amount of data */
     it("Transfer from ERC777 and LSP4 to account and delegate to UniversalReceiverAddressStore", async () => {
       const OPERATION_CALL = 0x0;
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils, owner);
-      // const account = await new UniversalProfile__factory(owner).deploy(owner.address);
+      const account = await deployUniversalProfile(erc725Utils.address, owner);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
 
       // set account2 as new receiver for account1
-      await account.setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address], {
-        from: owner.address,
-      });
+      await account
+        .connect(owner)
+        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
 
       let tokenOwner = accounts[3];
 
@@ -746,23 +751,27 @@ describe("UniversalProfile", () => {
 
       let abi;
       abi = erc777.interface.encodeFunctionData("send", [accounts[4].address, "50", "0x"]);
-      await account.execute(OPERATION_CALL, erc777.address, 0, abi, { gasLimit: 3_000_000 });
+      await account
+        .connect(owner)
+        .execute(OPERATION_CALL, erc777.address, 0, abi, { gasLimit: 3_000_000 });
       abi = erc777.interface.encodeFunctionData("transfer", [accounts[4].address, "50"]);
-      await account.execute(OPERATION_CALL, erc777.address, 0, abi, { gasLimit: 3_000_000 });
+      await account
+        .connect(owner)
+        .execute(OPERATION_CALL, erc777.address, 0, abi, { gasLimit: 3_000_000 });
 
       abi = digitalCertificate.interface.encodeFunctionData("send", [
         accounts[4].address,
         "50",
         "0x",
       ]);
-      await account.execute(OPERATION_CALL, digitalCertificate.address, 0, abi, {
+      await account.connect(owner).execute(OPERATION_CALL, digitalCertificate.address, 0, abi, {
         gasLimit: 3_000_000,
       });
       abi = digitalCertificate.interface.encodeFunctionData("transfer", [
         accounts[4].address,
         "50",
       ]);
-      await account.execute(OPERATION_CALL, digitalCertificate.address, 0, abi, {
+      await account.connect(owner).execute(OPERATION_CALL, digitalCertificate.address, 0, abi, {
         gasLimit: 3_000_000,
       });
 
@@ -788,9 +797,9 @@ describe("UniversalProfile", () => {
       owner = accounts[6];
       signer = accounts[7];
       thirdParty = accounts[8];
-      erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      UniversalProfile = await deployUniversalProfile(erc725Utils, owner);
-      keyManager = await deployKeyManager(erc725Utils, owner, UniversalProfile);
+      erc725Utils = await deployERC725Utils();
+      UniversalProfile = await deployUniversalProfile(erc725Utils.address, owner);
+      keyManager = await deployKeyManager(erc725Utils.address, UniversalProfile);
 
       // give all permissions to owner
       await UniversalProfile.connect(owner).setData(
@@ -799,11 +808,17 @@ describe("UniversalProfile", () => {
       );
 
       // give SIGN permission to signer
-      await UniversalProfile.setData([KEYS.PERMISSIONS + signer.address.substr(2)], ["0x80"]);
+      await UniversalProfile.connect(owner).setData(
+        [KEYS.PERMISSIONS + signer.address.substr(2)],
+        ["0x80"]
+      );
       // give CALL permission to non-signer
-      await UniversalProfile.setData([KEYS.PERMISSIONS + thirdParty.address.substr(2)], ["0x08"]);
+      await UniversalProfile.connect(owner).setData(
+        [KEYS.PERMISSIONS + thirdParty.address.substr(2)],
+        ["0x08"]
+      );
 
-      await UniversalProfile.transferOwnership(keyManager.address);
+      await UniversalProfile.connect(owner).transferOwnership(keyManager.address);
     });
 
     it("Accounts should have owner as KeyManager", async () => {
