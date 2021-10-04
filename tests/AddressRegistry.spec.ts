@@ -11,7 +11,7 @@ import {
   UniversalProfile__factory,
 } from "../build/types";
 
-import { deployUniversalProfile } from "./utils/deploy";
+import { deployERC725Utils, deployUniversalProfile } from "./utils/deploy";
 
 describe("Address Registry contracts", () => {
   let addressRegistry: AddressRegistry;
@@ -87,8 +87,8 @@ describe("Address Registry contracts", () => {
 
     beforeEach(async () => {
       owner = accounts[3];
-      erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      account = await deployUniversalProfile(erc725Utils, owner);
+      erc725Utils = await deployERC725Utils();
+      account = await deployUniversalProfile(erc725Utils.address, owner);
       addressRegistryRequireERC725 = await new AddressRegistryRequiresERC725__factory(
         owner
       ).deploy();
@@ -99,8 +99,7 @@ describe("Address Registry contracts", () => {
         account.address,
       ]);
 
-      await account.execute(0, addressRegistryRequireERC725.address, 0, abi, {
-        from: owner.address,
+      await account.connect(owner).execute(0, addressRegistryRequireERC725.address, 0, abi, {
         gasLimit: 3_000_000,
       });
       expect(await addressRegistryRequireERC725.getAddress(0)).toEqual(account.address);
@@ -116,7 +115,7 @@ describe("Address Registry contracts", () => {
         account.address,
       ]);
 
-      await account.execute(0, addressRegistryRequireERC725.address, 0, abi);
+      await account.connect(owner).execute(0, addressRegistryRequireERC725.address, 0, abi);
       expect(await addressRegistryRequireERC725.containsAddress(account.address)).toEqual(false);
     });
 
