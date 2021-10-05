@@ -87,7 +87,13 @@ To create a release
 ```bash
 $ npm run release
 ```
-This  invokes [standard-version](https://github.com/conventional-changelog/standard-version) which calculates the new version number and generates release notes from the conventional git commit history. The version number is increased in `package.json` and the new version number and additions to `CHANGELOG.md` are committed as `chore(release): <version>`.
+
+This command invokes [standard-version](https://github.com/conventional-changelog/standard-version) which calculates the new version number and generates release notes from the conventional git commit history. Whether there is a `patch`, `minor` or `major` version increase is calculated automatically based on the conventional git commit prefixes (`feat` => `minor`, `docs` => `patch`, `fix` => `patch`). The version number is increased in `package.json` and the new version number and additions to `CHANGELOG.md` are committed as `chore(release): <version>`.
+
+Or to trigger a major release  run:
+```bash
+npm run release -- -r major
+```
 
 2) Push the release commit to develop
 ```bash
