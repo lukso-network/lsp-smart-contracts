@@ -31,7 +31,7 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: |- 
           git config --global user.email "release@lukso.network"
-          git config --global user.name "Lukso Bot"
+          git config --global user.name "LUKSO Bot"
 
       - name: Set Version
         if: steps.check.outputs.changed == 'true'
@@ -39,21 +39,46 @@ jobs:
           APP_VERSION="v$(node -pe "require('./package.json').version")"
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
-      - name: Git Tag
-        if: steps.check.outputs.changed == 'true'
-        run : git tag -a ${{ env.APP_VERSION }} -m "Release Version ${{ env.APP_VERSION }}"
-
-      # Change Branches here so we dont push directly to main
-      - uses: actions/checkout@v2
-        with: 
-          ref: develop 
-
-      - name: Push Tag
+      - name: Create and push Git Tag
         if: steps.check.outputs.changed == 'true'
         run : |- 
+          git tag -a ${{ env.APP_VERSION }} -m "Release Version ${{ env.APP_VERSION }}"
           git push --set-upstream origin develop tag ${{ env.APP_VERSION }}
 
-      - name: Extract release notes
+      - if: steps.check.outputs.changed == 'true'
+        run: |-
+          git submodule update --init --recursive
+          npm ci
+          cd ./submodules/ERC725/implementations && npm install
+
+      # Build Android Artifact
+      - name: Generate Android artifacts using shell
+        if: steps.check.outputs.changed == 'true'
+        run: bash make-jar.sh
+
+      - name: Set up our JDK environment
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 1.11
+
+      - name: Grant rights
+        if: steps.check.outputs.changed == 'true'
+        run: chmod +x java/build.gradle
+
+      - name: Build jar
+        if: steps.check.outputs.changed == 'true'
+        working-directory: ./java
+        run: gradle build
+
+      # Build ios Artifact
+      - name: Generate ABIs for iOS using shell script
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          mkdir ios
+          node make-ios.js
+
+      - name: Extract release notes from CHANGELOG
         if: steps.check.outputs.changed == 'true'
         id: extract-release-notes
         uses: ffurrer2/extract-release-notes@v1
@@ -63,6 +88,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         if: steps.check.outputs.changed == 'true'
         with:
+          artifacts: "ios/UPContractsAbi.swift,java/build/libs/upcontracts.jar"
           bodyFile: "RELEASENOTES.md"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.APP_VERSION }}
