@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../../submodules/ERC725/implementations/contracts/ILSP1/ILSP1_UniversalReceiverDelegate.sol";
+import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
 import "../Registries/AddressRegistry.sol";
