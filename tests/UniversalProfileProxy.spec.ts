@@ -21,10 +21,17 @@ import {
 
 /** @todo put all of these in constant file */
 
+/** @deprecated */
 const SupportedStandardsERC725Account_KEY =
   "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
+
+/** @deprecated */
 // Get key: bytes4(keccak256('ERC725Account'))
 const ERC725Account_VALUE = "0xafdeb5d6";
+
+const SupportedStandardsLSP3UniversalProfile_KEY =
+  "0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6";
+const LSP3UniversalProfile_VALUE = "0xabe425d6";
 
 // Interfaces IDs
 const ERC165_INTERFACE_ID = "0x01ffc9a7";
@@ -163,8 +170,8 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
     });
 
     it("Has SupportedStandardsERC725Account_KEY set to ERC725Account_VALUE", async () => {
-      let [result] = await proxy.callStatic.getData([SupportedStandardsERC725Account_KEY]);
-      expect(result).toEqual(ERC725Account_VALUE);
+      let [result] = await proxy.callStatic.getData([SupportedStandardsLSP3UniversalProfile_KEY]);
+      expect(result).toEqual(LSP3UniversalProfile_VALUE);
     });
   });
 
@@ -205,7 +212,14 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(await newProxyAccount.callStatic.owner()).toEqual(owner.address);
     });
 
-    it("Should `setData` in Key-Value store via proxy (item 1)", async () => {
+    /**
+     * The UniversalProfile storage already contains one key-value pair after deployment
+     *  key: 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6 (SupportedStandards:LSP3UniversalProfile)
+     *  value: 0xabe425d6
+     *
+     * This is set within the contract's constructor
+     */
+    it("Should `setData` in Key-Value store via proxy (item 2)", async () => {
       let keys = [abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0xcafe", 32)])];
       let values = ["0xbeef"];
 
@@ -219,16 +233,6 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
 
       expect(result).toEqual(values);
       //   "not the same value in storage for key '0xcafe'"
-    });
-
-    it("Store 32 bytes item 2", async () => {
-      let keys = [
-        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]),
-      ];
-      let values = ["0x" + (count++).toString(16)];
-      await proxy.setData(keys, values);
-
-      expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
     it("Store 32 bytes item 3", async () => {
@@ -261,7 +265,17 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
-    it("Store a long URL as bytes item 6", async () => {
+    it("Store 32 bytes item 6", async () => {
+      let keys = [
+        abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]),
+      ];
+      let values = ["0x" + (count++).toString(16)];
+      await proxy.setData(keys, values);
+
+      expect(await proxy.callStatic.getData(keys)).toEqual(values);
+    });
+
+    it("Store a long URL as bytes item 7", async () => {
       let keys = [
         abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]),
       ];
@@ -277,7 +291,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(await proxy.getData(keys)).toEqual(values);
     });
 
-    it("Store 32 bytes item 7", async () => {
+    it("Store 32 bytes item 8", async () => {
       let keys = [
         abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]),
       ];
@@ -287,12 +301,12 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
-    it("dataCount should be 7", async () => {
+    it("dataCount should be 8", async () => {
       let result = await proxy.allDataKeys();
-      expect(result.length).toEqual(7);
+      expect(result.length).toEqual(8);
     });
 
-    it("Update 32 bytes item 7", async () => {
+    it("Update 32 bytes item 8", async () => {
       let keys = [
         abiCoder.encode(["bytes32"], [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]),
       ];
@@ -303,12 +317,12 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(await proxy.getData(keys)).toEqual(values);
     });
 
-    it("dataCount should remain 7 (after updating item 7)", async () => {
+    it("dataCount should remain 8 (after updating item 8)", async () => {
       let result = await proxy.callStatic.allDataKeys();
-      expect(result.length).toEqual(7);
+      expect(result.length).toEqual(8);
     });
 
-    it("Store multiple 32 bytes item 8-10", async () => {
+    it("Store multiple 32 bytes item 9-11", async () => {
       let keys = [];
       let values = [];
       // increase
@@ -328,9 +342,9 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(result).toEqual(values);
     });
 
-    it("dataCount should be 10", async () => {
+    it("dataCount should be 11", async () => {
       let keys = await proxy.allDataKeys();
-      expect(keys.length).toEqual(10);
+      expect(keys.length).toEqual(11);
 
       // console.log('Stored keys', keys)
     });
