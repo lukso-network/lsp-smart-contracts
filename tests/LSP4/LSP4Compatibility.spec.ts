@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
-import { LSP4CompatibilityTester, LSP4CompatibilityTester__factory } from "../build/types";
-import { deployERC725Utils } from "./utils/deploy";
+import { LSP4CompatibilityTester, LSP4CompatibilityTester__factory } from "../../build/types";
+import { deployERC725Utils } from "../utils/deploy";
 
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 

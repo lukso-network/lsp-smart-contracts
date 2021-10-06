@@ -8,7 +8,7 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
-} from "../build/types";
+} from "../../../build/types";
 
 export const tokenIdAsBytes32 = (tokenId: BigNumberish): BytesLike => {
   return ethers.utils.hexZeroPad(ethers.BigNumber.from(tokenId).toHexString(), 32);
@@ -41,7 +41,11 @@ describe("LSP8CompatibilityForERC721", () => {
       deployParams.symbol
     );
 
-    await lsp8CompatibilityForERC721.mint(owner.address, mintedTokenId);
+    await lsp8CompatibilityForERC721.mint(
+      owner.address,
+      mintedTokenId,
+      ethers.utils.toUtf8Bytes("mint a token for the owner")
+    );
   });
 
   describe("ownerOf", () => {

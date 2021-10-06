@@ -12,11 +12,11 @@ contract LSP8Tester is LSP8 {
     ) LSP8(name, symbol, newOwner) {}
 
     function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
-        _mint(to, bytes32(tokenId), force, data);
+        _mint(to, tokenId, force, data);
     }
 
     function burn(bytes32 tokenId, bytes memory data) public {
-        _burn(bytes32(tokenId), data);
+        _burn(tokenId, data);
     }
 
     function buildMetadataKey(bytes32 tokenId, bool buildAddressKey) public pure returns (bytes32) {

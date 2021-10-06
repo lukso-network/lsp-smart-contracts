@@ -45,12 +45,6 @@ abstract contract LSP8Core is Context, ILSP8 {
     // Mapping a `tokenId` to its authorized operator addresses.
     mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
-    // Mapping a `tokenId` to its index in the _tokenIdOperatorsList;
-    mapping(bytes32 => uint256) internal _tokenIdOperatorIndex;
-
-    // A list of AddressSet, one per existing tokenId;
-    EnumerableSet.AddressSet[] internal _tokenIdOperatorsList;
-
     //
     // --- Token queries
     //
@@ -480,8 +474,6 @@ abstract contract LSP8Core is Context, ILSP8 {
      * transferred to `to`.
      * - When `from` is zero, `tokenId` will be minted for `to`.
      * - When `to` is zero, ``from``'s `tokenId` will be burned.
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
      */
     function _beforeTokenTransfer(
         address from,

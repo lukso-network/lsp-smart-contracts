@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { LSP8CappedSupplyTester, LSP8CappedSupplyTester__factory } from "../build/types";
+import { LSP8CappedSupplyTester, LSP8CappedSupplyTester__factory } from "../../../build/types";
 
 describe("LSP8CappedSupply", () => {
   type TestAccounts = {

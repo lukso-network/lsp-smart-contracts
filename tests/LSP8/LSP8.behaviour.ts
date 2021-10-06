@@ -7,7 +7,7 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
-} from "../build/types";
+} from "../../build/types";
 
 import type { BigNumberish, BytesLike } from "ethers";
 

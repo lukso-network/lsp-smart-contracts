@@ -10,7 +10,7 @@ import "../ILSP8.sol";
  */
 interface ILSP8CappedSupply is ILSP8 {
   /**
-   * @dev Returns the number of tokens that have been minted.
+   * @dev Returns the number of tokens that can be minted.
    */
   function tokenSupplyCap() external view returns (uint256);
 }

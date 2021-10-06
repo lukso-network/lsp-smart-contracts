@@ -12,8 +12,8 @@ contract LSP8CompatibilityForERC721Tester is LSP8, LSP8CompatibilityForERC721 {
       string memory symbol
     ) LSP8(name, symbol, msg.sender) {}
 
-    function mint(address to, uint256 tokenId) public {
+    function mint(address to, uint256 tokenId, bytes calldata data) public {
         // NOTE: using force=true so we can send to EOA in test
-        _mint(to, bytes32(tokenId), true, "compatible token printer go brrr");
+        _mint(to, bytes32(tokenId), true, data);
     }
 }

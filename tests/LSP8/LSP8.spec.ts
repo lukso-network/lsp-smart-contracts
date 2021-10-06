@@ -1,7 +1,7 @@
 import { waffleJest } from "@ethereum-waffle/jest";
 import { ethers } from "hardhat";
-import { LSP8Tester__factory, LSP8InitTester__factory } from "../build/types";
-import { deployProxy } from "./utils/proxy";
+import { LSP8Tester__factory, LSP8InitTester__factory } from "../../build/types";
+import { deployProxy } from "../utils/proxy";
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP8,
