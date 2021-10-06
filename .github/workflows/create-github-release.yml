@@ -85,6 +85,17 @@ jobs:
         with:
           release_notes_file: RELEASENOTES.md
 
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPR
+        with:
+          state: closed
+
+      - name: Add PR body to Release Notes
+        env:
+          PR_BODY: ${{ steps.findPR.outputs.body }}
+        run: |-
+          echo ${PR_BODY}|cat - RELEASENOTES.md > /tmp/out && mv /tmp/out RELEASENOTES.md
+
       - uses: ncipollo/release-action@v1
         if: steps.check.outputs.changed == 'true'
         with:
