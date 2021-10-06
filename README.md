@@ -87,7 +87,7 @@ This functions increases the versions automatically:
 $ npm run release
 ```
 
-If the current branch contains new commits that contains [standard-version](https://github.com/conventional-changelog/standard-version) names like `feat, fix or docs`, it will increase the version as follows:
+If the current branch contains new commits since the last git tag that contains [standard-version](https://github.com/conventional-changelog/standard-version) names like `feat`, `fix` or `docs`, it will increase the version as follows:
 
 - `feat` will increase the `minor` version
 - `fix` and `docs` will increase the `patch` version
