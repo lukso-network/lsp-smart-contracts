@@ -101,7 +101,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public override onlyOwner {
-        Ownable.transferOwnership(newOwner);
+        super.transferOwnership(newOwner);
         if (minter != address(0)) minter = newOwner;
     }
 
