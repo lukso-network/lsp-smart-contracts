@@ -23,10 +23,18 @@ import { deployERC725Utils, deployUniversalProfile, deployKeyManager } from "./u
 
 /** @todo put all of these in constant file */
 
+/** @deprecated */
 const SupportedStandardsERC725Account_KEY =
   "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
+
+/** @deprecated */
 // Get key: bytes4(keccak256('ERC725Account'))
 const ERC725Account_VALUE = "0xafdeb5d6";
+
+const SupportedStandardsLSP3UniversalProfile_KEY =
+  "0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6";
+const LSP3UniversalProfile_VALUE = "0xabe425d6";
+
 // Get key: keccak256('LSP1UniversalReceiverDelegate')
 const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
 
@@ -99,9 +107,9 @@ describe("UniversalProfile", () => {
     it("Has SupportedStandardsERC725Account_KEY set to ERC725Account_VALUE", async () => {
       const owner = accounts[2];
       let [result] = await UniversalProfile.callStatic.getData([
-        SupportedStandardsERC725Account_KEY,
+        SupportedStandardsLSP3UniversalProfile_KEY,
       ]);
-      expect(result).toEqual(ERC725Account_VALUE);
+      expect(result).toEqual(LSP3UniversalProfile_VALUE);
     });
   });
 
@@ -143,19 +151,13 @@ describe("UniversalProfile", () => {
       expect(await newaccount.callStatic.owner()).toEqual(owner.address);
     });
 
-    it("Store 32 bytes item 1", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = "0x" + (count++).toString(16);
-
-      await UniversalProfile.connect(owner).setData([key], [value]);
-
-      let [result] = await UniversalProfile.callStatic.getData([key]);
-      expect(result).toEqual(value);
-    });
-
+    /**
+     * The UniversalProfile storage already contains one key-value pair after deployment
+     *  key: 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6 (SupportedStandards:LSP3UniversalProfile)
+     *  value: 0xabe425d6
+     *
+     * This is set within the contract's constructor
+     */
     it("Store 32 bytes item 2", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
@@ -183,6 +185,19 @@ describe("UniversalProfile", () => {
     });
 
     it("Store 32 bytes item 4", async () => {
+      let key = abiCoder.encode(
+        ["bytes32"],
+        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
+      );
+      let value = "0x" + (count++).toString(16);
+
+      await UniversalProfile.connect(owner).setData([key], [value]);
+
+      let [result] = await UniversalProfile.callStatic.getData([key]);
+      expect(result).toEqual(value);
+    });
+
+    it("Store 32 bytes item 5", async () => {
       let owner = accounts[2];
 
       let key = abiCoder.encode(
@@ -197,7 +212,7 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("Store a long URL as bytes item 5: https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD", async () => {
+    it("Store a long URL as bytes item 6: https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
@@ -213,7 +228,7 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("Store 32 bytes item 6", async () => {
+    it("Store 32 bytes item 7", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]
@@ -226,13 +241,13 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("dataCount should be 6", async () => {
-      // 6 because the ERC725Type ios already set by the ERC725Account implementation
+    it("dataCount should be 7", async () => {
+      // 7 because the LSP3UniversalProfile-type is already set by the UniversalProfile implementation
       let result = await UniversalProfile.callStatic.allDataKeys();
-      expect(result.length).toEqual(6);
+      expect(result.length).toEqual(7);
     });
 
-    it("Update 32 bytes item 6", async () => {
+    it("Update 32 bytes item 7", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]
@@ -245,12 +260,12 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("dataCount should remain 6", async () => {
+    it("dataCount should remain 7", async () => {
       let result = await UniversalProfile.callStatic.allDataKeys();
-      expect(result.length).toEqual(6);
+      expect(result.length).toEqual(7);
     });
 
-    it("Store multiple 32 bytes item 7-9", async () => {
+    it("Store multiple 32 bytes item 8-10", async () => {
       let keys = [];
       let values = [];
       // increase
@@ -272,9 +287,9 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(values);
     });
 
-    it("dataCount should be 9", async () => {
+    it("dataCount should be 10", async () => {
       let keys = await UniversalProfile.allDataKeys();
-      expect(keys.length).toEqual(9);
+      expect(keys.length).toEqual(10);
 
       //   console.log("Stored keys", keys);
     });
@@ -716,7 +731,6 @@ describe("UniversalProfile", () => {
       ).toBeTruthy();
     });
 
-    /** @debug Transaction reverted: function returned an unexpected amount of data */
     it("Transfer from ERC777 and LSP4 to account and delegate to UniversalReceiverAddressStore", async () => {
       const OPERATION_CALL = 0x0;
       const owner = accounts[2];
