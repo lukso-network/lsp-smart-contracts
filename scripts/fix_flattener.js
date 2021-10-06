@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-let file = "./flat_contracts/LSP3Account_flat.sol";
+let file = "./flat_contracts/UniversalProfile_flat.sol";
 
 fs.readFile(file, "utf8", (err, data) => {
   if (err) {
