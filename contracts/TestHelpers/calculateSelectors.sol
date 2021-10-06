@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 import "../_LSPs/ILSP6_KeyManager.sol";
-import "../../submodules/ERC725/implementations/contracts/ILSP1/ILSP1_UniversalReceiver.sol";
-import "../../submodules/ERC725/implementations/contracts/ILSP1/ILSP1_UniversalReceiverDelegate.sol";
+import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
+import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
 
 contract CalculateERC165Selectors {
 
