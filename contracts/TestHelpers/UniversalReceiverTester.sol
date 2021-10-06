@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "../../submodules/ERC725/implementations/contracts/ILSP1/ILSP1_UniversalReceiver.sol";
+import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
 
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "solidity-bytes-utils/contracts/AssertBytes.sol";
