@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+import '../LSP8/LSP8Init.sol';
+
+contract LSP8InitTester is LSP8Init {
+    function initialize(
+      string memory name,
+      string memory symbol,
+      address newOwner
+    )
+        public
+        initializer
+        override
+    {
+        LSP8Init.initialize(name, symbol, newOwner);
+    }
+
+    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
+        _mint(to, bytes32(tokenId), force, data);
+    }
+
+    function burn(bytes32 tokenId, bytes memory data) public {
+        _burn(bytes32(tokenId), data);
+    }
+
+    function buildMetadataKey(bytes32 tokenId, bool buildAddressKey) public pure returns (bytes32) {
+        return _buildMetadataKey(tokenId, buildAddressKey);
+    }
+}
