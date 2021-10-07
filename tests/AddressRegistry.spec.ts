@@ -2,13 +2,11 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
   ERC725Utils,
-  ERC725Utils__factory,
   AddressRegistry,
   AddressRegistryRequiresERC725,
   AddressRegistryRequiresERC725__factory,
   AddressRegistry__factory,
   UniversalProfile,
-  UniversalProfile__factory,
 } from "../build/types";
 
 import { deployERC725Utils, deployUniversalProfile } from "./utils/deploy";

@@ -2,10 +2,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
   ERC725Utils,
-  ERC725Utils__factory,
   BasicUniversalReceiver,
   BasicUniversalReceiver__factory,
-  UniversalProfile__factory,
   UniversalReceiverAddressStore,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
@@ -62,7 +60,9 @@ describe("Receivers", () => {
   // });
 
   it("Contract can check for implementing interface with Bytes32", async () => {
-    let checker = await new UniversalReceiverTester__factory(signer).deploy();
+    let checker: UniversalReceiverTester = await new UniversalReceiverTester__factory(
+      signer
+    ).deploy();
     let tx = await checker.functions.checkImplementation(
       uni.address,
       TOKENS_RECIPIENT_INTERFACE_HASH
@@ -107,7 +107,9 @@ describe("Receivers", () => {
     let checker = await new UniversalReceiverTester__factory(signer).deploy();
     let checker2 = await new UniversalReceiverTester__factory(signer).deploy();
     let checker3 = await new UniversalReceiverTester__factory(signer).deploy();
-    let delegate = await new UniversalReceiverAddressStore__factory(signer).deploy(account.address);
+    let delegate: UniversalReceiverAddressStore = await new UniversalReceiverAddressStore__factory(
+      signer
+    ).deploy(account.address);
 
     // set uni receiver delegate
     await account

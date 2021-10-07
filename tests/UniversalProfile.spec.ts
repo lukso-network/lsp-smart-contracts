@@ -1,4 +1,3 @@
-import { VoidSigner } from "@ethersproject/abstract-signer";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { calculateCreate2 } from "eth-create2-calculator";
@@ -12,9 +11,12 @@ import {
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
   UniversalReceiverTester__factory,
+  ERC777UniversalReceiver,
   ERC777UniversalReceiver__factory,
+  ExternalERC777UniversalReceiverTester,
   ExternalERC777UniversalReceiverTester__factory,
   LSP4DigitalCertificate__factory,
+  LSP4DigitalCertificate,
 } from "../build/types";
 
 // helpers
@@ -457,7 +459,9 @@ describe("UniversalProfile", () => {
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
       const account = await deployUniversalProfile(erc725Utils.address, owner);
       // use the checker contract to call account
-      let checker = await new UniversalReceiverTester__factory(owner).deploy();
+      let checker: UniversalReceiverTester = await new UniversalReceiverTester__factory(
+        owner
+      ).deploy();
 
       let transaction = await checker
         .connect(owner)
@@ -489,9 +493,8 @@ describe("UniversalProfile", () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
       const account = await deployUniversalProfile(erc725Utils.address, owner);
-      const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
-        owner
-      ).deploy();
+      const externalUniversalReceiver: ExternalERC777UniversalReceiverTester =
+        await new ExternalERC777UniversalReceiverTester__factory(owner).deploy();
 
       // set account2 as new receiver for account1
       await account
@@ -499,7 +502,9 @@ describe("UniversalProfile", () => {
         .setData([LSP2Keys.UniversalReceiverDelegate], [externalUniversalReceiver.address]);
 
       // use the checker contract to call account
-      let checker = await new UniversalReceiverTester__factory(owner).deploy();
+      let checker: UniversalReceiverTester = await new UniversalReceiverTester__factory(
+        owner
+      ).deploy();
       let transaction = await checker.callImplementationAndReturn(
         account.address,
         ERC777TokensRecipient
@@ -550,21 +555,17 @@ describe("UniversalProfile", () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
       const account = await deployUniversalProfile(erc725Utils.address, owner);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(owner.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(owner.address);
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       let initialERC777Balance = await erc777.balanceOf(account.address);
       let initialdigitalCertificateBalance = await digitalCertificate.balanceOf(account.address);
@@ -584,21 +585,17 @@ describe("UniversalProfile", () => {
       const owner = accounts[2];
       const erc725Utils = await deployERC725Utils();
       const account = await deployUniversalProfile(erc725Utils.address, owner);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(account.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(account.address);
 
       let tokenOwner = accounts[3];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       await erc777.connect(tokenOwner).mint(tokenOwner.address, "100");
       await digitalCertificate.connect(tokenOwner).mint(tokenOwner.address, "100");
@@ -628,9 +625,8 @@ describe("UniversalProfile", () => {
       const owner = accounts[2];
       const erc725Utils = await deployERC725Utils();
       const account = await deployUniversalProfile(erc725Utils.address, owner);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(account.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(account.address);
 
       // set account2 as new receiver for account1
       await account
@@ -639,15 +635,12 @@ describe("UniversalProfile", () => {
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       expect(await erc777.balanceOf(account.address)).toEqBN(0);
       expect(await digitalCertificate.balanceOf(account.address)).toEqBN(0);
@@ -668,9 +661,8 @@ describe("UniversalProfile", () => {
       const owner = accounts[2];
       const erc725Utils = await deployERC725Utils();
       const account = await deployUniversalProfile(erc725Utils.address, owner);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(account.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(account.address);
 
       // set account2 as new receiver for account1
       await account
@@ -679,15 +671,12 @@ describe("UniversalProfile", () => {
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       await erc777.connect(tokenOwner).mint(tokenOwner.address, "100");
       await digitalCertificate.connect(tokenOwner).mint(tokenOwner.address, "100");
@@ -714,9 +703,8 @@ describe("UniversalProfile", () => {
       const owner = accounts[2];
       const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
       const account = await deployUniversalProfile(erc725Utils.address, owner);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(account.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(account.address);
 
       // set account2 as new receiver for account1
       await account
@@ -725,15 +713,12 @@ describe("UniversalProfile", () => {
 
       let tokenOwner = accounts[3];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       await erc777.connect(tokenOwner).mint(account.address, "100");
       await digitalCertificate.connect(tokenOwner).mint(account.address, "100");
