@@ -21,8 +21,6 @@ contract UniversalProfileInit is Initializable, ERC725AccountInit, UniversalProf
         store[key] = abi.encodePacked(bytes4(0xabe425d6));
         dataKeys.push(key);
         emit DataChanged(key, store[key]);
-        
-        _registerInterface(_INTERFACE_ID_LSP1);
     }
 
     function execute(
