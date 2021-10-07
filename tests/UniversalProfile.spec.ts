@@ -17,35 +17,13 @@ import {
   LSP4DigitalCertificate__factory,
 } from "../build/types";
 
-// custom utils
+// helpers
 import { KEYS, PERMISSIONS } from "./utils/keymanager";
 import { deployERC725Utils, deployUniversalProfile, deployKeyManager } from "./utils/deploy";
 
-/** @todo put all of these in constant file */
-
-/** @deprecated */
-const SupportedStandardsERC725Account_KEY =
-  "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
-
-/** @deprecated */
-// Get key: bytes4(keccak256('ERC725Account'))
-const ERC725Account_VALUE = "0xafdeb5d6";
-
-const SupportedStandardsLSP3UniversalProfile_KEY =
-  "0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6";
-const LSP3UniversalProfile_VALUE = "0xabe425d6";
-
-// Get key: keccak256('LSP1UniversalReceiverDelegate')
-const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
-
-const ERC1271_MAGIC_VALUE = "0x1626ba7e";
-const ERC1271_FAIL_VALUE = "0xffffffff";
-
-// Universal Receiver
-const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-// keccak256("UniversalReceiver(address,bytes32,bytes,bytes)")
-const EVENT_SIGNATURE = "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3";
+// constants
+import { SupportedStandards, LSP2Keys } from "./utils/lsp2schema";
+import { ERC1271, RANDOM_BYTES32, ERC777TokensRecipient, EventSignatures } from "./utils/constants";
 
 describe("UniversalProfile", () => {
   let accounts: SignerWithAddress[] = [];
@@ -104,12 +82,12 @@ describe("UniversalProfile", () => {
       expect(result).toBeTruthy();
     });
 
-    it("Has SupportedStandardsERC725Account_KEY set to ERC725Account_VALUE", async () => {
+    it("Should have Key: 'SupportedStandards:LSP3UniversalProfile' set to Value: 'LSP3UniversalProfile'", async () => {
       const owner = accounts[2];
       let [result] = await UniversalProfile.callStatic.getData([
-        SupportedStandardsLSP3UniversalProfile_KEY,
+        SupportedStandards.LSP3UniversalProfile.key,
       ]);
-      expect(result).toEqual(LSP3UniversalProfile_VALUE);
+      expect(result).toEqual(SupportedStandards.LSP3UniversalProfile.value);
     });
   });
 
@@ -123,7 +101,7 @@ describe("UniversalProfile", () => {
       const signature = await signer.signMessage(dataToSign);
 
       const result = await account.callStatic.isValidSignature(messageHash, signature);
-      expect(result).toEqual(ERC1271_MAGIC_VALUE);
+      expect(result).toEqual(ERC1271.MAGIC_VALUE);
     });
 
     it("Should fail when verifying signature from not-owner", async () => {
@@ -136,7 +114,7 @@ describe("UniversalProfile", () => {
       const signature = await signer.signMessage(dataToSign);
 
       const result = await account.callStatic.isValidSignature(messageHash, signature);
-      expect(result).toEqual(ERC1271_FAIL_VALUE);
+      expect(result).toEqual(ERC1271.FAIL_VALUE);
     });
   });
 
@@ -489,7 +467,7 @@ describe("UniversalProfile", () => {
       // event should come from account
       expect(receipt.logs[0].address).toEqual(account.address);
       // event signature
-      expect(receipt.logs[0].topics[0]).toEqual(EVENT_SIGNATURE);
+      expect(receipt.logs[0].topics[0]).toEqual(EventSignatures.UniversalReceiver);
       // from
       expect(receipt.logs[0].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -518,7 +496,7 @@ describe("UniversalProfile", () => {
       // set account2 as new receiver for account1
       await account
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [externalUniversalReceiver.address]);
+        .setData([LSP2Keys.UniversalReceiverDelegate], [externalUniversalReceiver.address]);
 
       // use the checker contract to call account
       let checker = await new UniversalReceiverTester__factory(owner).deploy();
@@ -555,7 +533,7 @@ describe("UniversalProfile", () => {
       // event should come from account account
       expect(receipt.logs[1].address).toEqual(account.address);
       // signature
-      expect(receipt.logs[1].topics[0]).toEqual(EVENT_SIGNATURE);
+      expect(receipt.logs[1].topics[0]).toEqual(EventSignatures.UniversalReceiver);
       // "from" is the checker
       expect(receipt.logs[1].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -657,7 +635,7 @@ describe("UniversalProfile", () => {
       // set account2 as new receiver for account1
       await account
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData([LSP2Keys.UniversalReceiverDelegate], [universalReceiverDelegate.address]);
 
       let tokenOwner = accounts[2];
 
@@ -697,7 +675,7 @@ describe("UniversalProfile", () => {
       // set account2 as new receiver for account1
       await account
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData([LSP2Keys.UniversalReceiverDelegate], [universalReceiverDelegate.address]);
 
       let tokenOwner = accounts[2];
 
@@ -743,7 +721,7 @@ describe("UniversalProfile", () => {
       // set account2 as new receiver for account1
       await account
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData([LSP2Keys.UniversalReceiverDelegate], [universalReceiverDelegate.address]);
 
       let tokenOwner = accounts[3];
 
@@ -847,7 +825,7 @@ describe("UniversalProfile", () => {
         const signature = await owner.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-        expect(result).toEqual(ERC1271_MAGIC_VALUE);
+        expect(result).toEqual(ERC1271.MAGIC_VALUE);
       });
 
       it("Can verify signature from signer on KeyManager", async () => {
@@ -856,7 +834,7 @@ describe("UniversalProfile", () => {
         const signature = await signer.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-        expect(result).toEqual(ERC1271_MAGIC_VALUE);
+        expect(result).toEqual(ERC1271.MAGIC_VALUE);
       });
 
       it("Should fail when verifying signature from address with no SIGN permission", async () => {
@@ -865,7 +843,7 @@ describe("UniversalProfile", () => {
         const signature = await thirdParty.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-        expect(result).toEqual(ERC1271_FAIL_VALUE);
+        expect(result).toEqual(ERC1271.FAIL_VALUE);
       });
     });
 

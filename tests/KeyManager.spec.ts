@@ -15,27 +15,29 @@ import {
 
 import { solidityKeccak256 } from "ethers/lib/utils";
 
-// custom helpers
+// helpers
 import {
   deployERC725Utils,
   deployUniversalProfile,
   deployKeyManager,
   deployKeyManagerHelper,
 } from "./utils/deploy";
+
 import {
   EMPTY_PAYLOAD,
   DUMMY_PAYLOAD,
   DUMMY_PRIVATEKEY,
   ONE_ETH,
-  SCHEMA,
   getRandomAddresses,
   generateKeysAndValues,
 } from "./utils/helpers";
-import { INTERFACE_IDS } from "./utils/constants";
 
+// constants
+import { INTERFACE_IDS } from "./utils/constants";
+import { BasicUPSetup_Schema } from "./utils/lsp2schema";
 import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
 
-describe("KeyManagerHelper", () => {
+describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   let abiCoder;
   let accounts: SignerWithAddress[] = [];
 
@@ -219,6 +221,7 @@ describe("KeyManager", () => {
         [KEYS.ALLOWEDADDRESSES + app.address.substr(2)],
         [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
       );
+
     // do not allow the app to `setNumber` on TargetContract
     await universalProfile
       .connect(owner)
@@ -270,6 +273,7 @@ describe("KeyManager", () => {
     universalProfile.connect(owner.address);
     keyManager.connect(owner.address);
 
+    // reset state variable
     await targetContract.setName("Simple Contract Name");
     await targetContract.setNumber(5);
   });
@@ -421,7 +425,7 @@ describe("KeyManager", () => {
 
       const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
 
-      const encodedData = encodeData(data, SCHEMA);
+      const encodedData = encodeData(data, BasicUPSetup_Schema);
       const flattenedEncodedData = flattenEncodedData(encodedData);
 
       let keys = [];
@@ -456,7 +460,7 @@ describe("KeyManager", () => {
         LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
       };
 
-      let encodedData = encodeData(basicUPSetup, SCHEMA);
+      let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
       let flattenedEncodedData = flattenEncodedData(encodedData);
 
       let keys = [];

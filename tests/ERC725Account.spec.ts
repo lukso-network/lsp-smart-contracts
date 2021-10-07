@@ -2,8 +2,9 @@ import { encodeData, flattenEncodedData, KeyValuePair } from "@erc725/erc725.js"
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { ERC725Account, ERC725Utils } from "../build/types";
-import { SCHEMA, getRandomAddresses, generateKeysAndValues } from "./utils/helpers";
+import { getRandomAddresses, generateKeysAndValues } from "./utils/helpers";
 import { deployERC725Utils, deployERC725Account } from "./utils/deploy";
+import { BasicUPSetup_Schema } from "./utils/lsp2schema";
 
 describe("ERC725 Account", () => {
   let accounts: SignerWithAddress[];
@@ -57,7 +58,7 @@ describe("ERC725 Account", () => {
       // prettier-ignore
       const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
 
-      const encodedData = encodeData(data, SCHEMA);
+      const encodedData = encodeData(data, BasicUPSetup_Schema);
       const flattenedEncodedData = flattenEncodedData(encodedData);
 
       let keys = [];
@@ -87,7 +88,7 @@ describe("ERC725 Account", () => {
         LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
       };
 
-      let encodedData = encodeData(basicUPSetup, SCHEMA);
+      let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
       let flattenedEncodedData = flattenEncodedData(encodedData);
 
       let keys = [];
@@ -110,7 +111,7 @@ describe("ERC725 Account", () => {
 
       const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
 
-      const encodedData = encodeData(data, SCHEMA);
+      const encodedData = encodeData(data, BasicUPSetup_Schema);
       const flattenedEncodedData = flattenEncodedData(encodedData);
 
       let keys = [];
@@ -123,7 +124,7 @@ describe("ERC725 Account", () => {
 
       await erc725Account.setData(keys, values);
 
-      const [length] = await erc725Account.getData([SCHEMA[2].key]);
+      const [length] = await erc725Account.getData([BasicUPSetup_Schema[2].key]);
       expect(parseInt(length)).toEqual(50);
     });
 
@@ -135,7 +136,7 @@ describe("ERC725 Account", () => {
         "LSP3IssuedAssets[]": lsp3IssuedAssets,
       };
 
-      const encodedData = encodeData(data, SCHEMA);
+      const encodedData = encodeData(data, BasicUPSetup_Schema);
       const flattenedEncodedData = flattenEncodedData(encodedData);
 
       let keys = [];
@@ -148,7 +149,7 @@ describe("ERC725 Account", () => {
 
       await erc725Account.setData(keys, values);
 
-      const [length] = await erc725Account.getData([SCHEMA[2].key]);
+      const [length] = await erc725Account.getData([BasicUPSetup_Schema[2].key]);
       expect(parseInt(length)).toEqual(51);
     });
   });

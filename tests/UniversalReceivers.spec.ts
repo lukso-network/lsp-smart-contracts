@@ -12,14 +12,14 @@ import {
   UniversalReceiverTester__factory,
 } from "../build/types";
 
+// helpers
 import { deployERC725Utils, deployUniversalProfile } from "./utils/deploy";
 
-// keccak256("ERC777TokensRecipient")
-const TOKENS_RECIPIENT_INTERFACE_HASH =
-  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+// constants
+import { LSP2Keys } from "./utils/lsp2schema";
 
-// keccak256("LSP1UniversalReceiverDelegate")
-const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
+// keccak256("ERC777TokensRecipient")
+const TOKENS_RECIPIENT_INTERFACE_HASH = LSP2Keys.ERC777TokensRecipient;
 
 describe("Receivers", () => {
   let uni: BasicUniversalReceiver;
@@ -110,7 +110,9 @@ describe("Receivers", () => {
     let delegate = await new UniversalReceiverAddressStore__factory(signer).deploy(account.address);
 
     // set uni receiver delegate
-    await account.connect(signerAddress).setData([UNIVERSALRECEIVER_KEY], [delegate.address]);
+    await account
+      .connect(signerAddress)
+      .setData([LSP2Keys.UniversalReceiverDelegate], [delegate.address]);
 
     await checker.lowLevelCheckImplementation(account.address, TOKENS_RECIPIENT_INTERFACE_HASH);
     await checker.checkImplementation(account.address, TOKENS_RECIPIENT_INTERFACE_HASH);

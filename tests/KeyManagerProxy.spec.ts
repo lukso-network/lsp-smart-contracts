@@ -24,9 +24,9 @@ import {
 import { deployERC725Utils } from "./utils/deploy";
 
 // constants
-import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
-import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
 import { INTERFACE_IDS } from "./utils/constants";
+import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
+import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
 
 describe("KeyManager + LSP3 Account as Proxies", () => {
   let abiCoder;
