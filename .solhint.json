@@ -22,6 +22,6 @@
     "use-forbidden-name": "error",
     "imports-on-top": "error",
     "visibility-modifier-order": "error",
-    "reason-string": ["warn", { "maxLength": 64 }]
+    "reason-string": ["warn", { "maxLength": 120 }]
   }
 }
