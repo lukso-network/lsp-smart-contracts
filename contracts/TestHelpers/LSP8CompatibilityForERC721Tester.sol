@@ -9,8 +9,9 @@ import '../LSP8/LSP8.sol';
 contract LSP8CompatibilityForERC721Tester is LSP8, LSP8CompatibilityForERC721 {
     constructor(
       string memory name,
-      string memory symbol
-    ) LSP8(name, symbol, msg.sender) {}
+      string memory symbol,
+      address newOwner
+    ) LSP8(name, symbol, newOwner) {}
 
     function mint(address to, uint256 tokenId, bytes calldata data) public {
         // NOTE: using force=true so we can send to EOA in test

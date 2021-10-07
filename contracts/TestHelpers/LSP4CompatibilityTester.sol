@@ -7,8 +7,9 @@ import '../LSP4/LSP4Compatibility.sol';
 contract LSP4CompatibilityTester is LSP4Compatibility {
     constructor(
       string memory name,
-      string memory symbol
-    ) ERC725Y(msg.sender) {
+      string memory symbol,
+      address newOwner
+    ) ERC725Y(newOwner) {
         // TODO: when ERC725Y has been updated
         // bytes32[] keys = new bytes32[](2);
         // keys.push(LSP4_METADATA_TOKEN_NAME_KEY);

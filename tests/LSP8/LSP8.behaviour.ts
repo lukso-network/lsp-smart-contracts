@@ -1,17 +1,16 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { waffleJest } from "@ethereum-waffle/jest";
 import {
+  ERC725Y,
   LSP8Tester,
   TokenReceiverWithLSP1,
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../build/types";
+import { tokenIdAsBytes32 } from "../utils/tokens";
 
-import type { BigNumberish, BytesLike } from "ethers";
-
-expect.extend(waffleJest);
+import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 export type LSP8TestAccounts = {
   owner: SignerWithAddress;
@@ -19,6 +18,11 @@ export type LSP8TestAccounts = {
   operator: SignerWithAddress;
   anotherOperator: SignerWithAddress;
   anyone: SignerWithAddress;
+};
+
+export const getNamedAccounts = async (): Promise<LSP8TestAccounts> => {
+  const [owner, tokenReceiver, operator, anotherOperator, anyone] = await ethers.getSigners();
+  return { owner, tokenReceiver, operator, anotherOperator, anyone };
 };
 
 export type LSP8TestContext = {
@@ -31,17 +35,8 @@ export type LSP8TestContext = {
   };
 };
 
-const tokenIdAsBytes32 = (tokenId: BigNumberish): BytesLike => {
-  return ethers.utils.hexZeroPad(ethers.BigNumber.from(tokenId).toHexString(), 32);
-};
-
 const mintedTokenId = tokenIdAsBytes32(10);
 const neverMintedTokenId = tokenIdAsBytes32(1010110);
-
-export const getNamedAccounts = async (): Promise<LSP8TestAccounts> => {
-  const [owner, tokenReceiver, operator, anotherOperator, anyone] = await ethers.getSigners();
-  return { owner, tokenReceiver, operator, anotherOperator, anyone };
-};
 
 export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext>) => {
   let context: LSP8TestContext;
@@ -1098,6 +1093,49 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           await shouldBuildKey("0x9a26b4060ae7f7d500000000", false);
         });
       });
+    });
+  });
+};
+
+export type LSP8InitializeTestContext = {
+  erc725Y: ERC725Y;
+  initializeTransaction: TransactionResponse;
+  expectedSetData: { name: string; symbol: string };
+};
+
+export const shouldInitializeLikeLSP8 = (
+  buildContext: () => Promise<LSP8InitializeTestContext>
+) => {
+  let context: LSP8InitializeTestContext;
+
+  beforeEach(async () => {
+    context = await buildContext();
+  });
+
+  describe("when the contract was initialized", () => {
+    it("should have set expected entries with ERC725Y.setData", async () => {
+      const lsp8SupportedStandardsKey =
+        "0xeafec4d89fa9619884b6b89135626455000000000000000000000000d9bfeb57";
+      const lsp8SupportedStandardsValue = "0xd9bfeb57";
+      await expect(context.initializeTransaction).toHaveEmittedWith(
+        context.erc725Y,
+        "DataChanged",
+        [lsp8SupportedStandardsKey, lsp8SupportedStandardsValue]
+      );
+
+      const nameKey = "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
+      await expect(context.initializeTransaction).toHaveEmittedWith(
+        context.erc725Y,
+        "DataChanged",
+        [nameKey, ethers.utils.hexlify(ethers.utils.toUtf8Bytes(context.expectedSetData.name))]
+      );
+
+      const symbolKey = "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
+      await expect(context.initializeTransaction).toHaveEmittedWith(
+        context.erc725Y,
+        "DataChanged",
+        [symbolKey, ethers.utils.hexlify(ethers.utils.toUtf8Bytes(context.expectedSetData.symbol))]
+      );
     });
   });
 };

@@ -3,15 +3,22 @@
 pragma solidity ^0.8.0;
 
 // modules
-import '../LSP8/extensions/LSP8CappedSupply.sol';
+import '../LSP8/extensions/LSP8CappedSupplyInit.sol';
 
-contract LSP8CappedSupplyTester is LSP8CappedSupply {
-    constructor(
+contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInit {
+    function initialize(
       string memory name,
       string memory symbol,
       address newOwner,
       uint256 tokenSupplyCap
-    ) LSP8(name, symbol, newOwner) LSP8CappedSupply(tokenSupplyCap) {}
+    )
+        public
+        virtual
+        initializer
+    {
+        LSP8Init.initialize(name, symbol, newOwner);
+        LSP8CappedSupplyInit.initialize(tokenSupplyCap);
+    }
 
     function mint(address to, bytes32 tokenId) public {
         _mint(to, tokenId, true, "token printer go brrr");

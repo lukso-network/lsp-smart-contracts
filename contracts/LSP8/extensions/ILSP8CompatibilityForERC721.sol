@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
 import "../ILSP8.sol";
 
 /**
- * @dev LSP8 extension, for compatibility for clients / tools that expect ERC20/721.
+ * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
 interface ILSP8CompatibilityForERC721 is ILSP8 {
 
@@ -28,7 +28,7 @@ interface ILSP8CompatibilityForERC721 is ILSP8 {
   /*
    * @dev Compatible with ERC721 approve.
    */
-  function approve(address to, uint256 tokenId) external;
+  function approve(address operator, uint256 tokenId) external;
 
   /*
    * @dev Compatible with ERC721 getApproved.
