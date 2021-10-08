@@ -23,18 +23,9 @@ contract UniversalProfileInit is Initializable, ERC725AccountInit, UniversalProf
         emit DataChanged(key, store[key]);
     }
 
-    function execute(
-        uint256 _operation,
-        address _to,
-        uint256 _value,
-        bytes calldata _data
-    ) public payable virtual override(ERC725AccountInit, ERC725XCore) onlyOwner returns(bytes memory result) {
-        result = ERC725AccountInit.execute(_operation,_to,_value,_data);
-    }
-
-    function setData(bytes32[] calldata _keys, bytes[] calldata _values)
+    function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
-        override(UniversalProfileCore, ERC725AccountInit)
+        override(UniversalProfileCore, ERC725YCore)
         onlyOwner
     {
         UniversalProfileCore.setData(_keys, _values);

@@ -24,7 +24,7 @@ abstract contract UniversalProfileCore is ERC165Storage, ERC725AccountCore {
         return dataKeys;
     }
 
-    function setData(bytes32[] calldata _keys, bytes[] calldata _values)
+    function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
         virtual
         override

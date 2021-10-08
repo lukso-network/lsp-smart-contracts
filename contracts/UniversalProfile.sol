@@ -23,18 +23,9 @@ contract UniversalProfile is ERC725Account, UniversalProfileCore  {
         emit DataChanged(key, store[key]);
     }
 
-    function execute(
-        uint256 _operation,
-        address _to,
-        uint256 _value,
-        bytes calldata _data
-    ) public payable virtual override(ERC725Account, ERC725XCore) onlyOwner returns(bytes memory result) {
-        result = ERC725Account.execute(_operation,_to,_value,_data);
-    }
-
-    function setData(bytes32[] calldata _keys, bytes[] calldata _values)
+    function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
-        override(UniversalProfileCore, ERC725Account)
+        override(UniversalProfileCore, ERC725YCore)
         onlyOwner
     {
         UniversalProfileCore.setData(_keys, _values);
