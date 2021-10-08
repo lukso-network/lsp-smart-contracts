@@ -53,10 +53,12 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     bytes1 internal constant _PERMISSION_TRANSFERVALUE = 0x40;   // 0100 0000
     bytes1 internal constant _PERMISSION_SIGN          = 0x80;   // 1000 0000
 
+    /* solhint-disable */
     // selectors
     bytes4 internal immutable _SETDATA_SELECTOR = account.setData.selector; // 0x14a6e293
     bytes4 internal immutable _EXECUTE_SELECTOR = account.execute.selector; // 0x44c028fe
     bytes4 internal immutable _TRANSFEROWNERSHIP_SELECTOR = account.transferOwnership.selector; // 0xf2fde38b;
+    /* solhint-enable */
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -225,6 +227,8 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             );
 
             bytes1 permission;
+
+            /* solhint-disable */
             assembly {
                 switch operationType
                 case 0 { permission := _PERMISSION_CALL }
@@ -232,6 +236,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
                 case 2 { permission := _PERMISSION_DEPLOY } // CREATE2
                 case 3 { permission := _PERMISSION_DEPLOY } // CREATE
             }
+            /* solhint-enable */
             bool operationAllowed = _isAllowed(permission, userPermissions);
 
             if (!operationAllowed && (permission == _PERMISSION_CALL)) {
@@ -289,15 +294,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         view
         returns (bytes1)
     {
-        bytes32 permissionKey;
-        bytes memory computedKey = abi.encodePacked(_ADDRESS_PERMISSIONS, _address);
-
-        assembly {
-            permissionKey := mload(add(computedKey, 32))
-        }
-
-        bytes1 storedPermission;
-        // this might cost more gas? Does contract type casting cost more gas?
+        bytes32 permissionKey = _generatePermissionKey(_ADDRESS_PERMISSIONS, _address);
         bytes memory fetchResult = ERC725Y(account).getDataSingle(permissionKey);
 
         if (fetchResult.length == 0) {
@@ -306,6 +303,8 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             );
         }
 
+        bytes1 storedPermission;
+        // solhint-disable-next-line
         assembly {
             storedPermission := mload(add(fetchResult, 32))
         }
@@ -318,14 +317,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         view
         returns (bytes memory)
     {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(
-            _ADDRESS_ALLOWEDADDRESSES,
-            _sender
-        );
-        bytes32 allowedAddressesKey;
-        assembly {
-            allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
+        bytes32 allowedAddressesKey = _generatePermissionKey(_ADDRESS_ALLOWEDADDRESSES, _sender);
         return ERC725Y(account).getDataSingle(allowedAddressesKey);
     }
 
@@ -334,14 +326,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         view
         returns (bytes memory)
     {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(
-            _ADDRESS_ALLOWEDFUNCTIONS,
-            _sender
-        );
-        bytes32 allowedFunctionsKey;
-        assembly {
-            allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
+        bytes32 allowedFunctionsKey = _generatePermissionKey(_ADDRESS_ALLOWEDFUNCTIONS, _sender);        
         return ERC725Y(account).getDataSingle(allowedFunctionsKey);
     }
 
@@ -415,5 +400,22 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         } else {
             return false;
         }
+    }
+
+    function _generatePermissionKey(bytes12 _key, address _address)
+        internal
+        pure
+        returns (bytes32) 
+    {
+        bytes memory allowedAddressesKeyComputed = abi.encodePacked(
+            _key,
+            _address
+        );
+        bytes32 generatedKey;
+        // solhint-disable-next-line
+        assembly {
+            generatedKey := mload(add(allowedAddressesKeyComputed, 32))
+        }
+        return generatedKey;
     }
 }
