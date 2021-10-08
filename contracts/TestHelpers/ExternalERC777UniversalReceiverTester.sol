@@ -66,7 +66,7 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
             uint256 _amount
         ) 
     {
-        // solium-disable-next-line security/no-inline-assembly
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             _operator := mload(add(add(_bytes, 0x14), 0x0))
             _from := mload(add(add(_bytes, 0x14), 0x14))
