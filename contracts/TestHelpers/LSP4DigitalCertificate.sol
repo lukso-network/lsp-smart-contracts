@@ -91,7 +91,7 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
                 dataKeys.push (_keys[ii]);
             }
         }
-        ERC725Y.setData(_keys, _values);
+        super.setData(_keys, _values);
     }
 
     /* Internal functions */

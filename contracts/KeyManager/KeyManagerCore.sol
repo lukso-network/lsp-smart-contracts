@@ -44,14 +44,15 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
 
     // prettier-ignore
     // PERMISSIONS VALUES
-    bytes1 internal constant _PERMISSION_CHANGEOWNER   = 0x01;   // 0000 0001
-    bytes1 internal constant _PERMISSION_CHANGEKEYS    = 0x02;   // 0000 0010
-    bytes1 internal constant _PERMISSION_SETDATA       = 0x04;   // 0000 0100
-    bytes1 internal constant _PERMISSION_CALL          = 0x08;   // 0000 1000
-    bytes1 internal constant _PERMISSION_DELEGATECALL  = 0x10;   // 0001 0000
-    bytes1 internal constant _PERMISSION_DEPLOY        = 0x20;   // 0010 0000
-    bytes1 internal constant _PERMISSION_TRANSFERVALUE = 0x40;   // 0100 0000
-    bytes1 internal constant _PERMISSION_SIGN          = 0x80;   // 1000 0000
+    bytes2 internal constant _PERMISSION_CHANGEOWNER   = 0x0001;   // 0000 0000 0000 0001
+    bytes2 internal constant _PERMISSION_CHANGEKEYS    = 0x0002;   // 0000 0000 0000 0010
+    bytes2 internal constant _PERMISSION_SETDATA       = 0x0004;   // 0000 0000 0000 0100
+    bytes2 internal constant _PERMISSION_CALL          = 0x0008;   // 0000 0000 0000 1000
+    bytes2 internal constant _PERMISSION_STATICCALL    = 0x0010;   // 0000 0000 0001 0000
+    bytes2 internal constant _PERMISSION_DELEGATECALL  = 0x0020;   // 0000 0000 0010 0000
+    bytes2 internal constant _PERMISSION_DEPLOY        = 0x0040;   // 0000 0000 0100 0000
+    bytes2 internal constant _PERMISSION_TRANSFERVALUE = 0x0080;   // 0000 0000 1000 0000
+    bytes2 internal constant _PERMISSION_SIGN          = 0x0100;   // 0000 0001 0000 0000
 
     /* solhint-disable */
     // selectors
@@ -185,7 +186,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         internal
         view
     {
-        bytes1 userPermissions = _getUserPermissions(_address);
+        bytes2 userPermissions = _getUserPermissions(_address);
         bytes4 erc725Selector = bytes4(_data[:4]);
 
         if (erc725Selector == _SETDATA_SELECTOR) {
@@ -222,19 +223,20 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             uint256 value = uint256(bytes32(_data[68:100]));
 
             require(
-                operationType < 4, // Check for CALL, DELEGATECALL or DEPLOY
+                operationType < 5, // Check for CALL, DELEGATECALL or DEPLOY
                 "KeyManager:_checkPermissions: Invalid operation type"
             );
 
-            bytes1 permission;
+            bytes2 permission;
 
             /* solhint-disable */
             assembly {
                 switch operationType
                 case 0 { permission := _PERMISSION_CALL }
-                case 1 { permission := _PERMISSION_DELEGATECALL }
-                case 2 { permission := _PERMISSION_DEPLOY } // CREATE2
-                case 3 { permission := _PERMISSION_DEPLOY } // CREATE
+                case 1 { permission := _PERMISSION_DEPLOY } // CREATE2
+                case 2 { permission := _PERMISSION_DEPLOY } // CREATE
+                case 3 { permission := _PERMISSION_STATICCALL }
+                case 4 { permission := _PERMISSION_DELEGATECALL }
             }
             /* solhint-enable */
             bool operationAllowed = _isAllowed(permission, userPermissions);
@@ -292,7 +294,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     function _getUserPermissions(address _address)
         internal
         view
-        returns (bytes1)
+        returns (bytes2)
     {
         bytes32 permissionKey = _generatePermissionKey(_ADDRESS_PERMISSIONS, _address);
         bytes memory fetchResult = ERC725Y(account).getDataSingle(permissionKey);
@@ -303,7 +305,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             );
         }
 
-        bytes1 storedPermission;
+        bytes2 storedPermission;
         // solhint-disable-next-line
         assembly {
             storedPermission := mload(add(fetchResult, 32))
@@ -388,14 +390,14 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         }
     }
 
-    function _isAllowed(bytes1 _permission, bytes1 _addressPermission)
+    function _isAllowed(bytes2 _permission, bytes2 _addressPermission)
         internal
         pure
         returns (bool)
     {
-        uint8 resultCheck = uint8(_permission) & uint8(_addressPermission);
+        bytes2 resultCheck = _permission & _addressPermission;
 
-        if (resultCheck == uint8(_permission)) {
+        if (resultCheck == _permission) {
             return true;
         } else {
             return false;

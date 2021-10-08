@@ -139,7 +139,7 @@ describe("KeyManagerHelper", () => {
 
   describe("Reading User's permissions", () => {
     it("Should return 0xff for owner", async () => {
-      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual("0xff"); // ALL_PERMISSIONS = "0xff"
+      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual("0xffff"); // ALL_PERMISSIONS = "0xff"
     });
   });
 
@@ -203,13 +203,14 @@ describe("KeyManager", () => {
     keyManager = await deployKeyManager(erc725Utils.address, universalProfile);
     targetContract = await new TargetContract__factory(owner).deploy();
     maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(keyManager.address);
+
     // owner permissions
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [PERMISSIONS.ALL]);
 
     // app permissions
-    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL);
+    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
@@ -228,13 +229,13 @@ describe("KeyManager", () => {
       );
 
     // user permissions
-    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL);
+    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + user.address.substr(2)], [userPermissions]);
 
     // externalApp permissions
-    let externalAppPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL);
+    let externalAppPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + externalApp.address.substr(2)], [externalAppPermissions]);
@@ -253,7 +254,12 @@ describe("KeyManager", () => {
     // test security
     await universalProfile.setData(
       [KEYS.PERMISSIONS + newUser.address.substr(2)],
-      [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE)]
+      [
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          2
+        ),
+      ]
     );
 
     // switch account management to KeyManager
@@ -284,12 +290,12 @@ describe("KeyManager", () => {
     let [permissions] = await universalProfile.getData([
       KEYS.PERMISSIONS + owner.address.substr(2),
     ]);
-    expect(permissions).toEqual("0xff", "Owner should have all permissions set");
+    expect(permissions).toEqual("0xffff", "Owner should have all permissions set");
   });
 
   it("get app permissions", async () => {
     let [permissions] = await universalProfile.getData([KEYS.PERMISSIONS + app.address.substr(2)]);
-    expect(permissions).toEqual("0x0c", "Owner should have all permissions set");
+    expect(permissions).toEqual("0x000c", "App should have permissions");
   });
 
   describe("> testing permissions: CHANGEKEYS, SETDATA", () => {
@@ -313,7 +319,7 @@ describe("KeyManager", () => {
       await keyManager.execute(
         universalProfile.interface.encodeFunctionData("setData", [
           [key],
-          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL)],
+          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2)],
         ])
       );
     });
@@ -485,9 +491,9 @@ describe("KeyManager", () => {
       ];
 
       let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
       ];
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
@@ -505,9 +511,9 @@ describe("KeyManager", () => {
       ];
 
       let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
       ];
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
@@ -521,7 +527,8 @@ describe("KeyManager", () => {
       // prettier-ignore
       let permissionKeyDisallowed = KEYS.PERMISSIONS + user.address.substr(2)
       let permissionValueDisallowed = ethers.utils.hexZeroPad(
-        PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE
+        PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+        2
       );
 
       let elements = {
@@ -557,9 +564,9 @@ describe("KeyManager", () => {
       ]);
 
       values = values.concat([
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
       ]);
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
@@ -596,6 +603,7 @@ describe("KeyManager", () => {
     });
 
     it("App should not be allowed to make a DELEGATECALL", async () => {
+      let payload = targetContract.interface.encodeFunctionData("setName", ["Example"]);
       let executePayload = universalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.DELEGATECALL,
         "0xcafecafecafecafecafecafecafecafecafecafe",
@@ -610,7 +618,7 @@ describe("KeyManager", () => {
 
     it("App should not be allowed to DEPLOY a contract", async () => {
       let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.DEPLOY,
+        OPERATIONS.CREATE,
         "0x0000000000000000000000000000000000000000",
         0,
         DUMMY_PAYLOAD,
