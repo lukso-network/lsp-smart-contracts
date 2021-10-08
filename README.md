@@ -92,7 +92,10 @@ If the current branch contains new commits since the last git tag that contains 
 - `feat` will increase the `minor` version
 - `fix` and `docs` will increase the `patch` version
 
-Standard-version then updates the `package.json` version, adds to the `CHANGELOG.md` all commit messages grouped by `Feature`, `Bug Fixes`, `Documentation` or `Other`, and commits all changes under: `chore(release): <version>`.
+Standard-version then:
+1. updates the `package.json` version
+2. adds to the `CHANGELOG.md` all commit messages grouped by `Feature`, `Bug Fixes`, `Documentation` or `Other`
+3. commits all changes under: `chore(release): <version>`
 
 
 Then push the changes to `develop`:
@@ -100,9 +103,9 @@ Then push the changes to `develop`:
 $ git push orign develop
 ```
 
-A NPM and Github release is created when a version change in `package.json` is merged into `main`.
+A NPM and GitHub release is created when a version change in `package.json` is merged into `main`.
 
-A git tag will then be created, a Github Release created with the description of the PR to `main` as the release notes with the appended `CHANGELOG.md` content, and iOS and Android Artifacts attached.
+A git tag will then be created, a GitHub Release created with the description of the PR to `main` as the release notes with the appended `CHANGELOG.md` content, and iOS and Android Artifacts attached.
 At last a release will be published in NPM automatically.
 
 &nbsp;
