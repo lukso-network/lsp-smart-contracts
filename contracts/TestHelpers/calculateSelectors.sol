@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 import "../_LSPs/ILSP6_KeyManager.sol";
-import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
-import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "../_LSPs/ILSP1_UniversalReceiver.sol";
+import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 
 contract CalculateERC165Selectors {
 
@@ -23,7 +23,8 @@ contract CalculateERC165Selectors {
 
         return i.execute.selector
             ^ i.executeRelayCall.selector
-            ^ i.getNonce.selector;
+            ^ i.getNonce.selector
+            ^ i.isValidSignature.selector;
     }
 
     function calculateSelectorERC1271() public pure returns (bytes4) {

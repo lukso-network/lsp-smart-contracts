@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
+// interfaces
+import "../_LSPs/ILSP1_UniversalReceiver.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // modules

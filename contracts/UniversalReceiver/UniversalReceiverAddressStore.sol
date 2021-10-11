@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
 import "../Registries/AddressRegistry.sol";
@@ -45,7 +45,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         external
         override
         onlyAccount
-        returns (bytes memory)
+        returns (bytes32)
     {
         // require(typeId == _TOKENS_RECIPIENT_INTERFACE_HASH, 'UniversalReceiverDelegate: Type not supported');
 
@@ -53,7 +53,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, ILSP1Delegate, AddressR
         if(typeId == _TOKENS_RECIPIENT_INTERFACE_HASH)
             addAddress(sender);
 
-        return abi.encodePacked(typeId);
+        return typeId;
     }
 
     /* Modifers */

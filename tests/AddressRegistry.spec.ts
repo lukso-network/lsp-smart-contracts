@@ -7,11 +7,11 @@ import {
   AddressRegistryRequiresERC725,
   AddressRegistryRequiresERC725__factory,
   AddressRegistry__factory,
-  UniversalProfile,
-  UniversalProfile__factory,
+  LSP3Account,
+  LSP3Account__factory,
 } from "../build/types";
 
-import { deployERC725Utils, deployUniversalProfile } from "./utils/deploy";
+import { deployLSP3Account } from "./utils/deploy";
 
 describe("Address Registry contracts", () => {
   let addressRegistry: AddressRegistry;
@@ -82,13 +82,13 @@ describe("Address Registry contracts", () => {
   describe("AddressRegistryRequiresERC725", () => {
     let addressRegistryRequireERC725: AddressRegistryRequiresERC725,
       erc725Utils: ERC725Utils,
-      account: UniversalProfile,
+      account: LSP3Account,
       owner: SignerWithAddress;
 
     beforeEach(async () => {
       owner = accounts[3];
-      erc725Utils = await deployERC725Utils();
-      account = await deployUniversalProfile(erc725Utils.address, owner);
+      erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
+      account = await deployLSP3Account(erc725Utils, owner);
       addressRegistryRequireERC725 = await new AddressRegistryRequiresERC725__factory(
         owner
       ).deploy();
@@ -99,7 +99,8 @@ describe("Address Registry contracts", () => {
         account.address,
       ]);
 
-      await account.connect(owner).execute(0, addressRegistryRequireERC725.address, 0, abi, {
+      await account.execute(0, addressRegistryRequireERC725.address, 0, abi, {
+        from: owner.address,
         gasLimit: 3_000_000,
       });
       expect(await addressRegistryRequireERC725.getAddress(0)).toEqual(account.address);
@@ -115,7 +116,7 @@ describe("Address Registry contracts", () => {
         account.address,
       ]);
 
-      await account.connect(owner).execute(0, addressRegistryRequireERC725.address, 0, abi);
+      await account.execute(0, addressRegistryRequireERC725.address, 0, abi);
       expect(await addressRegistryRequireERC725.containsAddress(account.address)).toEqual(false);
     });
 

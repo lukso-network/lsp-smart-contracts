@@ -3,11 +3,10 @@ import { Contract, ContractTransaction } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
-  ERC725Account,
   ERC725Utils,
-  KeyManager,
-  KeyManagerHelper,
-  UniversalProfile,
+  KeyManager__factory,
+  LSP3Account,
+  LSP3Account__factory,
 } from "../../build/types";
 
 export async function getDeploymentCost(contractOrTransaction: Contract | ContractTransaction) {
@@ -27,61 +26,21 @@ export async function getDeploymentCost(contractOrTransaction: Contract | Contra
   };
 }
 
-export async function deployERC725Utils(): Promise<ERC725Utils> {
-  const erc725UtilsFactory = await ethers.getContractFactory("ERC725Utils");
-  return await erc725UtilsFactory.deploy();
-}
-
-export async function deployERC725Account(
-  erc725UtilsAddress: string,
-  owner: SignerWithAddress
-): Promise<ERC725Account> {
-  const erc725AccountFactory = await ethers.getContractFactory("ERC725Account", {
-    libraries: {
-      ERC725Utils: erc725UtilsAddress,
-    },
-  });
-  return await erc725AccountFactory.deploy(owner.address);
-}
-
-export async function deployUniversalProfile(
-  erc725UtilsAddress: string,
-  owner: SignerWithAddress
-): Promise<UniversalProfile> {
-  const universalProfileFactory = await ethers.getContractFactory("UniversalProfile", {
-    libraries: {
-      ERC725Utils: erc725UtilsAddress,
-    },
-  });
-  return await universalProfileFactory.deploy(owner.address);
+export async function deployLSP3Account(erc725Utils: ERC725Utils, owner: SignerWithAddress) {
+  return await new LSP3Account__factory(
+    { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
+    owner
+  ).deploy(owner.address);
 }
 
 export async function deployKeyManager(
-  erc725UtilsAddress: string,
-  universalProfile: UniversalProfile | ERC725Account
-): Promise<KeyManager> {
-  const keyManagerFactory = await ethers.getContractFactory("KeyManager", {
-    libraries: {
-      ERC725Utils: erc725UtilsAddress,
-    },
-  });
-
-  return await keyManagerFactory.deploy(universalProfile.address);
+  erc725Utils: ERC725Utils,
+  owner: SignerWithAddress,
+  lsp3Account: LSP3Account
+) {
+  return await new KeyManager__factory(
+    { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
+    owner
+  ).deploy(lsp3Account.address);
 }
-
 export async function deployUniversalReceiver() {}
-
-// Helper contracts
-// used to test internal functions
-
-export async function deployKeyManagerHelper(
-  erc725UtilsAddress: string,
-  universalProfile: UniversalProfile | ERC725Account
-): Promise<KeyManagerHelper> {
-  const keyManagerFactory = await ethers.getContractFactory("KeyManagerHelper", {
-    libraries: {
-      ERC725Utils: erc725UtilsAddress,
-    },
-  });
-  return await keyManagerFactory.deploy(universalProfile.address);
-}

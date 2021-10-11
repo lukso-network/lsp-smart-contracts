@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
-      "UniversalProfile",
+      "LSP3Account",
       "KeyManager",
       "BasicUniversalReceiver",
       "UniversalReceiverAddressStore",

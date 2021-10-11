@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "../_LSPs/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
@@ -36,7 +36,7 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
     ) 
         external 
         override 
-        returns (bytes memory)
+        returns (bytes32)
     {
 
         if (typeId == _TOKENS_RECIPIENT_INTERFACE_HASH) {
@@ -66,7 +66,7 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
             uint256 _amount
         ) 
     {
-        // solhint-disable-next-line no-inline-assembly
+        // solium-disable-next-line security/no-inline-assembly
         assembly {
             _operator := mload(add(add(_bytes, 0x14), 0x0))
             _from := mload(add(add(_bytes, 0x14), 0x14))
