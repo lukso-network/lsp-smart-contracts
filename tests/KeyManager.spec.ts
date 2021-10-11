@@ -577,7 +577,7 @@ describe("KeyManager", () => {
     });
   });
 
-  describe("> testing permissions: CALL, DELEGATECALL, DEPLOY", () => {
+  describe("> testing permissions: CALL, DEPLOY, STATICCALL & DELEGATECALL", () => {
     it("Owner should be allowed to make a CALL", async () => {
       let executePayload = universalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
@@ -602,8 +602,20 @@ describe("KeyManager", () => {
       expect(executeResult).toBeTruthy();
     });
 
+    it("App should not be allowed to make a STATICCALL", async () => {
+      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.STATICCALL,
+        "0xcafecafecafecafecafecafecafecafecafecafe",
+        0,
+        DUMMY_PAYLOAD,
+      ]);
+
+      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+      );
+    });
+
     it("App should not be allowed to make a DELEGATECALL", async () => {
-      let payload = targetContract.interface.encodeFunctionData("setName", ["Example"]);
       let executePayload = universalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.DELEGATECALL,
         "0xcafecafecafecafecafecafecafecafecafecafe",
@@ -1358,6 +1370,27 @@ describe("KeyManager", () => {
       await expect(keyManager.connect(accounts[6]).execute(executePayload)).toBeRevertedWith(
         "KeyManager:_getUserPermissions: no permissions set for this user / caller"
       );
+    });
+
+    it("Should revert if STATICCALL tries to change state", async () => {
+      let initialValue = targetContract.callStatic.getName()
+      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        "Another Contract Name",
+      ]);
+
+      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.STATICCALL,
+        targetContract.address,
+        0,
+        targetContractPayload,
+      ]);
+
+      await expect(keyManager.connect(owner).execute(executePayload)).toBeReverted;
+
+      let newValue = targetContract.callStatic.getName();
+
+      // ensure state hasn't changed.
+      expect(initialValue).toEqual(newValue);
     });
 
     it("Permissions should prevent ReEntrancy and stop contract from re-calling and re-transfering ETH.", async () => {
