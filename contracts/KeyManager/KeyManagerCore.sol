@@ -246,16 +246,22 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
                     "KeyManager:_checkPermissions: not authorized to perform CALL"
                 );
             }
-            if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
-                revert(
-                    "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
-                );
-            }
             if (!operationAllowed && (permission == _PERMISSION_DEPLOY)) {
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
                 );
             }
+            if (!operationAllowed && (permission == _PERMISSION_STATICCALL)) {
+                revert(
+                    "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+                );
+            }
+            if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
+                revert(
+                    "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
+                );
+            }
+            
 
             require(
                 _isAllowedAddress(_address, recipient),

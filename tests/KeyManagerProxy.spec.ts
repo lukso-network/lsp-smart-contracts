@@ -297,6 +297,19 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       expect(executeResult).toBeTruthy();
     });
 
+    it("App should not be allowed to make a STATICCALL", async () => {
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.STATICCALL,
+        "0xcafecafecafecafecafecafecafecafecafecafe",
+        0,
+        DUMMY_PAYLOAD,
+      ]);
+
+      await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
+        "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+      );
+    });
+
     it("App should not be allowed to make a DELEGATECALL", async () => {
       let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.DELEGATECALL,
@@ -1030,6 +1043,27 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       await expect(proxyKeyManager.connect(accounts[6]).execute(executePayload)).toBeRevertedWith(
         "KeyManager:_getUserPermissions: no permissions set for this user / caller"
       );
+    });
+
+    it("Should revert if STATICCALL tries to change state", async () => {
+      let initialValue = targetContract.callStatic.getName()
+      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
+        "Another Contract Name",
+      ]);
+
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.STATICCALL,
+        targetContract.address,
+        0,
+        targetContractPayload,
+      ]);
+
+      await expect(proxyKeyManager.connect(owner).execute(executePayload)).toBeReverted;
+
+      let newValue = targetContract.callStatic.getName();
+
+      // ensure state hasn't changed.
+      expect(initialValue).toEqual(newValue);
     });
 
     it("Permissions should prevent ReEntrancy and stop contract from re-calling and re-transfering ETH.", async () => {
