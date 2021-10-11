@@ -5,14 +5,14 @@ import {
   ERC725Utils__factory,
   BasicUniversalReceiver,
   BasicUniversalReceiver__factory,
-  LSP3Account__factory,
+  UniversalProfile__factory,
   UniversalReceiverAddressStore,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
   UniversalReceiverTester__factory,
 } from "../build/types";
 
-import { deployLSP3Account } from "./utils/deploy";
+import { deployERC725Utils, deployUniversalProfile } from "./utils/deploy";
 
 // keccak256("ERC777TokensRecipient")
 const TOKENS_RECIPIENT_INTERFACE_HASH =
@@ -25,12 +25,12 @@ describe("Receivers", () => {
   let uni: BasicUniversalReceiver;
   let accounts: SignerWithAddress[] = [];
   let signer: SignerWithAddress;
-  let library: ERC725Utils;
+  let erc725Utils: ERC725Utils;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
     signer = accounts[1];
-    library = await new ERC725Utils__factory(accounts[0]).deploy();
+    erc725Utils = await deployERC725Utils();
   });
 
   beforeEach(async () => {
@@ -102,17 +102,15 @@ describe("Receivers", () => {
   });
 
   it("Use delegate and test if it can store addresses", async () => {
-    const signerAddress = accounts[1].address;
-    let account = await deployLSP3Account(library, signer);
+    const signerAddress = accounts[1];
+    let account = await deployUniversalProfile(erc725Utils.address, signer);
     let checker = await new UniversalReceiverTester__factory(signer).deploy();
     let checker2 = await new UniversalReceiverTester__factory(signer).deploy();
     let checker3 = await new UniversalReceiverTester__factory(signer).deploy();
     let delegate = await new UniversalReceiverAddressStore__factory(signer).deploy(account.address);
 
     // set uni receiver delegate
-    await account.setData([UNIVERSALRECEIVER_KEY], [delegate.address], {
-      from: signerAddress,
-    });
+    await account.connect(signerAddress).setData([UNIVERSALRECEIVER_KEY], [delegate.address]);
 
     await checker.lowLevelCheckImplementation(account.address, TOKENS_RECIPIENT_INTERFACE_HASH);
     await checker.checkImplementation(account.address, TOKENS_RECIPIENT_INTERFACE_HASH);

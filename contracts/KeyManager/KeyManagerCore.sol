@@ -12,7 +12,7 @@ import "../_LSPs/ILSP6_KeyManager.sol";
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "../Utils/ERC725Utils.sol";
+import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
 
 /**
  * @title Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -36,27 +36,30 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     /* solhint-disable */
     // PERMISSION KEYS
     bytes8 internal constant _SET_PERMISSIONS       = 0x4b80742d00000000;         // AddressPermissions:<...>
-    bytes12 internal constant _KEY_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
-    bytes12 internal constant _KEY_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
-    bytes12 internal constant _KEY_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
-    bytes12 internal constant _KEY_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+    bytes12 internal constant _ADDRESS_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes1
+    bytes12 internal constant _ADDRESS_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
+    bytes12 internal constant _ADDRESS_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+    bytes12 internal constant _ADDRESS_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
     /* solhint-enable */
 
     // prettier-ignore
     // PERMISSIONS VALUES
-    bytes1 internal constant _PERMISSION_CHANGEOWNER   = 0x01;   // 0000 0001
-    bytes1 internal constant _PERMISSION_CHANGEKEYS    = 0x02;   // 0000 0010
-    bytes1 internal constant _PERMISSION_SETDATA       = 0x04;   // 0000 0100
-    bytes1 internal constant _PERMISSION_CALL          = 0x08;   // 0000 1000
-    bytes1 internal constant _PERMISSION_DELEGATECALL  = 0x10;   // 0001 0000
-    bytes1 internal constant _PERMISSION_DEPLOY        = 0x20;   // 0010 0000
-    bytes1 internal constant _PERMISSION_TRANSFERVALUE = 0x40;   // 0100 0000
-    bytes1 internal constant _PERMISSION_SIGN          = 0x80;   // 1000 0000
+    bytes2 internal constant _PERMISSION_CHANGEOWNER   = 0x0001;   // 0000 0000 0000 0001
+    bytes2 internal constant _PERMISSION_CHANGEKEYS    = 0x0002;   // 0000 0000 0000 0010
+    bytes2 internal constant _PERMISSION_SETDATA       = 0x0004;   // 0000 0000 0000 0100
+    bytes2 internal constant _PERMISSION_CALL          = 0x0008;   // 0000 0000 0000 1000
+    bytes2 internal constant _PERMISSION_STATICCALL    = 0x0010;   // 0000 0000 0001 0000
+    bytes2 internal constant _PERMISSION_DELEGATECALL  = 0x0020;   // 0000 0000 0010 0000
+    bytes2 internal constant _PERMISSION_DEPLOY        = 0x0040;   // 0000 0000 0100 0000
+    bytes2 internal constant _PERMISSION_TRANSFERVALUE = 0x0080;   // 0000 0000 1000 0000
+    bytes2 internal constant _PERMISSION_SIGN          = 0x0100;   // 0000 0001 0000 0000
 
+    /* solhint-disable */
     // selectors
     bytes4 internal immutable _SETDATA_SELECTOR = account.setData.selector; // 0x14a6e293
     bytes4 internal immutable _EXECUTE_SELECTOR = account.execute.selector; // 0x44c028fe
     bytes4 internal immutable _TRANSFEROWNERSHIP_SELECTOR = account.transferOwnership.selector; // 0xf2fde38b;
+    /* solhint-enable */
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -183,7 +186,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         internal
         view
     {
-        bytes1 userPermissions = _getUserPermissions(_address);
+        bytes2 userPermissions = _getUserPermissions(_address);
         bytes4 erc725Selector = bytes4(_data[:4]);
 
         if (erc725Selector == _SETDATA_SELECTOR) {
@@ -220,18 +223,22 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             uint256 value = uint256(bytes32(_data[68:100]));
 
             require(
-                operationType < 4, // Check for CALL, DELEGATECALL or DEPLOY
+                operationType < 5, // Check for CALL, DELEGATECALL or DEPLOY
                 "KeyManager:_checkPermissions: Invalid operation type"
             );
 
-            bytes1 permission;
+            bytes2 permission;
+
+            /* solhint-disable */
             assembly {
                 switch operationType
                 case 0 { permission := _PERMISSION_CALL }
-                case 1 { permission := _PERMISSION_DELEGATECALL }
-                case 2 { permission := _PERMISSION_DEPLOY } // CREATE2
-                case 3 { permission := _PERMISSION_DEPLOY } // CREATE
+                case 1 { permission := _PERMISSION_DEPLOY } // CREATE2
+                case 2 { permission := _PERMISSION_DEPLOY } // CREATE
+                case 3 { permission := _PERMISSION_STATICCALL }
+                case 4 { permission := _PERMISSION_DELEGATECALL }
             }
+            /* solhint-enable */
             bool operationAllowed = _isAllowed(permission, userPermissions);
 
             if (!operationAllowed && (permission == _PERMISSION_CALL)) {
@@ -239,16 +246,22 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
                     "KeyManager:_checkPermissions: not authorized to perform CALL"
                 );
             }
-            if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
-                revert(
-                    "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
-                );
-            }
             if (!operationAllowed && (permission == _PERMISSION_DEPLOY)) {
                 revert(
                     "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
                 );
             }
+            if (!operationAllowed && (permission == _PERMISSION_STATICCALL)) {
+                revert(
+                    "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+                );
+            }
+            if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
+                revert(
+                    "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
+                );
+            }
+            
 
             require(
                 _isAllowedAddress(_address, recipient),
@@ -287,17 +300,9 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     function _getUserPermissions(address _address)
         internal
         view
-        returns (bytes1)
+        returns (bytes2)
     {
-        bytes32 permissionKey;
-        bytes memory computedKey = abi.encodePacked(_KEY_PERMISSIONS, _address);
-
-        assembly {
-            permissionKey := mload(add(computedKey, 32))
-        }
-
-        bytes1 storedPermission;
-        // this might cost more gas? Does contract type casting cost more gas?
+        bytes32 permissionKey = _generatePermissionKey(_ADDRESS_PERMISSIONS, _address);
         bytes memory fetchResult = ERC725Y(account).getDataSingle(permissionKey);
 
         if (fetchResult.length == 0) {
@@ -306,6 +311,8 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             );
         }
 
+        bytes2 storedPermission;
+        // solhint-disable-next-line
         assembly {
             storedPermission := mload(add(fetchResult, 32))
         }
@@ -318,14 +325,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         view
         returns (bytes memory)
     {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(
-            _KEY_ALLOWEDADDRESSES,
-            _sender
-        );
-        bytes32 allowedAddressesKey;
-        assembly {
-            allowedAddressesKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
+        bytes32 allowedAddressesKey = _generatePermissionKey(_ADDRESS_ALLOWEDADDRESSES, _sender);
         return ERC725Y(account).getDataSingle(allowedAddressesKey);
     }
 
@@ -334,14 +334,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         view
         returns (bytes memory)
     {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(
-            _KEY_ALLOWEDFUNCTIONS,
-            _sender
-        );
-        bytes32 allowedFunctionsKey;
-        assembly {
-            allowedFunctionsKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
+        bytes32 allowedFunctionsKey = _generatePermissionKey(_ADDRESS_ALLOWEDFUNCTIONS, _sender);        
         return ERC725Y(account).getDataSingle(allowedFunctionsKey);
     }
 
@@ -403,17 +396,34 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         }
     }
 
-    function _isAllowed(bytes1 _permission, bytes1 _addressPermission)
+    function _isAllowed(bytes2 _permission, bytes2 _addressPermission)
         internal
         pure
         returns (bool)
     {
-        uint8 resultCheck = uint8(_permission) & uint8(_addressPermission);
+        bytes2 resultCheck = _permission & _addressPermission;
 
-        if (resultCheck == uint8(_permission)) {
+        if (resultCheck == _permission) {
             return true;
         } else {
             return false;
         }
+    }
+
+    function _generatePermissionKey(bytes12 _key, address _address)
+        internal
+        pure
+        returns (bytes32) 
+    {
+        bytes memory allowedAddressesKeyComputed = abi.encodePacked(
+            _key,
+            _address
+        );
+        bytes32 generatedKey;
+        // solhint-disable-next-line
+        assembly {
+            generatedKey := mload(add(allowedAddressesKeyComputed, 32))
+        }
+        return generatedKey;
     }
 }
