@@ -1,0 +1,24 @@
+# Run me by typing `mythx analyze` in the directory of the yml file! :)
+
+ci: true # make the workflow fail on high severity issues
+confirm: true #  automatic confirmation of multiple file submissions (equivalent to --yes)
+
+analyze:
+  mode: standard
+  async: true
+  solc: 0.8.7
+  remappings:
+    - "@openzeppelin/=node_modules/@openzeppelin/"
+    - "solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+  targets:
+    # LSP0 (ERC725Account)
+    - submodules/ERC725/implementations/contracts/ERC725/ERC725Account.sol
+    - submodules/ERC725/implementations/contracts/ERC725/ERC725AccountInit.sol
+    # LSP1 (UniversalReceiver)
+    - contracts/UniversalReceiver/UniversalReceiverAddressStore.sol
+    # LSP3 (UniversalProfile)
+    - contracts/UniversalProfile.sol
+    - contracts/UniversalProfileInit.sol
+    # LSP6 (KeyManager)
+    - contracts/KeyManager/KeyManager.sol
+    - contracts/KeyManager/KeyManagerInit.sol

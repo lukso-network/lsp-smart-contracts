@@ -1,6 +1,8 @@
 # This workflow checks for Smart Contract security and vulnerabilities by submitting to Mythx
-# Inspired from: https://github.com/Uniswap/v3-core/blob/main/.github/workflows/mythx.yml
-name: Mythx
+# Inspired from: 
+#   - https://github.com/Uniswap/v3-core/blob/main/.github/workflows/mythx.yml
+#   - https://github.com/TacoswapCRD/tacoswap-contracts/blob/master/.github/workflows/sushiswap.yml
+name: Mythx Security Analysis
 
 on:
   workflow_dispatch:
@@ -16,32 +18,37 @@ jobs:
       - name: Setup Node.js v16
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: "16.x"
           cache: "npm"
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
 
       - name: Install node dependencies (including submodules)
         run: git submodule update --init --recursive
         run: npm ci
         run: cd ./submodules/ERC725/implementations && npm install
 
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      
       - name: Install pip3
         run: python -m pip install --upgrade pip
 
       - name: Install mythx CLI
         run: pip3 install mythx-cli
-
-      - name: Install solc-select
-        run: pip3 install solc-select
-
-      - name: Install solc 0.8.7
+      - name: Print version info
         run: |
-          solc-select install 0.8.7
-          solc-select use 0.8.7
+          python3 -V
+          mythx version
 
-      - name: Submit code to Mythx
-        # Submit code to Mythx
+      # - name: Install solc-select
+      #   run: pip3 install solc-select
+
+      # - name: Install solc 0.8.7
+      #   run: |
+      #     solc-select install 0.8.7
+      #     solc-select use 0.8.7
+
+      - name: Submit contracts to Mythx
+        # use configs from .mythx.yml
+        run: mythx analyze 
