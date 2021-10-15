@@ -1,16 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../UniversalProfileCore.sol";
+import "../UniversalProfile.sol";
 import "../KeyManager/KeyManager.sol";
 
 contract Executor {
 
-    KeyManager keyManager;
+    uint256 internal constant OPERATION_CALL = 0;
 
-    constructor(address _keyManager) {
+    KeyManager keyManager;
+    UniversalProfile universalProfile;
+
+    address constant dummyRecipient = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
+
+    // payable modifier is required as _account is non-payable by default
+    // but UniversalProfile as a payable fallback function
+    constructor(address payable _account, address _keyManager) {
+        universalProfile = UniversalProfile(_account);
         keyManager = KeyManager(_keyManager);
     }
+
+    // contract calls
+    // -----------
 
     function setHardcodedKey() public returns (bool) {
         bytes32[] memory keys = new bytes32[](1);
@@ -21,7 +32,7 @@ contract Executor {
         values[0] = 'Hello Lukso';
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            UniversalProfileCore.setData.selector,
+            universalProfile.setData.selector,
             keys,
             values
         );
@@ -29,7 +40,69 @@ contract Executor {
         return keyManager.execute(erc725Payload);
     }
 
-    // setHardcodedKey (raw / low-level call)
+    function setComputedKey() public returns (bool) {
+        bytes32[] memory keys = new bytes32[](1);
+        bytes[] memory values = new bytes[](1);
+
+        keys[0] = keccak256(abi.encodePacked('MyFirstKey'));
+        values[0] = abi.encodePacked('Hello Lukso');
+
+        bytes memory erc725Payload = abi.encodeWithSelector(
+            universalProfile.setData.selector,
+            keys,
+            values
+        );
+
+        return keyManager.execute(erc725Payload);
+    }
+
+    function setComputedKeyFromParams(bytes32 _key, bytes memory _value) public returns (bool) {
+        bytes32[] memory keys = new bytes32[](1);
+        bytes[] memory values = new bytes[](1);
+
+        keys[0] = _key;
+        values[0] = _value;
+
+        bytes memory erc725Payload = abi.encodeWithSelector(
+            universalProfile.setData.selector,
+            keys,
+            values
+        );
+
+        return keyManager.execute(erc725Payload);
+    }
+
+    function sendOneLyxHardcoded() public returns (bool) {
+        uint256 amount = 1 ether;
+
+        bytes memory erc725Payload = abi.encodeWithSelector(
+            universalProfile.execute.selector,
+            OPERATION_CALL,
+            dummyRecipient,
+            amount,
+            ""
+        );
+
+        return keyManager.execute(erc725Payload);
+    }
+
+    function sendOneLyxToRecipient(address _recipient) public returns (bool) {
+        uint256 amount = 1 ether;
+
+        bytes memory erc725Payload = abi.encodeWithSelector(
+            universalProfile.execute.selector,
+            OPERATION_CALL,
+            _recipient,
+            amount,
+            ""
+        );
+
+        return keyManager.execute(erc725Payload);
+    }
+
+    // raw / low-level calls
+    // ----------------------
+
     function setHardcodedKeyRawCall() public returns (bool) {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
@@ -39,7 +112,7 @@ contract Executor {
         values[0] = 'Hello Lukso';
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            UniversalProfileCore.setData.selector,
+            universalProfile.setData.selector,
             keys,
             values
         );
@@ -53,8 +126,7 @@ contract Executor {
         return success;
     }
 
-    // set computed keys
-    function setComputedKey() public returns (bool) {
+    function setComputedKeyRawCall() public returns (bool) {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
@@ -62,32 +134,80 @@ contract Executor {
         values[0] = abi.encodePacked('Hello Lukso');
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            UniversalProfileCore.setData.selector,
+            universalProfile.setData.selector,
             keys,
             values
         );
 
-        return keyManager.execute(erc725Payload);
+        bytes memory keyManagerPayload = abi.encodeWithSelector(
+            keyManager.execute.selector,
+            erc725Payload
+        );
+
+        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        return success;
     }
 
-    // set computed keys (raw call)
-
-    // set computed keys (as params)
-    function setComputedKeyFromParams(bytes32 _key, bytes memory _value) public returns (bool) {
+    function setComputedKeyFromParamsRawCall(bytes32 _key, bytes memory _value) public returns (bool) {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
-        keys[0] = keccak256(abi.encodePacked('MyFirstKey'));
-        values[0] = abi.encodePacked(_value);
+        keys[0] = _key;
+        values[0] = _value;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            UniversalProfileCore.setData.selector,
+            universalProfile.setData.selector,
             keys,
             values
         );
 
-        return keyManager.execute(erc725Payload);
+        bytes memory keyManagerPayload = abi.encodeWithSelector(
+            keyManager.execute.selector,
+            erc725Payload
+        );
+
+        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        return success;
     }
 
-    // set computed keys (as params) (raw call)
+    function sendOneLyxHardcodedRawCall() public returns (bool) {
+        uint256 amount = 1 ether;
+
+        bytes memory erc725Payload = abi.encodeWithSelector(
+            universalProfile.execute.selector,
+            OPERATION_CALL,
+            dummyRecipient,
+            amount,
+            ""
+        );
+
+        bytes memory keyManagerPayload = abi.encodeWithSelector(
+            keyManager.execute.selector,
+            erc725Payload
+        );
+
+        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        return success;
+    }
+
+    function sendOneLyxToRecipientRawCall(address _recipient) public returns (bool) {
+        uint256 amount = 1 ether;
+
+        bytes memory erc725Payload = abi.encodeWithSelector(
+            universalProfile.execute.selector,
+            OPERATION_CALL,
+            _recipient,
+            amount,
+            ""
+        );
+
+        bytes memory keyManagerPayload = abi.encodeWithSelector(
+            keyManager.execute.selector,
+            erc725Payload
+        );
+
+        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        return success;
+    }
+
 }
