@@ -6,12 +6,13 @@ import "../KeyManager/KeyManager.sol";
 
 contract Executor {
 
-    uint256 internal constant OPERATION_CALL = 0;
+    uint256 internal constant _OPERATION_CALL = 0;
+    address constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
+    /* solhint-disable */
     KeyManager keyManager;
     UniversalProfile universalProfile;
-
-    address constant dummyRecipient = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
+    /* solhint-enable */
 
     // payable modifier is required as _account is non-payable by default
     // but UniversalProfile as a payable fallback function
@@ -29,7 +30,7 @@ contract Executor {
 
         // keccak256('MyFirstKey')
         keys[0] = 0x00b76b597620a89621ab37aedc4220d553ad6145a885461350e5990372b906f5;
-        values[0] = 'Hello Lukso';
+        values[0] = "Hello Lukso";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
             universalProfile.setData.selector,
@@ -44,8 +45,8 @@ contract Executor {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
-        keys[0] = keccak256(abi.encodePacked('MyFirstKey'));
-        values[0] = abi.encodePacked('Hello Lukso');
+        keys[0] = keccak256(abi.encodePacked("MyFirstKey"));
+        values[0] = abi.encodePacked("Hello Lukso");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
             universalProfile.setData.selector,
@@ -77,8 +78,8 @@ contract Executor {
 
         bytes memory erc725Payload = abi.encodeWithSelector(
             universalProfile.execute.selector,
-            OPERATION_CALL,
-            dummyRecipient,
+            _OPERATION_CALL,
+            _DUMMY_RECIPIENT,
             amount,
             ""
         );
@@ -91,7 +92,7 @@ contract Executor {
 
         bytes memory erc725Payload = abi.encodeWithSelector(
             universalProfile.execute.selector,
-            OPERATION_CALL,
+            _OPERATION_CALL,
             _recipient,
             amount,
             ""
@@ -109,7 +110,7 @@ contract Executor {
 
         // keccak256('MyFirstKey')
         keys[0] = 0x00b76b597620a89621ab37aedc4220d553ad6145a885461350e5990372b906f5;
-        values[0] = 'Hello Lukso';
+        values[0] = "Hello Lukso";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
             universalProfile.setData.selector,
@@ -130,8 +131,8 @@ contract Executor {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
-        keys[0] = keccak256(abi.encodePacked('MyFirstKey'));
-        values[0] = abi.encodePacked('Hello Lukso');
+        keys[0] = keccak256(abi.encodePacked("MyFirstKey"));
+        values[0] = abi.encodePacked("Hello Lukso");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
             universalProfile.setData.selector,
@@ -175,8 +176,8 @@ contract Executor {
 
         bytes memory erc725Payload = abi.encodeWithSelector(
             universalProfile.execute.selector,
-            OPERATION_CALL,
-            dummyRecipient,
+            _OPERATION_CALL,
+            _DUMMY_RECIPIENT,
             amount,
             ""
         );
@@ -195,7 +196,7 @@ contract Executor {
 
         bytes memory erc725Payload = abi.encodeWithSelector(
             universalProfile.execute.selector,
-            OPERATION_CALL,
+            _OPERATION_CALL,
             _recipient,
             amount,
             ""
