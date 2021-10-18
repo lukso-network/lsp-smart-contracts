@@ -125,19 +125,29 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     /**
      * @dev execute the payload _data on the ERC725 Account
      * @param _data obtained via encodeABI() in web3
-     * @return success_ true if the call on ERC725 Account succeeded, false otherwise
+     * @return result_ the data being returned by the ERC725 Account
      */
     function execute(bytes calldata _data)
         external
         payable
         override
-        returns (bool success_)
+        returns (bytes memory)
     {
         _checkPermissions(msg.sender, _data);
-        (success_, ) = address(account).call{value: msg.value, gas: gasleft()}(
+        (bool success, bytes memory result_) = address(account).call{value: msg.value, gas: gasleft()}(
             _data
         );
-        if (success_) emit Executed(msg.value, _data);
+
+        if (!success) {
+            if (result_.length < 68) revert();
+            assembly {
+                result_ := add(result_, 0x04)
+            }
+            revert(abi.decode(result_, (string)));
+        }
+        
+        emit Executed(msg.value, _data);
+        return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
     /**
@@ -146,13 +156,14 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
      * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
      * @param _data obtained via encodeABI() in web3
      * @param _signature bytes32 ethereum signature
+     * @return result_ the data being returned by the ERC725 Account
      */
     function executeRelayCall(
         address _signedFor,
         uint256 _nonce,
         bytes calldata _data,
         bytes memory _signature
-    ) external payable override returns (bool success_) {
+    ) external payable override returns (bytes memory) {
         require(
             _signedFor == address(this),
             "KeyManager:executeRelayCall: Message not signed for this keyManager"
@@ -178,8 +189,18 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
 
         _checkPermissions(from, _data);
 
-        (success_, ) = address(account).call{value: 0, gas: gasleft()}(_data);
-        if (success_) emit Executed(msg.value, _data);
+        (bool success, bytes memory result_) = address(account).call{value: 0, gas: gasleft()}(_data);
+        
+        if (!success) {
+            if (result_.length < 68) revert();
+            assembly {
+                result_ := add(result_, 0x04)
+            }
+            revert(abi.decode(result_, (string)));
+        }
+        
+        emit Executed(msg.value, _data);
+        return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
     function _checkPermissions(address _address, bytes calldata _data)
