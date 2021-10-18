@@ -483,8 +483,8 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
   });
 
-  describe("> testing external contract's state change", () => {
-    it("Owner should be allowed to set `name` variable in simple contract", async () => {
+  describe("> testing interactions with a TargetContract", () => {
+    it("Owner should be allowed to set `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
 
@@ -505,7 +505,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       expect(result).toEqual(newName, `name variable in TargetContract should now be ${newName}`);
     });
 
-    it("App should be allowed to set `name` variable in TargetContract", async () => {
+    it("App should be allowed to set `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
 
@@ -526,7 +526,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       expect(result).toEqual(newName);
     });
 
-    it("Owner should be allowed to set `number` variable from TargetContract", async () => {
+    it("Owner should be allowed to set `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
       let newNumber = 18;
 
@@ -552,7 +552,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(newNumber);
     });
 
-    it("App should not be allowed to set `number` variable in simple contract", async () => {
+    it("App should not be allowed to set `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
       let newNumber = 18;
 
@@ -576,6 +576,40 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ethers.BigNumber.from(initialNumber).toNumber()
       );
     });
+
+    it("Should return `name` variable ...", async () => {
+      let initialName = await targetContract.callStatic.getName();
+
+      let targetContractPayload = targetContract.interface.encodeFunctionData("getName");
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.CALL,
+        targetContract.address,
+        0,
+        targetContractPayload,
+      ]);
+
+      let result = await proxyKeyManager.connect(owner).callStatic.execute(executePayload);
+
+      let [decodedResult] = abiCoder.decode(["string"], result);
+      expect(decodedResult).toEqual(initialName);
+    });
+
+    it("Should return `number` variable", async () => {
+      let initialNumber = await targetContract.callStatic.getNumber();
+
+      let targetContractPayload = targetContract.interface.encodeFunctionData("getNumber");
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.CALL,
+        targetContract.address,
+        0,
+        targetContractPayload,
+      ]);
+
+      let result = await proxyKeyManager.connect(owner).callStatic.execute(executePayload);
+
+      let [decodedResult] = abiCoder.decode(["uint256"], result);
+      expect(decodedResult).toEqual(initialNumber);
+    });
   });
 
   describe("> testing other revert causes", () => {
@@ -595,6 +629,21 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(proxyKeyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
         "KeyManager:_checkPermissions: unknown function selector from ERC725 account"
+      );
+    });
+
+    it("Should revert with a revert reason string from TargetContract", async () => {
+      let targetContractPayload = targetContract.interface.encodeFunctionData("revertCall");
+
+      let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.CALL,
+        targetContract.address,
+        0,
+        targetContractPayload,
+      ]);
+
+      await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
+        "TargetContract:revertCall: this function has reverted!"
       );
     });
   });
@@ -1046,7 +1095,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
 
     it("Should revert if STATICCALL tries to change state", async () => {
-      let initialValue = targetContract.callStatic.getName()
+      let initialValue = targetContract.callStatic.getName();
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
         "Another Contract Name",
       ]);
@@ -1058,7 +1107,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         targetContractPayload,
       ]);
 
-      await expect(proxyKeyManager.connect(owner).execute(executePayload)).toBeReverted;
+      await expect(proxyKeyManager.connect(owner).execute(executePayload)).toBeReverted();
 
       let newValue = targetContract.callStatic.getName();
 
