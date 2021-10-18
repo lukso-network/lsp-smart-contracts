@@ -658,7 +658,7 @@ describe("KeyManager", () => {
       let callResult = await keyManager.callStatic.execute(transferPayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.execute(transferPayload, { gasLimit: 3_000_000 });
+      await keyManager.execute(transferPayload);
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
       expect(parseInt(newAccountBalance)).toBeLessThan(parseInt(initialAccountBalance));
@@ -727,9 +727,7 @@ describe("KeyManager", () => {
         targetContractPayload,
       ]);
 
-      let result = await keyManager
-        .connect(app)
-        .callStatic.execute(keyManagerPayload, { gasLimit: 3_000_000 });
+      let result = await keyManager.connect(app).callStatic.execute(keyManagerPayload);
       expect(result).toBeTruthy();
     });
 
@@ -805,7 +803,7 @@ describe("KeyManager", () => {
       let callResult = await keyManager.connect(owner).callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.connect(owner).execute(executePayload, { gasLimit: 3_000_000 });
+      await keyManager.connect(owner).execute(executePayload);
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
       expect(result).toEqual(newName, `name variable in TargetContract should now be ${newName}`);
@@ -826,7 +824,7 @@ describe("KeyManager", () => {
       let callResult = await keyManager.connect(app).callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.connect(app).execute(executePayload, { gasLimit: 3_000_000 });
+      await keyManager.connect(app).execute(executePayload);
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
       expect(result).toEqual(newName);
@@ -849,7 +847,7 @@ describe("KeyManager", () => {
       let callResult = await keyManager.connect(owner).callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.connect(owner).execute(executePayload, { gasLimit: 3_000_000 });
+      await keyManager.connect(owner).execute(executePayload);
       let result = await targetContract.callStatic.getNumber();
       expect(
         parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
@@ -1039,8 +1037,7 @@ describe("KeyManager", () => {
         keyManager.address,
         nonce,
         executeRelayCallPayload,
-        signature,
-        { gasLimit: 3_000_000 }
+        signature
       );
       let endResult = await targetContract.callStatic.getName();
       expect(endResult).toEqual(newName);
@@ -1112,8 +1109,7 @@ describe("KeyManager", () => {
           keyManager.address,
           latestNonce,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1157,8 +1153,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1193,8 +1188,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1234,8 +1228,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1270,8 +1263,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1311,8 +1303,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1347,8 +1338,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1386,8 +1376,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1461,7 +1450,7 @@ describe("KeyManager", () => {
       // console.log("Attacker's initial balance: ", initialAttackerBalance)
 
       // try to drain funds via ReEntrancy
-      await keyManager.connect(owner).execute(transferPayload, { gasLimit: 3_000_000 });
+      await keyManager.connect(owner).execute(transferPayload);
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
       let newAttackerBalance = await provider.getBalance(maliciousContract.address);

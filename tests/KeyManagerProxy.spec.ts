@@ -242,7 +242,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let callResult = await proxyKeyManager.connect(owner).callStatic.execute(payload);
       expect(callResult).toBeTruthy();
 
-      await proxyKeyManager.connect(owner).execute(payload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.connect(owner).execute(payload);
       let [fetchedResult] = await proxyUniversalProfile.callStatic.getData([key]);
 
       expect(fetchedResult).toEqual(value);
@@ -289,9 +289,6 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         0,
         targetContract.interface.encodeFunctionData("setName", ["Example"]),
       ]);
-
-      console.log("accounts[0] (owner)", accounts[0].address);
-      console.log("accounts[1] (app)", accounts[1].address);
 
       let executeResult = await proxyKeyManager.connect(app).callStatic.execute(executePayload);
       expect(executeResult).toBeTruthy();
@@ -354,7 +351,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let callResult = await proxyKeyManager.callStatic.execute(transferPayload);
       expect(callResult).toBeTruthy();
 
-      await proxyKeyManager.execute(transferPayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.execute(transferPayload);
 
       let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
       expect(parseInt(newAccountBalance)).toBeLessThan(parseInt(initialAccountBalance));
@@ -499,7 +496,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await proxyKeyManager.execute(executePayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.execute(executePayload);
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
       expect(result).toEqual(newName, `name variable in TargetContract should now be ${newName}`);
@@ -520,7 +517,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await proxyKeyManager.execute(executePayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.execute(executePayload);
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
       expect(result).toEqual(newName);
@@ -543,7 +540,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await proxyKeyManager.execute(executePayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.execute(executePayload);
       let result = await targetContract.callStatic.getNumber();
       expect(
         parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
@@ -1137,7 +1134,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       // console.log("Attacker's initial balance: ", initialAttackerBalance)
 
       // try to drain funds via ReEntrancy
-      await proxyKeyManager.connect(owner).execute(transferPayload, { gasLimit: 3_000_000 });
+      await proxyKeyManager.connect(owner).execute(transferPayload);
 
       let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
       let newAttackerBalance = await provider.getBalance(maliciousContract.address);
