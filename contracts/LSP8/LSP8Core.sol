@@ -158,7 +158,8 @@ abstract contract LSP8Core is Context, ILSP8 {
         address tokenOwner = tokenOwnerOf(tokenId);
         require(tokenOwner == _msgSender(), "LSP8: authorize caller not token owner");
 
-        require(tokenOwner != operator, "LSP8: authorizing self as operator");
+        require(tokenOwner != operator, "LSP8: authorizing tokenOwner as operator");
+        require(operator != address(0), "LSP8: authorizing operator is the zero address");
 
         _operators[tokenId].add(operator);
 
@@ -186,7 +187,8 @@ abstract contract LSP8Core is Context, ILSP8 {
         address tokenOwner = tokenOwnerOf(tokenId);
         require(tokenOwner == _msgSender(), "LSP8: revoke caller not token owner");
 
-        require(operator != tokenOwner, "LSP8: revoking self as operator");
+        require(operator != tokenOwner, "LSP8: revoking tokenOwner as operator");
+        require(operator != address(0), "LSP8: revoking operator is the zero address");
 
         _revokeOperator(operator, tokenOwner, tokenId);
     }

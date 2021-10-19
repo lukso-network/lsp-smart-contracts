@@ -153,35 +153,65 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           it("should revert", async () => {
             await expect(
               context.lsp8.authorizeOperator(context.accounts.owner.address, mintedTokenId)
-            ).toBeRevertedWith("LSP8: authorizing self as operator");
+            ).toBeRevertedWith("LSP8: authorizing tokenOwner as operator");
           });
         });
 
         describe("when given operator is different than tokenOwner", () => {
-          describe("when operator is already authorized", () => {
-            beforeEach(async () => {
-              await context.lsp8.authorizeOperator(
-                context.accounts.operator.address,
-                mintedTokenId
-              );
+          describe("when operator is not the zero address", () => {
+            it("should succeed", async () => {
+              const operator = context.accounts.operator.address;
+              const tokenOwner = context.accounts.owner.address;
+              const tokenId = mintedTokenId;
+
+              const tx = await context.lsp8.authorizeOperator(operator, tokenId);
+
+              await expect(tx).toHaveEmittedWith(context.lsp8, "AuthorizedOperator", [
+                operator,
+                tokenOwner,
+                tokenId,
+              ]);
+
+              expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(true);
             });
 
-            it("should succeed", async () => {});
-          });
-          it("should succeed", async () => {
-            const operator = context.accounts.operator.address;
-            const tokenOwner = context.accounts.owner.address;
-            const tokenId = mintedTokenId;
+            describe("when operator is already authorized", () => {
+              beforeEach(async () => {
+                await context.lsp8.authorizeOperator(
+                  context.accounts.operator.address,
+                  mintedTokenId
+                );
+              });
 
-            const tx = await context.lsp8.authorizeOperator(operator, tokenId);
+              it("should succeed", async () => {
+                const operator = context.accounts.operator.address;
+                const tokenOwner = context.accounts.owner.address;
+                const tokenId = mintedTokenId;
 
-            await expect(tx).toHaveEmittedWith(context.lsp8, "AuthorizedOperator", [
-              operator,
-              tokenOwner,
-              tokenId,
-            ]);
+                await context.lsp8.authorizeOperator(operator, tokenId);
 
-            expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(true);
+                const tx = await context.lsp8.authorizeOperator(operator, tokenId);
+
+                await expect(tx).toHaveEmittedWith(context.lsp8, "AuthorizedOperator", [
+                  operator,
+                  tokenOwner,
+                  tokenId,
+                ]);
+
+                expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(true);
+              });
+            });
+
+            describe("when operator is the zero address", () => {
+              it("should revert", async () => {
+                const operator = ethers.constants.AddressZero;
+                const tokenId = mintedTokenId;
+
+                await expect(context.lsp8.authorizeOperator(operator, tokenId)).toBeRevertedWith(
+                  "LSP8: authorizing operator is the zero address"
+                );
+              });
+            });
           });
         });
       });
@@ -211,30 +241,43 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           it("should revert", async () => {
             await expect(
               context.lsp8.revokeOperator(context.accounts.owner.address, mintedTokenId)
-            ).toBeRevertedWith("LSP8: revoking self as operator");
+            ).toBeRevertedWith("LSP8: revoking tokenOwner as operator");
           });
         });
 
         describe("when given operator is different than tokenOwner", () => {
-          it("should succeed", async () => {
-            const operator = context.accounts.operator.address;
-            const tokenOwner = context.accounts.owner.address;
-            const tokenId = mintedTokenId;
+          describe("when operator is not the zero address", () => {
+            it("should succeed", async () => {
+              const operator = context.accounts.operator.address;
+              const tokenOwner = context.accounts.owner.address;
+              const tokenId = mintedTokenId;
 
-            // pre-conditions
-            await context.lsp8.authorizeOperator(operator, tokenId);
-            expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(true);
+              // pre-conditions
+              await context.lsp8.authorizeOperator(operator, tokenId);
+              expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(true);
 
-            // effects
-            const tx = await context.lsp8.revokeOperator(operator, tokenId);
-            await expect(tx).toHaveEmittedWith(context.lsp8, "RevokedOperator", [
-              operator,
-              tokenOwner,
-              tokenId,
-            ]);
+              // effects
+              const tx = await context.lsp8.revokeOperator(operator, tokenId);
+              await expect(tx).toHaveEmittedWith(context.lsp8, "RevokedOperator", [
+                operator,
+                tokenOwner,
+                tokenId,
+              ]);
 
-            // post-conditions
-            expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(false);
+              // post-conditions
+              expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(false);
+            });
+          });
+
+          describe("when operator is the zero address", () => {
+            it("should revert", async () => {
+              const operator = ethers.constants.AddressZero;
+              const tokenId = mintedTokenId;
+
+              await expect(context.lsp8.revokeOperator(operator, tokenId)).toBeRevertedWith(
+                "LSP8: revoking operator is the zero address"
+              );
+            });
           });
         });
       });

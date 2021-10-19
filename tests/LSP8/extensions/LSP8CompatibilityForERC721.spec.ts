@@ -94,17 +94,30 @@ describe("LSP8CompatibilityForERC721", () => {
     });
 
     describe("when caller is owner of tokenId", () => {
-      it("should succeed", async () => {
-        const operator = context.accounts.operator.address;
-        const tokenId = mintedTokenId;
+      describe("when operator is not the zero address", () => {
+        it("should succeed", async () => {
+          const operator = context.accounts.operator.address;
+          const tokenId = mintedTokenId;
 
-        const tx = await context.lsp8CompatibilityForERC721.approve(operator, tokenId);
+          const tx = await context.lsp8CompatibilityForERC721.approve(operator, tokenId);
 
-        expect(tx).toHaveEmittedWith(context.lsp8CompatibilityForERC721, "AuthorizedOperator", [
-          operator,
-          context.accounts.owner.address,
-          tokenIdAsBytes32(tokenId),
-        ]);
+          expect(tx).toHaveEmittedWith(context.lsp8CompatibilityForERC721, "AuthorizedOperator", [
+            operator,
+            context.accounts.owner.address,
+            tokenIdAsBytes32(tokenId),
+          ]);
+        });
+      });
+
+      describe("when operator is the zero address", () => {
+        it("should revert", async () => {
+          const operator = ethers.constants.AddressZero;
+          const tokenId = mintedTokenId;
+
+          await expect(
+            context.lsp8CompatibilityForERC721.approve(operator, tokenId)
+          ).toBeRevertedWith("LSP8: authorizing operator is the zero address");
+        });
       });
     });
   });

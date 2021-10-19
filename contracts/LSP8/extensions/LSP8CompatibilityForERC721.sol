@@ -36,7 +36,7 @@ abstract contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP
         virtual
         override
     {
-        authorizeOperator(operator, bytes32(tokenId));
+        return authorizeOperator(operator, bytes32(tokenId));
     }
 
     /*
