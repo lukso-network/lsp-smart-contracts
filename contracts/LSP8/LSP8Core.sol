@@ -328,11 +328,11 @@ abstract contract LSP8Core is Context, ILSP8 {
      * Emits {Transfer} event for each transfered token.
      */
     function transferBatch(
-        address[] calldata from,
-        address[] calldata to,
-        bytes32[] calldata tokenId,
+        address[] memory from,
+        address[] memory to,
+        bytes32[] memory tokenId,
         bool force,
-        bytes[] calldata data
+        bytes[] memory data
     )
         external
         virtual

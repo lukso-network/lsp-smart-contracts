@@ -156,7 +156,7 @@ interface ILSP8 is IERC165, IERC725Y {
         address to,
         bytes32 tokenId,
         bool force,
-        bytes calldata data
+        bytes memory data
     ) external;
 
     /**
@@ -174,10 +174,10 @@ interface ILSP8 is IERC165, IERC725Y {
      * Emits {Transfer} events.
      */
     function transferBatch(
-        address[] calldata from,
-        address[] calldata to,
-        bytes32[] calldata tokenId,
+        address[] memory from,
+        address[] memory to,
+        bytes32[] memory tokenId,
         bool force,
-        bytes[] calldata data
+        bytes[] memory data
     ) external;
 }
