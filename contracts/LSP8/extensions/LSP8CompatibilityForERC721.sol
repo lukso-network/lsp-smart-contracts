@@ -71,7 +71,7 @@ abstract contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP
     }
 
     /*
-     * @dev Compatible with ERC721 tranferFrom.
+     * @dev Compatible with ERC721 transferFrom.
      * Using force=true, meaning EOA and any contract may receive the tokenId.
      */
     function transferFrom(address from, address to, uint256 tokenId)
@@ -83,7 +83,7 @@ abstract contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP
     }
 
     /*
-     * @dev Compatible with ERC721 safeTranferFrom.
+     * @dev Compatible with ERC721 safeTransferFrom.
      * Using force=false, no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
     function safeTransferFrom(address from, address to, uint256 tokenId)

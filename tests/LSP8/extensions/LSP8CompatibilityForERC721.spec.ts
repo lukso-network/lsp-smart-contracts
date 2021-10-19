@@ -209,13 +209,10 @@ describe("LSP8CompatibilityForERC721", () => {
       );
     });
 
+    type TransferParams = { operator: string; from: string; to: string; tokenId: BytesLike };
+
     const transferSuccessScenario = async (
-      {
-        operator,
-        from,
-        to,
-        tokenId,
-      }: { operator: string; from: string; to: string; tokenId: number },
+      { operator, from, to, tokenId }: TransferTxParams,
       transferFn: string,
       expectedData: string
     ) => {
@@ -244,18 +241,12 @@ describe("LSP8CompatibilityForERC721", () => {
     };
 
     const transferFailScenario = async (
-      {
-        operator,
-        from,
-        to,
-        tokenId,
-      }: { operator: string; from: string; to: string; tokenId: number },
+      { operator, from, to, tokenId }: TransferTxParams,
       transferFn: string,
       expectedError: string
     ) => {
       // pre-conditions
       const preOwnerOf = await context.lsp8CompatibilityForERC721.ownerOf(tokenId);
-      expect(preOwnerOf).toEqual(from);
 
       // effect
       await expect(
@@ -271,44 +262,60 @@ describe("LSP8CompatibilityForERC721", () => {
       const transferFn = "transferFrom";
       const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("compat-transferFrom"));
 
-      describe("when `to` is an EOA", () => {
-        it("should allow transfering the tokenId", async () => {
-          const txParams = {
-            operator: context.accounts.owner.address,
-            from: context.accounts.owner.address,
-            to: context.accounts.tokenReceiver.address,
-            tokenId: mintedTokenId,
-          };
+      describe("when the from address is the tokenId owner", () => {
+        describe("when `to` is an EOA", () => {
+          it("should allow transfering the tokenId", async () => {
+            const txParams = {
+              operator: context.accounts.owner.address,
+              from: context.accounts.owner.address,
+              to: context.accounts.tokenReceiver.address,
+              tokenId: mintedTokenId,
+            };
 
-          await transferSuccessScenario(txParams, transferFn, expectedData);
+            await transferSuccessScenario(txParams, transferFn, expectedData);
+          });
+        });
+
+        describe("when `to` is a contract", () => {
+          describe("when receiving contract supports LSP1", () => {
+            it("should allow transfering the tokenId", async () => {
+              const txParams = {
+                operator: context.accounts.owner.address,
+                from: context.accounts.owner.address,
+                to: deployedContracts.tokenReceiverWithLSP1.address,
+                tokenId: mintedTokenId,
+              };
+
+              await transferSuccessScenario(txParams, transferFn, expectedData);
+            });
+          });
+
+          describe("when receiving contract does not support LSP1", () => {
+            it("should allow transfering the tokenId", async () => {
+              const txParams = {
+                operator: context.accounts.owner.address,
+                from: context.accounts.owner.address,
+                to: deployedContracts.tokenReceiverWithoutLSP1.address,
+                tokenId: mintedTokenId,
+              };
+
+              await transferSuccessScenario(txParams, transferFn, expectedData);
+            });
+          });
         });
       });
 
-      describe("when `to` is a contract", () => {
-        describe("when receiving contract supports LSP1", () => {
-          it("should allow transfering the tokenId", async () => {
-            const txParams = {
-              operator: context.accounts.owner.address,
-              from: context.accounts.owner.address,
-              to: deployedContracts.tokenReceiverWithLSP1.address,
-              tokenId: mintedTokenId,
-            };
+      describe("when the from address is not the tokenId owner", () => {
+        it("should revert", async () => {
+          const txParams = {
+            operator: context.accounts.anyone.address,
+            from: context.accounts.anyone.address,
+            to: deployedContracts.tokenReceiverWithoutLSP1.address,
+            tokenId: mintedTokenId,
+          };
+          const expectedError = "LSP8: transfer of tokenId from incorrect owner";
 
-            await transferSuccessScenario(txParams, transferFn, expectedData);
-          });
-        });
-
-        describe("when receiving contract does not support LSP1", () => {
-          it("should allow transfering the tokenId", async () => {
-            const txParams = {
-              operator: context.accounts.owner.address,
-              from: context.accounts.owner.address,
-              to: deployedContracts.tokenReceiverWithoutLSP1.address,
-              tokenId: mintedTokenId,
-            };
-
-            await transferSuccessScenario(txParams, transferFn, expectedData);
-          });
+          await transferFailScenario(txParams, transferFn, expectedError);
         });
       });
     });
@@ -319,46 +326,62 @@ describe("LSP8CompatibilityForERC721", () => {
         ethers.utils.toUtf8Bytes("compat-safeTransferFrom")
       );
 
-      describe("when `to` is an EOA", () => {
-        it("should not allow transfering the tokenId", async () => {
-          const txParams = {
-            operator: context.accounts.owner.address,
-            from: context.accounts.owner.address,
-            to: context.accounts.tokenReceiver.address,
-            tokenId: mintedTokenId,
-          };
-          const expectedError = "LSP8: token receiver is EOA";
-
-          await transferFailScenario(txParams, transferFn, expectedError);
-        });
-      });
-
-      describe("when `to` is a contract", () => {
-        describe("when receiving contract supports LSP1", () => {
-          it("should allow transfering the tokenId", async () => {
+      describe("when the from address is the tokenId owner", () => {
+        describe("when `to` is an EOA", () => {
+          it("should revert", async () => {
             const txParams = {
               operator: context.accounts.owner.address,
               from: context.accounts.owner.address,
-              to: deployedContracts.tokenReceiverWithLSP1.address,
+              to: context.accounts.tokenReceiver.address,
               tokenId: mintedTokenId,
             };
-
-            await transferSuccessScenario(txParams, transferFn, expectedData);
-          });
-        });
-
-        describe("when receiving contract does not support LSP1", () => {
-          it("should not allow transfering the tokenId", async () => {
-            const txParams = {
-              operator: context.accounts.owner.address,
-              from: context.accounts.owner.address,
-              to: deployedContracts.tokenReceiverWithoutLSP1.address,
-              tokenId: mintedTokenId,
-            };
-            const expectedError = "LSP8: token receiver contract missing LSP1 interface";
+            const expectedError = "LSP8: token receiver is EOA";
 
             await transferFailScenario(txParams, transferFn, expectedError);
           });
+        });
+
+        describe("when `to` is a contract", () => {
+          describe("when receiving contract supports LSP1", () => {
+            it("should allow transfering the tokenId", async () => {
+              const txParams = {
+                operator: context.accounts.owner.address,
+                from: context.accounts.owner.address,
+                to: deployedContracts.tokenReceiverWithLSP1.address,
+                tokenId: mintedTokenId,
+              };
+
+              await transferSuccessScenario(txParams, transferFn, expectedData);
+            });
+          });
+
+          describe("when receiving contract does not support LSP1", () => {
+            it("should revert", async () => {
+              const txParams = {
+                operator: context.accounts.owner.address,
+                from: context.accounts.owner.address,
+                to: deployedContracts.tokenReceiverWithoutLSP1.address,
+                tokenId: mintedTokenId,
+              };
+              const expectedError = "LSP8: token receiver contract missing LSP1 interface";
+
+              await transferFailScenario(txParams, transferFn, expectedError);
+            });
+          });
+        });
+      });
+
+      describe("when the from address is not the tokenId owner", () => {
+        it("should revert", async () => {
+          const txParams = {
+            operator: context.accounts.anyone.address,
+            from: context.accounts.anyone.address,
+            to: deployedContracts.tokenReceiverWithoutLSP1.address,
+            tokenId: mintedTokenId,
+          };
+          const expectedError = "LSP8: transfer of tokenId from incorrect owner";
+
+          await transferFailScenario(txParams, transferFn, expectedError);
         });
       });
     });
