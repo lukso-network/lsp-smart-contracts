@@ -26,7 +26,7 @@ import { deployERC725Utils } from "./utils/deploy";
 // constants
 import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
 import { KEYS, PERMISSIONS, OPERATIONS, ALL_PERMISSIONS_SET } from "./utils/keymanager";
-import { INTERFACE_IDS } from "./utils/constants";
+import { ADDRESSPERMISSIONS_KEY, INTERFACE_IDS } from "./utils/constants";
 
 describe("KeyManager + LSP3 Account as Proxies", () => {
   let abiCoder;
@@ -46,6 +46,8 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     user: SignerWithAddress,
     externalApp: SignerWithAddress,
     newUser: SignerWithAddress;
+
+  let addressPermissions;
 
   beforeAll(async () => {
     abiCoder = await ethers.utils.defaultAbiCoder;
@@ -145,6 +147,35 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         ]
       );
 
+    // Set AddressPermissions array
+    addressPermissions = [
+      { key: ADDRESSPERMISSIONS_KEY, value: "0x05" },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000000",
+        value: owner.address,
+      },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000001",
+        value: app.address,
+      },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000002",
+        value: user.address,
+      },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000003",
+        value: ethers.utils.getAddress(externalApp.address),
+      },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000004",
+        value: newUser.address,
+      },
+    ];
+
+    addressPermissions.map(async (element) => {
+      await proxyUniversalProfile.connect(owner).setData([element.key], [element.value]);
+    });
+
     // switch account management to KeyManager
     await proxyUniversalProfile.connect(owner).transferOwnership(proxyKeyManager.address);
 
@@ -172,15 +203,12 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     expect(result).toBeTruthy();
   });
 
-  describe("> verify permissions", () => {
+  describe("> Verifying permissions", () => {
     it("Owner should have ALL PERMISSIONS (= admin)", async () => {
       let [permissions] = await proxyUniversalProfile.getData([
         KEYS.PERMISSIONS + owner.address.substr(2),
       ]);
-      expect(permissions).toEqual(
-        ethers.utils.hexZeroPad(ALL_PERMISSIONS_SET, 32),
-        "Owner should have all permissions set"
-      );
+      expect(permissions).toEqual(ethers.utils.hexZeroPad(ALL_PERMISSIONS_SET, 32));
     });
 
     it("App should have permissions SETDATA and CALL", async () => {
@@ -188,10 +216,25 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         KEYS.PERMISSIONS + app.address.substr(2),
       ]);
       expect(permissions).toEqual(
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32),
-        "Owner should have all permissions set"
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
       );
     });
+
+    // check the array length
+    it("Value should be 5 for key 'AddressPermissions[]'", async () => {
+      let [result] = await proxyUniversalProfile.getData([ADDRESSPERMISSIONS_KEY]);
+      expect(result).toEqual(addressPermissions[0].value);
+    });
+
+    // check array indexes individually
+    for (let ii = 1; ii <= 5; ii++) {
+      it(`Checking address (=value) stored at AddressPermissions[${ii - 1}]'`, async () => {
+        let [result] = await proxyUniversalProfile.getData([addressPermissions[ii].key]);
+        // raw bytes are stored lower case, so we need to checksum the address retrieved
+        result = ethers.utils.getAddress(result);
+        expect(result).toEqual(addressPermissions[ii].value);
+      });
+    }
   });
 
   describe("> testing permissions: CHANGEKEYS, SETDATA", () => {
