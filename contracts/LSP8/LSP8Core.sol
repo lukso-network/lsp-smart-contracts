@@ -68,7 +68,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     /**
      * @dev Returns the number of tokens in ``tokenOwner``'s account.
      *
-     * * Requirements:
+     * Requirements:
      *
      * - `tokenOwner` cannot be the zero address.
      */
@@ -387,9 +387,9 @@ abstract contract LSP8Core is Context, ILSP8 {
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        _notifyTokenReceiver(address(0), to, tokenId, force, data);
-
         emit Transfer(operator, address(0), to, tokenId, data);
+
+        _notifyTokenReceiver(address(0), to, tokenId, force, data);
     }
 
     /**
@@ -461,9 +461,10 @@ abstract contract LSP8Core is Context, ILSP8 {
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
+        emit Transfer(operator, from, to, tokenId, data);
+
         _notifyTokenReceiver(from, to, tokenId, force, data);
 
-        emit Transfer(operator, from, to, tokenId, data);
     }
 
     /**
