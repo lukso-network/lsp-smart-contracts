@@ -25,7 +25,7 @@ import { deployERC725Utils } from "./utils/deploy";
 
 // constants
 import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
-import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
+import { KEYS, PERMISSIONS, OPERATIONS, ALL_PERMISSIONS_SET } from "./utils/keymanager";
 import { INTERFACE_IDS } from "./utils/constants";
 
 describe("KeyManager + LSP3 Account as Proxies", () => {
@@ -83,10 +83,10 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     // owner permissions
     await proxyUniversalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [PERMISSIONS.ALL]);
+      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
     // app permissions
-    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await proxyUniversalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
@@ -105,13 +105,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       );
 
     // user permissions
-    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await proxyUniversalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + user.address.substr(2)], [userPermissions]);
 
     // externalApp permissions
-    let externalAppPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let externalAppPermissions = ethers.utils.hexZeroPad(
+      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+      32
+    );
     await proxyUniversalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + externalApp.address.substr(2)], [externalAppPermissions]);
@@ -137,7 +140,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         [
           ethers.utils.hexZeroPad(
             PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-            2
+            32
           ),
         ]
       );
@@ -175,7 +178,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         KEYS.PERMISSIONS + owner.address.substr(2),
       ]);
       expect(permissions).toEqual(
-        ethers.utils.hexZeroPad(PERMISSIONS.ALL, 2),
+        ethers.utils.hexZeroPad(ALL_PERMISSIONS_SET, 32),
         "Owner should have all permissions set"
       );
     });
@@ -185,7 +188,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         KEYS.PERMISSIONS + app.address.substr(2),
       ]);
       expect(permissions).toEqual(
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32),
         "Owner should have all permissions set"
       );
     });
@@ -212,7 +215,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       await proxyKeyManager.execute(
         proxyUniversalProfile.interface.encodeFunctionData("setData", [
           [key],
-          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2)],
+          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)],
         ])
       );
     });
@@ -221,7 +224,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       // malicious app trying to set all permissions
       let dangerousPayload = proxyUniversalProfile.interface.encodeFunctionData("setData", [
         [KEYS.PERMISSIONS + app.address.substr(2)],
-        [PERMISSIONS.ALL],
+        [ALL_PERMISSIONS_SET],
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(

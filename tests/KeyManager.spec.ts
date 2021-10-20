@@ -33,7 +33,13 @@ import {
 } from "./utils/helpers";
 import { INTERFACE_IDS } from "./utils/constants";
 
-import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
+import {
+  ALL_PERMISSIONS_SET,
+  KEYS,
+  PERMISSIONS,
+  OPERATIONS,
+  allowedAddresses,
+} from "./utils/keymanager";
 
 describe("KeyManagerHelper", () => {
   let abiCoder;
@@ -59,13 +65,9 @@ describe("KeyManagerHelper", () => {
     universalProfile = await deployUniversalProfile(erc725Utils.address, owner);
     keyManagerHelper = await deployKeyManagerHelper(erc725Utils.address, universalProfile);
 
-    await universalProfile.setData(
-      [KEYS.PERMISSIONS + owner.address.substr(2)],
-      [PERMISSIONS.ALL],
-      {
-        from: owner.address,
-      }
-    );
+    await universalProfile
+      .connect(owner)
+      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
     let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
 
@@ -78,6 +80,12 @@ describe("KeyManagerHelper", () => {
       [KEYS.ALLOWEDFUNCTIONS + owner.address.substr(2)],
       [abiCoder.encode(["bytes4[]"], [allowedFunctions])]
     );
+
+    // app permissions
+    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
+    await universalProfile
+      .connect(owner)
+      .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
   });
 
   it("Shows the interfaceId for LSP6", async () => {
@@ -137,8 +145,26 @@ describe("KeyManagerHelper", () => {
   });
 
   describe("Reading User's permissions", () => {
-    it("Should return 0xff for owner", async () => {
-      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual("0xffff"); // ALL_PERMISSIONS = "0xff"
+    it("Should return 0xffff... for owner", async () => {
+      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual(ALL_PERMISSIONS_SET); // ALL_PERMISSIONS = "0xffff..."
+    });
+
+    it("Should return 0x....0c for app", async () => {
+      expect(await keyManagerHelper.getUserPermissions(app.address)).toEqual(
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
+      );
+    });
+  });
+
+  describe("Testing allowed permissions", () => {
+    it("Should return true for operation setData", async () => {
+      let appPermissions = await keyManagerHelper.getUserPermissions(app.address);
+      expect(
+        await keyManagerHelper.isAllowed(
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+          appPermissions
+        )
+      ).toBeTruthy();
     });
   });
 
@@ -206,10 +232,10 @@ describe("KeyManager", () => {
     // owner permissions
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [PERMISSIONS.ALL]);
+      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
     // app permissions
-    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
@@ -228,13 +254,16 @@ describe("KeyManager", () => {
       );
 
     // user permissions
-    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + user.address.substr(2)], [userPermissions]);
 
     // externalApp permissions
-    let externalAppPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let externalAppPermissions = ethers.utils.hexZeroPad(
+      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+      32
+    );
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + externalApp.address.substr(2)], [externalAppPermissions]);
@@ -256,7 +285,7 @@ describe("KeyManager", () => {
       [
         ethers.utils.hexZeroPad(
           PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-          2
+          32
         ),
       ]
     );
@@ -289,12 +318,14 @@ describe("KeyManager", () => {
     let [permissions] = await universalProfile.getData([
       KEYS.PERMISSIONS + owner.address.substr(2),
     ]);
-    expect(permissions).toEqual("0xffff", "Owner should have all permissions set");
+    expect(permissions).toEqual(ALL_PERMISSIONS_SET);
   });
 
-  it("get app permissions", async () => {
+  it("App permission should be SETDATA + CALL ('0x...0c')", async () => {
     let [permissions] = await universalProfile.getData([KEYS.PERMISSIONS + app.address.substr(2)]);
-    expect(permissions).toEqual("0x000c", "App should have permissions");
+    expect(permissions).toEqual(
+      ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
+    );
   });
 
   describe("> testing permissions: CHANGEKEYS, SETDATA", () => {
@@ -318,7 +349,7 @@ describe("KeyManager", () => {
       await keyManager.execute(
         universalProfile.interface.encodeFunctionData("setData", [
           [key],
-          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2)],
+          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)],
         ])
       );
     });
@@ -327,16 +358,12 @@ describe("KeyManager", () => {
       // malicious app trying to set all permissions
       let dangerousPayload = universalProfile.interface.encodeFunctionData("setData", [
         [KEYS.PERMISSIONS + app.address.substr(2)],
-        [PERMISSIONS.ALL],
+        [ALL_PERMISSIONS_SET],
       ]);
 
       await expect(keyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to change keys"
       );
-
-      let [permissions] = await universalProfile.getData([
-        KEYS.PERMISSIONS + app.address.substr(2),
-      ]);
     });
 
     it("Owner should be allowed to setData", async () => {
@@ -490,9 +517,9 @@ describe("KeyManager", () => {
       ];
 
       let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
       ];
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
@@ -510,9 +537,9 @@ describe("KeyManager", () => {
       ];
 
       let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
       ];
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
@@ -527,7 +554,7 @@ describe("KeyManager", () => {
       let permissionKeyDisallowed = KEYS.PERMISSIONS + user.address.substr(2)
       let permissionValueDisallowed = ethers.utils.hexZeroPad(
         PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-        2
+        32
       );
 
       let elements = {
@@ -563,9 +590,9 @@ describe("KeyManager", () => {
       ]);
 
       values = values.concat([
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
       ]);
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
