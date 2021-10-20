@@ -60,7 +60,7 @@ abstract contract LSP8CappedSupplyCore is ILSP8CappedSupply, LSP8Core {
         virtual
         override
     {
-        require(tokenSupplyCap() - totalSupply() > 0, "LSP8CappedSupply: tokenSupplyCap reached");
+        require(totalSupply() + 1 <= tokenSupplyCap(), "LSP8CappedSupply: tokenSupplyCap reached");
         super._mint(to, tokenId, force, data);
     }
 }
