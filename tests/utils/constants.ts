@@ -22,6 +22,12 @@ export const SupportedStandards = {
   },
 };
 
+// KeyManager
+
+// Get key: keccak256('AddressPermissions[]')
+export const ADDRESSPERMISSIONS_KEY =
+  "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3";
+
 // Universal Receiver
 
 // Get key: keccak256('LSP1UniversalReceiverDelegate')

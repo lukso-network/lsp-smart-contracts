@@ -31,9 +31,15 @@ import {
   getRandomAddresses,
   generateKeysAndValues,
 } from "./utils/helpers";
-import { INTERFACE_IDS } from "./utils/constants";
+import { INTERFACE_IDS, ADDRESSPERMISSIONS_KEY } from "./utils/constants";
 
-import { KEYS, PERMISSIONS, OPERATIONS, allowedAddresses } from "./utils/keymanager";
+import {
+  ALL_PERMISSIONS_SET,
+  KEYS,
+  PERMISSIONS,
+  OPERATIONS,
+  allowedAddresses,
+} from "./utils/keymanager";
 
 describe("KeyManagerHelper", () => {
   let abiCoder;
@@ -59,13 +65,9 @@ describe("KeyManagerHelper", () => {
     universalProfile = await deployUniversalProfile(erc725Utils.address, owner);
     keyManagerHelper = await deployKeyManagerHelper(erc725Utils.address, universalProfile);
 
-    await universalProfile.setData(
-      [KEYS.PERMISSIONS + owner.address.substr(2)],
-      [PERMISSIONS.ALL],
-      {
-        from: owner.address,
-      }
-    );
+    await universalProfile
+      .connect(owner)
+      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
     let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
 
@@ -78,11 +80,16 @@ describe("KeyManagerHelper", () => {
       [KEYS.ALLOWEDFUNCTIONS + owner.address.substr(2)],
       [abiCoder.encode(["bytes4[]"], [allowedFunctions])]
     );
+
+    // app permissions
+    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
+    await universalProfile
+      .connect(owner)
+      .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
   });
 
   it("Shows the interfaceId for LSP6", async () => {
     let lsp6InterfaceId = await keyManagerHelper.getInterfaceId();
-    console.log("LSP6 InterfaceId: ", lsp6InterfaceId);
     expect(lsp6InterfaceId).toEqual(INTERFACE_IDS.LSP6);
   });
 
@@ -138,8 +145,26 @@ describe("KeyManagerHelper", () => {
   });
 
   describe("Reading User's permissions", () => {
-    it("Should return 0xff for owner", async () => {
-      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual("0xffff"); // ALL_PERMISSIONS = "0xff"
+    it("Should return 0xffff... for owner", async () => {
+      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual(ALL_PERMISSIONS_SET); // ALL_PERMISSIONS = "0xffff..."
+    });
+
+    it("Should return 0x....0c for app", async () => {
+      expect(await keyManagerHelper.getUserPermissions(app.address)).toEqual(
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
+      );
+    });
+  });
+
+  describe("Testing allowed permissions", () => {
+    it("Should return true for operation setData", async () => {
+      let appPermissions = await keyManagerHelper.getUserPermissions(app.address);
+      expect(
+        await keyManagerHelper.isAllowed(
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+          appPermissions
+        )
+      ).toBeTruthy();
     });
   });
 
@@ -163,7 +188,7 @@ describe("KeyManagerHelper", () => {
     });
 
     it("_isAllowedAddress(...) - Should return `true`, user has all addresses whitelisted (= no list of allowed address)", async () => {
-      // assuming a scenario user wants to interact with app on via ERC725 account
+      // assuming a scenario user wants to interact with app via ERC725 account
       expect(
         await keyManagerHelper.callStatic.isAllowedAddress(user.address, app.address)
       ).toBeTruthy();
@@ -187,6 +212,8 @@ describe("KeyManager", () => {
     externalApp: SignerWithAddress,
     newUser: SignerWithAddress;
 
+  let addressPermissions;
+
   beforeAll(async () => {
     abiCoder = await ethers.utils.defaultAbiCoder;
     accounts = await ethers.getSigners();
@@ -207,10 +234,10 @@ describe("KeyManager", () => {
     // owner permissions
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [PERMISSIONS.ALL]);
+      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
     // app permissions
-    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
@@ -229,13 +256,16 @@ describe("KeyManager", () => {
       );
 
     // user permissions
-    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + user.address.substr(2)], [userPermissions]);
 
     // externalApp permissions
-    let externalAppPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2);
+    let externalAppPermissions = ethers.utils.hexZeroPad(
+      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+      32
+    );
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + externalApp.address.substr(2)], [externalAppPermissions]);
@@ -257,10 +287,39 @@ describe("KeyManager", () => {
       [
         ethers.utils.hexZeroPad(
           PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-          2
+          32
         ),
       ]
     );
+
+    // Set AddressPermissions array
+    addressPermissions = [
+      { key: ADDRESSPERMISSIONS_KEY, value: "0x05" },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000000",
+        value: owner.address,
+      },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000001",
+        value: app.address,
+      },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000002",
+        value: user.address,
+      },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000003",
+        value: ethers.utils.getAddress(externalApp.address),
+      },
+      {
+        key: ADDRESSPERMISSIONS_KEY.slice(0, 34) + "00000000000000000000000000000004",
+        value: newUser.address,
+      },
+    ];
+
+    addressPermissions.map(async (element) => {
+      await universalProfile.connect(owner).setData([element.key], [element.value]);
+    });
 
     // switch account management to KeyManager
     await universalProfile.connect(owner).transferOwnership(keyManager.address);
@@ -285,17 +344,38 @@ describe("KeyManager", () => {
     expect(result).toBeTruthy();
   });
 
-  // ensures owner is still universalProfile\'s admin (=all permissions)
-  it("ensures owner is still universalProfile's admin (=all permissions)", async () => {
-    let [permissions] = await universalProfile.getData([
-      KEYS.PERMISSIONS + owner.address.substr(2),
-    ]);
-    expect(permissions).toEqual("0xffff", "Owner should have all permissions set");
-  });
+  describe("> Verifying permissions", () => {
+    it("ensures owner is still universalProfile's admin (=all permissions)", async () => {
+      let [permissions] = await universalProfile.getData([
+        KEYS.PERMISSIONS + owner.address.substr(2),
+      ]);
+      expect(permissions).toEqual(ALL_PERMISSIONS_SET);
+    });
 
-  it("get app permissions", async () => {
-    let [permissions] = await universalProfile.getData([KEYS.PERMISSIONS + app.address.substr(2)]);
-    expect(permissions).toEqual("0x000c", "App should have permissions");
+    it("App permission should be SETDATA + CALL ('0x...0c')", async () => {
+      let [permissions] = await universalProfile.getData([
+        KEYS.PERMISSIONS + app.address.substr(2),
+      ]);
+      expect(permissions).toEqual(
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
+      );
+    });
+
+    // check the array length
+    it("Value should be 5 for key 'AddressPermissions[]'", async () => {
+      let [result] = await universalProfile.getData([ADDRESSPERMISSIONS_KEY]);
+      expect(result).toEqual(addressPermissions[0].value);
+    });
+
+    // check array indexes individually
+    for (let ii = 1; ii <= 5; ii++) {
+      it(`Checking address (=value) stored at AddressPermissions[${ii - 1}]'`, async () => {
+        let [result] = await universalProfile.getData([addressPermissions[ii].key]);
+        // raw bytes are stored lower case, so we need to checksum the address retrieved
+        result = ethers.utils.getAddress(result);
+        expect(result).toEqual(addressPermissions[ii].value);
+      });
+    }
   });
 
   describe("> testing permissions: CHANGEKEYS, SETDATA", () => {
@@ -319,7 +399,7 @@ describe("KeyManager", () => {
       await keyManager.execute(
         universalProfile.interface.encodeFunctionData("setData", [
           [key],
-          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 2)],
+          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)],
         ])
       );
     });
@@ -328,16 +408,12 @@ describe("KeyManager", () => {
       // malicious app trying to set all permissions
       let dangerousPayload = universalProfile.interface.encodeFunctionData("setData", [
         [KEYS.PERMISSIONS + app.address.substr(2)],
-        [PERMISSIONS.ALL],
+        [ALL_PERMISSIONS_SET],
       ]);
 
       await expect(keyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to change keys"
       );
-
-      let [permissions] = await universalProfile.getData([
-        KEYS.PERMISSIONS + app.address.substr(2),
-      ]);
     });
 
     it("Owner should be allowed to setData", async () => {
@@ -491,9 +567,9 @@ describe("KeyManager", () => {
       ];
 
       let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
       ];
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
@@ -511,9 +587,9 @@ describe("KeyManager", () => {
       ];
 
       let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
       ];
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
@@ -528,7 +604,7 @@ describe("KeyManager", () => {
       let permissionKeyDisallowed = KEYS.PERMISSIONS + user.address.substr(2)
       let permissionValueDisallowed = ethers.utils.hexZeroPad(
         PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-        2
+        32
       );
 
       let elements = {
@@ -564,9 +640,9 @@ describe("KeyManager", () => {
       ]);
 
       values = values.concat([
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 2),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 2),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
       ]);
 
       let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
@@ -659,7 +735,7 @@ describe("KeyManager", () => {
       let callResult = await keyManager.callStatic.execute(transferPayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.execute(transferPayload, { gasLimit: 3_000_000 });
+      await keyManager.execute(transferPayload);
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
       expect(parseInt(newAccountBalance)).toBeLessThan(parseInt(initialAccountBalance));
@@ -728,9 +804,7 @@ describe("KeyManager", () => {
         targetContractPayload,
       ]);
 
-      let result = await keyManager
-        .connect(app)
-        .callStatic.execute(keyManagerPayload, { gasLimit: 3_000_000 });
+      let result = await keyManager.connect(app).callStatic.execute(keyManagerPayload);
       expect(result).toBeTruthy();
     });
 
@@ -790,8 +864,8 @@ describe("KeyManager", () => {
     });
   });
 
-  describe("> testing external contract's state change", () => {
-    it("Owner should be allowed to set `name` variable in simple contract", async () => {
+  describe("> testing interactions with a TargetContract", () => {
+    it("Owner should be allowed to set `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
 
@@ -806,13 +880,13 @@ describe("KeyManager", () => {
       let callResult = await keyManager.connect(owner).callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.connect(owner).execute(executePayload, { gasLimit: 3_000_000 });
+      await keyManager.connect(owner).execute(executePayload);
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
       expect(result).toEqual(newName, `name variable in TargetContract should now be ${newName}`);
     });
 
-    it("App should be allowed to set `name` variable in TargetContract", async () => {
+    it("App should be allowed to set `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
 
@@ -827,13 +901,13 @@ describe("KeyManager", () => {
       let callResult = await keyManager.connect(app).callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.connect(app).execute(executePayload, { gasLimit: 3_000_000 });
+      await keyManager.connect(app).execute(executePayload);
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
       expect(result).toEqual(newName);
     });
 
-    it("Owner should be allowed to set `number` variable from TargetContract", async () => {
+    it("Owner should be allowed to set `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
       let newNumber = 18;
 
@@ -850,7 +924,7 @@ describe("KeyManager", () => {
       let callResult = await keyManager.connect(owner).callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
-      await keyManager.connect(owner).execute(executePayload, { gasLimit: 3_000_000 });
+      await keyManager.connect(owner).execute(executePayload);
       let result = await targetContract.callStatic.getNumber();
       expect(
         parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
@@ -859,7 +933,7 @@ describe("KeyManager", () => {
       expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(newNumber);
     });
 
-    it("App should not be allowed to set `number` variable in simple contract", async () => {
+    it("App should not be allowed to set `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
       let newNumber = 18;
 
@@ -883,6 +957,40 @@ describe("KeyManager", () => {
         ethers.BigNumber.from(initialNumber).toNumber()
       );
     });
+
+    it("Should return `name` variable", async () => {
+      let initialName = await targetContract.callStatic.getName();
+
+      let targetContractPayload = targetContract.interface.encodeFunctionData("getName");
+      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.CALL,
+        targetContract.address,
+        0,
+        targetContractPayload,
+      ]);
+
+      let result = await keyManager.connect(owner).callStatic.execute(executePayload);
+
+      let [decodedResult] = abiCoder.decode(["string"], result);
+      expect(decodedResult).toEqual(initialName);
+    });
+
+    it("Should return `number` variable", async () => {
+      let initialNumber = await targetContract.callStatic.getNumber();
+
+      let targetContractPayload = targetContract.interface.encodeFunctionData("getNumber");
+      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.CALL,
+        targetContract.address,
+        0,
+        targetContractPayload,
+      ]);
+
+      let result = await keyManager.connect(owner).callStatic.execute(executePayload);
+
+      let [decodedResult] = abiCoder.decode(["uint256"], result);
+      expect(decodedResult).toEqual(initialNumber);
+    });
   });
 
   describe("> testing other revert causes", () => {
@@ -902,6 +1010,21 @@ describe("KeyManager", () => {
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(keyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
         "KeyManager:_checkPermissions: unknown function selector from ERC725 account"
+      );
+    });
+
+    it("Should revert with a revert reason string from TargetContract", async () => {
+      let targetContractPayload = targetContract.interface.encodeFunctionData("revertCall");
+
+      let payload = universalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.CALL,
+        targetContract.address,
+        0,
+        targetContractPayload,
+      ]);
+
+      await expect(keyManager.execute(payload)).toBeRevertedWith(
+        "TargetContract:revertCall: this function has reverted!"
       );
     });
   });
@@ -991,8 +1114,7 @@ describe("KeyManager", () => {
         keyManager.address,
         nonce,
         executeRelayCallPayload,
-        signature,
-        { gasLimit: 3_000_000 }
+        signature
       );
       let endResult = await targetContract.callStatic.getName();
       expect(endResult).toEqual(newName);
@@ -1064,8 +1186,7 @@ describe("KeyManager", () => {
           keyManager.address,
           latestNonce,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1109,8 +1230,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1145,8 +1265,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1186,8 +1305,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1222,8 +1340,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1263,8 +1380,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1299,8 +1415,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1338,8 +1453,7 @@ describe("KeyManager", () => {
           keyManager.address,
           nonceBefore,
           executeRelayCallPayload,
-          signature,
-          { gasLimit: 3_000_000 }
+          signature
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -1373,7 +1487,7 @@ describe("KeyManager", () => {
     });
 
     it("Should revert if STATICCALL tries to change state", async () => {
-      let initialValue = targetContract.callStatic.getName()
+      let initialValue = targetContract.callStatic.getName();
       let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
         "Another Contract Name",
       ]);
@@ -1385,7 +1499,7 @@ describe("KeyManager", () => {
         targetContractPayload,
       ]);
 
-      await expect(keyManager.connect(owner).execute(executePayload)).toBeReverted;
+      await expect(keyManager.connect(owner).execute(executePayload)).toBeReverted();
 
       let newValue = targetContract.callStatic.getName();
 
@@ -1413,7 +1527,7 @@ describe("KeyManager", () => {
       // console.log("Attacker's initial balance: ", initialAttackerBalance)
 
       // try to drain funds via ReEntrancy
-      await keyManager.connect(owner).execute(transferPayload, { gasLimit: 3_000_000 });
+      await keyManager.connect(owner).execute(transferPayload);
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
       let newAttackerBalance = await provider.getBalance(maliciousContract.address);

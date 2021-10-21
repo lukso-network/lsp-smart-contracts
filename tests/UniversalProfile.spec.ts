@@ -18,7 +18,7 @@ import {
 } from "../build/types";
 
 // custom utils
-import { KEYS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";
+import { ALL_PERMISSIONS_SET, KEYS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";
 import { deployERC725Utils, deployUniversalProfile, deployKeyManager } from "./utils/deploy";
 
 /** @todo put all of these in constant file */
@@ -804,13 +804,13 @@ describe("UniversalProfile", () => {
       // give all permissions to owner
       await UniversalProfile.connect(owner).setData(
         [KEYS.PERMISSIONS + owner.address.substr(2)],
-        [PERMISSIONS.ALL]
+        [ALL_PERMISSIONS_SET]
       );
 
       // give SIGN permission to signer
       await UniversalProfile.connect(owner).setData(
         [KEYS.PERMISSIONS + signer.address.substr(2)],
-        [PERMISSIONS.SIGN]
+        [ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32)]
       );
       // give CALL permission to non-signer
       await UniversalProfile.connect(owner).setData(
