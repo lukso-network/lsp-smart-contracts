@@ -44,15 +44,15 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
 
     // prettier-ignore
     // PERMISSIONS VALUES
-    bytes32 internal constant _PERMISSION_CHANGEOWNER   = 0x0000000000000000000000000000000000000000000000000000000000000001;   // [240 x 0 bits...] 0000 0000 0000 0001
-    bytes32 internal constant _PERMISSION_CHANGEKEYS    = 0x0000000000000000000000000000000000000000000000000000000000000002;   // [      ...      ] .... .... .... 0010
-    bytes32 internal constant _PERMISSION_SETDATA       = 0x0000000000000000000000000000000000000000000000000000000000000004;   // [      ...      ] .... .... .... 0100
-    bytes32 internal constant _PERMISSION_CALL          = 0x0000000000000000000000000000000000000000000000000000000000000008;   // [      ...      ] .... .... .... 1000
-    bytes32 internal constant _PERMISSION_STATICCALL    = 0x0000000000000000000000000000000000000000000000000000000000000010;   // [      ...      ] .... .... 0001 ....
-    bytes32 internal constant _PERMISSION_DELEGATECALL  = 0x0000000000000000000000000000000000000000000000000000000000000020;   // [      ...      ] .... .... 0010 ....
-    bytes32 internal constant _PERMISSION_DEPLOY        = 0x0000000000000000000000000000000000000000000000000000000000000040;   // [      ...      ] .... .... 0100 ....
-    bytes32 internal constant _PERMISSION_TRANSFERVALUE = 0x0000000000000000000000000000000000000000000000000000000000000080;   // [      ...      ] .... .... 1000 ....
-    bytes32 internal constant _PERMISSION_SIGN          = 0x0000000000000000000000000000000000000000000000000000000000000100;   // [      ...      ] .... 0001 .... ....
+    bytes32 internal constant _PERMISSION_CHANGEOWNER          = 0x0000000000000000000000000000000000000000000000000000000000000001;   // [240 x 0 bits...] 0000 0000 0000 0001
+    bytes32 internal constant _PERMISSION_CHANGEPERMISSIONS    = 0x0000000000000000000000000000000000000000000000000000000000000002;   // [      ...      ] .... .... .... 0010
+    bytes32 internal constant _PERMISSION_SETDATA              = 0x0000000000000000000000000000000000000000000000000000000000000004;   // [      ...      ] .... .... .... 0100
+    bytes32 internal constant _PERMISSION_CALL                 = 0x0000000000000000000000000000000000000000000000000000000000000008;   // [      ...      ] .... .... .... 1000
+    bytes32 internal constant _PERMISSION_STATICCALL           = 0x0000000000000000000000000000000000000000000000000000000000000010;   // [      ...      ] .... .... 0001 ....
+    bytes32 internal constant _PERMISSION_DELEGATECALL         = 0x0000000000000000000000000000000000000000000000000000000000000020;   // [      ...      ] .... .... 0010 ....
+    bytes32 internal constant _PERMISSION_DEPLOY               = 0x0000000000000000000000000000000000000000000000000000000000000040;   // [      ...      ] .... .... 0100 ....
+    bytes32 internal constant _PERMISSION_TRANSFERVALUE        = 0x0000000000000000000000000000000000000000000000000000000000000080;   // [      ...      ] .... .... 1000 ....
+    bytes32 internal constant _PERMISSION_SIGN                 = 0x0000000000000000000000000000000000000000000000000000000000000100;   // [      ...      ] .... 0001 .... ....
 
     /* solhint-disable */
     // selectors
@@ -225,7 +225,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
                 // check if we try to change permissions
                 if (bytes8(setDataKey) == _SET_PERMISSIONS) {
                     require(
-                        _isAllowed(_PERMISSION_CHANGEKEYS, userPermissions),
+                        _isAllowed(_PERMISSION_CHANGEPERMISSIONS, userPermissions),
                         "KeyManager:_checkPermissions: Not authorized to change keys"
                     );
                 } 
