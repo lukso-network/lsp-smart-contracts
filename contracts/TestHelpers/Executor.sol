@@ -24,7 +24,7 @@ contract Executor {
     // contract calls
     // -----------
 
-    function setHardcodedKey() public returns (bool) {
+    function setHardcodedKey() public returns (bytes memory) {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
@@ -41,7 +41,7 @@ contract Executor {
         return keyManager.execute(erc725Payload);
     }
 
-    function setComputedKey() public returns (bool) {
+    function setComputedKey() public returns (bytes memory) {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
@@ -57,7 +57,7 @@ contract Executor {
         return keyManager.execute(erc725Payload);
     }
 
-    function setComputedKeyFromParams(bytes32 _key, bytes memory _value) public returns (bool) {
+    function setComputedKeyFromParams(bytes32 _key, bytes memory _value) public returns (bytes memory) {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
@@ -73,7 +73,7 @@ contract Executor {
         return keyManager.execute(erc725Payload);
     }
 
-    function sendOneLyxHardcoded() public returns (bool) {
+    function sendOneLyxHardcoded() public returns (bytes memory) {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
@@ -87,7 +87,7 @@ contract Executor {
         return keyManager.execute(erc725Payload);
     }
 
-    function sendOneLyxToRecipient(address _recipient) public returns (bool) {
+    function sendOneLyxToRecipient(address _recipient) public returns (bytes memory) {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(

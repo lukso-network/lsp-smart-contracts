@@ -35,7 +35,7 @@ contract KeyManagerHelper is KeyManager {
         return super._isAllowedFunction(_sender, _function);
     }
 
-    function isAllowed(bytes32 _permission, bytes32 _addressPermission) public view returns (bool) {
+    function isAllowed(bytes32 _permission, bytes32 _addressPermission) public pure returns (bool) {
         return super._isAllowed(_permission, _addressPermission);
     }
 
