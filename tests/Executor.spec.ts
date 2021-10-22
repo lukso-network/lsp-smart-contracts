@@ -12,7 +12,7 @@ import {
 // custom helpers
 import { deployERC725Utils, deployUniversalProfile, deployKeyManager } from "./utils/deploy";
 import { ONE_ETH, DUMMY_RECIPIENT } from "./utils/helpers";
-import { KEYS, PERMISSIONS } from "./utils/keymanager";
+import { ALL_PERMISSIONS_SET, KEYS, PERMISSIONS } from "./utils/keymanager";
 
 describe("Executor interacting with KeyManager", () => {
   let accounts: SignerWithAddress[] = [];
@@ -47,7 +47,7 @@ describe("Executor interacting with KeyManager", () => {
     );
 
     // owner permissions
-    let ownerPermissions = ethers.utils.hexZeroPad(PERMISSIONS.ALL, 2);
+    let ownerPermissions = ethers.utils.hexZeroPad(ALL_PERMISSIONS_SET, 32);
     await universalProfile
       .connect(owner)
       .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ownerPermissions]);
@@ -55,7 +55,7 @@ describe("Executor interacting with KeyManager", () => {
     // executor permissions
     let executorPermissions = ethers.utils.hexZeroPad(
       PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-      2
+      32
     );
     await universalProfile
       .connect(owner)
@@ -70,7 +70,9 @@ describe("Executor interacting with KeyManager", () => {
       let [permissions] = await universalProfile.getData([
         KEYS.PERMISSIONS + executor.address.substr(2),
       ]);
-      expect(permissions).toEqual("0x008c");
+      expect(permissions).toEqual(
+        "0x000000000000000000000000000000000000000000000000000000000000008c"
+      );
     });
   });
 
