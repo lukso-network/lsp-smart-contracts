@@ -139,6 +139,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         );
 
         if (!success) {
+            // solhint-disable-next-line reason-string
             if (result_.length < 68) revert();
             assembly {
                 result_ := add(result_, 0x04)
@@ -192,6 +193,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         (bool success, bytes memory result_) = address(account).call{value: 0, gas: gasleft()}(_data);
         
         if (!success) {
+            // solhint-disable-next-line reason-string
             if (result_.length < 68) revert();
             assembly {
                 result_ := add(result_, 0x04)
