@@ -1,12 +1,8 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import {
-  LSP8CappedSupply,
-  LSP8CappedSupplyTester,
-  LSP8CappedSupplyTester__factory,
-} from "../../../build/types";
+import { LSP8CappedSupplyTester } from "../../../build/types";
 
-import type { BigNumber } from "ethers";
+import type { BigNumber, BytesLike } from "ethers";
 
 export type LSP8CappedSupplyTestAccounts = {
   owner: SignerWithAddress;
@@ -70,7 +66,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
       const postTokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
       const postTotalSupply = await context.lsp8CappedSupply.totalSupply();
-      expect(postTotalSupply.sub(postTokenSupplyCap).toString()).toEqual("0");
+      expect(postTotalSupply.sub(postTokenSupplyCap)).toEqual(ethers.constants.Zero);
     });
 
     describe("when cap has been reached", () => {
@@ -85,7 +81,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
         const preTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(preTotalSupply.sub(tokenSupplyCap).toString()).toEqual("0");
+        expect(preTotalSupply.sub(tokenSupplyCap)).toEqual(ethers.constants.Zero);
 
         await expect(
           context.lsp8CappedSupply.mint(context.accounts.tokenReceiver.address, anotherTokenId)
@@ -101,7 +97,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
         const preBurnTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(preBurnTotalSupply.sub(preBurnTotalSupply).toString()).toEqual("0");
+        expect(preBurnTotalSupply.sub(preBurnTotalSupply)).toEqual(ethers.constants.Zero);
 
         await context.lsp8CappedSupply.burn(mintedTokenIds[0]);
 
@@ -111,7 +107,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
         await context.lsp8CappedSupply.mint(context.accounts.tokenReceiver.address, anotherTokenId);
 
         const postMintTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(postMintTotalSupply.sub(preBurnTotalSupply).toString()).toEqual("0");
+        expect(postMintTotalSupply.sub(preBurnTotalSupply)).toEqual(ethers.constants.Zero);
       });
     });
   });

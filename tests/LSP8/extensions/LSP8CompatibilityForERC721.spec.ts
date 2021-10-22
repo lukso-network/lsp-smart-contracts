@@ -10,6 +10,8 @@ import {
 } from "../../../build/types";
 import { tokenIdAsBytes32 } from "../../utils/tokens";
 
+import type { BytesLike } from "ethers";
+
 type LSP8CompatibilityForERC721TestAccounts = {
   owner: SignerWithAddress;
   tokenReceiver: SignerWithAddress;
@@ -190,7 +192,7 @@ describe("LSP8CompatibilityForERC721", () => {
     };
     let deployedContracts: TestDeployedContracts;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       deployedContracts = {
         tokenReceiverWithLSP1: await new TokenReceiverWithLSP1__factory(
           context.accounts.owner
@@ -209,7 +211,7 @@ describe("LSP8CompatibilityForERC721", () => {
       );
     });
 
-    type TransferParams = { operator: string; from: string; to: string; tokenId: BytesLike };
+    type TransferTxParams = { operator: string; from: string; to: string; tokenId: BytesLike };
 
     const transferSuccessScenario = async (
       { operator, from, to, tokenId }: TransferTxParams,

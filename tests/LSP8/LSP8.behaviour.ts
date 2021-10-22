@@ -10,6 +10,7 @@ import {
 } from "../../build/types";
 import { tokenIdAsBytes32 } from "../utils/tokens";
 
+import type { BytesLike } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 export type LSP8TestAccounts = {
@@ -311,7 +312,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           });
         });
 
-        describe("when many accounts have been approved for the tokenId", () => {
+        describe("when many accounts have been authorized for the tokenId", () => {
           it("should return true for all operators", async () => {
             await context.lsp8.authorizeOperator(context.accounts.operator.address, mintedTokenId);
             await context.lsp8.authorizeOperator(
@@ -359,7 +360,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           });
         });
 
-        describe("when many accounts have been approved for the tokenId", () => {
+        describe("when many accounts have been authorized for the tokenId", () => {
           it("should return list", async () => {
             await context.lsp8.authorizeOperator(context.accounts.operator.address, mintedTokenId);
             await context.lsp8.authorizeOperator(
@@ -383,7 +384,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
       };
       let helperContracts: HelperContracts;
 
-      beforeAll(async () => {
+      beforeEach(async () => {
         helperContracts = {
           tokenReceiverWithLSP1: await new TokenReceiverWithLSP1__factory(
             context.accounts.owner
@@ -404,20 +405,16 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
       });
 
       describe("transfer", () => {
+        type TransferTxParams = {
+          from: string;
+          to: string;
+          tokenId: BytesLike;
+          force: boolean;
+          data: string;
+        };
+
         const transferSuccessScenario = async (
-          {
-            from,
-            to,
-            tokenId,
-            force,
-            data,
-          }: {
-            from: string;
-            to: string;
-            tokenId: BytesLike;
-            force: boolean;
-            data: string;
-          },
+          { from, to, tokenId, force, data }: TransferTxParams,
           operator: SignerWithAddress
         ) => {
           // pre-conditions
@@ -482,27 +479,10 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         };
 
         const transferFailScenario = async (
-          {
-            from,
-            to,
-            tokenId,
-            force,
-            data,
-          }: {
-            from: string;
-            to: string;
-            tokenId: BytesLike;
-            force: boolean;
-            data: string;
-          },
+          { from, to, tokenId, force, data }: TransferTxParams,
           operator: SignerWithAddress,
           expectedError: string
         ) => {
-          // pre-conditions
-          const preTokenOwnerOf = await context.lsp8.tokenOwnerOf(tokenId);
-          expect(preTokenOwnerOf).toEqual(from);
-
-          // effect
           await expect(
             context.lsp8.connect(operator).transfer(from, to, tokenId, force, data)
           ).toBeRevertedWith(expectedError);
@@ -510,7 +490,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
         const sendingTransferTransactions = (getOperator: () => SignerWithAddress) => {
           let operator: SignerWithAddress;
-          beforeAll(() => {
+          beforeEach(() => {
             // passed as a thunk since other before hooks setup accounts map
             operator = getOperator();
           });
@@ -522,6 +502,21 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
             );
 
             describe("when `to` is an EOA", () => {
+              describe("when `to` is the zero address", () => {
+                it("should revert", async () => {
+                  const txParams = {
+                    from: context.accounts.owner.address,
+                    to: ethers.constants.AddressZero,
+                    tokenId: mintedTokenId,
+                    force,
+                    data,
+                  };
+                  const expectedError = "LSP8: transfer to the zero address";
+
+                  await transferFailScenario(txParams, operator, expectedError);
+                });
+              });
+
               it("should allow transfering the tokenId", async () => {
                 const txParams = {
                   from: context.accounts.owner.address,
@@ -656,63 +651,53 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
         describe("when operator sends tx", () => {
           sendingTransferTransactions(() => context.accounts.operator);
+
+          describe("when the caller is not an operator", () => {
+            it("should revert", async () => {
+              const operator = context.accounts.anyone;
+              const txParams = {
+                from: context.accounts.owner.address,
+                to: context.accounts.tokenReceiver.address,
+                tokenId: mintedTokenId,
+                force: true,
+                data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert")),
+              };
+              const expectedError = "LSP8: transfer caller is not owner or operator of tokenId";
+
+              await transferFailScenario(txParams, operator, expectedError);
+            });
+          });
         });
 
         describe("when the from address is incorrect", () => {
           it("should revert", async () => {
-            await expect(
-              context.lsp8.transfer(
-                context.accounts.anyone.address,
-                context.accounts.tokenReceiver.address,
-                mintedTokenId,
-                true,
-                ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))
-              )
-            ).toBeRevertedWith("LSP8: transfer of tokenId from incorrect owner");
-          });
-        });
+            const operator = context.accounts.owner;
+            const txParams = {
+              from: context.accounts.anyone.address,
+              to: context.accounts.tokenReceiver.address,
+              tokenId: mintedTokenId,
+              force: true,
+              data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert")),
+            };
+            const expectedError = "LSP8: transfer of tokenId from incorrect owner";
 
-        describe("when the caller is not an operator", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8
-                .connect(context.accounts.anyone)
-                .transfer(
-                  context.accounts.anyone.address,
-                  context.accounts.tokenReceiver.address,
-                  mintedTokenId,
-                  true,
-                  ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))
-                )
-            ).toBeRevertedWith("LSP8: transfer caller is not owner or operator of tokenId");
+            await transferFailScenario(txParams, operator, expectedError);
           });
         });
 
         describe("when the given tokenId has not been minted", () => {
           it("should revert", async () => {
-            await expect(
-              context.lsp8.transfer(
-                context.accounts.anyone.address,
-                context.accounts.tokenReceiver.address,
-                neverMintedTokenId,
-                true,
-                ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))
-              )
-            ).toBeRevertedWith("LSP8: tokenOwner query for nonexistent token");
-          });
-        });
+            const operator = context.accounts.owner;
+            const txParams = {
+              from: context.accounts.owner.address,
+              to: context.accounts.tokenReceiver.address,
+              tokenId: neverMintedTokenId,
+              force: true,
+              data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert")),
+            };
+            const expectedError = "LSP8: tokenOwner query for nonexistent token";
 
-        describe("when the to address is the zero address", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8.transfer(
-                context.accounts.owner.address,
-                ethers.constants.AddressZero,
-                mintedTokenId,
-                true,
-                ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))
-              )
-            ).toBeRevertedWith("LSP8: transfer to the zero address");
+            await transferFailScenario(txParams, operator, expectedError);
           });
         });
       });
@@ -747,20 +732,16 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
           );
         });
 
+        type TransferBatchTxParams = {
+          from: string[];
+          to: string[];
+          tokenId: BytesLike[];
+          force: boolean;
+          data: string[];
+        };
+
         const transferBatchSuccessScenario = async (
-          {
-            from,
-            to,
-            tokenId,
-            force,
-            data,
-          }: {
-            from: string[];
-            to: string[];
-            tokenId: BytesLike[];
-            force: boolean;
-            data: string[];
-          },
+          { from, to, tokenId, force, data }: TransferBatchTxParams,
           operator: SignerWithAddress
         ) => {
           // pre-conditions
@@ -819,19 +800,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         };
 
         const transferBatchFailScenario = async (
-          {
-            from,
-            to,
-            tokenId,
-            force,
-            data,
-          }: {
-            from: string[];
-            to: string[];
-            tokenId: BytesLike[];
-            force: boolean;
-            data: string[];
-          },
+          { from, to, tokenId, force, data }: TransferBatchTxParams,
           operator: SignerWithAddress,
           expectedError: string
         ) => {
@@ -851,7 +820,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
         const sendingTransferBatchTransactions = (getOperator: () => SignerWithAddress) => {
           let operator: SignerWithAddress;
-          beforeAll(() => {
+          beforeEach(() => {
             // passed as a thunk since other before hooks setup accounts map
             operator = getOperator();
           });
@@ -863,6 +832,21 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
             );
 
             describe("when `to` is an EOA", () => {
+              describe("when `to` is the zero address", () => {
+                it("should revert", async () => {
+                  const txParams = {
+                    from: [context.accounts.owner.address, context.accounts.owner.address],
+                    to: [context.accounts.tokenReceiver.address, ethers.constants.AddressZero],
+                    tokenId: [mintedTokenId, anotherMintedTokenId],
+                    force,
+                    data: [data, data],
+                  };
+                  const expectedError = "LSP8: transfer to the zero address";
+
+                  await transferBatchFailScenario(txParams, operator, expectedError);
+                });
+              });
+
               it("should allow transfering the tokenId", async () => {
                 const txParams = {
                   from: [context.accounts.owner.address, context.accounts.owner.address],
@@ -999,6 +983,64 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
               });
             });
           });
+
+          describe("when the from address is incorrect", () => {
+            it("should revert", async () => {
+              const txParams = {
+                to: [context.accounts.anyone.address],
+                from: [context.accounts.tokenReceiver.address],
+                tokenId: [mintedTokenId],
+                force: true,
+                data: [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))],
+              };
+              const expectedError = "LSP8: transfer of tokenId from incorrect owner";
+
+              await transferBatchFailScenario(txParams, operator, expectedError);
+            });
+          });
+
+          describe("when the given tokenId has not been minted", () => {
+            it("should revert", async () => {
+              const txParams = {
+                to: [context.accounts.anyone.address],
+                from: [context.accounts.tokenReceiver.address],
+                tokenId: [neverMintedTokenId],
+                force: true,
+                data: [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))],
+              };
+              const expectedError = "LSP8: tokenOwner query for nonexistent token";
+
+              await transferBatchFailScenario(txParams, operator, expectedError);
+            });
+          });
+
+          describe("when function parameters list length does not match", () => {
+            it("should revert", async () => {
+              const validTxParams = {
+                from: [context.accounts.owner.address, context.accounts.owner.address],
+                to: [
+                  context.accounts.tokenReceiver.address,
+                  context.accounts.tokenReceiver.address,
+                ],
+                tokenId: [mintedTokenId, anotherMintedTokenId],
+                force: true,
+                data: [
+                  ethers.utils.toUtf8Bytes("should revert"),
+                  ethers.utils.toUtf8Bytes("should revert"),
+                ],
+              };
+
+              await Promise.all(
+                ["from", "to", "tokenId", "data"].map(async (arrayParam) => {
+                  await transferBatchFailScenario(
+                    { ...validTxParams, [`${arrayParam}`]: [validTxParams[arrayParam][0]] },
+                    operator,
+                    "LSP8: transferBatch list length mismatch"
+                  );
+                })
+              );
+            });
+          });
         };
 
         describe("when tokenOwner sends tx", () => {
@@ -1007,103 +1049,21 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 
         describe("when operator sends tx", () => {
           sendingTransferBatchTransactions(() => context.accounts.operator);
-        });
 
-        describe("when the from address is incorrect", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8.transferBatch(
-                [context.accounts.anyone.address],
-                [context.accounts.tokenReceiver.address],
-                [mintedTokenId],
-                true,
-                [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))]
-              )
-            ).toBeRevertedWith("LSP8: transfer of tokenId from incorrect owner");
-          });
-        });
+          describe("when the caller is not an operator", () => {
+            it("should revert", async () => {
+              const operator = context.accounts.anyone;
+              const txParams = {
+                to: [context.accounts.owner.address],
+                from: [context.accounts.tokenReceiver.address],
+                tokenId: [mintedTokenId],
+                force: true,
+                data: [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))],
+              };
+              const expectedError = "LSP8: transfer caller is not owner or operator of tokenId";
 
-        describe("when the caller is not an operator", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8
-                .connect(context.accounts.anyone)
-                .transferBatch(
-                  [context.accounts.anyone.address],
-                  [context.accounts.tokenReceiver.address],
-                  [mintedTokenId],
-                  true,
-                  [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))]
-                )
-            ).toBeRevertedWith("LSP8: transfer caller is not owner or operator of tokenId");
-          });
-        });
-
-        describe("when the given tokenId has not been minted", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8.transferBatch(
-                [context.accounts.anyone.address],
-                [context.accounts.tokenReceiver.address],
-                [neverMintedTokenId],
-                true,
-                [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))]
-              )
-            ).toBeRevertedWith("LSP8: tokenOwner query for nonexistent token");
-          });
-        });
-
-        describe("when the to address is the zero address", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8.transferBatch(
-                [context.accounts.owner.address],
-                [ethers.constants.AddressZero],
-                [mintedTokenId],
-                true,
-                [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))]
-              )
-            ).toBeRevertedWith("LSP8: transfer to the zero address");
-          });
-        });
-
-        describe("when function parameters list length does not match", () => {
-          it("should revert", async () => {
-            const operator = context.accounts.owner;
-            const validTxParams = {
-              from: [context.accounts.owner.address, context.accounts.owner.address],
-              to: [context.accounts.tokenReceiver.address, context.accounts.tokenReceiver.address],
-              tokenId: [mintedTokenId, anotherMintedTokenId],
-              force: true,
-              data: [
-                ethers.utils.toUtf8Bytes("gonna revert"),
-                ethers.utils.toUtf8Bytes("gonna revert"),
-              ],
-            };
-
-            await transferBatchFailScenario(
-              { ...validTxParams, from: [context.accounts.owner.address] },
-              operator,
-              "LSP8: transferBatch list length mismatch"
-            );
-
-            await transferBatchFailScenario(
-              { ...validTxParams, to: [context.accounts.tokenReceiver.address] },
-              operator,
-              "LSP8: transferBatch list length mismatch"
-            );
-
-            await transferBatchFailScenario(
-              { ...validTxParams, tokenId: [mintedTokenId] },
-              operator,
-              "LSP8: transferBatch list length mismatch"
-            );
-
-            await transferBatchFailScenario(
-              { ...validTxParams, data: [ethers.utils.toUtf8Bytes("gonna revert")] },
-              operator,
-              "LSP8: transferBatch list length mismatch"
-            );
+              await transferBatchFailScenario(txParams, operator, expectedError);
+            });
           });
         });
       });
