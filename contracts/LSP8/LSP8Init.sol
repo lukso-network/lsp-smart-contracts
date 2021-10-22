@@ -29,15 +29,7 @@ contract LSP8Init is Initializable, LSP4Init, LSP8Core {
     {
         LSP4Init.initialize(name_, symbol_, newOwner_);
 
-        // TODO: when ERC725Y has been updated
-        // bytes32[] keys = new bytes32[](2);
-        // bytes[] values = new bytes[](2);
-        //
-        // keys.push(_LSP8_SUPPORTED_STANDARD_KEY);
-        // values.push(abi.encodePacked(_LSP8_SUPPORTED_STANDARD_VALUE));
-        //
-        // setDataFromMemory(keys, values);
-        setDataFromMemory(_LSP8_SUPPORTED_STANDARDS_KEY, abi.encodePacked(_LSP8_SUPPORTED_STANDARDS_VALUE));
+        _setData(_LSP8_SUPPORTED_STANDARDS_KEY, abi.encodePacked(_LSP8_SUPPORTED_STANDARDS_VALUE));
     }
 
     //
@@ -69,42 +61,8 @@ contract LSP8Init is Initializable, LSP4Init, LSP8Core {
         address metadataAddress = address(new ERC725Y(_msgSender()));
 
         bytes memory metadataAddressBytes = abi.encodePacked(metadataAddress);
-        setDataFromMemory(metadataKeyForTokenId, metadataAddressBytes);
+        _setData(metadataKeyForTokenId, metadataAddressBytes);
 
         return metadataAddress;
-    }
-
-    //
-    // --- Overrides
-    //
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC165Storage, IERC165)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
-
-    function _msgData()
-        internal
-        view
-        virtual
-        override(Context, ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
-
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(Context, ContextUpgradeable)
-        returns (address)
-    {
-        return super._msgSender();
     }
 }

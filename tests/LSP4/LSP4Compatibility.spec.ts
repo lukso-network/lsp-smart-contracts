@@ -32,9 +32,12 @@ describe("LSP4Compatibility", () => {
       newOwner: accounts.owner.address,
     };
 
-    const erc725Utils = await deployERC725Utils(accounts.owner);
+    const erc725Utils = await deployERC725Utils();
     const lsp4Compatibility = await new LSP4CompatibilityTester__factory(
-      { "contracts/Utils/ERC725Utils.sol:ERC725Utils": erc725Utils.address },
+      {
+        "submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol:ERC725Utils":
+          erc725Utils.address,
+      },
       accounts.owner
     ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
 

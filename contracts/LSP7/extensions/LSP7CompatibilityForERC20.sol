@@ -38,7 +38,7 @@ abstract contract LSP7CompatibilityForERC20 is ILSP7CompatibilityForERC20, LSP7C
 
     /*
      * @dev Compatible with ERC20 transfer.
-     * Using force=true, meaning EOA and any contract may receive the tokens.
+     * Using force=true so that EOA and any contract may receive the tokens.
      */
     function transfer(address to, uint256 amount)
         external
@@ -50,7 +50,7 @@ abstract contract LSP7CompatibilityForERC20 is ILSP7CompatibilityForERC20, LSP7C
 
     /*
      * @dev Compatible with ERC20 transferFrom.
-     * Using force=true, meaning EOA and any contract may receive the tokens.
+     * Using force=true so that EOA and any contract may receive the tokens.
      */
     function transferFrom(address from, address to, uint256 amount)
         external

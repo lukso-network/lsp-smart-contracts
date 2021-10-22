@@ -7,7 +7,7 @@ import "../LSP1/LSP1Constants.sol";
 import "../LSP4/LSP4Constants.sol";
 
 // libraries
-import "../Utils/ERC725Utils.sol";
+import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
 
 // interfaces
 import "../_LSPs/ILSP1_UniversalReceiver.sol";

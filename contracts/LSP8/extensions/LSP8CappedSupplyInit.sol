@@ -50,24 +50,4 @@ abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, LSP8CappedSup
     {
         super._mint(to, tokenId, force, data);
     }
-
-    function _msgData()
-        internal
-        view
-        virtual
-        override(Context, LSP8Init)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
-
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(Context, LSP8Init)
-        returns (address)
-    {
-        return super._msgSender();
-    }
 }

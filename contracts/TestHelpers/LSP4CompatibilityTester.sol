@@ -10,17 +10,7 @@ contract LSP4CompatibilityTester is LSP4Compatibility {
       string memory symbol,
       address newOwner
     ) ERC725Y(newOwner) {
-        // TODO: when ERC725Y has been updated
-        // bytes32[] keys = new bytes32[](2);
-        // keys.push(LSP4_METADATA_TOKEN_NAME_KEY);
-        // keys.push(LSP4_METADATA_TOKEN_SYMBOL_KEY);
-        //
-        // bytes[] values = new bytes[](2);
-        // values.push(bytes(name));
-        // values.push(bytes(symbol));
-        //
-        // setDataFromMemory(keys, values);
-        setDataFromMemory(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name));
-        setDataFromMemory(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol));
+        _setData(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name));
+        _setData(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol));
     }
 }

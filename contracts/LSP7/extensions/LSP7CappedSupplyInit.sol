@@ -49,24 +49,4 @@ abstract contract LSP7CappedSupplyInit is Initializable, LSP7Init, LSP7CappedSup
     {
         super._mint(to, amount, force, data);
     }
-
-    function _msgData()
-        internal
-        view
-        virtual
-        override(Context, LSP7Init)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
-
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(Context, LSP7Init)
-        returns (address)
-    {
-        return super._msgSender();
-    }
 }

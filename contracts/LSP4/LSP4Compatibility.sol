@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "./LSP4Constants.sol";
 
 // libraries
-import "../Utils/ERC725Utils.sol";
+import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
 
 // interfaces
 import "./ILSP4Compatibility.sol";
