@@ -684,6 +684,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                     data: [data, data],
                   };
                   const expectedError = "LSP7: transfer to the zero address";
+
+                  await transferBatchFailScenario(txParams, operator, expectedError);
                 });
               });
 

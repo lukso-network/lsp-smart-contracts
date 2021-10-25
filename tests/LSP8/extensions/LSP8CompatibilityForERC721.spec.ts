@@ -243,7 +243,7 @@ describe("LSP8CompatibilityForERC721", () => {
     };
 
     const transferFailScenario = async (
-      { operator, from, to, tokenId }: TransferTxParams,
+      { from, to, tokenId }: TransferTxParams,
       transferFn: string,
       expectedError: string
     ) => {
@@ -257,7 +257,7 @@ describe("LSP8CompatibilityForERC721", () => {
 
       // post-conditions
       const postOwnerOf = await context.lsp8CompatibilityForERC721.ownerOf(tokenId);
-      expect(preOwnerOf).toEqual(preOwnerOf);
+      expect(postOwnerOf).toEqual(preOwnerOf);
     };
 
     describe("transferFrom", () => {

@@ -97,7 +97,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
         const preBurnTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(preBurnTotalSupply.sub(preBurnTotalSupply)).toEqual(ethers.constants.Zero);
+        expect(preBurnTotalSupply.sub(tokenSupplyCap)).toEqual(ethers.constants.Zero);
 
         await context.lsp8CappedSupply.burn(mintedTokenIds[0]);
 
