@@ -2,7 +2,6 @@ import { ethers } from "hardhat";
 import {
   LSP7CappedSupplyTester__factory,
   LSP7CappedSupplyInitTester__factory,
-  ERC725Y__factory,
 } from "../../../build/types";
 import { deployProxy } from "../../utils/proxy";
 import {
@@ -40,16 +39,12 @@ describe("LSP7CappedSupply", () => {
       });
 
       shouldInitializeLikeLSP7(async () => {
+        const { lsp7CappedSupply: lsp7, deployParams } = context;
+
         return {
-          erc725Y: ERC725Y__factory.connect(
-            context.lsp7CappedSupply.address,
-            context.accounts.owner
-          ),
+          lsp7,
+          deployParams,
           initializeTransaction: context.lsp7CappedSupply.deployTransaction,
-          expectedSetData: {
-            name: context.deployParams.name,
-            symbol: context.deployParams.symbol,
-          },
         };
       });
     });
@@ -95,18 +90,13 @@ describe("LSP7CappedSupply", () => {
 
       describe("when initializing the contract", () => {
         shouldInitializeLikeLSP7(async () => {
+          const { lsp7CappedSupply: lsp7, deployParams } = context;
           const initializeTransaction = await initializeProxy(context);
 
           return {
-            erc725Y: ERC725Y__factory.connect(
-              context.lsp7CappedSupply.address,
-              context.accounts.owner
-            ),
+            lsp7,
+            deployParams,
             initializeTransaction,
-            expectedSetData: {
-              name: context.deployParams.name,
-              symbol: context.deployParams.symbol,
-            },
           };
         });
       });

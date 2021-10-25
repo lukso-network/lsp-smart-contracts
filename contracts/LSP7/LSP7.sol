@@ -23,6 +23,7 @@ contract LSP7 is LSP4, LSP7Core {
         string memory symbol_,
         address newOwner_
     ) LSP4(name_, symbol_, newOwner_) {
+        _registerInterface(_LSP7_INTERFACE_ID);
         _setData(_LSP7_SUPPORTED_STANDARDS_KEY, abi.encodePacked(_LSP7_SUPPORTED_STANDARDS_VALUE));
     }
 }

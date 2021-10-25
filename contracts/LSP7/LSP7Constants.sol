@@ -17,4 +17,4 @@ bytes4 constant _LSP7_SUPPORTED_STANDARDS_VALUE =
 // --- ERC165 interface ids
 //
 
-// TODO: do we need to define these for LSP7/8?
+bytes4 constant _LSP7_INTERFACE_ID = 0xe33f65c3;

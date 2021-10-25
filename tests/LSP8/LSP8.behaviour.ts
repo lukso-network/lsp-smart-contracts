@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
-  ERC725Y,
+  LSP8,
   LSP8Tester,
   TokenReceiverWithLSP1,
   TokenReceiverWithLSP1__factory,
@@ -9,6 +9,7 @@ import {
   TokenReceiverWithoutLSP1__factory,
 } from "../../build/types";
 import { tokenIdAsBytes32 } from "../utils/tokens";
+import { INTERFACE_IDS } from "../utils/constants";
 
 import type { BytesLike } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
@@ -26,14 +27,16 @@ export const getNamedAccounts = async (): Promise<LSP8TestAccounts> => {
   return { owner, tokenReceiver, operator, anotherOperator, anyone };
 };
 
+export type LSP8DeployParams = {
+  name: string;
+  symbol: string;
+  newOwner: string;
+};
+
 export type LSP8TestContext = {
   accounts: LSP8TestAccounts;
   lsp8: LSP8Tester;
-  deployParams: {
-    name: string;
-    symbol: string;
-    newOwner: string;
-  };
+  deployParams: LSP8DeployParams;
 };
 
 const mintedTokenId = tokenIdAsBytes32(10);
@@ -1101,9 +1104,9 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 };
 
 export type LSP8InitializeTestContext = {
-  erc725Y: ERC725Y;
+  lsp8: LSP8;
   initializeTransaction: TransactionResponse;
-  expectedSetData: { name: string; symbol: string };
+  deployParams: LSP8DeployParams;
 };
 
 export const shouldInitializeLikeLSP8 = (
@@ -1116,29 +1119,41 @@ export const shouldInitializeLikeLSP8 = (
   });
 
   describe("when the contract was initialized", () => {
+    it("should have registered its ERC165 interface", async () => {
+      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.LSP8));
+    });
+
     it("should have set expected entries with ERC725Y.setData", async () => {
       const lsp8SupportedStandardsKey =
         "0xeafec4d89fa9619884b6b89135626455000000000000000000000000d9bfeb57";
       const lsp8SupportedStandardsValue = "0xd9bfeb57";
-      await expect(context.initializeTransaction).toHaveEmittedWith(
-        context.erc725Y,
-        "DataChanged",
-        [lsp8SupportedStandardsKey, lsp8SupportedStandardsValue]
-      );
+      await expect(context.initializeTransaction).toHaveEmittedWith(context.lsp8, "DataChanged", [
+        lsp8SupportedStandardsKey,
+        lsp8SupportedStandardsValue,
+      ]);
+      expect(await context.lsp8.getData([lsp8SupportedStandardsKey])).toEqual([
+        lsp8SupportedStandardsValue,
+      ]);
 
       const nameKey = "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
-      await expect(context.initializeTransaction).toHaveEmittedWith(
-        context.erc725Y,
-        "DataChanged",
-        [nameKey, ethers.utils.hexlify(ethers.utils.toUtf8Bytes(context.expectedSetData.name))]
+      const expectedNameValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
+      await expect(context.initializeTransaction).toHaveEmittedWith(context.lsp8, "DataChanged", [
+        nameKey,
+        expectedNameValue,
+      ]);
+      expect(await context.lsp8.getData([nameKey])).toEqual([expectedNameValue]);
 
       const symbolKey = "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
-      await expect(context.initializeTransaction).toHaveEmittedWith(
-        context.erc725Y,
-        "DataChanged",
-        [symbolKey, ethers.utils.hexlify(ethers.utils.toUtf8Bytes(context.expectedSetData.symbol))]
+      const expectedSymbolValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );
+      await expect(context.initializeTransaction).toHaveEmittedWith(context.lsp8, "DataChanged", [
+        symbolKey,
+        expectedSymbolValue,
+      ]);
+      expect(await context.lsp8.getData([symbolKey])).toEqual([expectedSymbolValue]);
     });
   });
 };

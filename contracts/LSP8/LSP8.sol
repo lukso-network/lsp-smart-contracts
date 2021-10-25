@@ -23,6 +23,7 @@ contract LSP8 is LSP4, LSP8Core {
         string memory symbol_,
         address newOwner_
     ) LSP4(name_, symbol_, newOwner_) {
+        _registerInterface(_LSP8_INTERFACE_ID);
         _setData(_LSP8_SUPPORTED_STANDARDS_KEY, abi.encodePacked(_LSP8_SUPPORTED_STANDARDS_VALUE));
     }
 

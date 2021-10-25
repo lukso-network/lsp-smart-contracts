@@ -81,7 +81,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
 
         const tokenSupplyCap = await context.lsp7CappedSupply.tokenSupplyCap();
         const preBurnTotalSupply = await context.lsp7CappedSupply.totalSupply();
-        expect(preBurnTotalSupply.sub(preBurnTotalSupply)).toEqual(ethers.constants.Zero);
+        expect(preBurnTotalSupply.sub(tokenSupplyCap)).toEqual(ethers.constants.Zero);
 
         await context.lsp7CappedSupply
           .connect(context.accounts.tokenReceiver)

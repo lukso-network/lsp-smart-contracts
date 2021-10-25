@@ -20,19 +20,26 @@ describe("Calculate Selectors", () => {
 
   it("LSP1", async () => {
     const result = await contract.callStatic.calculateSelectorLSP1();
-    console.log("LSP1:", result);
     expect(result).toEqual(INTERFACE_IDS.LSP1);
   });
 
   it("LSP1Delegate", async () => {
     const result = await contract.callStatic.calculateSelectorLSP1Delegate();
-    console.log("LSP1Delegate:", result);
     expect(result).toEqual(INTERFACE_IDS.LSP1Delegate);
+  });
+
+  it("LSP7", async () => {
+    const result = await contract.callStatic.calculateSelectorLSP7();
+    expect(result).toEqual(INTERFACE_IDS.LSP7);
+  });
+
+  it("LSP8", async () => {
+    const result = await contract.callStatic.calculateSelectorLSP8();
+    expect(result).toEqual(INTERFACE_IDS.LSP8);
   });
 
   it("LSP6KeyManager", async () => {
     const result = await contract.callStatic.calculateSelectorLSP6KeyManager();
-    console.log("LSP6KeyManager:", result);
     expect(result).toEqual(INTERFACE_IDS.LSP6);
   });
 });

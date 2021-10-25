@@ -23,4 +23,4 @@ bytes12 constant _LSP8_METADATA_JSON_KEY_PREFIX = 0x9a26b4060ae7f7d500000000;
 // --- ERC165 interface ids
 //
 
-// TODO: do we need to define these for LSP7/8?
+bytes4 constant _LSP8_INTERFACE_ID = 0x49399145;

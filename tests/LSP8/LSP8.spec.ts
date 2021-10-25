@@ -1,11 +1,9 @@
-import { ethers } from "hardhat";
-import { ERC725Y__factory, LSP8Tester__factory, LSP8InitTester__factory } from "../../build/types";
+import { LSP8Tester__factory, LSP8InitTester__factory } from "../../build/types";
 import { deployProxy } from "../utils/proxy";
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP8,
   shouldInitializeLikeLSP8,
-  LSP8TestAccounts,
   LSP8TestContext,
 } from "./LSP8.behaviour";
 
@@ -34,29 +32,16 @@ describe("LSP8", () => {
         context = await buildTestContext();
       });
 
-      it("should have set expected entries with ERC725Y.setData", async () => {
-        const lsp8SupportedStandardsKey =
-          "0xeafec4d89fa9619884b6b89135626455000000000000000000000000d9bfeb57";
-        const lsp8SupportedStandardsValue = "0xd9bfeb57";
-        await expect(context.lsp8.deployTransaction).toHaveEmittedWith(
-          context.lsp8,
-          "DataChanged",
-          [lsp8SupportedStandardsKey, lsp8SupportedStandardsValue]
-        );
+      describe("when initializing the contract", () => {
+        shouldInitializeLikeLSP8(async () => {
+          const { lsp8, deployParams } = context;
 
-        const nameKey = "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
-        await expect(context.lsp8.deployTransaction).toHaveEmittedWith(
-          context.lsp8,
-          "DataChanged",
-          [nameKey, ethers.utils.hexlify(ethers.utils.toUtf8Bytes(context.deployParams.name))]
-        );
-
-        const symbolKey = "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
-        await expect(context.lsp8.deployTransaction).toHaveEmittedWith(
-          context.lsp8,
-          "DataChanged",
-          [symbolKey, ethers.utils.hexlify(ethers.utils.toUtf8Bytes(context.deployParams.symbol))]
-        );
+          return {
+            lsp8,
+            deployParams,
+            initializeTransaction: context.lsp8.deployTransaction,
+          };
+        });
       });
     });
 
@@ -98,15 +83,13 @@ describe("LSP8", () => {
 
       describe("when initializing the contract", () => {
         shouldInitializeLikeLSP8(async () => {
+          const { lsp8, deployParams } = context;
           const initializeTransaction = await initializeProxy(context);
 
           return {
-            erc725Y: ERC725Y__factory.connect(context.lsp8.address, context.accounts.owner),
+            lsp8,
+            deployParams,
             initializeTransaction,
-            expectedSetData: {
-              name: context.deployParams.name,
-              symbol: context.deployParams.symbol,
-            },
           };
         });
       });

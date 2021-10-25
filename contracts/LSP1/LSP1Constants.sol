@@ -14,3 +14,4 @@ bytes32 constant _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY =
 //
 
 bytes4 constant _LSP1_INTERFACE_ID = 0x6bb56a14;
+bytes4 constant _LSP1_DELEGATE_INTERFACE_ID = 0xc2d7bcc1;
