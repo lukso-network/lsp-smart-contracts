@@ -1125,8 +1125,8 @@ export const shouldInitializeLikeLSP8 = (
 
     it("should have set expected entries with ERC725Y.setData", async () => {
       const lsp8SupportedStandardsKey =
-        "0xeafec4d89fa9619884b6b89135626455000000000000000000000000d9bfeb57";
-      const lsp8SupportedStandardsValue = "0xd9bfeb57";
+        "0xeafec4d89fa9619884b6b891356264550000000000000000000000006a3c8618";
+      const lsp8SupportedStandardsValue = "0x6a3c8618";
       await expect(context.initializeTransaction).toHaveEmittedWith(context.lsp8, "DataChanged", [
         lsp8SupportedStandardsKey,
         lsp8SupportedStandardsValue,
