@@ -22,6 +22,7 @@ interface ILSP7 is IERC165, IERC725Y {
         address indexed from,
         address indexed to,
         uint256 amount,
+        bool force,
         bytes data
     );
 
@@ -66,10 +67,6 @@ interface ILSP7 is IERC165, IERC725Y {
 
     /**
      * @dev Returns the number of tokens owned by `tokenOwner`.
-     *
-     * Requirements:
-     *
-     * - `tokenOwner` cannot be the zero address.
      */
     function balanceOf(address tokenOwner) external view returns (uint256);
 
@@ -110,7 +107,7 @@ interface ILSP7 is IERC165, IERC725Y {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function isOperatorFor(address tokenOwner, address operator) external view returns (uint256);
+    function isOperatorFor(address operator, address tokenOwner) external view returns (uint256);
 
     //
     // --- Transfer functionality

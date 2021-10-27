@@ -67,10 +67,6 @@ abstract contract LSP8Core is Context, ILSP8 {
 
     /**
      * @dev Returns the number of tokens in ``tokenOwner``'s account.
-     *
-     * Requirements:
-     *
-     * - `tokenOwner` cannot be the zero address.
      */
     function balanceOf(address tokenOwner)
         public
@@ -78,11 +74,6 @@ abstract contract LSP8Core is Context, ILSP8 {
         override
         returns (uint256)
     {
-        require(
-            tokenOwner != address(0),
-            "LSP8: balance query for the zero address"
-        );
-
         return _ownedTokens[tokenOwner].length();
     }
 
@@ -102,7 +93,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         address tokenOwner = _tokenOwners[tokenId];
         require(
             tokenOwner != address(0),
-            "LSP8: tokenOwner query for nonexistent token"
+            "LSP8: can not query non existent token"
         );
 
         return tokenOwner;
@@ -116,7 +107,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     {
         require(
             tokenOwner != address(0),
-            "LSP8: tokenIdsOf query for the zero address"
+            "LSP8: can not query token for zero address"
         );
 
         return _ownedTokens[tokenOwner].values();
@@ -156,10 +147,10 @@ abstract contract LSP8Core is Context, ILSP8 {
         override
     {
         address tokenOwner = tokenOwnerOf(tokenId);
-        require(tokenOwner == _msgSender(), "LSP8: authorize caller not token owner");
+        require(tokenOwner == _msgSender(), "LSP8: caller can not authorize operator for token id");
 
-        require(tokenOwner != operator, "LSP8: authorizing tokenOwner as operator");
-        require(operator != address(0), "LSP8: authorizing operator is the zero address");
+        require(tokenOwner != operator, "LSP8: can not authorize token owner as operator");
+        require(operator != address(0), "LSP8: can not authorize zero address");
 
         _operators[tokenId].add(operator);
 
@@ -185,10 +176,10 @@ abstract contract LSP8Core is Context, ILSP8 {
         override
     {
         address tokenOwner = tokenOwnerOf(tokenId);
-        require(tokenOwner == _msgSender(), "LSP8: revoke caller not token owner");
+        require(tokenOwner == _msgSender(), "LSP8: caller can not revoke operator for token id");
 
-        require(operator != tokenOwner, "LSP8: revoking tokenOwner as operator");
-        require(operator != address(0), "LSP8: revoking operator is the zero address");
+        require(operator != tokenOwner, "LSP8: can not revoke token owner as operator");
+        require(operator != address(0), "LSP8: can not revoke zero address as operator");
 
         _revokeOperator(operator, tokenOwner, tokenId);
     }
@@ -240,7 +231,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     {
         require(
             _exists(tokenId),
-            "LSP8: operator query for nonexistent token"
+            "LSP8: can not query operator for non existent token"
         );
 
         return _isOperatorOrOwner(operator, tokenId);
@@ -262,7 +253,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     {
         require(
             _exists(tokenId),
-            "LSP8: operator query for nonexistent token"
+            "LSP8: can not query operator for non existent token"
         );
 
         return _operators[tokenId].values();
@@ -308,7 +299,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     {
         require(
             _isOperatorOrOwner(_msgSender(), tokenId),
-            "LSP8: transfer caller is not owner or operator of tokenId"
+            "LSP8: can not transfer, caller is not the owner or operator of token"
         );
         _transfer(from, to, tokenId, force, data);
     }
@@ -377,7 +368,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         internal
         virtual
     {
-        require(to != address(0), "LSP8: mint to the zero address");
+        require(to != address(0), "LSP8: can not mint to zero address");
         require(!_exists(tokenId), "LSP8: tokenId already minted");
 
         address operator = _msgSender();
@@ -387,7 +378,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(operator, address(0), to, tokenId, data);
+        emit Transfer(operator, address(0), to, tokenId, force, data);
 
         _notifyTokenReceiver(address(0), to, tokenId, force, data);
     }
@@ -419,7 +410,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         _ownedTokens[tokenOwner].remove(tokenId);
         delete _tokenOwners[tokenId];
 
-        emit Transfer(operator, tokenOwner, address(0), tokenId, data);
+        emit Transfer(operator, tokenOwner, address(0), tokenId, false, data);
     }
 
     /**
@@ -446,7 +437,7 @@ abstract contract LSP8Core is Context, ILSP8 {
             tokenOwnerOf(tokenId) == from,
             "LSP8: transfer of tokenId from incorrect owner"
         );
-        require(to != address(0), "LSP8: transfer to the zero address");
+        require(to != address(0), "LSP8: can not transfer to zero address");
 
         address operator = _msgSender();
 
@@ -461,7 +452,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
-        emit Transfer(operator, from, to, tokenId, data);
+        emit Transfer(operator, from, to, tokenId, force, data);
 
         _notifyTokenReceiver(from, to, tokenId, force, data);
 
@@ -527,7 +518,7 @@ abstract contract LSP8Core is Context, ILSP8 {
 
     /**
      * @dev An attempt is made to notify the token receiver about the `tokenId` changing owners
-     * using LSP1 interface. When `force=true` the token receiver MUST support LSP1.
+     * using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
      *
      * The receiver may revert when the token being sent is not wanted.
      */
@@ -551,10 +542,10 @@ abstract contract LSP8Core is Context, ILSP8 {
                 packedData
             );
         } else if (!force) {
-            if (!to.isContract()) {
-                revert('LSP8: token receiver is EOA');
-            } else {
+            if (to.isContract()) {
                 revert('LSP8: token receiver contract missing LSP1 interface');
+            } else {
+                revert('LSP8: token receiver is EOA');
             }
         }
     }

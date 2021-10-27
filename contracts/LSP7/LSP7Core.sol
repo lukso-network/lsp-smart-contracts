@@ -77,10 +77,6 @@ abstract contract LSP7Core is Context, ILSP7 {
 
     /**
      * @dev Returns the number of tokens owned by `tokenOwner`.
-     *
-     * Requirements:
-     *
-     * - `tokenOwner` cannot be the zero address.
      */
     function balanceOf(address tokenOwner)
         public
@@ -88,11 +84,6 @@ abstract contract LSP7Core is Context, ILSP7 {
         override
         returns (uint256)
     {
-        require(
-            tokenOwner != address(0),
-            "LSP7: balance query for the zero address"
-        );
-
         return _tokenOwnerBalances[tokenOwner];
     }
 
@@ -158,9 +149,9 @@ abstract contract LSP7Core is Context, ILSP7 {
         internal
         virtual
     {
-        require(operator != tokenOwner, "LSP7: updating operator is tokenOwner");
-        require(operator != address(0), "LSP7: updating operator is the zero address");
-        require(tokenOwner != address(0), "LSP7: updating operator and tokenOwner is the zero address");
+        require(operator != tokenOwner, "LSP7: updating operator failed, can not use token owner as operator");
+        require(operator != address(0), "LSP7: updating operator failed, operator can not be zero address");
+        require(tokenOwner != address(0), "LSP7: updating operator failed, can not set operator for zero address");
 
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
 
@@ -176,14 +167,18 @@ abstract contract LSP7Core is Context, ILSP7 {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function isOperatorFor(address tokenOwner, address operator)
+    function isOperatorFor(address operator, address tokenOwner)
         public
         view
         virtual
         override
         returns (uint256)
     {
-        return _operatorAuthorizedAmount[tokenOwner][operator];
+        if (tokenOwner == operator) {
+            return _tokenOwnerBalances[tokenOwner];
+        } else {
+            return _operatorAuthorizedAmount[tokenOwner][operator];
+        }
     }
 
     //
@@ -214,14 +209,14 @@ abstract contract LSP7Core is Context, ILSP7 {
         virtual
         override
     {
-        _transfer(from, to, amount, force, data);
-
         address operator = _msgSender();
         if (operator != from) {
             uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
             require(operatorAmount >= amount, "LSP7: transfer amount exceeds operator authorized amount");
             _updateOperator(from, operator, _operatorAuthorizedAmount[from][operator] - amount);
         }
+
+        _transfer(from, to, amount, force, data);
     }
 
     /**
@@ -279,7 +274,7 @@ abstract contract LSP7Core is Context, ILSP7 {
         internal
         virtual
     {
-        require(to != address(0), "LSP7: mint to the zero address");
+        require(to != address(0), "LSP7: mint to the zero address not allowed");
 
         address operator = _msgSender();
 
@@ -287,7 +282,7 @@ abstract contract LSP7Core is Context, ILSP7 {
 
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, address(0), to, amount, data);
+        emit Transfer(operator, address(0), to, amount, force, data);
 
         _notifyTokenReceiver(address(0), to, amount, force, data);
     }
@@ -323,7 +318,7 @@ abstract contract LSP7Core is Context, ILSP7 {
 
         _tokenOwnerBalances[from] -= amount;
 
-        emit Transfer(operator, from, address(0), amount, data);
+        emit Transfer(operator, from, address(0), amount, false, data);
     }
 
     /**
@@ -362,7 +357,7 @@ abstract contract LSP7Core is Context, ILSP7 {
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, from, to, amount, data);
+        emit Transfer(operator, from, to, amount, force, data);
 
         _notifyTokenReceiver(from, to, amount, force, data);
     }
@@ -424,7 +419,7 @@ abstract contract LSP7Core is Context, ILSP7 {
 
     /**
      * @dev An attempt is made to notify the token receiver about the `amount` tokens changing owners
-     * using LSP1 interface. When `force=true` the token receiver MUST support LSP1.
+     * using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
      *
      * The receiver may revert when the token being sent is not wanted.
      */
@@ -448,10 +443,10 @@ abstract contract LSP7Core is Context, ILSP7 {
                 packedData
             );
         } else if (!force) {
-            if (!to.isContract()) {
-                revert('LSP7: token receiver is EOA');
-            } else {
+            if (to.isContract()) {
                 revert('LSP7: token receiver contract missing LSP1 interface');
+            } else {
+                revert('LSP7: token receiver is EOA');
             }
         }
     }

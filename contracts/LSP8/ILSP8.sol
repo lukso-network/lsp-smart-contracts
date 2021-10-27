@@ -22,6 +22,7 @@ interface ILSP8 is IERC165, IERC725Y {
         address indexed from,
         address indexed to,
         bytes32 indexed tokenId,
+        bool force,
         bytes data
     );
 
@@ -58,10 +59,6 @@ interface ILSP8 is IERC165, IERC725Y {
 
     /**
      * @dev Returns the number of tokens owned by `tokenOwner`.
-     *
-     * Requirements:
-     *
-     * - `tokenOwner` cannot be the zero address.
      */
     function balanceOf(address tokenOwner) external view returns (uint256);
 

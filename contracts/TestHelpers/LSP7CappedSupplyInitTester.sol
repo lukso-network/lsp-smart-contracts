@@ -21,7 +21,7 @@ contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInit {
     }
 
     function mint(address to, uint256 amount) public {
-        //using force=true so we can send to EOA in test
+        // using force=true so we can send to EOA in test
         _mint(to, amount, true, "token printer go brrr");
     }
 

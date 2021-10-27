@@ -71,7 +71,7 @@ describe("LSP7CompatibilityForERC20", () => {
             ethers.constants.AddressZero,
             context.initialSupply
           )
-        ).toBeRevertedWith("LSP7: updating operator is the zero address");
+        ).toBeRevertedWith("LSP7: updating operator failed, operator can not be zero address");
       });
     });
 
@@ -82,7 +82,7 @@ describe("LSP7CompatibilityForERC20", () => {
             context.accounts.owner.address,
             context.initialSupply
           )
-        ).toBeRevertedWith("LSP7: updating operator is tokenOwner");
+        ).toBeRevertedWith("LSP7: updating operator failed, can not use token owner as operator");
       });
     });
 
@@ -219,6 +219,7 @@ describe("LSP7CompatibilityForERC20", () => {
         from,
         to,
         amount,
+        true, // Using force=true so that EOA and any contract may receive the tokens.
         expectedData,
       ]);
 

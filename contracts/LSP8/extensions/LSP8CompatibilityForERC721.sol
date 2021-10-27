@@ -51,7 +51,7 @@ abstract contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP
     {
         require(
             _exists(bytes32(tokenId)),
-            "LSP8: operator query for nonexistent token"
+            "LSP8: can not query operator for non existent token"
         );
 
         EnumerableSet.AddressSet storage operatorsForTokenId = _operators[bytes32(tokenId)];
