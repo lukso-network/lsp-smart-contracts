@@ -78,13 +78,13 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       // Deploying via Proxy
 
       // 1) deploy logic contract
-      let lsp3LogicAccount = await new UniversalProfileInit__factory(owner).deploy();
-      let lsp3LogicAccountAddress = lsp3LogicAccount.address;
+      let upLogicAccount = await new UniversalProfileInit__factory(owner).deploy();
+      let upLogicAccountAddress = upLogicAccount.address;
 
       // 2) setup proxy contract code + deploy
       let proxyRuntimeCode = proxyRuntimeCodeTemplate.replace(
         "bebebebebebebebebebebebebebebebebebebebe",
-        lsp3LogicAccountAddress.substr(2)
+        upLogicAccountAddress.substr(2)
       );
 
       let transaction = await owner.sendTransaction({ data: proxyRuntimeCode });
