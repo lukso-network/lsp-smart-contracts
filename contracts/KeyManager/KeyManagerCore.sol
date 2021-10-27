@@ -294,7 +294,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             if (value > 0) {
                 require(
                     _isAllowed(_PERMISSION_TRANSFERVALUE, userPermissions),
-                    "KeyManager:_checkPermissions: Not authorized to transfer ethers"
+                    "KeyManager:_checkPermissions: Not authorized to transfer LYX"
                 );
             }
 

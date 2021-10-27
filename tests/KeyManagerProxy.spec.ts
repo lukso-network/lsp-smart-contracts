@@ -373,7 +373,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
   describe("> testing permission: TRANSFERVALUE", () => {
     let provider = ethers.provider;
 
-    it("Owner should be allowed to transfer ethers to app", async () => {
+    it("Owner should be allowed to transfer LYX to app", async () => {
       let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
       let initialAppBalance = await provider.getBalance(app.address);
 
@@ -396,7 +396,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       expect(parseInt(newAppBalance)).toBeGreaterThan(parseInt(initialAppBalance));
     });
 
-    it("App should not be allowed to transfer ethers", async () => {
+    it("App should not be allowed to transfer LYX", async () => {
       let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
       let initialUserBalance = await provider.getBalance(user.address);
       // console.log("initialAccountBalance: ", initialAccountBalance)
@@ -410,7 +410,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to transfer ethers"
+        "KeyManager:_checkPermissions: Not authorized to transfer LYX"
       );
 
       let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
@@ -1150,7 +1150,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
     it("Permissions should prevent ReEntrancy and stop contract from re-calling and re-transfering ETH.", async () => {
       // we assume the owner is not aware that some malicious code is present at the recipient address (the recipient being a smart contract)
-      // the owner simply aims to transfer 1 ether from his ERC725 Account to the recipient address (= the malicious contract)
+      // the owner simply aims to transfer 1 LYX from his ERC725 Account to the recipient address (= the malicious contract)
       let transferPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         maliciousContract.address,
@@ -1161,7 +1161,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let executePayload = proxyKeyManager.interface.encodeFunctionData("execute", [
         transferPayload,
       ]);
-      // load the malicious payload, that will be executed in the fallback function (every time the contract receives ethers)
+      // load the malicious payload, that will be executed in the fallback function (every time the contract receives LYX)
       await maliciousContract.loadPayload(executePayload);
 
       let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
