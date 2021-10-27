@@ -1,6 +1,11 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { UniversalProfileInit, KeyManagerInit } from "../../build/types";
+import {
+  UniversalProfileInit__factory,
+  KeyManagerInit__factory,
+  KeyManagerInit,
+  UniversalProfileInit,
+} from "../../build/types";
 
 // prettier-ignore
 /**
@@ -32,43 +37,16 @@ export async function deployProxy(baseContractAddress: string, deployer: SignerW
   return receipt.contractAddress;
 }
 
-export async function deployBaseUniversalProfile(
-  erc725UtilsAddress: string
-): Promise<UniversalProfileInit> {
-  const universalProfileInitFactory = await ethers.getContractFactory("UniversalProfileInit", {
-    libraries: {
-      ERC725Utils: erc725UtilsAddress,
-    },
-  });
-  return await universalProfileInitFactory.deploy();
-}
-
 export async function attachUniversalProfileProxy(
-  erc725UtilsAddress: string,
+  deployer: SignerWithAddress,
   proxyAddress: string
 ): Promise<UniversalProfileInit> {
-  const universalProfileInitFactory = await ethers.getContractFactory("UniversalProfileInit", {
-    libraries: {
-      ERC725Utils: erc725UtilsAddress,
-    },
-  });
-  return await universalProfileInitFactory.attach(proxyAddress);
+  return await new UniversalProfileInit__factory(deployer).attach(proxyAddress);
 }
 
-export async function deployBaseKeyManager(erc725UtilsAddress: string): Promise<KeyManagerInit> {
-  const keyManagerInitFactory = await ethers.getContractFactory("KeyManagerInit", {
-    libraries: {
-      ERC725Utils: erc725UtilsAddress,
-    },
-  });
-  return await keyManagerInitFactory.deploy();
-}
-
-export async function attachKeyManagerProxy(erc725UtilsAddress: string, proxyAddress: string) {
-  const keyManagerInitFactory = await ethers.getContractFactory("KeyManagerInit", {
-    libraries: {
-      ERC725Utils: erc725UtilsAddress,
-    },
-  });
-  return await keyManagerInitFactory.attach(proxyAddress);
+export async function attachKeyManagerProxy(
+  deployer: SignerWithAddress,
+  proxyAddress: string
+): Promise<KeyManagerInit> {
+  return await new KeyManagerInit__factory(deployer).attach(proxyAddress);
 }

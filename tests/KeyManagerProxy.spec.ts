@@ -2,26 +2,20 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 import {
-  ERC725Utils,
-  UniversalProfileInit,
   KeyManagerInit,
-  TargetContract,
-  TargetContract__factory,
+  KeyManagerInit__factory,
   Reentrancy,
   Reentrancy__factory,
+  TargetContract,
+  TargetContract__factory,
+  UniversalProfileInit,
+  UniversalProfileInit__factory,
 } from "../build/types";
 
 import { solidityKeccak256 } from "ethers/lib/utils";
 
 // custom helpers
-import {
-  deployProxy,
-  deployBaseUniversalProfile,
-  deployBaseKeyManager,
-  attachUniversalProfileProxy,
-  attachKeyManagerProxy,
-} from "./utils/proxy";
-import { deployERC725Utils } from "./utils/deploy";
+import { deployProxy, attachUniversalProfileProxy, attachKeyManagerProxy } from "./utils/proxy";
 
 // constants
 import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
@@ -39,7 +33,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     proxyKeyManager: KeyManagerInit;
 
   // library + helpers contracts
-  let erc725Utils: ERC725Utils, targetContract: TargetContract, maliciousContract: Reentrancy;
+  let targetContract: TargetContract, maliciousContract: Reentrancy;
 
   let owner: SignerWithAddress,
     app: SignerWithAddress,
@@ -61,18 +55,14 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     newUser = accounts[5];
 
     // 1. deploy base contracts
-    erc725Utils = await deployERC725Utils();
-    baseUniversalProfile = await deployBaseUniversalProfile(erc725Utils.address);
-    baseKeyManager = await deployBaseKeyManager(erc725Utils.address);
+    baseUniversalProfile = await new UniversalProfileInit__factory(owner).deploy();
+    baseKeyManager = await new KeyManagerInit__factory(owner).deploy();
 
     // 2. deploy proxy contracts
     let proxyUniversalProfileAddress = await deployProxy(baseUniversalProfile.address, owner);
     let proxyKeyManagerAddress = await deployProxy(baseKeyManager.address, owner);
-    proxyUniversalProfile = await attachUniversalProfileProxy(
-      erc725Utils.address,
-      proxyUniversalProfileAddress
-    );
-    proxyKeyManager = await attachKeyManagerProxy(erc725Utils.address, proxyKeyManagerAddress);
+    proxyUniversalProfile = await attachUniversalProfileProxy(owner, proxyUniversalProfileAddress);
+    proxyKeyManager = await attachKeyManagerProxy(owner, proxyKeyManagerAddress);
 
     // 3. initialize them
     await proxyUniversalProfile.initialize(owner.address);

@@ -1,8 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
-  ERC725Utils,
-  ERC725Utils__factory,
   AddressRegistry,
   AddressRegistryRequiresERC725,
   AddressRegistryRequiresERC725__factory,
@@ -10,8 +8,6 @@ import {
   UniversalProfile,
   UniversalProfile__factory,
 } from "../build/types";
-
-import { deployERC725Utils, deployUniversalProfile } from "./utils/deploy";
 
 describe("Address Registry contracts", () => {
   let addressRegistry: AddressRegistry;
@@ -81,14 +77,12 @@ describe("Address Registry contracts", () => {
   // Require ERC725
   describe("AddressRegistryRequiresERC725", () => {
     let addressRegistryRequireERC725: AddressRegistryRequiresERC725,
-      erc725Utils: ERC725Utils,
       account: UniversalProfile,
       owner: SignerWithAddress;
 
     beforeEach(async () => {
       owner = accounts[3];
-      erc725Utils = await deployERC725Utils();
-      account = await deployUniversalProfile(erc725Utils.address, owner);
+      account = await new UniversalProfile__factory(owner).deploy(owner.address);
       addressRegistryRequireERC725 = await new AddressRegistryRequiresERC725__factory(
         owner
       ).deploy();
