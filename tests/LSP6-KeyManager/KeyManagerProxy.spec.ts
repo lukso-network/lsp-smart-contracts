@@ -15,12 +15,12 @@ import {
 import { solidityKeccak256 } from "ethers/lib/utils";
 
 // custom helpers
-import { deployProxy, attachUniversalProfileProxy, attachKeyManagerProxy } from "./utils/proxy";
+import { deployProxy, attachUniversalProfileProxy, attachKeyManagerProxy } from "../utils/proxy";
 
 // constants
-import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
-import { KEYS, PERMISSIONS, OPERATIONS, ALL_PERMISSIONS_SET } from "./utils/keymanager";
-import { ADDRESSPERMISSIONS_KEY, INTERFACE_IDS } from "./utils/constants";
+import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "../utils/helpers";
+import { KEYS, PERMISSIONS, OPERATIONS, ALL_PERMISSIONS_SET } from "../utils/keymanager";
+import { ADDRESSPERMISSIONS_KEY, INTERFACE_IDS } from "../utils/constants";
 
 describe("KeyManager + LSP3 Account as Proxies", () => {
   let abiCoder;
