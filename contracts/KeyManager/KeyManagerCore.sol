@@ -139,12 +139,13 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         );
 
         if (!success) {
-            // solhint-disable-next-line reason-string
+            /* solhint-disable */
             if (result_.length < 68) revert();
             assembly {
                 result_ := add(result_, 0x04)
             }
             revert(abi.decode(result_, (string)));
+            /* solhint-enable */
         }
         
         emit Executed(msg.value, _data);
@@ -193,12 +194,13 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
         (bool success, bytes memory result_) = address(account).call{value: 0, gas: gasleft()}(_data);
         
         if (!success) {
-            // solhint-disable-next-line reason-string
+            /* solhint-disable */
             if (result_.length < 68) revert();
             assembly {
                 result_ := add(result_, 0x04)
             }
             revert(abi.decode(result_, (string)));
+            /* solhint-enable */
         }
         
         emit Executed(msg.value, _data);
@@ -294,7 +296,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             if (value > 0) {
                 require(
                     _isAllowed(_PERMISSION_TRANSFERVALUE, userPermissions),
-                    "KeyManager:_checkPermissions: Not authorized to transfer ethers"
+                    "KeyManager:_checkPermissions: Not authorized to transfer LYX"
                 );
             }
 

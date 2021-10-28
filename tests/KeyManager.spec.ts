@@ -3,10 +3,12 @@ import { ethers } from "hardhat";
 import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
 
 import {
-  ERC725Utils,
   UniversalProfile,
+  UniversalProfile__factory,
   KeyManagerHelper,
+  KeyManagerHelper__factory,
   KeyManager,
+  KeyManager__factory,
   TargetContract,
   TargetContract__factory,
   Reentrancy,
@@ -16,12 +18,6 @@ import {
 import { solidityKeccak256 } from "ethers/lib/utils";
 
 // custom helpers
-import {
-  deployERC725Utils,
-  deployUniversalProfile,
-  deployKeyManager,
-  deployKeyManagerHelper,
-} from "./utils/deploy";
 import {
   EMPTY_PAYLOAD,
   DUMMY_PAYLOAD,
@@ -47,8 +43,7 @@ describe("KeyManagerHelper", () => {
 
   let universalProfile: UniversalProfile,
     keyManagerHelper: KeyManagerHelper,
-    targetContract: TargetContract,
-    erc725Utils: ERC725Utils;
+    targetContract: TargetContract;
 
   let owner: SignerWithAddress, app: SignerWithAddress, user: SignerWithAddress;
 
@@ -61,9 +56,8 @@ describe("KeyManagerHelper", () => {
 
     targetContract = await new TargetContract__factory(owner).deploy();
 
-    erc725Utils = await deployERC725Utils();
-    universalProfile = await deployUniversalProfile(erc725Utils.address, owner);
-    keyManagerHelper = await deployKeyManagerHelper(erc725Utils.address, universalProfile);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
+    keyManagerHelper = await new KeyManagerHelper__factory(owner).deploy(universalProfile.address);
 
     await universalProfile
       .connect(owner)
@@ -200,8 +194,7 @@ describe("KeyManager", () => {
   let abiCoder;
   let accounts: SignerWithAddress[] = [];
 
-  let erc725Utils: ERC725Utils,
-    universalProfile: UniversalProfile,
+  let universalProfile: UniversalProfile,
     keyManager: KeyManager,
     targetContract: TargetContract,
     maliciousContract: Reentrancy;
@@ -225,9 +218,8 @@ describe("KeyManager", () => {
     user = accounts[4];
     newUser = accounts[5];
 
-    erc725Utils = await deployERC725Utils();
-    universalProfile = await deployUniversalProfile(erc725Utils.address, owner);
-    keyManager = await deployKeyManager(erc725Utils.address, universalProfile);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
+    keyManager = await new KeyManager__factory(owner).deploy(universalProfile.address);
     targetContract = await new TargetContract__factory(owner).deploy();
     maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(keyManager.address);
 
@@ -324,7 +316,7 @@ describe("KeyManager", () => {
     // switch account management to KeyManager
     await universalProfile.connect(owner).transferOwnership(keyManager.address);
 
-    /** @todo find other way to ensure ERC725 Account has always 10 ethers before each test (and not transfer every time test is re-run) */
+    /** @todo find other way to ensure ERC725 Account has always 10 LYX before each test (and not transfer every time test is re-run) */
     await owner.sendTransaction({
       to: universalProfile.address,
       value: ethers.utils.parseEther("10"),
@@ -721,7 +713,7 @@ describe("KeyManager", () => {
   describe("> testing permission: TRANSFERVALUE", () => {
     let provider = ethers.provider;
 
-    it("Owner should be allowed to transfer ethers to app", async () => {
+    it("Owner should be allowed to transfer LYX to app", async () => {
       let initialAccountBalance = await provider.getBalance(universalProfile.address);
       let initialAppBalance = await provider.getBalance(app.address);
 
@@ -744,7 +736,7 @@ describe("KeyManager", () => {
       expect(parseInt(newAppBalance)).toBeGreaterThan(parseInt(initialAppBalance));
     });
 
-    it("App should not be allowed to transfer ethers", async () => {
+    it("App should not be allowed to transfer LYX", async () => {
       let initialAccountBalance = await provider.getBalance(universalProfile.address);
       let initialUserBalance = await provider.getBalance(user.address);
       // console.log("initialAccountBalance: ", initialAccountBalance)
@@ -758,7 +750,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to transfer ethers"
+        "KeyManager:_checkPermissions: Not authorized to transfer LYX"
       );
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
@@ -1518,7 +1510,7 @@ describe("KeyManager", () => {
       ]);
 
       let executePayload = keyManager.interface.encodeFunctionData("execute", [transferPayload]);
-      // load the malicious payload, that will be executed in the fallback function (every time the contract receives ethers)
+      // load the malicious payload, that will be executed in the fallback function (every time the contract receives LYX)
       await maliciousContract.loadPayload(executePayload);
 
       let initialAccountBalance = await provider.getBalance(universalProfile.address);

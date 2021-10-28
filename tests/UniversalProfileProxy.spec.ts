@@ -3,8 +3,9 @@ import { ethers } from "hardhat";
 import { calculateCreate2 } from "eth-create2-calculator";
 
 import {
-  ERC725Utils,
+  UniversalProfile__factory,
   UniversalProfileInit,
+  UniversalProfileInit__factory,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester__factory,
   ERC777UniversalReceiver__factory,
@@ -13,14 +14,9 @@ import {
 } from "../build/types";
 
 // custom helpers
-import { getDeploymentCost, deployERC725Utils, deployUniversalProfile } from "./utils/deploy";
+import { getDeploymentCost } from "./utils/deploy";
 import { OPERATIONS } from "./utils/keymanager";
-import {
-  proxyRuntimeCodeTemplate,
-  deployProxy,
-  deployBaseUniversalProfile,
-  attachUniversalProfileProxy,
-} from "./utils/proxy";
+import { proxyRuntimeCodeTemplate, deployProxy, attachUniversalProfileProxy } from "./utils/proxy";
 
 /** @todo put all of these in constant file */
 
@@ -61,36 +57,34 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
 
   let universalProfile: UniversalProfileInit;
   let proxy: UniversalProfileInit;
-  let erc725Utils: ERC725Utils;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
 
-    erc725Utils = await deployERC725Utils();
-    universalProfile = await deployBaseUniversalProfile(erc725Utils.address);
+    universalProfile = await new UniversalProfileInit__factory(owner).deploy();
 
     let proxyAddress = await deployProxy(universalProfile.address, owner);
-    proxy = await attachUniversalProfileProxy(erc725Utils.address, proxyAddress);
+    proxy = await attachUniversalProfileProxy(owner, proxyAddress);
   });
 
   describe("> Account deployment", () => {
     it("Should be cheaper to deploy via proxy", async () => {
       // Deploying whole LSP3 Account (not using `initialize` function)
-      const universalProfile = await deployUniversalProfile(erc725Utils.address, owner);
+      const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
       const { gasUsed: UniversalProfileDeploymentCost } = await getDeploymentCost(universalProfile);
       console.log("UniversalProfileDeploymentCost: ", UniversalProfileDeploymentCost);
 
       // Deploying via Proxy
 
       // 1) deploy logic contract
-      let lsp3LogicAccount = await deployBaseUniversalProfile(erc725Utils.address);
-      let lsp3LogicAccountAddress = lsp3LogicAccount.address;
+      let upLogicAccount = await new UniversalProfileInit__factory(owner).deploy();
+      let upLogicAccountAddress = upLogicAccount.address;
 
       // 2) setup proxy contract code + deploy
       let proxyRuntimeCode = proxyRuntimeCodeTemplate.replace(
         "bebebebebebebebebebebebebebebebebebebebe",
-        lsp3LogicAccountAddress.substr(2)
+        upLogicAccountAddress.substr(2)
       );
 
       let transaction = await owner.sendTransaction({ data: proxyRuntimeCode });
@@ -99,10 +93,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       );
 
       // 3) initialize contract (alternative to constructors)
-      let testProxy = await attachUniversalProfileProxy(
-        erc725Utils.address,
-        txReceipt.contractAddress
-      );
+      let testProxy = await attachUniversalProfileProxy(owner, txReceipt.contractAddress);
 
       const initializeTx = await testProxy.initialize(owner.address);
       const { gasUsed: initializeCost } = await getDeploymentCost(initializeTx);
@@ -206,10 +197,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
     it("Create account", async () => {
       const owner = accounts[2];
       const newProxyAddress = await deployProxy(universalProfile.address, owner);
-      const newProxyAccount = await attachUniversalProfileProxy(
-        erc725Utils.address,
-        newProxyAddress
-      );
+      const newProxyAccount = await attachUniversalProfileProxy(owner, newProxyAddress);
       await newProxyAccount.initialize(owner.address);
 
       expect(await newProxyAccount.callStatic.owner()).toEqual(owner.address);
@@ -366,7 +354,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       newOwner = accounts[5];
 
       const newProxyAddress = await deployProxy(universalProfile.address, owner);
-      proxy = await attachUniversalProfileProxy(erc725Utils.address, newProxyAddress);
+      proxy = await attachUniversalProfileProxy(owner, newProxyAddress);
       await proxy.initialize(owner.address);
     });
 
@@ -558,7 +546,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const owner = accounts[2];
 
       const proxyAddress = await deployProxy(universalProfile.address, owner);
-      const proxyAccount = await attachUniversalProfileProxy(erc725Utils.address, proxyAddress);
+      const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       // use the checker contract to call account
@@ -586,7 +574,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const owner = accounts[2];
 
       const proxyAddress = await deployProxy(universalProfile.address, owner);
-      const proxyAccount = await attachUniversalProfileProxy(erc725Utils.address, proxyAddress);
+      const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
@@ -645,7 +633,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const owner = accounts[2];
 
       const proxyAddress = await deployProxy(universalProfile.address, owner);
-      const proxyAccount = await attachUniversalProfileProxy(erc725Utils.address, proxyAddress);
+      const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -684,7 +672,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const owner = accounts[2];
 
       const proxyAddress = await deployProxy(universalProfile.address, owner);
-      const proxyAccount = await attachUniversalProfileProxy(erc725Utils.address, proxyAddress);
+      const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -732,7 +720,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const owner = accounts[2];
 
       const proxyAddress = await deployProxy(universalProfile.address, owner);
-      const proxyAccount = await attachUniversalProfileProxy(erc725Utils.address, proxyAddress);
+      const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -775,7 +763,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const owner = accounts[2];
 
       const proxyAddress = await deployProxy(universalProfile.address, owner);
-      const proxyAccount = await attachUniversalProfileProxy(erc725Utils.address, proxyAddress);
+      const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
@@ -824,7 +812,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const owner = accounts[2];
 
       const proxyAddress = await deployProxy(universalProfile.address, owner);
-      const proxyAccount = await attachUniversalProfileProxy(erc725Utils.address, proxyAddress);
+      const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(

@@ -7,7 +7,7 @@ import "../KeyManager/KeyManager.sol";
 contract Executor {
 
     uint256 internal constant _OPERATION_CALL = 0;
-    address constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
+    address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
     /* solhint-disable */
     KeyManager keyManager;

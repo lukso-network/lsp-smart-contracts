@@ -2,26 +2,20 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 import {
-  ERC725Utils,
-  UniversalProfileInit,
   KeyManagerInit,
-  TargetContract,
-  TargetContract__factory,
+  KeyManagerInit__factory,
   Reentrancy,
   Reentrancy__factory,
+  TargetContract,
+  TargetContract__factory,
+  UniversalProfileInit,
+  UniversalProfileInit__factory,
 } from "../build/types";
 
 import { solidityKeccak256 } from "ethers/lib/utils";
 
 // custom helpers
-import {
-  deployProxy,
-  deployBaseUniversalProfile,
-  deployBaseKeyManager,
-  attachUniversalProfileProxy,
-  attachKeyManagerProxy,
-} from "./utils/proxy";
-import { deployERC725Utils } from "./utils/deploy";
+import { deployProxy, attachUniversalProfileProxy, attachKeyManagerProxy } from "./utils/proxy";
 
 // constants
 import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "./utils/helpers";
@@ -39,7 +33,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     proxyKeyManager: KeyManagerInit;
 
   // library + helpers contracts
-  let erc725Utils: ERC725Utils, targetContract: TargetContract, maliciousContract: Reentrancy;
+  let targetContract: TargetContract, maliciousContract: Reentrancy;
 
   let owner: SignerWithAddress,
     app: SignerWithAddress,
@@ -61,18 +55,14 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     newUser = accounts[5];
 
     // 1. deploy base contracts
-    erc725Utils = await deployERC725Utils();
-    baseUniversalProfile = await deployBaseUniversalProfile(erc725Utils.address);
-    baseKeyManager = await deployBaseKeyManager(erc725Utils.address);
+    baseUniversalProfile = await new UniversalProfileInit__factory(owner).deploy();
+    baseKeyManager = await new KeyManagerInit__factory(owner).deploy();
 
     // 2. deploy proxy contracts
     let proxyUniversalProfileAddress = await deployProxy(baseUniversalProfile.address, owner);
     let proxyKeyManagerAddress = await deployProxy(baseKeyManager.address, owner);
-    proxyUniversalProfile = await attachUniversalProfileProxy(
-      erc725Utils.address,
-      proxyUniversalProfileAddress
-    );
-    proxyKeyManager = await attachKeyManagerProxy(erc725Utils.address, proxyKeyManagerAddress);
+    proxyUniversalProfile = await attachUniversalProfileProxy(owner, proxyUniversalProfileAddress);
+    proxyKeyManager = await attachKeyManagerProxy(owner, proxyKeyManagerAddress);
 
     // 3. initialize them
     await proxyUniversalProfile.initialize(owner.address);
@@ -383,7 +373,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
   describe("> testing permission: TRANSFERVALUE", () => {
     let provider = ethers.provider;
 
-    it("Owner should be allowed to transfer ethers to app", async () => {
+    it("Owner should be allowed to transfer LYX to app", async () => {
       let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
       let initialAppBalance = await provider.getBalance(app.address);
 
@@ -406,7 +396,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       expect(parseInt(newAppBalance)).toBeGreaterThan(parseInt(initialAppBalance));
     });
 
-    it("App should not be allowed to transfer ethers", async () => {
+    it("App should not be allowed to transfer LYX", async () => {
       let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
       let initialUserBalance = await provider.getBalance(user.address);
       // console.log("initialAccountBalance: ", initialAccountBalance)
@@ -420,7 +410,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to transfer ethers"
+        "KeyManager:_checkPermissions: Not authorized to transfer LYX"
       );
 
       let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
@@ -1160,7 +1150,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
     it("Permissions should prevent ReEntrancy and stop contract from re-calling and re-transfering ETH.", async () => {
       // we assume the owner is not aware that some malicious code is present at the recipient address (the recipient being a smart contract)
-      // the owner simply aims to transfer 1 ether from his ERC725 Account to the recipient address (= the malicious contract)
+      // the owner simply aims to transfer 1 LYX from his ERC725 Account to the recipient address (= the malicious contract)
       let transferPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
         maliciousContract.address,
@@ -1171,7 +1161,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let executePayload = proxyKeyManager.interface.encodeFunctionData("execute", [
         transferPayload,
       ]);
-      // load the malicious payload, that will be executed in the fallback function (every time the contract receives ethers)
+      // load the malicious payload, that will be executed in the fallback function (every time the contract receives LYX)
       await maliciousContract.loadPayload(executePayload);
 
       let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);

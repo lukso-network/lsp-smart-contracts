@@ -2,15 +2,15 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 import {
-  ERC725Utils,
   UniversalProfile,
+  UniversalProfile__factory,
   KeyManager,
+  KeyManager__factory,
   Executor,
   Executor__factory,
 } from "../build/types";
 
 // custom helpers
-import { deployERC725Utils, deployUniversalProfile, deployKeyManager } from "./utils/deploy";
 import { ONE_ETH, DUMMY_RECIPIENT } from "./utils/helpers";
 import { ALL_PERMISSIONS_SET, KEYS, PERMISSIONS } from "./utils/keymanager";
 
@@ -19,10 +19,7 @@ describe("Executor interacting with KeyManager", () => {
 
   let owner: SignerWithAddress;
 
-  let erc725Utils: ERC725Utils,
-    universalProfile: UniversalProfile,
-    keyManager: KeyManager,
-    executor: Executor;
+  let universalProfile: UniversalProfile, keyManager: KeyManager, executor: Executor;
 
   /**
    * @dev this is necessary when the function being called in the contract
@@ -34,13 +31,11 @@ describe("Executor interacting with KeyManager", () => {
   beforeAll(async () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
-
-    erc725Utils = await deployERC725Utils();
   });
 
   beforeEach(async () => {
-    universalProfile = await deployUniversalProfile(erc725Utils.address, owner);
-    keyManager = await deployKeyManager(erc725Utils.address, universalProfile);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
+    keyManager = await new KeyManager__factory(owner).deploy(universalProfile.address);
     executor = await new Executor__factory(owner).deploy(
       universalProfile.address,
       keyManager.address
