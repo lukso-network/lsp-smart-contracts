@@ -471,7 +471,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId =
-                    "0x709ce9002dd788b112f726e7b11ccffd8afa9c1339adf2c86a8089be7f81c507";
+                    "0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f";
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "uint256", "bytes"],
                     [txParams.from, txParams.to, txParams.amount, txParams.data]
@@ -536,7 +536,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId =
-                    "0x709ce9002dd788b112f726e7b11ccffd8afa9c1339adf2c86a8089be7f81c507";
+                    "0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f";
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "uint256", "bytes"],
                     [txParams.from, txParams.to, txParams.amount, txParams.data]

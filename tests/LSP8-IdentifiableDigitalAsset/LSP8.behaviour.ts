@@ -595,7 +595,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId =
-                    "0x709ce9002dd788b112f726e7b11ccffd8afa9c1339adf2c86a8089be7f81c507";
+                    "0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01";
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "bytes32", "bytes"],
                     [txParams.from, txParams.to, txParams.tokenId, txParams.data]
@@ -662,7 +662,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
                   const tx = await transferSuccessScenario(txParams, operator);
 
                   const typeId =
-                    "0x709ce9002dd788b112f726e7b11ccffd8afa9c1339adf2c86a8089be7f81c507";
+                    "0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01";
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "bytes32", "bytes"],
                     [txParams.from, txParams.to, txParams.tokenId, txParams.data]

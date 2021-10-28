@@ -33,7 +33,7 @@ abstract contract LSP7CompatibilityForERC20 is ILSP7CompatibilityForERC20, LSP7C
         override
         returns (uint256)
     {
-        return isOperatorFor(tokenOwner, operator);
+        return isOperatorFor(operator, tokenOwner);
     }
 
     /*

@@ -1,6 +1,5 @@
 import { ethers } from "hardhat";
 import { LSP4CompatibilityTester, LSP4CompatibilityTester__factory } from "../../build/types";
-import { deployERC725Utils } from "../utils/deploy";
 
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -32,12 +31,7 @@ describe("LSP4Compatibility", () => {
       newOwner: accounts.owner.address,
     };
 
-    const erc725Utils = await deployERC725Utils();
     const lsp4Compatibility = await new LSP4CompatibilityTester__factory(
-      {
-        "submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol:ERC725Utils":
-          erc725Utils.address,
-      },
       accounts.owner
     ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
 

@@ -26,8 +26,8 @@ import {
   SCHEMA,
   getRandomAddresses,
   generateKeysAndValues,
-} from "./utils/helpers";
-import { INTERFACE_IDS, ADDRESSPERMISSIONS_KEY } from "./utils/constants";
+} from "../utils/helpers";
+import { INTERFACE_IDS, ADDRESSPERMISSIONS_KEY } from "../utils/constants";
 
 import {
   ALL_PERMISSIONS_SET,
@@ -35,7 +35,7 @@ import {
   PERMISSIONS,
   OPERATIONS,
   allowedAddresses,
-} from "./utils/keymanager";
+} from "../utils/keymanager";
 
 describe("KeyManagerHelper", () => {
   let abiCoder;
