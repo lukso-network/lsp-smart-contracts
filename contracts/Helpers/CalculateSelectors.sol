@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 // constants
-import '../LSP1-UniversalReceiver/LSP1Constants.sol';
-import '../LSP6-KeyManager/LSP6Constants.sol';
-import '../LSP7-DigitalAsset/LSP7Constants.sol';
-import '../LSP8-IdentifiableDigitalAsset/LSP8Constants.sol';
+import "../LSP1-UniversalReceiver/LSP1Constants.sol";
+import "../LSP6-KeyManager/LSP6Constants.sol";
+import "../LSP7-DigitalAsset/LSP7Constants.sol";
+import "../LSP8-IdentifiableDigitalAsset/LSP8Constants.sol";
 
 // interfaces
 import "../LSP6-KeyManager/ILSP6_KeyManager.sol";

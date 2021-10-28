@@ -331,7 +331,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     {
         require (
             from.length == to.length && from.length == tokenId.length && from.length == data.length,
-            'LSP8: transferBatch list length mismatch'
+            "LSP8: transferBatch list length mismatch"
         );
 
         for(uint256 i=0; i < from.length; i++) {
@@ -543,9 +543,9 @@ abstract contract LSP8Core is Context, ILSP8 {
             );
         } else if (!force) {
             if (to.isContract()) {
-                revert('LSP8: token receiver contract missing LSP1 interface');
+                revert("LSP8: token receiver contract missing LSP1 interface");
             } else {
-                revert('LSP8: token receiver is EOA');
+                revert("LSP8: token receiver is EOA");
             }
         }
     }

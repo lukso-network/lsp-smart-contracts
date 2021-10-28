@@ -2,9 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import '../../LSP7-DigitalAsset/LSP7.sol';
+import "../../LSP7-DigitalAsset/LSP7.sol";
 
 contract LSP7Tester is LSP7 {
+    /* solhint-disable no-empty-blocks */
     constructor(
       string memory name,
       string memory symbol,

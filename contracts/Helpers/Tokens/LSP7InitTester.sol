@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import '../../LSP7-DigitalAsset/LSP7Init.sol';
+import "../../LSP7-DigitalAsset/LSP7Init.sol";
 
 contract LSP7InitTester is LSP7Init {
     function initialize(

@@ -247,7 +247,7 @@ abstract contract LSP7Core is Context, ILSP7 {
     {
         require (
             from.length == to.length && from.length == amount.length && from.length == data.length,
-            'LSP7: transferBatch list length mismatch'
+            "LSP7: transferBatch list length mismatch"
         );
 
         for(uint256 i=0; i < from.length; i++) {
@@ -444,9 +444,9 @@ abstract contract LSP7Core is Context, ILSP7 {
             );
         } else if (!force) {
             if (to.isContract()) {
-                revert('LSP7: token receiver contract missing LSP1 interface');
+                revert("LSP7: token receiver contract missing LSP1 interface");
             } else {
-                revert('LSP7: token receiver is EOA');
+                revert("LSP7: token receiver is EOA");
             }
         }
     }

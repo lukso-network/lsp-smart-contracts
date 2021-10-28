@@ -11,7 +11,7 @@ import "../../LSP1-UniversalReceiver/ILSP1_UniversalReceiver.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1 {
-
+    /* solhint-disable no-empty-blocks */
     event UniversalReceiverCalled(bytes32 typeId, bytes data);
 
     constructor() {
