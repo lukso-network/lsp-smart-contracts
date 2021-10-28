@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 const keccak256 = require("keccak256");
 import { ethers } from "hardhat";
-import { NFTStorageMerkle, NFTStorageMerkle__factory } from "../build/types";
+import { NFTStorageMerkle, NFTStorageMerkle__factory } from "../../build/types";
 
 const { MerkleTree } = require("merkletreejs");
 

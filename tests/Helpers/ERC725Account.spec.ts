@@ -1,8 +1,8 @@
 import { encodeData, flattenEncodedData, KeyValuePair } from "@erc725/erc725.js";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { ERC725Account, ERC725Account__factory } from "../build/types";
-import { SCHEMA, getRandomAddresses, generateKeysAndValues } from "./utils/helpers";
+import { ERC725Account, ERC725Account__factory } from "../../build/types";
+import { SCHEMA, getRandomAddresses, generateKeysAndValues } from "../utils/helpers";
 
 describe("ERC725 Account", () => {
   let accounts: SignerWithAddress[];

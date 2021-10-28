@@ -7,7 +7,7 @@ import {
   AddressRegistry__factory,
   UniversalProfile,
   UniversalProfile__factory,
-} from "../build/types";
+} from "../../build/types";
 
 describe("Address Registry contracts", () => {
   let addressRegistry: AddressRegistry;

@@ -8,11 +8,11 @@ import {
   KeyManager__factory,
   Executor,
   Executor__factory,
-} from "../build/types";
+} from "../../build/types";
 
 // custom helpers
-import { ONE_ETH, DUMMY_RECIPIENT } from "./utils/helpers";
-import { ALL_PERMISSIONS_SET, KEYS, PERMISSIONS } from "./utils/keymanager";
+import { ONE_ETH, DUMMY_RECIPIENT } from "../utils/helpers";
+import { ALL_PERMISSIONS_SET, KEYS, PERMISSIONS } from "../utils/keymanager";
 
 describe("Executor interacting with KeyManager", () => {
   let accounts: SignerWithAddress[] = [];

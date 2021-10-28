@@ -1,9 +1,9 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { CalculateERC165Selectors, CalculateERC165Selectors__factory } from "../build/types";
+import { CalculateERC165Selectors, CalculateERC165Selectors__factory } from "../../build/types";
 
 // utils
-import { INTERFACE_IDS } from "./utils/constants";
+import { INTERFACE_IDS } from "../utils/constants";
 
 /**
  * @dev these tests also ensure that the interfaceIds (stored in utils/constant.ts)

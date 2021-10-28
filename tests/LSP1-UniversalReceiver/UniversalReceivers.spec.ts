@@ -8,9 +8,7 @@ import {
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
   UniversalReceiverTester__factory,
-} from "../build/types";
-
-import { deployERC725Utils, deployUniversalProfile } from "./utils/deploy";
+} from "../../build/types";
 
 // keccak256("ERC777TokensRecipient")
 const TOKENS_RECIPIENT_INTERFACE_HASH =
