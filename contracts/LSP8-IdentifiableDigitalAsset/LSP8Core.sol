@@ -499,7 +499,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1(from).universalReceiver(
-                _LSP4_NOTIFY_TOKENS_SENDER_TYPE_ID,
+                _LSP8TOKENSSENDER_TYPE_ID,
                 packedData
             );
         }
@@ -527,7 +527,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1(to).universalReceiver(
-                _LSP4_NOTIFY_TOKENS_RECIPIENT_TYPE_ID,
+                _LSP8TOKENSRECIPIENT_TYPE_ID,
                 packedData
             );
         } else if (!force) {

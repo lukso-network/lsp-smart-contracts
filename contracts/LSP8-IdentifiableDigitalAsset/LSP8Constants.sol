@@ -24,3 +24,9 @@ bytes12 constant _LSP8_METADATA_JSON_KEY_PREFIX = 0x9a26b4060ae7f7d500000000;
 //
 
 bytes4 constant _LSP8_INTERFACE_ID = 0x49399145;
+
+bytes32 constant _LSP8TOKENSSENDER_TYPE_ID =
+  0x3724c94f0815e936299cca424da4140752198e0beb7931a6e0925d11bc97544c; // keccak256("LSP8TokensSender")
+
+bytes32 constant _LSP8TOKENSRECIPIENT_TYPE_ID =
+  0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01; // keccak256("LSP8TokensRecipient")

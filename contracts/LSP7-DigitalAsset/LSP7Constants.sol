@@ -18,3 +18,9 @@ bytes4 constant _LSP7_SUPPORTED_STANDARDS_VALUE =
 //
 
 bytes4 constant _LSP7_INTERFACE_ID = 0xe33f65c3;
+
+bytes32 constant _LSP7TOKENSSENDER_TYPE_ID =   
+  0x40b8bec57d7b5ff0dbd9e9acd0a47dfeb0101e1a203766f5ccab00445fbf39e9; // keccak256("LSP7TokensSender")
+
+bytes32 constant _LSP7TOKENSRECIPIENT_TYPE_ID =
+  0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f; // keccak256("LSP7TokensRecipient")
