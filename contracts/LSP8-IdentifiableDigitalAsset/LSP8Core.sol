@@ -113,17 +113,6 @@ abstract contract LSP8Core is Context, ILSP8 {
         return _ownedTokens[tokenOwner].values();
     }
 
-    function _buildMetadataKey(bytes32 tokenId, bool buildAddressKey)
-        internal
-        pure
-        returns (bytes32)
-    {
-        return bytes32(abi.encodePacked(
-            buildAddressKey ? _LSP8_METADATA_ADDRESS_KEY_PREFIX : _LSP8_METADATA_JSON_KEY_PREFIX,
-            bytes20(keccak256(abi.encodePacked(tokenId)))
-        ));
-    }
-
     //
     // --- Operator functionality
     //

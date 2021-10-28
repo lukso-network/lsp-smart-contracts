@@ -1121,35 +1121,6 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
         });
       });
     });
-
-    describe("buildMetadataKey", () => {
-      const shouldBuildKey = async (expectedKeyPrefix: string, buildingAddressKey: boolean) => {
-        // should be possible to build the key even if tokenId is not minted
-        await Promise.all(
-          [mintedTokenId, neverMintedTokenId].map(async (tokenId) => {
-            const expectedKey = `${expectedKeyPrefix}${ethers.utils
-              .keccak256(tokenId)
-              .slice(2, 42)}`;
-
-            expect(await context.lsp8.buildMetadataKey(tokenId, buildingAddressKey)).toEqual(
-              expectedKey
-            );
-          })
-        );
-      };
-
-      describe("when building the key for a metadata address", () => {
-        it("should build the expected ERC725Y key", async () => {
-          await shouldBuildKey("0x73dcc7c3c4096cdc00000000", true);
-        });
-      });
-
-      describe("when building the key for a metadata JSON", () => {
-        it("should build the expected ERC725Y key", async () => {
-          await shouldBuildKey("0x9a26b4060ae7f7d500000000", false);
-        });
-      });
-    });
   });
 };
 
