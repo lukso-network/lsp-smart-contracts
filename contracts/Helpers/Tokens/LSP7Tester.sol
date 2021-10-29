@@ -10,7 +10,7 @@ contract LSP7Tester is LSP7 {
       string memory name,
       string memory symbol,
       address newOwner
-    ) LSP7(name, symbol, newOwner) {}
+    ) LSP7(name, symbol, newOwner, false) {}
 
     function mint(address to, uint256 amount, bool force, bytes memory data) public {
         _mint(to, amount, force, data);

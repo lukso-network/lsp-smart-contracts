@@ -54,7 +54,7 @@ interface ILSP7 is IERC165, IERC725Y {
      * no way affects any of the arithmetic of the contract, including
      * {balanceOf} and {transfer}.
      */
-    function decimals() external pure returns (uint256);
+    function decimals() external view returns (uint256);
 
     /**
      * @dev Returns the number of existing tokens.

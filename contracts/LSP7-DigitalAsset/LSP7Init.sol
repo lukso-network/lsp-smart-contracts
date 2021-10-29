@@ -20,13 +20,14 @@ contract LSP7Init is Initializable, LSP4Init, LSP7Core {
     function initialize(
         string memory name_,
         string memory symbol_,
-        address newOwner_
+        address newOwner_,
+        bool isNFT_
     )
         public
         virtual
-        override
         initializer
     {
+        _isNFT = isNFT_;
         LSP4Init.initialize(name_, symbol_, newOwner_);
 
         _registerInterface(_LSP7_INTERFACE_ID);

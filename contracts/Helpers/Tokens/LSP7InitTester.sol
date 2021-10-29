@@ -14,7 +14,7 @@ contract LSP7InitTester is LSP7Init {
         initializer
         override
     {
-        LSP7Init.initialize(name, symbol, newOwner);
+        LSP7Init.initialize(name, symbol, newOwner, false);
     }
 
     function mint(address to, uint256 amount, bool force, bytes memory data) public {

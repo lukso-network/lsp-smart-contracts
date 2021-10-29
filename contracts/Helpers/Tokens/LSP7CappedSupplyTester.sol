@@ -12,7 +12,7 @@ contract LSP7CappedSupplyTester is LSP7CappedSupply {
       string memory symbol,
       address newOwner,
       uint256 tokenSupplyCap
-    ) LSP7(name, symbol, newOwner) LSP7CappedSupply(tokenSupplyCap) {}
+    ) LSP7(name, symbol, newOwner, true) LSP7CappedSupply(tokenSupplyCap) {}
 
     function mint(address to, uint256 amount) public {
         // using force=true so we can send to EOA in test

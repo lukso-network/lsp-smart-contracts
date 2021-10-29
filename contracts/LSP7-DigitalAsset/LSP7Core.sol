@@ -31,6 +31,8 @@ abstract contract LSP7Core is Context, ILSP7 {
     // --- Storage
     //
 
+    bool internal _isNFT;
+
     uint256 internal _existingTokens;
 
     // Mapping from `tokenOwner` to an `amount` of tokens
@@ -52,11 +54,11 @@ abstract contract LSP7Core is Context, ILSP7 {
      */
     function decimals()
         public
-        pure
+        view
         override
         returns (uint256)
     {
-        return 18;
+        return _isNFT ? 0 : 18;
     }
 
     /**

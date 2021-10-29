@@ -16,7 +16,7 @@ contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInit {
         virtual
         initializer
     {
-        LSP7Init.initialize(name, symbol, newOwner);
+        LSP7Init.initialize(name, symbol, newOwner, true);
         LSP7CappedSupplyInit.initialize(tokenSupplyCap);
     }
 
