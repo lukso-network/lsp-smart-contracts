@@ -683,7 +683,7 @@ describe("KeyManager", () => {
       );
     });
 
-    it("App should not be allowed to make a DELEGATECALL", async () => {
+    it("DELEGATECALL via UP should be disallowed", async () => {
       let executePayload = universalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.DELEGATECALL,
         "0xcafecafecafecafecafecafecafecafecafecafe",
@@ -691,8 +691,8 @@ describe("KeyManager", () => {
         DUMMY_PAYLOAD,
       ]);
 
-      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
+      await expect(keyManager.connect(owner).execute(executePayload)).toBeRevertedWith(
+        "Operation 4 `DELEGATECALL` not supported."
       );
     });
 
@@ -1001,7 +1001,7 @@ describe("KeyManager", () => {
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(keyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
-        "KeyManager:_checkPermissions: unknown function selector from ERC725 account"
+        "KeyManager:_checkPermissions: unknown function selector on ERC725 account"
       );
     });
 

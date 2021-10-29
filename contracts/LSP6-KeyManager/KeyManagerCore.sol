@@ -247,6 +247,8 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             address recipient = address(bytes20(_data[48:68]));
             uint256 value = uint256(bytes32(_data[68:100]));
 
+            require(operationType != 4, "Operation 4 `DELEGATECALL` not supported.");
+
             require(
                 operationType < 5, // Check for CALL, DELEGATECALL or DEPLOY
                 "KeyManager:_checkPermissions: Invalid operation type"
@@ -316,7 +318,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             );
         } else {
             revert(
-                "KeyManager:_checkPermissions: unknown function selector from ERC725 account"
+                "KeyManager:_checkPermissions: unknown function selector on ERC725 account"
             );
         }
 
