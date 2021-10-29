@@ -1,8 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
-  ERC725Utils,
-  ERC725Utils__factory,
   BasicUniversalReceiver,
   BasicUniversalReceiver__factory,
   UniversalProfile__factory,
@@ -25,12 +23,10 @@ describe("Receivers", () => {
   let uni: BasicUniversalReceiver;
   let accounts: SignerWithAddress[] = [];
   let signer: SignerWithAddress;
-  let erc725Utils: ERC725Utils;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
     signer = accounts[1];
-    erc725Utils = await deployERC725Utils();
   });
 
   beforeEach(async () => {
@@ -103,7 +99,7 @@ describe("Receivers", () => {
 
   it("Use delegate and test if it can store addresses", async () => {
     const signerAddress = accounts[1];
-    let account = await deployUniversalProfile(erc725Utils.address, signer);
+    let account = await new UniversalProfile__factory(signer).deploy(signer.address);
     let checker = await new UniversalReceiverTester__factory(signer).deploy();
     let checker2 = await new UniversalReceiverTester__factory(signer).deploy();
     let checker3 = await new UniversalReceiverTester__factory(signer).deploy();

@@ -128,4 +128,4 @@ java/.idea
 .idea
 
 # Solidity Flattener
-out/
+flat_contracts/

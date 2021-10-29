@@ -15,7 +15,7 @@ contract KeyManagerHelper is KeyManager {
         return _INTERFACE_ID_LSP6;
     }
 
-    function getUserPermissions(address _user) public view returns (bytes2) {
+    function getUserPermissions(address _user) public view returns (bytes32) {
         return super._getUserPermissions(_user);
     }
 
@@ -33,6 +33,10 @@ contract KeyManagerHelper is KeyManager {
 
     function isAllowedFunction(address _sender, bytes4 _function) public view returns (bool) {
         return super._isAllowedFunction(_sender, _function);
+    }
+
+    function isAllowed(bytes32 _permission, bytes32 _addressPermission) public pure returns (bool) {
+        return super._isAllowed(_permission, _addressPermission);
     }
 
 }

@@ -23,5 +23,9 @@ contract TargetContract {
     function setName(string memory _name) public {
         name = _name;
     }
+
+    function revertCall() public pure {
+        revert("TargetContract:revertCall: this function has reverted!");
+    }
     
 }
