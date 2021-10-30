@@ -35,7 +35,8 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     // prettier-ignore
     /* solhint-disable */
     // PERMISSION KEYS
-    bytes8 internal constant _SET_PERMISSIONS       = 0x4b80742d00000000;         // AddressPermissions:<...>
+
+    bytes8 internal constant _SET_PERMISSIONS           = 0x4b80742d00000000;         // AddressPermissions:<...>
     bytes12 internal constant _ADDRESS_PERMISSIONS      = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes32
     bytes12 internal constant _ADDRESS_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
     bytes12 internal constant _ADDRESS_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
@@ -59,6 +60,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
     bytes4 internal immutable _SETDATA_SELECTOR = account.setData.selector; // 0x14a6e293
     bytes4 internal immutable _EXECUTE_SELECTOR = account.execute.selector; // 0x44c028fe
     bytes4 internal immutable _TRANSFEROWNERSHIP_SELECTOR = account.transferOwnership.selector; // 0xf2fde38b;
+
     /* solhint-enable */
 
     /**
@@ -147,7 +149,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             revert(abi.decode(result_, (string)));
             /* solhint-enable */
         }
-        
+
         emit Executed(msg.value, _data);
         return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
@@ -202,7 +204,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             revert(abi.decode(result_, (string)));
             /* solhint-enable */
         }
-        
+
         emit Executed(msg.value, _data);
         return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
@@ -222,7 +224,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
                 // move calldata pointers
                 uint256 ptrStart = 100 + (32 * ii);
                 uint256 ptrEnd = (100 + (32 * (ii + 1)) - 1);
-                
+
                 // extract the key
                 bytes32 setDataKey = bytes32(_data[ptrStart:ptrEnd]);
 
@@ -232,8 +234,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
                         _isAllowed(_PERMISSION_CHANGEPERMISSIONS, userPermissions),
                         "KeyManager:_checkPermissions: Not authorized to change keys"
                     );
-                } 
-                else {
+                } else {
                     require(
                         _isAllowed(_PERMISSION_SETDATA, userPermissions),
                         "KeyManager:_checkPermissions: Not authorized to setData"
@@ -259,6 +260,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             /* solhint-disable */
             assembly {
                 switch operationType
+
                 case 0 { permission := _PERMISSION_CALL }
                 case 1 { permission := _PERMISSION_DEPLOY } // CREATE2
                 case 2 { permission := _PERMISSION_DEPLOY } // CREATE
@@ -288,7 +290,6 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
                     "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
                 );
             }
-            
 
             require(
                 _isAllowedAddress(_address, recipient),
@@ -298,7 +299,7 @@ abstract contract KeyManagerCore is ILSP6, ERC165Storage {
             if (value > 0) {
                 require(
                     _isAllowed(_PERMISSION_TRANSFERVALUE, userPermissions),
-                    "KeyManager:_checkPermissions: Not authorized to transfer LYX"
+                    "KeyManager:_checkPermissions: Not authorized to transfer value"
                 );
             }
 
