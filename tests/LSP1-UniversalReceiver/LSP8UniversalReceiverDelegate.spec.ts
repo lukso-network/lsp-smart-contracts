@@ -265,7 +265,7 @@ describe("Universal Receiver Delegate Contract", () => {
     });
     describe("Recepient Hook", () => {
       beforeAll(async () => {
-        //     // await tokenA.connect(owner).receiverHook(universalProfile1.address);
+        
         let abi = tokenA.interface.encodeFunctionData("mint", [
           universalProfile1.address,
           TOKEN_ID1,
@@ -284,7 +284,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenAMapAsset = LSP5_ASSET_MAP_HASH + tokenA.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenAMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
 
         expect(gettedResult[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
       });
@@ -298,7 +298,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Should Register the Address of Token A in the first Key in the Array", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenAMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -307,7 +307,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Should Have the Second Key in the Array empty for now", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index of second Asset
+
         const item2_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item2_Array_Key]);
@@ -316,7 +316,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Transfer Token B", async () => {
-        // await tokenB.connect(owner).receiverHook(universalProfile1.address);
+        
         let abi = tokenB.interface.encodeFunctionData("mint", [
           universalProfile1.address,
           TOKEN_ID2,
@@ -336,20 +336,20 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenBMapAsset = LSP5_ASSET_MAP_HASH + tokenB.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenBMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x" + "0000000000000001" + INTERFACE_ID);
       });
 
       it("=> Should Update the Length of The Array to `2`", async () => {
         let gettedResult = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        // length of the array is 1
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000002"
         );
       });
 
       it("=> Should Register the Address of Token B in the Second Key in the Array", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+
         const item2_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item2_Array_Key]);
@@ -362,24 +362,23 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenAMapAsset = LSP5_ASSET_MAP_HASH + tokenA.address.substr(2);
 
         let gettedResult0 = await universalProfile1.connect(owner).getData([tokenAMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+
         expect(gettedResult0[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
 
         // LSP5MAP for Token B
         const tokenBMapAsset = LSP5_ASSET_MAP_HASH + tokenB.address.substr(2);
 
         let gettedResult1 = await universalProfile1.connect(owner).getData([tokenBMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+
         expect(gettedResult1[0]).toEqual("0x" + "0000000000000001" + INTERFACE_ID);
 
         // LSP5Array Length equal 2 (Token A + B)
         let gettedResult2 = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        // length of the array is 1
+
         expect(gettedResult2[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000002"
         );
 
-        // First Item in the LSP5Array
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult3] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -394,7 +393,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Should Have the Third Key in the Array empty for now", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index of second Asset
+        
         const item3_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item3_Array_Key]);
@@ -422,20 +421,20 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenCMapAsset = LSP5_ASSET_MAP_HASH + tokenC.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenCMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x" + "0000000000000002" + INTERFACE_ID);
       });
 
       it("=> Should Update the Length of The Array to `3`", async () => {
         let gettedResult = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        // length of the array is 1
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000003"
         );
       });
 
       it("=> Should Register the Address of Token C in the Third Key in the Array", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenCMapAsset
+        
         const item3_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item3_Array_Key]);
@@ -446,7 +445,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
     describe("Sender Hook", () => {
       it("=> Eliminating Token B", async () => {
-        // await tokenB.connect(owner).senderHook(universalProfile1.address);
+        
         let abi = tokenB.interface.encodeFunctionData("burn", [TOKEN_ID2, "0x43"]);
         let abiExecutor = universalProfile1.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
@@ -459,14 +458,14 @@ describe("Universal Receiver Delegate Contract", () => {
 
       it("=> Should Update the Length of The Array to `2`", async () => {
         let gettedResult = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        // length of the array is 1
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000002"
         );
       });
 
       it("=> Item 2 in the LSP5ASSET Array Should be the address of Token C", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenCMapAsset
+        
         const item2_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item2_Array_Key]);
@@ -475,7 +474,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Item 3 Should not exist", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenCMapAsset
+        
         const item3_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item3_Array_Key]);
@@ -487,7 +486,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenBMapAsset = LSP5_ASSET_MAP_HASH + tokenB.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenBMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x");
       });
 
@@ -495,7 +494,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenCMapAsset = LSP5_ASSET_MAP_HASH + tokenC.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenCMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x" + "0000000000000001" + INTERFACE_ID);
       });
     });
@@ -519,14 +518,14 @@ describe("Universal Receiver Delegate Contract", () => {
 
       it("=> Should Update the Length of The Array to `3`", async () => {
         let gettedResult = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        //
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000003"
         );
       });
 
       it("=> Should Register the Address of Token D in the third Key in the Array", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+
         const item3_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item3_Array_Key]);
@@ -537,7 +536,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenDMapAsset = LSP5_ASSET_MAP_HASH + tokenD.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenDMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x" + "0000000000000002" + INTERFACE_ID);
       });
 
@@ -557,7 +556,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
       it("=> Should Update the Length of The Array to `2`", async () => {
         let gettedResult = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        //
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000002"
         );
@@ -567,12 +566,12 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenDMapAsset = LSP5_ASSET_MAP_HASH + tokenD.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenDMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x");
       });
 
       it("=> Should remove the Address of Token D from the third Key in the Array", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item3_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item3_Array_Key]);
@@ -580,7 +579,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Next slot should be empty", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item4_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000003";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item4_Array_Key]);
@@ -592,24 +591,24 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenAMapAsset = LSP5_ASSET_MAP_HASH + tokenA.address.substr(2);
 
         let gettedResult0 = await universalProfile1.connect(owner).getData([tokenAMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult0[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
 
         // LSP5MAP for Token C
         const tokenCMapAsset = LSP5_ASSET_MAP_HASH + tokenC.address.substr(2);
 
         let gettedResult1 = await universalProfile1.connect(owner).getData([tokenCMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult1[0]).toEqual("0x" + "0000000000000001" + INTERFACE_ID);
 
         // LSP5Array Length equal 2 (Token A + C)
         let gettedResult2 = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        // length of the array is 1
+        
         expect(gettedResult2[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000002"
         );
 
-        // First Item in the LSP5Array
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult3] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -624,7 +623,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Next slot should be empty", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item4_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000003";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item4_Array_Key]);
@@ -632,7 +631,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Eliminating Token A", async () => {
-        // await tokenA.connect(owner).senderHook(universalProfile1.address);
+        
         let abi = tokenA.interface.encodeFunctionData("burn", [
           TOKEN_ID1,
           "0x22",
@@ -658,12 +657,12 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenAMapAsset = LSP5_ASSET_MAP_HASH + tokenA.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenAMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x");
       });
 
       it("=> Should remove the Address of Token A from the first Key in the Array and replace it with token C", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -671,7 +670,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Next slot should be empty", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item2_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item2_Array_Key]);
@@ -705,12 +704,12 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenCMapAsset = LSP5_ASSET_MAP_HASH + tokenC.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenCMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x");
       });
 
       it("=> Should remove the Address of Token C from the first Key ", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -718,7 +717,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Next slot should be empty", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item2_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item2_Array_Key]);
@@ -726,7 +725,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Keys Should be Empty", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         const item2_Array_Key =
@@ -783,7 +782,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Should Register the Address of Token A in the first Key in the Array", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -794,7 +793,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenAMapAsset = LSP5_ASSET_MAP_HASH + tokenA.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenAMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
       });
 
@@ -838,7 +837,7 @@ describe("Universal Receiver Delegate Contract", () => {
       });
 
       it("=> Should Register the Address of Token E in the first Key in the Array", async () => {
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -849,12 +848,12 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenEMapAsset = LSP5_ASSET_MAP_HASH + tokenE.address.substr(2);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenEMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
       });
 
       it("=> Keys Should be Empty bur first Key should exist", async () => {
-        //
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         const item2_Array_Key =
@@ -885,7 +884,7 @@ describe("Universal Receiver Delegate Contract", () => {
         expect(gettedMaps).toEqual(["0x", "0x", "0x", "0x"]);
 
         let gettedResult = await universalProfile1.connect(owner).getData([tokenEMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
       });
     });
@@ -915,7 +914,7 @@ describe("Universal Receiver Delegate Contract", () => {
           "0x" + "0000000000000000000000000000000000000000000000000000000000000000"
         );
 
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult1] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -924,18 +923,18 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenEMapAsset = LSP5_ASSET_MAP_HASH + tokenE.address.substr(2);
 
         let gettedResult2 = await universalProfile1.connect(owner).getData([tokenEMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult2[0]).toEqual("0x");
       });
 
       it("Check if keys are registred after sending tokens in UP2", async () => {
         let gettedResult = await universalProfile2.connect(owner2).getData([LSP5_ARRAY_HASH]);
-        //
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000001"
         );
 
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult1] = await universalProfile2.connect(owner2).getData([item1_Array_Key]);
@@ -944,7 +943,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenEMapAsset = LSP5_ASSET_MAP_HASH + tokenE.address.substr(2);
 
         let gettedResult2 = await universalProfile2.connect(owner2).getData([tokenEMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult2[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
       });
 
@@ -955,7 +954,7 @@ describe("Universal Receiver Delegate Contract", () => {
           "0x" + "0000000000000000000000000000000000000000000000000000000000000001"
         );
 
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult1] = await universalProfile2.connect(owner2).getData([item1_Array_Key]);
@@ -964,12 +963,12 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenEMapAsset = LSP5_ASSET_MAP_HASH + tokenE.address.substr(2);
 
         let gettedResult2 = await universalProfile2.connect(owner2).getData([tokenEMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult2[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
       });
 
       it("Next slot should be intact in UP2", async () => {
-        //
+        
         const item2_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001";
         let [gettedResult1] = await universalProfile2.connect(owner2).getData([item2_Array_Key]);
@@ -978,12 +977,12 @@ describe("Universal Receiver Delegate Contract", () => {
 
       it("Should clear keys from UP1 as balance of tokensE is 0", async () => {
         let gettedResult = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        //
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000000"
         );
 
-        //
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult1] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -992,7 +991,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenEMapAsset = LSP5_ASSET_MAP_HASH + tokenE.address.substr(2);
 
         let gettedResult2 = await universalProfile1.connect(owner).getData([tokenEMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult2[0]).toEqual("0x");
       });
 
@@ -1014,12 +1013,12 @@ describe("Universal Receiver Delegate Contract", () => {
 
       it("Check if keys are registred after sending tokensD in UP2", async () => {
         let gettedResult = await universalProfile2.connect(owner2).getData([LSP5_ARRAY_HASH]);
-        //
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000002"
         );
 
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item2_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001";
         let [gettedResult1] = await universalProfile2.connect(owner2).getData([item2_Array_Key]);
@@ -1028,7 +1027,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenDMapAsset = LSP5_ASSET_MAP_HASH + tokenD.address.substr(2);
 
         let gettedResult2 = await universalProfile2.connect(owner2).getData([tokenDMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult2[0]).toEqual("0x" + "0000000000000001" + INTERFACE_ID);
       });
 
@@ -1051,12 +1050,12 @@ describe("Universal Receiver Delegate Contract", () => {
 
       it("Should remove tokenD keys after sending tokensD from UP2 to UP1", async () => {
         let gettedResult = await universalProfile2.connect(owner2).getData([LSP5_ARRAY_HASH]);
-        //
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000001"
         );
 
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item2_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001";
         let [gettedResult1] = await universalProfile2.connect(owner2).getData([item2_Array_Key]);
@@ -1065,18 +1064,18 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenDMapAsset = LSP5_ASSET_MAP_HASH + tokenD.address.substr(2);
 
         let gettedResult2 = await universalProfile2.connect(owner2).getData([tokenDMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult2[0]).toEqual("0x");
       });
 
       it("Should regsiter tokenD keys after sending tokensD from UP2 to UP1", async () => {
         let gettedResult = await universalProfile1.connect(owner).getData([LSP5_ARRAY_HASH]);
-        //
+        
         expect(gettedResult[0]).toEqual(
           "0x" + "0000000000000000000000000000000000000000000000000000000000000001"
         );
 
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult1] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -1085,7 +1084,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenDMapAsset = LSP5_ASSET_MAP_HASH + tokenD.address.substr(2);
 
         let gettedResult2 = await universalProfile1.connect(owner).getData([tokenDMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult2[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
       });
     });
@@ -1123,7 +1122,7 @@ describe("Universal Receiver Delegate Contract", () => {
           "0x" + "0000000000000000000000000000000000000000000000000000000000000001"
         );
 
-        // First 16 bytes of LSP5_ARRAY_HASH + index in tokenBMapAsset
+        
         const item1_Array_Key =
           "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000";
         let [gettedResult1] = await universalProfile1.connect(owner).getData([item1_Array_Key]);
@@ -1132,7 +1131,7 @@ describe("Universal Receiver Delegate Contract", () => {
         const tokenDMapAsset = LSP5_ASSET_MAP_HASH + tokenD.address.substr(2);
 
         let gettedResult2 = await universalProfile1.connect(owner).getData([tokenDMapAsset]);
-        // "0000000000000000" is index 0 since its the first Asset to be Registred
+        
         expect(gettedResult2[0]).toEqual("0x" + "0000000000000000" + INTERFACE_ID);
       });
     });
