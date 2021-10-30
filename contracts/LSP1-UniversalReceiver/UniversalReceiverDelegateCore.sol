@@ -56,23 +56,20 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
             // check if sending tokens
         } else if (typeId == _LSP7TOKENSSENDER_TYPE_ID || typeId == _LSP8TOKENSSENDER_TYPE_ID) {
             uint256 balance = ILSPToken(sender).balanceOf(msg.sender);
-
+            uint256 amount;
             /* solhint-disable no-inline-assembly */
             if (typeId == _LSP7TOKENSSENDER_TYPE_ID) {
-                uint256 amount;
+                // extracting the amount of tokens to send
                 assembly {
                     amount := mload(add(add(data, 0x20), 0x28)) // 40 = 0x28 in hex
                 }
-
-                if ((balance - amount) == 0) {
-                    bytes memory payload = _removeToken(typeId, lsp5MapKey);
-                    result = ILSP6(keyManagerAddress).execute(payload);
-                }
-            } else if (typeId == _LSP8TOKENSSENDER_TYPE_ID) {
-                if ((balance - 1) == 0) {
-                    bytes memory payload = _removeToken(typeId, lsp5MapKey);
-                    result = ILSP6(keyManagerAddress).execute(payload);
-                }
+                // amount to send in LSP8 is 1 (1 tokenId)
+            } else {
+                amount = 1;
+            }
+            if ((balance - amount) == 0) {
+                bytes memory payload = _removeToken(typeId, lsp5MapKey);
+                result = ILSP6(keyManagerAddress).execute(payload);
             }
         } else {
             return "";
