@@ -750,7 +750,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to transfer LYX"
+        "KeyManager:_checkPermissions: Not authorized to transfer value"
       );
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
