@@ -14,5 +14,6 @@ interface ILSP1  /* is ERC165 */ {
         bytes receivedData
     );
 
+
     function universalReceiver(bytes32 typeId, bytes calldata data) external returns (bytes memory);
 }
