@@ -410,7 +410,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to transfer LYX"
+        "KeyManager:_checkPermissions: Not authorized to transfer value"
       );
 
       let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
