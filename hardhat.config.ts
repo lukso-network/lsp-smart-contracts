@@ -44,6 +44,7 @@ const config: HardhatUserConfig = {
       // ------------------
       "UniversalProfile",
       "KeyManager",
+      "UniversalReceiverDelegate",
       "LSP7",
       "LSP7CappedSupply",
       "LSP8",
@@ -52,6 +53,7 @@ const config: HardhatUserConfig = {
       // ------------------
       "UniversalProfileInit",
       "KeyManagerInit",
+      "UniversalReceiverDelegateInit",
       "LSP7Init",
       "LSP7CappedSupplyInit",
       "LSP8Init",
