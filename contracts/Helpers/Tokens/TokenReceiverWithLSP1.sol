@@ -22,6 +22,7 @@ contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1 {
         external
         override
         returns (bytes memory returnValue)
+
     {
         emit UniversalReceiverCalled(typeId, data);
 
