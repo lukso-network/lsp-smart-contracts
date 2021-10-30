@@ -10,9 +10,6 @@ const UniversalProfile = fs.readFileSync(
 const KeyManager = fs.readFileSync(
   "./build/artifacts/contracts/LSP6-KeyManager/KeyManager.sol/KeyManager.json"
 );
-const UniversalReceiverAddressStore = fs.readFileSync(
-  "./build/artifacts/contracts/LSP1-UniversalReceiver/UniversalReceiverAddressStore.sol/UniversalReceiverAddressStore.json"
-);
 const LSP7 = fs.readFileSync("./build/artifacts/contracts/LSP7-DigitalAsset/LSP7.sol/LSP7.json");
 const LSP7CappedSupply = fs.readFileSync(
   "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7CappedSupply.sol/LSP7CappedSupply.json"
@@ -26,7 +23,6 @@ const LSP8CappedSupply = fs.readFileSync(
 
 const UniversalProfile_ABI = JSON.parse(UniversalProfile).abi;
 const KeyManager_ABI = JSON.parse(KeyManager).abi;
-const UniversalReceiverAddressStore_ABI = JSON.parse(UniversalReceiverAddressStore).abi;
 const LSP7_ABI = JSON.parse(LSP7).abi;
 const LSP7CappedSupply_ABI = JSON.parse(LSP7CappedSupply).abi;
 const LSP8_ABI = JSON.parse(LSP8).abi;
@@ -39,9 +35,6 @@ const UniversalProfileInit = fs.readFileSync(
 );
 const KeyManagerInit = fs.readFileSync(
   "./build/artifacts/contracts/LSP6-KeyManager/KeyManagerInit.sol/KeyManagerInit.json"
-);
-const UniversalReceiverAddressStoreInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP1-UniversalReceiver/UniversalReceiverAddressStoreInit.sol/UniversalReceiverAddressStoreInit.json"
 );
 const LSP7Init = fs.readFileSync(
   "./build/artifacts/contracts/LSP7-DigitalAsset/LSP7Init.sol/LSP7Init.json"
@@ -58,7 +51,6 @@ const LSP8CappedSupplyInit = fs.readFileSync(
 
 const UniversalProfileInit_ABI = JSON.parse(UniversalProfileInit).abi;
 const KeyManagerInit_ABI = JSON.parse(KeyManagerInit).abi;
-const UniversalReceiverAddressStoreInit_ABI = JSON.parse(UniversalReceiverAddressStoreInit).abi;
 const LSP7Init_ABI = JSON.parse(LSP7Init).abi;
 const LSP7CappedSupplyInit_ABI = JSON.parse(LSP7CappedSupplyInit).abi;
 const LSP8Init_ABI = JSON.parse(LSP8Init).abi;
@@ -100,10 +92,6 @@ public final class UPContractsAbi {
 
     public static let KEY_MANAGER_ABI = "${JSON.stringify(KeyManager_ABI).replace(/"/g, '\\"')}"
 
-    public static let UNIVERSAL_RECEIVER_ADDRESS_STORE_ABI = "${JSON.stringify(
-      UniversalReceiverAddressStore_ABI
-    ).replace(/"/g, '\\"')}"
-
     public static let LSP7_ABI = "${JSON.stringify(LSP7_ABI).replace(/"/g, '\\"')}"    
     public static let LSP7_CAPPED_SUPPLY_ABI = "${JSON.stringify(LSP7CappedSupply_ABI).replace(
       /"/g,
@@ -126,10 +114,6 @@ public final class UPContractsAbi {
       /"/g,
       '\\"'
     )}"    
-
-    public static let UNIVERSAL_RECEIVER_ADDRESS_STORE_INIT_ABI = "${JSON.stringify(
-      UniversalReceiverAddressStoreInit_ABI
-    ).replace(/"/g, '\\"')}"
 
     public static let LSP7_INIT_ABI = "${JSON.stringify(LSP7Init_ABI).replace(/"/g, '\\"')}"    
     public static let LSP7_CAPPED_SUPPLY_INIT_ABI = "${JSON.stringify(

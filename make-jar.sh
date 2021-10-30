@@ -17,14 +17,12 @@ solc --abi --bin \
     ../submodules="$(pwd)"/submodules \
     contracts/UniversalProfile.sol \
     contracts/LSP6-KeyManager/KeyManager.sol \
-    contracts/LSP1-UniversalReceiver/UniversalReceiverAddressStore.sol \
     contracts/LSP7-DigitalAsset/LSP7.sol \
     contracts/LSP7-DigitalAsset/extensions/LSP7CappedSupply.sol \
     contracts/LSP8-IdentifiableDigitalAsset/LSP8.sol \
     contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol \
     contracts/UniversalProfileInit.sol \
     contracts/LSP6-KeyManager/KeyManagerInit.sol \
-    contracts/LSP1-UniversalReceiver/UniversalReceiverAddressStoreInit.sol \
     contracts/LSP7-DigitalAsset/LSP7Init.sol \
     contracts/LSP7-DigitalAsset/extensions/LSP7CappedSupplyInit.sol \
     contracts/LSP8-IdentifiableDigitalAsset/LSP8Init.sol \
@@ -36,14 +34,12 @@ solc --abi --bin \
 FILES=(
     UniversalProfile 
     KeyManager 
-    UniversalReceiverAddressStore 
     LSP7 
     LSP7CappedSupply 
     LSP8 
     LSP8CappedSupply
     UniversalProfileInit
     KeyManagerInit
-    UniversalReceiverAddressStoreInit
     LSP7Init
     LSP7CappedSupplyInit
     LSP8Init
