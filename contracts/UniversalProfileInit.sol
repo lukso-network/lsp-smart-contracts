@@ -18,9 +18,11 @@ contract UniversalProfileInit is Initializable, ERC725AccountInit, UniversalProf
 
         // set SupportedStandards:LSP3UniversalProfile
         bytes32 key = 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6;
-        store[key] = abi.encodePacked(bytes4(0xabe425d6));
+        bytes memory value = hex"abe425d6";
+        
+        store[key] = value;
         dataKeys.push(key);
-        emit DataChanged(key, store[key]);
+        emit DataChanged(key, value);
     }
 
     function setData(bytes32[] memory _keys, bytes[] memory _values)

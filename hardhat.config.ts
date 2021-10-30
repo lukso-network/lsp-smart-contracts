@@ -40,11 +40,30 @@ const config: HardhatUserConfig = {
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
+      // Standard version
+      // ------------------
       "UniversalProfile",
       "KeyManager",
-      "BasicUniversalReceiver",
-      "UniversalReceiverAddressStore",
-      "ERC725Account",
+      "UniversalReceiverDelegate",
+      "LSP7",
+      "LSP7CappedSupply",
+      "LSP8",
+      "LSP8CappedSupply",
+      // Proxy version
+      // ------------------
+      "UniversalProfileInit",
+      "KeyManagerInit",
+      "UniversalReceiverDelegateInit",
+      "LSP7Init",
+      "LSP7CappedSupplyInit",
+      "LSP8Init",
+      "LSP8CappedSupplyInit",
+      // ERC Compatible tokens
+      // ------------------
+      "LSP7CompatibilityForERC20",
+      "LSP8CompatibilityForERC721",
+      // Tools
+      // ------------------
       "Create2Factory",
     ],
     // Whether to include the TypeChain factories or not.
