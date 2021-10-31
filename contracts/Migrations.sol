@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.4.21 <0.9.0;
+pragma solidity ^0.8.0;
 
+/* solhint-disable */
 contract Migrations {
   address public owner;
   uint public last_completed_migration;
@@ -22,3 +23,4 @@ contract Migrations {
     upgraded.setCompleted(last_completed_migration);
   }
 }
+/* solhint-enable */

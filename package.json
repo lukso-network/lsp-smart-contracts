@@ -1,15 +1,25 @@
 {
-  "name": "universalprofile-smart-contracts",
-  "version": "0.1.0",
+  "name": "@lukso/universalprofile-smart-contracts",
+  "version": "0.2.0",
   "description": "The reference implementation for universal profiles smart contracts",
-  "main": "truffle-config.js",
   "directories": {
     "test": "test"
   },
+  "files": [
+    "contracts/**/*.sol",
+    "build/artifacts/**/*.json",
+    "!build/artifacts/contracts/**/*.dbg.json"
+  ],
   "scripts": {
-    "test": "truffle test",
-    "build": "truffle build",
-    "release": "npm run test && npm run build && npx standard-version"
+    "test": "NODE_NO_WARNINGS=1 jest",
+    "build": "npx hardhat compile",
+    "package": "npx hardhat prepare-package",
+    "release": "run-s clean build package && npx standard-version",
+    "clean": "rm -rf build && rm -rf types",
+    "generate-types": "run-p generate-types:*",
+    "generate-types:web3": "typechain --target=web3-v1 'build/contracts/*.json'",
+    "generate-types:ethers": "typechain --target=ethers-v5 'build/contracts/*.json'",
+    "remixd": "remixd -s . --remix-ide"
   },
   "repository": {
     "type": "git",
@@ -22,16 +32,39 @@
     "url": "https://github.com/lukso-network/universalprofile-smart-contracts/issues"
   },
   "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
-  "dependencies": {
-    "eth-create2-calculator": "^1.1.5"
-  },
   "devDependencies": {
-    "@openzeppelin/contracts": "^4.0.0",
-    "chai": "^4.2.0",
+    "@erc725/erc725.js": "0.6.2-beta.4",
+    "@ethereum-waffle/jest": "^3.3.0",
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/contracts": "^4.3.0",
+    "@openzeppelin/contracts-upgradeable": "^4.3.0",
+    "@openzeppelin/test-helpers": "0.5.13",
+    "@remix-project/remixd": "^0.5.1",
+    "@typechain/ethers-v5": "^7.0.1",
+    "@typechain/web3-v1": "^3.1.0",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.4",
+    "axios": "^0.21.4",
+    "curl-to-node": "^0.1.0",
+    "esbuild": "^0.12.24",
+    "esbuild-jest": "^0.5.0",
+    "eth-create2-calculator": "^1.1.5",
     "eth-gas-reporter": "^0.2.19",
-    "openzeppelin-test-helpers": "^0.4.3",
+    "ethers": "^5.4.6",
+    "hardhat": "^2.6.2",
+    "hardhat-packager": "^1.1.0",
+    "jest": "^27.1.0",
+    "keccak256": "1.0.3",
+    "merkletreejs": "0.2.24",
+    "npm-run-all": "^4.1.5",
     "solidity-bytes-utils": "0.8.0",
     "standard-version": "^9.3.1",
-    "truffle": "^5.3.0"
+    "ts-node": "^10.2.0",
+    "typechain": "^5.1.2",
+    "typescript": "^4.3.5",
+    "web3": "^1.5.2",
+    "web3-eth-contract": "^1.5.2"
   }
 }

@@ -1,0 +1,56 @@
+# This workflow build and publish iOS artifacts
+
+name: Upload iOS Github artifacts CD
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  ios-build-artifacts:
+    # The type of runner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Check if version changed
+        uses: EndBug/version-check@v1
+        id: check
+
+      - name: Use Node.js '14.16.0'
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14.16.0"
+          cache: "npm"
+
+      - if: steps.check.outputs.changed == 'true'
+        run: npm ci
+
+      - if: steps.check.outputs.changed == 'true'
+        run: cd ./submodules/ERC725/implementations && npm install
+
+      - name: Build contracts ABIs
+        run: npm run build --if-present
+
+      - name: Write ABIs for iOS in Swift file
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          mkdir ios
+          node make-ios.js
+
+      - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git clone https://.:${{ secrets.IOSSDK_GITHUB_REPO_KEY }}@github.com/lukso-network/universalprofile-ios-sdk.git
+          cd universalprofile-ios-sdk
+          git config --global user.email "release@lukso.network"
+          git config --global user.name "LUKSO Bot"
+          git checkout -b abi-update-release
+          cp ../ios/UPContractsAbi.swift universalprofile-ios-sdk/UPContractsAbi.swift
+          git add .
+          git commit -m "Automatic publish new contracts abis from lukso-network/universalprofile-smart-contracts"
+          git push --set-upstream origin abi-update-release

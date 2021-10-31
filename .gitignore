@@ -34,6 +34,13 @@ bower_components
 # node-waf configuration
 .lock-wscript
 
+# Generated jar files
+jar/
+src/
+
+# Generated swift files
+ios/
+
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
@@ -104,3 +111,21 @@ dist
 .tern-port
 
 build
+types
+
+node_modules
+
+#Hardhat files
+cache
+artifacts
+typechain
+
+# JAVA
+java/github.properties
+java/.gradle
+java/.idea
+
+.idea
+
+# Solidity Flattener
+flat_contracts/

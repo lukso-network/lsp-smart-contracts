@@ -1,0 +1,39 @@
+# This workflow build and publish NPM artifacts
+name: Publish NPM artifacts
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  npm-build-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check if version changed
+        uses: EndBug/version-check@v1
+        id: check
+
+      - name: Use Node.js '14.16.0'
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14.16.0"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@lukso"
+          cache: "npm"
+
+      - name: Publish
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git submodule update --init --recursive
+          npm ci
+          cd ./submodules/ERC725/implementations && npm install
+          npx hardhat compile
+          npm run test
+          npm run package
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
