@@ -6,7 +6,8 @@ name: Node.js CI - Build + Test
 on:
   push:
     branches:
-      - "*"
+      - "main"
+      - "develop"
   pull_request:
     branches:
       - "*"
@@ -33,3 +34,4 @@ jobs:
       - run: npm run build --if-present
       - run: npm run generate-types
       - run: npm test
+
