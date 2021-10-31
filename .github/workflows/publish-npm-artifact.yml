@@ -31,7 +31,7 @@ jobs:
           git submodule update --init --recursive
           npm ci
           cd ./submodules/ERC725/implementations && npm install
-          npx hardhat compile
+          npx --yes hardhat compile
           npm run test
           npm run package
           npm publish --access public
