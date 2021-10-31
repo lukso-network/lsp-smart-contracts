@@ -1,4 +1,4 @@
-# universalprofile-smart-contracts
+# lsp-universalprofile-smart-contracts
 
 The reference implementation for universal profiles smart contracts.
 
@@ -42,8 +42,8 @@ npm install @lukso/universalprofile-smart-contracts --save
 Alternatively can also pull the repository and install its dependencies to use the smart contracts.
 
 ```bash
-$ git clone https://github.com/lukso-network/universalprofile-smart-contracts.git
-$ cd ./universalprofile-smart-contracts
+$ git clone https://github.com/lukso-network/lsp-universalprofile-smart-contracts.git
+$ cd ./lsp-universalprofile-smart-contracts
 
 # make sure to download the ERC725 submodule
 $ git submodule update --init --recursive
