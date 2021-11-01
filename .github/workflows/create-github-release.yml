@@ -76,6 +76,11 @@ jobs:
         run: gradle build
 
       # Build ios Artifact
+      - name: Build JSON ABIs
+        if: steps.check.outputs.changed == 'true'
+        run: |-
+          npm run build --if-present
+
       - name: Generate ABIs for iOS using shell script
         if: steps.check.outputs.changed == 'true'
         run: |
