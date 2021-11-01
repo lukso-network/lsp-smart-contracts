@@ -1,8 +1,5 @@
 name: Solhint CI
 on:
-  push:
-    branches:
-      - "*"
   pull_request:
     branches:
       - "*"
