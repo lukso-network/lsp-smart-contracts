@@ -41,7 +41,7 @@ const KeyManagerInit = fs.readFileSync(
   "./build/artifacts/contracts/LSP6-KeyManager/KeyManagerInit.sol/KeyManagerInit.json"
 );
 const UniversalReceiverDelegateInit = fs.readFileSync(
-  ".//build/artifacts/contracts/LSP1-UniversalReceiver/UniversalReceiverDelegateInit.sol/UniversalReceiverDelegateInit.json"
+  "./build/artifacts/contracts/LSP1-UniversalReceiver/UniversalReceiverDelegateInit.sol/UniversalReceiverDelegateInit.json"
 );
 const LSP7Init = fs.readFileSync(
   "./build/artifacts/contracts/LSP7-DigitalAsset/LSP7Init.sol/LSP7Init.json"
