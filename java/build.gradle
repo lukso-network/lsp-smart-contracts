@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id 'java'
 }
@@ -12,7 +14,6 @@ if (githubPropertiesFile.canRead()) {
 
 
 def getVersionName = { ->
-    import groovy.json.JsonSlurper
     def jsonSlurper = new JsonSlurper()
     def packageJson = jsonSlurper.parse file('../package.json')
     return packageJson.version
@@ -21,7 +22,6 @@ def getVersionName = { ->
 def getArtifactId = { ->
     return "upcontracts"
 }
-
 
 archivesBaseName = getArtifactId()
 
