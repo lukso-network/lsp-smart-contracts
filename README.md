@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # lsp-universalprofile-smart-contracts
+=======
+# universalprofile-smart-contracts
+>>>>>>> main
 
 The reference implementation for universal profiles smart contracts.
 
