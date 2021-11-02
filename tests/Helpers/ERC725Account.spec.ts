@@ -27,8 +27,8 @@ describe("ERC725 Account", () => {
       let [keys, values] = generateKeysAndValues(element);
 
       let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-      console.log("1 singleton key:");
-      console.log(payload);
+      // console.log("1 singleton key:");
+      // console.log(payload);
     });
 
     it("> 5 x singleton keys(same length)", async () => {
@@ -44,8 +44,8 @@ describe("ERC725 Account", () => {
       let [keys, values] = generateKeysAndValues(elements);
 
       let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-      console.log("5 singleton keys (same length):");
-      console.log(payload);
+      // console.log("5 singleton keys (same length):");
+      // console.log(payload);
     });
 
     //
@@ -66,8 +66,8 @@ describe("ERC725 Account", () => {
       });
 
       let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-      console.log("20 x LSP3IssuedAssets:");
-      console.log(payload);
+      // console.log("20 x LSP3IssuedAssets:");
+      // console.log(payload);
     });
 
     it("> basic Universal Profile setup (3 keys) => set `LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`", async () => {
@@ -96,8 +96,8 @@ describe("ERC725 Account", () => {
       });
 
       let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
-      console.log("Basic UP Setup ==> 3 items (different length):");
-      console.log(payload);
+      // console.log("Basic UP Setup ==> 3 items (different length):");
+      // console.log(payload);
     });
   });
 

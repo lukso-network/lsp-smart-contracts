@@ -35,10 +35,10 @@ describe("Receivers", () => {
     let tx = await uni.universalReceiver(TOKENS_RECIPIENT_INTERFACE_HASH, "0x");
     let txReceipt = await tx.wait();
 
-    console.log(
-      "Directly checking for implementing interface costs: ",
-      txReceipt.gasUsed.toNumber()
-    );
+    // console.log(
+    //   "Directly checking for implementing interface costs: ",
+    //   txReceipt.gasUsed.toNumber()
+    // );
 
     let result = await uni.callStatic.universalReceiver(TOKENS_RECIPIENT_INTERFACE_HASH, "0x");
 
@@ -63,10 +63,10 @@ describe("Receivers", () => {
     );
     let txReceipt = await tx.wait();
 
-    console.log(
-      "Contract checking for implementing interface using bytes32 costs: ",
-      txReceipt.gasUsed
-    );
+    // console.log(
+    //   "Contract checking for implementing interface using bytes32 costs: ",
+    //   txReceipt.gasUsed
+    // );
 
     let res = await checker.callStatic.checkImplementation(
       uni.address,
@@ -83,10 +83,10 @@ describe("Receivers", () => {
     );
     let txReceipt = await tx.wait();
 
-    console.log(
-      "Contract checking for implementing interface using low level and bytes32 costs: ",
-      txReceipt.gasUsed
-    );
+    // console.log(
+    //   "Contract checking for implementing interface using low level and bytes32 costs: ",
+    //   txReceipt.gasUsed
+    // );
 
     let res = await checker.callStatic.lowLevelCheckImplementation(
       uni.address,
