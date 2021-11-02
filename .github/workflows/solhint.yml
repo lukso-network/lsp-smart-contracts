@@ -25,9 +25,3 @@ jobs:
         run: |
           npm install -g solhint
           solhint 'contracts/**/*.sol'
-
-        # uses: contractshark/inject-solhint-ci@latest
-        # with:
-        #   github_token: ${{ secrets.GITHUB_TOKEN }}
-        #   # reporter: github-pr-review # Change reporter.
-        #   solhint_input: "contracts/**/*.sol"
