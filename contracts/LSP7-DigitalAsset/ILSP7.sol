@@ -10,9 +10,8 @@ import "../../submodules/ERC725/implementations/contracts/ERC725/IERC725Y.sol";
  * @dev Required interface of a LSP8 compliant contract.
  */
 interface ILSP7 is IERC165, IERC725Y {
-    //
+    
     // --- Events
-    //
 
     /**
      * @dev Emitted when `amount` tokens is transferred from `from` to `to`.
@@ -43,9 +42,8 @@ interface ILSP7 is IERC165, IERC725Y {
         address indexed tokenOwner
     );
 
-    //
+    
     // --- Token queries
-    //
 
     /**
      * @dev Returns the number of decimals used to get its user representation.
@@ -61,18 +59,16 @@ interface ILSP7 is IERC165, IERC725Y {
      */
     function totalSupply() external view returns (uint256);
 
-    //
+    
     // --- Token owner queries
-    //
 
     /**
      * @dev Returns the number of tokens owned by `tokenOwner`.
      */
     function balanceOf(address tokenOwner) external view returns (uint256);
 
-    //
+    
     // --- Operator functionality
-    //
 
     /**
      * @dev Sets `amount` as the amount of tokens `operator` address has access to from callers tokens.
@@ -109,9 +105,8 @@ interface ILSP7 is IERC165, IERC725Y {
      */
     function isOperatorFor(address operator, address tokenOwner) external view returns (uint256);
 
-    //
+    
     // --- Transfer functionality
-    //
 
     /**
      * @dev Transfers `amount` of tokens from `from` to `to`. The `force` parameter will be used

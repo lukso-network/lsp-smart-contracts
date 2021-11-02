@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// libraries
+// modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+
+// libraries
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract AddressRegistry is ERC165Storage {

@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// constants
-import "../LSP1-UniversalReceiver/LSP1Constants.sol";
-import "../LSP6-KeyManager/LSP6Constants.sol";
-import "../LSP7-DigitalAsset/LSP7Constants.sol";
-import "../LSP8-IdentifiableDigitalAsset/LSP8Constants.sol";
-
 // interfaces
 import "../LSP6-KeyManager/ILSP6_KeyManager.sol";
 import "../LSP7-DigitalAsset/ILSP7.sol";
@@ -14,6 +8,12 @@ import "../LSP8-IdentifiableDigitalAsset/ILSP8.sol";
 import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
 import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+
+// constants
+import "../LSP1-UniversalReceiver/LSP1Constants.sol";
+import "../LSP6-KeyManager/LSP6Constants.sol";
+import "../LSP7-DigitalAsset/LSP7Constants.sol";
+import "../LSP8-IdentifiableDigitalAsset/LSP8Constants.sol";
 
 contract CalculateERC165Selectors {
 

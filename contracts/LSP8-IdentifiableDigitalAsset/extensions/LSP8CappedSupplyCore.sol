@@ -2,25 +2,23 @@
 
 pragma solidity ^0.8.0;
 
-// interfaces
-import "./ILSP8CappedSupply.sol";
-
 // modules
 import "../LSP8Core.sol";
+
+// interfaces
+import "./ILSP8CappedSupply.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
 abstract contract LSP8CappedSupplyCore is ILSP8CappedSupply, LSP8Core {
-    //
+    
     // --- Storage
-    //
 
     uint256 internal _tokenSupplyCap;
 
-    //
+
     // --- Token queries
-    //
 
     /**
      * @dev Returns the number of tokens that have been minted.
@@ -35,9 +33,8 @@ abstract contract LSP8CappedSupplyCore is ILSP8CappedSupply, LSP8Core {
         return _tokenSupplyCap;
     }
 
-    //
+    
     // --- Transfer functionality
-    //
 
     /**
      * @dev Mints `tokenId` and transfers it to `to`.

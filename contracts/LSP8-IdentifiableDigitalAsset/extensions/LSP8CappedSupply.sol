@@ -10,18 +10,14 @@ import "../LSP8.sol";
  * @dev LSP8 extension, adds token supply cap.
  */
 abstract contract LSP8CappedSupply is LSP8, LSP8CappedSupplyCore {
-    //
-    // --- Initialize
-    //
 
     constructor(uint256 tokenSupplyCap_) {
       require(tokenSupplyCap_ > 0, "LSP8CappedSupply: tokenSupplyCap is zero");
       _tokenSupplyCap = tokenSupplyCap_;
     }
 
-    //
+
     // --- Overrides
-    //
 
     /**
      * @dev Mints `tokenId` and transfers it to `to`.

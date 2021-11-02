@@ -10,9 +10,6 @@ import "../LSP7Init.sol";
  * @dev LSP7 extension, adds token supply cap.
  */
 abstract contract LSP7CappedSupplyInit is Initializable, LSP7Init, LSP7CappedSupplyCore {
-    //
-    // --- Initialize
-    //
 
     function initialize(uint256 tokenSupplyCap_)
         public
@@ -23,9 +20,8 @@ abstract contract LSP7CappedSupplyInit is Initializable, LSP7Init, LSP7CappedSup
       _tokenSupplyCap = tokenSupplyCap_;
     }
 
-    //
+    
     // --- Overrides
-    //
 
     /**
      * @dev Mints `amount` tokens and transfers it to `to`.

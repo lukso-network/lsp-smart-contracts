@@ -10,9 +10,8 @@ import "../../submodules/ERC725/implementations/contracts/ERC725/IERC725Y.sol";
  * @dev Required interface of a LSP8 compliant contract.
  */
 interface ILSP8 is IERC165, IERC725Y {
-    //
+
     // --- Events
-    //
 
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
@@ -44,9 +43,8 @@ interface ILSP8 is IERC165, IERC725Y {
         bytes32 indexed tokenId
     );
 
-    //
+
     // --- Token queries
-    //
 
     /**
      * @dev Returns the number of existing tokens.
@@ -76,9 +74,8 @@ interface ILSP8 is IERC165, IERC725Y {
      */
     function tokenIdsOf(address tokenOwner) external view returns (bytes32[] memory);
 
-    //
+
     // --- Operator functionality
-    //
 
     /**
      * @dev Makes `operator` address an operator of `tokenId`.
@@ -132,9 +129,8 @@ interface ILSP8 is IERC165, IERC725Y {
      */
     function getOperatorsOf(bytes32 tokenId) external view returns (address[] memory);
 
-    //
+
     // --- Transfer functionality
-    //
 
     /**
      * @dev Transfers `tokenId` token from `from` to `to`.

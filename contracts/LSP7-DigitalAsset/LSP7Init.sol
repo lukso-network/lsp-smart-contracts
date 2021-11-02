@@ -13,9 +13,6 @@ import "../LSP4-DigitalAsset-Metadata/LSP4Init.sol";
  * @dev Implementation of a LSP7 compliant contract.
  */
 contract LSP7Init is Initializable, LSP4Init, LSP7Core {
-    //
-    // --- Initialize
-    //
 
     function initialize(
         string memory name_,

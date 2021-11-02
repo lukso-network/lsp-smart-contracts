@@ -10,18 +10,13 @@ import "../LSP7.sol";
  * @dev LSP7 extension, adds token supply cap.
  */
 abstract contract LSP7CappedSupply is LSP7, LSP7CappedSupplyCore {
-    //
-    // --- Initialize
-    //
 
     constructor(uint256 tokenSupplyCap_) {
       require(tokenSupplyCap_ > 0, "LSP7CappedSupply: tokenSupplyCap is zero");
       _tokenSupplyCap = tokenSupplyCap_;
     }
 
-    //
     // --- Overrides
-    //
 
     /**
      * @dev Mints `amount` tokens and transfers it to `to`.

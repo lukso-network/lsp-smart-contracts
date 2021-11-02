@@ -2,11 +2,11 @@
 pragma solidity ^0.8.6;
 
 // modules
+import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
+import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // interfaces
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725.sol";
 import "./ILSP6_KeyManager.sol";
 
 // libraries

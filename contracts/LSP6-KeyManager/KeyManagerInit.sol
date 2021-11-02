@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.6;
 
-import "./KeyManagerCore.sol";
-
 // modules
+import "./KeyManagerCore.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 contract KeyManagerInit is Initializable, KeyManagerCore {

@@ -10,9 +10,6 @@ import "../LSP8Init.sol";
  * @dev LSP8 extension, adds token supply cap.
  */
 abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, LSP8CappedSupplyCore {
-    //
-    // --- Initialize
-    //
 
     function initialize(uint256 tokenSupplyCap_)
         public
@@ -23,9 +20,8 @@ abstract contract LSP8CappedSupplyInit is Initializable, LSP8Init, LSP8CappedSup
       _tokenSupplyCap = tokenSupplyCap_;
     }
 
-    //
+    
     // --- Overrides
-    //
 
     /**
      * @dev Mints `tokenId` and transfers it to `to`.

@@ -14,8 +14,7 @@ import "../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
 abstract contract UniversalProfileCore is ERC165Storage, ERC725AccountCore {
-    using ERC725Utils for ERC725Y;
-
+    
     bytes32[] public dataKeys;
 
     /* non-standard public functions */

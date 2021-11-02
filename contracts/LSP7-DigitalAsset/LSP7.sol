@@ -14,9 +14,6 @@ import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
  * @dev Implementation of a LSP7 compliant contract.
  */
 contract LSP7 is LSP4, LSP7Core {
-    //
-    // --- Initialize
-    //
 
     constructor(
         string memory name_,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// libraries
+// modules
 import "./AddressRegistry.sol";
 
 contract AddressRegistryRequiresERC725 is AddressRegistry {

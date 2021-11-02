@@ -27,9 +27,8 @@ abstract contract LSP7Core is Context, ILSP7 {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Address for address;
 
-    //
+    
     // --- Storage
-    //
 
     bool internal _isNFT;
 
@@ -41,9 +40,8 @@ abstract contract LSP7Core is Context, ILSP7 {
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
     mapping(address => mapping(address => uint256)) internal _operatorAuthorizedAmount;
 
-    //
+    
     // --- Token queries
-    //
 
     /**
      * @dev Returns the number of decimals used to get its user representation.
@@ -73,9 +71,8 @@ abstract contract LSP7Core is Context, ILSP7 {
         return _existingTokens;
     }
 
-    //
+    
     // --- Token owner queries
-    //
 
     /**
      * @dev Returns the number of tokens owned by `tokenOwner`.
@@ -89,9 +86,8 @@ abstract contract LSP7Core is Context, ILSP7 {
         return _tokenOwnerBalances[tokenOwner];
     }
 
-    //
+    
     // --- Operator functionality
-    //
 
     /**
      * @dev Sets `amount` as the amount of tokens `operator` address has access to from callers tokens.
@@ -183,9 +179,8 @@ abstract contract LSP7Core is Context, ILSP7 {
         }
     }
 
-    //
+    
     // --- Transfer functionality
-    //
 
     /**
      * @dev Transfers `amount` tokens from `from` to `to`.

@@ -1,26 +1,24 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-// constants
-import "./LSP8Constants.sol";
-import "../LSP1-UniversalReceiver/LSP1Constants.sol";
-import "../LSP4-DigitalAsset-Metadata/LSP4Constants.sol";
-
-// libraries
-import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
+// modules
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
+import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
 
 // interfaces
 import "../LSP1-UniversalReceiver/ILSP1_UniversalReceiver.sol";
 import "./ILSP8.sol";
 
-// modules
+// libraries
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
-
-// library
+import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+
+// constants
+import "./LSP8Constants.sol";
+import "../LSP1-UniversalReceiver/LSP1Constants.sol";
+import "../LSP4-DigitalAsset-Metadata/LSP4Constants.sol";
 
 /**
  * @dev Implementation of a LSP8 compliant contract.
@@ -30,9 +28,7 @@ abstract contract LSP8Core is Context, ILSP8 {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Address for address;
 
-    //
     // --- Storage
-    //
 
     uint256 internal _existingTokens;
 
@@ -45,9 +41,8 @@ abstract contract LSP8Core is Context, ILSP8 {
     // Mapping a `tokenId` to its authorized operator addresses.
     mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
-    //
+    
     // --- Token queries
-    //
 
     /**
      * @dev Returns the number of existing tokens.
@@ -61,9 +56,8 @@ abstract contract LSP8Core is Context, ILSP8 {
         return _existingTokens;
     }
 
-    //
+
     // --- Token owner queries
-    //
 
     /**
      * @dev Returns the number of tokens in ``tokenOwner``'s account.
@@ -113,9 +107,8 @@ abstract contract LSP8Core is Context, ILSP8 {
         return _ownedTokens[tokenOwner].values();
     }
 
-    //
+
     // --- Operator functionality
-    //
 
     /**
      * @dev Makes `operator` address an operator of `tokenId`.
@@ -259,9 +252,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         return (caller == tokenOwner || _operators[tokenId].contains(caller));
     }
 
-    //
     // --- Transfer functionality
-    //
 
     /**
      * @dev Transfers `tokenId` token from `from` to `to`.

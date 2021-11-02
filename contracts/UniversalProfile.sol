@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "./UniversalProfileCore.sol";
-
 // modules
+import "./UniversalProfileCore.sol";
 import "../submodules/ERC725/implementations/contracts/ERC725/ERC725Account.sol";
 
 
