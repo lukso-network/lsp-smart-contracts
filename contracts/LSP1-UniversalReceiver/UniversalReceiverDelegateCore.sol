@@ -104,7 +104,6 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
             values[0] = abi.encodePacked(uint256(1));
             values[2] = abi.encodePacked(bytes8(0), _getInterfaceIdFor(_typeId));
 
-        // check if the array length is set before
         } else if (arrayLength.length == 32) {
             uint256 lengthOfLSP5Array = abi.decode(arrayLength, (uint256));
             uint256 newLengthOfLSP5Array = lengthOfLSP5Array + 1;
@@ -141,7 +140,6 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
         keys[1] = _mapKeyToRemove;
         values[1] = "";
 
-        // if the keyToRemove is the last Key in the Array then remove it
         if (index == (oldLengthOfLSP5Array - 1)) {
             keys[2] = arrayKeyToRemove;
             values[2] = "";
