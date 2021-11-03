@@ -8,7 +8,7 @@ import "./UniversalReceiverDelegateCore.sol";
  * @title Implementation of contract writing the received LSP7 and LSP8 assets into your ERC725Account using 
  *        the LSP5-ReceivedAsset standard and removing the sent assets.
  *
- * @author Yamen Merhi <YamenMerhi>
+ * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Delegate contract of the initial universal receiver
  */
 contract UniversalReceiverDelegate is UniversalReceiverDelegateCore {

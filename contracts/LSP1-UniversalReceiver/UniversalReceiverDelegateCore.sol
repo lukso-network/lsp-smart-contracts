@@ -22,7 +22,7 @@ interface ILSPToken {function balanceOf(address _addr) external view returns (ui
  * @title Core Implementation of contract writing the received LSP7 and LSP8 assets into your ERC725Account using 
  *        the LSP5-ReceivedAsset standard and removing the sent assets.
  *
- * @author Yamen Merhi <YamenMerhi>
+ * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Delegate contract of the initial universal receiver
  */
 abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage {
