@@ -62,14 +62,13 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
             uint256 balance = ILSPToken(sender).balanceOf(msg.sender);
             uint256 amount;
 
-            // extracting the amount to send
             if (typeId == _LSP7TOKENSSENDER_TYPE_ID) {
-                // extracting amount of tokens sent from @param data
+                // extracting the amount of tokens sent
                 assembly {
                     amount := mload(add(add(data, 0x20), 0x28))
                 }
             } else {
-                amount = 1; // amount to send in LSP8 is 1 (1 tokenId)
+                amount = 1; // amount sent in LSP8 is 1 (1 tokenId)
             }
 
             if ((balance - amount) == 0) {
