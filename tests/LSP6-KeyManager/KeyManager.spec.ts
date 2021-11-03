@@ -739,8 +739,6 @@ describe("KeyManager", () => {
     it("App should not be allowed to transfer LYX", async () => {
       let initialAccountBalance = await provider.getBalance(universalProfile.address);
       let initialUserBalance = await provider.getBalance(user.address);
-      // console.log("initialAccountBalance: ", initialAccountBalance)
-      // console.log("initialUserBalance: ", initialUserBalance)
 
       let transferPayload = universalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
@@ -755,8 +753,6 @@ describe("KeyManager", () => {
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
       let newUserBalance = await provider.getBalance(user.address);
-      // console.log("newAccountBalance: ", newAccountBalance);
-      // console.log("newUserBalance: ", newUserBalance);
 
       expect(initialAccountBalance.toString()).toBe(newAccountBalance.toString());
       expect(initialUserBalance.toString()).toBe(newUserBalance.toString());
@@ -1515,16 +1511,12 @@ describe("KeyManager", () => {
 
       let initialAccountBalance = await provider.getBalance(universalProfile.address);
       let initialAttackerBalance = await provider.getBalance(maliciousContract.address);
-      // console.log("ERC725's initial account balance: ", initialAccountBalance)
-      // console.log("Attacker's initial balance: ", initialAttackerBalance)
 
       // try to drain funds via ReEntrancy
       await keyManager.connect(owner).execute(transferPayload);
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
       let newAttackerBalance = await provider.getBalance(maliciousContract.address);
-      // console.log("ERC725 account balance: ", newAccountBalance)
-      // console.log("Attacker balance: ", newAttackerBalance)
 
       expect(parseInt(newAccountBalance.toString())).toEqual(
         initialAccountBalance.toString() - ONE_ETH.toString()

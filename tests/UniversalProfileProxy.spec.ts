@@ -73,7 +73,6 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       // Deploying whole LSP3 Account (not using `initialize` function)
       const universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
       const { gasUsed: UniversalProfileDeploymentCost } = await getDeploymentCost(universalProfile);
-      // console.log("UniversalProfileDeploymentCost: ", UniversalProfileDeploymentCost);
 
       // Deploying via Proxy
 
@@ -100,24 +99,10 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const totalProxyCost = proxyDeploymentCost + initializeCost;
 
       expect(totalProxyCost).toBeLessThan(UniversalProfileDeploymentCost);
-
-      // console.log("UniversalProfile deployment cost: ", UniversalProfileDeploymentCost, "\n");
-      // console.log("proxy deployment cost: ", proxyDeploymentCost);
-      // console.log("initialize gas cost: ", initializeCost);
-      // console.log("--------------------------------------------------");
-      // console.log("total: ", totalProxyCost);
-      // console.log(
-      //   "\n > Gas saved = ",
-      //   UniversalProfileDeploymentCost - totalProxyCost,
-      //   "(",
-      //   (totalProxyCost * 100) / UniversalProfileDeploymentCost - 100,
-      //   "%)"
-      // );
     });
 
     it("Should call the `initialize(...)` function and return the right owner", async () => {
       let currentOwner = await proxy.owner();
-      // console.log("currentOwner: ", currentOwner);
       // `initialize` function as constructor
       await proxy.initialize(owner.address);
 
@@ -336,8 +321,6 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
     it("dataCount should be 11", async () => {
       let keys = await proxy.allDataKeys();
       expect(keys.length).toEqual(11);
-
-      // console.log('Stored keys', keys)
     });
   });
 
@@ -443,7 +426,6 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
           ]
         ),
       ];
-      // console.log("show me the keys: ", keys);
       let data = [
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Important Data")),
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Another important data")),

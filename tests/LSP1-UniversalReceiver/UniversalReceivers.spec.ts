@@ -35,25 +35,10 @@ describe("Receivers", () => {
     let tx = await uni.universalReceiver(TOKENS_RECIPIENT_INTERFACE_HASH, "0x");
     let txReceipt = await tx.wait();
 
-    // console.log(
-    //   "Directly checking for implementing interface costs: ",
-    //   txReceipt.gasUsed.toNumber()
-    // );
-
     let result = await uni.callStatic.universalReceiver(TOKENS_RECIPIENT_INTERFACE_HASH, "0x");
 
     expect(result).toEqual(TOKENS_RECIPIENT_INTERFACE_HASH);
   });
-
-  // it("Can check for implementing interface with Bytes", async () => {
-  //     let tx = await uni.universalReceiver(TOKENS_RECIPIENT_INTERFACE_HASH, "0x");
-  //     console.log(
-  //         "Directly checking for implementing interface using bytes costs: ",
-  //         tx.receipt.gasUsed
-  //     );
-  //     let res = await uni.universalReceiverBytes.call(TOKENS_RECIPIENT_INTERFACE_HASH, "0x");
-  //     assert.equal(res, TOKENS_RECIPIENT_INTERFACE_HASH);
-  // });
 
   it("Contract can check for implementing interface with Bytes32", async () => {
     let checker = await new UniversalReceiverTester__factory(signer).deploy();
@@ -62,11 +47,6 @@ describe("Receivers", () => {
       TOKENS_RECIPIENT_INTERFACE_HASH
     );
     let txReceipt = await tx.wait();
-
-    // console.log(
-    //   "Contract checking for implementing interface using bytes32 costs: ",
-    //   txReceipt.gasUsed
-    // );
 
     let res = await checker.callStatic.checkImplementation(
       uni.address,
@@ -82,11 +62,6 @@ describe("Receivers", () => {
       TOKENS_RECIPIENT_INTERFACE_HASH
     );
     let txReceipt = await tx.wait();
-
-    // console.log(
-    //   "Contract checking for implementing interface using low level and bytes32 costs: ",
-    //   txReceipt.gasUsed
-    // );
 
     let res = await checker.callStatic.lowLevelCheckImplementation(
       uni.address,
@@ -116,38 +91,4 @@ describe("Receivers", () => {
     expect(await delegate.callStatic.containsAddress(checker3.address)).toBeTruthy();
     expect(await (await delegate.callStatic.getIndex(checker2.address)).toNumber()).toEqual(1);
   });
-
-  // it("Contract can check for implementing interface with Bytes", async () => {
-  //     let checker = await UniversalReceiverTester.new();
-  //     let tx = await checker.checkImplementationBytes(
-  //         uni.address,
-  //         TOKENS_RECIPIENT_INTERFACE_HASH
-  //     );
-  //     console.log(
-  //         "Contract checking for implementing interface using bytes return costs: ",
-  //         tx.receipt.gasUsed
-  //     );
-  //     let res = await checker.checkImplementation.call(
-  //         uni.address,
-  //         TOKENS_RECIPIENT_INTERFACE_HASH
-  //     );
-  //     assert.isTrue(res);
-  // });
-
-  // it("Contract can check for implementing interface with Low Level cal + Bytes", async () => {
-  //     let checker = await UniversalReceiverTester.new();
-  //     let tx = await checker.lowLevelCheckImplementationBytes(
-  //         uni.address,
-  //         TOKENS_RECIPIENT_INTERFACE_HASH
-  //     );
-  //     console.log(
-  //         "Contract checking for implementing interface using low level and bytes return costs: ",
-  //         tx.receipt.gasUsed
-  //     );
-  //     let res = await checker.checkImplementation.call(
-  //         uni.address,
-  //         TOKENS_RECIPIENT_INTERFACE_HASH
-  //     );
-  //     assert.isTrue(res);
-  // });
 });

@@ -286,8 +286,6 @@ describe("UniversalProfile", () => {
     it("dataCount should be 10", async () => {
       let keys = await UniversalProfile.allDataKeys();
       expect(keys.length).toEqual(10);
-
-      //   console.log("Stored keys", keys);
     });
   });
 
@@ -504,11 +502,6 @@ describe("UniversalProfile", () => {
         ERC777TokensRecipient
       );
       let receipt = await transaction.wait();
-
-      //   console.log("accounts[2] (owner): ", owner.address);
-      //   console.log("account (UP): ", account.address);
-      //   console.log("externalUniversalReceiver: ", externalUniversalReceiver.address);
-      //   console.log("checker: ", checker.address);
 
       // event signature "event ReceivedERC777(address indexed token, address indexed _operator, address indexed _from, address _to, uint256 _amount)"
       // event should come from account externalUniversalReceiver
@@ -854,9 +847,6 @@ describe("UniversalProfile", () => {
       const destBalance = await provider.getBalance(dest.address);
       const idBalance = await provider.getBalance(UniversalProfile.address);
       const managerBalance = await provider.getBalance(keyManager.address);
-      //   console.log("destBalance: ", destBalance);
-      //   console.log("idBalance: ", idBalance);
-      //   console.log("managerBalance: ", managerBalance);
 
       let abi = UniversalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
