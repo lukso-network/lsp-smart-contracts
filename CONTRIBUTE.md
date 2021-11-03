@@ -30,7 +30,7 @@ $ npm test
 
 ## **Release Process**
 
-Releases are published when a commit including an incease in the `package.json` version number is merged to the `main` branch.
+Releases are published when a commit including an increase in the `package.json` version number is merged to the `main` branch.
 
 This function increases the version automatically using [standard-version](https://github.com/conventional-changelog/standard-version):
 ```bash
@@ -50,7 +50,7 @@ Standard-version then:
 
 Then push the changes to `develop`:
 ```bash
-$ git push orign develop
+$ git push origin develop
 ```
 
 A NPM and GitHub release is created when a version change in `package.json` is merged into `main`.

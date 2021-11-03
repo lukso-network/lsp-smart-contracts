@@ -17,7 +17,7 @@ For more information see [Documentation](https://docs.lukso.tech/standards/Unive
 
 ### Installation
 
-via NPM:
+#### npm
 
 Universal Profile smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts).
 
@@ -25,9 +25,9 @@ Universal Profile smart contracts are available as a [npm package](https://www.n
 npm install @lukso/universalprofile-smart-contracts --save
 ```
 
-#### via cloning the repository
+#### cloning the repository
 
-Alternatively can also pull the repository and install its dependencies to use the smart contracts.
+Alternatively you can also clone the repository and install its dependencies to start using the smart contracts.
 
 ```bash
 $ git clone https://github.com/lukso-network/lsp-universalprofile-smart-contracts.git
@@ -43,7 +43,7 @@ $ cd ./submodules/ERC725/implementations && npm install
 
 #### in Javascript
 
-You can use the contracts by importing them as follow:
+You can use the contracts JSON ABI by importing them as follow:
 
 ```javascript
 import UniversalProfile from "@lukso/universalprofile-smart-contracts/build/artifacts/UniversalProfile.json";
