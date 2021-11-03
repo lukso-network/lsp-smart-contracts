@@ -7,7 +7,7 @@ import "../../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_Un
 // modules
 import "../Registries/AddressRegistry.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract UniversalReceiverAddressStoreInit is Initializable, ERC165Storage, ILSP1Delegate, AddressRegistry {
     using EnumerableSet for EnumerableSet.AddressSet;
