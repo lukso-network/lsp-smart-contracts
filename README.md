@@ -51,13 +51,5 @@ const UniversalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi
 import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
 ```
 
-## Testing
-
-Jest contract tests are defined under the tests directory. To run all the tests, run:
-
-```bash
-$ npm test
-```
----
 ## **Contribute**
 _Please check the [CONTRIBUTE](./CONTRIBUTE.md) page_ 

@@ -17,7 +17,16 @@ When merging a branch to `develop` PRs should be squashed into one conventional 
 
 
 ---
-&nbsp;
+
+## Testing
+
+Jest contract tests are defined under the tests directory. To run all the tests, run:
+
+```bash
+$ npm test
+```
+---
+
 
 ## **Release Process**
 
