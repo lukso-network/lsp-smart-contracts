@@ -6,8 +6,6 @@ import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 
 /**
  * @dev Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
- *
- * ERC 165 interface id: 0x6f4df48b
  */
 interface ILSP6 is IERC1271 /* is ERC165 */ {
         
