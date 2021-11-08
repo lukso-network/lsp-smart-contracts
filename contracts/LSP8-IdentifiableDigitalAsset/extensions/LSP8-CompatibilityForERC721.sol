@@ -4,10 +4,10 @@ pragma solidity ^0.8.0;
 
 // modules
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "../LSP8.sol";
+import "../LSP8-IdentifiableDigitalAsset.sol";
 
 // interfaces
-import "./ILSP8CompatibilityForERC721.sol";
+import "./ILSP8-CompatibilityForERC721.sol";
 
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.

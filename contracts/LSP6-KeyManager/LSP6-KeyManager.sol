@@ -2,7 +2,7 @@
 pragma solidity ^0.8.6;
 
 // modules
-import "./KeyManagerCore.sol";
+import "./LSP6-KeyManagerCore.sol";
 
 contract KeyManager is KeyManagerCore {
 

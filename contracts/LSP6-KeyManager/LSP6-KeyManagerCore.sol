@@ -7,7 +7,7 @@ import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // interfaces
-import "./ILSP6_KeyManager.sol";
+import "./ILSP6-KeyManager.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";

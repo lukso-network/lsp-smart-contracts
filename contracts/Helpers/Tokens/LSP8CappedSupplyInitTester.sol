@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../LSP8-IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol";
+import "../../LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupplyInit.sol";
 
 contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInit {
     function initialize(

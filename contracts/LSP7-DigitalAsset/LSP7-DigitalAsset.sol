@@ -2,12 +2,12 @@
 pragma solidity ^0.8.0;
 
 // constants
-import "./LSP7Constants.sol";
-import "../LSP4-DigitalAsset-Metadata/LSP4Constants.sol";
+import "./LSP7-Constants.sol";
+import "../LSP4-DigitalAsset-Metadata/LSP4-Constants.sol";
 
 // modules
-import "./LSP7Core.sol";
-import "../LSP4-DigitalAsset-Metadata/LSP4.sol";
+import "./LSP7-DigitalAssetCore.sol";
+import "../LSP4-DigitalAsset-Metadata/LSP4-DigitalAsset-Metadata.sol";
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
 
 /**

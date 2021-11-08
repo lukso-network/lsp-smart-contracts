@@ -5,13 +5,13 @@ pragma solidity ^0.8.0;
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
 
 // interfaces
-import "./ILSP4Compatibility.sol";
+import "./ILSP4-Compatibility.sol";
 
 // libraries
 import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
 
 // constants
-import "./LSP4Constants.sol";
+import "./LSP4-Constants.sol";
 
 /**
  * @dev LSP4 extension, for compatibility with clients & tools that expect ERC20/721.

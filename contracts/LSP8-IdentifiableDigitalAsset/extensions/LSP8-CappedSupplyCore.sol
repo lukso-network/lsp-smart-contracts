@@ -3,10 +3,10 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../LSP8Core.sol";
+import "../LSP8-IdentifiableDigitalAssetCore.sol";
 
 // interfaces
-import "./ILSP8CappedSupply.sol";
+import "./ILSP8-CappedSupply.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.

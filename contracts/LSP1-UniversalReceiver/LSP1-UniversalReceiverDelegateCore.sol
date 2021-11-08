@@ -6,15 +6,15 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // interfaces
 import "../LSP1-UniversalReceiver/ILSP1-UniversalReceiverDelegate.sol";
-import "../LSP6-KeyManager/ILSP6_KeyManager.sol";
+import "../LSP6-KeyManager/ILSP6-KeyManager.sol";
 
 // libraries
 import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
 
 // constants
 import "./LSP1-Constants.sol";
-import "../LSP7-DigitalAsset/LSP7Constants.sol";
-import "../LSP8-IdentifiableDigitalAsset/LSP8Constants.sol";
+import "../LSP7-DigitalAsset/LSP7-Constants.sol";
+import "../LSP8-IdentifiableDigitalAsset/LSP8-Constants.sol";
 
 interface ILSPToken {function balanceOf(address _addr) external view returns (uint256);}
 

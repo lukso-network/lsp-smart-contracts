@@ -2,13 +2,13 @@
 pragma solidity ^0.8.0;
 
 // constants
-import "./LSP7Constants.sol";
-import "../LSP1-UniversalReceiver/LSP1Constants.sol";
-import "../LSP4-DigitalAsset-Metadata/LSP4Constants.sol";
+import "./LSP7-Constants.sol";
+import "../LSP1-UniversalReceiver/LSP1-Constants.sol";
+import "../LSP4-DigitalAsset-Metadata/LSP4-Constants.sol";
 
 // interfaces
-import "../LSP1-UniversalReceiver/ILSP1_UniversalReceiver.sol";
-import "./ILSP7.sol";
+import "../LSP1-UniversalReceiver/ILSP1-UniversalReceiver.sol";
+import "./ILSP7-DigitalAsset.sol";
 
 // modules
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";

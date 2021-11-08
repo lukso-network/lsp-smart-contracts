@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
 
 // interfaces
-import "../LSP1-UniversalReceiver/ILSP1_UniversalReceiver.sol";
-import "./ILSP8.sol";
+import "../LSP1-UniversalReceiver/ILSP1-UniversalReceiver.sol";
+import "./ILSP8-IdentifiableDigitalAsset.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -16,9 +16,9 @@ import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol"
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
-import "./LSP8Constants.sol";
-import "../LSP1-UniversalReceiver/LSP1Constants.sol";
-import "../LSP4-DigitalAsset-Metadata/LSP4Constants.sol";
+import "./LSP8-Constants.sol";
+import "../LSP1-UniversalReceiver/LSP1-Constants.sol";
+import "../LSP4-DigitalAsset-Metadata/LSP4-Constants.sol";
 
 /**
  * @dev Implementation of a LSP8 compliant contract.

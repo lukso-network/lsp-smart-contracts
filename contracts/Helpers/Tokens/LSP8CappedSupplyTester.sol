@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../LSP8-IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol";
+import "../../LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupply.sol";
 
 contract LSP8CappedSupplyTester is LSP8CappedSupply {
     /* solhint-disable no-empty-blocks */

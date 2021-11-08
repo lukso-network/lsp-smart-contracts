@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
 
 // constants
-import "./LSP4Constants.sol";
+import "./LSP4-Constants.sol";
 
 /**
  * @dev Implementation of a LSP8 compliant contract.

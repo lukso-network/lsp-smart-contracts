@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../ILSP7.sol";
+import "../ILSP7-DigitalAsset.sol";
 
 /**
  * @dev LSP7 extension, adds token supply cap.

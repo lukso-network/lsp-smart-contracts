@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./UniversalProfileCore.sol";
+import "./LSP3-UniversalProfileCore.sol";
 import "../submodules/ERC725/implementations/contracts/ERC725/ERC725AccountInit.sol";
 
 /**

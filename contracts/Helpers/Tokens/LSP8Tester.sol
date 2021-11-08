@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP8-IdentifiableDigitalAsset/LSP8.sol";
+import "../../LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAsset.sol";
 
 contract LSP8Tester is LSP8 {
     /* solhint-disable no-empty-blocks */

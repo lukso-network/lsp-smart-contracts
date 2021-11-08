@@ -2,18 +2,18 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../LSP6-KeyManager/ILSP6_KeyManager.sol";
-import "../LSP7-DigitalAsset/ILSP7.sol";
-import "../LSP8-IdentifiableDigitalAsset/ILSP8.sol";
+import "../LSP6-KeyManager/ILSP6-KeyManager.sol";
+import "../LSP7-DigitalAsset/ILSP7-DigitalAsset.sol";
+import "../LSP8-IdentifiableDigitalAsset/ILSP8-IdentifiableDigitalAsset.sol";
 import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
 import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
 import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
 
 // constants
-import "../LSP1-UniversalReceiver/LSP1Constants.sol";
-import "../LSP6-KeyManager/LSP6Constants.sol";
-import "../LSP7-DigitalAsset/LSP7Constants.sol";
-import "../LSP8-IdentifiableDigitalAsset/LSP8Constants.sol";
+import "../LSP1-UniversalReceiver/LSP1-Constants.sol";
+import "../LSP6-KeyManager/LSP6-Constants.sol";
+import "../LSP7-DigitalAsset/LSP7-Constants.sol";
+import "../LSP8-IdentifiableDigitalAsset/LSP8-Constants.sol";
 
 contract CalculateERC165Selectors {
 

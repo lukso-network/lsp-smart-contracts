@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../UniversalProfile.sol";
-import "../LSP6-KeyManager/KeyManager.sol";
+import "../LSP3-UniversalProfile.sol";
+import "../LSP6-KeyManager/LSP6-KeyManager.sol";
 
 contract Executor {
 

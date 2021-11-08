@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../ILSP7.sol";
+import "../ILSP7-DigitalAsset.sol";
 
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC20.
