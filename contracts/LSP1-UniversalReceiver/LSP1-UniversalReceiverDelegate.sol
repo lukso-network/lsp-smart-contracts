@@ -2,18 +2,18 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./UniversalReceiverDelegateCore.sol";
+import "./LSP1-UniversalReceiverDelegateCore.sol";
 
 /**
- * @title Proxy Implementation of contract writing the received LSP7 and LSP8 assets into your ERC725Account using 
+ * @title Implementation of contract writing the received LSP7 and LSP8 assets into your ERC725Account using 
  *        the LSP5-ReceivedAsset standard and removing the sent assets.
  *
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Delegate contract of the initial universal receiver
  */
-contract UniversalReceiverDelegateInit is Initializable, UniversalReceiverDelegateCore {
-    
-    function initialize() public initializer {
+contract UniversalReceiverDelegate is UniversalReceiverDelegateCore {
+
+    constructor() {
         _registerInterface(_LSP1_DELEGATE_INTERFACE_ID);
     }
 }
