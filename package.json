@@ -7,8 +7,10 @@
   },
   "files": [
     "contracts/**/*.sol",
+    "submodules/**/*.sol",
     "build/artifacts/**/*.json",
-    "!build/artifacts/contracts/**/*.dbg.json"
+    "!build/artifacts/contracts/**/*.dbg.json",
+    "!submodules/ERC725/implementations/node_modules/**/*"
   ],
   "scripts": {
     "test": "NODE_NO_WARNINGS=1 jest",
