@@ -1,3 +1,4 @@
+import * as dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 
 import "@nomiclabs/hardhat-waffle";
@@ -6,21 +7,31 @@ import "@nomiclabs/hardhat-web3";
 import "@typechain/hardhat";
 import "hardhat-packager";
 
+import "hardhat-deploy";
+
+dotenv.config();
+
+const { DEPLOYER_PRIVATE_KEY } = process.env;
+
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {},
     // public L14 test network
-    l14: {
+    L14: {
       url: "http://34.76.61.201:8545", // bootnode
       chainId: 22,
-      // accounts: [privateKey1, privateKey2, ...]
+      accounts: [`0x${DEPLOYER_PRIVATE_KEY}`],
     },
+
     // ephemeral network
     // l15: {
     //   url: "http://35.198.139.247:8565", // bootnode
     //   chainId: null
     // }
+  },
+  namedAccounts: {
+    owner: 0,
   },
   solidity: {
     version: "0.8.7",
