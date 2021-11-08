@@ -115,10 +115,11 @@ types
 
 node_modules
 
-#Hardhat files
+# Hardhat folders
 cache
 artifacts
 typechain
+deployments
 
 # JAVA
 java/github.properties
