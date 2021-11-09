@@ -2,11 +2,14 @@
 # Inspired from:
 #   - https://github.com/Uniswap/v3-core/blob/main/.github/workflows/mythx.yml
 #   - https://github.com/TacoswapCRD/tacoswap-contracts/blob/master/.github/workflows/sushiswap.yml
+
 name: Mythx Security Analysis
 
 # Trigger this workflow manually
 on:
   workflow_dispatch:
+    branches:
+      - "*"
 
 jobs:
   mythx:
