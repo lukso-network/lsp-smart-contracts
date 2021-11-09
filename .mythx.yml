@@ -4,21 +4,35 @@ ci: true # make the workflow fail on high severity issues
 confirm: true #  automatic confirmation of multiple file submissions (equivalent to --yes)
 
 analyze:
-  mode: standard
+  mode: deep
   async: true
+  create-group: true
+  group-name: "@lukso/lsp-universalprofile-smart-contracts"
   solc: 0.8.7
   remappings:
     - "@openzeppelin/=node_modules/@openzeppelin/"
     - "solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
   targets:
-    # LSP0 (ERC725Account)
+    # Standard version
+    # ------------------
     - submodules/ERC725/implementations/contracts/ERC725/ERC725Account.sol
-    - submodules/ERC725/implementations/contracts/ERC725/ERC725AccountInit.sol
-    # LSP1 (UniversalReceiver)
-    - contracts/UniversalReceiver/UniversalReceiverAddressStore.sol
-    # LSP3 (UniversalProfile)
     - contracts/UniversalProfile.sol
+    - contracts/LSP6-KeyManager/KeyManager.sol
+    - contracts/LSP1-UniversalReceiver/UniversalReceiverDelegate.sol
+    - contracts/LSP7-DigitalAsset/LSP7.sol
+    - contracts/LSP8-IdentifiableDigitalAsset/LSP8.sol
+    # Proxy version
+    # ------------------
+    - submodules/ERC725/implementations/contracts/ERC725/ERC725AccountInit.sol
     - contracts/UniversalProfileInit.sol
-    # LSP6 (KeyManager)
-    - contracts/KeyManager/KeyManager.sol
-    - contracts/KeyManager/KeyManagerInit.sol
+    - contracts/LSP6-KeyManager/KeyManagerInit.sol
+    - contracts/LSP1-UniversalReceiver/UniversalReceiverDelegateInit.sol
+    - contracts/LSP7-DigitalAsset/LSP7Init.sol
+    - contracts/LSP8-IdentifiableDigitalAsset/LSP8Init.sol
+    # ERC Compatible tokens
+    # ------------------
+    - contracts/LSP7-DigitalAsset/extensions/LSP7CompatibilityForERC20.sol
+    - contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721.sol
+    # Tools
+    # ------------------
+    - contracts/Factories/Create2Factory.sol
