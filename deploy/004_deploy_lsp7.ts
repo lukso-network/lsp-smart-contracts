@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { ethers } from "hardhat";
 
 const deployLSP7Token: DeployFunction = async ({
   deployments,
@@ -12,9 +13,10 @@ const deployLSP7Token: DeployFunction = async ({
     from: owner,
     args: ["LSP7 Token", "LSP7", owner, false],
     gasLimit: 3_000_000,
+    gasPrice: ethers.BigNumber.from("5000000000"), // in wei
     log: true,
   });
 };
 
 export default deployLSP7Token;
-deployLSP7Token.tags = ["LSP7", "standards"];
+deployLSP7Token.tags = ["LSP7", "standard"];

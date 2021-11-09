@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { ethers } from "hardhat";
 
 const deployUniversalReceiverDelegate: DeployFunction = async ({
   deployments,
@@ -11,6 +12,7 @@ const deployUniversalReceiverDelegate: DeployFunction = async ({
   await deploy("UniversalReceiverDelegate", {
     from: owner,
     gasLimit: 3_000_000,
+    gasPrice: ethers.BigNumber.from("5000000000"), // in wei
     log: true,
   });
 };

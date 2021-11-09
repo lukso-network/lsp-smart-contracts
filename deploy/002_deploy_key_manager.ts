@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { ethers } from "hardhat";
 
 const deployKeyManager: DeployFunction = async ({
   deployments,
@@ -14,6 +15,7 @@ const deployKeyManager: DeployFunction = async ({
     from: owner,
     args: [UniversalProfile.address],
     gasLimit: 3_000_000,
+    gasPrice: ethers.BigNumber.from("5000000000"), // in wei
     log: true,
   });
 };
