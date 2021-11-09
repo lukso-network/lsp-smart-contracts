@@ -16,10 +16,14 @@ const { DEPLOYER_PRIVATE_KEY } = process.env;
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {},
+    hardhat: {
+      live: false,
+      saveDeployments: false,
+    },
     // public L14 test network
     L14: {
-      url: "http://34.76.61.201:8545", // bootnode
+      live: true,
+      url: "https://rpc.l14.lukso.network",
       chainId: 22,
       accounts: [`0x${DEPLOYER_PRIVATE_KEY}`],
     },
