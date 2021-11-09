@@ -39,6 +39,10 @@ jobs:
           APP_VERSION="v$(node -pe "require('./package.json').version")"
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
+      - uses: actions/checkout@v2
+        with: 
+          ref: develop
+
       - name: Create and push Git Tag
         if: steps.check.outputs.changed == 'true'
         run : |- 
@@ -72,6 +76,11 @@ jobs:
         run: gradle build
 
       # Build ios Artifact
+      - name: Build JSON ABIs
+        if: steps.check.outputs.changed == 'true'
+        run: |-
+          npm run build --if-present
+
       - name: Generate ABIs for iOS using shell script
         if: steps.check.outputs.changed == 'true'
         run: |

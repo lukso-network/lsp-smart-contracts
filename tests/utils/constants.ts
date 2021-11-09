@@ -5,6 +5,8 @@ export const INTERFACE_IDS = {
   ERC1271: "0x1626ba7e",
   LSP1: "0x6bb56a14",
   LSP1Delegate: "0xc2d7bcc1",
+  LSP7: "0xe33f65c3",
+  LSP8: "0x49399145",
   LSP6: "0x6f4df48b",
   ERC725Account: "0x63cb749b",
   LSP0: "",
@@ -21,6 +23,12 @@ export const SupportedStandards = {
     value: "0xafdeb5d6", // bytes4(keccak256('ERC725Account'))
   },
 };
+
+// KeyManager
+
+// Get key: keccak256('AddressPermissions[]')
+export const ADDRESSPERMISSIONS_KEY =
+  "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3";
 
 // Universal Receiver
 

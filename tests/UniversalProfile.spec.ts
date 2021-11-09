@@ -1,13 +1,12 @@
-import { VoidSigner } from "@ethersproject/abstract-signer";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { calculateCreate2 } from "eth-create2-calculator";
 
 import {
-  ERC725Utils,
-  ERC725Utils__factory,
   UniversalProfile,
+  UniversalProfile__factory,
   KeyManager,
+  KeyManager__factory,
   UniversalReceiverAddressStore,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
@@ -18,8 +17,7 @@ import {
 } from "../build/types";
 
 // custom utils
-import { KEYS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";
-import { deployERC725Utils, deployUniversalProfile, deployKeyManager } from "./utils/deploy";
+import { ALL_PERMISSIONS_SET, KEYS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";
 
 /** @todo put all of these in constant file */
 
@@ -50,17 +48,13 @@ const EVENT_SIGNATURE = "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996
 describe("UniversalProfile", () => {
   let accounts: SignerWithAddress[] = [];
   let UniversalProfile: UniversalProfile;
-  let erc725Utils: ERC725Utils;
 
   let owner: SignerWithAddress;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
     owner = accounts[2];
-    erc725Utils = await deployERC725Utils();
-    UniversalProfile = await deployUniversalProfile(erc725Utils.address, owner);
-    let tx = await UniversalProfile.deployTransaction.wait();
-    console.log("deployment of UP: ", tx);
+    UniversalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
   });
 
   describe("Accounts Deployment", () => {
@@ -118,7 +112,7 @@ describe("UniversalProfile", () => {
   describe("ERC1271", () => {
     it("Can verify signature from owner", async () => {
       const signer = accounts[9];
-      const account = await deployUniversalProfile(erc725Utils.address, signer);
+      const account = await new UniversalProfile__factory(owner).deploy(signer.address);
 
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
@@ -132,7 +126,7 @@ describe("UniversalProfile", () => {
       const owner = accounts[2];
       const signer = accounts[9];
 
-      const account = await deployUniversalProfile(erc725Utils.address, owner);
+      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await signer.signMessage(dataToSign);
@@ -148,7 +142,7 @@ describe("UniversalProfile", () => {
 
     it("Create account", async () => {
       const owner = accounts[2];
-      const newaccount = await deployUniversalProfile(erc725Utils.address, owner);
+      const newaccount = await new UniversalProfile__factory(owner).deploy(owner.address);
 
       expect(await newaccount.callStatic.owner()).toEqual(owner.address);
     });
@@ -303,14 +297,12 @@ describe("UniversalProfile", () => {
 
     let owner: SignerWithAddress;
     let newOwner: SignerWithAddress;
-    let erc725Utils: ERC725Utils;
     let account: UniversalProfile;
 
     beforeEach(async () => {
       owner = accounts[3];
       newOwner = accounts[5];
-      erc725Utils = await deployERC725Utils();
-      account = await deployUniversalProfile(erc725Utils.address, owner);
+      account = await new UniversalProfile__factory(owner).deploy(owner.address);
     });
 
     it("Upgrade ownership correctly", async () => {
@@ -468,8 +460,7 @@ describe("UniversalProfile", () => {
   describe("Universal Receiver", () => {
     it("Call account and check for 'UniversalReceiver' event", async () => {
       const owner = accounts[2];
-      const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils.address, owner);
+      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       // use the checker contract to call account
       let checker = await new UniversalReceiverTester__factory(owner).deploy();
 
@@ -496,8 +487,7 @@ describe("UniversalProfile", () => {
 
     it("Call account and check for 'ReceivedERC777' event in external account", async () => {
       const owner = accounts[2];
-      const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils.address, owner);
+      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
         owner
       ).deploy();
@@ -557,8 +547,7 @@ describe("UniversalProfile", () => {
 
     it("Mint ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
-      const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils.address, owner);
+      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(owner.address);
@@ -591,8 +580,7 @@ describe("UniversalProfile", () => {
 
     it("Transfer ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
-      const erc725Utils = await deployERC725Utils();
-      const account = await deployUniversalProfile(erc725Utils.address, owner);
+      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
@@ -635,8 +623,7 @@ describe("UniversalProfile", () => {
 
     it("Mint ERC777 and LSP4 to LSP3 account and delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
-      const erc725Utils = await deployERC725Utils();
-      const account = await deployUniversalProfile(erc725Utils.address, owner);
+      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
@@ -675,8 +662,7 @@ describe("UniversalProfile", () => {
 
     it("Transfer ERC777 and LSP4 from LSP3 account with delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
-      const erc725Utils = await deployERC725Utils();
-      const account = await deployUniversalProfile(erc725Utils.address, owner);
+      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
@@ -720,8 +706,7 @@ describe("UniversalProfile", () => {
 
     it("Transfer from ERC777 and LSP4 to account and delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
-      const erc725Utils = await new ERC725Utils__factory(accounts[0]).deploy();
-      const account = await deployUniversalProfile(erc725Utils.address, owner);
+      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
@@ -797,20 +782,19 @@ describe("UniversalProfile", () => {
       owner = accounts[6];
       signer = accounts[7];
       thirdParty = accounts[8];
-      erc725Utils = await deployERC725Utils();
-      UniversalProfile = await deployUniversalProfile(erc725Utils.address, owner);
-      keyManager = await deployKeyManager(erc725Utils.address, UniversalProfile);
+      UniversalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
+      keyManager = await new KeyManager__factory(owner).deploy(UniversalProfile.address);
 
       // give all permissions to owner
       await UniversalProfile.connect(owner).setData(
         [KEYS.PERMISSIONS + owner.address.substr(2)],
-        [PERMISSIONS.ALL]
+        [ALL_PERMISSIONS_SET]
       );
 
       // give SIGN permission to signer
       await UniversalProfile.connect(owner).setData(
         [KEYS.PERMISSIONS + signer.address.substr(2)],
-        [PERMISSIONS.SIGN]
+        [ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32)]
       );
       // give CALL permission to non-signer
       await UniversalProfile.connect(owner).setData(

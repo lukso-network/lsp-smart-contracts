@@ -25,14 +25,22 @@ jobs:
           scope: "@lukso"
           cache: "npm"
 
-      - name: Publish
+      - name: Install
         if: steps.check.outputs.changed == 'true'
-        run: |
+        run: |-
           git submodule update --init --recursive
           npm ci
           cd ./submodules/ERC725/implementations && npm install
-          npx hardhat compile
+
+      - name: Build and Test
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          npm run build --if-present
           npm run test
+
+      - name: Publish
+        if: steps.check.outputs.changed == 'true'
+        run: |
           npm run package
           npm publish --access public
         env:

@@ -70,6 +70,7 @@ typings/
 .node_repl_history
 
 # Output of 'npm pack'
+package/
 *.tgz
 
 # Yarn Integrity file
@@ -128,4 +129,7 @@ java/.idea
 .idea
 
 # Solidity Flattener
-out/
+flat_contracts/
+
+# Mac
+.DS_Store

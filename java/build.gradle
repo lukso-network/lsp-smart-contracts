@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id 'java'
 }
@@ -12,13 +14,14 @@ if (githubPropertiesFile.canRead()) {
 
 
 def getVersionName = { ->
-    return "0.1.4"
+    def jsonSlurper = new JsonSlurper()
+    def packageJson = jsonSlurper.parse file('../package.json')
+    return packageJson.version
 }
 
 def getArtifactId = { ->
     return "upcontracts"
 }
-
 
 archivesBaseName = getArtifactId()
 
@@ -46,7 +49,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/lukso-network/universalprofile-smart-contracts")
+            url = uri("https://maven.pkg.github.com/lukso-network/lsp-universalprofile-smart-contracts")
             credentials {
                 username = githubProperties['gpr.usr'] ?: System.getenv("GITHUB_ACTOR")
                 password = githubProperties['gpr.key'] ?: System.getenv("GITHUB_TOKEN")

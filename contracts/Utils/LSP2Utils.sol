@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
  *      https://github.com/lukso-network/LIPs/blob/master/LSPs/LSP-2-ERC725YJSONSchema.md
  */
 library LSP2Utils {
-
+    /* solhint-disable no-inline-assembly */
     function generateSingletonKey(string memory _keyName)
         public 
         pure

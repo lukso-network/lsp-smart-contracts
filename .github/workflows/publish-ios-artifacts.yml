@@ -33,17 +33,14 @@ jobs:
       - if: steps.check.outputs.changed == 'true'
         run: cd ./submodules/ERC725/implementations && npm install
 
-      - name: Generate ABIs for iOS using shell script
+      - name: Build contracts ABIs
+        run: npm run build --if-present
+
+      - name: Write ABIs for iOS in Swift file
         if: steps.check.outputs.changed == 'true'
         run: |
           mkdir ios
           node make-ios.js
-
-      # - name: Checkout iOS repository
-      #   uses: actions/checkout@v2
-      #   with:
-      #     repository: 'lukso-network/universalprofile-ios-sdk'
-      #     ref: 'main'
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         if: steps.check.outputs.changed == 'true'
@@ -55,5 +52,5 @@ jobs:
           git checkout -b abi-update-release
           cp ../ios/UPContractsAbi.swift universalprofile-ios-sdk/UPContractsAbi.swift
           git add .
-          git commit -m "Automatic publish new contracts abis from lukso-network/universalprofile-smart-contracts"
+          git commit -m "Automatic publish new contracts abis from lukso-network/lsp-universalprofile-smart-contracts"
           git push --set-upstream origin abi-update-release
