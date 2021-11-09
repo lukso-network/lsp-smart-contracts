@@ -5,7 +5,7 @@ import {
   shouldBehaveLikeLSP8,
   shouldInitializeLikeLSP8,
   LSP8TestContext,
-} from "./LSP8.behaviour";
+} from "./LSP8-IdentifiableDigitalAsset.behaviour";
 
 describe("LSP8", () => {
   describe("when using LSP8 contract with constructor", () => {
