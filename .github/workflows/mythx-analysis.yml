@@ -5,13 +5,13 @@
 
 name: Mythx Security Analysis
 
-# Trigger this workflow manually
 on:
   pull_request:
     branches:
       - "main"
       - "develop"
 
+  # Enable manual trigger on this workflow
   workflow_dispatch:
 
 jobs:
@@ -56,4 +56,6 @@ jobs:
 
       - name: Submit contracts to Mythx
         # use configs from .mythx.yml
-        run: mythx analyze --api-key ${{ secrets.MYTHX_API_KEY }}
+        run: mythx analyze
+        env:
+          MTHX_API_KEY: ${{ secrets.MYTHX_API_KEY }}
