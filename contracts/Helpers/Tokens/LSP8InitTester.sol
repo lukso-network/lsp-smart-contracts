@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP8-IdentifiableDigitalAsset/LSP8Init.sol";
+import "../../LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAssetInit.sol";
 
 contract LSP8InitTester is LSP8Init {
     function initialize(

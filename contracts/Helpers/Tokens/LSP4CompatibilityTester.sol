@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP4-DigitalAsset-Metadata/LSP4Compatibility.sol";
+import "../../LSP4-DigitalAsset-Metadata/LSP4-Compatibility.sol";
 
 contract LSP4CompatibilityTester is LSP4Compatibility {
     constructor(

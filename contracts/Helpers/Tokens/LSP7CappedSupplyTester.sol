@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../LSP7-DigitalAsset/extensions/LSP7CappedSupply.sol";
+import "../../LSP7-DigitalAsset/extensions/LSP7-CappedSupply.sol";
 
 contract LSP7CappedSupplyTester is LSP7CappedSupply {
     /* solhint-disable no-empty-blocks */

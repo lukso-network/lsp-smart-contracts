@@ -127,14 +127,12 @@ describe("Executor interacting with KeyManager", () => {
       it("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
         // check that nothing is set at store[key]
         let [initialStorage] = await universalProfile.callStatic.getData([key]);
-        console.log("initialStorage (low level): ", initialStorage);
         expect(initialStorage).toEqual("0x");
 
         // check if low-level call succeeded
         let result = await executor.callStatic.setHardcodedKeyRawCall({
           gasLimit: GAS_PROVIDED,
         });
-        console.log("result (low level): ", result);
         expect(result).toBeTruthy();
 
         // make the executor call
@@ -142,7 +140,6 @@ describe("Executor interacting with KeyManager", () => {
 
         // check that store[key] is now set to value
         let [newStorage] = await universalProfile.callStatic.getData([key]);
-        console.log("newStorage (low level): ", newStorage);
         expect(newStorage).toEqual(value);
       });
 
@@ -181,7 +178,6 @@ describe("Executor interacting with KeyManager", () => {
 
     beforeEach(async () => {
       let ownerBalance = await provider.getBalance(owner.address);
-      console.log(ethers.utils.formatUnits(ownerBalance));
 
       await owner.sendTransaction({
         to: universalProfile.address,
