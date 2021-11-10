@@ -58,4 +58,4 @@ jobs:
         # use configs from .mythx.yml
         run: mythx analyze
         env:
-          MTHX_API_KEY: ${{ secrets.MYTHX_API_KEY }}
+          MYTHX_API_KEY: ${{ secrets.MYTHX_API_KEY }}
