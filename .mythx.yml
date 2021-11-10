@@ -27,6 +27,3 @@ analyze:
     - contracts/LSP1-UniversalReceiver/UniversalReceiverDelegateInit.sol
     - contracts/LSP7-DigitalAsset/LSP7Init.sol
     - contracts/LSP8-IdentifiableDigitalAsset/LSP8Init.sol
-    # Tools
-    # ------------------
-    - contracts/Factories/Create2Factory.sol
