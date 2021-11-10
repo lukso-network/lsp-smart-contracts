@@ -45,8 +45,6 @@ jobs:
       - name: Install mythx CLI
         run: |
           pip3 install mythx-cli
-          python3 -V
-          mythx version
 
       - name: Install solc-select
         run: pip3 install solc-select
