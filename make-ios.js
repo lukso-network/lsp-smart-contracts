@@ -5,23 +5,23 @@ const fs = require("fs");
 // Standard version
 // ------------------
 const UniversalProfile = fs.readFileSync(
-  "./build/artifacts/contracts/UniversalProfile.sol/UniversalProfile.json"
+  "./build/artifacts/contracts/LSP3-UniversalProfile.sol/UniversalProfile.json"
 );
 const KeyManager = fs.readFileSync(
-  "./build/artifacts/contracts/LSP6-KeyManager/KeyManager.sol/KeyManager.json"
+  "./build/artifacts/contracts/LSP6-KeyManager/LSP6-KeyManager.sol/KeyManager.json"
 );
 const UniversalReceiverDelegate = fs.readFileSync(
-  "./build/artifacts/contracts/LSP1-UniversalReceiver/UniversalReceiverDelegate.sol/UniversalReceiverDelegate.json"
+  "./build/artifacts/contracts/LSP1-UniversalReceiver/LSP1-UniversalReceiverDelegate.sol/UniversalReceiverDelegate.json"
 );
-const LSP7 = fs.readFileSync("./build/artifacts/contracts/LSP7-DigitalAsset/LSP7.sol/LSP7.json");
+const LSP7 = fs.readFileSync("./build/artifacts/contracts/LSP7-DigitalAsset/LSP7-DigitalAsset.sol/LSP7.json");
 const LSP7CappedSupply = fs.readFileSync(
-  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7CappedSupply.sol/LSP7CappedSupply.json"
+  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7-CappedSupply.sol/LSP7CappedSupply.json"
 );
 const LSP8 = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/LSP8.sol/LSP8.json"
+  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAsset.sol/LSP8.json"
 );
 const LSP8CappedSupply = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol/LSP8CappedSupply.json"
+  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupply.sol/LSP8CappedSupply.json"
 );
 
 const UniversalProfile_ABI = JSON.parse(UniversalProfile).abi;
@@ -35,25 +35,25 @@ const LSP8CappedSupply_ABI = JSON.parse(LSP8CappedSupply).abi;
 // Proxy version
 // ------------------
 const UniversalProfileInit = fs.readFileSync(
-  "./build/artifacts/contracts/UniversalProfileInit.sol/UniversalProfileInit.json"
+  "./build/artifacts/contracts/LSP3-UniversalProfileInit.sol/UniversalProfileInit.json"
 );
 const KeyManagerInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP6-KeyManager/KeyManagerInit.sol/KeyManagerInit.json"
+  "./build/artifacts/contracts/LSP6-KeyManager/LSP6-KeyManagerInit.sol/KeyManagerInit.json"
 );
 const UniversalReceiverDelegateInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP1-UniversalReceiver/UniversalReceiverDelegateInit.sol/UniversalReceiverDelegateInit.json"
+  "./build/artifacts/contracts/LSP1-UniversalReceiver/LSP1-UniversalReceiverDelegateInit.sol/UniversalReceiverDelegateInit.json"
 );
 const LSP7Init = fs.readFileSync(
-  "./build/artifacts/contracts/LSP7-DigitalAsset/LSP7Init.sol/LSP7Init.json"
+  "./build/artifacts/contracts/LSP7-DigitalAsset/LSP7-DigitalAssetInit.sol/LSP7Init.json"
 );
 const LSP7CappedSupplyInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7CappedSupplyInit.sol/LSP7CappedSupplyInit.json"
+  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7-CappedSupplyInit.sol/LSP7CappedSupplyInit.json"
 );
 const LSP8Init = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/LSP8.sol/LSP8.json"
+  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAssetInit.sol/LSP8Init.json"
 );
 const LSP8CappedSupplyInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol/LSP8CappedSupplyInit.json"
+  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupplyInit.sol/LSP8CappedSupplyInit.json"
 );
 
 const UniversalProfileInit_ABI = JSON.parse(UniversalProfileInit).abi;
@@ -67,10 +67,10 @@ const LSP8CappedSupplyInit_ABI = JSON.parse(LSP8CappedSupplyInit).abi;
 // ERC Compatible tokens
 // ------------------------
 const LSP7CompatibilityForERC20 = fs.readFileSync(
-  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7CompatibilityForERC20.sol/LSP7CompatibilityForERC20.json"
+  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7-CompatibilityForERC20.sol/LSP7CompatibilityForERC20.json"
 );
 const LSP8CompatibilityForERC721 = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721.sol/LSP8CompatibilityForERC721.json"
+  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CompatibilityForERC721.sol/LSP8CompatibilityForERC721.json"
 );
 
 const LSP7CompatibilityForERC20_ABI = JSON.parse(LSP7CompatibilityForERC20).abi;
