@@ -54,7 +54,7 @@ const UniversalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi
 #### in Solidity
 
 ```solidity
-import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/LSP3-UniversalProfile.sol";
 ```
 
 ## **Contribute**
