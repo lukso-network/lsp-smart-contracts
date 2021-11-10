@@ -15,22 +15,22 @@ solc --abi --bin \
     solidity-bytes-utils/="$(pwd)"/node_modules/solidity-bytes-utils/ \
     @openzeppelin/="$(pwd)"/node_modules/@openzeppelin/ \
     ../submodules="$(pwd)"/submodules \
-    contracts/UniversalProfile.sol \
-    contracts/LSP6-KeyManager/KeyManager.sol \
-    contracts/LSP1-UniversalReceiver/UniversalReceiverDelegate.sol \
-    contracts/LSP7-DigitalAsset/LSP7.sol \
-    contracts/LSP7-DigitalAsset/extensions/LSP7CappedSupply.sol \
-    contracts/LSP8-IdentifiableDigitalAsset/LSP8.sol \
-    contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol \
-    contracts/UniversalProfileInit.sol \
-    contracts/LSP6-KeyManager/KeyManagerInit.sol \
-    contracts/LSP1-UniversalReceiver/UniversalReceiverDelegateInit.sol \
-    contracts/LSP7-DigitalAsset/LSP7Init.sol \
-    contracts/LSP7-DigitalAsset/extensions/LSP7CappedSupplyInit.sol \
-    contracts/LSP8-IdentifiableDigitalAsset/LSP8Init.sol \
-    contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol \
-    contracts/LSP7-DigitalAsset/extensions/LSP7CompatibilityForERC20.sol \
-    contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721.sol \
+    contracts/LSP3-UniversalProfile.sol \
+    contracts/LSP6-KeyManager/LSP6-KeyManager.sol \
+    contracts/LSP1-UniversalReceiver/LSP1-UniversalReceiverDelegate.sol \
+    contracts/LSP7-DigitalAsset/LSP7-DigitalAsset.sol \
+    contracts/LSP7-DigitalAsset/extensions/LSP7-CappedSupply.sol \
+    contracts/LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAsset.sol \
+    contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupply.sol \
+    contracts/LSP3-UniversalProfileInit.sol \
+    contracts/LSP6-KeyManager/LSP6-KeyManagerInit.sol \
+    contracts/LSP1-UniversalReceiver/LSP1-UniversalReceiverDelegateInit.sol \
+    contracts/LSP7-DigitalAsset/LSP7-DigitalAssetInit.sol \
+    contracts/LSP7-DigitalAsset/extensions/LSP7-CappedSupplyInit.sol \
+    contracts/LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAssetInit.sol \
+    contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupplyInit.sol \
+    contracts/LSP7-DigitalAsset/extensions/LSP7-CompatibilityForERC20.sol \
+    contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CompatibilityForERC721.sol \
     -o ./output/
 
 FILES=(
