@@ -4,7 +4,6 @@
 #   - https://github.com/TacoswapCRD/tacoswap-contracts/blob/master/.github/workflows/sushiswap.yml
 
 name: Mythx Security Analysis
-
 on:
   pull_request:
     branches:
@@ -16,7 +15,7 @@ on:
 
 jobs:
   mythx:
-    name: Submit to Mythx
+    name: Mythx Security Analysis
     runs-on: ubuntu-latest
 
     steps:
