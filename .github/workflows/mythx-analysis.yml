@@ -7,9 +7,12 @@ name: Mythx Security Analysis
 
 # Trigger this workflow manually
 on:
-  workflow_dispatch:
+  pull_request:
     branches:
-      - "*"
+      - "main"
+      - "develop"
+
+  workflow_dispatch:
 
 jobs:
   mythx:
