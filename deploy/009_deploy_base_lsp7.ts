@@ -11,9 +11,8 @@ const deployBaseLSP7Token: DeployFunction = async ({
 
   const deployResult = await deploy("LSP7Init", {
     from: owner,
-    gasLimit: 3_000_000,
-    gasPrice: ethers.BigNumber.from("10000000000"), // in wei
     log: true,
+    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
   });
 
   const LSP7Init = await ethers.getContractFactory("LSP7Init");
@@ -25,11 +24,7 @@ const deployBaseLSP7Token: DeployFunction = async ({
     "LSP7 Token (Base Contract)",
     "LSP7Init",
     ethers.constants.AddressZero,
-    false, // isNFT
-    {
-      gasPrice: ethers.BigNumber.from("10000000000"),
-      gasLimit: 3_000_000,
-    }
+    false // isNFT
   );
 };
 

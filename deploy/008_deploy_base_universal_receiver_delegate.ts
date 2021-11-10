@@ -11,9 +11,8 @@ const deployBaseUniversalReceiverDelegate: DeployFunction = async ({
 
   const deployResult = await deploy("UniversalReceiverDelegateInit", {
     from: owner,
-    gasLimit: 3_000_000,
-    gasPrice: ethers.BigNumber.from("10000000000"), // in wei
     log: true,
+    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
   });
 
   const UniversalReceiverDelegateInit = await ethers.getContractFactory(
@@ -21,10 +20,7 @@ const deployBaseUniversalReceiverDelegate: DeployFunction = async ({
   );
   const universalReceiverDelegate = UniversalReceiverDelegateInit.attach(deployResult.address);
 
-  await universalReceiverDelegate.initialize({
-    gasPrice: ethers.BigNumber.from("10000000000"),
-    gasLimit: 3_000_000,
-  });
+  await universalReceiverDelegate.initialize();
 };
 
 export default deployBaseUniversalReceiverDelegate;

@@ -11,20 +11,16 @@ const deployBaseKeyManager: DeployFunction = async ({
 
   const deployResult = await deploy("KeyManagerInit", {
     from: owner,
-    gasLimit: 3_500_000,
-    gasPrice: ethers.BigNumber.from("10000000000"), // in wei
     log: true,
+    gasLimit: 5_000_000,
+    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
   });
 
   const KeyManagerInit = await ethers.getContractFactory("KeyManagerInit");
   const keyManagerInit = await KeyManagerInit.attach(deployResult.address);
 
-  await keyManagerInit.initialize(ethers.constants.AddressZero, {
-    gasPrice: ethers.BigNumber.from("10000000000"),
-    gasLimit: 3_500_000,
-  });
+  await keyManagerInit.initialize(ethers.constants.AddressZero);
 };
 
 export default deployBaseKeyManager;
 deployBaseKeyManager.tags = ["KeyManagerInit", "proxy"];
-deployBaseKeyManager.dependencies = ["UniversalProfileInit"];

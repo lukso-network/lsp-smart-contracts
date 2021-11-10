@@ -11,9 +11,8 @@ const deployBaseLSP8NFT: DeployFunction = async ({
 
   const deployResult = await deploy("LSP8Init", {
     from: owner,
-    gasLimit: 3_000_000,
-    gasPrice: ethers.BigNumber.from("10000000000"), // in wei
     log: true,
+    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
   });
 
   const LSP8Init = await ethers.getContractFactory("LSP8Init");
@@ -24,11 +23,7 @@ const deployBaseLSP8NFT: DeployFunction = async ({
   await lsp8Init["initialize(string,string,address)"](
     "LSP8 NFT (Base Contract)",
     "LSP8Init",
-    ethers.constants.AddressZero,
-    {
-      gasPrice: ethers.BigNumber.from("10000000000"),
-      gasLimit: 3_000_000,
-    }
+    ethers.constants.AddressZero
   );
 };
 

@@ -12,8 +12,7 @@ const deployLSP7Token: DeployFunction = async ({
   await deploy("LSP7", {
     from: owner,
     args: ["LSP7 Token", "LSP7", owner, false],
-    gasLimit: 3_000_000,
-    gasPrice: ethers.BigNumber.from("5000000000"), // in wei
+    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
     log: true,
   });
 };
