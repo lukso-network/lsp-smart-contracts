@@ -9,16 +9,28 @@ const deployBaseLSP7Token: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  await deploy("LSP7Init", {
+  const deployResult = await deploy("LSP7Init", {
     from: owner,
     gasLimit: 3_000_000,
-    gasPrice: ethers.BigNumber.from("2500000000"), // in wei
+    gasPrice: ethers.BigNumber.from("10000000000"), // in wei
     log: true,
   });
 
-  /**
-   * @todo call `initialize("LSP7 Token (Base Contract)", "LSP7Init", owner, false)
-   */
+  const LSP7Init = await ethers.getContractFactory("LSP7Init");
+  const lsp7Init = await LSP7Init.attach(deployResult.address);
+
+  // function overloading is required, as the inherited contracts LSP4Init and ERC725YInit
+  // also contain an `initialize()` function
+  await lsp7Init["initialize(string,string,address,bool)"](
+    "LSP7 Token (Base Contract)",
+    "LSP7Init",
+    ethers.constants.AddressZero,
+    false, // isNFT
+    {
+      gasPrice: ethers.BigNumber.from("10000000000"),
+      gasLimit: 3_000_000,
+    }
+  );
 };
 
 export default deployBaseLSP7Token;

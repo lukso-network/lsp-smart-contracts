@@ -9,14 +9,20 @@ const deployBaseUniversalProfile: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  await deploy("UniversalProfileInit", {
+  const deployResult = await deploy("UniversalProfileInit", {
     from: owner,
     gasLimit: 3_000_000,
-    gasPrice: ethers.BigNumber.from("2500000000"), // in wei
+    gasPrice: ethers.BigNumber.from("10000000000"), // in wei
     log: true,
   });
 
-  /** @todo call `initialize()` */
+  const UniversalProfileInit = await ethers.getContractFactory("UniversalProfileInit");
+  const universalProfileInit = await UniversalProfileInit.attach(deployResult.address);
+
+  await universalProfileInit.initialize(ethers.constants.AddressZero, {
+    gasPrice: ethers.BigNumber.from("10000000000"),
+    gasLimit: 3_000_000,
+  });
 };
 
 export default deployBaseUniversalProfile;
