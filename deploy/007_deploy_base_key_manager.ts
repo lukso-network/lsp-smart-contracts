@@ -23,4 +23,4 @@ const deployBaseKeyManager: DeployFunction = async ({
 };
 
 export default deployBaseKeyManager;
-deployBaseKeyManager.tags = ["KeyManagerInit", "proxy"];
+deployBaseKeyManager.tags = ["KeyManagerInit", "base"];

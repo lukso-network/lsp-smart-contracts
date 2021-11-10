@@ -24,4 +24,4 @@ const deployBaseUniversalReceiverDelegate: DeployFunction = async ({
 };
 
 export default deployBaseUniversalReceiverDelegate;
-deployBaseUniversalReceiverDelegate.tags = ["UniversalReceiverDelegateInit", "proxy"];
+deployBaseUniversalReceiverDelegate.tags = ["UniversalReceiverDelegateInit", "base"];

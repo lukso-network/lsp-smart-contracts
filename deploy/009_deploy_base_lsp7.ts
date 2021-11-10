@@ -29,4 +29,4 @@ const deployBaseLSP7Token: DeployFunction = async ({
 };
 
 export default deployBaseLSP7Token;
-deployBaseLSP7Token.tags = ["LSP7Init", "proxy"];
+deployBaseLSP7Token.tags = ["LSP7Init", "base"];

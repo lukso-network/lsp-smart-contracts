@@ -22,4 +22,4 @@ const deployBaseUniversalProfile: DeployFunction = async ({
 };
 
 export default deployBaseUniversalProfile;
-deployBaseUniversalProfile.tags = ["UniversalProfileInit", "proxy"];
+deployBaseUniversalProfile.tags = ["UniversalProfileInit", "base"];

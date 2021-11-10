@@ -28,4 +28,4 @@ const deployBaseLSP8NFT: DeployFunction = async ({
 };
 
 export default deployBaseLSP8NFT;
-deployBaseLSP8NFT.tags = ["LSP8Init", "proxy"];
+deployBaseLSP8NFT.tags = ["LSP8Init", "base"];
