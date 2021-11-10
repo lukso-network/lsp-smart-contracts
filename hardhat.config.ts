@@ -1,4 +1,3 @@
-import * as dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 
 import "@nomiclabs/hardhat-waffle";
@@ -8,10 +7,6 @@ import "@typechain/hardhat";
 import "hardhat-packager";
 
 import "hardhat-deploy";
-
-dotenv.config();
-
-const { DEPLOYER_PRIVATE_KEY } = process.env;
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -25,7 +20,7 @@ const config: HardhatUserConfig = {
       live: true,
       url: "https://rpc.l14.lukso.network",
       chainId: 22,
-      accounts: [`0x${DEPLOYER_PRIVATE_KEY}`],
+      //   accounts: [privateKey1, privateKey2, ...]
     },
 
     // ephemeral network

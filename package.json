@@ -48,7 +48,6 @@
     "@types/node": "^16.7.4",
     "axios": "^0.21.4",
     "curl-to-node": "^0.1.0",
-    "dotenv": "^10.0.0",
     "esbuild": "^0.12.24",
     "esbuild-jest": "^0.5.0",
     "eth-create2-calculator": "^1.1.5",
