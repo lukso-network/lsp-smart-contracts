@@ -2,8 +2,8 @@
 .idea
 .vscode
 
-submodules
 contracts/
+
 migrations
 test
 .gitmodules

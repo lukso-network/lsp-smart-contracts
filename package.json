@@ -7,8 +7,10 @@
   },
   "files": [
     "contracts/**/*.sol",
+    "submodules/**/*.sol",
     "build/artifacts/**/*.json",
-    "!build/artifacts/contracts/**/*.dbg.json"
+    "!build/artifacts/contracts/**/*.dbg.json",
+    "!submodules/ERC725/implementations/node_modules/**/*"
   ],
   "scripts": {
     "test": "NODE_NO_WARNINGS=1 jest",
@@ -39,7 +41,6 @@
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/contracts": "^4.3.0",
-    "@openzeppelin/contracts-upgradeable": "^4.3.0",
     "@openzeppelin/test-helpers": "0.5.13",
     "@remix-project/remixd": "^0.5.1",
     "@typechain/ethers-v5": "^7.0.1",

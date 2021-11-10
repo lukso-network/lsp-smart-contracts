@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "../../LSP6-KeyManager/KeyManager.sol";
+import "../../LSP6-KeyManager/LSP6-KeyManager.sol";
 
 /**
  * Helper contract to test internal functions of the KeyManager

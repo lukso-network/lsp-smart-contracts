@@ -1,0 +1,29 @@
+# Run me by typing `mythx analyze` in the directory of the yml file! :)
+
+ci: true # make the workflow fail on high severity issues
+confirm: true #  automatic confirmation of multiple file submissions (equivalent to --yes)
+
+analyze:
+  mode: deep
+  async: true
+  create-group: true
+  group-name: "@lukso/lsp-universalprofile-smart-contracts"
+  solc: 0.8.7
+  remappings:
+    - "@openzeppelin/=node_modules/@openzeppelin/"
+    - "solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+  targets:
+    # Standard version
+    # ------------------
+    - contracts/UniversalProfile.sol
+    - contracts/LSP6-KeyManager/KeyManager.sol
+    - contracts/LSP1-UniversalReceiver/UniversalReceiverDelegate.sol
+    - contracts/LSP7-DigitalAsset/LSP7.sol
+    - contracts/LSP8-IdentifiableDigitalAsset/LSP8.sol
+    # Proxy version
+    # ------------------
+    - contracts/UniversalProfileInit.sol
+    - contracts/LSP6-KeyManager/KeyManagerInit.sol
+    - contracts/LSP1-UniversalReceiver/UniversalReceiverDelegateInit.sol
+    - contracts/LSP7-DigitalAsset/LSP7Init.sol
+    - contracts/LSP8-IdentifiableDigitalAsset/LSP8Init.sol
