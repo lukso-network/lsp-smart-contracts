@@ -5,12 +5,6 @@
 
 name: Mythx Security Analysis
 on:
-  pull_request:
-    branches:
-      - "main"
-      - "develop"
-
-  # Enable manual trigger on this workflow
   workflow_dispatch:
 
 jobs:
