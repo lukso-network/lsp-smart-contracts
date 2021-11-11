@@ -58,4 +58,4 @@ import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/
 ```
 
 ## **Contribute**
-_Please check the [CONTRIBUTE](./CONTRIBUTE.md) page_ 
+_Please check the [CONTRIBUTE](./CONTRIBUTING.md) page_ 
