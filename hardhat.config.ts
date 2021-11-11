@@ -71,10 +71,10 @@ const config: HardhatUserConfig = {
     includeFactories: true,
   },
   paths: {
-    artifacts: "build/artifacts",
+    artifacts: "artifacts",
   },
   typechain: {
-    outDir: "build/types",
+    outDir: "types",
     target: "ethers-v5",
   },
 };
