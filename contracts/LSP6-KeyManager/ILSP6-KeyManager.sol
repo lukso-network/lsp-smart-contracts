@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
+import "@erc725/smart-contracts/contracts/interfaces/IERC1271.sol";
 
 /**
  * @dev Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage

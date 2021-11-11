@@ -5,9 +5,9 @@ pragma solidity ^0.8.0;
 import "../LSP6-KeyManager/ILSP6-KeyManager.sol";
 import "../LSP7-DigitalAsset/ILSP7-DigitalAsset.sol";
 import "../LSP8-IdentifiableDigitalAsset/ILSP8-IdentifiableDigitalAsset.sol";
-import "../../submodules/ERC725/implementations/contracts/IERC1271.sol";
-import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
-import "../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "@erc725/smart-contracts/contracts/interfaces/IERC1271.sol";
+import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiver.sol";
+import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
 
 // constants
 import "../LSP1-UniversalReceiver/LSP1-Constants.sol";

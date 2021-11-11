@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725YInit.sol";
+import "@erc725/smart-contracts/contracts/ERC725/ERC725YInit.sol";
 
 // constants
 import "./LSP4-Constants.sol";

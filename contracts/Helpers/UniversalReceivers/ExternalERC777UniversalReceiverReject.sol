@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";

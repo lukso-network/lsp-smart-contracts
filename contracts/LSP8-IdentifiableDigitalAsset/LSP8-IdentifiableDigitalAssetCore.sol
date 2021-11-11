@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 // modules
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
+import "@erc725/smart-contracts/contracts/ERC725/ERC725Y.sol";
 
 // interfaces
 import "../LSP1-UniversalReceiver/ILSP1-UniversalReceiver.sol";
@@ -12,7 +12,7 @@ import "./ILSP8-IdentifiableDigitalAsset.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
+import "@erc725/smart-contracts/contracts/Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants

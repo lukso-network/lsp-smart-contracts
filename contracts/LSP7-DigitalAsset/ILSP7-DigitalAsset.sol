@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "../../submodules/ERC725/implementations/contracts/ERC725/IERC725Y.sol";
+import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
  * @dev Required interface of a LSP8 compliant contract.

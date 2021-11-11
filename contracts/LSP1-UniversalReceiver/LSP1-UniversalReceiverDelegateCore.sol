@@ -9,7 +9,7 @@ import "../LSP1-UniversalReceiver/ILSP1-UniversalReceiverDelegate.sol";
 import "../LSP6-KeyManager/ILSP6-KeyManager.sol";
 
 // libraries
-import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
+import "@erc725/smart-contracts/contracts/Utils/ERC725Utils.sol";
 
 // constants
 import "./LSP1-Constants.sol";

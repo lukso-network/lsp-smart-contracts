@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // modules
 import "./LSP3-UniversalProfileCore.sol";
-import "../submodules/ERC725/implementations/contracts/ERC725/ERC725AccountInit.sol";
+import "@erc725/smart-contracts/contracts/ERC725/ERC725AccountInit.sol";
 
 /**
  * @title Proxy implementation of a LUKSO's Universal Profile based on LSP3

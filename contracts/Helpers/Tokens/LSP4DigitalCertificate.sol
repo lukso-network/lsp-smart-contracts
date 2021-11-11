@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
+import "@erc725/smart-contracts/contracts/ERC725/ERC725Y.sol";
 import "../UniversalReceivers/ERC777-UniversalReceiver.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";

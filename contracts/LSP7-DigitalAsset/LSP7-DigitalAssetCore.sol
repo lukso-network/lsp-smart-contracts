@@ -14,7 +14,7 @@ import "./ILSP7-DigitalAsset.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
+import "@erc725/smart-contracts/contracts/ERC725/ERC725Y.sol";
 
 // library
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";

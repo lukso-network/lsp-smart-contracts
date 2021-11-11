@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../../submodules/ERC725/implementations/contracts/ERC725/IERC725Y.sol";
+import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
  * @dev LSP4 extension, for compatibility with clients & tools that expect ERC20/721.

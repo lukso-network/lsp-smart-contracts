@@ -2,8 +2,8 @@
 pragma solidity ^0.8.6;
 
 // modules
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725Y.sol";
-import "../../submodules/ERC725/implementations/contracts/ERC725/ERC725.sol";
+import "@erc725/smart-contracts/contracts/ERC725/ERC725Y.sol";
+import "@erc725/smart-contracts/contracts/ERC725/ERC725.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // interfaces
@@ -12,7 +12,7 @@ import "./ILSP6-KeyManager.sol";
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "../../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
+import "@erc725/smart-contracts/contracts/Utils/ERC725Utils.sol";
 
 /**
  * @title Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
