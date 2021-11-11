@@ -4,6 +4,7 @@ pragma solidity ^0.8.6;
 // modules
 import "./LSP6-KeyManagerCore.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract KeyManagerInit is Initializable, KeyManagerCore {
 

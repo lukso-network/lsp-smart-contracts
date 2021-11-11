@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 // modules
 import "./LSP1-UniversalReceiverDelegateCore.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 /**
  * @title Proxy Implementation of contract writing the received LSP7 and LSP8 assets into your ERC725Account using 
