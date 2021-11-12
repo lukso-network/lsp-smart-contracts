@@ -34,9 +34,7 @@ $ git clone https://github.com/lukso-network/lsp-universalprofile-smart-contract
 $ cd ./lsp-universalprofile-smart-contracts
 
 # make sure to download the ERC725 submodule
-$ git submodule update --init --recursive
 $ npm install
-$ cd ./submodules/ERC725/implementations && npm install
 ```
 
 ## Usage
@@ -46,9 +44,9 @@ $ cd ./submodules/ERC725/implementations && npm install
 You can use the contracts JSON ABI by importing them as follow:
 
 ```javascript
-import UniversalProfile from "@lukso/universalprofile-smart-contracts/build/artifacts/UniversalProfile.json";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/artifacts/UniversalProfile.json";
 
-const UniversalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
+const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
 ```
 
 #### in Solidity
