@@ -12,6 +12,7 @@ import "./ILSP7CompatibilityForERC20.sol";
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
 contract LSP7CompatibilityForERC20 is ILSP7CompatibilityForERC20, LSP7DigitalAsset {
+    /* solhint-disable no-empty-blocks */
     constructor(
         string memory name_,
         string memory symbol_,
