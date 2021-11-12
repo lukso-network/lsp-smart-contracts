@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../LSP3-UniversalProfile.sol";
-import "../LSP6-KeyManager/LSP6-KeyManager.sol";
+import "../UniversalProfile.sol";
+import "../LSP6KeyManager/LSP6KeyManager.sol";
 
 contract Executor {
 
@@ -10,7 +10,7 @@ contract Executor {
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
     /* solhint-disable */
-    KeyManager keyManager;
+    LSP6KeyManager keyManager;
     UniversalProfile universalProfile;
     /* solhint-enable */
 
@@ -18,7 +18,7 @@ contract Executor {
     // but UniversalProfile has a payable fallback function
     constructor(address payable _account, address _keyManager) {
         universalProfile = UniversalProfile(_account);
-        keyManager = KeyManager(_keyManager);
+        keyManager = LSP6KeyManager(_keyManager);
     }
 
     // contract calls

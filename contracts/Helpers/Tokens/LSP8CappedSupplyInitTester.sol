@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupplyInit.sol";
+import "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol";
 
 contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInit {
     function initialize(
@@ -16,7 +16,7 @@ contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInit {
         virtual
         initializer
     {
-        LSP8Init.initialize(name, symbol, newOwner);
+        LSP8IdentifiableDigitalAssetInit.initialize(name, symbol, newOwner);
         LSP8CappedSupplyInit.initialize(tokenSupplyCap);
     }
 

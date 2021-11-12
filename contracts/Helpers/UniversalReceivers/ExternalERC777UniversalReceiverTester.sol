@@ -2,12 +2,12 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1Delegate {
+contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1UniversalReceiverDelegate {
 
     bytes4 internal constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 

@@ -2,15 +2,15 @@
 pragma solidity ^0.8.0;
 
 // constants
-import "../../LSP1-UniversalReceiver/LSP1-Constants.sol";
+import "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 // interfaces
-import "../../LSP1-UniversalReceiver/ILSP1-UniversalReceiver.sol";
+import "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1 {
+contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
     /* solhint-disable no-empty-blocks */
     event UniversalReceiverCalled(bytes32 typeId, bytes data);
 
