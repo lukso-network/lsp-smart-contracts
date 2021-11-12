@@ -27,10 +27,8 @@ jobs:
 
       - name: Install
         if: steps.check.outputs.changed == 'true'
-        run: |-
-          git submodule update --init --recursive
+        run: |
           npm ci
-          cd ./submodules/ERC725/implementations && npm install
 
       - name: Build and Test
         if: steps.check.outputs.changed == 'true'
