@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 // modules
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@erc725/smart-contracts/contracts/ERC725/ERC725Y.sol";
+import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // interfaces
 import "../LSP1-UniversalReceiver/ILSP1-UniversalReceiver.sol";
@@ -12,7 +12,7 @@ import "./ILSP8-IdentifiableDigitalAsset.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@erc725/smart-contracts/contracts/Utils/ERC725Utils.sol";
+import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
@@ -41,33 +41,21 @@ abstract contract LSP8Core is Context, ILSP8 {
     // Mapping a `tokenId` to its authorized operator addresses.
     mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
-    
     // --- Token queries
 
     /**
      * @dev Returns the number of existing tokens.
      */
-    function totalSupply()
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function totalSupply() public view override returns (uint256) {
         return _existingTokens;
     }
-
 
     // --- Token owner queries
 
     /**
      * @dev Returns the number of tokens in ``tokenOwner``'s account.
      */
-    function balanceOf(address tokenOwner)
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function balanceOf(address tokenOwner) public view override returns (uint256) {
         return _ownedTokens[tokenOwner].length();
     }
 
@@ -78,35 +66,18 @@ abstract contract LSP8Core is Context, ILSP8 {
      *
      * - `tokenId` must exist.
      */
-    function tokenOwnerOf(bytes32 tokenId)
-        public
-        view
-        override
-        returns (address)
-    {
+    function tokenOwnerOf(bytes32 tokenId) public view override returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
-        require(
-            tokenOwner != address(0),
-            "LSP8: can not query non existent token"
-        );
+        require(tokenOwner != address(0), "LSP8: can not query non existent token");
 
         return tokenOwner;
     }
 
-    function tokenIdsOf(address tokenOwner)
-        public
-        view
-        override
-        returns(bytes32[] memory)
-    {
-        require(
-            tokenOwner != address(0),
-            "LSP8: can not query token for zero address"
-        );
+    function tokenIdsOf(address tokenOwner) public view override returns (bytes32[] memory) {
+        require(tokenOwner != address(0), "LSP8: can not query token for zero address");
 
         return _ownedTokens[tokenOwner].values();
     }
-
 
     // --- Operator functionality
 
@@ -123,11 +94,7 @@ abstract contract LSP8Core is Context, ILSP8 {
      * - caller must be current `tokenOwner` of `tokenId`.
      * - `operator` cannot be calling address.
      */
-    function authorizeOperator(address operator, bytes32 tokenId)
-        public
-        virtual
-        override
-    {
+    function authorizeOperator(address operator, bytes32 tokenId) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
         require(tokenOwner == _msgSender(), "LSP8: caller can not authorize operator for token id");
 
@@ -152,11 +119,7 @@ abstract contract LSP8Core is Context, ILSP8 {
      * - caller must be current `tokenOwner` of `tokenId`.
      * - `operator` cannot be calling address.
      */
-    function revokeOperator(address operator, bytes32 tokenId)
-        public
-        virtual
-        override
-    {
+    function revokeOperator(address operator, bytes32 tokenId) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
         require(tokenOwner == _msgSender(), "LSP8: caller can not revoke operator for token id");
 
@@ -166,19 +129,17 @@ abstract contract LSP8Core is Context, ILSP8 {
         _revokeOperator(operator, tokenOwner, tokenId);
     }
 
-    function _revokeOperator(address operator, address tokenOwner, bytes32 tokenId)
-        internal
-        virtual
-    {
+    function _revokeOperator(
+        address operator,
+        address tokenOwner,
+        bytes32 tokenId
+    ) internal virtual {
         _operators[tokenId].remove(operator);
 
         emit RevokedOperator(operator, tokenOwner, tokenId);
     }
 
-    function _clearOperators(address tokenOwner, bytes32 tokenId)
-        internal
-        virtual
-    {
+    function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
         // TODO: here is a good exmaple of why having multiple operators will be expensive.. we
         // need to clear them on token transfer
         //
@@ -188,7 +149,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
 
         uint256 operatorListLength = operatorsForTokenId.length();
-        for(uint256 i=0; i < operatorListLength; i++) {
+        for (uint256 i = 0; i < operatorListLength; i++) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId);
@@ -211,10 +172,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         override
         returns (bool)
     {
-        require(
-            _exists(tokenId),
-            "LSP8: can not query operator for non existent token"
-        );
+        require(_exists(tokenId), "LSP8: can not query operator for non existent token");
 
         return _isOperatorOrOwner(operator, tokenId);
     }
@@ -233,10 +191,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         override
         returns (address[] memory)
     {
-        require(
-            _exists(tokenId),
-            "LSP8: can not query operator for non existent token"
-        );
+        require(_exists(tokenId), "LSP8: can not query operator for non existent token");
 
         return _operators[tokenId].values();
     }
@@ -245,7 +200,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         internal
         view
         virtual
-        returns(bool)
+        returns (bool)
     {
         address tokenOwner = tokenOwnerOf(tokenId);
 
@@ -272,11 +227,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    )
-        public
-        virtual
-        override
-    {
+    ) public virtual override {
         require(
             _isOperatorOrOwner(_msgSender(), tokenId),
             "LSP8: can not transfer, caller is not the owner or operator of token"
@@ -304,17 +255,13 @@ abstract contract LSP8Core is Context, ILSP8 {
         bytes32[] memory tokenId,
         bool force,
         bytes[] memory data
-    )
-        external
-        virtual
-        override
-    {
-        require (
+    ) external virtual override {
+        require(
             from.length == to.length && from.length == tokenId.length && from.length == data.length,
             "LSP8: transferBatch list length mismatch"
         );
 
-        for(uint256 i=0; i < from.length; i++) {
+        for (uint256 i = 0; i < from.length; i++) {
             transfer(from[i], to[i], tokenId[i], force, data[i]);
         }
     }
@@ -344,10 +291,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         require(to != address(0), "LSP8: can not mint to zero address");
         require(!_exists(tokenId), "LSP8: tokenId already minted");
 
@@ -373,10 +317,7 @@ abstract contract LSP8Core is Context, ILSP8 {
      *
      * Emits a {Transfer} event.
      */
-    function _burn(bytes32 tokenId, bytes memory data)
-        internal
-        virtual
-    {
+    function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
         address operator = _msgSender();
 
@@ -409,14 +350,8 @@ abstract contract LSP8Core is Context, ILSP8 {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-    {
-        require(
-            tokenOwnerOf(tokenId) == from,
-            "LSP8: transfer of tokenId from incorrect owner"
-        );
+    ) internal virtual {
+        require(tokenOwnerOf(tokenId) == from, "LSP8: transfer of tokenId from incorrect owner");
         require(to != address(0), "LSP8: can not transfer to zero address");
 
         address operator = _msgSender();
@@ -435,7 +370,6 @@ abstract contract LSP8Core is Context, ILSP8 {
         emit Transfer(operator, from, to, tokenId, force, data);
 
         _notifyTokenReceiver(from, to, tokenId, force, data);
-
     }
 
     /**
@@ -453,10 +387,7 @@ abstract contract LSP8Core is Context, ILSP8 {
         address from,
         address to,
         bytes32 tokenId
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         // silence compiler warning about unused variable
         tokenId;
 
@@ -480,19 +411,13 @@ abstract contract LSP8Core is Context, ILSP8 {
         address to,
         bytes32 tokenId,
         bytes memory data
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         if (
             ERC165Checker.supportsERC165(from) &&
             ERC165Checker.supportsInterface(from, _LSP1_INTERFACE_ID)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
-            ILSP1(from).universalReceiver(
-                _LSP8TOKENSSENDER_TYPE_ID,
-                packedData
-            );
+            ILSP1(from).universalReceiver(_LSP8TOKENSSENDER_TYPE_ID, packedData);
         }
     }
 
@@ -508,19 +433,13 @@ abstract contract LSP8Core is Context, ILSP8 {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         if (
             ERC165Checker.supportsERC165(to) &&
             ERC165Checker.supportsInterface(to, _LSP1_INTERFACE_ID)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
-            ILSP1(to).universalReceiver(
-                _LSP8TOKENSRECIPIENT_TYPE_ID,
-                packedData
-            );
+            ILSP1(to).universalReceiver(_LSP8TOKENSRECIPIENT_TYPE_ID, packedData);
         } else if (!force) {
             if (to.isContract()) {
                 revert("LSP8: token receiver contract missing LSP1 interface");

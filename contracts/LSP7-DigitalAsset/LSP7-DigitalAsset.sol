@@ -8,13 +8,12 @@ import "../LSP4-DigitalAsset-Metadata/LSP4-Constants.sol";
 // modules
 import "./LSP7-DigitalAssetCore.sol";
 import "../LSP4-DigitalAsset-Metadata/LSP4-DigitalAsset-Metadata.sol";
-import "@erc725/smart-contracts/contracts/ERC725/ERC725Y.sol";
+import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 /**
  * @dev Implementation of a LSP7 compliant contract.
  */
 contract LSP7 is LSP4, LSP7Core {
-
     constructor(
         string memory name_,
         string memory symbol_,

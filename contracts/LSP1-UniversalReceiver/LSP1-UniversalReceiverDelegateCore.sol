@@ -3,24 +3,26 @@ pragma solidity ^0.8.0;
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
-import "@erc725/smart-contracts/contracts/ERC725/ERC725Y.sol";
+import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // interfaces
 import "../LSP1-UniversalReceiver/ILSP1-UniversalReceiverDelegate.sol";
 import "../LSP6-KeyManager/ILSP6-KeyManager.sol";
 
 // libraries
-import "@erc725/smart-contracts/contracts/Utils/ERC725Utils.sol";
+import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 
 // constants
 import "./LSP1-Constants.sol";
 import "../LSP7-DigitalAsset/LSP7-Constants.sol";
 import "../LSP8-IdentifiableDigitalAsset/LSP8-Constants.sol";
 
-interface ILSPToken {function balanceOf(address _addr) external view returns (uint256);}
+interface ILSPToken {
+    function balanceOf(address _addr) external view returns (uint256);
+}
 
 /**
- * @title Core Implementation of contract writing the received LSP7 and LSP8 assets into your ERC725Account using 
+ * @title Core Implementation of contract writing the received LSP7 and LSP8 assets into your ERC725Account using
  *        the LSP5-ReceivedAsset standard and removing the sent assets.
  *
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
@@ -43,7 +45,6 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
         bytes32 typeId,
         bytes memory data
     ) public override returns (bytes memory result) {
-        
         address keyManagerAddress = ERC725Y(msg.sender).owner();
         bytes32 lsp5MapKey = _generateMapKey(abi.encodePacked(sender));
 
@@ -57,7 +58,7 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
                 result = ILSP6(keyManagerAddress).execute(payload);
             }
 
-        // check if sending tokens
+            // check if sending tokens
         } else if (typeId == _LSP7TOKENSSENDER_TYPE_ID || typeId == _LSP8TOKENSSENDER_TYPE_ID) {
             // extracting the initial balance
             uint256 balance = ILSPToken(sender).balanceOf(msg.sender);
@@ -79,7 +80,7 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
         } else {
             return "";
         }
-    } 
+    }
 
     // internal functions
 
@@ -104,7 +105,6 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
 
             values[0] = abi.encodePacked(uint256(1));
             values[2] = abi.encodePacked(bytes8(0), _getInterfaceIdFor(_typeId));
-
         } else if (arrayLength.length == 32) {
             uint256 lengthOfLSP5Array = abi.decode(arrayLength, (uint256));
             uint256 newLengthOfLSP5Array = lengthOfLSP5Array + 1;
@@ -112,7 +112,10 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
             keys[1] = _generateArrayKeyAtIndex(newLengthOfLSP5Array - 1);
 
             values[0] = abi.encodePacked(newLengthOfLSP5Array);
-            values[2] = abi.encodePacked(bytes8(uint64(lengthOfLSP5Array)), _getInterfaceIdFor(_typeId));
+            values[2] = abi.encodePacked(
+                bytes8(uint64(lengthOfLSP5Array)),
+                _getInterfaceIdFor(_typeId)
+            );
         }
         // returns payload to execute
         payload = _setDataPayload(keys, values);
@@ -145,7 +148,7 @@ abstract contract UniversalReceiverDelegateCore is ILSP1Delegate, ERC165Storage 
             keys[2] = arrayKeyToRemove;
             values[2] = "";
 
-        // if its not then swap the KeyToRemove with lastKey in the Array
+            // if its not then swap the KeyToRemove with lastKey in the Array
         } else {
             bytes32 lastKey = _generateArrayKeyAtIndex(newLength);
             bytes memory lastKeyValue = IERC725Y(msg.sender).getDataSingle(lastKey);

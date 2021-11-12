@@ -14,7 +14,7 @@ import "./ILSP7-DigitalAsset.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@erc725/smart-contracts/contracts/ERC725/ERC725Y.sol";
+import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // library
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -27,7 +27,6 @@ abstract contract LSP7Core is Context, ILSP7 {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Address for address;
 
-    
     // --- Storage
 
     bool internal _isNFT;
@@ -40,7 +39,6 @@ abstract contract LSP7Core is Context, ILSP7 {
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
     mapping(address => mapping(address => uint256)) internal _operatorAuthorizedAmount;
 
-    
     // --- Token queries
 
     /**
@@ -50,43 +48,26 @@ abstract contract LSP7Core is Context, ILSP7 {
      * no way affects any of the arithmetic of the contract, including
      * {balanceOf} and {transfer}.
      */
-    function decimals()
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function decimals() public view override returns (uint256) {
         return _isNFT ? 0 : 18;
     }
 
     /**
      * @dev Returns the number of existing tokens.
      */
-    function totalSupply()
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function totalSupply() public view override returns (uint256) {
         return _existingTokens;
     }
 
-    
     // --- Token owner queries
 
     /**
      * @dev Returns the number of tokens owned by `tokenOwner`.
      */
-    function balanceOf(address tokenOwner)
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function balanceOf(address tokenOwner) public view override returns (uint256) {
         return _tokenOwnerBalances[tokenOwner];
     }
 
-    
     // --- Operator functionality
 
     /**
@@ -101,11 +82,7 @@ abstract contract LSP7Core is Context, ILSP7 {
      * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      */
-    function authorizeOperator(address operator, uint256 amount)
-        public
-        virtual
-        override
-    {
+    function authorizeOperator(address operator, uint256 amount) public virtual override {
         _updateOperator(_msgSender(), operator, amount);
     }
 
@@ -121,11 +98,7 @@ abstract contract LSP7Core is Context, ILSP7 {
      * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      */
-    function revokeOperator(address operator)
-        public
-        virtual
-        override
-    {
+    function revokeOperator(address operator) public virtual override {
         _updateOperator(_msgSender(), operator, 0);
     }
 
@@ -143,13 +116,23 @@ abstract contract LSP7Core is Context, ILSP7 {
      * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      */
-    function _updateOperator(address tokenOwner, address operator, uint256 amount)
-        internal
-        virtual
-    {
-        require(operator != tokenOwner, "LSP7: updating operator failed, can not use token owner as operator");
-        require(operator != address(0), "LSP7: updating operator failed, operator can not be zero address");
-        require(tokenOwner != address(0), "LSP7: updating operator failed, can not set operator for zero address");
+    function _updateOperator(
+        address tokenOwner,
+        address operator,
+        uint256 amount
+    ) internal virtual {
+        require(
+            operator != tokenOwner,
+            "LSP7: updating operator failed, can not use token owner as operator"
+        );
+        require(
+            operator != address(0),
+            "LSP7: updating operator failed, operator can not be zero address"
+        );
+        require(
+            tokenOwner != address(0),
+            "LSP7: updating operator failed, can not set operator for zero address"
+        );
 
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
 
@@ -179,7 +162,6 @@ abstract contract LSP7Core is Context, ILSP7 {
         }
     }
 
-    
     // --- Transfer functionality
 
     /**
@@ -201,15 +183,14 @@ abstract contract LSP7Core is Context, ILSP7 {
         uint256 amount,
         bool force,
         bytes memory data
-    )
-        public
-        virtual
-        override
-    {
+    ) public virtual override {
         address operator = _msgSender();
         if (operator != from) {
             uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
-            require(operatorAmount >= amount, "LSP7: transfer amount exceeds operator authorized amount");
+            require(
+                operatorAmount >= amount,
+                "LSP7: transfer amount exceeds operator authorized amount"
+            );
             _updateOperator(from, operator, _operatorAuthorizedAmount[from][operator] - amount);
         }
 
@@ -237,17 +218,13 @@ abstract contract LSP7Core is Context, ILSP7 {
         uint256[] memory amount,
         bool force,
         bytes[] memory data
-    )
-        external
-        virtual
-        override
-    {
-        require (
+    ) external virtual override {
+        require(
             from.length == to.length && from.length == amount.length && from.length == data.length,
             "LSP7: transferBatch list length mismatch"
         );
 
-        for(uint256 i=0; i < from.length; i++) {
+        for (uint256 i = 0; i < from.length; i++) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(from[i], to[i], amount[i], force, data[i]);
         }
@@ -267,10 +244,7 @@ abstract contract LSP7Core is Context, ILSP7 {
         uint256 amount,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         require(to != address(0), "LSP7: mint to the zero address not allowed");
 
         address operator = _msgSender();
@@ -296,16 +270,23 @@ abstract contract LSP7Core is Context, ILSP7 {
      *
      * Emits a {Transfer} event.
      */
-    function _burn(address from, uint256 amount, bytes memory data)
-        internal
-        virtual
-    {
+    function _burn(
+        address from,
+        uint256 amount,
+        bytes memory data
+    ) internal virtual {
         require(from != address(0), "LSP7: burn from the zero address");
-        require(_tokenOwnerBalances[from] >= amount, "LSP7: burn amount exceeds tokenOwner balance");
+        require(
+            _tokenOwnerBalances[from] >= amount,
+            "LSP7: burn amount exceeds tokenOwner balance"
+        );
 
         address operator = _msgSender();
         if (operator != from) {
-            require(_operatorAuthorizedAmount[from][operator] >= amount, "LSP7: burn amount exceeds operator authorized amount");
+            require(
+                _operatorAuthorizedAmount[from][operator] >= amount,
+                "LSP7: burn amount exceeds operator authorized amount"
+            );
             _operatorAuthorizedAmount[from][operator] -= amount;
         }
 
@@ -337,13 +318,13 @@ abstract contract LSP7Core is Context, ILSP7 {
         uint256 amount,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         require(from != address(0), "LSP7: transfer from the zero address");
         require(to != address(0), "LSP7: transfer to the zero address");
-        require(_tokenOwnerBalances[from] >= amount, "LSP7: transfer amount exceeds tokenOwner balance");
+        require(
+            _tokenOwnerBalances[from] >= amount,
+            "LSP7: transfer amount exceeds tokenOwner balance"
+        );
 
         address operator = _msgSender();
 
@@ -374,10 +355,7 @@ abstract contract LSP7Core is Context, ILSP7 {
         address from,
         address to,
         uint256 amount
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         // tokens being minted
         if (from == address(0)) {
             _existingTokens += amount;
@@ -398,19 +376,13 @@ abstract contract LSP7Core is Context, ILSP7 {
         address to,
         uint256 amount,
         bytes memory data
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         if (
             ERC165Checker.supportsERC165(from) &&
             ERC165Checker.supportsInterface(from, _LSP1_INTERFACE_ID)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
-            ILSP1(from).universalReceiver(
-                _LSP7TOKENSSENDER_TYPE_ID,
-                packedData
-            );
+            ILSP1(from).universalReceiver(_LSP7TOKENSSENDER_TYPE_ID, packedData);
         }
     }
 
@@ -426,19 +398,13 @@ abstract contract LSP7Core is Context, ILSP7 {
         uint256 amount,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         if (
             ERC165Checker.supportsERC165(to) &&
             ERC165Checker.supportsInterface(to, _LSP1_INTERFACE_ID)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
-            ILSP1(to).universalReceiver(
-                _LSP7TOKENSRECIPIENT_TYPE_ID,
-                packedData
-            );
+            ILSP1(to).universalReceiver(_LSP7TOKENSRECIPIENT_TYPE_ID, packedData);
         } else if (!force) {
             if (to.isContract()) {
                 revert("LSP7: token receiver contract missing LSP1 interface");
