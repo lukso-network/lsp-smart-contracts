@@ -5,23 +5,25 @@ const fs = require("fs");
 // Standard version
 // ------------------
 const UniversalProfile = fs.readFileSync(
-  "./build/artifacts/contracts/LSP3-UniversalProfile.sol/UniversalProfile.json"
+  "./artifacts/contracts/LSP3-UniversalProfile.sol/UniversalProfile.json"
 );
 const KeyManager = fs.readFileSync(
-  "./build/artifacts/contracts/LSP6-KeyManager/LSP6-KeyManager.sol/KeyManager.json"
+  "./artifacts/contracts/LSP6KeyManager/LSP6KeyManager.sol/LSP6KeyManager.json"
 );
 const UniversalReceiverDelegate = fs.readFileSync(
-  "./build/artifacts/contracts/LSP1-UniversalReceiver/LSP1-UniversalReceiverDelegate.sol/UniversalReceiverDelegate.json"
+  "./artifacts/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegate.sol/LSP1UniversalReceiverDelegate.json"
 );
-const LSP7 = fs.readFileSync("./build/artifacts/contracts/LSP7-DigitalAsset/LSP7-DigitalAsset.sol/LSP7.json");
+const LSP7 = fs.readFileSync(
+  "./artifacts/contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol/LSP7DigitalAsset.json"
+);
 const LSP7CappedSupply = fs.readFileSync(
-  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7-CappedSupply.sol/LSP7CappedSupply.json"
+  "./artifacts/contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol/LSP7CappedSupply.json"
 );
 const LSP8 = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAsset.sol/LSP8.json"
+  "./artifacts/contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol/LSP8IdentifiableDigitalAsset.json"
 );
 const LSP8CappedSupply = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupply.sol/LSP8CappedSupply.json"
+  "./artifacts/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol/LSP8CappedSupply.json"
 );
 
 const UniversalProfile_ABI = JSON.parse(UniversalProfile).abi;
@@ -35,25 +37,25 @@ const LSP8CappedSupply_ABI = JSON.parse(LSP8CappedSupply).abi;
 // Proxy version
 // ------------------
 const UniversalProfileInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP3-UniversalProfileInit.sol/UniversalProfileInit.json"
+  "./artifacts/contracts/UniversalProfileInit.sol/UniversalProfileInit.json"
 );
 const KeyManagerInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP6-KeyManager/LSP6-KeyManagerInit.sol/KeyManagerInit.json"
+  "./artifacts/contracts/LSP6KeyManager/LSP6KeyManagerInit.sol/LSP6KeyManagerInit.json"
 );
 const UniversalReceiverDelegateInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP1-UniversalReceiver/LSP1-UniversalReceiverDelegateInit.sol/UniversalReceiverDelegateInit.json"
+  "./artifacts/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateInit.sol/LSP1UniversalReceiverDelegateInit.json"
 );
 const LSP7Init = fs.readFileSync(
-  "./build/artifacts/contracts/LSP7-DigitalAsset/LSP7-DigitalAssetInit.sol/LSP7Init.json"
+  "./artifacts/contracts/LSP7DigitalAsset/LSP7DigitalAssetInit.sol/LSP7DigitalAssetInit.json"
 );
 const LSP7CappedSupplyInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7-CappedSupplyInit.sol/LSP7CappedSupplyInit.json"
+  "./artifacts/contracts/LSP7DigitalAsset/extensions/LSP7CappedSupplyInit.sol/LSP7CappedSupplyInit.json"
 );
 const LSP8Init = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAssetInit.sol/LSP8Init.json"
+  "./artifacts/contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInit.sol/LSP8IdentifiableDigitalAssetInit.json"
 );
 const LSP8CappedSupplyInit = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CappedSupplyInit.sol/LSP8CappedSupplyInit.json"
+  "./artifacts/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol/LSP8CappedSupplyInit.json"
 );
 
 const UniversalProfileInit_ABI = JSON.parse(UniversalProfileInit).abi;
@@ -67,10 +69,10 @@ const LSP8CappedSupplyInit_ABI = JSON.parse(LSP8CappedSupplyInit).abi;
 // ERC Compatible tokens
 // ------------------------
 const LSP7CompatibilityForERC20 = fs.readFileSync(
-  "./build/artifacts/contracts/LSP7-DigitalAsset/extensions/LSP7-CompatibilityForERC20.sol/LSP7CompatibilityForERC20.json"
+  "./artifacts/contracts/LSP7DigitalAsset/extensions/LSP7CompatibilityForERC20.sol/LSP7CompatibilityForERC20.json"
 );
 const LSP8CompatibilityForERC721 = fs.readFileSync(
-  "./build/artifacts/contracts/LSP8-IdentifiableDigitalAsset/extensions/LSP8-CompatibilityForERC721.sol/LSP8CompatibilityForERC721.json"
+  "./artifacts/contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721.sol/LSP8CompatibilityForERC721.json"
 );
 
 const LSP7CompatibilityForERC20_ABI = JSON.parse(LSP7CompatibilityForERC20).abi;
@@ -98,18 +100,27 @@ public final class UPContractsAbi {
       '\\"'
     )}"
 
-    public static let KEY_MANAGER_ABI = "${JSON.stringify(KeyManager_ABI).replace(/"/g, '\\"')}"
+    public static let LSP6_KEY_MANAGER_ABI = "${JSON.stringify(KeyManager_ABI).replace(
+      /"/g,
+      '\\"'
+    )}"
     
-    public static let UNIVERSAL_RECEIVER_DELEGATE_ABI = "${JSON.stringify(
+    public static let LSP1_UNIVERSAL_RECEIVER_DELEGATE_ABI = "${JSON.stringify(
       UniversalReceiverDelegate_ABI
     ).replace(/"/g, '\\"')}"
 
-    public static let LSP7_ABI = "${JSON.stringify(LSP7_ABI).replace(/"/g, '\\"')}"    
+    public static let LSP7_DIGITAL_ASSET_ABI = "${JSON.stringify(LSP7_ABI).replace(
+      /"/g,
+      '\\"'
+    )}"    
     public static let LSP7_CAPPED_SUPPLY_ABI = "${JSON.stringify(LSP7CappedSupply_ABI).replace(
       /"/g,
       '\\"'
     )}"    
-    public static let LSP8_ABI = "${JSON.stringify(LSP8_ABI).replace(/"/g, '\\"')}"    
+    public static let LSP8_IDENTIFIABLE_DIGITAL_ASSET_ABI = "${JSON.stringify(LSP8_ABI).replace(
+      /"/g,
+      '\\"'
+    )}"    
     public static let LSP8_CAPPED_SUPPLY_ABI = "${JSON.stringify(LSP8CappedSupply_ABI).replace(
       /"/g,
       '\\"'
@@ -122,21 +133,26 @@ public final class UPContractsAbi {
       UniversalProfileInit_ABI
     ).replace(/"/g, '\\"')}"    
 
-    public static let KEY_MANAGER_INIT_ABI = "${JSON.stringify(KeyManagerInit_ABI).replace(
+    public static let LSP6_KEY_MANAGER_INIT_ABI = "${JSON.stringify(KeyManagerInit_ABI).replace(
       /"/g,
       '\\"'
     )}" 
     
-    public static let UNIVERSAL_RECEIVER_DELEGATE_INIT_ABI = "${JSON.stringify(
+    public static let LSP1_UNIVERSAL_RECEIVER_DELEGATE_INIT_ABI = "${JSON.stringify(
       UniversalReceiverDelegateInit_ABI
     ).replace(/"/g, '\\"')}"
 
-    public static let LSP7_INIT_ABI = "${JSON.stringify(LSP7Init_ABI).replace(/"/g, '\\"')}"    
+    public static let LSP7_DIGITAL_ASSET_INIT_ABI = "${JSON.stringify(LSP7Init_ABI).replace(
+      /"/g,
+      '\\"'
+    )}"    
     public static let LSP7_CAPPED_SUPPLY_INIT_ABI = "${JSON.stringify(
       LSP7CappedSupplyInit_ABI
     ).replace(/"/g, '\\"')}"  
 
-    public static let LSP8_INIT_ABI = "${JSON.stringify(LSP8Init_ABI).replace(/"/g, '\\"')}"    
+    public static let LSP8_IDENTIFIABLE_DIGITAL_ASSET_INIT_ABI = "${JSON.stringify(
+      LSP8Init_ABI
+    ).replace(/"/g, '\\"')}"    
     public static let LSP8_CAPPED_SUPPLY_INIT_ABI = "${JSON.stringify(
       LSP8CappedSupplyInit_ABI
     ).replace(/"/g, '\\"')}"    
