@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 // constants
-import "../../LSP1-UniversalReceiver/LSP1Constants.sol";
+import "../../LSP1-UniversalReceiver/LSP1-Constants.sol";
 
 // interfaces
-import "../../LSP1-UniversalReceiver/ILSP1_UniversalReceiver.sol";
+import "../../LSP1-UniversalReceiver/ILSP1-UniversalReceiver.sol";
 
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
