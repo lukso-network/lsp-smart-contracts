@@ -22,7 +22,7 @@ For more information see [Documentation](https://docs.lukso.tech/standards/Unive
 Universal Profile smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts).
 
 ```bash
-npm install @lukso/universalprofile-smart-contracts --save
+npm install @lukso/universalprofile-smart-contracts
 ```
 
 #### cloning the repository
@@ -32,7 +32,6 @@ Alternatively you can also clone the repository and install its dependencies to 
 ```bash
 $ git clone https://github.com/lukso-network/lsp-universalprofile-smart-contracts.git
 $ cd ./lsp-universalprofile-smart-contracts
-
 $ npm install
 ```
 
