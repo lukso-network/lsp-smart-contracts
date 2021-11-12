@@ -4,8 +4,8 @@ import { ethers } from "hardhat";
 import {
   UniversalProfile,
   UniversalProfile__factory,
-  KeyManager,
-  KeyManager__factory,
+  LSP6KeyManager,
+  LSP6KeyManager__factory,
   Executor,
   Executor__factory,
 } from "../../types";
@@ -19,7 +19,7 @@ describe("Executor interacting with KeyManager", () => {
 
   let owner: SignerWithAddress;
 
-  let universalProfile: UniversalProfile, keyManager: KeyManager, executor: Executor;
+  let universalProfile: UniversalProfile, keyManager: LSP6KeyManager, executor: Executor;
 
   /**
    * @dev this is necessary when the function being called in the contract
@@ -35,7 +35,7 @@ describe("Executor interacting with KeyManager", () => {
 
   beforeEach(async () => {
     universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManager = await new KeyManager__factory(owner).deploy(universalProfile.address);
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
     executor = await new Executor__factory(owner).deploy(
       universalProfile.address,
       keyManager.address

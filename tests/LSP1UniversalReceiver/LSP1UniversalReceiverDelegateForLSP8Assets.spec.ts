@@ -1,15 +1,15 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
-  KeyManager__factory,
-  UniversalReceiverDelegate,
-  UniversalReceiverDelegate__factory,
+  LSP6KeyManager__factory,
+  LSP1UniversalReceiverDelegate,
+  LSP1UniversalReceiverDelegate__factory,
 } from "../../types";
 import {
   UniversalProfile,
   UniversalProfile__factory,
   KeyManagerHelper,
-  KeyManager,
+  LSP6KeyManager,
   LSP8Tester,
   LSP8Tester__factory,
   URDRevert,
@@ -45,10 +45,10 @@ describe("Universal Receiver Delegate Contract", () => {
     let abiCoder;
     let owner;
     let owner2;
-    let keyManager1: KeyManager;
-    let keyManager2: KeyManager;
-    let universalReceiverDelegate1: UniversalReceiverDelegate;
-    let universalReceiverDelegate2: UniversalReceiverDelegate;
+    let keyManager1: LSP6KeyManager;
+    let keyManager2: LSP6KeyManager;
+    let universalReceiverDelegate1: LSP1UniversalReceiverDelegate;
+    let universalReceiverDelegate2: LSP1UniversalReceiverDelegate;
     let universalProfile1: UniversalProfile;
     let universalProfile2: UniversalProfile;
     let tokenA: LSP8Tester;
@@ -70,11 +70,11 @@ describe("Universal Receiver Delegate Contract", () => {
       tokenC = await new LSP8Tester__factory(owner).deploy("TokenC", "TKC", owner.address);
       tokenD = await new LSP8Tester__factory(owner).deploy("TokenD", "TKD", owner.address);
       tokenE = await new LSP8Tester__factory(owner).deploy("TokenE", "TKE", owner.address);
-      universalReceiverDelegate1 = await new UniversalReceiverDelegate__factory(owner).deploy();
-      universalReceiverDelegate2 = await new UniversalReceiverDelegate__factory(owner2).deploy();
+      universalReceiverDelegate1 = await new LSP1UniversalReceiverDelegate__factory(owner).deploy();
+      universalReceiverDelegate2 = await new LSP1UniversalReceiverDelegate__factory(owner2).deploy();
       URDrevert = await new URDRevert__factory(owner).deploy();
-      keyManager1 = await new KeyManager__factory(owner).deploy(universalProfile1.address);
-      keyManager2 = await new KeyManager__factory(owner2).deploy(universalProfile2.address);
+      keyManager1 = await new LSP6KeyManager__factory(owner).deploy(universalProfile1.address);
+      keyManager2 = await new LSP6KeyManager__factory(owner2).deploy(universalProfile2.address);
 
       // FOR UNIVERSALPROFILE 1
 

@@ -6,7 +6,7 @@ import {
   shouldBehaveLikeLSP7,
   shouldInitializeLikeLSP7,
   LSP7TestContext,
-} from "./LSP7-DigitalAsset.behaviour";
+} from "./LSP7DigitalAsset.behaviour";
 
 describe("LSP7", () => {
   describe("when using LSP7 contract with constructor", () => {

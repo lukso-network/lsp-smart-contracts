@@ -2,8 +2,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 import {
-  KeyManagerInit,
-  KeyManagerInit__factory,
+  LSP6KeyManagerInit,
+  LSP6KeyManagerInit__factory,
   Reentrancy,
   Reentrancy__factory,
   TargetContract,
@@ -28,9 +28,9 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
   // core contracts
   let baseUniversalProfile: UniversalProfileInit,
-    baseKeyManager: KeyManagerInit,
+    baseKeyManager: LSP6KeyManagerInit,
     proxyUniversalProfile: UniversalProfileInit,
-    proxyKeyManager: KeyManagerInit;
+    proxyKeyManager: LSP6KeyManagerInit;
 
   // library + helpers contracts
   let targetContract: TargetContract, maliciousContract: Reentrancy;
@@ -56,7 +56,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
     // 1. deploy base contracts
     baseUniversalProfile = await new UniversalProfileInit__factory(owner).deploy();
-    baseKeyManager = await new KeyManagerInit__factory(owner).deploy();
+    baseKeyManager = await new LSP6KeyManagerInit__factory(owner).deploy();
 
     // 2. deploy proxy contracts
     let proxyUniversalProfileAddress = await deployProxy(baseUniversalProfile.address, owner);
@@ -576,7 +576,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let result = await targetContract.callStatic.getNumber();
       expect(
         parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
-          ethers.BigNumber.from(initialNumber).toNumber()
+        ethers.BigNumber.from(initialNumber).toNumber()
       );
       expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(newNumber);
     });

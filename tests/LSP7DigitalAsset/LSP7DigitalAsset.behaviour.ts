@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   LSP7Tester,
-  LSP7,
+  LSP7DigitalAsset,
   TokenReceiverWithLSP1,
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
@@ -993,7 +993,7 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 };
 
 export type LSP7InitializeTestContext = {
-  lsp7: LSP7;
+  lsp7: LSP7DigitalAsset;
   deployParams: LSP7DeployParams;
   initializeTransaction: TransactionResponse;
 };

@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
-  LSP8,
+  LSP8IdentifiableDigitalAsset,
   LSP8Tester,
   TokenReceiverWithLSP1,
   TokenReceiverWithLSP1__factory,
@@ -1125,7 +1125,7 @@ export const shouldBehaveLikeLSP8 = (buildContext: () => Promise<LSP8TestContext
 };
 
 export type LSP8InitializeTestContext = {
-  lsp8: LSP8;
+  lsp8: LSP8IdentifiableDigitalAsset;
   initializeTransaction: TransactionResponse;
   deployParams: LSP8DeployParams;
 };

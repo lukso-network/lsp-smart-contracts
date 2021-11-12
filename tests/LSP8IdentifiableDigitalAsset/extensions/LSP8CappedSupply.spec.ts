@@ -8,8 +8,8 @@ import {
   shouldBehaveLikeLSP8CappedSupply,
   LSP8CappedSupplyTestContext,
   getNamedAccounts,
-} from "./LSP8-CappedSupply.behaviour";
-import { shouldInitializeLikeLSP8 } from "../LSP8-IdentifiableDigitalAsset.behaviour";
+} from "./LSP8CappedSupply.behaviour";
+import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
 
 describe("LSP8CappedSupply", () => {
   describe("when using LSP8CappedSupply with constructor", () => {

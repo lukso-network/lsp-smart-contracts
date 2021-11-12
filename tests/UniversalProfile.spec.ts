@@ -5,8 +5,8 @@ import { calculateCreate2 } from "eth-create2-calculator";
 import {
   UniversalProfile,
   UniversalProfile__factory,
-  KeyManager,
-  KeyManager__factory,
+  LSP6KeyManager,
+  LSP6KeyManager__factory,
   UniversalReceiverAddressStore,
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
@@ -764,8 +764,7 @@ describe("UniversalProfile", () => {
   describe("Using KeyManager as owner", () => {
     let provider = ethers.provider;
 
-    let erc725Utils: ERC725Utils;
-    let keyManager: KeyManager;
+    let keyManager: LSP6KeyManager;
     let UniversalProfile: UniversalProfile;
     let owner: SignerWithAddress;
     let signer: SignerWithAddress;
@@ -776,7 +775,7 @@ describe("UniversalProfile", () => {
       signer = accounts[7];
       thirdParty = accounts[8];
       UniversalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-      keyManager = await new KeyManager__factory(owner).deploy(UniversalProfile.address);
+      keyManager = await new LSP6KeyManager__factory(owner).deploy(UniversalProfile.address);
 
       // give all permissions to owner
       await UniversalProfile.connect(owner).setData(

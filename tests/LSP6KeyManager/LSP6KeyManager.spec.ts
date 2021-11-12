@@ -7,8 +7,8 @@ import {
   UniversalProfile__factory,
   KeyManagerHelper,
   KeyManagerHelper__factory,
-  KeyManager,
-  KeyManager__factory,
+  LSP6KeyManager,
+  LSP6KeyManager__factory,
   TargetContract,
   TargetContract__factory,
   Reentrancy,
@@ -195,7 +195,7 @@ describe("KeyManager", () => {
   let accounts: SignerWithAddress[] = [];
 
   let universalProfile: UniversalProfile,
-    keyManager: KeyManager,
+    keyManager: LSP6KeyManager,
     targetContract: TargetContract,
     maliciousContract: Reentrancy;
 
@@ -219,7 +219,7 @@ describe("KeyManager", () => {
     newUser = accounts[5];
 
     universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManager = await new KeyManager__factory(owner).deploy(universalProfile.address);
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
     targetContract = await new TargetContract__factory(owner).deploy();
     maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(keyManager.address);
 
@@ -467,11 +467,11 @@ describe("KeyManager", () => {
     it("(should pass): adding 5 singleton keys", async () => {
       // prettier-ignore
       let elements = {
-        "MyFirstKey":   "aaaaaaaaaa",
-        "MySecondKey":  "bbbbbbbbbb",
-        "MyThirdKey":   "cccccccccc",
-        "MyFourthKey":  "dddddddddd",
-        "MyFifthKey":   "eeeeeeeeee",
+        "MyFirstKey": "aaaaaaaaaa",
+        "MySecondKey": "bbbbbbbbbb",
+        "MyThirdKey": "cccccccccc",
+        "MyFourthKey": "dddddddddd",
+        "MyFifthKey": "eeeeeeeeee",
       };
 
       let [keys, values] = generateKeysAndValues(elements);
@@ -916,7 +916,7 @@ describe("KeyManager", () => {
       let result = await targetContract.callStatic.getNumber();
       expect(
         parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
-          ethers.BigNumber.from(initialNumber).toNumber()
+        ethers.BigNumber.from(initialNumber).toNumber()
       );
       expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(newNumber);
     });
