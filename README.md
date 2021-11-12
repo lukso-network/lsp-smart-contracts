@@ -33,7 +33,6 @@ Alternatively you can also clone the repository and install its dependencies to 
 $ git clone https://github.com/lukso-network/lsp-universalprofile-smart-contracts.git
 $ cd ./lsp-universalprofile-smart-contracts
 
-# make sure to download the ERC725 submodule
 $ npm install
 ```
 
@@ -52,7 +51,7 @@ const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultO
 #### in Solidity
 
 ```solidity
-import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/LSP3-UniversalProfile.sol";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
 ```
 
 ## **Contribute**
