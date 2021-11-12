@@ -7,7 +7,7 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
-} from "../../build/types";
+} from "../../types";
 import { INTERFACE_IDS } from "../utils/constants";
 
 import type { BigNumber } from "ethers";

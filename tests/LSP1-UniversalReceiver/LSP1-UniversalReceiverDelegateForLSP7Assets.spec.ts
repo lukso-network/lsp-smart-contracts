@@ -4,7 +4,7 @@ import {
   KeyManager__factory,
   UniversalReceiverDelegate,
   UniversalReceiverDelegate__factory,
-} from "../../build/types";
+} from "../../types";
 import {
   UniversalProfile,
   UniversalProfile__factory,
@@ -14,7 +14,7 @@ import {
   LSP7Tester__factory,
   URDRevert,
   URDRevert__factory,
-} from "../../build/types";
+} from "../../types";
 
 import {
   ALL_PERMISSIONS_SET,

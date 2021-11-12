@@ -10,7 +10,7 @@ import {
   TargetContract__factory,
   UniversalProfileInit,
   UniversalProfileInit__factory,
-} from "../../build/types";
+} from "../../types";
 
 import { solidityKeccak256 } from "ethers/lib/utils";
 

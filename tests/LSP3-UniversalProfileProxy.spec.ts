@@ -11,7 +11,7 @@ import {
   ERC777UniversalReceiver__factory,
   ExternalERC777UniversalReceiverTester__factory,
   LSP4DigitalCertificate__factory,
-} from "../build/types";
+} from "../types";
 
 // custom helpers
 import { getDeploymentCost } from "./utils/deploy";

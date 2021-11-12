@@ -1,4 +1,4 @@
-import { LSP8Tester__factory, LSP8InitTester__factory } from "../../build/types";
+import { LSP8Tester__factory, LSP8InitTester__factory } from "../../types";
 import { deployProxy } from "../utils/proxy";
 import {
   getNamedAccounts,

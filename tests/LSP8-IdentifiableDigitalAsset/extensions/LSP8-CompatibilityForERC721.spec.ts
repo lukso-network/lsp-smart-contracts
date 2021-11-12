@@ -7,7 +7,7 @@ import {
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
-} from "../../../build/types";
+} from "../../../types";
 import { tokenIdAsBytes32 } from "../../utils/tokens";
 
 import type { BytesLike } from "ethers";

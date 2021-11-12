@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { LSP4CompatibilityTester, LSP4CompatibilityTester__factory } from "../../build/types";
+import { LSP4CompatibilityTester, LSP4CompatibilityTester__factory } from "../../types";
 
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -31,9 +31,11 @@ describe("LSP4Compatibility", () => {
       newOwner: accounts.owner.address,
     };
 
-    const lsp4Compatibility = await new LSP4CompatibilityTester__factory(
-      accounts.owner
-    ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
+    const lsp4Compatibility = await new LSP4CompatibilityTester__factory(accounts.owner).deploy(
+      deployParams.name,
+      deployParams.symbol,
+      deployParams.newOwner
+    );
 
     return { accounts, lsp4Compatibility, deployParams };
   };

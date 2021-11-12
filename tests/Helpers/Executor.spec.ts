@@ -8,7 +8,7 @@ import {
   KeyManager__factory,
   Executor,
   Executor__factory,
-} from "../../build/types";
+} from "../../types";
 
 // custom helpers
 import { ONE_ETH, DUMMY_RECIPIENT } from "../utils/helpers";

@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { LSP7Tester__factory, LSP7InitTester__factory } from "../../build/types";
+import { LSP7Tester__factory, LSP7InitTester__factory } from "../../types";
 import { deployProxy } from "../utils/proxy";
 import {
   getNamedAccounts,

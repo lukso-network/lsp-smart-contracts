@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { CalculateERC165Selectors, CalculateERC165Selectors__factory } from "../../build/types";
+import { CalculateERC165Selectors, CalculateERC165Selectors__factory } from "../../types";
 
 // utils
 import { INTERFACE_IDS } from "../utils/constants";

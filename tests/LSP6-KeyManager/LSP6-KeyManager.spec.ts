@@ -13,7 +13,7 @@ import {
   TargetContract__factory,
   Reentrancy,
   Reentrancy__factory,
-} from "../../build/types";
+} from "../../types";
 
 import { solidityKeccak256 } from "ethers/lib/utils";
 

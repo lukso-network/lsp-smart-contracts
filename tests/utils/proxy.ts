@@ -5,7 +5,7 @@ import {
   KeyManagerInit__factory,
   KeyManagerInit,
   UniversalProfileInit,
-} from "../../build/types";
+} from "../../types";
 
 // prettier-ignore
 /**

@@ -14,7 +14,7 @@ import {
   ERC777UniversalReceiver__factory,
   ExternalERC777UniversalReceiverTester__factory,
   LSP4DigitalCertificate__factory,
-} from "../build/types";
+} from "../types";
 
 // custom utils
 import { ALL_PERMISSIONS_SET, KEYS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";

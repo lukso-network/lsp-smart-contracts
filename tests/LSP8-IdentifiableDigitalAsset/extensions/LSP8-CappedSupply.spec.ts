@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import {
   LSP8CappedSupplyTester__factory,
   LSP8CappedSupplyInitTester__factory,
-} from "../../../build/types";
+} from "../../../types";
 import { deployProxy } from "../../utils/proxy";
 import {
   shouldBehaveLikeLSP8CappedSupply,

@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import {
   LSP7CappedSupplyTester__factory,
   LSP7CappedSupplyInitTester__factory,
-} from "../../../build/types";
+} from "../../../types";
 import { deployProxy } from "../../utils/proxy";
 import {
   shouldBehaveLikeLSP7CappedSupply,
