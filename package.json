@@ -27,7 +27,7 @@
     "type": "git",
     "url": "git+https://github.com/lukso-network/universalprofile-smart-contracts.git"
   },
-  "keywords": ["LSP", "solidity","universalprofiles"],
+  "keywords": ["LSP", "solidity","universalprofiles","lukso","ethereum"],
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
