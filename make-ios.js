@@ -5,7 +5,7 @@ const fs = require("fs");
 // Standard version
 // ------------------
 const UniversalProfile = fs.readFileSync(
-  "./artifacts/contracts/LSP3-UniversalProfile.sol/UniversalProfile.json"
+  "./artifacts/contracts/UniversalProfile.sol/UniversalProfile.json"
 );
 const KeyManager = fs.readFileSync(
   "./artifacts/contracts/LSP6KeyManager/LSP6KeyManager.sol/LSP6KeyManager.json"
