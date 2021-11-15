@@ -217,7 +217,7 @@ describe("Universal Receiver Delegate Contract", () => {
         KEYS.PERMISSIONS + universalReceiverDelegate1.address.substr(2),
       ]);
       expect(permissions).toEqual(
-        "0x000000000000000000000000000000000000000000000000000000000000000c",
+        "0x0000000000000000000000000000000000000000000000000000000000000018",
         "URD should have permissions"
       ); // to setData and call
 
@@ -226,7 +226,7 @@ describe("Universal Receiver Delegate Contract", () => {
         KEYS.PERMISSIONS + universalReceiverDelegate2.address.substr(2),
       ]);
       expect(permissionsSecond).toEqual(
-        "0x000000000000000000000000000000000000000000000000000000000000000c",
+        "0x0000000000000000000000000000000000000000000000000000000000000018",
         "URD should have permissions"
       ); // to setData and call
     });

@@ -61,12 +61,12 @@ describe("Executor interacting with KeyManager", () => {
   });
 
   describe("Setup", () => {
-    it("Executor should have permission SETDATA + CALL", async () => {
+    it("Executor should have permission SETDATA + CALL + TRANSFERVALUE", async () => {
       let [permissions] = await universalProfile.getData([
         KEYS.PERMISSIONS + executor.address.substr(2),
       ]);
       expect(permissions).toEqual(
-        "0x000000000000000000000000000000000000000000000000000000000000008c"
+        "0x0000000000000000000000000000000000000000000000000000000000000118"
       );
     });
   });
