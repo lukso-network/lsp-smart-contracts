@@ -14,7 +14,7 @@ export package=network.lukso.up.contracts
 solc --abi --bin \
     solidity-bytes-utils/="$(pwd)"/node_modules/solidity-bytes-utils/ \
     @openzeppelin/="$(pwd)"/node_modules/@openzeppelin/ \
-    ../submodules="$(pwd)"/submodules \
+    @erc725/smart-contracts/="$(pwd)"/node_modules/@erc725/smart-contracts/ \
     contracts/UniversalProfile.sol \
     contracts/LSP6KeyManager/LSP6KeyManager.sol \
     contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegate.sol \
