@@ -14,7 +14,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "NODE_NO_WARNINGS=1 jest",
+    "test": "npx hardhat compile --force; NODE_NO_WARNINGS=1 jest",
     "build": "npx hardhat compile",
     "package": "npx hardhat prepare-package",
     "release": "run-s clean build package && npx standard-version",

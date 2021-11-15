@@ -1,3 +1,4 @@
+
 <p align="center">
   <a href="https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts">
     <img alt="Version" src="https://badge.fury.io/js/@lukso%2Funiversalprofile-smart-contracts.svg" />
