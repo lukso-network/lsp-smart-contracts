@@ -17,7 +17,7 @@ import {
 } from "../types";
 
 // custom utils
-import { ALL_PERMISSIONS_SET, KEYS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";
+import { ALL_PERMISSIONS_SET, ADDRESS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";
 
 /** @todo put all of these in constant file */
 
@@ -779,18 +779,18 @@ describe("UniversalProfile", () => {
 
       // give all permissions to owner
       await UniversalProfile.connect(owner).setData(
-        [KEYS.PERMISSIONS + owner.address.substr(2)],
+        [ADDRESS.PERMISSIONS + owner.address.substr(2)],
         [ALL_PERMISSIONS_SET]
       );
 
       // give SIGN permission to signer
       await UniversalProfile.connect(owner).setData(
-        [KEYS.PERMISSIONS + signer.address.substr(2)],
+        [ADDRESS.PERMISSIONS + signer.address.substr(2)],
         [ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32)]
       );
       // give CALL permission to non-signer
       await UniversalProfile.connect(owner).setData(
-        [KEYS.PERMISSIONS + thirdParty.address.substr(2)],
+        [ADDRESS.PERMISSIONS + thirdParty.address.substr(2)],
         ["0x08"]
       );
 
