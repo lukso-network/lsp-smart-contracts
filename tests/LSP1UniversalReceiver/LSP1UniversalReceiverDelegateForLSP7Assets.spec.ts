@@ -18,7 +18,7 @@ import {
 
 import {
   ALL_PERMISSIONS_SET,
-  KEYS,
+  ADDRESS,
   PERMISSIONS,
   OPERATIONS,
   allowedAddresses,
@@ -74,7 +74,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
       await universalProfile1
         .connect(owner)
-        .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
+        .setData([ADDRESS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
       // set the URD Key
       await universalProfile1
@@ -86,7 +86,7 @@ describe("Universal Receiver Delegate Contract", () => {
       await universalProfile1
         .connect(owner)
         .setData(
-          [KEYS.PERMISSIONS + universalReceiverDelegate1.address.substr(2)],
+          [ADDRESS.PERMISSIONS + universalReceiverDelegate1.address.substr(2)],
           [URDPermissions]
         );
 
@@ -98,7 +98,7 @@ describe("Universal Receiver Delegate Contract", () => {
       );
       await universalProfile1
         .connect(owner)
-        .setData([KEYS.PERMISSIONS + URDrevert.address.substr(2)], [URDRevertPermissions]);
+        .setData([ADDRESS.PERMISSIONS + URDrevert.address.substr(2)], [URDRevertPermissions]);
 
       // switch account management to keyManager1
       await universalProfile1.connect(owner).transferOwnership(keyManager1.address);
@@ -115,7 +115,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
       await universalProfile2
         .connect(owner2)
-        .setData([KEYS.PERMISSIONS + owner2.address.substr(2)], [ALL_PERMISSIONS_SET]);
+        .setData([ADDRESS.PERMISSIONS + owner2.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
       // set the URD Key
       await universalProfile2
@@ -127,7 +127,7 @@ describe("Universal Receiver Delegate Contract", () => {
       await universalProfile2
         .connect(owner2)
         .setData(
-          [KEYS.PERMISSIONS + universalReceiverDelegate2.address.substr(2)],
+          [ADDRESS.PERMISSIONS + universalReceiverDelegate2.address.substr(2)],
           [URDPermissions2]
         );
 
@@ -139,7 +139,7 @@ describe("Universal Receiver Delegate Contract", () => {
       );
       await universalProfile2
         .connect(owner2)
-        .setData([KEYS.PERMISSIONS + URDrevert.address.substr(2)], [URDRevertPermissions2]);
+        .setData([ADDRESS.PERMISSIONS + URDrevert.address.substr(2)], [URDRevertPermissions2]);
 
       // switch account management to keyManager2
       await universalProfile2.connect(owner2).transferOwnership(keyManager2.address);
@@ -195,7 +195,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
     it("ensures owner is still universalProfile1's admin (=all permissions)", async () => {
       let [permissions] = await universalProfile1.getData([
-        KEYS.PERMISSIONS + owner.address.substr(2),
+        ADDRESS.PERMISSIONS + owner.address.substr(2),
       ]);
       expect(permissions).toEqual(
         "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
@@ -204,7 +204,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
       // UP2
       let [permissionsSecond] = await universalProfile2.getData([
-        KEYS.PERMISSIONS + owner2.address.substr(2),
+        ADDRESS.PERMISSIONS + owner2.address.substr(2),
       ]);
       expect(permissionsSecond).toEqual(
         "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
@@ -214,7 +214,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
     it("get URD permissions", async () => {
       let [permissions] = await universalProfile1.getData([
-        KEYS.PERMISSIONS + universalReceiverDelegate1.address.substr(2),
+        ADDRESS.PERMISSIONS + universalReceiverDelegate1.address.substr(2),
       ]);
       expect(permissions).toEqual(
         "0x0000000000000000000000000000000000000000000000000000000000000018",
@@ -223,7 +223,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
       // UP2
       let [permissionsSecond] = await universalProfile2.getData([
-        KEYS.PERMISSIONS + universalReceiverDelegate2.address.substr(2),
+        ADDRESS.PERMISSIONS + universalReceiverDelegate2.address.substr(2),
       ]);
       expect(permissionsSecond).toEqual(
         "0x0000000000000000000000000000000000000000000000000000000000000018",
@@ -233,7 +233,7 @@ describe("Universal Receiver Delegate Contract", () => {
 
     it("Owner should be allowed to change keys", async () => {
       // change universalReceiverDelegate1's permissions
-      let key = KEYS.PERMISSIONS + universalReceiverDelegate1.address.substr(2);
+      let key = ADDRESS.PERMISSIONS + universalReceiverDelegate1.address.substr(2);
 
       let payload = universalProfile1.interface.encodeFunctionData("setData", [
         [key],

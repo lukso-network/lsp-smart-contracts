@@ -31,7 +31,7 @@ import { INTERFACE_IDS, ADDRESSPERMISSIONS_KEY } from "../utils/constants";
 
 import {
   ALL_PERMISSIONS_SET,
-  KEYS,
+  ADDRESS,
   PERMISSIONS,
   OPERATIONS,
   allowedAddresses,
@@ -61,17 +61,17 @@ describe("KeyManagerHelper", () => {
 
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
+      .setData([ADDRESS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
     let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
 
     await universalProfile.setData(
-      [KEYS.ALLOWEDADDRESSES + owner.address.substr(2)],
+      [ADDRESS.ALLOWEDADDRESSES + owner.address.substr(2)],
       [abiCoder.encode(["address[]"], [allowedAddresses])]
     );
 
     await universalProfile.setData(
-      [KEYS.ALLOWEDFUNCTIONS + owner.address.substr(2)],
+      [ADDRESS.ALLOWEDFUNCTIONS + owner.address.substr(2)],
       [abiCoder.encode(["bytes4[]"], [allowedFunctions])]
     );
 
@@ -79,7 +79,7 @@ describe("KeyManagerHelper", () => {
     let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
+      .setData([ADDRESS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
   });
 
   it("Shows the interfaceId for LSP6", async () => {
@@ -105,7 +105,7 @@ describe("KeyManagerHelper", () => {
       expect([bytesResult]).toEqual(["0x"]);
 
       let resultFromAccount = await universalProfile.getData([
-        KEYS.ALLOWEDADDRESSES + app.address.substr(2),
+        ADDRESS.ALLOWEDADDRESSES + app.address.substr(2),
       ]);
       expect(resultFromAccount).toEqual(["0x"]);
     });
@@ -117,7 +117,7 @@ describe("KeyManagerHelper", () => {
       expect(allowedOwnerFunctions).toEqual([allowedFunctions]);
 
       let resultFromAccount = await universalProfile.getData([
-        KEYS.ALLOWEDFUNCTIONS + owner.address.substr(2),
+        ADDRESS.ALLOWEDFUNCTIONS + owner.address.substr(2),
       ]);
       let decodedResultFromAccount = abiCoder.decode(["bytes4[]"], resultFromAccount[0]);
 
@@ -132,7 +132,7 @@ describe("KeyManagerHelper", () => {
       expect([bytesResult]).toEqual(["0x"]);
 
       let resultFromAccount = await universalProfile.getData([
-        KEYS.ALLOWEDFUNCTIONS + app.address.substr(2),
+        ADDRESS.ALLOWEDFUNCTIONS + app.address.substr(2),
       ]);
       expect(resultFromAccount).toEqual(["0x"]);
     });
@@ -226,24 +226,24 @@ describe("KeyManager", () => {
     // owner permissions
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
+      .setData([ADDRESS.PERMISSIONS + owner.address.substr(2)], [ALL_PERMISSIONS_SET]);
 
     // app permissions
     let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
+      .setData([ADDRESS.PERMISSIONS + app.address.substr(2)], [appPermissions]);
     await universalProfile
       .connect(owner)
       .setData(
-        [KEYS.ALLOWEDADDRESSES + app.address.substr(2)],
+        [ADDRESS.ALLOWEDADDRESSES + app.address.substr(2)],
         [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
       );
     // do not allow the app to `setNumber` on TargetContract
     await universalProfile
       .connect(owner)
       .setData(
-        [KEYS.ALLOWEDFUNCTIONS + app.address.substr(2)],
+        [ADDRESS.ALLOWEDFUNCTIONS + app.address.substr(2)],
         [abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])]
       );
 
@@ -251,7 +251,7 @@ describe("KeyManager", () => {
     let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + user.address.substr(2)], [userPermissions]);
+      .setData([ADDRESS.PERMISSIONS + user.address.substr(2)], [userPermissions]);
 
     // externalApp permissions
     let externalAppPermissions = ethers.utils.hexZeroPad(
@@ -260,22 +260,22 @@ describe("KeyManager", () => {
     );
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + externalApp.address.substr(2)], [externalAppPermissions]);
+      .setData([ADDRESS.PERMISSIONS + externalApp.address.substr(2)], [externalAppPermissions]);
     await universalProfile
       .connect(owner)
       .setData(
-        [KEYS.ALLOWEDADDRESSES + externalApp.address.substr(2)],
+        [ADDRESS.ALLOWEDADDRESSES + externalApp.address.substr(2)],
         [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
       );
     await universalProfile.setData(
       // do not allow the externalApp to `setNumber` on TargetContract
-      [KEYS.ALLOWEDFUNCTIONS + externalApp.address.substr(2)],
+      [ADDRESS.ALLOWEDFUNCTIONS + externalApp.address.substr(2)],
       [abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])]
     );
 
     // test security
     await universalProfile.setData(
-      [KEYS.PERMISSIONS + newUser.address.substr(2)],
+      [ADDRESS.PERMISSIONS + newUser.address.substr(2)],
       [
         ethers.utils.hexZeroPad(
           PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
@@ -339,14 +339,14 @@ describe("KeyManager", () => {
   describe("> Verifying permissions", () => {
     it("ensures owner is still universalProfile's admin (=all permissions)", async () => {
       let [permissions] = await universalProfile.getData([
-        KEYS.PERMISSIONS + owner.address.substr(2),
+        ADDRESS.PERMISSIONS + owner.address.substr(2),
       ]);
       expect(permissions).toEqual(ALL_PERMISSIONS_SET);
     });
 
     it("App permission should be SETDATA + CALL ('0x...0c')", async () => {
       let [permissions] = await universalProfile.getData([
-        KEYS.PERMISSIONS + app.address.substr(2),
+        ADDRESS.PERMISSIONS + app.address.substr(2),
       ]);
       expect(permissions).toEqual(
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
@@ -373,7 +373,7 @@ describe("KeyManager", () => {
   describe("> testing permissions: CHANGEKEYS, SETDATA", () => {
     it("Owner should be allowed to change keys", async () => {
       // change app's permissions
-      let key = KEYS.PERMISSIONS + app.address.substr(2);
+      let key = ADDRESS.PERMISSIONS + app.address.substr(2);
 
       let payload = universalProfile.interface.encodeFunctionData("setData", [
         [key],
@@ -399,7 +399,7 @@ describe("KeyManager", () => {
     it("App should not be allowed to change keys", async () => {
       // malicious app trying to set all permissions
       let dangerousPayload = universalProfile.interface.encodeFunctionData("setData", [
-        [KEYS.PERMISSIONS + app.address.substr(2)],
+        [ADDRESS.PERMISSIONS + app.address.substr(2)],
         [ALL_PERMISSIONS_SET],
       ]);
 
@@ -553,9 +553,9 @@ describe("KeyManager", () => {
 
     it("(should fail): give admin permission to an address", async () => {
       let keys = [
-        KEYS.PERMISSIONS + user.address.substr(2),
-        KEYS.PERMISSIONS + newUser.address.substr(2),
-        KEYS.PERMISSIONS + accounts[6].address.substr(2),
+        ADDRESS.PERMISSIONS + user.address.substr(2),
+        ADDRESS.PERMISSIONS + newUser.address.substr(2),
+        ADDRESS.PERMISSIONS + accounts[6].address.substr(2),
       ];
 
       let values = [
@@ -573,9 +573,9 @@ describe("KeyManager", () => {
 
     it("(should fail): set permissions to 3 addresses", async () => {
       let keys = [
-        KEYS.PERMISSIONS + user.address.substr(2),
-        KEYS.PERMISSIONS + newUser.address.substr(2),
-        KEYS.PERMISSIONS + accounts[6].address.substr(2),
+        ADDRESS.PERMISSIONS + user.address.substr(2),
+        ADDRESS.PERMISSIONS + newUser.address.substr(2),
+        ADDRESS.PERMISSIONS + accounts[6].address.substr(2),
       ];
 
       let values = [
@@ -593,7 +593,7 @@ describe("KeyManager", () => {
 
     it("(should fail): set 3 keys + 1 permission", async () => {
       // prettier-ignore
-      let permissionKeyDisallowed = KEYS.PERMISSIONS + user.address.substr(2)
+      let permissionKeyDisallowed = ADDRESS.PERMISSIONS + user.address.substr(2)
       let permissionValueDisallowed = ethers.utils.hexZeroPad(
         PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
         32
@@ -626,9 +626,9 @@ describe("KeyManager", () => {
       let [keys, values] = generateKeysAndValues(elements);
 
       keys = keys.concat([
-        KEYS.PERMISSIONS + user.address.substr(2),
-        KEYS.PERMISSIONS + newUser.address.substr(2),
-        KEYS.PERMISSIONS + accounts[6].address.substr(2),
+        ADDRESS.PERMISSIONS + user.address.substr(2),
+        ADDRESS.PERMISSIONS + newUser.address.substr(2),
+        ADDRESS.PERMISSIONS + accounts[6].address.substr(2),
       ]);
 
       values = values.concat([
