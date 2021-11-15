@@ -2,11 +2,11 @@
 
 set -e
 
-# sudo add-apt-repository ppa:ethereum/ethereum
-# sudo apt-get update
-# sudo apt-get install solc
+sudo add-apt-repository ppa:ethereum/ethereum
+sudo apt-get update
+sudo apt-get install solc
 
-# curl -L get.web3j.io | sh && source ~/.web3j/source.sh
+curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
 export destination=./java/src/main/java/network/lukso/up/contracts
 export package=network.lukso.up.contracts
