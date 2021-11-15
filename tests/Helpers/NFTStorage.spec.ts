@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 const keccak256 = require("keccak256");
 import { ethers } from "hardhat";
-import { NFTStorageMerkle, NFTStorageMerkle__factory } from "../../build/types";
+import { NFTStorageMerkle, NFTStorageMerkle__factory } from "../../types";
 
 const { MerkleTree } = require("merkletreejs");
 
@@ -46,12 +46,12 @@ describe("NFTStorageMerkle", () => {
     });
 
     it("Should verify the proof in the smart contract", async () => {
-        let root = merkletree.getHexRoot();
-        let leaf = merkletree.getHexLeaves()[3];
-        let proof = merkletree.getHexProof(leaf);
+      let root = merkletree.getHexRoot();
+      let leaf = merkletree.getHexLeaves()[3];
+      let proof = merkletree.getHexProof(leaf);
 
-        let result = await nftStorage.callStatic.verifyMerkleProof(proof, root, leaf);
-        expect(result).toBeTruthy();
+      let result = await nftStorage.callStatic.verifyMerkleProof(proof, root, leaf);
+      expect(result).toBeTruthy();
     });
   });
 });

@@ -25,10 +25,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - run: git submodule update --init --recursive
       - run: npm ci
-      - run: cd ./submodules/ERC725/implementations && npm install
       - run: npm run build --if-present
       - run: npm run generate-types
       - run: npm test
-

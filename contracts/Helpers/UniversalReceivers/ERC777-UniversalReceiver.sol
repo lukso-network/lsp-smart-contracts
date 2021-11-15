@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "../../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
+import "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // modules
@@ -95,7 +95,7 @@ contract ERC777UniversalReceiver is ERC777 {
 
         if (ERC165Checker.supportsERC165(from) && ERC165Checker.supportsInterface(from, _INTERFACE_ID_LSP1)) {
             bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
-            ILSP1(from).universalReceiver(_TOKENS_SENDER_INTERFACE_HASH, data);
+            ILSP1UniversalReceiver(from).universalReceiver(_TOKENS_SENDER_INTERFACE_HASH, data);
         }
 
         /* solhint-disable */
@@ -142,7 +142,7 @@ contract ERC777UniversalReceiver is ERC777 {
     {
         if (ERC165Checker.supportsERC165(to) && ERC165Checker.supportsInterface(to, _INTERFACE_ID_LSP1)) {
             bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
-            ILSP1(to).universalReceiver(_TOKENS_RECIPIENT_INTERFACE_HASH, data);
+            ILSP1UniversalReceiver(to).universalReceiver(_TOKENS_RECIPIENT_INTERFACE_HASH, data);
         } else if (requireReceptionAck) {
             require(
                 !to.isContract(), 

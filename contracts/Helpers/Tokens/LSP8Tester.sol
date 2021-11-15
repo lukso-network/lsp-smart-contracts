@@ -2,15 +2,15 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAsset.sol";
+import "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
 
-contract LSP8Tester is LSP8 {
+contract LSP8Tester is LSP8IdentifiableDigitalAsset {
     /* solhint-disable no-empty-blocks */
     constructor(
       string memory name,
       string memory symbol,
       address newOwner
-    ) LSP8(name, symbol, newOwner) {}
+    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner) {}
     
     function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
         _mint(to, tokenId, force, data);

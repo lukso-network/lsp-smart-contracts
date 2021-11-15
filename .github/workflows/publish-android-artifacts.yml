@@ -8,18 +8,11 @@ on:
     branches:
       - "main"
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job
   android-build-artifacts:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Check if version changed
         uses: EndBug/version-check@v1
@@ -32,12 +25,8 @@ jobs:
           node-version: "14.16.0"
           cache: "npm"
 
-      # - run: git submodule update --init --recursive
       - if: steps.check.outputs.changed == 'true'
         run: npm ci
-
-      - if: steps.check.outputs.changed == 'true'
-        run: cd ./submodules/ERC725/implementations && npm install
 
       - name: Step 1 - Generate artifacts using shell
         if: steps.check.outputs.changed == 'true'

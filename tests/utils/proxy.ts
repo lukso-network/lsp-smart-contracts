@@ -2,10 +2,10 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   UniversalProfileInit__factory,
-  KeyManagerInit__factory,
-  KeyManagerInit,
+  LSP6KeyManagerInit__factory,
+  LSP6KeyManagerInit,
   UniversalProfileInit,
-} from "../../build/types";
+} from "../../types";
 
 // prettier-ignore
 /**
@@ -47,6 +47,6 @@ export async function attachUniversalProfileProxy(
 export async function attachKeyManagerProxy(
   deployer: SignerWithAddress,
   proxyAddress: string
-): Promise<KeyManagerInit> {
-  return await new KeyManagerInit__factory(deployer).attach(proxyAddress);
+): Promise<LSP6KeyManagerInit> {
+  return await new LSP6KeyManagerInit__factory(deployer).attach(proxyAddress);
 }

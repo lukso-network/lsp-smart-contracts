@@ -19,7 +19,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-      - run: cd ./submodules/ERC725/implementations && npm install
 
       - name: solhint
         run: |

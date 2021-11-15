@@ -28,9 +28,7 @@ jobs:
 
       - name: Install node dependencies (including submodules)
         run: |
-          git submodule update --init --recursive
           npm ci
-          cd ./submodules/ERC725/implementations && npm install
 
       - name: Install pip3
         run: python -m pip install --upgrade pip
