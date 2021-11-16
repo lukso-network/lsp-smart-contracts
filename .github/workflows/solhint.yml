@@ -20,5 +20,5 @@ jobs:
 
       - name: solhint
         run: |
-          npm install -g solhint
+          npm install solhint
           solhint 'contracts/**/*.sol'
