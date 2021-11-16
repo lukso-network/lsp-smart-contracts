@@ -18,7 +18,5 @@ jobs:
 
       - run: npm ci
 
-      - name: solhint
-        run: |
-          npm install solhint
-          solhint 'contracts/**/*.sol'
+      - name: Run Solhint Linter on Smart Contracts
+        run: npm run linter
