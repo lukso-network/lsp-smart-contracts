@@ -15,15 +15,15 @@ analyze:
   targets:
     # Standard version
     # ------------------
-    - contracts/LSP3-UniversalProfile.sol
-    - contracts/LSP6-KeyManager/LSP6-KeyManager.sol
-    - contracts/LSP1-UniversalReceiver/LSP1-UniversalReceiverDelegate.sol
-    - contracts/LSP7-DigitalAsset/LSP7-DigitalAsset.sol
-    - contracts/LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAsset.sol
+    - contracts/UniversalProfile.sol
+    - contracts/LSP6KeyManager/LSP6KeyManager.sol
+    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegate.sol
+    - contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol
+    - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol
     # Proxy version
     # ------------------
-    - contracts/LSP3-UniversalProfileInit.sol
-    - contracts/LSP6-KeyManager/LSP6-KeyManagerInit.sol
-    - contracts/LSP1-UniversalReceiver/LSP1-UniversalReceiverDelegateInit.sol
-    - contracts/LSP7-DigitalAsset/LSP7-DigitalAssetInit.sol
-    - contracts/LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAssetInit.sol
+    - contracts/UniversalProfileInit.sol
+    - contracts/LSP6KeyManager/LSP6KeyManagerInit.sol
+    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateInit.sol
+    - contracts/LSP7DigitalAsset/LSP7DigitalAssetInit.sol
+    - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInit.sol
