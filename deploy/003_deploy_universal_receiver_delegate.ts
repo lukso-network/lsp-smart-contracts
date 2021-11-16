@@ -9,7 +9,7 @@ const deployUniversalReceiverDelegate: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  await deploy("UniversalReceiverDelegate", {
+  await deploy("LSP1UniversalReceiverDelegate", {
     from: owner,
     gasPrice: ethers.BigNumber.from("20000000000"), // in wei
     log: true,
@@ -17,4 +17,4 @@ const deployUniversalReceiverDelegate: DeployFunction = async ({
 };
 
 export default deployUniversalReceiverDelegate;
-deployUniversalReceiverDelegate.tags = ["UniversalReceiverDelegate", "standard"];
+deployUniversalReceiverDelegate.tags = ["LSP1UniversalReceiverDelegate", "standard"];

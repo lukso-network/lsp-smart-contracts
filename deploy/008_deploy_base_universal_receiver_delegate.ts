@@ -9,14 +9,14 @@ const deployBaseUniversalReceiverDelegate: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  const deployResult = await deploy("UniversalReceiverDelegateInit", {
+  const deployResult = await deploy("LSP1UniversalReceiverDelegateInit", {
     from: owner,
     log: true,
     gasPrice: ethers.BigNumber.from("20000000000"), // in wei
   });
 
   const UniversalReceiverDelegateInit = await ethers.getContractFactory(
-    "UniversalReceiverDelegateInit"
+    "LSP1UniversalReceiverDelegateInit"
   );
   const universalReceiverDelegate = UniversalReceiverDelegateInit.attach(deployResult.address);
 
@@ -24,4 +24,4 @@ const deployBaseUniversalReceiverDelegate: DeployFunction = async ({
 };
 
 export default deployBaseUniversalReceiverDelegate;
-deployBaseUniversalReceiverDelegate.tags = ["UniversalReceiverDelegateInit", "base"];
+deployBaseUniversalReceiverDelegate.tags = ["LSP1UniversalReceiverDelegateInit", "base"];

@@ -11,7 +11,7 @@ const deployKeyManager: DeployFunction = async ({
 
   const UniversalProfile = await deployments.get("UniversalProfile");
 
-  await deploy("KeyManager", {
+  await deploy("LSP6KeyManager", {
     from: owner,
     args: [UniversalProfile.address],
     gasPrice: ethers.BigNumber.from("20000000000"), // in wei
@@ -20,5 +20,5 @@ const deployKeyManager: DeployFunction = async ({
 };
 
 export default deployKeyManager;
-deployKeyManager.tags = ["KeyManager", "standard"];
+deployKeyManager.tags = ["LSP6KeyManager", "standard"];
 deployKeyManager.dependencies = ["UniversalProfile"];

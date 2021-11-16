@@ -9,13 +9,13 @@ const deployBaseLSP7Token: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  const deployResult = await deploy("LSP7Init", {
+  const deployResult = await deploy("LSP7DigitalAssetInit", {
     from: owner,
     log: true,
     gasPrice: ethers.BigNumber.from("20000000000"), // in wei
   });
 
-  const LSP7Init = await ethers.getContractFactory("LSP7Init");
+  const LSP7Init = await ethers.getContractFactory("LSP7DigitalAssetInit");
   const lsp7Init = await LSP7Init.attach(deployResult.address);
 
   // function overloading is required, as the inherited contracts LSP4Init and ERC725YInit
@@ -29,4 +29,4 @@ const deployBaseLSP7Token: DeployFunction = async ({
 };
 
 export default deployBaseLSP7Token;
-deployBaseLSP7Token.tags = ["LSP7Init", "base"];
+deployBaseLSP7Token.tags = ["LSP7DigitalAssetInit", "base"];

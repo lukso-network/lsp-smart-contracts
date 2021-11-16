@@ -9,7 +9,7 @@ const deployLSP8NFT: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  await deploy("LSP8", {
+  await deploy("LSP8IdentifiableDigitalAsset", {
     from: owner,
     args: ["LSP8 NFT", "LSP8", owner],
     gasPrice: ethers.BigNumber.from("20000000000"), // in wei
@@ -18,4 +18,4 @@ const deployLSP8NFT: DeployFunction = async ({
 };
 
 export default deployLSP8NFT;
-deployLSP8NFT.tags = ["LSP8", "standard"];
+deployLSP8NFT.tags = ["LSP8IdentifiableDigitalAsset", "standard"];

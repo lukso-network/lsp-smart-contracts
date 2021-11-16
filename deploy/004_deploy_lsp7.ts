@@ -9,7 +9,7 @@ const deployLSP7Token: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  await deploy("LSP7", {
+  await deploy("LSP7DigitalAsset", {
     from: owner,
     args: ["LSP7 Token", "LSP7", owner, false],
     gasPrice: ethers.BigNumber.from("20000000000"), // in wei
@@ -18,4 +18,4 @@ const deployLSP7Token: DeployFunction = async ({
 };
 
 export default deployLSP7Token;
-deployLSP7Token.tags = ["LSP7", "standard"];
+deployLSP7Token.tags = ["LSP7DigitalAsset", "standard"];

@@ -9,13 +9,13 @@ const deployBaseLSP8NFT: DeployFunction = async ({
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  const deployResult = await deploy("LSP8Init", {
+  const deployResult = await deploy("LSP8IdentifiableDigitalAssetInit", {
     from: owner,
     log: true,
     gasPrice: ethers.BigNumber.from("20000000000"), // in wei
   });
 
-  const LSP8Init = await ethers.getContractFactory("LSP8Init");
+  const LSP8Init = await ethers.getContractFactory("LSP8IdentifiableDigitalAssetInit");
   const lsp8Init = await LSP8Init.attach(deployResult.address);
 
   // function overloading is required, as the inherited contracts LSP4Init and ERC725YInit
@@ -28,4 +28,4 @@ const deployBaseLSP8NFT: DeployFunction = async ({
 };
 
 export default deployBaseLSP8NFT;
-deployBaseLSP8NFT.tags = ["LSP8Init", "base"];
+deployBaseLSP8NFT.tags = ["LSP8IdentifiableDigitalAssetInit", "base"];
