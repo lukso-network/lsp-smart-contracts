@@ -55,4 +55,4 @@ import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/
 ```
 
 ## **Contribute & Development**
-Please check the [CONTRIBUTING](./CONTRIBUTING.md) page and the [DEVELOPMENT](./CONTRIBUTING.md#Development) _
+Please check the [CONTRIBUTING](./CONTRIBUTING.md) page and the [DEVELOPMENT](./CONTRIBUTING.md#Development) section.

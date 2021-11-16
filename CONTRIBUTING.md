@@ -104,9 +104,7 @@ All the deployment scripts for `base` contracts initialize the contract after de
 &nbsp;
 ## How to deploy on L14 with Hardhat?
 
-&nbsp;
-
-1. write a private key for an address you control in the hardhat.config.ts file.
+1. write a private key for an address you control in the `hardhat.config.ts` file.
 
 ```ts
     // public L14 test network
@@ -134,11 +132,15 @@ npx hardhat deploy --network L14 --tags <options> --reset
 > 
 > - `LSP6KeyManager`: deploy a `UniversalProfile` + `KeyManager`, with the Universal Profile address linked to the Key Manager.     
 > 
-> - `LSP6KeyManagerInit`: deploy a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will refer to `address(0)`).   
+> - `LSP6KeyManagerInit`: deploy a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).   
 > 
 > - `LSP1UniversalReceiverDelegate`: deploy a Universal Receiver Delegate contract
 > 
 > - `LSP1UniversalReceiverDelegateInit`: deploy a Universal Receiver Delegate as a base contract.
+> 
+> - `standard`: deploy the 3 standard contract above.
+
+> - `base`: deploy the 3 base contract above (for proxy use)
 
 &nbsp;
 
