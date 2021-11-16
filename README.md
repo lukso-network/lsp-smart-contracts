@@ -1,3 +1,4 @@
+
 <p align="center">
   <a href="https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts">
     <img alt="Version" src="https://badge.fury.io/js/@lukso%2Funiversalprofile-smart-contracts.svg" />
@@ -22,7 +23,7 @@ For more information see [Documentation](https://docs.lukso.tech/standards/Unive
 Universal Profile smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts).
 
 ```bash
-npm install @lukso/universalprofile-smart-contracts --save
+npm install @lukso/universalprofile-smart-contracts
 ```
 
 #### cloning the repository
@@ -32,11 +33,7 @@ Alternatively you can also clone the repository and install its dependencies to 
 ```bash
 $ git clone https://github.com/lukso-network/lsp-universalprofile-smart-contracts.git
 $ cd ./lsp-universalprofile-smart-contracts
-
-# make sure to download the ERC725 submodule
-$ git submodule update --init --recursive
 $ npm install
-$ cd ./submodules/ERC725/implementations && npm install
 ```
 
 ## Usage
@@ -46,16 +43,16 @@ $ cd ./submodules/ERC725/implementations && npm install
 You can use the contracts JSON ABI by importing them as follow:
 
 ```javascript
-import UniversalProfile from "@lukso/universalprofile-smart-contracts/build/artifacts/UniversalProfile.json";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/artifacts/UniversalProfile.json";
 
-const UniversalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
+const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
 ```
 
 #### in Solidity
 
 ```solidity
-import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/LSP3-UniversalProfile.sol";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
 ```
 
 ## **Contribute**
-_Please check the [CONTRIBUTE](./CONTRIBUTE.md) page_ 
+_Please check the [CONTRIBUTE](./CONTRIBUTING.md) page_ 

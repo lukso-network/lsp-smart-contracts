@@ -2,15 +2,15 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP7-DigitalAsset/LSP7-DigitalAsset.sol";
+import "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 
-contract LSP7Tester is LSP7 {
+contract LSP7Tester is LSP7DigitalAsset {
     /* solhint-disable no-empty-blocks */
     constructor(
       string memory name,
       string memory symbol,
       address newOwner
-    ) LSP7(name, symbol, newOwner, false) {}
+    ) LSP7DigitalAsset(name, symbol, newOwner, false) {}
 
     function mint(address to, uint256 amount, bool force, bytes memory data) public {
         _mint(to, amount, force, data);

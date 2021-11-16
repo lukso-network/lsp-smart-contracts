@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "../../LSP6-KeyManager/LSP6-KeyManager.sol";
+import "../../LSP6KeyManager/LSP6KeyManager.sol";
 
 /**
  * Helper contract to test internal functions of the KeyManager
  */
-contract KeyManagerHelper is KeyManager {
+contract KeyManagerHelper is LSP6KeyManager {
 
     /* solhint-disable no-empty-blocks */
-    constructor(address _account) KeyManager(_account) {}
+    constructor(address _account) LSP6KeyManager(_account) {}
 
     function getInterfaceId() public pure returns (bytes4) {
         return _INTERFACE_ID_LSP6;

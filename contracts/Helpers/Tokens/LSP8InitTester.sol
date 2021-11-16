@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP8-IdentifiableDigitalAsset/LSP8-IdentifiableDigitalAssetInit.sol";
+import "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInit.sol";
 
-contract LSP8InitTester is LSP8Init {
+contract LSP8InitTester is LSP8IdentifiableDigitalAssetInit {
     function initialize(
       string memory name,
       string memory symbol,
@@ -14,7 +14,7 @@ contract LSP8InitTester is LSP8Init {
         initializer
         override
     {
-        LSP8Init.initialize(name, symbol, newOwner);
+        LSP8IdentifiableDigitalAssetInit.initialize(name, symbol, newOwner);
     }
 
     function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {

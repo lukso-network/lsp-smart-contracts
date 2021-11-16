@@ -53,20 +53,20 @@ const config: HardhatUserConfig = {
       // Standard version
       // ------------------
       "UniversalProfile",
-      "KeyManager",
-      "UniversalReceiverDelegate",
-      "LSP7",
+      "LSP6KeyManager",
+      "LSP1UniversalReceiverDelegate",
+      "LSP7DigitalAsset",
       "LSP7CappedSupply",
-      "LSP8",
+      "LSP8IdentifiableDigitalAsset",
       "LSP8CappedSupply",
       // Proxy version
       // ------------------
       "UniversalProfileInit",
-      "KeyManagerInit",
-      "UniversalReceiverDelegateInit",
-      "LSP7Init",
+      "LSP6KeyManagerInit",
+      "LSP1UniversalReceiverDelegateInit",
+      "LSP7DigitalAssetInit",
       "LSP7CappedSupplyInit",
-      "LSP8Init",
+      "LSP8IdentifiableDigitalAssetInit",
       "LSP8CappedSupplyInit",
       // ERC Compatible tokens
       // ------------------
@@ -81,10 +81,10 @@ const config: HardhatUserConfig = {
     includeFactories: true,
   },
   paths: {
-    artifacts: "build/artifacts",
+    artifacts: "artifacts",
   },
   typechain: {
-    outDir: "build/types",
+    outDir: "types",
     target: "ethers-v5",
   },
 };

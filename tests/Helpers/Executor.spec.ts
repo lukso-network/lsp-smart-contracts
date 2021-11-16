@@ -4,22 +4,22 @@ import { ethers } from "hardhat";
 import {
   UniversalProfile,
   UniversalProfile__factory,
-  KeyManager,
-  KeyManager__factory,
+  LSP6KeyManager,
+  LSP6KeyManager__factory,
   Executor,
   Executor__factory,
-} from "../../build/types";
+} from "../../types";
 
 // custom helpers
 import { ONE_ETH, DUMMY_RECIPIENT } from "../utils/helpers";
-import { ALL_PERMISSIONS_SET, KEYS, PERMISSIONS } from "../utils/keymanager";
+import { ALL_PERMISSIONS_SET, ADDRESS, PERMISSIONS } from "../utils/keymanager";
 
 describe("Executor interacting with KeyManager", () => {
   let accounts: SignerWithAddress[] = [];
 
   let owner: SignerWithAddress;
 
-  let universalProfile: UniversalProfile, keyManager: KeyManager, executor: Executor;
+  let universalProfile: UniversalProfile, keyManager: LSP6KeyManager, executor: Executor;
 
   /**
    * @dev this is necessary when the function being called in the contract
@@ -35,7 +35,7 @@ describe("Executor interacting with KeyManager", () => {
 
   beforeEach(async () => {
     universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManager = await new KeyManager__factory(owner).deploy(universalProfile.address);
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
     executor = await new Executor__factory(owner).deploy(
       universalProfile.address,
       keyManager.address
@@ -45,7 +45,7 @@ describe("Executor interacting with KeyManager", () => {
     let ownerPermissions = ethers.utils.hexZeroPad(ALL_PERMISSIONS_SET, 32);
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + owner.address.substr(2)], [ownerPermissions]);
+      .setData([ADDRESS.PERMISSIONS + owner.address.substr(2)], [ownerPermissions]);
 
     // executor permissions
     let executorPermissions = ethers.utils.hexZeroPad(
@@ -54,19 +54,19 @@ describe("Executor interacting with KeyManager", () => {
     );
     await universalProfile
       .connect(owner)
-      .setData([KEYS.PERMISSIONS + executor.address.substr(2)], [executorPermissions]);
+      .setData([ADDRESS.PERMISSIONS + executor.address.substr(2)], [executorPermissions]);
 
     // switch account management to KeyManager
     await universalProfile.connect(owner).transferOwnership(keyManager.address);
   });
 
   describe("Setup", () => {
-    it("Executor should have permission SETDATA + CALL", async () => {
+    it("Executor should have permission SETDATA + CALL + TRANSFERVALUE", async () => {
       let [permissions] = await universalProfile.getData([
-        KEYS.PERMISSIONS + executor.address.substr(2),
+        ADDRESS.PERMISSIONS + executor.address.substr(2),
       ]);
       expect(permissions).toEqual(
-        "0x000000000000000000000000000000000000000000000000000000000000008c"
+        "0x0000000000000000000000000000000000000000000000000000000000000118"
       );
     });
   });

@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Use Node.js '14.16.0'
         uses: actions/setup-node@v2
@@ -19,7 +17,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-      - run: cd ./submodules/ERC725/implementations && npm install
 
       - name: solhint
         run: |

@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "../../../submodules/ERC725/implementations/contracts/interfaces/ILSP1_UniversalReceiver.sol";
+import "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "solidity-bytes-utils/contracts/AssertBytes.sol";
 
 contract UniversalReceiverTester {
     function callImplementationAndReturn(address target, bytes32 typeId) external returns (bytes memory) {
-        return ILSP1(target).universalReceiver(typeId, "");
+        return ILSP1UniversalReceiver(target).universalReceiver(typeId, "");
     }
 
     function checkImplementation(address _target, bytes32 _typeId) external returns (bool) {
-        bytes memory ret = ILSP1(_target).universalReceiver(_typeId, "");
+        bytes memory ret = ILSP1UniversalReceiver(_target).universalReceiver(_typeId, "");
         return abi.decode(ret, (bytes32)) == _typeId;
     }
 

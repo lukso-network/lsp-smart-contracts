@@ -5,12 +5,6 @@
 
 name: Mythx Security Analysis
 on:
-  pull_request:
-    branches:
-      - "main"
-      - "develop"
-
-  # Enable manual trigger on this workflow
   workflow_dispatch:
 
 jobs:
@@ -32,11 +26,9 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Install node dependencies (including submodules)
+      - name: Install node dependencies
         run: |
-          git submodule update --init --recursive
           npm ci
-          cd ./submodules/ERC725/implementations && npm install
 
       - name: Install pip3
         run: python -m pip install --upgrade pip
