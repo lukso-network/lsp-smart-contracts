@@ -54,5 +54,5 @@ const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultO
 import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
 ```
 
-## **Contribute**
-_Please check the [CONTRIBUTE](./CONTRIBUTING.md) page_ 
+## **Contribute & Development**
+Please check the [CONTRIBUTING](./CONTRIBUTING.md) page and the [DEVELOPMENT](./CONTRIBUTING.md#Development) _

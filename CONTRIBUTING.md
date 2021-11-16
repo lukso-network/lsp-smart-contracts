@@ -1,3 +1,5 @@
+# Contributing
+
 ## **Commits and PRs**
 
 This project uses Conventional Commits to generate release notes and to determine versioning. Commit messages should adhere to this standard and be of the form:
@@ -88,3 +90,69 @@ npm run release -- --prerelease alpha
 ```
 
 If the latest version is 1.0.0 this will change the version to: `1.0.1-alpha.0`
+
+
+&nbsp;
+
+
+# <a name="Development"></a> Development
+
+You can find a deployment utility with hardhat to easily deploy the smart contracts locally or on our L14 test network.
+
+All the deployment scripts for `base` contracts initialize the contract after deployment to the zero address for security.
+
+&nbsp;
+## How to deploy on L14 with Hardhat?
+
+&nbsp;
+
+1. write a private key for an address you control in the hardhat.config.ts file.
+
+```ts
+    // public L14 test network
+    L14: {
+      live: true,
+      url: "https://rpc.l14.lukso.network",
+      chainId: 22,
+      accounts: ["0xaabbccddeeff..."] // your private key here
+    },
+```
+
+&nbsp;
+
+2. run the command using one of the available `--tags`
+
+```
+npx hardhat deploy --network L14 --tags <options> --reset
+```
+
+> Available `--tags <options>` are:
+> 
+> - `UniversalProfile`: deploy a Universal Profile with the deployer as the owner
+> 
+> - `UniversalProfileInit`: deploy a Universal Profile as a base contract (for proxy use)
+> 
+> - `LSP6KeyManager`: deploy a `UniversalProfile` + `KeyManager`, with the Universal Profile address linked to the Key Manager.     
+> 
+> - `LSP6KeyManagerInit`: deploy a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will refer to `address(0)`).   
+> 
+> - `LSP1UniversalReceiverDelegate`: deploy a Universal Receiver Delegate contract
+> 
+> - `LSP1UniversalReceiverDelegateInit`: deploy a Universal Receiver Delegate as a base contract.
+
+&nbsp;
+
+**Examples**
+
+```
+// Deploy the 3 contracts
+npx hardhat deploy --network L14 --tags standard --reset
+
+
+// Deploy the 3 contracts as base contracts (to be used behind proxies)
+npx hardhat deploy --network L14 --tags base --reset
+
+// Deploy a specific contract
+npx hardhat deploy --network L14 --tags UniversalProfile --reset
+```
+
