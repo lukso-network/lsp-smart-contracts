@@ -6,21 +6,31 @@ import "@nomiclabs/hardhat-web3";
 import "@typechain/hardhat";
 import "hardhat-packager";
 
+import "hardhat-deploy";
+
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {},
-    // public L14 test network
-    l14: {
-      url: "http://34.76.61.201:8545", // bootnode
-      chainId: 22,
-      // accounts: [privateKey1, privateKey2, ...]
+    hardhat: {
+      live: false,
+      saveDeployments: false,
     },
+    // public L14 test network
+    L14: {
+      live: true,
+      url: "https://rpc.l14.lukso.network",
+      chainId: 22,
+      //   accounts: [privateKey1, privateKey2, ...]
+    },
+
     // ephemeral network
     // l15: {
     //   url: "http://35.198.139.247:8565", // bootnode
     //   chainId: null
     // }
+  },
+  namedAccounts: {
+    owner: 0,
   },
   solidity: {
     version: "0.8.7",
@@ -40,11 +50,30 @@ const config: HardhatUserConfig = {
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [
+      // Standard version
+      // ------------------
       "UniversalProfile",
-      "KeyManager",
-      "BasicUniversalReceiver",
-      "UniversalReceiverAddressStore",
-      "ERC725Account",
+      "LSP6KeyManager",
+      "LSP1UniversalReceiverDelegate",
+      "LSP7DigitalAsset",
+      "LSP7CappedSupply",
+      "LSP8IdentifiableDigitalAsset",
+      "LSP8CappedSupply",
+      // Proxy version
+      // ------------------
+      "UniversalProfileInit",
+      "LSP6KeyManagerInit",
+      "LSP1UniversalReceiverDelegateInit",
+      "LSP7DigitalAssetInit",
+      "LSP7CappedSupplyInit",
+      "LSP8IdentifiableDigitalAssetInit",
+      "LSP8CappedSupplyInit",
+      // ERC Compatible tokens
+      // ------------------
+      "LSP7CompatibilityForERC20",
+      "LSP8CompatibilityForERC721",
+      // Tools
+      // ------------------
       "Create2Factory",
     ],
     // Whether to include the TypeChain factories or not.
@@ -52,10 +81,10 @@ const config: HardhatUserConfig = {
     includeFactories: true,
   },
   paths: {
-    artifacts: "build/artifacts",
+    artifacts: "artifacts",
   },
   typechain: {
-    outDir: "build/types",
+    outDir: "types",
     target: "ethers-v5",
   },
 };

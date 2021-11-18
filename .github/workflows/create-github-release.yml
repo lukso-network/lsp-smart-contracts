@@ -1,0 +1,112 @@
+# This workflow creates a Github release with changelog and release notes
+name: Create Github Release
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  github-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Check if version changed
+        uses: EndBug/version-check@v1
+        id: check
+
+      - name: Use Node.js v16
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@lukso"
+          cache: "npm"
+
+      - name: Git Config
+        if: steps.check.outputs.changed == 'true'
+        run: |-
+          git config --global user.email "release@lukso.network"
+          git config --global user.name "LUKSO Bot"
+
+      - name: Set Version
+        if: steps.check.outputs.changed == 'true'
+        run: |-
+          APP_VERSION="v$(node -pe "require('./package.json').version")"
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+        with:
+          ref: develop
+
+      - name: Create and push Git Tag
+        if: steps.check.outputs.changed == 'true'
+        run: |-
+          git tag -a ${{ env.APP_VERSION }} -m "Release Version ${{ env.APP_VERSION }}"
+          git push --set-upstream origin develop tag ${{ env.APP_VERSION }}
+
+      - if: steps.check.outputs.changed == 'true'
+        run: |-
+          npm ci
+
+      # Build Android Artifact
+      - name: Generate Android artifacts using shell
+        if: steps.check.outputs.changed == 'true'
+        run: bash make-jar.sh
+
+      - name: Set up our JDK environment
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 1.11
+
+      - name: Grant rights
+        if: steps.check.outputs.changed == 'true'
+        run: chmod +x java/build.gradle
+
+      - name: Build jar
+        if: steps.check.outputs.changed == 'true'
+        working-directory: ./java
+        run: gradle build
+
+      # Build ios Artifact
+      - name: Build JSON ABIs
+        if: steps.check.outputs.changed == 'true'
+        run: |-
+          npm run build --if-present
+
+      - name: Generate ABIs for iOS using shell script
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          mkdir ios
+          node make-ios.js
+
+      - name: Extract release notes from CHANGELOG
+        if: steps.check.outputs.changed == 'true'
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
+        with:
+          release_notes_file: RELEASENOTES.md
+
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPR
+        with:
+          state: closed
+
+      - name: Add PR body to Release Notes
+        env:
+          PR_BODY: ${{ steps.findPR.outputs.body }}
+        run: |-
+          echo ${PR_BODY}|cat - RELEASENOTES.md > /tmp/out && mv /tmp/out RELEASENOTES.md
+
+      - uses: ncipollo/release-action@v1
+        if: steps.check.outputs.changed == 'true'
+        with:
+          artifacts: "ios/UPContractsAbi.swift,java/build/libs/upcontracts.jar"
+          bodyFile: "RELEASENOTES.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.APP_VERSION }}

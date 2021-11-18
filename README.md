@@ -1,58 +1,62 @@
-# universalprofile-smart-contracts
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts">
+    <img alt="Version" src="https://badge.fury.io/js/@lukso%2Funiversalprofile-smart-contracts.svg" />
+  </a>
+</p>
+
+# lsp-universalprofile-smart-contracts
 
 The reference implementation for universal profiles smart contracts.
+
+For more information see [Documentation](https://docs.lukso.tech/standards/Universal-Profiles)
 
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
 
-## Overview
+## **Overview**
 
 ### Installation
 
-#### via NPM
+#### npm
 
 Universal Profile smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/universalprofile-smart-contracts).
 
 ```bash
-npm install @lukso/universalprofile-smart-contracts --save
+npm install @lukso/universalprofile-smart-contracts
 ```
 
-#### via cloning the repository
+#### cloning the repository
 
-Alternatively can also pull the repository and install its dependencies to use the smart contracts.
+Alternatively you can also clone the repository and install its dependencies to start using the smart contracts.
 
 ```bash
-$ git clone https://github.com/lukso-network/universalprofile-smart-contracts.git
-$ cd ./universalprofile-smart-contracts
-
-# make sure to download the ERC725 submodule
-$ git submodule update --init --recursive
+$ git clone https://github.com/lukso-network/lsp-universalprofile-smart-contracts.git
+$ cd ./lsp-universalprofile-smart-contracts
 $ npm install
-$ cd ./submodules/ERC725/implementations && npm install
 ```
 
-### Usage
+## Usage
 
 #### in Javascript
 
-You can use the contracts by importing them as follow:
+You can use the contracts JSON ABI by importing them as follow:
 
 ```javascript
-import UniversalProfile from "@lukso/universalprofile-smart-contracts/build/contracts/UniversalProfile.json";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/artifacts/UniversalProfile.json";
 
-const UniversalProfileContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
+const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
 ```
 
 #### in Solidity
 
 ```solidity
-import UniversalProfile from "@lukso/universalprofile-smart-contracts/build/contracts/UniversalProfile.sol";
+import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
 ```
 
-## Testing
+#### deployment via hardhat
 
-Jest contract tests are defined under the tests directory. To run all the tests, run:
+You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./DEPLOYMENT.md) page.
 
-```bash
-$ npm test
-```
+## **Contribute**
+Please check the [CONTRIBUTING](./CONTRIBUTING.md) page.

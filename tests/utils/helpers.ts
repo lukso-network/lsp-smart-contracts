@@ -5,6 +5,9 @@ export const DUMMY_PAYLOAD = "0xaabbccdd123456780000000000";
 export const ONE_ETH = ethers.utils.parseEther("1");
 export const DUMMY_PRIVATEKEY =
   "0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe";
+export const DUMMY_RECIPIENT = ethers.utils.getAddress(
+  "0xcafecafecafecafecafecafecafecafecafecafe"
+);
 
 export function getRandomAddresses(count) {
   let base = "0xa56039d89BD9451A1ac94a680a20302da2dE92";

@@ -13,8 +13,8 @@
     "not-rely-on-block-hash": "error",
     "not-rely-on-time": "error",
     "reentrancy": "error",
-    "state-visibility": "warning",
-    "no-empty-block": "error",
+    "state-visibility": "warn",
+    "no-empty-blocks": "error",
     "constructor-syntax": "error",
     "func-param-name-mixedcase": "warn",
     "modifier-name-mixedcase": "warn",
@@ -22,6 +22,6 @@
     "use-forbidden-name": "error",
     "imports-on-top": "error",
     "visibility-modifier-order": "error",
-    "reason-string": ["warn", { "maxLength": 64 }]
+    "reason-string": ["warn", { "maxLength": 120 }]
   }
 }

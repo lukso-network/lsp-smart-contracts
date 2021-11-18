@@ -1,0 +1,52 @@
+# This workflow checks for Smart Contract security and vulnerabilities by submitting to Mythx
+# Inspired from:
+#   - https://github.com/Uniswap/v3-core/blob/main/.github/workflows/mythx.yml
+#   - https://github.com/TacoswapCRD/tacoswap-contracts/blob/master/.github/workflows/sushiswap.yml
+
+name: Mythx Security Analysis
+on:
+  workflow_dispatch:
+
+jobs:
+  mythx:
+    name: Mythx Security Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          cache: "npm"
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install node dependencies
+        run: |
+          npm ci
+
+      - name: Install pip3
+        run: python -m pip install --upgrade pip
+
+      - name: Install mythx CLI
+        run: |
+          pip3 install mythx-cli
+
+      - name: Install solc-select
+        run: pip3 install solc-select
+
+      - name: Use Solidity compiler 0.8.7
+        run: |
+          solc-select install 0.8.7
+          solc-select use 0.8.7
+
+      - name: Submit contracts to Mythx
+        # use configs from .mythx.yml
+        run: mythx analyze
+        env:
+          MYTHX_API_KEY: ${{ secrets.MYTHX_API_KEY }}

@@ -2,11 +2,11 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../submodules/ERC725/implementations/contracts/ERC725/ERC725AccountCore.sol";
+import "@erc725/smart-contracts/contracts/ERC725AccountCore.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // libraries
-import "../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
+import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 
 /**
  * @title Core implementation of a LUKSO's Universal Profile based on LSP3
@@ -14,8 +14,6 @@ import "../submodules/ERC725/implementations/contracts/Utils/ERC725Utils.sol";
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
 abstract contract UniversalProfileCore is ERC165Storage, ERC725AccountCore {
-    using ERC725Utils for ERC725Y;
-
     bytes32[] public dataKeys;
 
     /* non-standard public functions */
@@ -24,7 +22,7 @@ abstract contract UniversalProfileCore is ERC165Storage, ERC725AccountCore {
         return dataKeys;
     }
 
-    function setData(bytes32[] calldata _keys, bytes[] calldata _values)
+    function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
         virtual
         override
