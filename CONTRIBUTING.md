@@ -124,23 +124,23 @@ All the deployment scripts for `base` contracts initialize the contract after de
 npx hardhat deploy --network L14 --tags <options> --reset
 ```
 
-> Available `--tags <options>` are:
-> 
-> - `UniversalProfile`: deploy a Universal Profile with the deployer as the owner
-> 
-> - `UniversalProfileInit`: deploy a Universal Profile as a base contract (for proxy use)
-> 
-> - `LSP6KeyManager`: deploy a `UniversalProfile` + `KeyManager`, with the Universal Profile address linked to the Key Manager.     
-> 
-> - `LSP6KeyManagerInit`: deploy a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).   
-> 
-> - `LSP1UniversalReceiverDelegate`: deploy a Universal Receiver Delegate contract
-> 
-> - `LSP1UniversalReceiverDelegateInit`: deploy a Universal Receiver Delegate as a base contract.
-> 
-> - `standard`: deploy the 3 standard contract above.
+Available `--tags <options>` are:
 
-> - `base`: deploy the 3 base contract above (for proxy use)
+- `UniversalProfile`: deploy a Universal Profile with the deployer as the owner
+
+- `UniversalProfileInit`: deploy a Universal Profile as a base contract (for proxy use)
+
+- `LSP6KeyManager`: deploy a `UniversalProfile` + `KeyManager`, with the Universal Profile address linked to the Key Manager.     
+
+- `LSP6KeyManagerInit`: deploy a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).   
+
+- `LSP1UniversalReceiverDelegate`: deploy a Universal Receiver Delegate contract
+
+- `LSP1UniversalReceiverDelegateInit`: deploy a Universal Receiver Delegate as a base contract.
+
+- `standard`: deploy the 3 standard contract above.
+
+- `base`: deploy the 3 base contract above (for proxy use)
 
 &nbsp;
 
