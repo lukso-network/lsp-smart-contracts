@@ -14,7 +14,7 @@ const deployKeyManager: DeployFunction = async ({
   await deploy("LSP6KeyManager", {
     from: owner,
     args: [UniversalProfile.address],
-    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
+    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
     log: true,
   });
 };

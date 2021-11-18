@@ -13,7 +13,7 @@ const deployBaseKeyManager: DeployFunction = async ({
     from: owner,
     log: true,
     gasLimit: 5_000_000,
-    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
+    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
   });
 
   const KeyManagerInit = await ethers.getContractFactory("LSP6KeyManagerInit");

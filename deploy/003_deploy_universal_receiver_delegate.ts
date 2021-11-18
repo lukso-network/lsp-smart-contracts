@@ -11,7 +11,7 @@ const deployUniversalReceiverDelegate: DeployFunction = async ({
 
   await deploy("LSP1UniversalReceiverDelegate", {
     from: owner,
-    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
+    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
     log: true,
   });
 };

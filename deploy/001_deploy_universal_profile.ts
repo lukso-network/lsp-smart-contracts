@@ -12,7 +12,7 @@ const deployUniversalProfile: DeployFunction = async ({
   await deploy("UniversalProfile", {
     from: owner,
     args: [owner],
-    gasPrice: ethers.BigNumber.from("20000000000"), // in wei
+    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
     log: true,
   });
 };
