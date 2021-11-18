@@ -13,7 +13,7 @@ contract LSP8MintableInit is LSP8MintableCore, LSP8IdentifiableDigitalAssetInit 
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override {
+    ) public virtual override initializer {
         LSP8IdentifiableDigitalAssetInit.initialize(name_, symbol_, newOwner_);
     }
 
