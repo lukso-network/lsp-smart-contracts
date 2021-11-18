@@ -22,6 +22,5 @@ contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
         _isNFT = isNFT_;
         _registerInterface(_LSP7_INTERFACE_ID);
-        _setData(_LSP7_SUPPORTED_STANDARDS_KEY, abi.encodePacked(_LSP7_SUPPORTED_STANDARDS_VALUE));
     }
 }
