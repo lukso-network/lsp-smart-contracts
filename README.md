@@ -54,5 +54,9 @@ const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultO
 import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
 ```
 
-## **Contribute & Development**
-Please check the [CONTRIBUTING](./CONTRIBUTING.md) page and the [DEVELOPMENT](./CONTRIBUTING.md#Development) section.
+#### deployment via hardhat
+
+You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./DEPLOYMENT.md) page.
+
+## **Contribute**
+Please check the [CONTRIBUTING](./CONTRIBUTING.md) page.
