@@ -2,8 +2,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { LSP8Mintable } from "../../../types";
 
-import type { BigNumber } from "ethers";
-
 export type LSP8MintableTestAccounts = {
   owner: SignerWithAddress;
   tokenReceiver: SignerWithAddress;

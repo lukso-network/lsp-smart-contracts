@@ -1,4 +1,9 @@
-import { LSP8Mintable__factory, LSP8MintableInit__factory } from "../../../types";
+import {
+  LSP8Mintable,
+  LSP8Mintable__factory,
+  LSP8MintableInit,
+  LSP8MintableInit__factory,
+} from "../../../types";
 import { deployProxy } from "../../utils/proxy";
 import {
   shouldBehaveLikeLSP8Mintable,
@@ -11,12 +16,14 @@ describe("LSP8Mintable", () => {
   describe("when using LSP8Mintable with constructor", () => {
     const buildTestContext = async () => {
       const accounts = await getNamedAccounts();
+
       const deployParams = {
         name: "LSP8 Mintable - deployed with constructor",
         symbol: "LSP8 MNTBL",
         newOwner: accounts.owner.address,
       };
-      const lsp8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
+
+      const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
         deployParams.name,
         deployParams.symbol,
         deployParams.newOwner
@@ -56,9 +63,13 @@ describe("LSP8Mintable", () => {
         symbol: "MNTBL",
         newOwner: accounts.owner.address,
       };
-      const lsp8MintableInit = await new LSP8MintableInit__factory(accounts.owner).deploy();
-      const lsp8MintableProxy = await deployProxy(lsp8MintableInit.address, accounts.owner);
-      const lsp8Mintable = lsp8MintableInit.attach(lsp8MintableProxy);
+
+      const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
+        accounts.owner
+      ).deploy();
+
+      const lsp8MintableProxy = await deployProxy(LSP8MintableInit.address, accounts.owner);
+      const lsp8Mintable: LSP8MintableInit = LSP8MintableInit.attach(lsp8MintableProxy);
 
       return { accounts, lsp8Mintable, deployParams };
     };

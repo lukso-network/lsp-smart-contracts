@@ -1,9 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { LSP7Mintable } from "../../../types";
-import { INTERFACE_IDS } from "../../utils/constants";
-
-import type { BigNumber } from "ethers";
 
 export type LSP7MintableTestAccounts = {
   owner: SignerWithAddress;
