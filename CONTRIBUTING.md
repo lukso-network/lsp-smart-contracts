@@ -1,3 +1,5 @@
+# Contributing
+
 ## **Commits and PRs**
 
 This project uses Conventional Commits to generate release notes and to determine versioning. Commit messages should adhere to this standard and be of the form:

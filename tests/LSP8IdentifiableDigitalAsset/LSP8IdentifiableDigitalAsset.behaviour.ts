@@ -9,7 +9,7 @@ import {
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
 import { tokenIdAsBytes32 } from "../utils/tokens";
-import { INTERFACE_IDS } from "../utils/constants";
+import { INTERFACE_IDS, SupportedStandards } from "../utils/constants";
 
 import type { BytesLike } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
@@ -1145,15 +1145,12 @@ export const shouldInitializeLikeLSP8 = (
     });
 
     it("should have set expected entries with ERC725Y.setData", async () => {
-      const lsp8SupportedStandardsKey =
-        "0xeafec4d89fa9619884b6b891356264550000000000000000000000006a3c8618";
-      const lsp8SupportedStandardsValue = "0x6a3c8618";
       await expect(context.initializeTransaction).toHaveEmittedWith(context.lsp8, "DataChanged", [
-        lsp8SupportedStandardsKey,
-        lsp8SupportedStandardsValue,
+        SupportedStandards.LSP4DigitalAsset.key,
+        SupportedStandards.LSP4DigitalAsset.value,
       ]);
-      expect(await context.lsp8.getData([lsp8SupportedStandardsKey])).toEqual([
-        lsp8SupportedStandardsValue,
+      expect(await context.lsp8.getData([SupportedStandards.LSP4DigitalAsset.key])).toEqual([
+        SupportedStandards.LSP4DigitalAsset.value,
       ]);
 
       const nameKey = "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";

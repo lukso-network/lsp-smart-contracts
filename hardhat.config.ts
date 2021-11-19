@@ -6,21 +6,31 @@ import "@nomiclabs/hardhat-web3";
 import "@typechain/hardhat";
 import "hardhat-packager";
 
+import "hardhat-deploy";
+
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {},
-    // public L14 test network
-    l14: {
-      url: "http://34.76.61.201:8545", // bootnode
-      chainId: 22,
-      // accounts: [privateKey1, privateKey2, ...]
+    hardhat: {
+      live: false,
+      saveDeployments: false,
     },
+    // public L14 test network
+    L14: {
+      live: true,
+      url: "https://rpc.l14.lukso.network",
+      chainId: 22,
+      //   accounts: [privateKey1, privateKey2, ...]
+    },
+
     // ephemeral network
     // l15: {
     //   url: "http://35.198.139.247:8565", // bootnode
     //   chainId: null
     // }
+  },
+  namedAccounts: {
+    owner: 0,
   },
   solidity: {
     version: "0.8.7",
