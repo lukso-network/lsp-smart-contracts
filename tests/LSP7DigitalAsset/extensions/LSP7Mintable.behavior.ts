@@ -1,6 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { LSP7Mintable } from "../../../types";
+import { INTERFACE_IDS } from "../../utils/constants";
 
 import type { BigNumber } from "ethers";
 
@@ -14,15 +15,17 @@ export const getNamedAccounts = async (): Promise<LSP7MintableTestAccounts> => {
   return { owner, tokenReceiver };
 };
 
+export type LSP7MintableDeployParams = {
+  name: string;
+  symbol: string;
+  newOwner: string;
+  isNFT: boolean;
+};
+
 export type LSP7MintableTestContext = {
   accounts: LSP7MintableTestAccounts;
   lsp7Mintable: LSP7Mintable;
-  deployParams: {
-    name: string;
-    symbol: string;
-    newOwner: string;
-    isNFT: boolean;
-  };
+  deployParams: LSP7MintableDeployParams;
 };
 
 export const shouldBehaveLikeLSP7Mintable = (
@@ -30,25 +33,47 @@ export const shouldBehaveLikeLSP7Mintable = (
 ) => {
   let context: LSP7MintableTestContext;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     context = await buildContext();
   });
 
   describe("when owner minting tokens", () => {
     it("total supply should have increased", async () => {
-      const tokensToMint = 100;
+      const amountToMint = ethers.BigNumber.from("100");
       const preTotalSupply = await context.lsp7Mintable.totalSupply();
 
-      await context.lsp7Mintable.mint(context.accounts.tokenReceiver.address, tokensToMint);
+      await context.lsp7Mintable.mint(
+        context.accounts.tokenReceiver.address,
+        amountToMint,
+        true, // beneficiary is an EOA, so we need to force minting
+        "0x"
+      );
 
       let postTotalSupply = await context.lsp7Mintable.totalSupply();
-      expect(postTotalSupply).toEqual(preTotalSupply.add(tokensToMint));
+      expect(postTotalSupply).toEqual(preTotalSupply.add(amountToMint));
     });
 
-    // it("owner balance should have increased", async () => {});
+    it("tokenReceiver balance should have increased", async () => {
+      const amountToMint = ethers.BigNumber.from("100");
+
+      const tokenReceiverBalance = await context.lsp7Mintable.balanceOf(
+        context.accounts.tokenReceiver.address
+      );
+
+      expect(tokenReceiverBalance.toNumber()).toEqual(amountToMint.toNumber());
+    });
   });
 
   describe("when non-owner minting tokens", () => {
-    // it("a non-owner should not be allowed to mint", async () => {});
+    it("should revert", async () => {
+      const amountToMint = ethers.BigNumber.from("100");
+
+      // use any other account
+      const nonOwner = context.accounts.tokenReceiver;
+
+      await expect(
+        context.lsp7Mintable.connect(nonOwner).mint(nonOwner.address, amountToMint, true, "0x")
+      ).toBeRevertedWith("Ownable: caller is not the owner");
+    });
   });
 };
