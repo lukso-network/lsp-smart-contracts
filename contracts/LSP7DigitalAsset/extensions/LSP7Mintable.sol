@@ -9,6 +9,7 @@ import "../LSP7DigitalAsset.sol";
  * @dev LSP7 extension, mintable.
  */
 contract LSP7Mintable is LSP7MintableCore, LSP7DigitalAsset {
+    // solhint-disable no-empty-blocks
     constructor(
         string memory name_,
         string memory symbol_,

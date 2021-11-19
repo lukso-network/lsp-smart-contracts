@@ -9,6 +9,7 @@ import "../LSP8IdentifiableDigitalAsset.sol";
  * @dev LSP8 extension.
  */
 contract LSP8Mintable is LSP8MintableCore, LSP8IdentifiableDigitalAsset {
+    // solhint-disable no-empty-blocks
     constructor(
         string memory name_,
         string memory symbol_,
