@@ -18,6 +18,9 @@ abstract contract LSP4DigitalAssetMetadataInit is Initializable, ERC725YInit {
     ) public virtual initializer {
         ERC725YInit.initialize(newOwner_);
 
+        // set SupportedStandards:LSP4DigitalAsset
+        _setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
+
         _setData(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name_));
         _setData(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol_));
     }

@@ -13,13 +13,15 @@ import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 /**
  * @dev Implementation of a LSP8 compliant contract.
  */
-contract LSP8IdentifiableDigitalAsset is LSP4DigitalAssetMetadata, LSP8IdentifiableDigitalAssetCore {
+contract LSP8IdentifiableDigitalAsset is
+    LSP4DigitalAssetMetadata,
+    LSP8IdentifiableDigitalAssetCore
+{
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
         _registerInterface(_LSP8_INTERFACE_ID);
-        _setData(_LSP8_SUPPORTED_STANDARDS_KEY, abi.encodePacked(_LSP8_SUPPORTED_STANDARDS_VALUE));
     }
 }
