@@ -11,10 +11,8 @@ import {
 } from "../../types";
 
 // constants
-import { LSP2Keys } from "../utils/lsp2schema";
-
-// keccak256("ERC777TokensRecipient")
-const TOKENS_RECIPIENT_INTERFACE_HASH = LSP2Keys.ERC777TokensRecipient;
+import { ERC725YKeys } from "../utils/lsp2schema";
+import { ERC777TokensRecipient as TOKENS_RECIPIENT_INTERFACE_HASH } from "../utils/constants";
 
 describe("Receivers", () => {
   let uni: BasicUniversalReceiver;
@@ -84,7 +82,7 @@ describe("Receivers", () => {
     // set uni receiver delegate
     await account
       .connect(signerAddress)
-      .setData([LSP2Keys.UniversalReceiverDelegate], [delegate.address]);
+      .setData([ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]], [delegate.address]);
 
     await checker.lowLevelCheckImplementation(account.address, TOKENS_RECIPIENT_INTERFACE_HASH);
     await checker.checkImplementation(account.address, TOKENS_RECIPIENT_INTERFACE_HASH);

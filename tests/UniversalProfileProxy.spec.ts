@@ -24,7 +24,7 @@ import { OPERATIONS } from "./utils/keymanager";
 import { proxyRuntimeCodeTemplate, deployProxy, attachUniversalProfileProxy } from "./utils/proxy";
 
 // constants
-import { SupportedStandards, LSP2Keys } from "./utils/lsp2schema";
+import { SupportedStandards, ERC725YKeys } from "./utils/lsp2schema";
 import {
   ERC1271,
   RANDOM_BYTES32,
@@ -547,7 +547,10 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       // set account2 as new receiver for account1
       await proxyAccount
         .connect(owner)
-        .setData([LSP2Keys.UniversalReceiverDelegate], [externalUniversalReceiver.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [externalUniversalReceiver.address]
+        );
 
       // use the checker contract to call account
       let checker: UniversalReceiverTester = await new UniversalReceiverTester__factory(
@@ -682,7 +685,10 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       // set account2 as new receiver for account1
       await proxyAccount
         .connect(owner)
-        .setData([LSP2Keys.UniversalReceiverDelegate], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[2];
 
@@ -721,7 +727,10 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       // set account2 as new receiver for account1
       await proxyAccount
         .connect(owner)
-        .setData([LSP2Keys.UniversalReceiverDelegate], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[2];
 
@@ -766,7 +775,10 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       // set account2 as new receiver for account1
       await proxyAccount
         .connect(owner)
-        .setData([LSP2Keys.UniversalReceiverDelegate], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[3];
 
