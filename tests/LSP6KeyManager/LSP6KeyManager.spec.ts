@@ -170,10 +170,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   describe("Testing permissions for allowed addresses / function", () => {
     it("_isAllowedAddress(...) - Should return `true` for address listed in owner's allowed addresses", async () => {
       expect(
-        await keyManagerHelper.callStatic.isAllowedAddress(
-          owner.address,
-          "0xcafecafecafecafecafecafecafecafecafecafe"
-        )
+        await keyManagerHelper.callStatic.isAllowedAddress(owner.address, allowedAddresses[0])
       ).toBeTruthy();
     });
 
@@ -199,18 +196,18 @@ describe("KeyManager", () => {
   let abiCoder;
   let accounts: SignerWithAddress[] = [];
 
-  let universalProfile: UniversalProfile,
-    keyManager: LSP6KeyManager,
-    targetContract: TargetContract,
-    maliciousContract: Reentrancy;
-
   let owner: SignerWithAddress,
     app: SignerWithAddress,
     user: SignerWithAddress,
     externalApp: SignerWithAddress,
     newUser: SignerWithAddress;
 
-  let addressPermissions;
+  let universalProfile: UniversalProfile,
+    keyManager: LSP6KeyManager,
+    targetContract: TargetContract,
+    maliciousContract: Reentrancy;
+
+  let addressPermissions, allowedAddresses;
 
   beforeAll(async () => {
     abiCoder = await ethers.utils.defaultAbiCoder;
@@ -227,6 +224,8 @@ describe("KeyManager", () => {
     keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
     targetContract = await new TargetContract__factory(owner).deploy();
     maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(keyManager.address);
+
+    allowedAddresses = getRandomAddresses(2);
 
     // owner permissions
     await universalProfile
@@ -678,7 +677,7 @@ describe("KeyManager", () => {
     it("Owner should be allowed to make a CALL", async () => {
       let executePayload = universalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
+        allowedAddresses[0],
         0,
         DUMMY_PAYLOAD,
       ]);
