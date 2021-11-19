@@ -1,8 +1,4 @@
-import { ethers } from "hardhat";
-import {
-  LSP8Mintable__factory,
-  LSP8MintableInit__factory,
-} from "../../../types";
+import { LSP8Mintable__factory, LSP8MintableInit__factory } from "../../../types";
 import { deployProxy } from "../../utils/proxy";
 import {
   shouldBehaveLikeLSP8Mintable,
@@ -17,8 +13,8 @@ describe("LSP8Mintable", () => {
       const accounts = await getNamedAccounts();
       const deployParams = {
         name: "LSP8 Mintable - deployed with constructor",
-        symbol: "MNTBL",
-        newOwner: accounts.owner.address
+        symbol: "LSP8 MNTBL",
+        newOwner: accounts.owner.address,
       };
       const lsp8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
         deployParams.name,
@@ -58,11 +54,9 @@ describe("LSP8Mintable", () => {
       const deployParams = {
         name: "LSP8 Mintable - deployed with proxy",
         symbol: "MNTBL",
-        newOwner: accounts.owner.address
+        newOwner: accounts.owner.address,
       };
-      const lsp8MintableInit = await new LSP8MintableInit__factory(
-        accounts.owner
-      ).deploy();
+      const lsp8MintableInit = await new LSP8MintableInit__factory(accounts.owner).deploy();
       const lsp8MintableProxy = await deployProxy(lsp8MintableInit.address, accounts.owner);
       const lsp8Mintable = lsp8MintableInit.attach(lsp8MintableProxy);
 
@@ -76,14 +70,12 @@ describe("LSP8Mintable", () => {
         context.deployParams.newOwner
       );
     };
-
     describe("when deploying the contract as proxy", () => {
       let context: LSP8MintableTestContext;
 
       beforeEach(async () => {
         context = await buildTestContext();
       });
-
       describe("when initializing the contract", () => {
         shouldInitializeLikeLSP8(async () => {
           const { lsp8Mintable: lsp8, deployParams } = context;

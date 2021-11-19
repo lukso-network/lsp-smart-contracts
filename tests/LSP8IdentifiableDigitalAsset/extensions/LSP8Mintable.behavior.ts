@@ -14,14 +14,16 @@ export const getNamedAccounts = async (): Promise<LSP8MintableTestAccounts> => {
   return { owner, tokenReceiver };
 };
 
+export type LSP8MintableDeployParams = {
+  name: string;
+  symbol: string;
+  newOwner: string;
+};
+
 export type LSP8MintableTestContext = {
   accounts: LSP8MintableTestAccounts;
   lsp8Mintable: LSP8Mintable;
-  deployParams: {
-    name: string;
-    symbol: string;
-    newOwner: string;
-  };
+  deployParams: LSP8MintableDeployParams;
 };
 
 export const shouldBehaveLikeLSP8Mintable = (
@@ -35,13 +37,14 @@ export const shouldBehaveLikeLSP8Mintable = (
 
   describe("when owner minting tokens", () => {
     it("total supply should have increased", async () => {
-      const tokensToMint = "0xad7c5bef027816a800da1736444fb58a807ef4c9603b7848673f7e3a68eb14a5";
+      const randomTokenId = ethers.utils.randomBytes(32);
+
       const preTotalSupply = await context.lsp8Mintable.totalSupply();
 
       await context.lsp8Mintable.mint(
         context.accounts.tokenReceiver.address,
-        tokensToMint,
-        true,
+        randomTokenId,
+        true, // beneficiary is an EOA, so we need to force minting
         "0x"
       );
 
@@ -59,12 +62,16 @@ export const shouldBehaveLikeLSP8Mintable = (
   });
 
   describe("when non-owner minting tokens", () => {
-    it("a non-owner should not be allowed to mint", async () => {
-      const tokensToMint = "0x23f42ca762b34aae3cb582735a74eca0a1ff5f52d509344aa4effc6bfff66c3e";
+    it("should revert", async () => {
+      const randomTokenId = ethers.utils.randomBytes(32);
+
+      // use any other account
+      const nonOwner = context.accounts.tokenReceiver;
 
       await expect(
-        context.lsp8Mintable.connect(context.accounts.tokenReceiver.address)
-          .mint(context.accounts.tokenReceiver.address, tokensToMint, true, "0x",{gasLimit: 300_000})
+        context.lsp8Mintable
+          .connect(nonOwner)
+          .mint(context.accounts.tokenReceiver.address, randomTokenId, true, "0x")
       ).toBeRevertedWith("Ownable: caller is not the owner");
     });
   });
