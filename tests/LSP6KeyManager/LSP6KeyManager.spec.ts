@@ -1,6 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
+import { solidityKeccak256 } from "ethers/lib/utils";
 
 import {
   UniversalProfile,
@@ -15,8 +16,10 @@ import {
   Reentrancy__factory,
 } from "../../types";
 
-import { solidityKeccak256 } from "ethers/lib/utils";
+// constants
+import { INTERFACE_IDS, BasicUPSetup_Schema, ERC725YKeys } from "../utils/constants";
 
+// helpers
 import {
   EMPTY_PAYLOAD,
   DUMMY_PAYLOAD,
@@ -25,29 +28,25 @@ import {
   getRandomAddresses,
   generateKeysAndValues,
 } from "../utils/helpers";
-import { BasicUPSetup_Schema, ERC725YKeys } from "../utils/lsp2schema";
-import { INTERFACE_IDS } from "../utils/constants";
 
-import {
-  ALL_PERMISSIONS_SET,
-  PERMISSIONS,
-  OPERATIONS,
-  allowedAddresses,
-} from "../utils/keymanager";
+import { ALL_PERMISSIONS_SET, PERMISSIONS, OPERATIONS } from "../utils/constants";
 
 describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   let abiCoder;
   let accounts: SignerWithAddress[] = [];
 
+  let owner: SignerWithAddress, app: SignerWithAddress, user: SignerWithAddress;
+
   let universalProfile: UniversalProfile,
     keyManagerHelper: KeyManagerHelper,
     targetContract: TargetContract;
 
-  let owner: SignerWithAddress, app: SignerWithAddress, user: SignerWithAddress;
+  let allowedAddresses;
 
   beforeAll(async () => {
     abiCoder = await ethers.utils.defaultAbiCoder;
     accounts = await ethers.getSigners();
+
     owner = accounts[0];
     app = accounts[1];
     user = accounts[2];
@@ -56,6 +55,8 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
     universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
     keyManagerHelper = await new KeyManagerHelper__factory(owner).deploy(universalProfile.address);
+
+    allowedAddresses = getRandomAddresses(2);
 
     await universalProfile
       .connect(owner)

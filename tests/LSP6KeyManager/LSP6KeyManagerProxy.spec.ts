@@ -18,10 +18,15 @@ import { solidityKeccak256 } from "ethers/lib/utils";
 import { deployProxy, attachUniversalProfileProxy, attachKeyManagerProxy } from "../utils/proxy";
 
 // constants
+import {
+  INTERFACE_IDS,
+  ERC725YKeys,
+  PERMISSIONS,
+  OPERATIONS,
+  ALL_PERMISSIONS_SET,
+} from "../utils/constants";
+
 import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "../utils/helpers";
-import { PERMISSIONS, OPERATIONS, ALL_PERMISSIONS_SET } from "../utils/keymanager";
-import { INTERFACE_IDS } from "../utils/constants";
-import { ERC725YKeys } from "../utils/lsp2schema";
 
 describe("KeyManager + LSP3 Account as Proxies", () => {
   let abiCoder;

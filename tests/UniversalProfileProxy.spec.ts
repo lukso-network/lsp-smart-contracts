@@ -20,17 +20,17 @@ import {
 
 // helpers
 import { getDeploymentCost } from "./utils/deploy";
-import { OPERATIONS } from "./utils/keymanager";
 import { proxyRuntimeCodeTemplate, deployProxy, attachUniversalProfileProxy } from "./utils/proxy";
+import { RANDOM_BYTES32, ERC777TokensRecipient } from "./utils/helpers";
 
 // constants
-import { SupportedStandards, ERC725YKeys } from "./utils/lsp2schema";
 import {
-  ERC1271,
-  RANDOM_BYTES32,
   INTERFACE_IDS,
-  ERC777TokensRecipient,
+  SupportedStandards,
+  ERC725YKeys,
   EventSignatures,
+  OPERATIONS,
+  ERC1271,
 } from "./utils/constants";
 
 describe("UniversalProfile via EIP1167 Proxy + initializer", () => {

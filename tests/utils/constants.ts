@@ -1,3 +1,9 @@
+import { ethers } from "hardhat";
+import { ERC725JSONSchema } from "@erc725/erc725.js";
+
+// ERC165
+// ----------
+
 export const enum INTERFACE_IDS {
   ERC165 = "0x01ffc9a7",
   ERC1271 = "0x1626ba7e",
@@ -11,10 +17,79 @@ export const enum INTERFACE_IDS {
   LSP8 = "0x49399145",
 }
 
-export const enum ERC1271 {
-  MAGIC_VALUE = "0x1626ba7e",
-  FAIL_VALUE = "0xffffffff",
-}
+// ERC725Y
+// ----------
+
+export const SupportedStandards = {
+  LSP3UniversalProfile: {
+    key: "0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6",
+    value: "0xabe425d6",
+  },
+  LSP4DigitalCertificate: {
+    key: "0xeafec4d89fa9619884b6b89135626455000000000000000000000000abf0613c",
+    value: "0xabf0613c",
+  },
+};
+
+export const ERC725YKeys = {
+  LSP0: {
+    // keccak256('LSP1UniversalReceiverDelegate')
+    LSP1UniversalReceiverDelegate:
+      "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47",
+  },
+  LSP3: {
+    // keccak256('LSP3Profile')
+    LSP3Profile: "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
+    // LSP3IssuedAssetsMap:<address> --> bytes
+    "LSP3IssuedAssetsMap:": "0x83f5e77bfb14241600000000",
+    // keccak256('LSP3IssuedAssets[]')
+    "LSP3IssuedAssets[]": "0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0",
+  },
+  LSP5: {
+    // LSP5ReceivedAssetsMap:<address>
+    "LSP5ReceivedAssetsMap:": "0x812c4334633eb81600000000",
+    // LSP5ReceivedAssets[]
+    "LSP5ReceivedAssets[]": "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
+  },
+  LSP6: {
+    // AddressPermissions[]
+    "AddressPermissions[]": "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
+    // AddressPermissions:Permissions:<address> --> bytes1
+    "AddressPermissions:Permissions:": "0x4b80742d0000000082ac0000",
+    // AddressPermissions:AllowedAddresses:<address> --> address[]
+    "AddressPermissions:AllowedAddresses:": "0x4b80742d00000000c6dd0000",
+    // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+    "AddressPermissions:AllowedFunctions:": "0x4b80742d000000008efe0000",
+  },
+};
+
+export const BasicUPSetup_Schema: ERC725JSONSchema[] = [
+  {
+    name: "LSP3Profile",
+    key: ERC725YKeys.LSP3["LSP3Profile"],
+    keyType: "Singleton",
+    valueContent: "JSONURL",
+    valueType: "bytes",
+  },
+  {
+    name: "LSP1UniversalReceiverDelegate",
+    key: ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"],
+    keyType: "Singleton",
+    valueContent: "Address",
+    valueType: "address",
+  },
+  {
+    name: "LSP3IssuedAssets[]",
+    key: ERC725YKeys.LSP3["LSP3IssuedAssets[]"],
+    keyType: "Array",
+    valueContent: "Number",
+    valueType: "uint256",
+    elementValueContent: "Address",
+    elementValueType: "address",
+  },
+];
+
+// ----------
 
 export const EventSignatures = {
   /**
@@ -42,60 +117,42 @@ export const EventSignatures = {
   ReceivedERC777: "0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c",
 };
 
-export const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-export const ERC777TokensRecipient =
-  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+// LSP0
+// ----------
 
-export const RAW_INTERFACE_ID = {
-  LSP7: "e33f65c3",
-  LSP8: "49399145",
-};
+export const enum OPERATIONS {
+  CALL = 0,
+  CREATE = 1,
+  CREATE2 = 2,
+  STATICCALL = 3,
+  DELEGATECALL = 4,
+}
 
-export const ITEMS_ARRAY_KEY = {
-  ITEM1: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000",
-  ITEM2: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001",
-  ITEM3: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002",
-  ITEM4: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000003",
-  ITEM5: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000004",
-  ITEM6: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000005",
-  ITEM7: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000006",
-  ITEM8: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000007",
-};
+// LSP6
+// ----------
 
-// bytes8 index
-export const INDEX = {
-  ZERO: "0000000000000000",
-  ONE: "0000000000000001",
-  TWO: "0000000000000002",
-  THREE: "0000000000000003",
-  FOUR: "0000000000000004",
-  FIVE: "0000000000000005",
-  SIX: "0000000000000006",
-  SEVEN: "0000000000000007",
-};
+// hex =    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+// binary = .... 1111 1111 1111 (only 1s)
+export const ALL_PERMISSIONS_SET = ethers.utils.hexlify(ethers.constants.MaxUint256);
 
-// bytes32 arraylength
+// prettier-ignore
+export const enum PERMISSIONS {
+    CHANGEOWNER       = 0x0000000000000000000000000000000000000000000000000000000000000001, // .... 0000 0000 0001
+    CHANGEPERMISSIONS = 0x0000000000000000000000000000000000000000000000000000000000000002, // .... .... .... 0010
+    ADDPERMISSIONS    = 0x0000000000000000000000000000000000000000000000000000000000000004, // .... .... .... 0100
+    SETDATA           = 0x0000000000000000000000000000000000000000000000000000000000000008, // .... .... .... 1000
+    CALL              = 0x0000000000000000000000000000000000000000000000000000000000000010, // .... .... 0001 ....
+    STATICCALL        = 0x0000000000000000000000000000000000000000000000000000000000000020, // .... .... 0010 ....
+    DELEGATECALL      = 0x0000000000000000000000000000000000000000000000000000000000000040, // .... .... 0100 ....
+    DEPLOY            = 0x0000000000000000000000000000000000000000000000000000000000000080, // .... .... 1000 ....
+    TRANSFERVALUE     = 0x0000000000000000000000000000000000000000000000000000000000000100, // .... 0001 .... ....
+    SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200  // .... 0010 .... ....
+}
 
-export const ARRAY_LENGTH = {
-  ZERO: "0x0000000000000000000000000000000000000000000000000000000000000000",
-  ONE: "0x0000000000000000000000000000000000000000000000000000000000000001",
-  TWO: "0x0000000000000000000000000000000000000000000000000000000000000002",
-  THREE: "0x0000000000000000000000000000000000000000000000000000000000000003",
-  FOUR: "0x0000000000000000000000000000000000000000000000000000000000000004",
-  FIVE: "0x0000000000000000000000000000000000000000000000000000000000000005",
-  SIX: "0x0000000000000000000000000000000000000000000000000000000000000006",
-  SEVEN: "0x0000000000000000000000000000000000000000000000000000000000000007",
-  EIGHT: "0x0000000000000000000000000000000000000000000000000000000000000008",
-};
+// ERC1271
+// ----------
 
-// Random Token Id
-export const TOKEN_ID = {
-  ONE: "0xad7c5bef027816a800da1736444fb58a807ef4c9603b7848673f7e3a68eb14a5",
-  TWO: "0xd4d1a59767271eefdc7830a772b9732a11d503531d972ab8c981a6b1c0e666e5",
-  THREE: "0x3672b35640006da199633c5c75015da83589c4fb84ef8276b18076529e3d3196",
-  FOUR: "0x80a6c6138772c2d7c710a3d49f4eea603028994b7e390f670dd68566005417f0",
-  FIVE: "0x5c6f8b1aed769a328dad1ae15220e93730cdd52cb12817ae5fd8c15023d660d3",
-  SIX: "0x65ce3c3668a850c4f9fce91762a3fb886380399f02a9eb1495055234e7c0287a",
-  SEVEN: "0x00121ee2bd9802ce88a413ac1851c8afe6fe7474fb5d1b7da4475151b013da53",
-  EIGHT: "0x367f9d97f8dd1bece61f8b74c5db7616958147682674fd32de73490bd6347f60",
-};
+export const enum ERC1271 {
+  MAGIC_VALUE = "0x1626ba7e",
+  FAIL_VALUE = "0xffffffff",
+}

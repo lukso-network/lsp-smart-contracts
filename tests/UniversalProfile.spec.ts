@@ -19,12 +19,19 @@ import {
   LSP4DigitalCertificate__factory,
 } from "../types";
 
-// custom utils
-import { ALL_PERMISSIONS_SET, ADDRESS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";
-
 // constants
-import { SupportedStandards, ERC725YKeys } from "./utils/lsp2schema";
-import { ERC1271, RANDOM_BYTES32, ERC777TokensRecipient, EventSignatures } from "./utils/constants";
+import {
+  SupportedStandards,
+  ERC725YKeys,
+  EventSignatures,
+  ALL_PERMISSIONS_SET,
+  OPERATIONS,
+  PERMISSIONS,
+  ERC1271,
+} from "./utils/constants";
+
+// helpers
+import { RANDOM_BYTES32, ERC777TokensRecipient } from "./utils/helpers";
 
 describe("UniversalProfile", () => {
   let accounts: SignerWithAddress[];
@@ -773,18 +780,18 @@ describe("UniversalProfile", () => {
 
       // give all permissions to owner
       await UniversalProfile.connect(owner).setData(
-        [ADDRESS.PERMISSIONS + owner.address.substr(2)],
+        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2)],
         [ALL_PERMISSIONS_SET]
       );
 
       // give SIGN permission to signer
       await UniversalProfile.connect(owner).setData(
-        [ADDRESS.PERMISSIONS + signer.address.substr(2)],
+        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + signer.address.substr(2)],
         [ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32)]
       );
       // give CALL permission to non-signer
       await UniversalProfile.connect(owner).setData(
-        [ADDRESS.PERMISSIONS + thirdParty.address.substr(2)],
+        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + thirdParty.address.substr(2)],
         ["0x08"]
       );
 

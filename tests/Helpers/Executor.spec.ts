@@ -12,7 +12,7 @@ import {
 
 // custom helpers
 import { ONE_ETH, DUMMY_RECIPIENT } from "../utils/helpers";
-import { ALL_PERMISSIONS_SET, ADDRESS, PERMISSIONS } from "../utils/keymanager";
+import { ERC725YKeys, ALL_PERMISSIONS_SET, PERMISSIONS } from "../utils/constants";
 
 describe("Executor interacting with KeyManager", () => {
   let accounts: SignerWithAddress[] = [];
@@ -45,7 +45,10 @@ describe("Executor interacting with KeyManager", () => {
     let ownerPermissions = ethers.utils.hexZeroPad(ALL_PERMISSIONS_SET, 32);
     await universalProfile
       .connect(owner)
-      .setData([ADDRESS.PERMISSIONS + owner.address.substr(2)], [ownerPermissions]);
+      .setData(
+        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2)],
+        [ownerPermissions]
+      );
 
     // executor permissions
     let executorPermissions = ethers.utils.hexZeroPad(
@@ -54,7 +57,10 @@ describe("Executor interacting with KeyManager", () => {
     );
     await universalProfile
       .connect(owner)
-      .setData([ADDRESS.PERMISSIONS + executor.address.substr(2)], [executorPermissions]);
+      .setData(
+        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + executor.address.substr(2)],
+        [executorPermissions]
+      );
 
     // switch account management to KeyManager
     await universalProfile.connect(owner).transferOwnership(keyManager.address);
@@ -63,7 +69,7 @@ describe("Executor interacting with KeyManager", () => {
   describe("Setup", () => {
     it("Executor should have permission SETDATA + CALL + TRANSFERVALUE", async () => {
       let [permissions] = await universalProfile.getData([
-        ADDRESS.PERMISSIONS + executor.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + executor.address.substr(2),
       ]);
       expect(permissions).toEqual(
         "0x0000000000000000000000000000000000000000000000000000000000000118"

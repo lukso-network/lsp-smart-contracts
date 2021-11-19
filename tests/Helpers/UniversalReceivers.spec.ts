@@ -10,9 +10,8 @@ import {
   UniversalReceiverTester__factory,
 } from "../../types";
 
-// constants
-import { ERC725YKeys } from "../utils/lsp2schema";
-import { ERC777TokensRecipient as TOKENS_RECIPIENT_INTERFACE_HASH } from "../utils/constants";
+import { ERC725YKeys } from "../utils/constants";
+import { ERC777TokensRecipient as TOKENS_RECIPIENT_INTERFACE_HASH } from "../utils/helpers";
 
 describe("Receivers", () => {
   let uni: BasicUniversalReceiver;

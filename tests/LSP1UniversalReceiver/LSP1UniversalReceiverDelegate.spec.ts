@@ -15,23 +15,9 @@ import {
   LSP1UniversalReceiverDelegate__factory,
 } from "../../types";
 
-import { ERC725YKeys } from "../utils/lsp2schema";
+import { ERC725YKeys, ALL_PERMISSIONS_SET, PERMISSIONS, OPERATIONS } from "../utils/constants";
 
-import {
-  ALL_PERMISSIONS_SET,
-  PERMISSIONS,
-  OPERATIONS,
-  allowedAddresses,
-} from "../utils/keymanager";
-
-import {
-  RAW_INTERFACE_ID,
-  INTERFACE_IDS,
-  ITEMS_ARRAY_KEY,
-  ARRAY_LENGTH,
-  INDEX,
-  TOKEN_ID,
-} from "../utils/constants";
+import { RAW_INTERFACE_ID, ITEMS_ARRAY_KEY, ARRAY_LENGTH, INDEX, TOKEN_ID } from "../utils/helpers";
 
 describe("UniversalReceiverDelegate contract", () => {
   let accounts: SignerWithAddress[];
