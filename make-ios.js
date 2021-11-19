@@ -48,7 +48,7 @@ public final class UPContractsAbi {
 
   let swiftFileEnd = `
     
-} // end of lsp-universalprofile-smart-contract abis
+}
   `;
 
   swiftFileContent = swiftFileContent.concat(variablesList.join("\n\n   "));
