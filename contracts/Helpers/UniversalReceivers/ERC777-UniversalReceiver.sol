@@ -28,11 +28,11 @@ contract ERC777UniversalReceiver is ERC777 {
 
     bytes4 private constant _INTERFACE_ID_LSP1 = 0x6bb56a14;
 
-    bytes32 constant internal _TOKENS_SENDER_INTERFACE_HASH =
-    0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895; // keccak256("ERC777TokensSender")
+    bytes32 internal constant _TOKENS_SENDER_INTERFACE_HASH =
+        0x29ddb589b1fb5fc7cf394961c1adf5f8c6454761adf795e67fe149f658abe895; // keccak256("ERC777TokensSender")
 
-    bytes32 constant internal _TOKENS_RECIPIENT_INTERFACE_HASH =
-    0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b; // keccak256("ERC777TokensRecipient")
+    bytes32 internal constant _TOKENS_RECIPIENT_INTERFACE_HASH =
+        0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b; // keccak256("ERC777TokensRecipient")
 
     /**
      * @dev `defaultOperators` may be an empty array.
@@ -64,11 +64,7 @@ contract ERC777UniversalReceiver is ERC777 {
         uint256 amount,
         bytes memory userData,
         bytes memory operatorData
-    )
-        internal
-        virtual
-        override
-    {
+    ) internal virtual override {
         ERC777._move(operator, from, to, amount, userData, operatorData);
     }
 
@@ -88,20 +84,26 @@ contract ERC777UniversalReceiver is ERC777 {
         uint256 amount,
         bytes memory userData,
         bytes memory operatorData
-    )
-        internal
-        override
-    {
-
-        if (ERC165Checker.supportsERC165(from) && ERC165Checker.supportsInterface(from, _INTERFACE_ID_LSP1)) {
-            bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
+    ) internal override {
+        if (
+            ERC165Checker.supportsERC165(from) &&
+            ERC165Checker.supportsInterface(from, _INTERFACE_ID_LSP1)
+        ) {
+            bytes memory data = abi.encodePacked(
+                operator,
+                from,
+                to,
+                amount,
+                userData,
+                operatorData
+            );
             ILSP1UniversalReceiver(from).universalReceiver(_TOKENS_SENDER_INTERFACE_HASH, data);
         }
 
         /* solhint-disable */
         // bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
         // (bool succ, bytes memory ret) = to.call(
-        //     abi.encodeWithSignature("universalReceiver(bytes32,bytes)", 
+        //     abi.encodeWithSignature("universalReceiver(bytes32,bytes)",
         //     _TOKENS_SENDER_INTERFACE_HASH,data)
         // );
         // if(requireReceptionAck && from.isContract()) {
@@ -136,16 +138,23 @@ contract ERC777UniversalReceiver is ERC777 {
         bytes memory userData,
         bytes memory operatorData,
         bool requireReceptionAck
-    )
-        internal
-        override
-    {
-        if (ERC165Checker.supportsERC165(to) && ERC165Checker.supportsInterface(to, _INTERFACE_ID_LSP1)) {
-            bytes memory data = abi.encodePacked(operator, from, to, amount, userData, operatorData);
+    ) internal override {
+        if (
+            ERC165Checker.supportsERC165(to) &&
+            ERC165Checker.supportsInterface(to, _INTERFACE_ID_LSP1)
+        ) {
+            bytes memory data = abi.encodePacked(
+                operator,
+                from,
+                to,
+                amount,
+                userData,
+                operatorData
+            );
             ILSP1UniversalReceiver(to).universalReceiver(_TOKENS_RECIPIENT_INTERFACE_HASH, data);
         } else if (requireReceptionAck) {
             require(
-                !to.isContract(), 
+                !to.isContract(),
                 "ERC777: token recipient contract has no universal receiver for 'ERC777TokensRecipient'"
             );
         }

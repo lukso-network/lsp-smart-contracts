@@ -11,42 +11,30 @@ import {
   UniversalReceiverAddressStore__factory,
   UniversalReceiverTester,
   UniversalReceiverTester__factory,
+  ERC777UniversalReceiver,
   ERC777UniversalReceiver__factory,
+  ExternalERC777UniversalReceiverTester,
   ExternalERC777UniversalReceiverTester__factory,
+  LSP4DigitalCertificate,
   LSP4DigitalCertificate__factory,
 } from "../types";
 
-// custom utils
-import { ALL_PERMISSIONS_SET, ADDRESS, OPERATIONS, PERMISSIONS } from "./utils/keymanager";
+// constants
+import {
+  SupportedStandards,
+  ERC725YKeys,
+  EventSignatures,
+  ALL_PERMISSIONS_SET,
+  OPERATIONS,
+  PERMISSIONS,
+  ERC1271,
+} from "./utils/constants";
 
-/** @todo put all of these in constant file */
-
-/** @deprecated */
-const SupportedStandardsERC725Account_KEY =
-  "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
-
-/** @deprecated */
-// Get key: bytes4(keccak256('ERC725Account'))
-const ERC725Account_VALUE = "0xafdeb5d6";
-
-const SupportedStandardsLSP3UniversalProfile_KEY =
-  "0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6";
-const LSP3UniversalProfile_VALUE = "0xabe425d6";
-
-// Get key: keccak256('LSP1UniversalReceiverDelegate')
-const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
-
-const ERC1271_MAGIC_VALUE = "0x1626ba7e";
-const ERC1271_FAIL_VALUE = "0xffffffff";
-
-// Universal Receiver
-const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-// keccak256("UniversalReceiver(address,bytes32,bytes,bytes)")
-const EVENT_SIGNATURE = "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3";
+// helpers
+import { RANDOM_BYTES32, ERC777TokensRecipient } from "./utils/helpers";
 
 describe("UniversalProfile", () => {
-  let accounts: SignerWithAddress[] = [];
+  let accounts: SignerWithAddress[];
   let UniversalProfile: UniversalProfile;
 
   let owner: SignerWithAddress;
@@ -100,12 +88,12 @@ describe("UniversalProfile", () => {
       expect(result).toBeTruthy();
     });
 
-    it("Has SupportedStandardsERC725Account_KEY set to ERC725Account_VALUE", async () => {
+    it("Should have Key: 'SupportedStandards:LSP3UniversalProfile' set to Value: 'LSP3UniversalProfile'", async () => {
       const owner = accounts[2];
       let [result] = await UniversalProfile.callStatic.getData([
-        SupportedStandardsLSP3UniversalProfile_KEY,
+        SupportedStandards.LSP3UniversalProfile.key,
       ]);
-      expect(result).toEqual(LSP3UniversalProfile_VALUE);
+      expect(result).toEqual(SupportedStandards.LSP3UniversalProfile.value);
     });
   });
 
@@ -119,7 +107,7 @@ describe("UniversalProfile", () => {
       const signature = await signer.signMessage(dataToSign);
 
       const result = await account.callStatic.isValidSignature(messageHash, signature);
-      expect(result).toEqual(ERC1271_MAGIC_VALUE);
+      expect(result).toEqual(ERC1271.MAGIC_VALUE);
     });
 
     it("Should fail when verifying signature from not-owner", async () => {
@@ -132,7 +120,7 @@ describe("UniversalProfile", () => {
       const signature = await signer.signMessage(dataToSign);
 
       const result = await account.callStatic.isValidSignature(messageHash, signature);
-      expect(result).toEqual(ERC1271_FAIL_VALUE);
+      expect(result).toEqual(ERC1271.FAIL_VALUE);
     });
   });
 
@@ -456,11 +444,18 @@ describe("UniversalProfile", () => {
   });
 
   describe("Universal Receiver", () => {
+    /**
+     * @debug
+     * Expected: "0x54b98940949b5ac0325c889c84db302d4e18faec431b48bdc81706bfe482cfbd"
+     * Received: "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3"
+     */
     it("Call account and check for 'UniversalReceiver' event", async () => {
       const owner = accounts[2];
       const account = await new UniversalProfile__factory(owner).deploy(owner.address);
       // use the checker contract to call account
-      let checker = await new UniversalReceiverTester__factory(owner).deploy();
+      let checker: UniversalReceiverTester = await new UniversalReceiverTester__factory(
+        owner
+      ).deploy();
 
       let transaction = await checker
         .connect(owner)
@@ -470,7 +465,7 @@ describe("UniversalProfile", () => {
       // event should come from account
       expect(receipt.logs[0].address).toEqual(account.address);
       // event signature
-      expect(receipt.logs[0].topics[0]).toEqual(EVENT_SIGNATURE);
+      expect(receipt.logs[0].topics[0]).toEqual(EventSignatures.UniversalReceiver);
       // from
       expect(receipt.logs[0].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -483,25 +478,39 @@ describe("UniversalProfile", () => {
       );
     });
 
+    /**
+     * @debug
+     * Expected: "0x54b98940949b5ac0325c889c84db302d4e18faec431b48bdc81706bfe482cfbd"
+     * Received: "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3"
+     */
     it("Call account and check for 'ReceivedERC777' event in external account", async () => {
       const owner = accounts[2];
       const account = await new UniversalProfile__factory(owner).deploy(owner.address);
-      const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
-        owner
-      ).deploy();
+      const externalUniversalReceiver: ExternalERC777UniversalReceiverTester =
+        await new ExternalERC777UniversalReceiverTester__factory(owner).deploy();
 
       // set account2 as new receiver for account1
       await account
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [externalUniversalReceiver.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [externalUniversalReceiver.address]
+        );
 
       // use the checker contract to call account
-      let checker = await new UniversalReceiverTester__factory(owner).deploy();
+      let checker: UniversalReceiverTester = await new UniversalReceiverTester__factory(
+        owner
+      ).deploy();
       let transaction = await checker.callImplementationAndReturn(
         account.address,
         ERC777TokensRecipient
       );
       let receipt = await transaction.wait();
+
+      console.log("accounts[2] (owner): ", owner.address);
+      console.log("account (UP): ", account.address);
+      console.log("externalUniversalReceiver: ", externalUniversalReceiver.address);
+      console.log("checker: ", checker.address);
 
       // event signature "event ReceivedERC777(address indexed token, address indexed _operator, address indexed _from, address _to, uint256 _amount)"
       // event should come from account externalUniversalReceiver
@@ -525,7 +534,7 @@ describe("UniversalProfile", () => {
       // event should come from account account
       expect(receipt.logs[1].address).toEqual(account.address);
       // signature
-      expect(receipt.logs[1].topics[0]).toEqual(EVENT_SIGNATURE);
+      expect(receipt.logs[1].topics[0]).toEqual(EventSignatures.UniversalReceiver);
       // "from" is the checker
       expect(receipt.logs[1].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -541,21 +550,17 @@ describe("UniversalProfile", () => {
     it("Mint ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
       const account = await new UniversalProfile__factory(owner).deploy(owner.address);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(owner.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(owner.address);
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       let initialERC777Balance = await erc777.balanceOf(account.address);
       let initialdigitalCertificateBalance = await digitalCertificate.balanceOf(account.address);
@@ -574,21 +579,17 @@ describe("UniversalProfile", () => {
     it("Transfer ERC777 and LSP4 to LSP3 account", async () => {
       const owner = accounts[2];
       const account = await new UniversalProfile__factory(owner).deploy(owner.address);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(account.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(account.address);
 
       let tokenOwner = accounts[3];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       await erc777.connect(tokenOwner).mint(tokenOwner.address, "100");
       await digitalCertificate.connect(tokenOwner).mint(tokenOwner.address, "100");
@@ -617,26 +618,25 @@ describe("UniversalProfile", () => {
     it("Mint ERC777 and LSP4 to LSP3 account and delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
       const account = await new UniversalProfile__factory(owner).deploy(owner.address);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(account.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(account.address);
 
       // set account2 as new receiver for account1
       await account
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       expect(await erc777.balanceOf(account.address)).toEqBN(0);
       expect(await digitalCertificate.balanceOf(account.address)).toEqBN(0);
@@ -656,26 +656,25 @@ describe("UniversalProfile", () => {
     it("Transfer ERC777 and LSP4 from LSP3 account with delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
       const account = await new UniversalProfile__factory(owner).deploy(owner.address);
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(account.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(account.address);
 
       // set account2 as new receiver for account1
       await account
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       await erc777.connect(tokenOwner).mint(tokenOwner.address, "100");
       await digitalCertificate.connect(tokenOwner).mint(tokenOwner.address, "100");
@@ -699,7 +698,9 @@ describe("UniversalProfile", () => {
 
     it("Transfer from ERC777 and LSP4 to account and delegate to UniversalReceiverAddressStore", async () => {
       const owner = accounts[2];
-      const account = await new UniversalProfile__factory(owner).deploy(owner.address);
+      const account: UniversalReceiverAddressStore = await new UniversalProfile__factory(
+        owner
+      ).deploy(owner.address);
       const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
         owner
       ).deploy(account.address);
@@ -707,19 +708,19 @@ describe("UniversalProfile", () => {
       // set account2 as new receiver for account1
       await account
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[3];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       await erc777.connect(tokenOwner).mint(account.address, "100");
       await digitalCertificate.connect(tokenOwner).mint(account.address, "100");
@@ -779,18 +780,18 @@ describe("UniversalProfile", () => {
 
       // give all permissions to owner
       await UniversalProfile.connect(owner).setData(
-        [ADDRESS.PERMISSIONS + owner.address.substr(2)],
+        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2)],
         [ALL_PERMISSIONS_SET]
       );
 
       // give SIGN permission to signer
       await UniversalProfile.connect(owner).setData(
-        [ADDRESS.PERMISSIONS + signer.address.substr(2)],
+        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + signer.address.substr(2)],
         [ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32)]
       );
       // give CALL permission to non-signer
       await UniversalProfile.connect(owner).setData(
-        [ADDRESS.PERMISSIONS + thirdParty.address.substr(2)],
+        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + thirdParty.address.substr(2)],
         ["0x08"]
       );
 
@@ -809,7 +810,7 @@ describe("UniversalProfile", () => {
         const signature = await owner.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-        expect(result).toEqual(ERC1271_MAGIC_VALUE);
+        expect(result).toEqual(ERC1271.MAGIC_VALUE);
       });
 
       it("Can verify signature from signer on KeyManager", async () => {
@@ -818,7 +819,7 @@ describe("UniversalProfile", () => {
         const signature = await signer.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-        expect(result).toEqual(ERC1271_MAGIC_VALUE);
+        expect(result).toEqual(ERC1271.MAGIC_VALUE);
       });
 
       it("Should fail when verifying signature from address with no SIGN permission", async () => {
@@ -827,7 +828,7 @@ describe("UniversalProfile", () => {
         const signature = await thirdParty.signMessage(dataToSign);
 
         const result = await keyManager.callStatic.isValidSignature(messageHash, signature);
-        expect(result).toEqual(ERC1271_FAIL_VALUE);
+        expect(result).toEqual(ERC1271.FAIL_VALUE);
       });
     });
 

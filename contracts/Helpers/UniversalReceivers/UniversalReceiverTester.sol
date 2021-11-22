@@ -7,7 +7,10 @@ import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "solidity-bytes-utils/contracts/AssertBytes.sol";
 
 contract UniversalReceiverTester {
-    function callImplementationAndReturn(address target, bytes32 typeId) external returns (bytes memory) {
+    function callImplementationAndReturn(address target, bytes32 typeId)
+        external
+        returns (bytes memory)
+    {
         return ILSP1UniversalReceiver(target).universalReceiver(typeId, "");
     }
 
@@ -23,11 +26,7 @@ contract UniversalReceiverTester {
 
     function lowLevelCheckImplementation(address target, bytes32 typeId) external returns (bool) {
         (bool succ, bytes memory ret) = target.call(
-            abi.encodeWithSignature(
-                "universalReceiver(bytes32,bytes)", 
-                typeId, 
-                ""
-            )
+            abi.encodeWithSignature("universalReceiver(bytes32,bytes)", typeId, "")
         );
         bytes32 response = BytesLib.toBytes32(ret, 64);
         return succ && response == typeId;
@@ -39,5 +38,4 @@ contract UniversalReceiverTester {
     //     return succ && AssertBytes.equal(ret, abi.encodePacked(typeId), "");
     // }
     /* solhint-enable */
-
 }

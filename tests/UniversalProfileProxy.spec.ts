@@ -6,50 +6,32 @@ import {
   UniversalProfile__factory,
   UniversalProfileInit,
   UniversalProfileInit__factory,
+  UniversalReceiverAddressStore,
   UniversalReceiverAddressStore__factory,
+  UniversalReceiverTester,
   UniversalReceiverTester__factory,
+  ERC777UniversalReceiver,
   ERC777UniversalReceiver__factory,
+  ExternalERC777UniversalReceiverTester,
   ExternalERC777UniversalReceiverTester__factory,
+  LSP4DigitalCertificate,
   LSP4DigitalCertificate__factory,
 } from "../types";
 
-// custom helpers
+// helpers
 import { getDeploymentCost } from "./utils/deploy";
-import { OPERATIONS } from "./utils/keymanager";
 import { proxyRuntimeCodeTemplate, deployProxy, attachUniversalProfileProxy } from "./utils/proxy";
+import { RANDOM_BYTES32, ERC777TokensRecipient } from "./utils/helpers";
 
-/** @todo put all of these in constant file */
-
-/** @deprecated */
-const SupportedStandardsERC725Account_KEY =
-  "0xeafec4d89fa9619884b6b89135626455000000000000000000000000afdeb5d6";
-
-/** @deprecated */
-// Get key: bytes4(keccak256('ERC725Account'))
-const ERC725Account_VALUE = "0xafdeb5d6";
-
-const SupportedStandardsLSP3UniversalProfile_KEY =
-  "0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6";
-const LSP3UniversalProfile_VALUE = "0xabe425d6";
-
-// Interfaces IDs
-const ERC165_INTERFACE_ID = "0x01ffc9a7";
-const ERC725X_INTERFACE_ID = "0x44c028fe";
-const ERC725Y_INTERFACE_ID = "0x5a988c0f";
-const ERC1271_INTERFACE_ID = "0x1626ba7e";
-const LSP1_INTERFACE_ID = "0x6bb56a14";
-
-// Signatures
-const ERC1271_MAGIC_VALUE = "0x1626ba7e";
-const ERC1271_FAIL_VALUE = "0xffffffff";
-
-// Universal Receiver
-const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-// Get key: keccak256('LSP1UniversalReceiverDelegate')
-const UNIVERSALRECEIVER_KEY = "0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47";
-const ERC777TokensRecipient = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-// keccak256("UniversalReceiver(address,bytes32,bytes,bytes)")
-const EVENT_SIGNATURE = "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3";
+// constants
+import {
+  INTERFACE_IDS,
+  SupportedStandards,
+  ERC725YKeys,
+  EventSignatures,
+  OPERATIONS,
+  ERC1271,
+} from "./utils/constants";
 
 describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
   let accounts: SignerWithAddress[];
@@ -124,33 +106,33 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
 
   describe("> ERC165 (suported standards)", () => {
     it("Should support ERC165", async () => {
-      let result = await proxy.callStatic.supportsInterface(ERC165_INTERFACE_ID);
+      let result = await proxy.callStatic.supportsInterface(INTERFACE_IDS.ERC165);
       expect(result).toBeTruthy(); // "does not support interface `ERC165`"
     });
 
     it("Should support ERC725X", async () => {
-      let result = await proxy.callStatic.supportsInterface(ERC725X_INTERFACE_ID);
+      let result = await proxy.callStatic.supportsInterface(INTERFACE_IDS.ERC725X);
       expect(result).toBeTruthy(); // "does not support interface `ERC725X`"
     });
 
     it("Should support ERC725Y", async () => {
-      let result = await proxy.callStatic.supportsInterface(ERC725Y_INTERFACE_ID);
+      let result = await proxy.callStatic.supportsInterface(INTERFACE_IDS.ERC725Y);
       expect(result).toBeTruthy(); // "does not support interface `ERC725Y`"
     });
 
     it("Should support ERC1271", async () => {
-      let result = await proxy.callStatic.supportsInterface(ERC1271_INTERFACE_ID);
+      let result = await proxy.callStatic.supportsInterface(INTERFACE_IDS.ERC1271);
       expect(result).toBeTruthy(); // "does not support interface `ERC1271`"
     });
 
     it("Should support LSP1", async () => {
-      let result = await proxy.callStatic.supportsInterface(LSP1_INTERFACE_ID);
+      let result = await proxy.callStatic.supportsInterface(INTERFACE_IDS.LSP1);
       expect(result).toBeTruthy(); // "does not support interface `LSP1`"
     });
 
-    it("Has SupportedStandardsERC725Account_KEY set to ERC725Account_VALUE", async () => {
-      let [result] = await proxy.callStatic.getData([SupportedStandardsLSP3UniversalProfile_KEY]);
-      expect(result).toEqual(LSP3UniversalProfile_VALUE);
+    it("Should have Key: 'SupportedStandards:LSP3UniversalProfile' set to Value: 'LSP3UniversalProfile'", async () => {
+      let [result] = await proxy.callStatic.getData([SupportedStandards.LSP3UniversalProfile.key]);
+      expect(result).toEqual(SupportedStandards.LSP3UniversalProfile.value);
     });
   });
 
@@ -162,7 +144,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
 
       const result = await proxy.callStatic.isValidSignature(messageHash, signature);
 
-      expect(result).toEqual(ERC1271_MAGIC_VALUE); // "Should define the signature as valid"
+      expect(result).toEqual(ERC1271.MAGIC_VALUE); // "Should define the signature as valid"
     });
 
     it("Should fail when verifying signature from not-owner", async () => {
@@ -171,7 +153,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const signature = await accounts[1].signMessage(dataToSign);
 
       const result = await proxy.callStatic.isValidSignature(messageHash, signature);
-      expect(result).toEqual(ERC1271_FAIL_VALUE); // "Should define the signature as invalid"
+      expect(result).toEqual(ERC1271.FAIL_VALUE); // "Should define the signature as invalid"
     });
   });
 
@@ -201,14 +183,12 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
 
       let [initialValue] = await proxy.callStatic.getData(keys);
       expect(initialValue).toEqual("0x");
-      //   "there should be no value initially set for key '0xcafe'"
 
       await proxy.setData(keys, values);
 
       let result = await proxy.getData(keys);
 
       expect(result).toEqual(values);
-      //   "not the same value in storage for key '0xcafe'"
     });
 
     it("Store 32 bytes item 3", async () => {
@@ -532,14 +512,16 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       await proxyAccount.initialize(owner.address);
 
       // use the checker contract to call account
-      let checker = await new UniversalReceiverTester__factory(owner).deploy();
+      let checker: UniversalReceiverTester = await new UniversalReceiverTester__factory(
+        owner
+      ).deploy();
       let transaction = await checker.callImplementationAndReturn(proxy.address, RANDOM_BYTES32);
       let receipt = await transaction.wait();
 
       // event should come from account
       expect(receipt.logs[0].address).toEqual(proxy.address);
       // event signature
-      expect(receipt.logs[0].topics[0]).toEqual(EVENT_SIGNATURE);
+      expect(receipt.logs[0].topics[0]).toEqual(EventSignatures.UniversalReceiver);
       // from
       expect(receipt.logs[0].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -559,30 +541,31 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
-      const externalUniversalReceiver = await new ExternalERC777UniversalReceiverTester__factory(
-        owner
-      ).deploy();
+      const externalUniversalReceiver: ExternalERC777UniversalReceiverTester =
+        await new ExternalERC777UniversalReceiverTester__factory(owner).deploy();
 
       // set account2 as new receiver for account1
       await proxyAccount
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [externalUniversalReceiver.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [externalUniversalReceiver.address]
+        );
 
       // use the checker contract to call account
-      let checker = await new UniversalReceiverTester__factory(owner).deploy();
+      let checker: UniversalReceiverTester = await new UniversalReceiverTester__factory(
+        owner
+      ).deploy();
       let transaction = await checker.callImplementationAndReturn(
         proxyAccount.address,
         ERC777TokensRecipient
       );
       let receipt = await transaction.wait();
 
-      // event signature "event ReceivedERC777(address indexed token, address indexed _operator, address indexed _from, address _to, uint256 _amount)"
       // event should come from account externalUniversalReceiver
       expect(receipt.logs[0].address).toEqual(externalUniversalReceiver.address);
       // signature
-      expect(receipt.logs[0].topics[0]).toEqual(
-        "0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c"
-      );
+      expect(receipt.logs[0].topics[0]).toEqual(EventSignatures.ReceivedERC777);
       // "token" is the checker
       expect(receipt.logs[0].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -594,11 +577,10 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
         "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
       );
 
-      // event signature "event UniversalReceiver(address indexed from, bytes32 indexed typeId, bytes32 indexed returnedValue, bytes receivedData)"
       // event should come from account account
       expect(receipt.logs[1].address).toEqual(proxyAccount.address);
       // signature
-      expect(receipt.logs[1].topics[0]).toEqual(EVENT_SIGNATURE);
+      expect(receipt.logs[1].topics[0]).toEqual(EventSignatures.UniversalReceiver);
       // "from" is the checker
       expect(receipt.logs[1].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -618,21 +600,17 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(owner.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(owner.address);
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       let initialERC777Balance = await erc777.balanceOf(proxyAccount.address);
       let initialdigitalCertificateBalance = await digitalCertificate.balanceOf(
@@ -657,21 +635,17 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(proxyAccount.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(proxyAccount.address);
 
       let tokenOwner = accounts[3];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       await erc777.connect(tokenOwner).mint(tokenOwner.address, "100");
       await digitalCertificate.connect(tokenOwner).mint(tokenOwner.address, "100");
@@ -705,26 +679,25 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(proxyAccount.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(proxyAccount.address);
 
       // set account2 as new receiver for account1
       await proxyAccount
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       expect(await erc777.balanceOf(proxyAccount.address)).toEqBN(0);
       expect(await digitalCertificate.balanceOf(proxyAccount.address)).toEqBN(0);
@@ -748,26 +721,25 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(proxyAccount.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(proxyAccount.address);
 
       // set account2 as new receiver for account1
       await proxyAccount
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[2];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       await erc777.connect(tokenOwner).mint(tokenOwner.address, "100");
       await digitalCertificate.connect(tokenOwner).mint(tokenOwner.address, "100");
@@ -797,26 +769,25 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const proxyAccount = await attachUniversalProfileProxy(owner, proxyAddress);
       await proxyAccount.initialize(owner.address);
 
-      const universalReceiverDelegate = await new UniversalReceiverAddressStore__factory(
-        owner
-      ).deploy(proxyAccount.address);
+      const universalReceiverDelegate: UniversalReceiverAddressStore =
+        await new UniversalReceiverAddressStore__factory(owner).deploy(proxyAccount.address);
 
       // set account2 as new receiver for account1
       await proxyAccount
         .connect(owner)
-        .setData([UNIVERSALRECEIVER_KEY], [universalReceiverDelegate.address]);
+        .setData(
+          [ERC725YKeys.LSP0["LSP1UniversalReceiverDelegate"]],
+          [universalReceiverDelegate.address]
+        );
 
       let tokenOwner = accounts[3];
 
-      let erc777 = await new ERC777UniversalReceiver__factory(owner).deploy("MyToken", "TKN", [
-        tokenOwner.address,
-      ]);
-      let digitalCertificate = await new LSP4DigitalCertificate__factory(owner).deploy(
-        tokenOwner.address,
-        "MyDigitalCloth",
-        "DIGICLOTH01",
-        []
-      );
+      let erc777: ERC777UniversalReceiver = await new ERC777UniversalReceiver__factory(
+        owner
+      ).deploy("MyToken", "TKN", [tokenOwner.address]);
+      let digitalCertificate: LSP4DigitalCertificate = await new LSP4DigitalCertificate__factory(
+        owner
+      ).deploy(tokenOwner.address, "MyDigitalCloth", "DIGICLOTH01", []);
 
       /** @fails here */
       await erc777.connect(tokenOwner).mint(proxyAccount.address, "100");

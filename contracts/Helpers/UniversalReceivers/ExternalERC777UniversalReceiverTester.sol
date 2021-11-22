@@ -8,7 +8,6 @@ import "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1UniversalReceiverDelegate {
-
     bytes4 internal constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 
     bytes32 internal constant _TOKENS_SENDER_INTERFACE_HASH =
@@ -22,49 +21,40 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1UniversalR
     }
 
     event ReceivedERC777(
-        address indexed token, 
-        address indexed _operator, 
-        address indexed _from, 
-        address _to, 
+        address indexed token,
+        address indexed _operator,
+        address indexed _from,
+        address _to,
         uint256 _amount
     );
 
     function universalReceiverDelegate(
-        address sender, 
-        bytes32 typeId, 
+        address sender,
+        bytes32 typeId,
         bytes memory data
-    ) 
-        external 
-        override 
-        returns (bytes memory)
-    {
-
+    ) external override returns (bytes memory) {
         if (typeId == _TOKENS_RECIPIENT_INTERFACE_HASH) {
             (address _operator, address _from, address _to, uint256 _amount) = _toERC777Data(data);
 
             emit ReceivedERC777(sender, _operator, _from, _to, _amount);
 
             return "";
-
-        } else if(typeId == _TOKENS_SENDER_INTERFACE_HASH) {
-
+        } else if (typeId == _TOKENS_SENDER_INTERFACE_HASH) {
             return "";
-
         } else {
             revert("UniversalReceiverDelegate: Given typeId not supported.");
         }
     }
 
-
-    function _toERC777Data(bytes memory _bytes) 
-        internal 
-        pure 
-        returns(
-            address _operator, 
-            address _from, 
-            address _to, 
+    function _toERC777Data(bytes memory _bytes)
+        internal
+        pure
+        returns (
+            address _operator,
+            address _from,
+            address _to,
             uint256 _amount
-        ) 
+        )
     {
         // solhint-disable-next-line no-inline-assembly
         assembly {
