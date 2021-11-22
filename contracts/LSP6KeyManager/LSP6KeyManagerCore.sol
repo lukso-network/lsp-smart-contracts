@@ -25,7 +25,6 @@ import "@erc725/smart-contracts/contracts/constants.sol";
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     using ECDSA for bytes32;
-    using SafeMath for uint256;
     using ERC725Utils for ERC725Y;
 
     ERC725 public account;
