@@ -7,12 +7,11 @@ import "../../LSP6KeyManager/LSP6KeyManager.sol";
  * Helper contract to test internal functions of the KeyManager
  */
 contract KeyManagerHelper is LSP6KeyManager {
-
     /* solhint-disable no-empty-blocks */
     constructor(address _account) LSP6KeyManager(_account) {}
 
     function getInterfaceId() public pure returns (bytes4) {
-        return _INTERFACE_ID_LSP6;
+        return _LSP6_INTERFACE_ID;
     }
 
     function getUserPermissions(address _user) public view returns (bytes32) {
@@ -38,5 +37,4 @@ contract KeyManagerHelper is LSP6KeyManager {
     function isAllowed(bytes32 _permission, bytes32 _addressPermission) public pure returns (bool) {
         return super._isAllowed(_permission, _addressPermission);
     }
-
 }
