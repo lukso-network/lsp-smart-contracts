@@ -35,7 +35,7 @@ export const shouldBehaveLikeLSP7Mintable = (
   });
 
   describe("when owner minting tokens", () => {
-    it("total supply should have increased", async () => {
+    it("should increase the total supply", async () => {
       const amountToMint = ethers.BigNumber.from("100");
       const preTotalSupply = await context.lsp7Mintable.totalSupply();
 
@@ -50,7 +50,7 @@ export const shouldBehaveLikeLSP7Mintable = (
       expect(postTotalSupply).toEqual(preTotalSupply.add(amountToMint));
     });
 
-    it("tokenReceiver balance should have increased", async () => {
+    it("should increase the tokenReceiver balance", async () => {
       const amountToMint = ethers.BigNumber.from("100");
 
       const tokenReceiverBalance = await context.lsp7Mintable.balanceOf(

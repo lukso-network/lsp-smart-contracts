@@ -37,7 +37,7 @@ export const shouldBehaveLikeLSP8Mintable = (
     it("total supply should have increased", async () => {
       const randomTokenId = ethers.utils.randomBytes(32);
 
-      const preTotalSupply = await context.lsp8Mintable.totalSupply();
+      const preMintTotalSupply = await context.lsp8Mintable.totalSupply();
 
       await context.lsp8Mintable.mint(
         context.accounts.tokenReceiver.address,
@@ -46,8 +46,8 @@ export const shouldBehaveLikeLSP8Mintable = (
         "0x"
       );
 
-      let postTotalSupply = await context.lsp8Mintable.totalSupply();
-      expect(postTotalSupply).toEqual(preTotalSupply.add(1));
+      let postMintTotalSupply = await context.lsp8Mintable.totalSupply();
+      expect(postMintTotalSupply).toEqual(preMintTotalSupply.add(1));
     });
 
     it("tokenReceiver balance should have increased", async () => {
