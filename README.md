@@ -54,9 +54,16 @@ const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultO
 import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
 ```
 
-#### deployment via hardhat
+
+### Testing
+
+Jest contract tests are defined under the tests directory. To run all the tests, run:
+
+```bash
+$ npm test
+```
+
+
+### Deployment via hardhat
 
 You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./DEPLOYMENT.md) page.
-
-## **Contribute**
-Please check the [CONTRIBUTING](./CONTRIBUTING.md) page.
