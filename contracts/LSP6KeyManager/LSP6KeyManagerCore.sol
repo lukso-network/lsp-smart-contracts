@@ -310,45 +310,29 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         require(_operationType != 4, "Operation 4 `DELEGATECALL` not supported.");
 
         require(
-            _operationType < 5, // Check for CALL, DELEGATECALL or DEPLOY
+            _operationType < 5, // Check for CALL, DEPLOY or STATICCALL
             "KeyManager:_checkPermissions: Invalid operation type"
         );
 
-        bytes32 permission;
+        if (_operationType == 0) {
+            require(
+                _hasPermission(_PERMISSION_CALL, _userPermissions),
+                "KeyManager:_checkPermissions: not authorized to perform CALL"
+            );
+        }
 
-        /* solhint-disable */
-        assembly {
-            switch _operationType
-            case 0 {
-                permission := _PERMISSION_CALL
-            }
-            case 1 {
-                permission := _PERMISSION_DEPLOY
-            } // CREATE2
-            case 2 {
-                permission := _PERMISSION_DEPLOY
-            } // CREATE
-            case 3 {
-                permission := _PERMISSION_STATICCALL
-            }
-            case 4 {
-                permission := _PERMISSION_DELEGATECALL
-            }
+        if (_operationType == 1 || _operationType == 2) {
+            require(
+                _hasPermission(_PERMISSION_DEPLOY, _userPermissions),
+                "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
+            );
         }
-        /* solhint-enable */
-        bool operationAllowed = _hasPermission(permission, _userPermissions);
 
-        if (!operationAllowed && (permission == _PERMISSION_CALL)) {
-            revert("KeyManager:_checkPermissions: not authorized to perform CALL");
-        }
-        if (!operationAllowed && (permission == _PERMISSION_DEPLOY)) {
-            revert("KeyManager:_checkPermissions: not authorized to perform DEPLOY");
-        }
-        if (!operationAllowed && (permission == _PERMISSION_STATICCALL)) {
-            revert("KeyManager:_checkPermissions: not authorized to perform STATICCALL");
-        }
-        if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
-            revert("KeyManager:_checkPermissions: not authorized to perform DELEGATECALL");
+        if (_operationType == 3) {
+            require(
+                _hasPermission(_PERMISSION_STATICCALL, _userPermissions),
+                "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+            );
         }
 
         if (_value > 0) {
