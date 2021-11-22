@@ -7,6 +7,8 @@ import "../../LSP6KeyManager/LSP6KeyManager.sol";
  * Helper contract to test internal functions of the KeyManager
  */
 contract KeyManagerHelper is LSP6KeyManager {
+    using ERC725Utils for ERC725Y;
+
     /* solhint-disable no-empty-blocks */
     constructor(address _account) LSP6KeyManager(_account) {}
 
@@ -19,11 +21,23 @@ contract KeyManagerHelper is LSP6KeyManager {
     }
 
     function getAllowedAddresses(address _sender) public view returns (bytes memory) {
-        return super._getAllowedAddresses(_sender);
+        return
+            ERC725Y(account).getDataSingle(
+                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                    _ADDRESS_ALLOWEDADDRESSES,
+                    bytes20(_sender)
+                )
+            );
     }
 
     function getAllowedFunctions(address _sender) public view returns (bytes memory) {
-        return super._getAllowedFunctions(_sender);
+        return
+            ERC725Y(account).getDataSingle(
+                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                    _ADDRESS_ALLOWEDFUNCTIONS,
+                    bytes20(_sender)
+                )
+            );
     }
 
     function isAllowedAddress(address _sender, address _recipient) public view returns (bool) {

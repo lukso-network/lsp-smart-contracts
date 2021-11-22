@@ -11,8 +11,8 @@ import "./ILSP6KeyManager.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "../Utils/LSP2Utils.sol";
 
 // constants
 import "./LSP6Constants.sol";
@@ -212,8 +212,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     function _getUserPermissions(address _address) internal view returns (bytes32) {
-        bytes32 permissionKey = _generatePermissionKey(_ADDRESS_PERMISSIONS, _address);
-        bytes memory fetchResult = ERC725Y(account).getDataSingle(permissionKey);
+        bytes memory fetchResult = ERC725Y(account).getDataSingle(
+            LSP2Utils.generateBytes20MappingWithGroupingKey(_ADDRESS_PERMISSIONS, bytes20(_address))
+        );
 
         if (fetchResult.length == 0) {
             revert("KeyManager:_getUserPermissions: no permissions set for this user / caller");
@@ -228,18 +229,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         return storedPermission;
     }
 
-    function _getAllowedAddresses(address _sender) internal view returns (bytes memory) {
-        bytes32 allowedAddressesKey = _generatePermissionKey(_ADDRESS_ALLOWEDADDRESSES, _sender);
-        return ERC725Y(account).getDataSingle(allowedAddressesKey);
-    }
-
-    function _getAllowedFunctions(address _sender) internal view returns (bytes memory) {
-        bytes32 allowedFunctionsKey = _generatePermissionKey(_ADDRESS_ALLOWEDFUNCTIONS, _sender);
-        return ERC725Y(account).getDataSingle(allowedFunctionsKey);
-    }
-
     function _isAllowedAddress(address _sender, address _recipient) internal view returns (bool) {
-        bytes memory allowedAddresses = _getAllowedAddresses(_sender);
+        bytes memory allowedAddresses = ERC725Y(account).getDataSingle(
+            LSP2Utils.generateBytes20MappingWithGroupingKey(
+                _ADDRESS_ALLOWEDADDRESSES,
+                bytes20(_sender)
+            )
+        );
 
         if (allowedAddresses.length == 0) {
             return true;
@@ -257,7 +253,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     function _isAllowedFunction(address _sender, bytes4 _function) internal view returns (bool) {
-        bytes memory allowedFunctions = _getAllowedFunctions(_sender);
+        bytes memory allowedFunctions = ERC725Y(account).getDataSingle(
+            LSP2Utils.generateBytes20MappingWithGroupingKey(
+                _ADDRESS_ALLOWEDFUNCTIONS,
+                bytes20(_sender)
+            )
+        );
 
         if (allowedFunctions.length == 0) {
             return true;
@@ -370,19 +371,5 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         } else {
             return false;
         }
-    }
-
-    function _generatePermissionKey(bytes12 _key, address _address)
-        internal
-        pure
-        returns (bytes32)
-    {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(_key, _address);
-        bytes32 generatedKey;
-        // solhint-disable-next-line
-        assembly {
-            generatedKey := mload(add(allowedAddressesKeyComputed, 32))
-        }
-        return generatedKey;
     }
 }
