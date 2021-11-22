@@ -35,6 +35,6 @@ contract KeyManagerHelper is LSP6KeyManager {
     }
 
     function isAllowed(bytes32 _permission, bytes32 _addressPermission) public pure returns (bool) {
-        return super._isAllowed(_permission, _addressPermission);
+        return super._hasPermission(_permission, _addressPermission);
     }
 }

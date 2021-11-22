@@ -193,12 +193,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 // check if we try to change permissions
                 if (bytes8(setDataKey) == _SET_PERMISSIONS) {
                     require(
-                        _isAllowed(_PERMISSION_CHANGEPERMISSIONS, userPermissions),
+                        _hasPermission(_PERMISSION_CHANGEPERMISSIONS, userPermissions),
                         "KeyManager:_checkPermissions: Not authorized to change keys"
                     );
                 } else {
                     require(
-                        _isAllowed(_PERMISSION_SETDATA, userPermissions),
+                        _hasPermission(_PERMISSION_SETDATA, userPermissions),
                         "KeyManager:_checkPermissions: Not authorized to setData"
                     );
                 }
@@ -237,7 +237,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 }
             }
             /* solhint-enable */
-            bool operationAllowed = _isAllowed(permission, userPermissions);
+            bool operationAllowed = _hasPermission(permission, userPermissions);
 
             if (!operationAllowed && (permission == _PERMISSION_CALL)) {
                 revert("KeyManager:_checkPermissions: not authorized to perform CALL");
@@ -259,7 +259,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
             if (value > 0) {
                 require(
-                    _isAllowed(_PERMISSION_TRANSFERVALUE, userPermissions),
+                    _hasPermission(_PERMISSION_TRANSFERVALUE, userPermissions),
                     "KeyManager:_checkPermissions: Not authorized to transfer value"
                 );
             }
@@ -275,7 +275,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             }
         } else if (erc725Selector == _TRANSFEROWNERSHIP_SELECTOR) {
             require(
-                _isAllowed(_PERMISSION_CHANGEOWNER, userPermissions),
+                _hasPermission(_PERMISSION_CHANGEOWNER, userPermissions),
                 "KeyManager:_checkPermissions: Not authorized to transfer ownership"
             );
         } else {
@@ -346,7 +346,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         }
     }
 
-    function _isAllowed(bytes32 _permission, bytes32 _addressPermission)
+    function _hasPermission(bytes32 _permission, bytes32 _addressPermission)
         internal
         pure
         returns (bool)
