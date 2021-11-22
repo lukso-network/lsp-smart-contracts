@@ -179,90 +179,18 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         bytes4 erc725Selector = bytes4(_data[:4]);
 
         if (erc725Selector == _SETDATA_SELECTOR) {
-            uint256 keyCount = uint256(bytes32(_data[68:100]));
-
-            // loop through the keys
-            for (uint256 ii = 0; ii <= keyCount - 1; ii++) {
-                // move calldata pointers
-                uint256 ptrStart = 100 + (32 * ii);
-                uint256 ptrEnd = (100 + (32 * (ii + 1)) - 1);
-
-                // extract the key
-                bytes32 setDataKey = bytes32(_data[ptrStart:ptrEnd]);
-
-                // check if we try to change permissions
-                if (bytes8(setDataKey) == _SET_PERMISSIONS) {
-                    require(
-                        _hasPermission(_PERMISSION_CHANGEPERMISSIONS, userPermissions),
-                        "KeyManager:_checkPermissions: Not authorized to change keys"
-                    );
-                } else {
-                    require(
-                        _hasPermission(_PERMISSION_SETDATA, userPermissions),
-                        "KeyManager:_checkPermissions: Not authorized to setData"
-                    );
-                }
-            }
+            _canSetData(userPermissions, _data);
         } else if (erc725Selector == _EXECUTE_SELECTOR) {
-            uint8 operationType = uint8(bytes1(_data[35:36]));
+            uint256 operationType = uint256(bytes32(_data[4:36]));
             address recipient = address(bytes20(_data[48:68]));
             uint256 value = uint256(bytes32(_data[68:100]));
 
-            require(operationType != 4, "Operation 4 `DELEGATECALL` not supported.");
-
-            require(
-                operationType < 5, // Check for CALL, DELEGATECALL or DEPLOY
-                "KeyManager:_checkPermissions: Invalid operation type"
-            );
-
-            bytes32 permission;
-
-            /* solhint-disable */
-            assembly {
-                switch operationType
-                case 0 {
-                    permission := _PERMISSION_CALL
-                }
-                case 1 {
-                    permission := _PERMISSION_DEPLOY
-                } // CREATE2
-                case 2 {
-                    permission := _PERMISSION_DEPLOY
-                } // CREATE
-                case 3 {
-                    permission := _PERMISSION_STATICCALL
-                }
-                case 4 {
-                    permission := _PERMISSION_DELEGATECALL
-                }
-            }
-            /* solhint-enable */
-            bool operationAllowed = _hasPermission(permission, userPermissions);
-
-            if (!operationAllowed && (permission == _PERMISSION_CALL)) {
-                revert("KeyManager:_checkPermissions: not authorized to perform CALL");
-            }
-            if (!operationAllowed && (permission == _PERMISSION_DEPLOY)) {
-                revert("KeyManager:_checkPermissions: not authorized to perform DEPLOY");
-            }
-            if (!operationAllowed && (permission == _PERMISSION_STATICCALL)) {
-                revert("KeyManager:_checkPermissions: not authorized to perform STATICCALL");
-            }
-            if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
-                revert("KeyManager:_checkPermissions: not authorized to perform DELEGATECALL");
-            }
+            _canExecute(operationType, value, userPermissions);
 
             require(
                 _isAllowedAddress(_address, recipient),
                 "KeyManager:_checkPermissions: Not authorized to interact with this address"
             );
-
-            if (value > 0) {
-                require(
-                    _hasPermission(_PERMISSION_TRANSFERVALUE, userPermissions),
-                    "KeyManager:_checkPermissions: Not authorized to transfer value"
-                );
-            }
 
             if (_data.length > 164) {
                 bytes4 functionSelector = bytes4(_data[164:168]);
@@ -343,6 +271,90 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 }
                 return false;
             }
+        }
+    }
+
+    function _canSetData(bytes32 _executorPermissions, bytes calldata _data) internal pure {
+        uint256 keyCount = uint256(bytes32(_data[68:100]));
+
+        // loop through the keys
+        for (uint256 ii = 0; ii <= keyCount - 1; ii++) {
+            // move calldata pointers
+            uint256 ptrStart = 100 + (32 * ii);
+            uint256 ptrEnd = (100 + (32 * (ii + 1)) - 1);
+
+            // extract the key
+            bytes32 setDataKey = bytes32(_data[ptrStart:ptrEnd]);
+
+            // check if we try to change permissions
+            if (bytes8(setDataKey) == _SET_PERMISSIONS) {
+                require(
+                    _hasPermission(_PERMISSION_CHANGEPERMISSIONS, _executorPermissions),
+                    "KeyManager:_checkPermissions: Not authorized to change keys"
+                );
+            } else {
+                require(
+                    _hasPermission(_PERMISSION_SETDATA, _executorPermissions),
+                    "KeyManager:_checkPermissions: Not authorized to setData"
+                );
+            }
+        }
+    }
+
+    function _canExecute(
+        uint256 _operationType,
+        uint256 _value,
+        bytes32 _userPermissions // bytes calldata _data
+    ) internal pure {
+        require(_operationType != 4, "Operation 4 `DELEGATECALL` not supported.");
+
+        require(
+            _operationType < 5, // Check for CALL, DELEGATECALL or DEPLOY
+            "KeyManager:_checkPermissions: Invalid operation type"
+        );
+
+        bytes32 permission;
+
+        /* solhint-disable */
+        assembly {
+            switch _operationType
+            case 0 {
+                permission := _PERMISSION_CALL
+            }
+            case 1 {
+                permission := _PERMISSION_DEPLOY
+            } // CREATE2
+            case 2 {
+                permission := _PERMISSION_DEPLOY
+            } // CREATE
+            case 3 {
+                permission := _PERMISSION_STATICCALL
+            }
+            case 4 {
+                permission := _PERMISSION_DELEGATECALL
+            }
+        }
+        /* solhint-enable */
+        bool operationAllowed = _hasPermission(permission, _userPermissions);
+
+        if (!operationAllowed && (permission == _PERMISSION_CALL)) {
+            revert("KeyManager:_checkPermissions: not authorized to perform CALL");
+        }
+        if (!operationAllowed && (permission == _PERMISSION_DEPLOY)) {
+            revert("KeyManager:_checkPermissions: not authorized to perform DEPLOY");
+        }
+        if (!operationAllowed && (permission == _PERMISSION_STATICCALL)) {
+            revert("KeyManager:_checkPermissions: not authorized to perform STATICCALL");
+        }
+        if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
+            revert("KeyManager:_checkPermissions: not authorized to perform DELEGATECALL");
+        }
+
+        if (_value > 0) {
+            require(
+                _hasPermission(_PERMISSION_TRANSFERVALUE, _userPermissions),
+                "KeyManager:_checkPermissions: Not authorized to transfer value"
+            );
         }
     }
 
