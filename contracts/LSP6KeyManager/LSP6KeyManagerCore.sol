@@ -278,14 +278,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     function _canSetData(bytes32 _executorPermissions, bytes calldata _data) internal view {
         uint256 keyCount = uint256(bytes32(_data[68:100]));
 
+        uint256 ptrStart = 100;
+
         // loop through the keys
         for (uint256 ii = 0; ii <= keyCount - 1; ii++) {
-            // move calldata pointers
-            uint256 ptrStart = 100 + (32 * ii);
-            uint256 ptrEnd = (100 + (32 * (ii + 1)) - 1);
-
             // extract the key
-            bytes32 setDataKey = bytes32(_data[ptrStart:ptrEnd]);
+            bytes32 setDataKey = bytes32(_data[ptrStart:ptrStart + 32]);
 
             // check if we try to change permissions
             if (bytes8(setDataKey) == _SET_PERMISSIONS) {
@@ -306,6 +304,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     "KeyManager:_checkPermissions: Not authorized to setData"
                 );
             }
+
+            // move calldata pointers if not at the end of the list
+            if (ii != keyCount - 1) ptrStart += 32;
         }
     }
 
