@@ -30,39 +30,52 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     bytes4 internal constant _INTERFACE_ID_ERC1271 = 0x1626ba7e;
     bytes4 internal constant _ERC1271FAILVALUE = 0xffffffff;
 
-    bytes4 internal constant _INTERFACE_ID_LSP6 = type(ILSP6KeyManager).interfaceId;
+    bytes4 internal constant _INTERFACE_ID_LSP6 =
+        type(ILSP6KeyManager).interfaceId;
 
-    // prettier-ignore
-    /* solhint-disable */
     // PERMISSION KEYS
 
-    bytes8 internal constant _SET_PERMISSIONS           = 0x4b80742d00000000; // AddressPermissions:<...>
-    bytes12 internal constant _ADDRESS_PERMISSIONS = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes32
-    bytes12 internal constant _ADDRESS_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
-    bytes12 internal constant _ADDRESS_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
-    bytes12 internal constant _ADDRESS_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
-    /* solhint-enable */
+    // prettier-ignore
+    bytes8 internal constant _SET_PERMISSIONS = 
+        0x4b80742d00000000; // AddressPermissions:<...>
 
     // prettier-ignore
+    bytes12 internal constant _ADDRESS_PERMISSIONS = 
+        0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes32
+    bytes12 internal constant _ADDRESS_ALLOWEDADDRESSES =
+        0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
+    bytes12 internal constant _ADDRESS_ALLOWEDFUNCTIONS =
+        0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+    bytes12 internal constant _ADDRESS_ALLOWEDSTANDARDS =
+        0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+
     // PERMISSIONS VALUES
-    bytes32 internal constant _PERMISSION_CHANGEOWNER       = 0x0000000000000000000000000000000000000000000000000000000000000001; // [240 x 0 bits...] 0000 0000 0000 0001
-    bytes32 internal constant _PERMISSION_CHANGEPERMISSIONS = 0x0000000000000000000000000000000000000000000000000000000000000002; // [      ...      ] .... .... .... 0010
-    bytes32 internal constant _PERMISSION_ADDPERMISSIONS    = 0x0000000000000000000000000000000000000000000000000000000000000004; // [      ...      ] .... .... .... 0100
-    bytes32 internal constant _PERMISSION_SETDATA           = 0x0000000000000000000000000000000000000000000000000000000000000008; // [      ...      ] .... .... .... 1000
-    bytes32 internal constant _PERMISSION_CALL              = 0x0000000000000000000000000000000000000000000000000000000000000010; // [      ...      ] .... .... 0001 ....
-    bytes32 internal constant _PERMISSION_STATICCALL        = 0x0000000000000000000000000000000000000000000000000000000000000020; // [      ...      ] .... .... 0010 ....
-    bytes32 internal constant _PERMISSION_DELEGATECALL      = 0x0000000000000000000000000000000000000000000000000000000000000040; // [      ...      ] .... .... 0100 ....
-    bytes32 internal constant _PERMISSION_DEPLOY            = 0x0000000000000000000000000000000000000000000000000000000000000080; // [      ...      ] .... .... 1000 ....
-    bytes32 internal constant _PERMISSION_TRANSFERVALUE     = 0x0000000000000000000000000000000000000000000000000000000000000100; // [      ...      ] .... 0001 .... ....
-    bytes32 internal constant _PERMISSION_SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200; // [      ...      ] .... 0010 .... ....
+    bytes32 internal constant _PERMISSION_CHANGEOWNER =
+        0x0000000000000000000000000000000000000000000000000000000000000001; // [240 x 0 bits...] 0000 0000 0000 0001
+    bytes32 internal constant _PERMISSION_CHANGEPERMISSIONS =
+        0x0000000000000000000000000000000000000000000000000000000000000002; // [      ...      ] .... .... .... 0010
+    bytes32 internal constant _PERMISSION_ADDPERMISSIONS =
+        0x0000000000000000000000000000000000000000000000000000000000000004; // [      ...      ] .... .... .... 0100
+    bytes32 internal constant _PERMISSION_SETDATA =
+        0x0000000000000000000000000000000000000000000000000000000000000008; // [      ...      ] .... .... .... 1000
+    bytes32 internal constant _PERMISSION_CALL =
+        0x0000000000000000000000000000000000000000000000000000000000000010; // [      ...      ] .... .... 0001 ....
+    bytes32 internal constant _PERMISSION_STATICCALL =
+        0x0000000000000000000000000000000000000000000000000000000000000020; // [      ...      ] .... .... 0010 ....
+    bytes32 internal constant _PERMISSION_DELEGATECALL =
+        0x0000000000000000000000000000000000000000000000000000000000000040; // [      ...      ] .... .... 0100 ....
+    bytes32 internal constant _PERMISSION_DEPLOY =
+        0x0000000000000000000000000000000000000000000000000000000000000080; // [      ...      ] .... .... 1000 ....
+    bytes32 internal constant _PERMISSION_TRANSFERVALUE =
+        0x0000000000000000000000000000000000000000000000000000000000000100; // [      ...      ] .... 0001 .... ....
+    bytes32 internal constant _PERMISSION_SIGN =
+        0x0000000000000000000000000000000000000000000000000000000000000200; // [      ...      ] .... 0010 .... ....
 
-    /* solhint-disable */
     // selectors
-    bytes4 internal immutable _SETDATA_SELECTOR = account.setData.selector; // 0x14a6e293
-    bytes4 internal immutable _EXECUTE_SELECTOR = account.execute.selector; // 0x44c028fe
-    bytes4 internal immutable _TRANSFEROWNERSHIP_SELECTOR = account.transferOwnership.selector; // 0xf2fde38b;
-
-    /* solhint-enable */
+    bytes4 internal immutable _setDataSelector = account.setData.selector; // 0x14a6e293
+    bytes4 internal immutable _executeSelector = account.execute.selector; // 0x44c028fe
+    bytes4 internal immutable _transferOwnershipSelector =
+        account.transferOwnership.selector; // 0xf2fde38b;
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -74,7 +87,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         override(ERC165Storage)
         returns (bool)
     {
-        return interfaceId == _INTERFACE_ID_ERC1271 || super.supportsInterface(interfaceId);
+        return
+            interfaceId == _INTERFACE_ID_ERC1271 ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
@@ -83,7 +98,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _from caller address
      * @param _channel channel id
      */
-    function getNonce(address _from, uint256 _channel) public view override returns (uint256) {
+    function getNonce(address _from, uint256 _channel)
+        public
+        view
+        override
+        returns (uint256)
+    {
         uint128 nonceId = uint128(_nonceStore[_from][_channel]);
         return (uint256(_channel) << 128) | nonceId;
     }
@@ -95,7 +115,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _from caller address
      * @param _idx (channel id + nonce within the channel)
      */
-    function _verifyNonce(address _from, uint256 _idx) internal view returns (bool) {
+    function _verifyNonce(address _from, uint256 _idx)
+        internal
+        view
+        returns (bool)
+    {
         // idx % (1 << 128) = nonce
         // (idx >> 128) = channel
         // equivalent to: return (nonce == _nonceStore[_from][channel]
@@ -117,7 +141,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
         return
-            (_PERMISSION_SIGN & _getUserPermissions(recoveredAddress)) == _PERMISSION_SIGN
+            (_PERMISSION_SIGN & _getUserPermissions(recoveredAddress)) ==
+                _PERMISSION_SIGN
                 ? _INTERFACE_ID_ERC1271
                 : _ERC1271FAILVALUE;
     }
@@ -127,21 +152,29 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _data obtained via encodeABI() in web3
      * @return result_ the data being returned by the ERC725 Account
      */
-    function execute(bytes calldata _data) external payable override returns (bytes memory) {
+    function execute(bytes calldata _data)
+        external
+        payable
+        override
+        returns (bytes memory)
+    {
         _checkPermissions(msg.sender, _data);
+
+        // solhint-disable avoid-low-level-calls
         (bool success, bytes memory result_) = address(account).call{
             value: msg.value,
             gas: gasleft()
         }(_data);
 
         if (!success) {
-            /* solhint-disable */
+            // solhint-disable reason-string
             if (result_.length < 68) revert();
+
+            // solhint-disable no-inline-assembly
             assembly {
                 result_ := add(result_, 0x04)
             }
             revert(abi.decode(result_, (string)));
-            /* solhint-enable */
         }
 
         emit Executed(msg.value, _data);
@@ -173,38 +206,49 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             _data
         );
 
-        address from = keccak256(blob).toEthSignedMessageHash().recover(_signature);
+        address from = keccak256(blob).toEthSignedMessageHash().recover(
+            _signature
+        );
 
-        require(_verifyNonce(from, _nonce), "KeyManager:executeRelayCall: Incorrect nonce");
+        require(
+            _verifyNonce(from, _nonce),
+            "KeyManager:executeRelayCall: Incorrect nonce"
+        );
 
         // increase nonce after successful verification
         _nonceStore[from][_nonce >> 128]++;
 
         _checkPermissions(from, _data);
 
-        (bool success, bytes memory result_) = address(account).call{value: 0, gas: gasleft()}(
-            _data
-        );
+        // solhint-disable avoid-low-level-calls
+        (bool success, bytes memory result_) = address(account).call{
+            value: 0,
+            gas: gasleft()
+        }(_data);
 
         if (!success) {
-            /* solhint-disable */
+            // solhint-disable reason-string
             if (result_.length < 68) revert();
+
+            // solhint-disable no-inline-assembly
             assembly {
                 result_ := add(result_, 0x04)
             }
             revert(abi.decode(result_, (string)));
-            /* solhint-enable */
         }
 
         emit Executed(msg.value, _data);
         return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
-    function _checkPermissions(address _address, bytes calldata _data) internal view {
+    function _checkPermissions(address _address, bytes calldata _data)
+        internal
+        view
+    {
         bytes32 userPermissions = _getUserPermissions(_address);
         bytes4 erc725Selector = bytes4(_data[:4]);
 
-        if (erc725Selector == _SETDATA_SELECTOR) {
+        if (erc725Selector == _setDataSelector) {
             uint256 keyCount = uint256(bytes32(_data[68:100]));
 
             // loop through the keys
@@ -219,7 +263,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 // check if we try to change permissions
                 if (bytes8(setDataKey) == _SET_PERMISSIONS) {
                     require(
-                        _isAllowed(_PERMISSION_CHANGEPERMISSIONS, userPermissions),
+                        _isAllowed(
+                            _PERMISSION_CHANGEPERMISSIONS,
+                            userPermissions
+                        ),
                         "KeyManager:_checkPermissions: Not authorized to change keys"
                     );
                 } else {
@@ -229,12 +276,15 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     );
                 }
             }
-        } else if (erc725Selector == _EXECUTE_SELECTOR) {
+        } else if (erc725Selector == _executeSelector) {
             uint8 operationType = uint8(bytes1(_data[35:36]));
             address recipient = address(bytes20(_data[48:68]));
             uint256 value = uint256(bytes32(_data[68:100]));
 
-            require(operationType != 4, "Operation 4 `DELEGATECALL` not supported.");
+            require(
+                operationType != 4,
+                "Operation 4 `DELEGATECALL` not supported."
+            );
 
             require(
                 operationType < 5, // Check for CALL, DELEGATECALL or DEPLOY
@@ -243,7 +293,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
             bytes32 permission;
 
-            /* solhint-disable */
+            // solhint-disable no-inline-assembly
             assembly {
                 switch operationType
                 case 0 {
@@ -262,20 +312,27 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     permission := _PERMISSION_DELEGATECALL
                 }
             }
-            /* solhint-enable */
             bool operationAllowed = _isAllowed(permission, userPermissions);
 
             if (!operationAllowed && (permission == _PERMISSION_CALL)) {
-                revert("KeyManager:_checkPermissions: not authorized to perform CALL");
+                revert(
+                    "KeyManager:_checkPermissions: not authorized to perform CALL"
+                );
             }
             if (!operationAllowed && (permission == _PERMISSION_DEPLOY)) {
-                revert("KeyManager:_checkPermissions: not authorized to perform DEPLOY");
+                revert(
+                    "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
+                );
             }
             if (!operationAllowed && (permission == _PERMISSION_STATICCALL)) {
-                revert("KeyManager:_checkPermissions: not authorized to perform STATICCALL");
+                revert(
+                    "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+                );
             }
             if (!operationAllowed && (permission == _PERMISSION_DELEGATECALL)) {
-                revert("KeyManager:_checkPermissions: not authorized to perform DELEGATECALL");
+                revert(
+                    "KeyManager:_checkPermissions: not authorized to perform DELEGATECALL"
+                );
             }
 
             require(
@@ -299,26 +356,39 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     );
                 }
             }
-        } else if (erc725Selector == _TRANSFEROWNERSHIP_SELECTOR) {
+        } else if (erc725Selector == _transferOwnershipSelector) {
             require(
                 _isAllowed(_PERMISSION_CHANGEOWNER, userPermissions),
                 "KeyManager:_checkPermissions: Not authorized to transfer ownership"
             );
         } else {
-            revert("KeyManager:_checkPermissions: unknown function selector on ERC725 account");
+            revert(
+                "KeyManager:_checkPermissions: unknown function selector on ERC725 account"
+            );
         }
     }
 
-    function _getUserPermissions(address _address) internal view returns (bytes32) {
-        bytes32 permissionKey = _generatePermissionKey(_ADDRESS_PERMISSIONS, _address);
-        bytes memory fetchResult = ERC725Y(account).getDataSingle(permissionKey);
+    function _getUserPermissions(address _address)
+        internal
+        view
+        returns (bytes32)
+    {
+        bytes32 permissionKey = _generatePermissionKey(
+            _ADDRESS_PERMISSIONS,
+            _address
+        );
+        bytes memory fetchResult = ERC725Y(account).getDataSingle(
+            permissionKey
+        );
 
         if (fetchResult.length == 0) {
-            revert("KeyManager:_getUserPermissions: no permissions set for this user / caller");
+            revert(
+                "KeyManager:_getUserPermissions: no permissions set for this user / caller"
+            );
         }
 
         bytes32 storedPermission;
-        // solhint-disable-next-line
+        // solhint-disable no-inline-assembly
         assembly {
             storedPermission := mload(add(fetchResult, 32))
         }
@@ -326,27 +396,52 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         return storedPermission;
     }
 
-    function _getAllowedAddresses(address _sender) internal view returns (bytes memory) {
-        bytes32 allowedAddressesKey = _generatePermissionKey(_ADDRESS_ALLOWEDADDRESSES, _sender);
+    function _getAllowedAddresses(address _sender)
+        internal
+        view
+        returns (bytes memory)
+    {
+        bytes32 allowedAddressesKey = _generatePermissionKey(
+            _ADDRESS_ALLOWEDADDRESSES,
+            _sender
+        );
         return ERC725Y(account).getDataSingle(allowedAddressesKey);
     }
 
-    function _getAllowedFunctions(address _sender) internal view returns (bytes memory) {
-        bytes32 allowedFunctionsKey = _generatePermissionKey(_ADDRESS_ALLOWEDFUNCTIONS, _sender);
+    function _getAllowedFunctions(address _sender)
+        internal
+        view
+        returns (bytes memory)
+    {
+        bytes32 allowedFunctionsKey = _generatePermissionKey(
+            _ADDRESS_ALLOWEDFUNCTIONS,
+            _sender
+        );
         return ERC725Y(account).getDataSingle(allowedFunctionsKey);
     }
 
-    function _isAllowedAddress(address _sender, address _recipient) internal view returns (bool) {
+    function _isAllowedAddress(address _sender, address _recipient)
+        internal
+        view
+        returns (bool)
+    {
         bytes memory allowedAddresses = _getAllowedAddresses(_sender);
 
         if (allowedAddresses.length == 0) {
             return true;
         } else {
-            address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
+            address[] memory allowedAddressesList = abi.decode(
+                allowedAddresses,
+                (address[])
+            );
             if (allowedAddressesList.length == 0) {
                 return true;
             } else {
-                for (uint256 ii = 0; ii <= allowedAddressesList.length - 1; ii++) {
+                for (
+                    uint256 ii = 0;
+                    ii <= allowedAddressesList.length - 1;
+                    ii++
+                ) {
                     if (_recipient == allowedAddressesList[ii]) return true;
                 }
                 return false;
@@ -354,17 +449,28 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         }
     }
 
-    function _isAllowedFunction(address _sender, bytes4 _function) internal view returns (bool) {
+    function _isAllowedFunction(address _sender, bytes4 _function)
+        internal
+        view
+        returns (bool)
+    {
         bytes memory allowedFunctions = _getAllowedFunctions(_sender);
 
         if (allowedFunctions.length == 0) {
             return true;
         } else {
-            bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
+            bytes4[] memory allowedFunctionsList = abi.decode(
+                allowedFunctions,
+                (bytes4[])
+            );
             if (allowedFunctionsList.length == 0) {
                 return true;
             } else {
-                for (uint256 ii = 0; ii <= allowedFunctionsList.length - 1; ii++) {
+                for (
+                    uint256 ii = 0;
+                    ii <= allowedFunctionsList.length - 1;
+                    ii++
+                ) {
                     if (_function == allowedFunctionsList[ii]) return true;
                 }
                 return false;
@@ -391,9 +497,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         pure
         returns (bytes32)
     {
-        bytes memory allowedAddressesKeyComputed = abi.encodePacked(_key, _address);
+        bytes memory allowedAddressesKeyComputed = abi.encodePacked(
+            _key,
+            _address
+        );
         bytes32 generatedKey;
-        // solhint-disable-next-line
+        // solhint-disable no-inline-assembly
         assembly {
             generatedKey := mload(add(allowedAddressesKeyComputed, 32))
         }
