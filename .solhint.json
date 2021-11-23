@@ -1,8 +1,6 @@
 {
   "extends": "solhint:recommended",
   "rules": {
-    "avoid-call-value": "off",
-    "avoid-low-level-calls": "off",
     "avoid-sha3": "error",
     "avoid-suicide": "error",
     "avoid-throw": "error",
