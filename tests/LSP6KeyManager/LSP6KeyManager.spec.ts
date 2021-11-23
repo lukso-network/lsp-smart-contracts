@@ -431,40 +431,126 @@ describe("KeyManager", () => {
   });
 
   describe("> testing permissions: CHANGE / ADD PERMISSIONS", () => {
-    it("Owner should be allowed to change permissions", async () => {
-      // change app's permissions
-      let key = ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2);
+    let owner: SignerWithAddress,
+      bob: SignerWithAddress,
+      canOnlyAddPermissions: SignerWithAddress,
+      canOnlyChangePermissions: SignerWithAddress;
+
+    let universalProfile: UniversalProfile, keyManager: LSP6KeyManager;
+
+    beforeAll(async () => {
+      owner = accounts[0];
+      bob = accounts[1];
+      canOnlyAddPermissions = accounts[2];
+      canOnlyChangePermissions = accounts[3];
+
+      universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
+      keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+
+      await universalProfile.connect(owner).setData(
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            canOnlyAddPermissions.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            canOnlyChangePermissions.address.substr(2),
+        ],
+        [
+          ALL_PERMISSIONS_SET,
+          ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32), // example to test changing bob's permissions
+          ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
+          ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        ]
+      );
+
+      await universalProfile.connect(owner).transferOwnership(keyManager.address);
+    });
+
+    it("Owner should be allowed to add permissions", async () => {
+      let newControllerKey = new ethers.Wallet.createRandom();
+
+      let key =
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKey.address.substr(2);
 
       let payload = universalProfile.interface.encodeFunctionData("setData", [
         [key],
         [PERMISSIONS.SETDATA],
       ]);
 
-      let result = await keyManager.connect(owner).callStatic.execute(payload);
-      expect(result).toBeTruthy();
+      await keyManager.connect(owner).execute(payload);
+      let [fetchedResult] = await universalProfile.callStatic.getData([key]);
+      expect(fetchedResult).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA));
+    });
+    it("Owner should be allowed to change permissions", async () => {
+      let key = ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2);
+
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        [key],
+        [PERMISSIONS.SETDATA],
+      ]);
 
       await keyManager.connect(owner).execute(payload);
-      let fetchedResult = await universalProfile.callStatic.getData([key]);
-      expect(Number(fetchedResult)).toEqual(PERMISSIONS.SETDATA);
-
-      // reset app permissions
-      await keyManager.execute(
-        universalProfile.interface.encodeFunctionData("setData", [
-          [key],
-          [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)],
-        ])
-      );
+      let [fetchedResult] = await universalProfile.callStatic.getData([key]);
+      expect(fetchedResult).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA));
     });
-    it("App should not be allowed to change permissions of existing addresses", async () => {
-      // malicious app trying to set all permissions
-      let dangerousPayload = universalProfile.interface.encodeFunctionData("setData", [
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2)],
+
+    it("address that `canOnlyAddPermissions` should be allowed to add permissions", async () => {
+      let newAddress = new ethers.Wallet.createRandom();
+
+      let key = ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newAddress.address.substr(2);
+
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        [key],
+        [PERMISSIONS.SETDATA],
+      ]);
+
+      await keyManager.connect(canOnlyAddPermissions).execute(payload);
+      let [fetchedResult] = await universalProfile.callStatic.getData([key]);
+      expect(fetchedResult).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA));
+    });
+    it("address that `canOnlyAddPermissions` should not be allowed to change permissions", async () => {
+      // trying to set all permissions for itself
+      let maliciousPayload = universalProfile.interface.encodeFunctionData("setData", [
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            canOnlyAddPermissions.address.substr(2),
+        ],
         [ALL_PERMISSIONS_SET],
       ]);
 
-      await expect(keyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
+      await expect(keyManager.connect(app).execute(maliciousPayload)).toBeRevertedWith(
         "KeyManager:_checkPermissions: Not authorized to edit permissions of existing addresses"
       );
+    });
+
+    it("address that `canOnlyChangePermissions` should not be allowed to add permissions", async () => {
+      // trying to grant full access of the UP to a newly created controller key
+      // (so to then gain full control via `maliciousControllerKey`)
+      let maliciousControllerKey = new ethers.Wallet.createRandom();
+
+      let maliciousPayload = await universalProfile.interface.encodeFunctionData("setData", [
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            maliciousControllerKey.address.substr(2),
+        ],
+        [ALL_PERMISSIONS_SET],
+      ]);
+
+      await expect(
+        keyManager.connect(canOnlyChangePermissions).execute(maliciousPayload)
+      ).toBeRevertedWith("Not authorized to set permissions for new addresses");
+    });
+
+    it("address that `canOnlyChangePermissions` should be allowed to change permissions", async () => {
+      let key = ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2);
+      let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
+
+      let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+
+      await keyManager.connect(canOnlyChangePermissions).execute(payload);
+      let [fetchedResult] = await universalProfile.callStatic.getData([key]);
+      expect(fetchedResult).toEqual(value);
     });
   });
 
@@ -572,26 +658,6 @@ describe("KeyManager", () => {
       await keyManager.connect(app).execute(payload);
       let fetchedResult = await universalProfile.callStatic.getData(keys);
       expect(fetchedResult).toEqual(values);
-    });
-
-    it("(should fail): give admin permission to an address", async () => {
-      let keys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + user.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newUser.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + accounts[6].address.substr(2),
-      ];
-
-      let values = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-      ];
-
-      let failingPayload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
-
-      await expect(keyManager.connect(app).execute(failingPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to edit permissions of existing addresses"
-      );
     });
 
     it("(should fail): set permissions to 3 addresses", async () => {
