@@ -275,7 +275,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         }
     }
 
-    function _canSetData(bytes32 _executorPermissions, bytes calldata _data) internal pure {
+    function _canSetData(bytes32 _executorPermissions, bytes calldata _data) internal view {
         uint256 keyCount = uint256(bytes32(_data[68:100]));
 
         // loop through the keys
@@ -289,10 +289,17 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
             // check if we try to change permissions
             if (bytes8(setDataKey) == _SET_PERMISSIONS) {
-                require(
-                    _hasPermission(_PERMISSION_CHANGEPERMISSIONS, _executorPermissions),
-                    "KeyManager:_checkPermissions: Not authorized to change keys"
-                );
+                bool isNewAddress = ERC725Y(account).getDataSingle(setDataKey).length == 0;
+
+                isNewAddress
+                    ? require(
+                        _hasPermission(_PERMISSION_ADDPERMISSIONS, _executorPermissions),
+                        "Not authorized to set permissions for new addresses"
+                    )
+                    : require(
+                        _hasPermission(_PERMISSION_CHANGEPERMISSIONS, _executorPermissions),
+                        "KeyManager:_checkPermissions: Not authorized to edit permissions of existing addresses"
+                    );
             } else {
                 require(
                     _hasPermission(_PERMISSION_SETDATA, _executorPermissions),
