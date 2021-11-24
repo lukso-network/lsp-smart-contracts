@@ -10,9 +10,9 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "./ILSP6KeyManager.sol";
 
 // libraries
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 import "../Utils/LSP2Utils.sol";
+import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 // constants
 import "./LSP6Constants.sol";
@@ -24,9 +24,9 @@ import "@erc725/smart-contracts/contracts/constants.sol";
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
-    using ECDSA for bytes32;
     using LSP2Utils for bytes12;
     using ERC725Utils for ERC725Y;
+    using ECDSA for bytes32;
 
     ERC725 public account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
