@@ -287,7 +287,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
             // check if we try to change permissions
             if (bytes8(setDataKey) == _SET_PERMISSIONS) {
-                bool isNewAddress = ERC725Y(account).getDataSingle(setDataKey).length == 0;
+                bool isNewAddress = bytes32(ERC725Y(account).getDataSingle(setDataKey)) ==
+                    bytes32(0);
 
                 isNewAddress
                     ? require(
