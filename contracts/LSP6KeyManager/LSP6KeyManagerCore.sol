@@ -174,20 +174,21 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _data the payload that will be run on `account`
      */
     function _verifyPermissions(address _from, bytes calldata _data) internal view {
-        bytes4 functionCalled = bytes4(_data[:4]);
+        bytes4 erc725Function = bytes4(_data[:4]);
 
-        if (functionCalled == account.setData.selector) {
+        if (erc725Function == account.setData.selector) {
             _verifyCanSetData(_from, _data);
-        } else if (functionCalled == account.execute.selector) {
+        } else if (erc725Function == account.execute.selector) {
             _verifyCanExecute(_from, _data);
 
-            address toAddress = address(bytes20(_data[48:68]));
-            _verifyIfAllowedAddress(_from, toAddress);
+            address to = address(bytes20(_data[48:68]));
+            _verifyAllowedAddress(_from, to);
 
             if (_data.length >= 168) {
-                _verifyIfAllowedFunction(_from, bytes4(_data[164:168]));
+                bytes4 functionCalled = bytes4(_data[164:168]);
+                _verifyAllowedFunction(_from, functionCalled);
             }
-        } else if (functionCalled == account.transferOwnership.selector) {
+        } else if (erc725Function == account.transferOwnership.selector) {
             bytes32 permissions = _getAddressPermissions(_from);
             require(
                 _hasPermission(_PERMISSION_CHANGEOWNER, permissions),
@@ -278,7 +279,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         }
     }
 
-    function _verifyIfAllowedAddress(address _from, address _toAddress) internal view {
+    function _verifyAllowedAddress(address _from, address _to) internal view {
         bytes memory allowedAddresses = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_ALLOWEDADDRESSES,
@@ -291,12 +292,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
 
         for (uint256 ii = 0; ii <= allowedAddressesList.length - 1; ii++) {
-            if (_toAddress == allowedAddressesList[ii]) return;
+            if (_to == allowedAddressesList[ii]) return;
         }
-        revert("KeyManager:_verifyIfAllowedAddress: Not authorized to interact with this address");
+        revert("KeyManager:_verifyAllowedAddress: Not authorized to interact with this address");
     }
 
-    function _verifyIfAllowedFunction(address _from, bytes4 _functionSelector) internal view {
+    function _verifyAllowedFunction(address _from, bytes4 _functionSelector) internal view {
         bytes memory allowedFunctions = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_ALLOWEDFUNCTIONS,
@@ -311,7 +312,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         for (uint256 ii = 0; ii <= allowedFunctionsList.length - 1; ii++) {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
-        revert("KeyManager:_verifyIfAllowedFunction: not authorised to run this function");
+        revert("KeyManager:_verifyAllowedFunction: not authorised to run this function");
     }
 
     function _getAddressPermissions(address _address) internal view returns (bytes32) {

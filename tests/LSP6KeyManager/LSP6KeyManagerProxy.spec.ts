@@ -507,7 +507,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedAddress: Not authorized to interact with this address"
+        "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
       );
     });
   });
@@ -522,7 +522,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
+        "KeyManager:_verifyAllowedFunction: not authorised to run this function"
       );
     });
   });
@@ -626,7 +626,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
+        "KeyManager:_verifyAllowedFunction: not authorised to run this function"
       );
 
       let result = await targetContract.callStatic.getNumber();
@@ -825,9 +825,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           signature
         )
-      ).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
-      );
+      ).toBeRevertedWith("KeyManager:_verifyAllowedFunction: not authorised to run this function");
 
       let endResult = await targetContract.callStatic.getNumber();
       expect(endResult.toString()).toEqual(currentNumber.toString());

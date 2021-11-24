@@ -41,11 +41,11 @@ contract KeyManagerHelper is LSP6KeyManager {
     }
 
     function verifyIfAllowedAddress(address _sender, address _recipient) public view {
-        super._verifyIfAllowedAddress(_sender, _recipient);
+        super._verifyAllowedAddress(_sender, _recipient);
     }
 
     function verifyIfAllowedFunction(address _sender, bytes4 _function) public view {
-        super._verifyIfAllowedFunction(_sender, _function);
+        super._verifyAllowedFunction(_sender, _function);
     }
 
     function isAllowed(bytes32 _permission, bytes32 _addressPermission) public pure returns (bool) {

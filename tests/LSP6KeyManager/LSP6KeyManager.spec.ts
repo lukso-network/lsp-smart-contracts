@@ -164,22 +164,22 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   });
 
   describe("Testing allowed addresses / function", () => {
-    it("_verifyIfAllowedAddress(...) - Should not revert for address listed in owner's allowed addresses list", async () => {
+    it("_verifyAllowedAddress(...) - Should not revert for address listed in owner's allowed addresses list", async () => {
       await keyManagerHelper.verifyIfAllowedAddress(owner.address, allowedAddresses[0]);
     });
 
-    it("_verifyIfAllowedAddress(...) - Should revert for address not listed in owner's allowed addresses list", async () => {
+    it("_verifyAllowedAddress(...) - Should revert for address not listed in owner's allowed addresses list", async () => {
       await expect(
         keyManagerHelper.verifyIfAllowedAddress(
           owner.address,
           "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
         )
       ).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedAddress: Not authorized to interact with this address"
+        "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
       );
     });
 
-    it("_verifyIfAllowedAddress(...) - Should not revert when user has no address listed (= all addresses whitelisted)", async () => {
+    it("_verifyAllowedAddress(...) - Should not revert when user has no address listed (= all addresses whitelisted)", async () => {
       await keyManagerHelper.verifyIfAllowedAddress(user.address, app.address);
     });
   });
@@ -536,7 +536,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedAddress: Not authorized to interact with this address"
+        "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
       );
     });
   });
@@ -551,7 +551,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
+        "KeyManager:_verifyAllowedFunction: not authorised to run this function"
       );
     });
   });
@@ -655,7 +655,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
+        "KeyManager:_verifyAllowedFunction: not authorised to run this function"
       );
 
       let result = await targetContract.callStatic.getNumber();
@@ -849,9 +849,7 @@ describe("KeyManager", () => {
 
       await expect(
         keyManager.executeRelayCall(keyManager.address, nonce, executeRelayCallPayload, signature)
-      ).toBeRevertedWith(
-        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
-      );
+      ).toBeRevertedWith("KeyManager:_verifyAllowedFunction: not authorised to run this function");
 
       let endResult = await targetContract.callStatic.getNumber();
       expect(endResult.toString()).toEqual(currentNumber.toString());
