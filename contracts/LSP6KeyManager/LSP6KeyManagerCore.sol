@@ -293,16 +293,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 isNewAddress
                     ? require(
                         _hasPermission(_PERMISSION_ADDPERMISSIONS, _executorPermissions),
-                        "Not authorized to set permissions for new addresses"
+                        "KeyManager:_canExecute: not authorized to ADDPERMISSIONS"
                     )
                     : require(
                         _hasPermission(_PERMISSION_CHANGEPERMISSIONS, _executorPermissions),
-                        "KeyManager:_checkPermissions: Not authorized to edit permissions of existing addresses"
+                        "KeyManager:_canExecute: not authorized to CHANGEPERMISSIONS"
                     );
             } else {
                 require(
                     _hasPermission(_PERMISSION_SETDATA, _executorPermissions),
-                    "KeyManager:_checkPermissions: Not authorized to setData"
+                    "KeyManager:_canExecute: not authorized to SETDATA"
                 );
             }
 
@@ -316,38 +316,41 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         uint256 _value,
         bytes32 _userPermissions // bytes calldata _data
     ) internal pure {
-        require(_operationType != 4, "Operation 4 `DELEGATECALL` not supported.");
+        require(
+            _operationType != 4,
+            "KeyManager:_canExecute: operation 4 `DELEGATECALL` not supported"
+        );
 
         require(
             _operationType < 5, // Check for CALL, DEPLOY or STATICCALL
-            "KeyManager:_checkPermissions: Invalid operation type"
+            "KeyManager:_canExecute: invalid operation type"
         );
 
         if (_operationType == 0) {
             require(
                 _hasPermission(_PERMISSION_CALL, _userPermissions),
-                "KeyManager:_checkPermissions: not authorized to perform CALL"
+                "KeyManager:_canExecute: not authorized to CALL"
             );
         }
 
         if (_operationType == 1 || _operationType == 2) {
             require(
                 _hasPermission(_PERMISSION_DEPLOY, _userPermissions),
-                "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
+                "KeyManager:_canExecute: not authorized to DEPLOY"
             );
         }
 
         if (_operationType == 3) {
             require(
                 _hasPermission(_PERMISSION_STATICCALL, _userPermissions),
-                "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+                "KeyManager:_canExecute: not authorized to STATICCALL"
             );
         }
 
         if (_value > 0) {
             require(
                 _hasPermission(_PERMISSION_TRANSFERVALUE, _userPermissions),
-                "KeyManager:_checkPermissions: Not authorized to transfer value"
+                "KeyManager:_canExecute: not authorized to TRANSFERVALUE"
             );
         }
     }

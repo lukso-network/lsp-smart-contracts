@@ -405,7 +405,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+        "KeyManager:_canExecute: not authorized to STATICCALL"
       );
     });
 
@@ -418,7 +418,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(owner).execute(executePayload)).toBeRevertedWith(
-        "Operation 4 `DELEGATECALL` not supported."
+        "KeyManager:_canExecute: operation 4 `DELEGATECALL` not supported"
       );
     });
 
@@ -431,7 +431,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
+        "KeyManager:_canExecute: not authorized to DEPLOY"
       );
     });
   });
@@ -474,7 +474,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to transfer value"
+        "KeyManager:_canExecute: not authorized to TRANSFERVALUE"
       );
 
       let newAccountBalance = await provider.getBalance(universalProfile.address);
@@ -717,7 +717,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Invalid operation type"
+        "KeyManager:_canExecute: invalid operation type"
       );
     });
 
@@ -1361,7 +1361,7 @@ describe("SETDATA", () => {
         let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
 
         await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
-          "KeyManager:_checkPermissions: Not authorized to setData"
+          "KeyManager:_canExecute: not authorized to SETDATA"
         );
       });
     });
@@ -1544,7 +1544,7 @@ describe("SETDATA", () => {
         let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
 
         await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
-          "KeyManager:_checkPermissions: Not authorized to setData"
+          "KeyManager:_canExecute: not authorized to SETDATA"
         );
       });
 
@@ -1567,7 +1567,7 @@ describe("SETDATA", () => {
         let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
 
         await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
-          "KeyManager:_checkPermissions: Not authorized to setData"
+          "KeyManager:_canExecute: not authorized to SETDATA"
         );
       });
 
@@ -1599,7 +1599,7 @@ describe("SETDATA", () => {
         let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
 
         await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
-          "KeyManager:_checkPermissions: Not authorized to setData"
+          "KeyManager:_canExecute: not authorized to SETDATA"
         );
       });
     });
@@ -1710,9 +1710,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
         await expect(
           keyManager.connect(canOnlyAddPermissions).execute(maliciousPayload)
-        ).toBeRevertedWith(
-          "KeyManager:_checkPermissions: Not authorized to edit permissions of existing addresses"
-        );
+        ).toBeRevertedWith("KeyManager:_canExecute: not authorized to CHANGEPERMISSIONS");
       });
     });
 
@@ -1732,7 +1730,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
         await expect(
           keyManager.connect(canOnlyChangePermissions).execute(maliciousPayload)
-        ).toBeRevertedWith("Not authorized to set permissions for new addresses");
+        ).toBeRevertedWith("KeyManager:_canExecute: not authorized to ADDPERMISSIONS");
       });
 
       it("should be allowed to change permissions", async () => {
@@ -1754,7 +1752,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
         await expect(
           keyManager.connect(canOnlyChangePermissions).execute(payload)
-        ).toBeRevertedWith("Not authorized to set permissions for new addresses");
+        ).toBeRevertedWith("KeyManager:_canExecute: not authorized to ADDPERMISSIONS");
       });
     });
   });
@@ -1928,9 +1926,7 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
 
       await expect(
         keyManager.connect(canSetDataAndAddPermissions).execute(payload)
-      ).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to edit permissions of existing addresses"
-      );
+      ).toBeRevertedWith("KeyManager:_canExecute: not authorized to CHANGEPERMISSIONS");
     });
 
     it("(should fail): 2 x keys + (add 1 x new permission) + (change 1 x existing permission)", async () => {
@@ -1954,9 +1950,7 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
 
       await expect(
         keyManager.connect(canSetDataAndAddPermissions).execute(payload)
-      ).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to edit permissions of existing addresses"
-      );
+      ).toBeRevertedWith("KeyManager:_canExecute: not authorized to CHANGEPERMISSIONS");
     });
   });
 
@@ -1983,7 +1977,7 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
 
       await expect(
         keyManager.connect(canSetDataAndChangePermissions).execute(payload)
-      ).toBeRevertedWith("Not authorized to set permissions for new addresses");
+      ).toBeRevertedWith("KeyManager:_canExecute: not authorized to ADDPERMISSIONS");
     });
 
     it("(should pass): 2 x keys + change 2 x existing permissions", async () => {
@@ -2029,7 +2023,7 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
 
       await expect(
         keyManager.connect(canSetDataAndChangePermissions).execute(payload)
-      ).toBeRevertedWith("Not authorized to set permissions for new addresses");
+      ).toBeRevertedWith("KeyManager:_canExecute: not authorized to ADDPERMISSIONS");
     });
   });
 });

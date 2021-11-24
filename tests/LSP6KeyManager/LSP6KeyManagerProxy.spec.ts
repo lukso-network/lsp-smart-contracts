@@ -291,7 +291,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to change keys"
+        "KeyManager:_canExecute: not authorized to CHANGEPERMISSIONS"
       );
     });
 
@@ -369,7 +369,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: not authorized to perform STATICCALL"
+        "KeyManager:_canExecute: not authorized to STATICCALL"
       );
     });
 
@@ -382,7 +382,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(owner).execute(executePayload)).toBeRevertedWith(
-        "Operation 4 `DELEGATECALL` not supported."
+        "KeyManager:_canExecute: operation 4 `DELEGATECALL` not supported"
       );
     });
 
@@ -395,7 +395,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: not authorized to perform DEPLOY"
+        "KeyManager:_canExecute: not authorized to DEPLOY"
       );
     });
   });
@@ -438,7 +438,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to transfer value"
+        "KeyManager:_canExecute: not authorized to TRANSFERVALUE"
       );
 
       let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
@@ -681,7 +681,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Invalid operation type"
+        "KeyManager:_canExecute: invalid operation type"
       );
     });
 
