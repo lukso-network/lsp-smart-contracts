@@ -9,24 +9,25 @@ pragma solidity ^0.8.0;
  */
 library LSP2Utils {
     /* solhint-disable no-inline-assembly */
-    function generateSingletonKey(string memory _keyName) public pure returns (bytes32) {
+    function generateSingletonKey(string memory _keyName) internal pure returns (bytes32) {
         return keccak256(bytes(_keyName));
     }
 
-    function generateArrayKey(string memory _keyName) public pure returns (bytes32) {
+    function generateArrayKey(string memory _keyName) internal pure returns (bytes32) {
         bytes memory keyName = bytes(_keyName);
 
+        // prettier-ignore
         require(
             keyName[keyName.length - 2] == 0x5b && // "[" in utf8 encoded
                 keyName[keyName.length - 1] == 0x5d, // "]" in utf8
-            'Missing empty square brackets "[]" at the end of the key name'
+            "Missing empty square brackets \"[]\" at the end of the key name"
         );
 
         return keccak256(keyName);
     }
 
     function generateMappingKey(string memory _firstWord, string memory _lastWord)
-        public
+        internal
         pure
         returns (bytes32 key_)
     {
@@ -45,7 +46,7 @@ library LSP2Utils {
     }
 
     function generateBytes20MappingKey(string memory _firstWord, address _address)
-        public
+        internal
         pure
         returns (bytes32 key_)
     {
@@ -62,7 +63,7 @@ library LSP2Utils {
         string memory _firstWord,
         string memory _secondWord,
         address _address
-    ) public pure returns (bytes32 key_) {
+    ) internal pure returns (bytes32 key_) {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
         bytes32 secondWordHash = keccak256(bytes(_secondWord));
 
@@ -84,7 +85,7 @@ library LSP2Utils {
         pure
         returns (bytes32)
     {
-        bytes memory generatedKey = abi.encodePacked(_keyPrefix, _bytes20);
+        bytes memory generatedKey = bytes.concat(_keyPrefix, _bytes20);
         bytes32 toBytes32Key;
         // solhint-disable-next-line
         assembly {
@@ -97,7 +98,7 @@ library LSP2Utils {
         string memory _hashFunction,
         string memory _json,
         string memory _url
-    ) public pure returns (bytes memory key_) {
+    ) internal pure returns (bytes memory key_) {
         bytes32 hashFunctionDigest = keccak256(bytes(_hashFunction));
         bytes32 jsonDigest = keccak256(bytes(_json));
 
@@ -108,7 +109,7 @@ library LSP2Utils {
         string memory _hashFunction,
         string memory _assetBytes,
         string memory _url
-    ) public pure returns (bytes memory key_) {
+    ) internal pure returns (bytes memory key_) {
         bytes32 hashFunctionDigest = keccak256(bytes(_hashFunction));
         bytes32 jsonDigest = keccak256(bytes(_assetBytes));
 
