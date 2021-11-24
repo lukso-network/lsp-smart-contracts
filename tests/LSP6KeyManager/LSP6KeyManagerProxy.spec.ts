@@ -291,7 +291,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
-        "KeyManager:_canExecute: not authorized to CHANGEPERMISSIONS"
+        "KeyManager:_verifyCanSetData: not authorized to CHANGEPERMISSIONS"
       );
     });
 
@@ -369,7 +369,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_canExecute: not authorized to STATICCALL"
+        "KeyManager:_verifyCanExecute: not authorized to STATICCALL"
       );
     });
 
@@ -382,7 +382,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(owner).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_canExecute: operation 4 `DELEGATECALL` not supported"
+        "KeyManager:_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
       );
     });
 
@@ -395,7 +395,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_canExecute: not authorized to DEPLOY"
+        "KeyManager:_verifyCanExecute: not authorized to DEPLOY"
       );
     });
   });
@@ -438,7 +438,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_canExecute: not authorized to TRANSFERVALUE"
+        "KeyManager:_verifyCanExecute: not authorized to TRANSFERVALUE"
       );
 
       let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
@@ -507,7 +507,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to interact with this address"
+        "KeyManager:_verifyIfAllowedAddress: Not authorized to interact with this address"
       );
     });
   });
@@ -522,7 +522,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorised to run this function"
+        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
       );
     });
   });
@@ -626,7 +626,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorised to run this function"
+        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
       );
 
       let result = await targetContract.callStatic.getNumber();
@@ -681,13 +681,13 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_canExecute: invalid operation type"
+        "KeyManager:_verifyCanExecute: invalid operation type"
       );
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(proxyKeyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
-        "KeyManager:_checkPermissions: unknown function selector on ERC725 account"
+        "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
       );
     });
 
@@ -825,7 +825,9 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           signature
         )
-      ).toBeRevertedWith("KeyManager:_checkPermissions: Not authorised to run this function");
+      ).toBeRevertedWith(
+        "KeyManager:_verifyIfAllowedFunction: not authorised to run this function"
+      );
 
       let endResult = await targetContract.callStatic.getNumber();
       expect(endResult.toString()).toEqual(currentNumber.toString());
@@ -1149,7 +1151,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       ]);
 
       await expect(proxyKeyManager.connect(accounts[6]).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_getUserPermissions: no permissions set for this user / caller"
+        "KeyManager:_getAddressPermissions: no permissions set for this address"
       );
     });
 

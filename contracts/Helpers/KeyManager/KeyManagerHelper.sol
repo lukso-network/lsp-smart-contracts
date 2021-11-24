@@ -17,7 +17,7 @@ contract KeyManagerHelper is LSP6KeyManager {
     }
 
     function getUserPermissions(address _user) public view returns (bytes32) {
-        return super._getUserPermissions(_user);
+        return super._getAddressPermissions(_user);
     }
 
     function getAllowedAddresses(address _sender) public view returns (bytes memory) {
@@ -41,11 +41,13 @@ contract KeyManagerHelper is LSP6KeyManager {
     }
 
     function isAllowedAddress(address _sender, address _recipient) public view returns (bool) {
-        return super._isAllowedAddress(_sender, _recipient);
+        super._verifyIfAllowedAddress(_sender, _recipient);
+        return true;
     }
 
     function isAllowedFunction(address _sender, bytes4 _function) public view returns (bool) {
-        return super._isAllowedFunction(_sender, _function);
+        super._verifyIfAllowedFunction(_sender, _function);
+        return true;
     }
 
     function isAllowed(bytes32 _permission, bytes32 _addressPermission) public pure returns (bool) {
