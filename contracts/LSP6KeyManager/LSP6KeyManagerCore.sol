@@ -25,8 +25,8 @@ import "@erc725/smart-contracts/contracts/constants.sol";
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     using ECDSA for bytes32;
-    using ERC725Utils for ERC725Y;
     using LSP2Utils for bytes12;
+    using ERC725Utils for ERC725Y;
 
     ERC725 public account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
@@ -103,7 +103,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @return result_ the data being returned by the ERC725 Account
      */
     function execute(bytes calldata _data) external payable override returns (bytes memory) {
-        _checkPermissions(msg.sender, _data);
+        _verifyPermissions(msg.sender, _data);
         (bool success, bytes memory result_) = address(account).call{
             value: msg.value,
             gas: gasleft()
@@ -155,7 +155,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         // increase nonce after successful verification
         _nonceStore[from][_nonce >> 128]++;
 
-        _checkPermissions(from, _data);
+        _verifyPermissions(from, _data);
 
         (bool success, bytes memory result_) = address(account).call{value: 0, gas: gasleft()}(
             _data
@@ -175,7 +175,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
-    function _checkPermissions(address _address, bytes calldata _data) internal view {
+    function _verifyPermissions(address _address, bytes calldata _data) internal view {
         bytes32 userPermissions = _getUserPermissions(_address);
         bytes4 erc725Selector = bytes4(_data[:4]);
 
@@ -190,7 +190,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
             require(
                 _isAllowedAddress(_address, recipient),
-                "KeyManager:_checkPermissions: Not authorized to interact with this address"
+                "KeyManager:_verifyPermissions: Not authorized to interact with this address"
             );
 
             if (_data.length > 164) {
@@ -198,17 +198,17 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 if (functionSelector != 0x00000000) {
                     require(
                         _isAllowedFunction(_address, functionSelector),
-                        "KeyManager:_checkPermissions: Not authorised to run this function"
+                        "KeyManager:_verifyPermissions: Not authorised to run this function"
                     );
                 }
             }
         } else if (erc725Selector == _TRANSFEROWNERSHIP_SELECTOR) {
             require(
                 _hasPermission(_PERMISSION_CHANGEOWNER, userPermissions),
-                "KeyManager:_checkPermissions: Not authorized to transfer ownership"
+                "KeyManager:_verifyPermissions: Not authorized to transfer ownership"
             );
         } else {
-            revert("KeyManager:_checkPermissions: unknown function selector on ERC725 account");
+            revert("KeyManager:_verifyPermissions: unknown function selector on ERC725 account");
         }
     }
 
