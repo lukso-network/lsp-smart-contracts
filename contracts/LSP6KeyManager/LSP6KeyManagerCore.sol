@@ -206,13 +206,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
         // loop through the keys
         for (uint256 ii = 0; ii <= keyCount - 1; ii++) {
-            // extract the key
-            bytes32 setDataKey = bytes32(_data[ptrStart:ptrStart + 32]);
+            bytes32 key = bytes32(_data[ptrStart:ptrStart + 32]);
 
-            // check if we try to change permissions
-            if (bytes8(setDataKey) == _SET_PERMISSIONS) {
-                bool isNewAddress = bytes32(ERC725Y(account).getDataSingle(setDataKey)) ==
-                    bytes32(0);
+            // check if the key is related to setting permissions
+            if (bytes8(key) == _SET_PERMISSIONS) {
+                bool isNewAddress = bytes32(ERC725Y(account).getDataSingle(key)) == bytes32(0);
 
                 isNewAddress
                     ? require(
