@@ -372,17 +372,17 @@ describe("KeyManager", () => {
   });
 
   describe("> testing permissions: SETDATA", () => {
-    let owner: SignerWithAddress, app: SignerWithAddress, notAuthorisedAddress: SignerWithAddress;
+    let owner: SignerWithAddress, canSetData: SignerWithAddress, cannotSetData: SignerWithAddress;
 
     let universalProfile: UniversalProfile, keyManager: LSP6KeyManager;
 
     let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key"));
-    let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Hello Lukso"));
+    let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Hello Lukso!"));
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       owner = accounts[0];
-      app = accounts[1];
-      notAuthorisedAddress = accounts[2];
+      canSetData = accounts[1];
+      cannotSetData = accounts[2];
 
       universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
       keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
@@ -392,9 +392,8 @@ describe("KeyManager", () => {
         .setData(
           [
             ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2),
-            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2),
-            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
-              notAuthorisedAddress.address.substr(2),
+            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + canSetData.address.substr(2),
+            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + cannotSetData.address.substr(2),
           ],
           [
             ALL_PERMISSIONS_SET,
@@ -405,28 +404,275 @@ describe("KeyManager", () => {
 
       await universalProfile.connect(owner).transferOwnership(keyManager.address);
     });
-    it("Owner should be allowed to setData", async () => {
-      let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
 
-      await keyManager.connect(owner).execute(payload);
-      let [fetchedResult] = await universalProfile.callStatic.getData([key]);
-      expect(fetchedResult).toEqual(value);
+    describe("when setting one key", () => {
+      describe("For UP owner", () => {
+        it("should pass", async () => {
+          let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+
+          await keyManager.connect(owner).execute(payload);
+          let [fetchedResult] = await universalProfile.callStatic.getData([key]);
+          expect(fetchedResult).toEqual(value);
+        });
+      });
+
+      describe("For address that has permission SETDATA", () => {
+        it("should pass", async () => {
+          let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+
+          await keyManager.connect(canSetData).execute(payload);
+          let [fetchedResult] = await universalProfile.callStatic.getData([key]);
+          expect(fetchedResult).toEqual(value);
+        });
+      });
+
+      describe("For address that doesn't have permission SETDATA", () => {
+        it("should not allow", async () => {
+          let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+
+          await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
+            "KeyManager:_checkPermissions: Not authorized to setData"
+          );
+        });
+      });
     });
 
-    it("App should be allowed to setData", async () => {
-      let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+    describe("when setting multiple keys", () => {
+      describe("For UP owner", () => {
+        it("(should pass): adding 5 singleton keys", async () => {
+          // prettier-ignore
+          let elements = {
+                              "MyFirstKey": "aaaaaaaaaa",
+                              "MySecondKey": "bbbbbbbbbb",
+                              "MyThirdKey": "cccccccccc",
+                              "MyFourthKey": "dddddddddd",
+                              "MyFifthKey": "eeeeeeeeee",
+                            };
 
-      await keyManager.connect(app).execute(payload);
-      let [fetchedResult] = await universalProfile.callStatic.getData([key]);
-      expect(fetchedResult).toEqual(value);
-    });
+          let [keys, values] = generateKeysAndValues(elements);
 
-    it("address with no permission SETDATA should not be allowed to setData", async () => {
-      let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
 
-      await expect(keyManager.connect(notAuthorisedAddress).execute(payload)).toBeRevertedWith(
-        "KeyManager:_checkPermissions: Not authorized to setData"
-      );
+          await keyManager.connect(owner).execute(payload);
+          let fetchedResult = await universalProfile.callStatic.getData(keys);
+          expect(fetchedResult).toEqual(
+            Object.values(elements).map((value) =>
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
+            )
+          );
+        });
+
+        it("(should pass): adding 10 LSP3IssuedAssets", async () => {
+          let lsp3IssuedAssets = getRandomAddresses(10);
+
+          const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
+
+          const encodedData = encodeData(data, BasicUPSetup_Schema);
+          const flattenedEncodedData = flattenEncodedData(encodedData);
+
+          let keys = [];
+          let values = [];
+
+          flattenedEncodedData.map((data) => {
+            keys.push(data.key);
+            values.push(data.value);
+          });
+
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+
+          await keyManager.connect(owner).execute(payload);
+          let fetchedResult = await universalProfile.callStatic.getData(keys);
+          expect(fetchedResult).toEqual(values);
+        });
+
+        it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+          const basicUPSetup = {
+            LSP3Profile: {
+              hashFunction: "keccak256(utf8)",
+              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+              url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+            },
+            "LSP3IssuedAssets[]": [
+              "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
+              "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
+            ],
+            LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+          };
+
+          let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
+          let flattenedEncodedData = flattenEncodedData(encodedData);
+
+          let keys = [];
+          let values = [];
+
+          flattenedEncodedData.map((data) => {
+            keys.push(data.key);
+            values.push(data.value);
+          });
+
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+
+          await keyManager.connect(owner).execute(payload);
+          let fetchedResult = await universalProfile.callStatic.getData(keys);
+          expect(fetchedResult).toEqual(values);
+        });
+      });
+
+      describe("For address that has permission SETDATA", () => {
+        it("(should pass): adding 5 singleton keys", async () => {
+          // prettier-ignore
+          let elements = {
+                          "MyFirstKey": "aaaaaaaaaa",
+                          "MySecondKey": "bbbbbbbbbb",
+                          "MyThirdKey": "cccccccccc",
+                          "MyFourthKey": "dddddddddd",
+                          "MyFifthKey": "eeeeeeeeee",
+                        };
+
+          let [keys, values] = generateKeysAndValues(elements);
+
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+
+          await keyManager.connect(canSetData).execute(payload);
+          let fetchedResult = await universalProfile.callStatic.getData(keys);
+          expect(fetchedResult).toEqual(
+            Object.values(elements).map((value) =>
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
+            )
+          );
+        });
+
+        it("(should pass): adding 10 LSP3IssuedAssets", async () => {
+          let lsp3IssuedAssets = getRandomAddresses(10);
+
+          const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
+
+          const encodedData = encodeData(data, BasicUPSetup_Schema);
+          const flattenedEncodedData = flattenEncodedData(encodedData);
+
+          let keys = [];
+          let values = [];
+
+          flattenedEncodedData.map((data) => {
+            keys.push(data.key);
+            values.push(data.value);
+          });
+
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+
+          await keyManager.connect(canSetData).execute(payload);
+          let fetchedResult = await universalProfile.callStatic.getData(keys);
+          expect(fetchedResult).toEqual(values);
+        });
+
+        it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+          const basicUPSetup = {
+            LSP3Profile: {
+              hashFunction: "keccak256(utf8)",
+              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+              url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+            },
+            "LSP3IssuedAssets[]": [
+              "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
+              "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
+            ],
+            LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+          };
+
+          let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
+          let flattenedEncodedData = flattenEncodedData(encodedData);
+
+          let keys = [];
+          let values = [];
+
+          flattenedEncodedData.map((data) => {
+            keys.push(data.key);
+            values.push(data.value);
+          });
+
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+
+          await keyManager.connect(canSetData).execute(payload);
+          let fetchedResult = await universalProfile.callStatic.getData(keys);
+          expect(fetchedResult).toEqual(values);
+        });
+      });
+
+      describe("For address that doesn't have permission SETDATA", () => {
+        it("(should fail): adding 5 singleton keys", async () => {
+          // prettier-ignore
+          let elements = {
+                          "MyFirstKey": "aaaaaaaaaa",
+                          "MySecondKey": "bbbbbbbbbb",
+                          "MyThirdKey": "cccccccccc",
+                          "MyFourthKey": "dddddddddd",
+                          "MyFifthKey": "eeeeeeeeee",
+                        };
+
+          let [keys, values] = generateKeysAndValues(elements);
+
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+
+          await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
+            "KeyManager:_checkPermissions: Not authorized to setData"
+          );
+        });
+
+        it("(should fail): adding 10 LSP3IssuedAssets", async () => {
+          let lsp3IssuedAssets = getRandomAddresses(10);
+
+          const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
+
+          const encodedData = encodeData(data, BasicUPSetup_Schema);
+          const flattenedEncodedData = flattenEncodedData(encodedData);
+
+          let keys = [];
+          let values = [];
+
+          flattenedEncodedData.map((data) => {
+            keys.push(data.key);
+            values.push(data.value);
+          });
+
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+
+          await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
+            "KeyManager:_checkPermissions: Not authorized to setData"
+          );
+        });
+
+        it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+          const basicUPSetup = {
+            LSP3Profile: {
+              hashFunction: "keccak256(utf8)",
+              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+              url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
+            },
+            "LSP3IssuedAssets[]": [
+              "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
+              "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
+            ],
+            LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+          };
+
+          let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
+          let flattenedEncodedData = flattenEncodedData(encodedData);
+
+          let keys = [];
+          let values = [];
+
+          flattenedEncodedData.map((data) => {
+            keys.push(data.key);
+            values.push(data.value);
+          });
+
+          let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+
+          await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
+            "KeyManager:_checkPermissions: Not authorized to setData"
+          );
+        });
+      });
     });
   });
 
@@ -555,111 +801,6 @@ describe("KeyManager", () => {
   });
 
   describe("> testing permissions: App not allowed to CHANGEKEYS (setting multiple mixed keys)", () => {
-    it("(should pass): adding one singleton key", async () => {
-      let elements = { MyFirstKey: "Hello Lukso!" };
-      let [keys, values] = generateKeysAndValues(elements);
-
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
-
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(payload);
-      let fetchedResult = await universalProfile.callStatic.getData(keys);
-      expect(fetchedResult).toEqual(
-        Object.values(elements).map((value) =>
-          ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
-        )
-      );
-    });
-
-    it("(should pass): adding 5 singleton keys", async () => {
-      // prettier-ignore
-      let elements = {
-        "MyFirstKey": "aaaaaaaaaa",
-        "MySecondKey": "bbbbbbbbbb",
-        "MyThirdKey": "cccccccccc",
-        "MyFourthKey": "dddddddddd",
-        "MyFifthKey": "eeeeeeeeee",
-      };
-
-      let [keys, values] = generateKeysAndValues(elements);
-
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
-
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(payload);
-      let fetchedResult = await universalProfile.callStatic.getData(keys);
-      expect(fetchedResult).toEqual(
-        Object.values(elements).map((value) =>
-          ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
-        )
-      );
-    });
-
-    it("(should pass): adding 10 LSP3IssuedAssets", async () => {
-      let lsp3IssuedAssets = getRandomAddresses(10);
-
-      const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
-
-      const encodedData = encodeData(data, BasicUPSetup_Schema);
-      const flattenedEncodedData = flattenEncodedData(encodedData);
-
-      let keys = [];
-      let values = [];
-
-      flattenedEncodedData.map((data) => {
-        keys.push(data.key);
-        values.push(data.value);
-      });
-
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
-
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(payload);
-      let fetchedResult = await universalProfile.callStatic.getData(keys);
-      expect(fetchedResult).toEqual(values);
-    });
-
-    it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
-      const basicUPSetup = {
-        LSP3Profile: {
-          hashFunction: "keccak256(utf8)",
-          hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
-          url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
-        },
-        "LSP3IssuedAssets[]": [
-          "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
-          "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
-        ],
-        LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
-      };
-
-      let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
-      let flattenedEncodedData = flattenEncodedData(encodedData);
-
-      let keys = [];
-      let values = [];
-
-      flattenedEncodedData.map((data) => {
-        keys.push(data.key);
-        values.push(data.value);
-      });
-
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
-
-      let callResult = await keyManager.connect(app).callStatic.execute(payload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(payload);
-      let fetchedResult = await universalProfile.callStatic.getData(keys);
-      expect(fetchedResult).toEqual(values);
-    });
-
     it("(should fail): set permissions to 3 addresses", async () => {
       let keys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + user.address.substr(2),
@@ -679,7 +820,6 @@ describe("KeyManager", () => {
         "KeyManager:_checkPermissions: Not authorized to edit permissions of existing addresses"
       );
     });
-
     it("(should fail): set 3 keys + 1 permission", async () => {
       // prettier-ignore
       let permissionKeyDisallowed = ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + user.address.substr(2)
