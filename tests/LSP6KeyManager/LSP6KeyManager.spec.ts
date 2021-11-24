@@ -37,9 +37,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
   let owner: SignerWithAddress, app: SignerWithAddress, user: SignerWithAddress;
 
-  let universalProfile: UniversalProfile,
-    keyManagerHelper: KeyManagerHelper,
-    targetContract: TargetContract;
+  let universalProfile: UniversalProfile, keyManagerHelper: KeyManagerHelper;
 
   let allowedAddresses;
 
@@ -50,8 +48,6 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
     owner = accounts[0];
     app = accounts[1];
     user = accounts[2];
-
-    targetContract = await new TargetContract__factory(owner).deploy();
 
     universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
     keyManagerHelper = await new KeyManagerHelper__factory(owner).deploy(universalProfile.address);
@@ -167,27 +163,24 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
     });
   });
 
-  describe("Testing permissions for allowed addresses / function", () => {
-    it("_isAllowedAddress(...) - Should return `true` for address listed in owner's allowed addresses", async () => {
-      expect(
-        await keyManagerHelper.callStatic.isAllowedAddress(owner.address, allowedAddresses[0])
-      ).toBeTruthy();
+  describe("Testing allowed addresses / function", () => {
+    it("_verifyIfAllowedAddress(...) - Should not revert for address listed in owner's allowed addresses list", async () => {
+      await keyManagerHelper.verifyIfAllowedAddress(owner.address, allowedAddresses[0]);
     });
 
-    it("_isAllowedAddress(...) - Should return `false` for address not listed in owner's allowed addresses", async () => {
-      expect(
-        await keyManagerHelper.callStatic.isAllowedAddress(
+    it("_verifyIfAllowedAddress(...) - Should revert for address not listed in owner's allowed addresses list", async () => {
+      await expect(
+        keyManagerHelper.verifyIfAllowedAddress(
           owner.address,
           "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
         )
-      ).toBeFalsy();
+      ).toBeRevertedWith(
+        "KeyManager:_verifyIfAllowedAddress: Not authorized to interact with this address"
+      );
     });
 
-    it("_isAllowedAddress(...) - Should return `true`, user has all addresses whitelisted (= no list of allowed address)", async () => {
-      // assuming a scenario user wants to interact with app via ERC725 account
-      expect(
-        await keyManagerHelper.callStatic.isAllowedAddress(user.address, app.address)
-      ).toBeTruthy();
+    it("_verifyIfAllowedAddress(...) - Should not revert when user has no address listed (= all addresses whitelisted)", async () => {
+      await keyManagerHelper.verifyIfAllowedAddress(user.address, app.address);
     });
   });
 });

@@ -40,14 +40,12 @@ contract KeyManagerHelper is LSP6KeyManager {
             );
     }
 
-    function isAllowedAddress(address _sender, address _recipient) public view returns (bool) {
+    function verifyIfAllowedAddress(address _sender, address _recipient) public view {
         super._verifyIfAllowedAddress(_sender, _recipient);
-        return true;
     }
 
-    function isAllowedFunction(address _sender, bytes4 _function) public view returns (bool) {
+    function verifyIfAllowedFunction(address _sender, bytes4 _function) public view {
         super._verifyIfAllowedFunction(_sender, _function);
-        return true;
     }
 
     function isAllowed(bytes32 _permission, bytes32 _addressPermission) public pure returns (bool) {
