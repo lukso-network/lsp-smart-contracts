@@ -28,7 +28,10 @@ interface ILSPToken {
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Delegate contract of the initial universal receiver
  */
-abstract contract LSP1UniversalReceiverDelegateCore is ILSP1UniversalReceiverDelegate, ERC165Storage {
+abstract contract LSP1UniversalReceiverDelegateCore is
+    ILSP1UniversalReceiverDelegate,
+    ERC165Storage
+{
     using ERC725Utils for IERC725Y;
 
     /* solhint-disable no-inline-assembly */
@@ -216,9 +219,9 @@ abstract contract LSP1UniversalReceiverDelegateCore is ILSP1UniversalReceiverDel
 
     function _getInterfaceIdFor(bytes32 _typeId) internal pure returns (bytes4) {
         if (_typeId == _LSP7TOKENSSENDER_TYPE_ID || _typeId == _LSP7TOKENSRECIPIENT_TYPE_ID) {
-            return 0xe33f65c3;
+            return _LSP7_INTERFACE_ID;
         } else {
-            return 0x49399145;
+            return _LSP8_INTERFACE_ID;
         }
     }
     /* solhint-enable */
