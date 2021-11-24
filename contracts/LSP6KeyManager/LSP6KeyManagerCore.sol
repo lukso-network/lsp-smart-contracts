@@ -203,11 +203,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         bytes32 permissions = _getAddressPermissions(_from);
 
         uint256 keyCount = uint256(bytes32(_data[68:100]));
-        uint256 ptrStart = 100;
+        uint256 pointer = 100;
 
         // loop through the keys
-        for (uint256 ii = 0; ii <= keyCount - 1; ii++) {
-            bytes32 key = bytes32(_data[ptrStart:ptrStart + 32]);
+        for (uint256 ii = 0; ii < keyCount; ii++) {
+            bytes32 key = bytes32(_data[pointer:pointer + 32]);
 
             // check if the key is related to setting permissions
             if (bytes8(key) == _SET_PERMISSIONS) {
@@ -229,8 +229,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 );
             }
 
-            // move calldata pointers if not at the end of the list
-            if (ii != keyCount - 1) ptrStart += 32;
+            pointer += 32; // move calldata pointer
         }
     }
 
@@ -291,7 +290,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
         address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
 
-        for (uint256 ii = 0; ii <= allowedAddressesList.length - 1; ii++) {
+        for (uint256 ii = 0; ii < allowedAddressesList.length; ii++) {
             if (_to == allowedAddressesList[ii]) return;
         }
         revert("KeyManager:_verifyAllowedAddress: Not authorized to interact with this address");
@@ -309,7 +308,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
         bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
 
-        for (uint256 ii = 0; ii <= allowedFunctionsList.length - 1; ii++) {
+        for (uint256 ii = 0; ii < allowedFunctionsList.length; ii++) {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
         revert("KeyManager:_verifyAllowedFunction: not authorised to run this function");
