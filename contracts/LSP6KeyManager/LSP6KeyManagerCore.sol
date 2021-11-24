@@ -31,14 +31,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     ERC725 public account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
-    /* solhint-disable */
-    // selectors
-    bytes4 internal immutable _SETDATA_SELECTOR = account.setData.selector; // 0x14a6e293
-    bytes4 internal immutable _EXECUTE_SELECTOR = account.execute.selector; // 0x44c028fe
-    bytes4 internal immutable _TRANSFEROWNERSHIP_SELECTOR = account.transferOwnership.selector; // 0xf2fde38b;
-
-    /* solhint-enable */
-
     /**
      * @dev See {IERC165-supportsInterface}.
      */
