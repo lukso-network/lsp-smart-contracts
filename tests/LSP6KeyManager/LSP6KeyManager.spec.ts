@@ -17,10 +17,17 @@ import {
 } from "../../types";
 
 // constants
-import { INTERFACE_IDS, BasicUPSetup_Schema, ERC725YKeys } from "../utils/constants";
+import {
+  INTERFACE_IDS,
+  BasicUPSetup_Schema,
+  ERC725YKeys,
+} from "../utils/constants";
 
 // helpers
 import {
+  NotAuthorisedError,
+  NotAllowedAddressError,
+  NotAllowedFunctionError,
   EMPTY_PAYLOAD,
   DUMMY_PAYLOAD,
   DUMMY_PRIVATEKEY,
@@ -29,7 +36,11 @@ import {
   generateKeysAndValues,
 } from "../utils/helpers";
 
-import { ALL_PERMISSIONS_SET, PERMISSIONS, OPERATIONS } from "../utils/constants";
+import {
+  ALL_PERMISSIONS_SET,
+  PERMISSIONS,
+  OPERATIONS,
+} from "../utils/constants";
 
 describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   let abiCoder;
@@ -49,36 +60,55 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
     app = accounts[1];
     user = accounts[2];
 
-    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManagerHelper = await new KeyManagerHelper__factory(owner).deploy(universalProfile.address);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManagerHelper = await new KeyManagerHelper__factory(owner).deploy(
+      universalProfile.address
+    );
 
     allowedAddresses = getRandomAddresses(2);
 
     await universalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            owner.address.substr(2),
+        ],
         [ALL_PERMISSIONS_SET]
       );
 
     let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
 
     await universalProfile.setData(
-      [ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] + owner.address.substr(2)],
+      [
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+          owner.address.substr(2),
+      ],
       [abiCoder.encode(["address[]"], [allowedAddresses])]
     );
 
     await universalProfile.setData(
-      [ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] + owner.address.substr(2)],
+      [
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+          owner.address.substr(2),
+      ],
       [abiCoder.encode(["bytes4[]"], [allowedFunctions])]
     );
 
     // app permissions
-    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
+    let appPermissions = ethers.utils.hexZeroPad(
+      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+      32
+    );
     await universalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            app.address.substr(2),
+        ],
         [appPermissions]
       );
   });
@@ -90,9 +120,12 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
   describe("Reading ERC725's account storage", () => {
     it("_getAllowedAddresses(...) - Should return list of owner's allowed addresses", async () => {
-      let bytesResult = await keyManagerHelper.getAllowedAddresses(owner.address, {
-        from: owner.address,
-      });
+      let bytesResult = await keyManagerHelper.getAllowedAddresses(
+        owner.address,
+        {
+          from: owner.address,
+        }
+      );
       let allowedOwnerAddresses = abiCoder.decode(["address[]"], bytesResult);
       let CheckSummedAllowedAddress = [
         await ethers.utils.getAddress(allowedAddresses[0]),
@@ -106,21 +139,28 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
       expect([bytesResult]).toEqual(["0x"]);
 
       let resultFromAccount = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] + app.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+          app.address.substr(2),
       ]);
       expect(resultFromAccount).toEqual(["0x"]);
     });
 
     it("_getAllowedFunctions(...) - Should return list of owner's allowed functions", async () => {
-      let bytesResult = await keyManagerHelper.callStatic.getAllowedFunctions(owner.address);
+      let bytesResult = await keyManagerHelper.callStatic.getAllowedFunctions(
+        owner.address
+      );
       let allowedOwnerFunctions = abiCoder.decode(["bytes4[]"], bytesResult);
       let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
       expect(allowedOwnerFunctions).toEqual([allowedFunctions]);
 
       let resultFromAccount = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] + owner.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+          owner.address.substr(2),
       ]);
-      let decodedResultFromAccount = abiCoder.decode(["bytes4[]"], resultFromAccount[0]);
+      let decodedResultFromAccount = abiCoder.decode(
+        ["bytes4[]"],
+        resultFromAccount[0]
+      );
 
       expect(decodedResultFromAccount).toEqual([allowedFunctions]);
 
@@ -133,7 +173,8 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
       expect([bytesResult]).toEqual(["0x"]);
 
       let resultFromAccount = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] + app.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+          app.address.substr(2),
       ]);
       expect(resultFromAccount).toEqual(["0x"]);
     });
@@ -141,7 +182,9 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
   describe("Reading User's permissions", () => {
     it("Should return 0xffff... for owner", async () => {
-      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual(ALL_PERMISSIONS_SET); // ALL_PERMISSIONS = "0xffff..."
+      expect(await keyManagerHelper.getUserPermissions(owner.address)).toEqual(
+        ALL_PERMISSIONS_SET
+      ); // ALL_PERMISSIONS = "0xffff..."
     });
 
     it("Should return 0x....0c for app", async () => {
@@ -153,7 +196,9 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
   describe("Testing allowed permissions", () => {
     it("Should return true for operation setData", async () => {
-      let appPermissions = await keyManagerHelper.getUserPermissions(app.address);
+      let appPermissions = await keyManagerHelper.getUserPermissions(
+        app.address
+      );
       expect(
         await keyManagerHelper.isAllowed(
           ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
@@ -165,18 +210,27 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
   describe("Testing allowed addresses / function", () => {
     it("_verifyAllowedAddress(...) - Should not revert for address listed in owner's allowed addresses list", async () => {
-      await keyManagerHelper.verifyIfAllowedAddress(owner.address, allowedAddresses[0]);
+      await keyManagerHelper.verifyIfAllowedAddress(
+        owner.address,
+        allowedAddresses[0]
+      );
     });
 
     it("_verifyAllowedAddress(...) - Should revert for address not listed in owner's allowed addresses list", async () => {
-      await expect(
-        keyManagerHelper.verifyIfAllowedAddress(
-          owner.address,
-          "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
-        )
-      ).toBeRevertedWith(
-        "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
+      let disallowedAddress = ethers.utils.getAddress(
+        "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
       );
+
+      try {
+        await keyManagerHelper.verifyIfAllowedAddress(
+          owner.address,
+          disallowedAddress
+        );
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedAddressError(owner.address, disallowedAddress)
+        );
+      }
     });
 
     it("_verifyAllowedAddress(...) - Should not revert when user has no address listed (= all addresses whitelisted)", async () => {
@@ -212,15 +266,27 @@ describe("KeyManager", () => {
     externalApp = new ethers.Wallet(DUMMY_PRIVATEKEY, ethers.provider);
     newUser = accounts[5];
 
-    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(
+      universalProfile.address
+    );
     targetContract = await new TargetContract__factory(owner).deploy();
-    maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(keyManager.address);
+    maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(
+      keyManager.address
+    );
 
     allowedAddresses = getRandomAddresses(2);
 
-    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
-    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
+    let appPermissions = ethers.utils.hexZeroPad(
+      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+      32
+    );
+    let userPermissions = ethers.utils.hexZeroPad(
+      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+      32
+    );
     let externalAppPermissions = ethers.utils.hexZeroPad(
       PERMISSIONS.SETDATA + PERMISSIONS.CALL,
       32
@@ -234,11 +300,16 @@ describe("KeyManager", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + user.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + externalApp.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newUser.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            owner.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            app.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            user.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            externalApp.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            newUser.address.substr(2),
         ],
         [
           ALL_PERMISSIONS_SET,
@@ -253,12 +324,20 @@ describe("KeyManager", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] + app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] + externalApp.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+            app.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+            externalApp.address.substr(2),
         ],
         [
-          abiCoder.encode(["address[]"], [[targetContract.address, user.address]]),
-          abiCoder.encode(["address[]"], [[targetContract.address, user.address]]),
+          abiCoder.encode(
+            ["address[]"],
+            [[targetContract.address, user.address]]
+          ),
+          abiCoder.encode(
+            ["address[]"],
+            [[targetContract.address, user.address]]
+          ),
         ]
       );
 
@@ -267,12 +346,20 @@ describe("KeyManager", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] + app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] + externalApp.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+            app.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+            externalApp.address.substr(2),
         ],
         [
-          abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]]),
-          abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]]),
+          abiCoder.encode(
+            ["bytes4[]"],
+            [[targetContract.interface.getSighash("setName(string)")]]
+          ),
+          abiCoder.encode(
+            ["bytes4[]"],
+            [[targetContract.interface.getSighash("setName(string)")]]
+          ),
         ]
       );
 
@@ -312,7 +399,9 @@ describe("KeyManager", () => {
     ];
 
     addressPermissions.map(async (element) => {
-      await universalProfile.connect(owner).setData([element.key], [element.value]);
+      await universalProfile
+        .connect(owner)
+        .setData([element.key], [element.value]);
     });
 
     // switch account management to KeyManager
@@ -326,21 +415,25 @@ describe("KeyManager", () => {
   });
 
   it("Should support LSP6", async () => {
-    let result = await keyManager.callStatic.supportsInterface(INTERFACE_IDS.LSP6);
+    let result = await keyManager.callStatic.supportsInterface(
+      INTERFACE_IDS.LSP6
+    );
     expect(result).toBeTruthy();
   });
 
   describe("> Verifying permissions", () => {
     it("ensures owner is still universalProfile's admin (=all permissions)", async () => {
       let [permissions] = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          owner.address.substr(2),
       ]);
       expect(permissions).toEqual(ALL_PERMISSIONS_SET);
     });
 
     it("App permission should be SETDATA + CALL ('0x...0c')", async () => {
       let [permissions] = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          app.address.substr(2),
       ]);
       expect(permissions).toEqual(
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
@@ -349,14 +442,20 @@ describe("KeyManager", () => {
 
     // check the array length
     it("Value should be 5 for key 'AddressPermissions[]'", async () => {
-      let [result] = await universalProfile.getData([ERC725YKeys.LSP6["AddressPermissions[]"]]);
+      let [result] = await universalProfile.getData([
+        ERC725YKeys.LSP6["AddressPermissions[]"],
+      ]);
       expect(result).toEqual(addressPermissions[0].value);
     });
 
     // check array indexes individually
     for (let ii = 1; ii <= 5; ii++) {
-      it(`Checking address (=value) stored at AddressPermissions[${ii - 1}]'`, async () => {
-        let [result] = await universalProfile.getData([addressPermissions[ii].key]);
+      it(`Checking address (=value) stored at AddressPermissions[${
+        ii - 1
+      }]'`, async () => {
+        let [result] = await universalProfile.getData([
+          addressPermissions[ii].key,
+        ]);
         // raw bytes are stored lower case, so we need to checksum the address retrieved
         result = ethers.utils.getAddress(result);
         expect(result).toEqual(addressPermissions[ii].value);
@@ -366,66 +465,90 @@ describe("KeyManager", () => {
 
   describe("> testing permissions: CALL, DEPLOY, STATICCALL & DELEGATECALL", () => {
     it("Owner should be allowed to make a CALL", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        allowedAddresses[0],
-        0,
-        DUMMY_PAYLOAD,
-      ]);
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, allowedAddresses[0], 0, DUMMY_PAYLOAD]
+      );
 
-      let result = await keyManager.callStatic.execute(executePayload, { from: owner.address });
+      let result = await keyManager.callStatic.execute(executePayload, {
+        from: owner.address,
+      });
       expect(result).toBeTruthy();
     });
 
     it("App should be allowed to make a CALL", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContract.interface.encodeFunctionData("setName", ["Example"]),
-      ]);
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          targetContract.interface.encodeFunctionData("setName", ["Example"]),
+        ]
+      );
 
-      let executeResult = await keyManager.connect(app).callStatic.execute(executePayload);
+      let executeResult = await keyManager
+        .connect(app)
+        .callStatic.execute(executePayload);
       expect(executeResult).toBeTruthy();
     });
 
     it("App should not be allowed to make a STATICCALL", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.STATICCALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
-
-      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: not authorized to STATICCALL"
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.STATICCALL,
+          "0xcafecafecafecafecafecafecafecafecafecafe",
+          0,
+          DUMMY_PAYLOAD,
+        ]
       );
+
+      try {
+        await keyManager.connect(app).execute(executePayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError("STATICCALL", app.address)
+        );
+      }
     });
 
     it("DELEGATECALL via UP should be disallowed", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.DELEGATECALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.DELEGATECALL,
+          "0xcafecafecafecafecafecafecafecafecafecafe",
+          0,
+          DUMMY_PAYLOAD,
+        ]
+      );
 
-      await expect(keyManager.connect(owner).execute(executePayload)).toBeRevertedWith(
+      await expect(
+        keyManager.connect(owner).execute(executePayload)
+      ).toBeRevertedWith(
         "KeyManager:_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
       );
     });
 
     it("App should not be allowed to DEPLOY a contract", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CREATE,
-        "0x0000000000000000000000000000000000000000",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
-
-      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: not authorized to DEPLOY"
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CREATE,
+          "0x0000000000000000000000000000000000000000",
+          0,
+          DUMMY_PAYLOAD,
+        ]
       );
+
+      try {
+        await keyManager.connect(app).execute(executePayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError("CREATE", app.address)
+        );
+      }
     });
   });
 
@@ -433,47 +556,71 @@ describe("KeyManager", () => {
     let provider = ethers.provider;
 
     it("Owner should be allowed to transfer LYX to app", async () => {
-      let initialAccountBalance = await provider.getBalance(universalProfile.address);
+      let initialAccountBalance = await provider.getBalance(
+        universalProfile.address
+      );
       let initialAppBalance = await provider.getBalance(app.address);
 
-      let transferPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        app.address,
-        ethers.utils.parseEther("3"),
-        EMPTY_PAYLOAD,
-      ]);
+      let transferPayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          app.address,
+          ethers.utils.parseEther("3"),
+          EMPTY_PAYLOAD,
+        ]
+      );
 
       let callResult = await keyManager.callStatic.execute(transferPayload);
       expect(callResult).toBeTruthy();
 
       await keyManager.execute(transferPayload);
 
-      let newAccountBalance = await provider.getBalance(universalProfile.address);
-      expect(parseInt(newAccountBalance)).toBeLessThan(parseInt(initialAccountBalance));
+      let newAccountBalance = await provider.getBalance(
+        universalProfile.address
+      );
+      expect(parseInt(newAccountBalance)).toBeLessThan(
+        parseInt(initialAccountBalance)
+      );
 
       let newAppBalance = await provider.getBalance(app.address);
-      expect(parseInt(newAppBalance)).toBeGreaterThan(parseInt(initialAppBalance));
+      expect(parseInt(newAppBalance)).toBeGreaterThan(
+        parseInt(initialAppBalance)
+      );
     });
 
     it("App should not be allowed to transfer LYX", async () => {
-      let initialAccountBalance = await provider.getBalance(universalProfile.address);
+      let initialAccountBalance = await provider.getBalance(
+        universalProfile.address
+      );
       let initialUserBalance = await provider.getBalance(user.address);
 
-      let transferPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        user.address,
-        ethers.utils.parseEther("3"),
-        EMPTY_PAYLOAD,
-      ]);
-
-      await expect(keyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: not authorized to TRANSFERVALUE"
+      let transferPayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          user.address,
+          ethers.utils.parseEther("3"),
+          EMPTY_PAYLOAD,
+        ]
       );
 
-      let newAccountBalance = await provider.getBalance(universalProfile.address);
+      try {
+        await keyManager.connect(app).execute(transferPayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError("TRANSFERVALUE", app.address)
+        );
+      }
+
+      let newAccountBalance = await provider.getBalance(
+        universalProfile.address
+      );
       let newUserBalance = await provider.getBalance(user.address);
 
-      expect(initialAccountBalance.toString()).toBe(newAccountBalance.toString());
+      expect(initialAccountBalance.toString()).toBe(
+        newAccountBalance.toString()
+      );
       expect(initialUserBalance.toString()).toBe(newUserBalance.toString());
     });
   });
@@ -490,28 +637,34 @@ describe("KeyManager", () => {
       let result = await keyManager.callStatic.execute(payload);
       expect(result).toBeTruthy();
 
-      let secondPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
+      let secondPayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+          0,
+          DUMMY_PAYLOAD,
+        ]
+      );
 
       let secondResult = await keyManager.callStatic.execute(secondPayload);
       expect(secondResult).toBeTruthy();
     });
 
     it("App should be allowed to interact with `TargetContract`", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", ["Test"]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["Test"]
+      );
 
-      let keyManagerPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let keyManagerPayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      let result = await keyManager.connect(app).callStatic.execute(keyManagerPayload);
+      let result = await keyManager
+        .connect(app)
+        .callStatic.execute(keyManagerPayload);
       expect(result).toBeTruthy();
     });
 
@@ -528,16 +681,23 @@ describe("KeyManager", () => {
     });
 
     it("App should not be allowed to interact with `0xdeadbeef...` (not allowed address)", async () => {
+      let disallowedAddress = ethers.utils.getAddress(
+        "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+      );
       let payload = universalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
-        "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+        disallowedAddress,
         0,
         DUMMY_PAYLOAD,
       ]);
 
-      await expect(keyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
-      );
+      try {
+        await keyManager.connect(app).execute(payload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedAddressError(app.address, disallowedAddress)
+        );
+      }
     });
   });
 
@@ -550,23 +710,32 @@ describe("KeyManager", () => {
         "0xbeefbeef123456780000000000",
       ]);
 
-      await expect(keyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyAllowedFunction: not authorised to run this function"
-      );
+      try {
+        await keyManager.connect(app).execute(payload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedFunctionError(app.address, "0xbeefbeef")
+        );
+      }
     });
   });
 
   describe("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", () => {
     it("Should pass if no addresses / functions are stored for a user", async () => {
       let randomPayload = "0xfafbfcfd1201456875dd";
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        randomPayload,
-      ]);
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          "0xcafecafecafecafecafecafecafecafecafecafe",
+          0,
+          randomPayload,
+        ]
+      );
 
-      let callResult = await keyManager.connect(user).callStatic.execute(executePayload);
+      let callResult = await keyManager
+        .connect(user)
+        .callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
     });
   });
@@ -576,36 +745,46 @@ describe("KeyManager", () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        [newName]
+      );
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      let callResult = await keyManager.connect(owner).callStatic.execute(executePayload);
+      let callResult = await keyManager
+        .connect(owner)
+        .callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
       await keyManager.connect(owner).execute(executePayload);
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
-      expect(result).toEqual(newName, `name variable in TargetContract should now be ${newName}`);
+      expect(result).toEqual(
+        newName,
+        `name variable in TargetContract should now be ${newName}`
+      );
     });
 
     it("App should be allowed to set `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        [newName]
+      );
 
-      let callResult = await keyManager.connect(app).callStatic.execute(executePayload);
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
+
+      let callResult = await keyManager
+        .connect(app)
+        .callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
       await keyManager.connect(app).execute(executePayload);
@@ -618,17 +797,18 @@ describe("KeyManager", () => {
       let initialNumber = await targetContract.callStatic.getNumber();
       let newNumber = 18;
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [
-        newNumber,
-      ]);
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setNumber",
+        [newNumber]
+      );
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      let callResult = await keyManager.connect(owner).callStatic.execute(executePayload);
+      let callResult = await keyManager
+        .connect(owner)
+        .callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
 
       await keyManager.connect(owner).execute(executePayload);
@@ -637,29 +817,39 @@ describe("KeyManager", () => {
         parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
           ethers.BigNumber.from(initialNumber).toNumber()
       );
-      expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(newNumber);
+      expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(
+        newNumber
+      );
     });
 
     it("App should not be allowed to set `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
       let newNumber = 18;
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [
-        newNumber,
-      ]);
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
-
-      await expect(keyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_verifyAllowedFunction: not authorised to run this function"
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setNumber",
+        [newNumber]
+      );
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
       );
 
+      try {
+        await keyManager.connect(app).execute(executePayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedFunctionError(
+            app.address,
+            targetContract.interface.getSighash("setNumber")
+          )
+        );
+      }
+
       let result = await targetContract.callStatic.getNumber();
-      expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10) !== newNumber);
+      expect(
+        parseInt(ethers.BigNumber.from(result).toNumber(), 10) !== newNumber
+      );
       expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(
         ethers.BigNumber.from(initialNumber).toNumber()
       );
@@ -668,15 +858,16 @@ describe("KeyManager", () => {
     it("Should return `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("getName");
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getName");
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      let result = await keyManager.connect(owner).callStatic.execute(executePayload);
+      let result = await keyManager
+        .connect(owner)
+        .callStatic.execute(executePayload);
 
       let [decodedResult] = abiCoder.decode(["string"], result);
       expect(decodedResult).toEqual(initialName);
@@ -685,15 +876,16 @@ describe("KeyManager", () => {
     it("Should return `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("getNumber");
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getNumber");
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      let result = await keyManager.connect(owner).callStatic.execute(executePayload);
+      let result = await keyManager
+        .connect(owner)
+        .callStatic.execute(executePayload);
 
       let [decodedResult] = abiCoder.decode(["uint256"], result);
       expect(decodedResult).toEqual(initialNumber);
@@ -710,18 +902,21 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: invalid operation type"
+        "KeyManager:_extractPermissionFromOperation: invalid operation type"
       );
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
-      await expect(keyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
+      await expect(
+        keyManager.execute("0xbad000000000000000000000000bad")
+      ).toBeRevertedWith(
         "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
       );
     });
 
     it("Should revert with a revert reason string from TargetContract", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData("revertCall");
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("revertCall");
 
       let payload = universalProfile.interface.encodeFunctionData("execute", [
         OPERATIONS.CALL,
@@ -751,9 +946,13 @@ describe("KeyManager", () => {
         [staticAddress, nonce, payload]
       );
 
-      let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+      let signature = await externalApp.signMessage(
+        ethers.utils.arrayify(hash)
+      );
 
-      expect(hash).toEqual("0xb491e88483d56b1143c783cb4b60a85632f831e36147670bffc61bc57d7dad86");
+      expect(hash).toEqual(
+        "0xb491e88483d56b1143c783cb4b60a85632f831e36147670bffc61bc57d7dad86"
+      );
       // expect: 0xb491e88483d56b1143c783cb4b60a85632f831e36147670bffc61bc57d7dad86
       expect(signature).toEqual(
         "0x82544c08b894ebeb5c2beffd586e48860a39e11ea7e3bf9cf0c66062470b72695724b8a85902cb5433945cca7d0eeae2eef2265fac2e9e730ecd68df6dda9a181c"
@@ -761,24 +960,31 @@ describe("KeyManager", () => {
     });
 
     it("should execute a signed tx successfully", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-        "Another name",
-      ]);
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["Another name"]
+      );
+      let nonce = await keyManager.callStatic.getNonce(
+        externalApp.address,
+        channelId
+      );
 
-      let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executeRelayCallPayload =
+        universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
         [keyManager.address, nonce, executeRelayCallPayload]
       );
 
-      let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+      let signature = await externalApp.signMessage(
+        ethers.utils.arrayify(hash)
+      );
 
       let result = await keyManager.callStatic.executeRelayCall(
         keyManager.address,
@@ -792,22 +998,31 @@ describe("KeyManager", () => {
     it("Should allow to `setName` via `executeRelay`", async () => {
       let newName = "Dagobah";
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        [newName]
+      );
+      let nonce = await keyManager.callStatic.getNonce(
+        externalApp.address,
+        channelId
+      );
 
-      let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executeRelayCallPayload =
+        universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
         [keyManager.address, nonce, executeRelayCallPayload]
       );
 
-      let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+      let signature = await externalApp.signMessage(
+        ethers.utils.arrayify(hash)
+      );
 
       let result = await keyManager.callStatic.executeRelayCall(
         keyManager.address,
@@ -830,26 +1045,47 @@ describe("KeyManager", () => {
     it("Should not allow to `setNumber` via `executeRelay`", async () => {
       let currentNumber = await targetContract.callStatic.getNumber();
 
-      let nonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [2354]);
+      let nonce = await keyManager.callStatic.getNonce(
+        externalApp.address,
+        channelId
+      );
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setNumber",
+        [2354]
+      );
 
-      let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executeRelayCallPayload =
+        universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
         [keyManager.address, nonce, executeRelayCallPayload]
       );
 
-      let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+      let signature = await externalApp.signMessage(
+        ethers.utils.arrayify(hash)
+      );
 
-      await expect(
-        keyManager.executeRelayCall(keyManager.address, nonce, executeRelayCallPayload, signature)
-      ).toBeRevertedWith("KeyManager:_verifyAllowedFunction: not authorised to run this function");
+      try {
+        await keyManager.executeRelayCall(
+          keyManager.address,
+          nonce,
+          executeRelayCallPayload,
+          signature
+        );
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedFunctionError(
+            externalApp.address,
+            targetContract.interface.getSighash("setNumber")
+          )
+        );
+      }
 
       let endResult = await targetContract.callStatic.getNumber();
       expect(endResult.toString()).toEqual(currentNumber.toString());
@@ -861,7 +1097,10 @@ describe("KeyManager", () => {
     let latestNonce;
 
     beforeEach(async () => {
-      latestNonce = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+      latestNonce = await keyManager.callStatic.getNonce(
+        externalApp.address,
+        channelId
+      );
     });
 
     it.each([
@@ -872,22 +1111,26 @@ describe("KeyManager", () => {
     ])(
       "$callNb call > nonce should increment from $latestNonce to $expectedNonce",
       async ({ callNb, newName, expectedNonce }) => {
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
+        );
+        let executeRelayCallPayload =
+          universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [keyManager.address, latestNonce, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await keyManager.executeRelayCall(
           keyManager.address,
@@ -897,7 +1140,10 @@ describe("KeyManager", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, 0);
+        let nonceAfter = await keyManager.callStatic.getNonce(
+          externalApp.address,
+          0
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(latestNonce.add(1)); // ensure the nonce incremented
@@ -912,26 +1158,35 @@ describe("KeyManager", () => {
       let channelId = 1;
       let names = ["Fabian", "Yamen"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+      it(`First call > nonce should increment from ${nonces[0]} to ${
+        nonces[0] + 1
+      }`, async () => {
+        let nonceBefore = await keyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
+        );
+        let executeRelayCallPayload =
+          universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [keyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await keyManager.executeRelayCall(
           keyManager.address,
@@ -941,32 +1196,44 @@ describe("KeyManager", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await keyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+      it(`Second call > nonce should increment from ${nonces[1]} to ${
+        nonces[1] + 1
+      }`, async () => {
+        let nonceBefore = await keyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
+        );
+        let executeRelayCallPayload =
+          universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [keyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await keyManager.executeRelayCall(
           keyManager.address,
@@ -976,7 +1243,10 @@ describe("KeyManager", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await keyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -987,26 +1257,35 @@ describe("KeyManager", () => {
       let channelId = 2;
       let names = ["Hugo", "Reto"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+      it(`First call > nonce should increment from ${nonces[0]} to ${
+        nonces[0] + 1
+      }`, async () => {
+        let nonceBefore = await keyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
+        );
+        let executeRelayCallPayload =
+          universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [keyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await keyManager.executeRelayCall(
           keyManager.address,
@@ -1016,32 +1295,44 @@ describe("KeyManager", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await keyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+      it(`Second call > nonce should increment from ${nonces[1]} to ${
+        nonces[1] + 1
+      }`, async () => {
+        let nonceBefore = await keyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
+        );
+        let executeRelayCallPayload =
+          universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [keyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await keyManager.executeRelayCall(
           keyManager.address,
@@ -1051,7 +1342,10 @@ describe("KeyManager", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await keyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1062,26 +1356,35 @@ describe("KeyManager", () => {
       let channelId = 3;
       let names = ["Jean", "Lenny"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+      it(`First call > nonce should increment from ${nonces[0]} to ${
+        nonces[0] + 1
+      }`, async () => {
+        let nonceBefore = await keyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
+        );
+        let executeRelayCallPayload =
+          universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [keyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await keyManager.executeRelayCall(
           keyManager.address,
@@ -1091,32 +1394,44 @@ describe("KeyManager", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await keyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+      it(`Second call > nonce should increment from ${nonces[1]} to ${
+        nonces[1] + 1
+      }`, async () => {
+        let nonceBefore = await keyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
+        );
+        let executeRelayCallPayload =
+          universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [keyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await keyManager.executeRelayCall(
           keyManager.address,
@@ -1126,7 +1441,10 @@ describe("KeyManager", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await keyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1136,25 +1454,32 @@ describe("KeyManager", () => {
     describe("channel 15", () => {
       let channelId = 15;
       it("First call > nonce should increment from 0 to 1", async () => {
-        let nonceBefore = await keyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await keyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = "Lukasz";
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
+        );
+        let executeRelayCallPayload =
+          universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [keyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await keyManager.executeRelayCall(
           keyManager.address,
@@ -1164,7 +1489,10 @@ describe("KeyManager", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await keyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await keyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1177,36 +1505,43 @@ describe("KeyManager", () => {
     let channelId = 0;
 
     it("Should revert because caller has no permissions set", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-        "New Contract Name",
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["New Contract Name"]
+      );
 
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      await expect(keyManager.connect(accounts[6]).execute(executePayload)).toBeRevertedWith(
+      await expect(
+        keyManager.connect(accounts[6]).execute(executePayload)
+      ).toBeRevertedWith(
         "KeyManager:_getAddressPermissions: no permissions set for this address"
       );
     });
 
     it("Should revert if STATICCALL tries to change state", async () => {
       let initialValue = targetContract.callStatic.getName();
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-        "Another Contract Name",
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["Another Contract Name"]
+      );
 
-      let executePayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.STATICCALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.STATICCALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]
+      );
 
-      await expect(keyManager.connect(owner).execute(executePayload)).toBeReverted();
+      await expect(
+        keyManager.connect(owner).execute(executePayload)
+      ).toBeReverted();
 
       let newValue = targetContract.callStatic.getName();
 
@@ -1217,41 +1552,55 @@ describe("KeyManager", () => {
     it("Permissions should prevent ReEntrancy and stop contract from re-calling and re-transfering ETH.", async () => {
       // we assume the owner is not aware that some malicious code is present at the recipient address (the recipient being a smart contract)
       // the owner simply aims to transfer 1 ether from his ERC725 Account to the recipient address (= the malicious contract)
-      let transferPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        maliciousContract.address,
-        ONE_ETH,
-        EMPTY_PAYLOAD,
-      ]);
+      let transferPayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, maliciousContract.address, ONE_ETH, EMPTY_PAYLOAD]
+      );
 
-      let executePayload = keyManager.interface.encodeFunctionData("execute", [transferPayload]);
+      let executePayload = keyManager.interface.encodeFunctionData("execute", [
+        transferPayload,
+      ]);
       // load the malicious payload, that will be executed in the fallback function (every time the contract receives LYX)
       await maliciousContract.loadPayload(executePayload);
 
-      let initialAccountBalance = await provider.getBalance(universalProfile.address);
-      let initialAttackerBalance = await provider.getBalance(maliciousContract.address);
+      let initialAccountBalance = await provider.getBalance(
+        universalProfile.address
+      );
+      let initialAttackerBalance = await provider.getBalance(
+        maliciousContract.address
+      );
 
       // try to drain funds via ReEntrancy
       await keyManager.connect(owner).execute(transferPayload);
 
-      let newAccountBalance = await provider.getBalance(universalProfile.address);
-      let newAttackerBalance = await provider.getBalance(maliciousContract.address);
+      let newAccountBalance = await provider.getBalance(
+        universalProfile.address
+      );
+      let newAttackerBalance = await provider.getBalance(
+        maliciousContract.address
+      );
 
       expect(parseInt(newAccountBalance.toString())).toEqual(
         initialAccountBalance.toString() - ONE_ETH.toString()
       );
-      expect(parseInt(newAttackerBalance.toString())).toEqual(parseInt(ONE_ETH.toString()));
+      expect(parseInt(newAttackerBalance.toString())).toEqual(
+        parseInt(ONE_ETH.toString())
+      );
     });
 
     it("Replay Attack should fail because of invalid nonce", async () => {
-      let nonce = await keyManager.callStatic.getNonce(newUser.address, channelId);
+      let nonce = await keyManager.callStatic.getNonce(
+        newUser.address,
+        channelId
+      );
 
-      let executeRelayCallPayload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        maliciousContract.address,
-        ONE_ETH,
-        DUMMY_PAYLOAD,
-      ]);
+      let executeRelayCallPayload =
+        universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          maliciousContract.address,
+          ONE_ETH,
+          DUMMY_PAYLOAD,
+        ]);
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
@@ -1278,7 +1627,12 @@ describe("KeyManager", () => {
 
       // 2nd call = replay attack
       await expect(
-        keyManager.executeRelayCall(executeRelayCallPayload, keyManager.address, nonce, signature)
+        keyManager.executeRelayCall(
+          executeRelayCallPayload,
+          keyManager.address,
+          nonce,
+          signature
+        )
       ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");
     });
   });
@@ -1287,7 +1641,9 @@ describe("KeyManager", () => {
 describe("SETDATA", () => {
   let accounts: SignerWithAddress[] = [];
 
-  let owner: SignerWithAddress, canSetData: SignerWithAddress, cannotSetData: SignerWithAddress;
+  let owner: SignerWithAddress,
+    canSetData: SignerWithAddress,
+    cannotSetData: SignerWithAddress;
 
   let universalProfile: UniversalProfile, keyManager: LSP6KeyManager;
 
@@ -1298,16 +1654,23 @@ describe("SETDATA", () => {
     canSetData = accounts[1];
     cannotSetData = accounts[2];
 
-    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(
+      universalProfile.address
+    );
 
     await universalProfile
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + canSetData.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + cannotSetData.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            owner.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            canSetData.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            cannotSetData.address.substr(2),
         ],
         [
           ALL_PERMISSIONS_SET,
@@ -1322,10 +1685,17 @@ describe("SETDATA", () => {
   describe("when setting one key", () => {
     describe("For UP owner", () => {
       it("should pass", async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key"));
-        let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Hello Lukso!"));
+        let key = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("My First Key")
+        );
+        let value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("Hello Lukso!")
+        );
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          [key],
+          [value],
+        ]);
 
         await keyManager.connect(owner).execute(payload);
         let [fetchedResult] = await universalProfile.callStatic.getData([key]);
@@ -1335,10 +1705,17 @@ describe("SETDATA", () => {
 
     describe("For address that has permission SETDATA", () => {
       it("should pass", async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key"));
-        let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Hello Lukso!"));
+        let key = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("My First Key")
+        );
+        let value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("Hello Lukso!")
+        );
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          [key],
+          [value],
+        ]);
 
         await keyManager.connect(canSetData).execute(payload);
         let [fetchedResult] = await universalProfile.callStatic.getData([key]);
@@ -1348,14 +1725,25 @@ describe("SETDATA", () => {
 
     describe("For address that doesn't have permission SETDATA", () => {
       it("should not allow", async () => {
-        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key"));
-        let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Hello Lukso!"));
-
-        let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
-
-        await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
-          "KeyManager:_verifyCanSetData: not authorized to SETDATA"
+        let key = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("My First Key")
         );
+        let value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("Hello Lukso!")
+        );
+
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          [key],
+          [value],
+        ]);
+
+        try {
+          await keyManager.connect(cannotSetData).execute(payload);
+        } catch (error) {
+          expect(error.message).toMatch(
+            NotAuthorisedError("SETDATA", cannotSetData.address)
+          );
+        }
       });
     });
   });
@@ -1374,7 +1762,10 @@ describe("SETDATA", () => {
 
         let [keys, values] = generateKeysAndValues(elements);
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
         await keyManager.connect(owner).execute(payload);
         let fetchedResult = await universalProfile.callStatic.getData(keys);
@@ -1401,7 +1792,10 @@ describe("SETDATA", () => {
           values.push(data.value);
         });
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
         await keyManager.connect(owner).execute(payload);
         let fetchedResult = await universalProfile.callStatic.getData(keys);
@@ -1419,7 +1813,8 @@ describe("SETDATA", () => {
             "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
             "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
           ],
-          LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+          LSP1UniversalReceiverDelegate:
+            "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
         };
 
         let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
@@ -1433,7 +1828,10 @@ describe("SETDATA", () => {
           values.push(data.value);
         });
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
         await keyManager.connect(owner).execute(payload);
         let fetchedResult = await universalProfile.callStatic.getData(keys);
@@ -1454,7 +1852,10 @@ describe("SETDATA", () => {
 
         let [keys, values] = generateKeysAndValues(elements);
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
         await keyManager.connect(canSetData).execute(payload);
         let fetchedResult = await universalProfile.callStatic.getData(keys);
@@ -1481,7 +1882,10 @@ describe("SETDATA", () => {
           values.push(data.value);
         });
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
         await keyManager.connect(canSetData).execute(payload);
         let fetchedResult = await universalProfile.callStatic.getData(keys);
@@ -1499,7 +1903,8 @@ describe("SETDATA", () => {
             "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
             "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
           ],
-          LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+          LSP1UniversalReceiverDelegate:
+            "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
         };
 
         let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
@@ -1513,7 +1918,10 @@ describe("SETDATA", () => {
           values.push(data.value);
         });
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
         await keyManager.connect(canSetData).execute(payload);
         let fetchedResult = await universalProfile.callStatic.getData(keys);
@@ -1534,11 +1942,18 @@ describe("SETDATA", () => {
 
         let [keys, values] = generateKeysAndValues(elements);
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
-        await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
-          "KeyManager:_verifyCanSetData: not authorized to SETDATA"
-        );
+        try {
+          await keyManager.connect(cannotSetData).execute(payload);
+        } catch (error) {
+          expect(error.message).toMatch(
+            NotAuthorisedError("SETDATA", cannotSetData.address)
+          );
+        }
       });
 
       it("(should fail): adding 10 LSP3IssuedAssets", async () => {
@@ -1557,11 +1972,18 @@ describe("SETDATA", () => {
           values.push(data.value);
         });
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
-        await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
-          "KeyManager:_verifyCanSetData: not authorized to SETDATA"
-        );
+        try {
+          await keyManager.connect(cannotSetData).execute(payload);
+        } catch (error) {
+          expect(error.message).toMatch(
+            NotAuthorisedError("SETDATA", cannotSetData.address)
+          );
+        }
       });
 
       it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
@@ -1575,7 +1997,8 @@ describe("SETDATA", () => {
             "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
             "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
           ],
-          LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+          LSP1UniversalReceiverDelegate:
+            "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
         };
 
         let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
@@ -1589,11 +2012,18 @@ describe("SETDATA", () => {
           values.push(data.value);
         });
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          keys,
+          values,
+        ]);
 
-        await expect(keyManager.connect(cannotSetData).execute(payload)).toBeRevertedWith(
-          "KeyManager:_verifyCanSetData: not authorized to SETDATA"
-        );
+        try {
+          await keyManager.connect(cannotSetData).execute(payload);
+        } catch (error) {
+          expect(error.message).toMatch(
+            NotAuthorisedError("SETDATA", cannotSetData.address)
+          );
+        }
       });
     });
   });
@@ -1619,18 +2049,25 @@ describe("CHANGE / ADD PERMISSIONS", () => {
     bob = accounts[3];
     zeroBytes = accounts[4];
 
-    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(
+      universalProfile.address
+    );
 
     await universalProfile.connect(owner).setData(
       [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          owner.address.substr(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
           canOnlyAddPermissions.address.substr(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
           canOnlyChangePermissions.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + zeroBytes.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          bob.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          zeroBytes.address.substr(2),
       ],
       [
         ALL_PERMISSIONS_SET,
@@ -1650,7 +2087,8 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         let newControllerKey = new ethers.Wallet.createRandom();
 
         let key =
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKey.address.substr(2);
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKey.address.substr(2);
 
         let payload = universalProfile.interface.encodeFunctionData("setData", [
           [key],
@@ -1659,10 +2097,14 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
         await keyManager.connect(owner).execute(payload);
         let [fetchedResult] = await universalProfile.callStatic.getData([key]);
-        expect(fetchedResult).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA));
+        expect(fetchedResult).toEqual(
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA)
+        );
       });
       it("should be allowed to change permissions", async () => {
-        let key = ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2);
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          bob.address.substr(2);
 
         let payload = universalProfile.interface.encodeFunctionData("setData", [
           [key],
@@ -1671,7 +2113,9 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
         await keyManager.connect(owner).execute(payload);
         let [fetchedResult] = await universalProfile.callStatic.getData([key]);
-        expect(fetchedResult).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA));
+        expect(fetchedResult).toEqual(
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA)
+        );
       });
     });
 
@@ -1680,7 +2124,8 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         let newAddress = new ethers.Wallet.createRandom();
 
         let key =
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newAddress.address.substr(2);
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newAddress.address.substr(2);
 
         let payload = universalProfile.interface.encodeFunctionData("setData", [
           [key],
@@ -1689,21 +2134,35 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
         await keyManager.connect(canOnlyAddPermissions).execute(payload);
         let [fetchedResult] = await universalProfile.callStatic.getData([key]);
-        expect(fetchedResult).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA));
+        expect(fetchedResult).toEqual(
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA)
+        );
       });
       it("should not be allowed to change permissions", async () => {
         // trying to set all permissions for itself
-        let maliciousPayload = universalProfile.interface.encodeFunctionData("setData", [
+        let maliciousPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
           [
-            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
-              canOnlyAddPermissions.address.substr(2),
-          ],
-          [ALL_PERMISSIONS_SET],
-        ]);
+            [
+              ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+                canOnlyAddPermissions.address.substr(2),
+            ],
+            [ALL_PERMISSIONS_SET],
+          ]
+        );
 
-        await expect(
-          keyManager.connect(canOnlyAddPermissions).execute(maliciousPayload)
-        ).toBeRevertedWith("KeyManager:_verifyCanSetData: not authorized to CHANGEPERMISSIONS");
+        try {
+          await keyManager
+            .connect(canOnlyAddPermissions)
+            .execute(maliciousPayload);
+        } catch (error) {
+          expect(error.message).toMatch(
+            NotAuthorisedError(
+              "CHANGEPERMISSIONS",
+              canOnlyAddPermissions.address
+            )
+          );
+        }
       });
     });
 
@@ -1713,24 +2172,42 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         // (so to then gain full control via `maliciousControllerKey`)
         let maliciousControllerKey = new ethers.Wallet.createRandom();
 
-        let maliciousPayload = await universalProfile.interface.encodeFunctionData("setData", [
-          [
-            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
-              maliciousControllerKey.address.substr(2),
-          ],
-          [ALL_PERMISSIONS_SET],
-        ]);
+        let maliciousPayload =
+          await universalProfile.interface.encodeFunctionData("setData", [
+            [
+              ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+                maliciousControllerKey.address.substr(2),
+            ],
+            [ALL_PERMISSIONS_SET],
+          ]);
 
-        await expect(
-          keyManager.connect(canOnlyChangePermissions).execute(maliciousPayload)
-        ).toBeRevertedWith("KeyManager:_verifyCanSetData: not authorized to ADDPERMISSIONS");
+        try {
+          await keyManager
+            .connect(canOnlyChangePermissions)
+            .execute(maliciousPayload);
+        } catch (error) {
+          expect(error.message).toMatch(
+            NotAuthorisedError(
+              "ADDPERMISSIONS",
+              canOnlyChangePermissions.address
+            )
+          );
+        }
       });
 
       it("should be allowed to change permissions", async () => {
-        let key = ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2);
-        let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          bob.address.substr(2);
+        let value = ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+          32
+        );
 
-        let payload = universalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+        let payload = universalProfile.interface.encodeFunctionData("setData", [
+          [key],
+          [value],
+        ]);
 
         await keyManager.connect(canOnlyChangePermissions).execute(payload);
         let [fetchedResult] = await universalProfile.callStatic.getData([key]);
@@ -1739,13 +2216,23 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
       it("should not be allowed to add permissions for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
         let payload = universalProfile.interface.encodeFunctionData("setData", [
-          [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + zeroBytes.address.substr(2)],
+          [
+            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+              zeroBytes.address.substr(2),
+          ],
           [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)],
         ]);
 
-        await expect(
-          keyManager.connect(canOnlyChangePermissions).execute(payload)
-        ).toBeRevertedWith("KeyManager:_verifyCanSetData: not authorized to ADDPERMISSIONS");
+        try {
+          await keyManager.connect(canOnlyChangePermissions).execute(payload);
+        } catch (error) {
+          expect(error.message).toMatch(
+            NotAuthorisedError(
+              "ADDPERMISSIONS",
+              canOnlyChangePermissions.address
+            )
+          );
+        }
       });
     });
   });
@@ -1774,24 +2261,38 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
     alice = accounts[4];
     bob = accounts[5];
 
-    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(
+      universalProfile.address
+    );
 
     await universalProfile.connect(owner).setData(
       [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          owner.address.substr(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
           canSetDataAndAddPermissions.address.substr(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
           canSetDataAndChangePermissions.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + canSetDataOnly.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + alice.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          canSetDataOnly.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          alice.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          bob.address.substr(2),
       ],
       [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.ADDPERMISSIONS, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CHANGEPERMISSIONS, 32),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.ADDPERMISSIONS,
+          32
+        ),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.CHANGEPERMISSIONS,
+          32
+        ),
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
         ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32), // example to test changing Alice permissions
         ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32), // example to test changing Bob permissions
@@ -1809,8 +2310,10 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyTwo.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyOne.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyTwo.address.substr(2),
       ];
 
       let values = [
@@ -1820,7 +2323,10 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
       await keyManager.connect(owner).execute(payload);
       let fetchedResult = await universalProfile.getData(keys);
@@ -1831,18 +2337,29 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + alice.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          alice.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          bob.address.substr(2),
       ];
 
       let values = [
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
       await keyManager.connect(owner).execute(payload);
       let fetchedResult = await universalProfile.getData(keys);
@@ -1855,18 +2372,26 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + alice.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyOne.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          alice.address.substr(2),
       ];
 
       let values = [
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
         ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
       await keyManager.connect(owner).execute(payload);
       let fetchedResult = await universalProfile.getData(keys);
@@ -1882,8 +2407,10 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyTwo.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyOne.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyTwo.address.substr(2),
       ];
 
       let values = [
@@ -1893,7 +2420,10 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
       await keyManager.connect(canSetDataAndAddPermissions).execute(payload);
       let fetchedResult = await universalProfile.getData(keys);
@@ -1904,22 +2434,40 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + alice.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          alice.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          bob.address.substr(2),
       ];
 
       let values = [
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
-      await expect(
-        keyManager.connect(canSetDataAndAddPermissions).execute(payload)
-      ).toBeRevertedWith("KeyManager:_verifyCanSetData: not authorized to CHANGEPERMISSIONS");
+      try {
+        await keyManager.connect(canSetDataAndAddPermissions).execute(payload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError(
+            "CHANGEPERMISSIONS",
+            canSetDataAndAddPermissions.address
+          )
+        );
+      }
     });
 
     it("(should fail): 2 x keys + (add 1 x new permission) + (change 1 x existing permission)", async () => {
@@ -1928,22 +2476,37 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + alice.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyOne.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          alice.address.substr(2),
       ];
 
       let values = [
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
         ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
-      await expect(
-        keyManager.connect(canSetDataAndAddPermissions).execute(payload)
-      ).toBeRevertedWith("KeyManager:_verifyCanSetData: not authorized to CHANGEPERMISSIONS");
+      try {
+        await keyManager.connect(canSetDataAndAddPermissions).execute(payload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError(
+            "CHANGEPERMISSIONS",
+            canSetDataAndAddPermissions.address
+          )
+        );
+      }
     });
   });
 
@@ -1955,8 +2518,10 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyTwo.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyOne.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyTwo.address.substr(2),
       ];
 
       let values = [
@@ -1966,29 +2531,50 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
-      await expect(
-        keyManager.connect(canSetDataAndChangePermissions).execute(payload)
-      ).toBeRevertedWith("KeyManager:_verifyCanSetData: not authorized to ADDPERMISSIONS");
+      try {
+        await keyManager.connect(canSetDataAndAddPermissions).execute(payload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError(
+            "ADDPERMISSIONS",
+            canSetDataAndAddPermissions.address
+          )
+        );
+      }
     });
 
     it("(should pass): 2 x keys + change 2 x existing permissions", async () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + alice.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + bob.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          alice.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          bob.address.substr(2),
       ];
 
       let values = [
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
       await keyManager.connect(canSetDataAndChangePermissions).execute(payload);
       let fetchedResult = await universalProfile.getData(keys);
@@ -2001,22 +2587,37 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + alice.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          newControllerKeyOne.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          alice.address.substr(2),
       ];
 
       let values = [
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
         ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
       ];
 
-      let payload = universalProfile.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = universalProfile.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
 
-      await expect(
-        keyManager.connect(canSetDataAndChangePermissions).execute(payload)
-      ).toBeRevertedWith("KeyManager:_verifyCanSetData: not authorized to ADDPERMISSIONS");
+      try {
+        await keyManager.connect(canSetDataAndAddPermissions).execute(payload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError(
+            "CHANGEPERMISSIONS",
+            canSetDataAndAddPermissions.address
+          )
+        );
+      }
     });
   });
 });

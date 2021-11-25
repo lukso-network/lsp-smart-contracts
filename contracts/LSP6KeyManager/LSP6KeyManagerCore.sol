@@ -18,6 +18,26 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./LSP6Constants.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
 
+/** address `from` is not authorised to `permission`
+ * @param permission permission required
+ * @param from address not-authorised
+ */
+error NotAuthorised(string permission, address from);
+
+/**
+ * address `from` is not authorised to interact with `toAddressDisallowed` via account
+ * @param from address making the request
+ * @param toAddressDisallowed address that `from` is not authorised to call
+ */
+error NotAllowedAddress(address from, address toAddressDisallowed);
+
+/**
+ * address `from` is not authorised to run `disallowedFunction` via account
+ * @param from address making the request
+ * @param disallowedFunction bytes4 function selector that `from` is not authorised to run
+ */
+error NotAllowedFunction(address from, bytes4 disallowedFunction);
+
 /**
  * @title Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller, Jean Cavallera
@@ -220,10 +240,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             }
         } else if (erc725Function == account.transferOwnership.selector) {
             bytes32 permissions = _getAddressPermissions(_from);
-            require(
-                _hasPermission(_PERMISSION_CHANGEOWNER, permissions),
-                "KeyManager:_verifyPermissions: Not authorized to transfer ownership"
-            );
+
+            _hasPermission(_PERMISSION_CHANGEOWNER, permissions) ||
+                _notAuthorised("TRANSFEROWNERSHIP", _from);
         } else {
             revert(
                 "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
@@ -250,23 +269,17 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     ERC725Y(account).getDataSingle(key)
                 ) == bytes32(0);
 
-                isNewAddress
-                    ? require(
-                        _hasPermission(_PERMISSION_ADDPERMISSIONS, permissions),
-                        "KeyManager:_verifyCanSetData: not authorized to ADDPERMISSIONS"
-                    )
-                    : require(
-                        _hasPermission(
-                            _PERMISSION_CHANGEPERMISSIONS,
-                            permissions
-                        ),
-                        "KeyManager:_verifyCanSetData: not authorized to CHANGEPERMISSIONS"
-                    );
+                if (isNewAddress) {
+                    _hasPermission(_PERMISSION_ADDPERMISSIONS, permissions) ||
+                        _notAuthorised("ADDPERMISSIONS", _from);
+                } else {
+                    // prettier-ignore
+                    _hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions) || 
+                        _notAuthorised("CHANGEPERMISSIONS", _from);
+                }
             } else {
-                require(
-                    _hasPermission(_PERMISSION_SETDATA, permissions),
-                    "KeyManager:_verifyCanSetData: not authorized to SETDATA"
-                );
+                _hasPermission(_PERMISSION_SETDATA, permissions) ||
+                    _notAuthorised("SETDATA", _from);
             }
 
             pointer += 32; // move calldata pointer
@@ -287,38 +300,18 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             "KeyManager:_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
         );
 
-        require(
-            operationType < 5, // Check for CALL, DEPLOY or STATICCALL
-            "KeyManager:_verifyCanExecute: invalid operation type"
-        );
+        (
+            bytes32 permissionRequired,
+            string memory operationName
+        ) = _extractPermissionFromOperation(operationType);
 
-        if (operationType == 0) {
-            require(
-                _hasPermission(_PERMISSION_CALL, permissions),
-                "KeyManager:_verifyCanExecute: not authorized to CALL"
-            );
-        }
+        _hasPermission(permissionRequired, permissions) ||
+            _notAuthorised(operationName, _from);
 
-        if (operationType == 1 || operationType == 2) {
-            require(
-                _hasPermission(_PERMISSION_DEPLOY, permissions),
-                "KeyManager:_verifyCanExecute: not authorized to DEPLOY"
-            );
-        }
-
-        if (operationType == 3) {
-            require(
-                _hasPermission(_PERMISSION_STATICCALL, permissions),
-                "KeyManager:_verifyCanExecute: not authorized to STATICCALL"
-            );
-        }
-
-        if (value > 0) {
-            require(
-                _hasPermission(_PERMISSION_TRANSFERVALUE, permissions),
-                "KeyManager:_verifyCanExecute: not authorized to TRANSFERVALUE"
-            );
-        }
+        if (
+            (value > 0) &&
+            !_hasPermission(_PERMISSION_TRANSFERVALUE, permissions)
+        ) _notAuthorised("TRANSFERVALUE", _from);
     }
 
     function _verifyAllowedAddress(address _from, address _to) internal view {
@@ -339,9 +332,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         for (uint256 ii = 0; ii < allowedAddressesList.length; ii++) {
             if (_to == allowedAddressesList[ii]) return;
         }
-        revert(
-            "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
-        );
+        revert NotAllowedAddress(_from, _to);
     }
 
     function _verifyAllowedFunction(address _from, bytes4 _functionSelector)
@@ -365,9 +356,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         for (uint256 ii = 0; ii < allowedFunctionsList.length; ii++) {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
-        revert(
-            "KeyManager:_verifyAllowedFunction: not authorised to run this function"
-        );
+        revert NotAllowedFunction(_from, _functionSelector);
     }
 
     function _getAddressPermissions(address _address)
@@ -375,26 +364,20 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         view
         returns (bytes32)
     {
-        bytes memory fetchResult = ERC725Y(account).getDataSingle(
+        bytes memory permissions = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_PERMISSIONS,
                 bytes20(_address)
             )
         );
 
-        if (fetchResult.length == 0) {
+        if (bytes32(permissions) == bytes32(0)) {
             revert(
                 "KeyManager:_getAddressPermissions: no permissions set for this address"
             );
         }
 
-        bytes32 storedPermission;
-        // solhint-disable-next-line
-        assembly {
-            storedPermission := mload(add(fetchResult, 32))
-        }
-
-        return storedPermission;
+        return bytes32(permissions);
     }
 
     function _hasPermission(bytes32 _permission, bytes32 _addressPermission)
@@ -403,5 +386,34 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         returns (bool)
     {
         return (_permission & _addressPermission) == _permission ? true : false;
+    }
+
+    function _extractPermissionFromOperation(uint256 _operationType)
+        internal
+        pure
+        returns (bytes32, string memory)
+    {
+        require(
+            _operationType < 5,
+            "KeyManager:_extractPermissionFromOperation: invalid operation type"
+        );
+
+        if (_operationType == 0) return (_PERMISSION_CALL, "CALL");
+        if (_operationType == 1) return (_PERMISSION_DEPLOY, "CREATE");
+        if (_operationType == 2) return (_PERMISSION_DEPLOY, "CREATE2");
+        if (_operationType == 3) return (_PERMISSION_DEPLOY, "STATICCALL");
+    }
+
+    /**
+     * @dev return a boolean here to allow short-circuiting syntax && or ||
+     *      eg1: _hasEnoughPermissions(...) || revert NotAuthorized(...)
+     *      eg2: _isNotAdmin(...) && revert NotAuthorised(...)
+     */
+    function _notAuthorised(string memory _permission, address _from)
+        private
+        pure
+        returns (bool)
+    {
+        revert NotAuthorised(_permission, _from);
     }
 }
