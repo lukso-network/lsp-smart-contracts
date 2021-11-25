@@ -356,7 +356,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         for (uint256 ii = 0; ii < allowedFunctionsList.length; ii++) {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
-
         revert NotAllowedFunction(_from, _functionSelector);
     }
 
@@ -365,27 +364,20 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         view
         returns (bytes32)
     {
-        bytes memory fetchResult = ERC725Y(account).getDataSingle(
+        bytes memory permissions = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_PERMISSIONS,
                 bytes20(_address)
             )
         );
 
-        if (fetchResult.length == 0) {
+        if (bytes32(permissions) == bytes32(0)) {
             revert(
                 "KeyManager:_getAddressPermissions: no permissions set for this address"
             );
         }
 
-        bytes32 storedPermission;
-
-        // solhint-disable no-inline-assembly
-        assembly {
-            storedPermission := mload(add(fetchResult, 32))
-        }
-
-        return storedPermission;
+        return bytes32(permissions);
     }
 
     function _hasPermission(bytes32 _permission, bytes32 _addressPermission)
