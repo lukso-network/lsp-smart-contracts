@@ -902,7 +902,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       );
 
       await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_extractOperationPermissions: invalid operation type"
+        "KeyManager:_extractPermissionFromOperation: invalid operation type"
       );
     });
 

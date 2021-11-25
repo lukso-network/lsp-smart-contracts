@@ -303,7 +303,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         (
             bytes32 permissionRequired,
             string memory operationName
-        ) = _extractOperationPermissions(operationType);
+        ) = _extractPermissionFromOperation(operationType);
 
         _hasPermission(permissionRequired, permissions) ||
             _notAuthorised(operationName, _from);
@@ -388,14 +388,14 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         return (_permission & _addressPermission) == _permission ? true : false;
     }
 
-    function _extractOperationPermissions(uint256 _operationType)
+    function _extractPermissionFromOperation(uint256 _operationType)
         internal
         pure
         returns (bytes32, string memory)
     {
         require(
             _operationType < 5,
-            "KeyManager:_extractOperationPermissions: invalid operation type"
+            "KeyManager:_extractPermissionFromOperation: invalid operation type"
         );
 
         if (_operationType == 0) return (_PERMISSION_CALL, "CALL");

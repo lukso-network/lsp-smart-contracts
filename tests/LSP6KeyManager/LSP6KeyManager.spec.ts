@@ -902,7 +902,7 @@ describe("KeyManager", () => {
       ]);
 
       await expect(keyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_extractOperationPermissions: invalid operation type"
+        "KeyManager:_extractPermissionFromOperation: invalid operation type"
       );
     });
 
