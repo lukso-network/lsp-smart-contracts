@@ -15,7 +15,11 @@ import {
 import { solidityKeccak256 } from "ethers/lib/utils";
 
 // custom helpers
-import { deployProxy, attachUniversalProfileProxy, attachKeyManagerProxy } from "../utils/proxy";
+import {
+  deployProxy,
+  attachUniversalProfileProxy,
+  attachKeyManagerProxy,
+} from "../utils/proxy";
 
 // constants
 import {
@@ -26,7 +30,15 @@ import {
   ALL_PERMISSIONS_SET,
 } from "../utils/constants";
 
-import { EMPTY_PAYLOAD, DUMMY_PAYLOAD, DUMMY_PRIVATEKEY, ONE_ETH } from "../utils/helpers";
+import {
+  EMPTY_PAYLOAD,
+  DUMMY_PAYLOAD,
+  DUMMY_PRIVATEKEY,
+  ONE_ETH,
+  NotAuthorisedError,
+  NotAllowedAddressError,
+  NotAllowedFunctionError,
+} from "../utils/helpers";
 
 describe("KeyManager + LSP3 Account as Proxies", () => {
   let abiCoder;
@@ -61,14 +73,28 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     newUser = accounts[5];
 
     // 1. deploy base contracts
-    baseUniversalProfile = await new UniversalProfileInit__factory(owner).deploy();
+    baseUniversalProfile = await new UniversalProfileInit__factory(
+      owner
+    ).deploy();
     baseKeyManager = await new LSP6KeyManagerInit__factory(owner).deploy();
 
     // 2. deploy proxy contracts
-    let proxyUniversalProfileAddress = await deployProxy(baseUniversalProfile.address, owner);
-    let proxyKeyManagerAddress = await deployProxy(baseKeyManager.address, owner);
-    proxyUniversalProfile = await attachUniversalProfileProxy(owner, proxyUniversalProfileAddress);
-    proxyKeyManager = await attachKeyManagerProxy(owner, proxyKeyManagerAddress);
+    let proxyUniversalProfileAddress = await deployProxy(
+      baseUniversalProfile.address,
+      owner
+    );
+    let proxyKeyManagerAddress = await deployProxy(
+      baseKeyManager.address,
+      owner
+    );
+    proxyUniversalProfile = await attachUniversalProfileProxy(
+      owner,
+      proxyUniversalProfileAddress
+    );
+    proxyKeyManager = await attachKeyManagerProxy(
+      owner,
+      proxyKeyManagerAddress
+    );
 
     // 3. initialize them
     await proxyUniversalProfile.initialize(owner.address);
@@ -76,44 +102,77 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
     // Other test contracts
     targetContract = await new TargetContract__factory(owner).deploy();
-    maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(proxyKeyManager.address);
+    maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(
+      proxyKeyManager.address
+    );
 
     // owner permissions
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            owner.address.substr(2),
+        ],
         [ALL_PERMISSIONS_SET]
       );
 
     // app permissions
-    let appPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
+    let appPermissions = ethers.utils.hexZeroPad(
+      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+      32
+    );
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            app.address.substr(2),
+        ],
         [appPermissions]
       );
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] + app.address.substr(2)],
-        [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
+        [
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+            app.address.substr(2),
+        ],
+        [
+          abiCoder.encode(
+            ["address[]"],
+            [[targetContract.address, user.address]]
+          ),
+        ]
       );
     // do not allow the app to `setNumber` on TargetContract
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] + app.address.substr(2)],
-        [abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])]
+        [
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+            app.address.substr(2),
+        ],
+        [
+          abiCoder.encode(
+            ["bytes4[]"],
+            [[targetContract.interface.getSighash("setName(string)")]]
+          ),
+        ]
       );
 
     // user permissions
-    let userPermissions = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32);
+    let userPermissions = ethers.utils.hexZeroPad(
+      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
+      32
+    );
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + user.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            user.address.substr(2),
+        ],
         [userPermissions]
       );
 
@@ -125,28 +184,50 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + externalApp.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            externalApp.address.substr(2),
+        ],
         [externalAppPermissions]
       );
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] + externalApp.address.substr(2)],
-        [abiCoder.encode(["address[]"], [[targetContract.address, user.address]])]
+        [
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+            externalApp.address.substr(2),
+        ],
+        [
+          abiCoder.encode(
+            ["address[]"],
+            [[targetContract.address, user.address]]
+          ),
+        ]
       );
     // do not allow the externalApp to `setNumber` on TargetContract
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] + externalApp.address.substr(2)],
-        [abiCoder.encode(["bytes4[]"], [[targetContract.interface.getSighash("setName(string)")]])]
+        [
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+            externalApp.address.substr(2),
+        ],
+        [
+          abiCoder.encode(
+            ["bytes4[]"],
+            [[targetContract.interface.getSighash("setName(string)")]]
+          ),
+        ]
       );
 
     // test security
     await proxyUniversalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + newUser.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            newUser.address.substr(2),
+        ],
         [
           ethers.utils.hexZeroPad(
             PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
@@ -191,11 +272,15 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     ];
 
     addressPermissions.map(async (element) => {
-      await proxyUniversalProfile.connect(owner).setData([element.key], [element.value]);
+      await proxyUniversalProfile
+        .connect(owner)
+        .setData([element.key], [element.value]);
     });
 
     // switch account management to KeyManager
-    await proxyUniversalProfile.connect(owner).transferOwnership(proxyKeyManager.address);
+    await proxyUniversalProfile
+      .connect(owner)
+      .transferOwnership(proxyKeyManager.address);
 
     /** @todo find other way to ensure ERC725 Account has always 10 ethers before each test (and not transfer every time test is re-run) */
     await owner.sendTransaction({
@@ -206,7 +291,9 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
   it("Cannot `initalize` LSP3 Account proxy twice", async () => {
     await expect(
-      proxyUniversalProfile.initialize("0xdead0dead0dead0dead0dead0dead0dead0dead0")
+      proxyUniversalProfile.initialize(
+        "0xdead0dead0dead0dead0dead0dead0dead0dead0"
+      )
     ).toBeRevertedWith("Initializable: contract is already initialized");
   });
 
@@ -217,21 +304,27 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
   });
 
   it("Should support LSP6", async () => {
-    let result = await proxyKeyManager.callStatic.supportsInterface(INTERFACE_IDS.LSP6);
+    let result = await proxyKeyManager.callStatic.supportsInterface(
+      INTERFACE_IDS.LSP6
+    );
     expect(result).toBeTruthy();
   });
 
   describe("> Verifying permissions", () => {
     it("Owner should have ALL PERMISSIONS (= admin)", async () => {
       let [permissions] = await proxyUniversalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          owner.address.substr(2),
       ]);
-      expect(permissions).toEqual(ethers.utils.hexZeroPad(ALL_PERMISSIONS_SET, 32));
+      expect(permissions).toEqual(
+        ethers.utils.hexZeroPad(ALL_PERMISSIONS_SET, 32)
+      );
     });
 
     it("App should have permissions SETDATA and CALL", async () => {
       let [permissions] = await proxyUniversalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          app.address.substr(2),
       ]);
       expect(permissions).toEqual(
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
@@ -248,8 +341,12 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
     // check array indexes individually
     for (let ii = 1; ii <= 5; ii++) {
-      it(`Checking address (=value) stored at AddressPermissions[${ii - 1}]'`, async () => {
-        let [result] = await proxyUniversalProfile.getData([addressPermissions[ii].key]);
+      it(`Checking address (=value) stored at AddressPermissions[${
+        ii - 1
+      }]'`, async () => {
+        let [result] = await proxyUniversalProfile.getData([
+          addressPermissions[ii].key,
+        ]);
         // raw bytes are stored lower case, so we need to checksum the address retrieved
         result = ethers.utils.getAddress(result);
         expect(result).toEqual(addressPermissions[ii].value);
@@ -260,14 +357,18 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
   describe("> testing permissions: CHANGEKEYS, SETDATA", () => {
     it("Owner should be allowed to change keys", async () => {
       // change app's permissions
-      let key = ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2);
+      let key =
+        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        app.address.substr(2);
 
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("setData", [
-        [key],
-        [PERMISSIONS.SETDATA],
-      ]);
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "setData",
+        [[key], [PERMISSIONS.SETDATA]]
+      );
 
-      let result = await proxyKeyManager.connect(owner).callStatic.execute(payload);
+      let result = await proxyKeyManager
+        .connect(owner)
+        .callStatic.execute(payload);
       expect(result).toBeTruthy();
 
       await proxyKeyManager.connect(owner).execute(payload);
@@ -285,14 +386,24 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
     it("App should not be allowed to change keys", async () => {
       // malicious app trying to set all permissions
-      let dangerousPayload = proxyUniversalProfile.interface.encodeFunctionData("setData", [
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + app.address.substr(2)],
-        [ALL_PERMISSIONS_SET],
-      ]);
-
-      await expect(proxyKeyManager.connect(app).execute(dangerousPayload)).toBeRevertedWith(
-        "KeyManager:_verifyCanSetData: not authorized to CHANGEPERMISSIONS"
+      let dangerousPayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "setData",
+        [
+          [
+            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+              app.address.substr(2),
+          ],
+          [ALL_PERMISSIONS_SET],
+        ]
       );
+
+      try {
+        await proxyKeyManager.connect(app).execute(dangerousPayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError("CHANGEPERMISSIONS", app.address)
+        );
+      }
     });
 
     it("Owner should be allowed to setData", async () => {
@@ -303,13 +414,20 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         )
       );
 
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "setData",
+        [[key], [value]]
+      );
 
-      let callResult = await proxyKeyManager.connect(owner).callStatic.execute(payload);
+      let callResult = await proxyKeyManager
+        .connect(owner)
+        .callStatic.execute(payload);
       expect(callResult).toBeTruthy();
 
       await proxyKeyManager.connect(owner).execute(payload);
-      let [fetchedResult] = await proxyUniversalProfile.callStatic.getData([key]);
+      let [fetchedResult] = await proxyUniversalProfile.callStatic.getData([
+        key,
+      ]);
 
       expect(fetchedResult).toEqual(value);
     });
@@ -322,25 +440,35 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         )
       );
 
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("setData", [[key], [value]]);
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "setData",
+        [[key], [value]]
+      );
 
-      let callResult = await proxyKeyManager.connect(app).callStatic.execute(payload);
+      let callResult = await proxyKeyManager
+        .connect(app)
+        .callStatic.execute(payload);
       expect(callResult).toBeTruthy();
 
       await proxyKeyManager.connect(app).execute(payload);
-      let [fetchedResult] = await proxyUniversalProfile.callStatic.getData([key]);
+      let [fetchedResult] = await proxyUniversalProfile.callStatic.getData([
+        key,
+      ]);
       expect(fetchedResult).toEqual(value);
     });
   });
 
   describe("> testing permissions: CALL, DELEGATECALL, DEPLOY", () => {
     it("Owner should be allowed to make a CALL", async () => {
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          "0xcafecafecafecafecafecafecafecafecafecafe",
+          0,
+          DUMMY_PAYLOAD,
+        ]
+      );
 
       let result = await proxyKeyManager.callStatic.execute(executePayload, {
         from: owner.address,
@@ -349,54 +477,78 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
 
     it("App should be allowed to make a CALL", async () => {
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContract.interface.encodeFunctionData("setName", ["Example"]),
-      ]);
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          targetContract.interface.encodeFunctionData("setName", ["Example"]),
+        ]
+      );
 
-      let executeResult = await proxyKeyManager.connect(app).callStatic.execute(executePayload);
+      let executeResult = await proxyKeyManager
+        .connect(app)
+        .callStatic.execute(executePayload);
       expect(executeResult).toBeTruthy();
     });
 
     it("App should not be allowed to make a STATICCALL", async () => {
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.STATICCALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
-
-      await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: not authorized to STATICCALL"
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.STATICCALL,
+          "0xcafecafecafecafecafecafecafecafecafecafe",
+          0,
+          DUMMY_PAYLOAD,
+        ]
       );
+
+      try {
+        await proxyKeyManager.connect(app).execute(executePayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError("STATICCALL", app.address)
+        );
+      }
     });
 
     it("DELEGATECALL via UP should be disallowed", async () => {
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.DELEGATECALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.DELEGATECALL,
+          "0xcafecafecafecafecafecafecafecafecafecafe",
+          0,
+          DUMMY_PAYLOAD,
+        ]
+      );
 
-      await expect(proxyKeyManager.connect(owner).execute(executePayload)).toBeRevertedWith(
+      await expect(
+        proxyKeyManager.connect(owner).execute(executePayload)
+      ).toBeRevertedWith(
         "KeyManager:_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
       );
     });
 
     it("App should not be allowed to DEPLOY a contract", async () => {
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CREATE,
-        "0x0000000000000000000000000000000000000000",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
-
-      await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: not authorized to DEPLOY"
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CREATE,
+          "0x0000000000000000000000000000000000000000",
+          0,
+          DUMMY_PAYLOAD,
+        ]
       );
+
+      try {
+        await proxyKeyManager.connect(app).execute(executePayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError("CREATE", app.address)
+        );
+      }
     });
   });
 
@@ -404,140 +556,195 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     let provider = ethers.provider;
 
     it("Owner should be allowed to transfer LYX to app", async () => {
-      let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
+      let initialAccountBalance = await provider.getBalance(
+        proxyUniversalProfile.address
+      );
       let initialAppBalance = await provider.getBalance(app.address);
 
-      let transferPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        app.address,
-        ethers.utils.parseEther("3"),
-        EMPTY_PAYLOAD,
-      ]);
+      let transferPayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          app.address,
+          ethers.utils.parseEther("3"),
+          EMPTY_PAYLOAD,
+        ]
+      );
 
-      let callResult = await proxyKeyManager.callStatic.execute(transferPayload);
+      let callResult = await proxyKeyManager.callStatic.execute(
+        transferPayload
+      );
       expect(callResult).toBeTruthy();
 
       await proxyKeyManager.execute(transferPayload);
 
-      let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
-      expect(parseInt(newAccountBalance)).toBeLessThan(parseInt(initialAccountBalance));
+      let newAccountBalance = await provider.getBalance(
+        proxyUniversalProfile.address
+      );
+      expect(parseInt(newAccountBalance)).toBeLessThan(
+        parseInt(initialAccountBalance)
+      );
 
       let newAppBalance = await provider.getBalance(app.address);
-      expect(parseInt(newAppBalance)).toBeGreaterThan(parseInt(initialAppBalance));
+      expect(parseInt(newAppBalance)).toBeGreaterThan(
+        parseInt(initialAppBalance)
+      );
     });
 
     it("App should not be allowed to transfer LYX", async () => {
-      let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
+      let initialAccountBalance = await provider.getBalance(
+        proxyUniversalProfile.address
+      );
       let initialUserBalance = await provider.getBalance(user.address);
 
-      let transferPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        user.address,
-        ethers.utils.parseEther("3"),
-        EMPTY_PAYLOAD,
-      ]);
-
-      await expect(proxyKeyManager.connect(app).execute(transferPayload)).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: not authorized to TRANSFERVALUE"
+      let transferPayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          user.address,
+          ethers.utils.parseEther("3"),
+          EMPTY_PAYLOAD,
+        ]
       );
 
-      let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
+      try {
+        await proxyKeyManager.connect(app).execute(transferPayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAuthorisedError("TRANSFERVALUE", app.address)
+        );
+      }
+
+      let newAccountBalance = await provider.getBalance(
+        proxyUniversalProfile.address
+      );
       let newUserBalance = await provider.getBalance(user.address);
 
-      expect(initialAccountBalance.toString()).toBe(newAccountBalance.toString());
+      expect(initialAccountBalance.toString()).toBe(
+        newAccountBalance.toString()
+      );
       expect(initialUserBalance.toString()).toBe(newUserBalance.toString());
     });
   });
 
   describe("> testing permissions: ALLOWEDADDRESSES", () => {
     it("All addresses whitelisted = Owner should be allowed to interact with any address", async () => {
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          "0xcafecafecafecafecafecafecafecafecafecafe",
+          0,
+          DUMMY_PAYLOAD,
+        ]
+      );
 
       let result = await proxyKeyManager.callStatic.execute(payload);
       expect(result).toBeTruthy();
 
-      let secondPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
+      let secondPayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
+          0,
+          DUMMY_PAYLOAD,
+        ]
+      );
 
-      let secondResult = await proxyKeyManager.callStatic.execute(secondPayload);
+      let secondResult = await proxyKeyManager.callStatic.execute(
+        secondPayload
+      );
       expect(secondResult).toBeTruthy();
     });
 
     it("App should be allowed to interact with `TargetContract`", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", ["Test"]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["Test"]
+      );
 
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      let result = await proxyKeyManager.connect(app).callStatic.execute(payload);
+      let result = await proxyKeyManager
+        .connect(app)
+        .callStatic.execute(payload);
       expect(result).toBeTruthy();
     });
 
     it("App should be allowed to interact with `user`", async () => {
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        user.address,
-        0,
-        EMPTY_PAYLOAD,
-      ]);
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, user.address, 0, EMPTY_PAYLOAD]
+      );
 
-      let result = await proxyKeyManager.connect(app).callStatic.execute(payload);
+      let result = await proxyKeyManager
+        .connect(app)
+        .callStatic.execute(payload);
       expect(result).toBeTruthy();
     });
 
     it("App should not be allowed to interact with `0xdeadbeef...` (not allowed address)", async () => {
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
-
-      await expect(proxyKeyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
+      let disallowedAddress = ethers.utils.getAddress(
+        "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
       );
+
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, disallowedAddress, 0, DUMMY_PAYLOAD]
+      );
+
+      try {
+        await proxyKeyManager.connect(app).execute(payload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedAddressError(app.address, disallowedAddress)
+        );
+      }
     });
   });
 
   describe("> testing permissions: ALLOWEDFUNCTIONS", () => {
     it("App should not be allowed to run a non-allowed function (function signature = `0xbeefbeef`)", async () => {
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        "0xbeefbeef123456780000000000",
-      ]);
-
-      await expect(proxyKeyManager.connect(app).execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyAllowedFunction: not authorised to run this function"
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          "0xbeefbeef123456780000000000",
+        ]
       );
+
+      try {
+        await proxyKeyManager.connect(app).execute(payload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedFunctionError(app.address, "0xbeefbeef")
+        );
+      }
     });
   });
 
   describe("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", () => {
     it("Should pass if no addresses / functions are stored for a user", async () => {
       let randomPayload = "0xfafbfcfd1201456875dd";
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        randomPayload,
-      ]);
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.CALL,
+          "0xcafecafecafecafecafecafecafecafecafecafe",
+          0,
+          randomPayload,
+        ]
+      );
 
-      let callResult = await proxyKeyManager.connect(user).callStatic.execute(executePayload);
+      let callResult = await proxyKeyManager
+        .connect(user)
+        .callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
     });
   });
@@ -547,13 +754,14 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        [newName]
+      );
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
       let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
@@ -561,20 +769,24 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       await proxyKeyManager.execute(executePayload);
       let result = await targetContract.callStatic.getName();
       expect(result !== initialName);
-      expect(result).toEqual(newName, `name variable in TargetContract should now be ${newName}`);
+      expect(result).toEqual(
+        newName,
+        `name variable in TargetContract should now be ${newName}`
+      );
     });
 
     it("App should be allowed to set `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        [newName]
+      );
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
       let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
@@ -589,15 +801,14 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let initialNumber = await targetContract.callStatic.getNumber();
       let newNumber = 18;
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [
-        newNumber,
-      ]);
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setNumber",
+        [newNumber]
+      );
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
       let callResult = await proxyKeyManager.callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
@@ -608,29 +819,39 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
           ethers.BigNumber.from(initialNumber).toNumber()
       );
-      expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(newNumber);
+      expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(
+        newNumber
+      );
     });
 
     it("App should not be allowed to set `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
       let newNumber = 18;
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [
-        newNumber,
-      ]);
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
-
-      await expect(proxyKeyManager.connect(app).execute(executePayload)).toBeRevertedWith(
-        "KeyManager:_verifyAllowedFunction: not authorised to run this function"
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setNumber",
+        [newNumber]
+      );
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
       );
 
+      try {
+        await proxyKeyManager.connect(app).execute(executePayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedFunctionError(
+            app.address,
+            targetContract.interface.getSighash("setNumber")
+          )
+        );
+      }
+
       let result = await targetContract.callStatic.getNumber();
-      expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10) !== newNumber);
+      expect(
+        parseInt(ethers.BigNumber.from(result).toNumber(), 10) !== newNumber
+      );
       expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(
         ethers.BigNumber.from(initialNumber).toNumber()
       );
@@ -639,15 +860,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     it("Should return `name` variable ...", async () => {
       let initialName = await targetContract.callStatic.getName();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("getName");
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getName");
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      let result = await proxyKeyManager.connect(owner).callStatic.execute(executePayload);
+      let result = await proxyKeyManager
+        .connect(owner)
+        .callStatic.execute(executePayload);
 
       let [decodedResult] = abiCoder.decode(["string"], result);
       expect(decodedResult).toEqual(initialName);
@@ -656,15 +878,16 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     it("Should return `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("getNumber");
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getNumber");
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      let result = await proxyKeyManager.connect(owner).callStatic.execute(executePayload);
+      let result = await proxyKeyManager
+        .connect(owner)
+        .callStatic.execute(executePayload);
 
       let [decodedResult] = abiCoder.decode(["uint256"], result);
       expect(decodedResult).toEqual(initialNumber);
@@ -673,33 +896,32 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
   describe("> testing other revert causes", () => {
     it("Should revert because of wrong operation type", async () => {
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        5648941657,
-        targetContract.address,
-        0,
-        "0x",
-      ]);
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [5648941657, targetContract.address, 0, "0x"]
+      );
 
       await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: invalid operation type"
+        "KeyManager:_extractOperationPermissions: invalid operation type"
       );
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
-      await expect(proxyKeyManager.execute("0xbad000000000000000000000000bad")).toBeRevertedWith(
+      await expect(
+        proxyKeyManager.execute("0xbad000000000000000000000000bad")
+      ).toBeRevertedWith(
         "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
       );
     });
 
     it("Should revert with a revert reason string from TargetContract", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData("revertCall");
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("revertCall");
 
-      let payload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let payload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
       await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
         "TargetContract:revertCall: this function has reverted!"
@@ -722,9 +944,13 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         [staticAddress, nonce, payload]
       );
 
-      let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+      let signature = await externalApp.signMessage(
+        ethers.utils.arrayify(hash)
+      );
 
-      expect(hash).toEqual("0xb491e88483d56b1143c783cb4b60a85632f831e36147670bffc61bc57d7dad86");
+      expect(hash).toEqual(
+        "0xb491e88483d56b1143c783cb4b60a85632f831e36147670bffc61bc57d7dad86"
+      );
       // expect: 0xb491e88483d56b1143c783cb4b60a85632f831e36147670bffc61bc57d7dad86
       expect(signature).toEqual(
         "0x82544c08b894ebeb5c2beffd586e48860a39e11ea7e3bf9cf0c66062470b72695724b8a85902cb5433945cca7d0eeae2eef2265fac2e9e730ecd68df6dda9a181c"
@@ -732,24 +958,31 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     });
 
     it("should execute a signed tx successfully", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-        "Another name",
-      ]);
-      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["Another name"]
+      );
+      let nonce = await proxyKeyManager.callStatic.getNonce(
+        externalApp.address,
+        channelId
+      );
 
-      let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executeRelayCallPayload =
+        proxyUniversalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
         [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
-      let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+      let signature = await externalApp.signMessage(
+        ethers.utils.arrayify(hash)
+      );
 
       let result = await proxyKeyManager.callStatic.executeRelayCall(
         proxyKeyManager.address,
@@ -763,22 +996,31 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     it("Should allow to `setName` via `executeRelay`", async () => {
       let newName = "Dagobah";
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [newName]);
-      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        [newName]
+      );
+      let nonce = await proxyKeyManager.callStatic.getNonce(
+        externalApp.address,
+        channelId
+      );
 
-      let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executeRelayCallPayload =
+        proxyUniversalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
         [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
-      let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+      let signature = await externalApp.signMessage(
+        ethers.utils.arrayify(hash)
+      );
 
       let result = await proxyKeyManager.callStatic.executeRelayCall(
         proxyKeyManager.address,
@@ -801,31 +1043,47 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     it("Should not allow to `setNumber` via `executeRelay`", async () => {
       let currentNumber = await targetContract.callStatic.getNumber();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setNumber", [2354]);
-      let nonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setNumber",
+        [2354]
+      );
+      let nonce = await proxyKeyManager.callStatic.getNonce(
+        externalApp.address,
+        channelId
+      );
 
-      let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executeRelayCallPayload =
+        proxyUniversalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
         [proxyKeyManager.address, nonce, executeRelayCallPayload]
       );
 
-      let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+      let signature = await externalApp.signMessage(
+        ethers.utils.arrayify(hash)
+      );
 
-      await expect(
-        proxyKeyManager.executeRelayCall(
+      try {
+        await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
           nonce,
           executeRelayCallPayload,
           signature
-        )
-      ).toBeRevertedWith("KeyManager:_verifyAllowedFunction: not authorised to run this function");
+        );
+      } catch (error) {
+        expect(error.message).toMatch(
+          NotAllowedFunctionError(
+            externalApp.address,
+            targetContract.interface.getSighash("setNumber")
+          )
+        );
+      }
 
       let endResult = await targetContract.callStatic.getNumber();
       expect(endResult.toString()).toEqual(currentNumber.toString());
@@ -837,7 +1095,10 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     let latestNonce;
 
     beforeEach(async () => {
-      latestNonce = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+      latestNonce = await proxyKeyManager.callStatic.getNonce(
+        externalApp.address,
+        channelId
+      );
     });
 
     it.each([
@@ -848,20 +1109,26 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     ])(
       "$callNb call > nonce should increment from $latestNonce to $expectedNonce",
       async ({ callNb, newName, expectedNonce }) => {
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
         );
+        let executeRelayCallPayload =
+          proxyUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [proxyKeyManager.address, latestNonce, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
@@ -871,7 +1138,10 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, 0);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(
+          externalApp.address,
+          0
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(latestNonce.add(1)); // ensure the nonce incremented
@@ -886,24 +1156,35 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let channelId = 1;
       let names = ["Fabian", "Yamen"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+      it(`First call > nonce should increment from ${nonces[0]} to ${
+        nonces[0] + 1
+      }`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
         );
+        let executeRelayCallPayload =
+          proxyUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
@@ -913,30 +1194,44 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+      it(`Second call > nonce should increment from ${nonces[1]} to ${
+        nonces[1] + 1
+      }`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
         );
+        let executeRelayCallPayload =
+          proxyUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
@@ -946,7 +1241,10 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -957,24 +1255,35 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let channelId = 2;
       let names = ["Hugo", "Reto"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+      it(`First call > nonce should increment from ${nonces[0]} to ${
+        nonces[0] + 1
+      }`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
         );
+        let executeRelayCallPayload =
+          proxyUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
@@ -984,30 +1293,44 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+      it(`Second call > nonce should increment from ${nonces[1]} to ${
+        nonces[1] + 1
+      }`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
         );
+        let executeRelayCallPayload =
+          proxyUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
@@ -1017,7 +1340,10 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1028,24 +1354,35 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       let channelId = 3;
       let names = ["Jean", "Lenny"];
 
-      it(`First call > nonce should increment from ${nonces[0]} to ${nonces[0] + 1}`, async () => {
-        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+      it(`First call > nonce should increment from ${nonces[0]} to ${
+        nonces[0] + 1
+      }`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[0];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
         );
+        let executeRelayCallPayload =
+          proxyUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
@@ -1055,30 +1392,44 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
-      it(`Second call > nonce should increment from ${nonces[1]} to ${nonces[1] + 1}`, async () => {
-        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+      it(`Second call > nonce should increment from ${nonces[1]} to ${
+        nonces[1] + 1
+      }`, async () => {
+        let nonceBefore = await proxyKeyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = names[1];
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
         );
+        let executeRelayCallPayload =
+          proxyUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
@@ -1088,7 +1439,10 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1098,23 +1452,32 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     describe("channel 15", () => {
       let channelId = 15;
       it("First call > nonce should increment from 0 to 1", async () => {
-        let nonceBefore = await proxyKeyManager.getNonce(externalApp.address, channelId);
+        let nonceBefore = await proxyKeyManager.getNonce(
+          externalApp.address,
+          channelId
+        );
         let newName = "Lukasz";
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-          newName,
-        ]);
-        let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+        let targetContractPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          [newName]
         );
+        let executeRelayCallPayload =
+          proxyUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let hash = ethers.utils.solidityKeccak256(
           ["address", "uint256", "bytes"],
           [proxyKeyManager.address, nonceBefore, executeRelayCallPayload]
         );
 
-        let signature = await externalApp.signMessage(ethers.utils.arrayify(hash));
+        let signature = await externalApp.signMessage(
+          ethers.utils.arrayify(hash)
+        );
 
         await proxyKeyManager.executeRelayCall(
           proxyKeyManager.address,
@@ -1124,7 +1487,10 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         );
 
         let fetchedName = await targetContract.callStatic.getName();
-        let nonceAfter = await proxyKeyManager.callStatic.getNonce(externalApp.address, channelId);
+        let nonceAfter = await proxyKeyManager.callStatic.getNonce(
+          externalApp.address,
+          channelId
+        );
 
         expect(fetchedName).toEqual(newName);
         expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
@@ -1137,36 +1503,43 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     let channelId = 0;
 
     it("Should revert because caller has no permissions set", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-        "New Contract Name",
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["New Contract Name"]
+      );
 
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      );
 
-      await expect(proxyKeyManager.connect(accounts[6]).execute(executePayload)).toBeRevertedWith(
+      await expect(
+        proxyKeyManager.connect(accounts[6]).execute(executePayload)
+      ).toBeRevertedWith(
         "KeyManager:_getAddressPermissions: no permissions set for this address"
       );
     });
 
     it("Should revert if STATICCALL tries to change state", async () => {
       let initialValue = targetContract.callStatic.getName();
-      let targetContractPayload = targetContract.interface.encodeFunctionData("setName", [
-        "Another Contract Name",
-      ]);
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["Another Contract Name"]
+      );
 
-      let executePayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.STATICCALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+      let executePayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATIONS.STATICCALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]
+      );
 
-      await expect(proxyKeyManager.connect(owner).execute(executePayload)).toBeReverted();
+      await expect(
+        proxyKeyManager.connect(owner).execute(executePayload)
+      ).toBeReverted();
 
       let newValue = targetContract.callStatic.getName();
 
@@ -1177,43 +1550,56 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     it("Permissions should prevent ReEntrancy and stop contract from re-calling and re-transfering ETH.", async () => {
       // we assume the owner is not aware that some malicious code is present at the recipient address (the recipient being a smart contract)
       // the owner simply aims to transfer 1 LYX from his ERC725 Account to the recipient address (= the malicious contract)
-      let transferPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        maliciousContract.address,
-        ONE_ETH,
-        EMPTY_PAYLOAD,
-      ]);
+      let transferPayload = proxyUniversalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, maliciousContract.address, ONE_ETH, EMPTY_PAYLOAD]
+      );
 
-      let executePayload = proxyKeyManager.interface.encodeFunctionData("execute", [
-        transferPayload,
-      ]);
+      let executePayload = proxyKeyManager.interface.encodeFunctionData(
+        "execute",
+        [transferPayload]
+      );
       // load the malicious payload, that will be executed in the fallback function (every time the contract receives LYX)
       await maliciousContract.loadPayload(executePayload);
 
-      let initialAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
-      let initialAttackerBalance = await provider.getBalance(maliciousContract.address);
+      let initialAccountBalance = await provider.getBalance(
+        proxyUniversalProfile.address
+      );
+      let initialAttackerBalance = await provider.getBalance(
+        maliciousContract.address
+      );
 
       // try to drain funds via ReEntrancy
       await proxyKeyManager.connect(owner).execute(transferPayload);
 
-      let newAccountBalance = await provider.getBalance(proxyUniversalProfile.address);
-      let newAttackerBalance = await provider.getBalance(maliciousContract.address);
+      let newAccountBalance = await provider.getBalance(
+        proxyUniversalProfile.address
+      );
+      let newAttackerBalance = await provider.getBalance(
+        maliciousContract.address
+      );
 
       expect(parseInt(newAccountBalance.toString())).toEqual(
         initialAccountBalance.toString() - ONE_ETH.toString()
       );
-      expect(parseInt(newAttackerBalance.toString())).toEqual(parseInt(ONE_ETH.toString()));
+      expect(parseInt(newAttackerBalance.toString())).toEqual(
+        parseInt(ONE_ETH.toString())
+      );
     });
 
     it("Replay Attack should fail because of invalid nonce", async () => {
-      let nonce = await proxyKeyManager.callStatic.getNonce(newUser.address, channelId);
+      let nonce = await proxyKeyManager.callStatic.getNonce(
+        newUser.address,
+        channelId
+      );
 
-      let executeRelayCallPayload = proxyUniversalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        maliciousContract.address,
-        ONE_ETH,
-        DUMMY_PAYLOAD,
-      ]);
+      let executeRelayCallPayload =
+        proxyUniversalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          maliciousContract.address,
+          ONE_ETH,
+          DUMMY_PAYLOAD,
+        ]);
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
