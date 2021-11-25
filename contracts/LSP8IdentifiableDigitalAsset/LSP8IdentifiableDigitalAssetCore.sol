@@ -129,33 +129,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
         _revokeOperator(operator, tokenOwner, tokenId);
     }
 
-    function _revokeOperator(
-        address operator,
-        address tokenOwner,
-        bytes32 tokenId
-    ) internal virtual {
-        _operators[tokenId].remove(operator);
-
-        emit RevokedOperator(operator, tokenOwner, tokenId);
-    }
-
-    function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
-        // TODO: here is a good exmaple of why having multiple operators will be expensive.. we
-        // need to clear them on token transfer
-        //
-        // NOTE: this may cause a tx to fail if there is too many operators to clear, in which case
-        // the tokenOwner needs to call `revokeOperator` until there is less operators to clear and
-        // the desired `transfer` or `burn` call can succeed.
-        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
-
-        uint256 operatorListLength = operatorsForTokenId.length();
-        for (uint256 i = 0; i < operatorListLength; i++) {
-            // we are emptying the list, always remove from index 0
-            address operator = operatorsForTokenId.at(0);
-            _revokeOperator(operator, tokenOwner, tokenId);
-        }
-    }
-
     /**
      * @dev Returns whether `operator` address is an operator of `tokenId`.
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
@@ -263,6 +236,32 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
 
         for (uint256 i = 0; i < from.length; i++) {
             transfer(from[i], to[i], tokenId[i], force, data[i]);
+        }
+    }
+
+    function _revokeOperator(
+        address operator,
+        address tokenOwner,
+        bytes32 tokenId
+    ) internal virtual {
+        _operators[tokenId].remove(operator);
+        emit RevokedOperator(operator, tokenOwner, tokenId);
+    }
+
+    function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
+        // TODO: here is a good exmaple of why having multiple operators will be expensive.. we
+        // need to clear them on token transfer
+        //
+        // NOTE: this may cause a tx to fail if there is too many operators to clear, in which case
+        // the tokenOwner needs to call `revokeOperator` until there is less operators to clear and
+        // the desired `transfer` or `burn` call can succeed.
+        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
+
+        uint256 operatorListLength = operatorsForTokenId.length();
+        for (uint256 i = 0; i < operatorListLength; i++) {
+            // we are emptying the list, always remove from index 0
+            address operator = operatorsForTokenId.at(0);
+            _revokeOperator(operator, tokenOwner, tokenId);
         }
     }
 
