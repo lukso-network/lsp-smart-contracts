@@ -9,78 +9,61 @@ pragma solidity ^0.8.0;
  */
 library LSP2Utils {
     /* solhint-disable no-inline-assembly */
-    function generateSingletonKey(string memory _keyName)
-        public 
-        pure
-        returns (bytes32)
-    {
+    function generateSingletonKey(string memory _keyName) internal pure returns (bytes32) {
         return keccak256(bytes(_keyName));
-    }   
+    }
 
-    function generateArrayKey(string memory _keyName)
-        public
-        pure
-        returns (bytes32)
-    {
+    function generateArrayKey(string memory _keyName) internal pure returns (bytes32) {
         bytes memory keyName = bytes(_keyName);
-        
+
+        // prettier-ignore
         require(
-            keyName[keyName.length - 2] == 0x5b // "[" in utf8 encoded
-            && keyName[keyName.length - 1] == 0x5d,  // "]" in utf8
+            keyName[keyName.length - 2] == 0x5b && // "[" in utf8 encoded
+                keyName[keyName.length - 1] == 0x5d, // "]" in utf8
             "Missing empty square brackets \"[]\" at the end of the key name"
         );
 
         return keccak256(keyName);
     }
-    
+
     function generateMappingKey(string memory _firstWord, string memory _lastWord)
-        public
+        internal
         pure
         returns (bytes32 key_)
     {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
         bytes32 lastWordHash = keccak256(bytes(_lastWord));
-        
+
         bytes memory temporaryBytes = abi.encodePacked(
-            bytes16(firstWordHash), 
-            bytes12(0), 
+            bytes16(firstWordHash),
+            bytes12(0),
             bytes4(lastWordHash)
         );
-        
-        assembly {
-            key_ := mload(add(temporaryBytes, 32))
-        }
-    
-    }
-
-    function generateAddressMappingKey(string memory _firstWord, address _address)
-        public 
-        pure
-        returns (bytes32 key_)
-    {   
-        bytes32 firstWordHash = keccak256(bytes(_firstWord));
-
-        bytes memory temporaryBytes = abi.encodePacked(
-            bytes8(firstWordHash), 
-            bytes4(0), 
-            _address
-        );
 
         assembly {
             key_ := mload(add(temporaryBytes, 32))
         }
-
     }
 
-    function generateAddressMappingWithGroupingKey(
-        string memory _firstWord, 
-        string memory _secondWord, 
-        address _address
-    )
-        public
+    function generateBytes20MappingKey(string memory _firstWord, address _address)
+        internal
         pure
         returns (bytes32 key_)
     {
+        bytes32 firstWordHash = keccak256(bytes(_firstWord));
+
+        bytes memory temporaryBytes = abi.encodePacked(bytes8(firstWordHash), bytes4(0), _address);
+
+        assembly {
+            key_ := mload(add(temporaryBytes, 32))
+        }
+    }
+
+    function generateBytes20MappingWithGroupingKey(
+        string memory _firstWord,
+        string memory _secondWord,
+        address _address
+    ) internal pure returns (bytes32 key_) {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
         bytes32 secondWordHash = keccak256(bytes(_secondWord));
 
@@ -97,42 +80,39 @@ library LSP2Utils {
         }
     }
 
-    function generateJSONURLValue(
-        string memory _hashFunction, 
-        string memory _json, 
-        string memory _url
-    ) 
-        public
+    function generateBytes20MappingWithGroupingKey(bytes12 _keyPrefix, bytes20 _bytes20)
+        internal
         pure
-        returns (bytes memory key_)
+        returns (bytes32)
     {
+        bytes memory generatedKey = bytes.concat(_keyPrefix, _bytes20);
+        bytes32 toBytes32Key;
+        // solhint-disable-next-line
+        assembly {
+            toBytes32Key := mload(add(generatedKey, 32))
+        }
+        return toBytes32Key;
+    }
+
+    function generateJSONURLValue(
+        string memory _hashFunction,
+        string memory _json,
+        string memory _url
+    ) internal pure returns (bytes memory key_) {
         bytes32 hashFunctionDigest = keccak256(bytes(_hashFunction));
         bytes32 jsonDigest = keccak256(bytes(_json));
 
-        key_ = abi.encodePacked(
-            bytes4(hashFunctionDigest),
-            jsonDigest,
-            _url
-        );
+        key_ = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, _url);
     }
 
     function generateASSETURLValue(
-        string memory _hashFunction, 
-        string memory _assetBytes, 
+        string memory _hashFunction,
+        string memory _assetBytes,
         string memory _url
-    )
-        public
-        pure
-        returns (bytes memory key_)
-    {
+    ) internal pure returns (bytes memory key_) {
         bytes32 hashFunctionDigest = keccak256(bytes(_hashFunction));
         bytes32 jsonDigest = keccak256(bytes(_assetBytes));
 
-        key_ = abi.encodePacked(
-            bytes4(hashFunctionDigest),
-            jsonDigest,
-            _url
-        );
+        key_ = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, _url);
     }
-
 }
