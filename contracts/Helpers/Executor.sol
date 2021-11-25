@@ -5,20 +5,19 @@ import "../UniversalProfile.sol";
 import "../LSP6KeyManager/LSP6KeyManager.sol";
 
 contract Executor {
-
     uint256 internal constant _OPERATION_CALL = 0;
+
+    // prettier-ignore
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
-    /* solhint-disable */
-    LSP6KeyManager keyManager;
-    UniversalProfile universalProfile;
-    /* solhint-enable */
+    LSP6KeyManager private _keyManager;
+    UniversalProfile private _universalProfile;
 
     // payable modifier is required as _account is non-payable by default
     // but UniversalProfile has a payable fallback function
-    constructor(address payable _account, address _keyManager) {
-        universalProfile = UniversalProfile(_account);
-        keyManager = LSP6KeyManager(_keyManager);
+    constructor(address payable account_, address keyManager_) {
+        _universalProfile = UniversalProfile(account_);
+        _keyManager = LSP6KeyManager(keyManager_);
     }
 
     // contract calls
@@ -29,16 +28,17 @@ contract Executor {
         bytes[] memory values = new bytes[](1);
 
         // keccak256('MyFirstKey')
+        // prettier-ignore
         keys[0] = 0x00b76b597620a89621ab37aedc4220d553ad6145a885461350e5990372b906f5;
         values[0] = "Hello Lukso";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.setData.selector,
+            _universalProfile.setData.selector,
             keys,
             values
         );
 
-        return keyManager.execute(erc725Payload);
+        return _keyManager.execute(erc725Payload);
     }
 
     function setComputedKey() public returns (bytes memory) {
@@ -49,15 +49,18 @@ contract Executor {
         values[0] = abi.encodePacked("Hello Lukso");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.setData.selector,
+            _universalProfile.setData.selector,
             keys,
             values
         );
 
-        return keyManager.execute(erc725Payload);
+        return _keyManager.execute(erc725Payload);
     }
 
-    function setComputedKeyFromParams(bytes32 _key, bytes memory _value) public returns (bytes memory) {
+    function setComputedKeyFromParams(bytes32 _key, bytes memory _value)
+        public
+        returns (bytes memory)
+    {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
@@ -65,40 +68,43 @@ contract Executor {
         values[0] = _value;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.setData.selector,
+            _universalProfile.setData.selector,
             keys,
             values
         );
 
-        return keyManager.execute(erc725Payload);
+        return _keyManager.execute(erc725Payload);
     }
 
     function sendOneLyxHardcoded() public returns (bytes memory) {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.execute.selector,
+            _universalProfile.execute.selector,
             _OPERATION_CALL,
             _DUMMY_RECIPIENT,
             amount,
             ""
         );
 
-        return keyManager.execute(erc725Payload);
+        return _keyManager.execute(erc725Payload);
     }
 
-    function sendOneLyxToRecipient(address _recipient) public returns (bytes memory) {
+    function sendOneLyxToRecipient(address _recipient)
+        public
+        returns (bytes memory)
+    {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.execute.selector,
+            _universalProfile.execute.selector,
             _OPERATION_CALL,
             _recipient,
             amount,
             ""
         );
 
-        return keyManager.execute(erc725Payload);
+        return _keyManager.execute(erc725Payload);
     }
 
     // raw / low-level calls
@@ -109,21 +115,23 @@ contract Executor {
         bytes[] memory values = new bytes[](1);
 
         // keccak256('MyFirstKey')
+        // prettier-ignore
         keys[0] = 0x00b76b597620a89621ab37aedc4220d553ad6145a885461350e5990372b906f5;
         values[0] = "Hello Lukso";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.setData.selector,
+            _universalProfile.setData.selector,
             keys,
             values
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            keyManager.execute.selector,
+            _keyManager.execute.selector,
             erc725Payload
         );
 
-        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        // solhint-disable avoid-low-level-calls
+        (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
 
@@ -135,21 +143,25 @@ contract Executor {
         values[0] = abi.encodePacked("Hello Lukso");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.setData.selector,
+            _universalProfile.setData.selector,
             keys,
             values
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            keyManager.execute.selector,
+            _keyManager.execute.selector,
             erc725Payload
         );
 
-        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        // solhint-disable avoid-low-level-calls
+        (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
 
-    function setComputedKeyFromParamsRawCall(bytes32 _key, bytes memory _value) public returns (bool) {
+    function setComputedKeyFromParamsRawCall(bytes32 _key, bytes memory _value)
+        public
+        returns (bool)
+    {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
@@ -157,17 +169,18 @@ contract Executor {
         values[0] = _value;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.setData.selector,
+            _universalProfile.setData.selector,
             keys,
             values
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            keyManager.execute.selector,
+            _keyManager.execute.selector,
             erc725Payload
         );
 
-        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        // solhint-disable avoid-low-level-calls
+        (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
 
@@ -175,7 +188,7 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.execute.selector,
+            _universalProfile.execute.selector,
             _OPERATION_CALL,
             _DUMMY_RECIPIENT,
             amount,
@@ -183,19 +196,23 @@ contract Executor {
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            keyManager.execute.selector,
+            _keyManager.execute.selector,
             erc725Payload
         );
 
-        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        // solhint-disable avoid-low-level-calls
+        (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
 
-    function sendOneLyxToRecipientRawCall(address _recipient) public returns (bool) {
+    function sendOneLyxToRecipientRawCall(address _recipient)
+        public
+        returns (bool)
+    {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            universalProfile.execute.selector,
+            _universalProfile.execute.selector,
             _OPERATION_CALL,
             _recipient,
             amount,
@@ -203,12 +220,12 @@ contract Executor {
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            keyManager.execute.selector,
+            _keyManager.execute.selector,
             erc725Payload
         );
 
-        (bool success, ) = address(keyManager).call(keyManagerPayload);
+        // solhint-disable avoid-low-level-calls
+        (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
-
 }

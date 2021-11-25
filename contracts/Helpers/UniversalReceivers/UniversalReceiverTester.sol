@@ -14,8 +14,14 @@ contract UniversalReceiverTester {
         return ILSP1UniversalReceiver(target).universalReceiver(typeId, "");
     }
 
-    function checkImplementation(address _target, bytes32 _typeId) external returns (bool) {
-        bytes memory ret = ILSP1UniversalReceiver(_target).universalReceiver(_typeId, "");
+    function checkImplementation(address _target, bytes32 _typeId)
+        external
+        returns (bool)
+    {
+        bytes memory ret = ILSP1UniversalReceiver(_target).universalReceiver(
+            _typeId,
+            ""
+        );
         return abi.decode(ret, (bytes32)) == _typeId;
     }
 
@@ -24,9 +30,17 @@ contract UniversalReceiverTester {
     //     return AssertBytes.equal(ret, abi.encodePacked(typeId), "");
     // }
 
-    function lowLevelCheckImplementation(address target, bytes32 typeId) external returns (bool) {
+    function lowLevelCheckImplementation(address target, bytes32 typeId)
+        external
+        returns (bool)
+    {
+        // solhint-disable avoid-low-level-calls
         (bool succ, bytes memory ret) = target.call(
-            abi.encodeWithSignature("universalReceiver(bytes32,bytes)", typeId, "")
+            abi.encodeWithSignature(
+                "universalReceiver(bytes32,bytes)",
+                typeId,
+                ""
+            )
         );
         bytes32 response = BytesLib.toBytes32(ret, 64);
         return succ && response == typeId;

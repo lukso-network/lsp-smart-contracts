@@ -41,7 +41,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         override(ERC165Storage)
         returns (bool)
     {
-        return interfaceId == _INTERFACE_ID_ERC1271 || super.supportsInterface(interfaceId);
+        return
+            interfaceId == _INTERFACE_ID_ERC1271 ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
@@ -50,7 +52,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _from caller address
      * @param _channel channel id
      */
-    function getNonce(address _from, uint256 _channel) public view override returns (uint256) {
+    function getNonce(address _from, uint256 _channel)
+        public
+        view
+        override
+        returns (uint256)
+    {
         uint128 nonceId = uint128(_nonceStore[_from][_channel]);
         return (uint256(_channel) << 128) | nonceId;
     }
@@ -70,7 +77,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
         return
-            (_PERMISSION_SIGN & _getAddressPermissions(recoveredAddress)) == _PERMISSION_SIGN
+            (_PERMISSION_SIGN & _getAddressPermissions(recoveredAddress)) ==
+                _PERMISSION_SIGN
                 ? _INTERFACE_ID_ERC1271
                 : _ERC1271FAILVALUE;
     }
@@ -80,22 +88,29 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _data obtained via encodeABI() in web3
      * @return result_ the data being returned by the ERC725 Account
      */
-    function execute(bytes calldata _data) external payable override returns (bytes memory) {
+    function execute(bytes calldata _data)
+        external
+        payable
+        override
+        returns (bytes memory)
+    {
         _verifyPermissions(msg.sender, _data);
 
+        // solhint-disable avoid-low-level-calls
         (bool success, bytes memory result_) = address(account).call{
             value: msg.value,
             gas: gasleft()
         }(_data);
 
         if (!success) {
-            /* solhint-disable */
+            // solhint-disable reason-string
             if (result_.length < 68) revert();
+
+            // solhint-disable no-inline-assembly
             assembly {
                 result_ := add(result_, 0x04)
             }
             revert(abi.decode(result_, (string)));
-            /* solhint-enable */
         }
 
         emit Executed(msg.value, _data);
@@ -127,27 +142,35 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             _data
         );
 
-        address signer = keccak256(blob).toEthSignedMessageHash().recover(_signature);
+        address signer = keccak256(blob).toEthSignedMessageHash().recover(
+            _signature
+        );
 
-        require(_isValidNonce(signer, _nonce), "KeyManager:executeRelayCall: Incorrect nonce");
+        require(
+            _isValidNonce(signer, _nonce),
+            "KeyManager:executeRelayCall: Incorrect nonce"
+        );
 
         // increase nonce after successful verification
         _nonceStore[signer][_nonce >> 128]++;
 
         _verifyPermissions(signer, _data);
 
-        (bool success, bytes memory result_) = address(account).call{value: 0, gas: gasleft()}(
-            _data
-        );
+        // solhint-disable avoid-low-level-calls
+        (bool success, bytes memory result_) = address(account).call{
+            value: 0,
+            gas: gasleft()
+        }(_data);
 
         if (!success) {
-            /* solhint-disable */
+            // solhint-disable reason-string
             if (result_.length < 68) revert();
+
+            // solhint-disable no-inline-assembly
             assembly {
                 result_ := add(result_, 0x04)
             }
             revert(abi.decode(result_, (string)));
-            /* solhint-enable */
         }
 
         emit Executed(msg.value, _data);
@@ -161,7 +184,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _from caller address
      * @param _idx (channel id + nonce within the channel)
      */
-    function _isValidNonce(address _from, uint256 _idx) internal view returns (bool) {
+    function _isValidNonce(address _from, uint256 _idx)
+        internal
+        view
+        returns (bool)
+    {
         // idx % (1 << 128) = nonce
         // (idx >> 128) = channel
         // equivalent to: return (nonce == _nonceStore[_from][channel]
@@ -173,7 +200,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _from the address making the request
      * @param _data the payload that will be run on `account`
      */
-    function _verifyPermissions(address _from, bytes calldata _data) internal view {
+    function _verifyPermissions(address _from, bytes calldata _data)
+        internal
+        view
+    {
         bytes4 erc725Function = bytes4(_data[:4]);
 
         if (erc725Function == account.setData.selector) {
@@ -195,11 +225,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 "KeyManager:_verifyPermissions: Not authorized to transfer ownership"
             );
         } else {
-            revert("KeyManager:_verifyPermissions: unknown function selector on ERC725 account");
+            revert(
+                "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
+            );
         }
     }
 
-    function _verifyCanSetData(address _from, bytes calldata _data) internal view {
+    function _verifyCanSetData(address _from, bytes calldata _data)
+        internal
+        view
+    {
         bytes32 permissions = _getAddressPermissions(_from);
 
         uint256 keyCount = uint256(bytes32(_data[68:100]));
@@ -211,7 +246,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
             // check if the key is related to setting permissions
             if (bytes8(key) == _SET_PERMISSIONS) {
-                bool isNewAddress = bytes32(ERC725Y(account).getDataSingle(key)) == bytes32(0);
+                bool isNewAddress = bytes32(
+                    ERC725Y(account).getDataSingle(key)
+                ) == bytes32(0);
 
                 isNewAddress
                     ? require(
@@ -219,7 +256,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                         "KeyManager:_verifyCanSetData: not authorized to ADDPERMISSIONS"
                     )
                     : require(
-                        _hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions),
+                        _hasPermission(
+                            _PERMISSION_CHANGEPERMISSIONS,
+                            permissions
+                        ),
                         "KeyManager:_verifyCanSetData: not authorized to CHANGEPERMISSIONS"
                     );
             } else {
@@ -233,7 +273,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         }
     }
 
-    function _verifyCanExecute(address _from, bytes calldata _data) internal view {
+    function _verifyCanExecute(address _from, bytes calldata _data)
+        internal
+        view
+    {
         bytes32 permissions = _getAddressPermissions(_from);
 
         uint256 operationType = uint256(bytes32(_data[4:36]));
@@ -288,15 +331,23 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
         if (allowedAddresses.length == 0) return;
 
-        address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
+        address[] memory allowedAddressesList = abi.decode(
+            allowedAddresses,
+            (address[])
+        );
 
         for (uint256 ii = 0; ii < allowedAddressesList.length; ii++) {
             if (_to == allowedAddressesList[ii]) return;
         }
-        revert("KeyManager:_verifyAllowedAddress: Not authorized to interact with this address");
+        revert(
+            "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
+        );
     }
 
-    function _verifyAllowedFunction(address _from, bytes4 _functionSelector) internal view {
+    function _verifyAllowedFunction(address _from, bytes4 _functionSelector)
+        internal
+        view
+    {
         bytes memory allowedFunctions = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_ALLOWEDFUNCTIONS,
@@ -306,21 +357,35 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
         if (allowedFunctions.length == 0) return;
 
-        bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
+        bytes4[] memory allowedFunctionsList = abi.decode(
+            allowedFunctions,
+            (bytes4[])
+        );
 
         for (uint256 ii = 0; ii < allowedFunctionsList.length; ii++) {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
-        revert("KeyManager:_verifyAllowedFunction: not authorised to run this function");
+        revert(
+            "KeyManager:_verifyAllowedFunction: not authorised to run this function"
+        );
     }
 
-    function _getAddressPermissions(address _address) internal view returns (bytes32) {
+    function _getAddressPermissions(address _address)
+        internal
+        view
+        returns (bytes32)
+    {
         bytes memory fetchResult = ERC725Y(account).getDataSingle(
-            LSP2Utils.generateBytes20MappingWithGroupingKey(_ADDRESS_PERMISSIONS, bytes20(_address))
+            LSP2Utils.generateBytes20MappingWithGroupingKey(
+                _ADDRESS_PERMISSIONS,
+                bytes20(_address)
+            )
         );
 
         if (fetchResult.length == 0) {
-            revert("KeyManager:_getAddressPermissions: no permissions set for this address");
+            revert(
+                "KeyManager:_getAddressPermissions: no permissions set for this address"
+            );
         }
 
         bytes32 storedPermission;
