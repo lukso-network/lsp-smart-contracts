@@ -29,14 +29,14 @@ error NotAuthorised(string permission, address from);
  * @param from address making the request
  * @param toAddressDisallowed address that `from` is not authorised to call
  */
-error NotAllowedAddress(string from, string toAddressDisallowed);
+error NotAllowedAddress(address from, address toAddressDisallowed);
 
 /**
  * address `from` is not authorised to run `disallowedFunction` via account
  * @param from address making the request
  * @param disallowedFunction bytes4 function selector that `from` is not authorised to run
  */
-error NotAllowedFunction(string from, string disallowedFunction);
+error NotAllowedFunction(address from, bytes4 disallowedFunction);
 
 /**
  * @title Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -332,9 +332,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         for (uint256 ii = 0; ii < allowedAddressesList.length; ii++) {
             if (_to == allowedAddressesList[ii]) return;
         }
-        revert(
-            "KeyManager:_verifyAllowedAddress: Not authorized to interact with this address"
-        );
+        revert NotAllowedAddress(_from, _to);
     }
 
     function _verifyAllowedFunction(address _from, bytes4 _functionSelector)
@@ -358,9 +356,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         for (uint256 ii = 0; ii < allowedFunctionsList.length; ii++) {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
-        revert(
-            "KeyManager:_verifyAllowedFunction: not authorised to run this function"
-        );
+
+        revert NotAllowedFunction(_from, _functionSelector);
     }
 
     function _getAddressPermissions(address _address)
