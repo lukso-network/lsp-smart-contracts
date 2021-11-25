@@ -103,47 +103,6 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     }
 
     /**
-     * @dev Changes token `amount` the `operator` has access to from `tokenOwner` tokens. If the
-     * amount is zero then the operator is being revoked, otherwise the operator amount is being
-     * modified.
-     *
-     * See {isOperatorFor}.
-     *
-     * Emits either {AuthorizedOperator} or {RevokedOperator} event.
-     *
-     * Requirements
-     *
-     * - `operator` cannot be calling address.
-     * - `operator` cannot be the zero address.
-     */
-    function _updateOperator(
-        address tokenOwner,
-        address operator,
-        uint256 amount
-    ) internal virtual {
-        require(
-            operator != tokenOwner,
-            "LSP7: updating operator failed, can not use token owner as operator"
-        );
-        require(
-            operator != address(0),
-            "LSP7: updating operator failed, operator can not be zero address"
-        );
-        require(
-            tokenOwner != address(0),
-            "LSP7: updating operator failed, can not set operator for zero address"
-        );
-
-        _operatorAuthorizedAmount[tokenOwner][operator] = amount;
-
-        if (amount > 0) {
-            emit AuthorizedOperator(operator, tokenOwner, amount);
-        } else {
-            emit RevokedOperator(operator, tokenOwner);
-        }
-    }
-
-    /**
      * @dev Returns amount of tokens `operator` address has access to from `tokenOwner`.
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
@@ -227,6 +186,47 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         for (uint256 i = 0; i < from.length; i++) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(from[i], to[i], amount[i], force, data[i]);
+        }
+    }
+
+    /**
+     * @dev Changes token `amount` the `operator` has access to from `tokenOwner` tokens. If the
+     * amount is zero then the operator is being revoked, otherwise the operator amount is being
+     * modified.
+     *
+     * See {isOperatorFor}.
+     *
+     * Emits either {AuthorizedOperator} or {RevokedOperator} event.
+     *
+     * Requirements
+     *
+     * - `operator` cannot be calling address.
+     * - `operator` cannot be the zero address.
+     */
+    function _updateOperator(
+        address tokenOwner,
+        address operator,
+        uint256 amount
+    ) internal virtual {
+        require(
+            operator != tokenOwner,
+            "LSP7: updating operator failed, can not use token owner as operator"
+        );
+        require(
+            operator != address(0),
+            "LSP7: updating operator failed, operator can not be zero address"
+        );
+        require(
+            tokenOwner != address(0),
+            "LSP7: updating operator failed, can not set operator for zero address"
+        );
+
+        _operatorAuthorizedAmount[tokenOwner][operator] = amount;
+
+        if (amount > 0) {
+            emit AuthorizedOperator(operator, tokenOwner, amount);
+        } else {
+            emit RevokedOperator(operator, tokenOwner);
         }
     }
 
