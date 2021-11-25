@@ -425,9 +425,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         pure
         returns (bool)
     {
-        revert NotAuthorised(
-            string(abi.encodePacked(unicode"🚫 ", _permission)),
-            _from
-        );
+        revert NotAuthorised(_permission, _from);
     }
 }
