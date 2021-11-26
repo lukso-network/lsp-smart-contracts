@@ -43,11 +43,19 @@ FILES=(
     LSP1UniversalReceiverDelegate
     LSP7Mintable
     LSP8Mintable
+    LSP7DigitalAsset
+    LSP7CappedSupply
+    LSP8IdentifiableDigitalAsset
+    LSP8CappedSupply
     UniversalProfileInit
     LSP6KeyManagerInit
     LSP1UniversalReceiverDelegateInit
     LSP7MintableInit
     LSP8MintableInit
+    LSP7DigitalAssetInit
+    LSP7CappedSupplyInit
+    LSP8IdentifiableDigitalAssetInit
+    LSP8CappedSupplyInit
     LSP7CompatibilityForERC20
     LSP8CompatibilityForERC721
 )
