@@ -18,13 +18,21 @@ solc --abi --bin \
     contracts/UniversalProfile.sol \
     contracts/LSP6KeyManager/LSP6KeyManager.sol \
     contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegate.sol \
-    contracts/LSP7DigitalAsset/extensions/LSP7Mintable.sol.sol \
-    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Mintable.sol.sol \
+    contracts/LSP7DigitalAsset/extensions/LSP7Mintable.sol \
+    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Mintable.sol \
+    contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol \
+    contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol \
+    contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol \
+    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol \
     contracts/UniversalProfileInit.sol \
     contracts/LSP6KeyManager/LSP6KeyManagerInit.sol \
     contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateInit.sol \
-    contracts/LSP7DigitalAsset/extensions/LSP7MintableInit.sol.sol \
-    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8MintableInit.sol.sol \
+    contracts/LSP7DigitalAsset/extensions/LSP7MintableInit.sol \
+    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8MintableInit.sol \
+    contracts/LSP7DigitalAsset/LSP7DigitalAssetInit.sol \
+    contracts/LSP7DigitalAsset/extensions/LSP7CappedSupplyInit.sol \
+    contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInit.sol \
+    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol \
     contracts/LSP7DigitalAsset/extensions/LSP7CompatibilityForERC20.sol \
     contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721.sol \
     -o ./output/
@@ -35,11 +43,19 @@ FILES=(
     LSP1UniversalReceiverDelegate
     LSP7Mintable
     LSP8Mintable
+    LSP7DigitalAsset
+    LSP7CappedSupply
+    LSP8IdentifiableDigitalAsset
+    LSP8CappedSupply
     UniversalProfileInit
     LSP6KeyManagerInit
     LSP1UniversalReceiverDelegateInit
     LSP7MintableInit
     LSP8MintableInit
+    LSP7DigitalAssetInit
+    LSP7CappedSupplyInit
+    LSP8IdentifiableDigitalAssetInit
+    LSP8CappedSupplyInit
     LSP7CompatibilityForERC20
     LSP8CompatibilityForERC721
 )
