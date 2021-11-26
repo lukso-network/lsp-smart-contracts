@@ -57,6 +57,10 @@ const config: HardhatUserConfig = {
       "LSP1UniversalReceiverDelegate",
       "LSP7Mintable",
       "LSP8Mintable",
+      "LSP7DigitalAsset",
+      "LSP7CappedSupply",
+      "LSP8IdentifiableDigitalAsset",
+      "LSP8CappedSupply",
       // Proxy version
       // ------------------
       "UniversalProfileInit",
@@ -64,6 +68,10 @@ const config: HardhatUserConfig = {
       "LSP1UniversalReceiverDelegateInit",
       "LSP7MintableInit",
       "LSP8MintableInit",
+      "LSP7DigitalAssetInit",
+      "LSP7CappedSupplyInit",
+      "LSP8IdentifiableDigitalAssetInit",
+      "LSP8CappedSupplyInit",
       // ERC Compatible tokens
       // ------------------
       "LSP7CompatibilityForERC20",
