@@ -18,8 +18,8 @@ solc --abi --bin \
     contracts/UniversalProfile.sol \
     contracts/LSP6KeyManager/LSP6KeyManager.sol \
     contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegate.sol \
-    contracts/LSP7DigitalAsset/extensions/LSP7Mintable.sol.sol \
-    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Mintable.sol.sol \
+    contracts/LSP7DigitalAsset/extensions/LSP7Mintable.sol \
+    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Mintable.sol \
     contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol \
     contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol \
     contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol \
@@ -27,8 +27,8 @@ solc --abi --bin \
     contracts/UniversalProfileInit.sol \
     contracts/LSP6KeyManager/LSP6KeyManagerInit.sol \
     contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateInit.sol \
-    contracts/LSP7DigitalAsset/extensions/LSP7MintableInit.sol.sol \
-    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8MintableInit.sol.sol \
+    contracts/LSP7DigitalAsset/extensions/LSP7MintableInit.sol \
+    contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8MintableInit.sol \
     contracts/LSP7DigitalAsset/LSP7DigitalAssetInit.sol \
     contracts/LSP7DigitalAsset/extensions/LSP7CappedSupplyInit.sol \
     contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInit.sol \
