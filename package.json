@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
   "dependencies": {
-    "@erc725/smart-contracts": "^2.1.2",
+    "@erc725/smart-contracts": "^2.1.6",
     "@openzeppelin/contracts": "^4.3.0",
     "solidity-bytes-utils": "0.8.0"
   },
