@@ -21,6 +21,13 @@ pragma solidity ^0.8.0;
  * based on https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Create2.sol
  * DO NOT TOUCH
  */
+
+// NOTE
+// fix proxy deployement
+// change deploy to do: create2, then call init
+// the salt needs to be the inital owner
+// pick you identicon by generating different initial owner keys
+
 contract Create2Factory {
     event ContractCreated(address addr, bytes32 salt);
 
