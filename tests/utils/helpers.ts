@@ -11,7 +11,8 @@ export const DUMMY_RECIPIENT = ethers.utils.getAddress(
   "0xcafecafecafecafecafecafecafecafecafecafe"
 );
 
-export const RANDOM_BYTES32 = "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+export const RANDOM_BYTES32 =
+  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 export const ERC777TokensRecipient =
   "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 
@@ -94,3 +95,20 @@ export function generateKeysAndValues(_elementObject) {
 
   return [keys, values];
 }
+
+// LSP6 - KeyManager
+
+const customRevertErrorMessage =
+  "VM Exception while processing transaction: reverted with custom error";
+
+export const NotAuthorisedError = (_permission, _address) => {
+  return `${customRevertErrorMessage} 'NotAuthorised("${_permission}", "${_address}")'`;
+};
+
+export const NotAllowedAddressError = (_from, _to) => {
+  return `${customRevertErrorMessage} 'NotAllowedAddress("${_from}", "${_to}")'`;
+};
+
+export const NotAllowedFunctionError = (_from, _functionSelector) => {
+  return `${customRevertErrorMessage} 'NotAllowedFunction("${_from}", "${_functionSelector}")'`;
+};
