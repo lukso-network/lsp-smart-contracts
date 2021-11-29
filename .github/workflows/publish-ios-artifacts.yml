@@ -3,9 +3,11 @@
 name: Upload iOS Github artifacts CD
 
 on:
-  push:
+  # push:
+  pull_request:
     branches:
-      - "main"
+      # - "main"
+      - "develop"
   # Run workflow manually for testing
   workflow_dispatch:
 
