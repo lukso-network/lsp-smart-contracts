@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.1](https://github.com/lukso-network/universalprofile-smart-contracts/compare/v0.4.0...v0.4.1) (2021-11-26)
+
+## [0.4.0](https://github.com/lukso-network/universalprofile-smart-contracts/compare/v0.3.0...v0.4.0) (2021-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **release:** ILSP6 interface return type change.
+
+* test!(KM): return bytes or revert on `execute` / `executeRelayCall`
+
+Tests by interacting with `TargetContract`
+
+* test!(KM): Remove gasLimit specified in tests.
+
+* feat!(KM): Extend permission range to 256 (32 bytes)
+
+* test!(KM): Use 32 bytes padding for 32 bytes permissions range
+
+* test!: :heavy_plus_sign: set AddressPermissions[]  in tests
+
+Addresses with permissions set MUST be added to an array inside ERC725Y key-value (see LSP6 specs)
+
+* Fixed KeyManager permission key name
+
+### Features
+
+* :pushpin: upgrade `@erc725/smart-contracts` to version 2.1.6 ([#69](https://github.com/lukso-network/universalprofile-smart-contracts/issues/69)) ([97e19e8](https://github.com/lukso-network/universalprofile-smart-contracts/commit/97e19e86b166e85e4d8f3d2c091b9aaf3c0aac32))
+* `ADDPERMISSIONS` + refactor LSP6Keymanager internal functions names & logic ([#65](https://github.com/lukso-network/universalprofile-smart-contracts/issues/65)) ([adc225c](https://github.com/lukso-network/universalprofile-smart-contracts/commit/adc225c75cd0c7a5f343f2238669b69d7b11a9b8))
+* add Mintable version of LSP7 / LSP8  ([#61](https://github.com/lukso-network/universalprofile-smart-contracts/issues/61)) ([b8a0bdf](https://github.com/lukso-network/universalprofile-smart-contracts/commit/b8a0bdf50074f79e6e1e020bd489038cddc872e4))
+* use custom `error` for reverts in KeyManager ([#68](https://github.com/lukso-network/universalprofile-smart-contracts/issues/68)) ([1e8113e](https://github.com/lukso-network/universalprofile-smart-contracts/commit/1e8113e4cbd4578f7c18fa709406f07ce496423f))
+
+
+* **release:** 0.2.2 - the start ([#46](https://github.com/lukso-network/universalprofile-smart-contracts/issues/46)) ([928902f](https://github.com/lukso-network/universalprofile-smart-contracts/commit/928902f97333465262fdb18e2d84b21a121f81e5)), closes [#7](https://github.com/lukso-network/universalprofile-smart-contracts/issues/7) [#21](https://github.com/lukso-network/universalprofile-smart-contracts/issues/21) [#26](https://github.com/lukso-network/universalprofile-smart-contracts/issues/26) [#25](https://github.com/lukso-network/universalprofile-smart-contracts/issues/25) [#30](https://github.com/lukso-network/universalprofile-smart-contracts/issues/30) [#31](https://github.com/lukso-network/universalprofile-smart-contracts/issues/31) [#32](https://github.com/lukso-network/universalprofile-smart-contracts/issues/32) [#33](https://github.com/lukso-network/universalprofile-smart-contracts/issues/33) [#35](https://github.com/lukso-network/universalprofile-smart-contracts/issues/35) [#34](https://github.com/lukso-network/universalprofile-smart-contracts/issues/34) [#36](https://github.com/lukso-network/universalprofile-smart-contracts/issues/36) [#38](https://github.com/lukso-network/universalprofile-smart-contracts/issues/38) [#37](https://github.com/lukso-network/universalprofile-smart-contracts/issues/37) [#40](https://github.com/lukso-network/universalprofile-smart-contracts/issues/40) [#41](https://github.com/lukso-network/universalprofile-smart-contracts/issues/41) [#43](https://github.com/lukso-network/universalprofile-smart-contracts/issues/43) [#44](https://github.com/lukso-network/universalprofile-smart-contracts/issues/44) [#45](https://github.com/lukso-network/universalprofile-smart-contracts/issues/45)
 
 ## [0.3.0](https://github.com/lukso-network/universalprofile-smart-contracts/compare/v0.2.2...v0.3.0) (2021-11-15)
 
