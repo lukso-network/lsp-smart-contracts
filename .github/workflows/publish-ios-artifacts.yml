@@ -1,4 +1,4 @@
-# This workflow build and publish iOS artifacts
+# This workflow build and publish iOS artifacts to the LUKSO iOS SDK repository on Github
 
 name: Upload iOS Github artifacts CD
 
@@ -6,15 +6,16 @@ on:
   push:
     branches:
       - "main"
+  # Enable to run workflow manually for debugging
+  workflow_dispatch:
 
 jobs:
-  ios-build-artifacts:
-    # The type of runner
+  upload-ios-artifacts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check if version changed
+      - name: Check if NPM package version has changed
         uses: EndBug/version-check@v1
         id: check
 
@@ -41,6 +42,7 @@ jobs:
           cd universalprofile-ios-sdk
           git config --global user.email "release@lukso.network"
           git config --global user.name "LUKSO Bot"
+          git push origin --delete abi-update-release
           git checkout -b abi-update-release
           cp ../ios/UPContractsAbi.swift universalprofile-ios-sdk/UPContractsAbi.swift
           git add .
