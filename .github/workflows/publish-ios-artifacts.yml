@@ -3,6 +3,7 @@
 name: Upload iOS Github artifacts CD
 
 on:
+  # Run workflow manually for testing
   workflow_dispatch:
   push:
     branches:
