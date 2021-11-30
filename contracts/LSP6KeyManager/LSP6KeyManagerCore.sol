@@ -125,7 +125,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             revert(abi.decode(result_, (string)));
         }
 
-        if (success) emit Executed(msg.value, _data);
+        emit Executed(msg.value, _data);
         return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
