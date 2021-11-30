@@ -12,7 +12,11 @@ import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInit.sol";
 /**
  * @dev Implementation of a LSP7 compliant contract.
  */
-contract LSP7DigitalAssetInit is Initializable, LSP4DigitalAssetMetadataInit, LSP7DigitalAssetCore {
+contract LSP7DigitalAssetInit is
+    Initializable,
+    LSP4DigitalAssetMetadataInit,
+    LSP7DigitalAssetCore
+{
     function initialize(
         string memory name_,
         string memory symbol_,
@@ -22,6 +26,6 @@ contract LSP7DigitalAssetInit is Initializable, LSP4DigitalAssetMetadataInit, LS
         _isNFT = isNFT_;
         LSP4DigitalAssetMetadataInit.initialize(name_, symbol_, newOwner_);
 
-        _registerInterface(_LSP7_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP7);
     }
 }

@@ -15,6 +15,7 @@ export const enum INTERFACE_IDS {
   LSP6 = "0x6f4df48b",
   LSP7 = "0xe33f65c3",
   LSP8 = "0x49399145",
+  LSP9 = "0x75edcee5"
 }
 
 // ERC725Y
@@ -32,6 +33,10 @@ export const SupportedStandards = {
   LSP4DigitalAsset: {
     key: "0xeafec4d89fa9619884b6b89135626455000000000000000000000000a4d96624",
     value: "0xa4d96624",
+  },
+  LSP9Vault: {
+    key: "0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1",
+    value: "0x7c0334a1",
   },
 };
 
@@ -65,6 +70,10 @@ export const ERC725YKeys = {
     // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
     "AddressPermissions:AllowedFunctions:": "0x4b80742d000000008efe0000",
   },
+  LSP10: {
+    "LSP10ReceivedVaultsMap": "0x5e5a4636eeb20bf100000000",
+    "LSP10ReceivedVaults[]": "0xd8c6ec2b958bbebb976719e1eb233f126e0f355c63843f434220f9753b5ca9e5"
+  }
 };
 
 export const BasicUPSetup_Schema: ERC725JSONSchema[] = [

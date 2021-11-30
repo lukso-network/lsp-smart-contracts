@@ -9,6 +9,6 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 contract LSP6KeyManagerInit is Initializable, LSP6KeyManagerCore {
     function initialize(address _account) public initializer {
         account = ERC725(_account);
-        _registerInterface(_LSP6_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP6);
     }
 }
