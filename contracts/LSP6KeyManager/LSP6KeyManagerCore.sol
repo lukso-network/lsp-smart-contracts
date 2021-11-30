@@ -10,7 +10,6 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "./ILSP6KeyManager.sol";
 
 // libraries
-import "../Utils/LSP2Utils.sol";
 import "../Utils/LSP6Utils.sol";
 import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -46,7 +45,6 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
-    using LSP2Utils for bytes12;
     using ERC725Utils for ERC725Y;
     using LSP6Utils for ERC725;
     using ECDSA for bytes32;
@@ -318,13 +316,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     function _verifyAllowedAddress(address _from, address _to) internal view {
-        bytes memory allowedAddresses = ERC725Y(account).getDataSingle(
-            LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _ADDRESS_ALLOWEDADDRESSES,
-                bytes20(_from)
-            )
-        );
+        bytes memory allowedAddresses = account.getAllowedAddressesFor(_from);
 
+        // whitelist any address if nothing in the list
         if (allowedAddresses.length == 0) return;
 
         address[] memory allowedAddressesList = abi.decode(
@@ -342,13 +336,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         internal
         view
     {
-        bytes memory allowedFunctions = ERC725Y(account).getDataSingle(
-            LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _ADDRESS_ALLOWEDFUNCTIONS,
-                bytes20(_from)
-            )
-        );
+        bytes memory allowedFunctions = account.getAllowedFunctionsFor(_from);
 
+        // whitelist any function if nothing in the list
         if (allowedFunctions.length == 0) return;
 
         bytes4[] memory allowedFunctionsList = abi.decode(

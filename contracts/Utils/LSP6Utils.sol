@@ -33,13 +33,31 @@ library LSP6Utils {
         return bytes32(permissions);
     }
 
-    function getAllowedAddressesFor(address _address)
+    function getAllowedAddressesFor(IERC725Y _account, address _address)
         internal
+        view
         returns (bytes memory)
-    {}
+    {
+        return
+            _account.getDataSingle(
+                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                    _ADDRESS_ALLOWEDADDRESSES,
+                    bytes20(_address)
+                )
+            );
+    }
 
-    function getAllowedFunctionsFor(address _address)
+    function getAllowedFunctionsFor(IERC725Y _account, address _address)
         internal
+        view
         returns (bytes memory)
-    {}
+    {
+        return
+            _account.getDataSingle(
+                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                    _ADDRESS_ALLOWEDFUNCTIONS,
+                    bytes20(_address)
+                )
+            );
+    }
 }
