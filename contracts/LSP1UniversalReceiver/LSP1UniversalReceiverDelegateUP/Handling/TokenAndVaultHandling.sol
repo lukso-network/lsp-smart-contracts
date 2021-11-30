@@ -23,54 +23,89 @@ import "../../../LSP9Vault/LSP9Constants.sol";
 abstract contract TokenAndVaultHandlingContract {
     using ERC725Utils for IERC725Y;
 
-    // prettier-ignore
-
     function _tokenAndVaultHandling(
         address sender,
         bytes32 typeId,
         bytes memory data
     ) internal returns (bytes memory result) {
-
-        (bytes32 arrayKey, bytes32 mapHash, bytes4 interfaceID) = _getTransferData(typeId);
+        (
+            bytes32 arrayKey,
+            bytes32 mapHash,
+            bytes4 interfaceID
+        ) = _getTransferData(typeId);
         address keyManagerAddress = ERC725Y(msg.sender).owner();
-        bytes32 mapKey = ERC725Utils.generateMapKey(mapHash,abi.encodePacked(sender));
+        bytes32 mapKey = ERC725Utils.generateMapKey(
+            mapHash,
+            abi.encodePacked(sender)
+        );
         bytes memory mapValue = IERC725Y(msg.sender).getDataSingle(mapKey);
 
         if (
-            typeId == _LSP7TOKENSRECIPIENT_TYPE_ID || typeId == _LSP8TOKENSRECIPIENT_TYPE_ID ||
-            typeId == _LSP9_VAULT_RECEPIENT_TYPE_ID_) {
+            typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
+            typeId == _TYPEID_LSP8_TOKENSRECIPIENT ||
+            typeId == _TYPEID_LSP9_VAULTRECIPIENT
+        ) {
+            if (bytes12(mapValue) == bytes12(0)) {
+                (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
+                    .addMapAndArrayKey(
+                        IERC725Y(msg.sender),
+                        arrayKey,
+                        mapKey,
+                        sender,
+                        interfaceID
+                    );
 
-            if (mapValue.length != 12) {
-
-                (bytes32[] memory keys,
-                bytes[] memory values) = ERC725Utils.addMapAndArrayKey(IERC725Y(msg.sender), arrayKey, mapKey, sender, interfaceID);
-
-                result = _executeViaKeyManager(keyManagerAddress, keys, values);
+                result = _executeViaKeyManager(
+                    ILSP6KeyManager(keyManagerAddress),
+                    keys,
+                    values
+                );
             }
-
         } else if (
-            typeId == _LSP7TOKENSSENDER_TYPE_ID || typeId == _LSP8TOKENSSENDER_TYPE_ID ||
-            typeId == _LSP9_VAULT_SENDER_TYPE_ID_) {
-                
-            if (mapValue.length == 12) {
+            typeId == _TYPEID_LSP7_TOKENSSENDER ||
+            typeId == _TYPEID_LSP8_TOKENSSENDER ||
+            typeId == _TYPEID_LSP9_VAULTSENDER
+        ) {
+            if (bytes12(mapValue) != bytes12(0)) {
+                if (typeId == _TYPEID_LSP9_VAULTSENDER) {
+                    (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
+                        .removeMapAndArrayKey(
+                            IERC725Y(msg.sender),
+                            arrayKey,
+                            mapHash,
+                            mapKey,
+                            interfaceID
+                        );
 
-                if (typeId == _LSP9_VAULT_SENDER_TYPE_ID_) {
-
-                    (bytes32[] memory keys,
-                    bytes[] memory values) = ERC725Utils.removeMapAndArrayKey(IERC725Y(msg.sender), arrayKey, mapHash, mapKey, interfaceID);
-
-                    result = _executeViaKeyManager(keyManagerAddress,keys,values);
-
+                    result = _executeViaKeyManager(
+                        ILSP6KeyManager(keyManagerAddress),
+                        keys,
+                        values
+                    );
                 } else if (
-                    typeId == _LSP7TOKENSSENDER_TYPE_ID || typeId == _LSP8TOKENSSENDER_TYPE_ID) {
-
-                    uint256 balance = ILSP7DigitalAsset(sender).balanceOf(msg.sender);
+                    typeId == _TYPEID_LSP7_TOKENSSENDER ||
+                    typeId == _TYPEID_LSP8_TOKENSSENDER
+                ) {
+                    uint256 balance = ILSP7DigitalAsset(sender).balanceOf(
+                        msg.sender
+                    );
                     if ((balance - _tokenAmount(typeId, data)) == 0) {
-                       
-                        (bytes32[] memory keys,
-                        bytes[] memory values) = ERC725Utils.removeMapAndArrayKey(IERC725Y(msg.sender), arrayKey, mapHash, mapKey, interfaceID);
+                        (
+                            bytes32[] memory keys,
+                            bytes[] memory values
+                        ) = ERC725Utils.removeMapAndArrayKey(
+                                IERC725Y(msg.sender),
+                                arrayKey,
+                                mapHash,
+                                mapKey,
+                                interfaceID
+                            );
 
-                        result = _executeViaKeyManager(keyManagerAddress,keys,values);
+                        result = _executeViaKeyManager(
+                            ILSP6KeyManager(keyManagerAddress),
+                            keys,
+                            values
+                        );
                     }
                 }
             }
@@ -89,33 +124,33 @@ abstract contract TokenAndVaultHandlingContract {
         )
     {
         if (
-            _typeId == _LSP7TOKENSSENDER_TYPE_ID ||
-            _typeId == _LSP7TOKENSRECIPIENT_TYPE_ID ||
-            _typeId == _LSP8TOKENSSENDER_TYPE_ID ||
-            _typeId == _LSP8TOKENSRECIPIENT_TYPE_ID
+            _typeId == _TYPEID_LSP7_TOKENSSENDER ||
+            _typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
+            _typeId == _TYPEID_LSP8_TOKENSSENDER ||
+            _typeId == _TYPEID_LSP8_TOKENSRECIPIENT
         ) {
-            _arrayKey = _LSP5_ARRAY_KEY;
-            _mapHash = _LSP5_ASSET_MAP_HASH;
+            _arrayKey = _ARRAYKEY_LSP5;
+            _mapHash = _MAPHASH_LSP5;
             if (
-                _typeId == _LSP7TOKENSSENDER_TYPE_ID ||
-                _typeId == _LSP7TOKENSRECIPIENT_TYPE_ID
+                _typeId == _TYPEID_LSP7_TOKENSSENDER ||
+                _typeId == _TYPEID_LSP7_TOKENSRECIPIENT
             ) {
-                _interfaceID = _LSP7_INTERFACE_ID;
+                _interfaceID = _INTERFACEID_LSP7;
             } else {
-                _interfaceID = _LSP8_INTERFACE_ID;
+                _interfaceID = _INTERFACEID_LSP8;
             }
         } else if (
-            _typeId == _LSP9_VAULT_SENDER_TYPE_ID_ ||
-            _typeId == _LSP9_VAULT_RECEPIENT_TYPE_ID_
+            _typeId == _TYPEID_LSP9_VAULTSENDER ||
+            _typeId == _TYPEID_LSP9_VAULTRECIPIENT
         ) {
-            _arrayKey = _LSP10_ARRAY_KEY;
-            _mapHash = _LSP10_VAULT_MAP_HASH;
-            _interfaceID = _LSP9_INTERFACE_ID;
+            _arrayKey = _ARRAYKEY_LSP10;
+            _mapHash = _MAPHASH_LSP10;
+            _interfaceID = _INTERFACEID_LSP9;
         }
     }
 
     function _executeViaKeyManager(
-        address _keyManagerAdd,
+        ILSP6KeyManager _keyManagerAdd,
         bytes32[] memory _keys,
         bytes[] memory _values
     ) private returns (bytes memory result) {
@@ -132,7 +167,7 @@ abstract contract TokenAndVaultHandlingContract {
         pure
         returns (uint256 amount)
     {
-        if (_typeId == _LSP7TOKENSSENDER_TYPE_ID) {
+        if (_typeId == _TYPEID_LSP7_TOKENSSENDER) {
             /* solhint-disable */
             assembly {
                 amount := mload(add(add(_data, 0x20), 0x28))

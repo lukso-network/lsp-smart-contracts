@@ -15,6 +15,6 @@ contract LSP1UniversalReceiverDelegateVault is
     LSP1UniversalReceiverDelegateVaultCore
 {
     constructor() {
-        _registerInterface(_LSP1_DELEGATE_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 }

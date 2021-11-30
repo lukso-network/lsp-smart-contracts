@@ -2,14 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import "../../LSP1UniversalReceiver/LSP1Constants.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 contract URDVaultSetter is ERC165Storage {
-    bytes4 private constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
-
     constructor() {
-        _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
+        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 
     function universalReceiverDelegate(

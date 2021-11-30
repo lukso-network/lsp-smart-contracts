@@ -22,37 +22,56 @@ import "../../../LSP9Vault/LSP9Constants.sol";
 abstract contract TokenHandlingContract {
     using ERC725Utils for IERC725Y;
 
-    // prettier-ignore
     function _tokenHandling(
         address sender,
         bytes32 typeId,
         bytes memory data
     ) internal returns (bytes memory) {
-
-        (bytes32 arrayKey, bytes32 mapHash, bytes4 interfaceId) = _getTransferData(typeId);
-        bytes32 mapKey = ERC725Utils.generateMapKey(mapHash, abi.encodePacked(sender));
+        (
+            bytes32 arrayKey,
+            bytes32 mapHash,
+            bytes4 interfaceId
+        ) = _getTransferData(typeId);
+        bytes32 mapKey = ERC725Utils.generateMapKey(
+            mapHash,
+            abi.encodePacked(sender)
+        );
         IERC725Y vault = IERC725Y(msg.sender);
         bytes memory mapValue = vault.getDataSingle(mapKey);
-        
-        if (typeId == _LSP7TOKENSRECIPIENT_TYPE_ID || typeId == _LSP8TOKENSRECIPIENT_TYPE_ID) {
 
-            if (mapValue.length != 12) {
-
-                (bytes32[] memory keys,
-                bytes[] memory values) = ERC725Utils.addMapAndArrayKey(vault, arrayKey, mapKey, sender, interfaceId);
+        if (
+            typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
+            typeId == _TYPEID_LSP8_TOKENSRECIPIENT
+        ) {
+            if (bytes12(mapValue) == bytes12(0)) {
+                (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
+                    .addMapAndArrayKey(
+                        vault,
+                        arrayKey,
+                        mapKey,
+                        sender,
+                        interfaceId
+                    );
 
                 vault.setData(keys, values);
             }
-            
-        } else if (typeId == _LSP7TOKENSSENDER_TYPE_ID || typeId == _LSP8TOKENSSENDER_TYPE_ID) {
-
-            if (mapValue.length == 12){
-
-                uint256 balance = ILSP7DigitalAsset(sender).balanceOf(msg.sender);
-                if ((balance - _tokenAmount(typeId,data)) == 0) {
-
-                    (bytes32[] memory keys,
-                    bytes[] memory values) = ERC725Utils.removeMapAndArrayKey(vault, arrayKey, mapHash, mapKey, interfaceId);
+        } else if (
+            typeId == _TYPEID_LSP7_TOKENSSENDER ||
+            typeId == _TYPEID_LSP8_TOKENSSENDER
+        ) {
+            if (bytes12(mapValue) != bytes12(0)) {
+                uint256 balance = ILSP7DigitalAsset(sender).balanceOf(
+                    msg.sender
+                );
+                if ((balance - _tokenAmount(typeId, data)) == 0) {
+                    (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
+                        .removeMapAndArrayKey(
+                            vault,
+                            arrayKey,
+                            mapHash,
+                            mapKey,
+                            interfaceId
+                        );
 
                     vault.setData(keys, values);
                 }
@@ -71,15 +90,15 @@ abstract contract TokenHandlingContract {
             bytes4 interfaceID
         )
     {
-        arrayKey = _LSP5_ARRAY_KEY;
-        mapHash = _LSP5_ASSET_MAP_HASH;
+        arrayKey = _ARRAYKEY_LSP5;
+        mapHash = _MAPHASH_LSP5;
         if (
-            _typeId == _LSP7TOKENSSENDER_TYPE_ID ||
-            _typeId == _LSP7TOKENSRECIPIENT_TYPE_ID
+            _typeId == _TYPEID_LSP7_TOKENSSENDER ||
+            _typeId == _TYPEID_LSP7_TOKENSRECIPIENT
         ) {
-            interfaceID = _LSP7_INTERFACE_ID;
+            interfaceID = _INTERFACEID_LSP7;
         } else {
-            interfaceID = _LSP8_INTERFACE_ID;
+            interfaceID = _INTERFACEID_LSP8;
         }
     }
 
@@ -88,7 +107,7 @@ abstract contract TokenHandlingContract {
         pure
         returns (uint256 amount)
     {
-        if (_typeId == _LSP7TOKENSSENDER_TYPE_ID) {
+        if (_typeId == _TYPEID_LSP7_TOKENSSENDER) {
             /* solhint-disable */
             assembly {
                 amount := mload(add(add(_data, 0x20), 0x28))

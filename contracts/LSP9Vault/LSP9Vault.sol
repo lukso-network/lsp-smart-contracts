@@ -18,8 +18,8 @@ contract LSP9Vault is LSP9VaultCore, ERC725 {
 
         _notifyVaultReceiver(_newOwner);
 
-        _registerInterface(_LSP1_INTERFACE_ID);
-        _registerInterface(_LSP9_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP1);
+        _registerInterface(_INTERFACEID_LSP9);
     }
 
     function transferOwnership(address newOwner)

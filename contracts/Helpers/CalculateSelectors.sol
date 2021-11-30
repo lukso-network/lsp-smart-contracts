@@ -21,7 +21,7 @@ contract CalculateERC165Selectors {
     function calculateSelectorLSP1() public pure returns (bytes4) {
         bytes4 selector = type(ILSP1).interfaceId;
         require(
-            selector == _LSP1_INTERFACE_ID,
+            selector == _INTERFACEID_LSP1,
             "_LSP1_INTERFACE_ID does not match type(ILSP1).interfaceId"
         );
 
@@ -31,7 +31,7 @@ contract CalculateERC165Selectors {
     function calculateSelectorLSP1Delegate() public pure returns (bytes4) {
         bytes4 selector = type(ILSP1Delegate).interfaceId;
         require(
-            selector == _LSP1_DELEGATE_INTERFACE_ID,
+            selector == _INTERFACEID_LSP1_DELEGATE,
             "_LSP1_DELEGATE_INTERFACE_ID does not match type(ILSP1Delegate).interfaceId"
         );
 
@@ -41,7 +41,7 @@ contract CalculateERC165Selectors {
     function calculateSelectorLSP6KeyManager() public pure returns (bytes4) {
         bytes4 selector = type(ILSP6KeyManager).interfaceId;
         require(
-            selector == _LSP6_INTERFACE_ID,
+            selector == _INTERFACEID_LSP6,
             "_LSP6_INTERFACE_ID does not match type(ILSP6).interfaceId"
         );
 
@@ -51,7 +51,7 @@ contract CalculateERC165Selectors {
     function calculateSelectorLSP7() public pure returns (bytes4) {
         bytes4 selector = type(ILSP7DigitalAsset).interfaceId;
         require(
-            selector == _LSP7_INTERFACE_ID,
+            selector == _INTERFACEID_LSP7,
             "_LSP7_INTERFACE_ID does not match type(ILSP7).interfaceId"
         );
 
@@ -61,7 +61,7 @@ contract CalculateERC165Selectors {
     function calculateSelectorLSP8() public pure returns (bytes4) {
         bytes4 selector = type(ILSP8IdentifiableDigitalAsset).interfaceId;
         require(
-            selector == _LSP8_INTERFACE_ID,
+            selector == _INTERFACEID_LSP8,
             "_LSP8_INTERFACE_ID does not match type(ILSP8).interfaceId"
         );
 
@@ -83,7 +83,7 @@ contract CalculateERC165Selectors {
             i.universalReceiver.selector;
 
         require(
-            selector == _LSP9_INTERFACE_ID,
+            selector == _INTERFACEID_LSP9,
             "_LSP9_INTERFACE_ID does not match XOR of the functions"
         );
 

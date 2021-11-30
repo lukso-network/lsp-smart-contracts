@@ -26,6 +26,28 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
 
     event ValueReceived(address indexed sender, uint256 indexed value);
 
+    // modifiers
+
+    modifier onlyAllowed() {
+        if (msg.sender != owner()) {
+            address universalReceiverAddress = address(
+                bytes20(
+                    IERC725Y(this).getDataSingle(
+                        _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
+                    )
+                )
+            );
+            require(
+                ERC165Checker.supportsInterface(
+                    msg.sender,
+                    _INTERFACEID_LSP1_DELEGATE
+                ) && msg.sender == universalReceiverAddress,
+                "Only Owner or Universal Receiver Delegate allowed"
+            );
+        }
+        _;
+    }
+
     // public functions
 
     receive() external payable {
@@ -104,10 +126,10 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
     function _notifyVaultSender(address _sender) internal virtual {
         if (
             ERC165Checker.supportsERC165(_sender) &&
-            ERC165Checker.supportsInterface(_sender, _LSP1_INTERFACE_ID)
+            ERC165Checker.supportsInterface(_sender, _INTERFACEID_LSP1)
         ) {
             ILSP1UniversalReceiver(_sender).universalReceiver(
-                _LSP9_VAULT_SENDER_TYPE_ID_,
+                _TYPEID_LSP9_VAULTSENDER,
                 ""
             );
         }
@@ -116,34 +138,12 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
     function _notifyVaultReceiver(address _receiver) internal virtual {
         if (
             ERC165Checker.supportsERC165(_receiver) &&
-            ERC165Checker.supportsInterface(_receiver, _LSP1_INTERFACE_ID)
+            ERC165Checker.supportsInterface(_receiver, _INTERFACEID_LSP1)
         ) {
             ILSP1UniversalReceiver(_receiver).universalReceiver(
-                _LSP9_VAULT_RECEPIENT_TYPE_ID_,
+                _TYPEID_LSP9_VAULTRECIPIENT,
                 ""
             );
         }
-    }
-
-    // modifiers
-
-    modifier onlyAllowed() {
-        if (msg.sender != owner()) {
-            address universalReceiverAddress = address(
-                bytes20(
-                    IERC725Y(this).getDataSingle(
-                        _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-                    )
-                )
-            );
-            require(
-                ERC165Checker.supportsInterface(
-                    msg.sender,
-                    _LSP1_DELEGATE_INTERFACE_ID
-                ) && msg.sender == universalReceiverAddress,
-                "Only Owner or Universal Receiver Delegate allowed"
-            );
-        }
-        _;
     }
 }

@@ -32,10 +32,10 @@ abstract contract LSP1UniversalReceiverDelegateVaultCore is
         bytes memory data
     ) public override returns (bytes memory result) {
         if (
-            typeId == _LSP7TOKENSSENDER_TYPE_ID ||
-            typeId == _LSP7TOKENSRECIPIENT_TYPE_ID ||
-            typeId == _LSP8TOKENSSENDER_TYPE_ID ||
-            typeId == _LSP8TOKENSRECIPIENT_TYPE_ID
+            typeId == _TYPEID_LSP7_TOKENSSENDER ||
+            typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
+            typeId == _TYPEID_LSP8_TOKENSSENDER ||
+            typeId == _TYPEID_LSP8_TOKENSRECIPIENT
         ) {
             result = _tokenHandling(sender, typeId, data);
         }

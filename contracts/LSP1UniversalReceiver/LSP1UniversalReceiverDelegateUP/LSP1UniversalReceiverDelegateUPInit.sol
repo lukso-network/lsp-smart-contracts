@@ -17,6 +17,6 @@ contract LSP1UniversalReceiverDelegateUPInit is
     LSP1UniversalReceiverDelegateUPCore
 {
     function initialize() public initializer {
-        _registerInterface(_LSP1_DELEGATE_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 }
