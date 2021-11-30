@@ -16,7 +16,7 @@ contract KeyManagerHelper is LSP6KeyManager {
         return _LSP6_INTERFACE_ID;
     }
 
-    function getUserPermissions(address _address)
+    function getAddressPermissions(address _address)
         public
         view
         returns (bytes32)

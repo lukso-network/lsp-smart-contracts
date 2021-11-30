@@ -43,21 +43,25 @@ export const ERC725YKeys = {
   },
   LSP3: {
     // keccak256('LSP3Profile')
-    LSP3Profile: "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
+    LSP3Profile:
+      "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
     // LSP3IssuedAssetsMap:<address> --> bytes
     "LSP3IssuedAssetsMap:": "0x83f5e77bfb14241600000000",
     // keccak256('LSP3IssuedAssets[]')
-    "LSP3IssuedAssets[]": "0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0",
+    "LSP3IssuedAssets[]":
+      "0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0",
   },
   LSP5: {
     // LSP5ReceivedAssetsMap:<address>
     "LSP5ReceivedAssetsMap:": "0x812c4334633eb81600000000",
     // LSP5ReceivedAssets[]
-    "LSP5ReceivedAssets[]": "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
+    "LSP5ReceivedAssets[]":
+      "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
   },
   LSP6: {
     // AddressPermissions[]
-    "AddressPermissions[]": "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
+    "AddressPermissions[]":
+      "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
     // AddressPermissions:Permissions:<address> --> bytes1
     "AddressPermissions:Permissions:": "0x4b80742d0000000082ac0000",
     // AddressPermissions:AllowedAddresses:<address> --> address[]
@@ -106,7 +110,8 @@ export const EventSignatures = {
    *
    * signature = keccak256('UniversalReceiver(address,bytes32,bytes32,bytes)')
    */
-  UniversalReceiver: "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3",
+  UniversalReceiver:
+    "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3",
   /**
    * event ReceivedERC777(
    *    address indexed token,
@@ -118,7 +123,8 @@ export const EventSignatures = {
    *
    * signature = keccak256('ReceivedERC777(address,address,address,address,uint256)')
    */
-  ReceivedERC777: "0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c",
+  ReceivedERC777:
+    "0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c",
 };
 
 // LSP0
@@ -137,7 +143,9 @@ export const enum OPERATIONS {
 
 // hex =    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 // binary = .... 1111 1111 1111 (only 1s)
-export const ALL_PERMISSIONS_SET = ethers.utils.hexlify(ethers.constants.MaxUint256);
+export const ALL_PERMISSIONS_SET = ethers.utils.hexlify(
+  ethers.constants.MaxUint256
+);
 
 // prettier-ignore
 export const enum PERMISSIONS {
@@ -150,7 +158,8 @@ export const enum PERMISSIONS {
     DELEGATECALL      = 0x0000000000000000000000000000000000000000000000000000000000000040, // .... .... 0100 ....
     DEPLOY            = 0x0000000000000000000000000000000000000000000000000000000000000080, // .... .... 1000 ....
     TRANSFERVALUE     = 0x0000000000000000000000000000000000000000000000000000000000000100, // .... 0001 .... ....
-    SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200  // .... 0010 .... ....
+    SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200,  // .... 0010 .... ....
+    TEST              = 0x00000000000000000000000000000000000000000000000000000000000002
 }
 
 // ERC1271
