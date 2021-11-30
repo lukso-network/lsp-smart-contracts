@@ -15,14 +15,13 @@ contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
     event UniversalReceiverCalled(bytes32 typeId, bytes data);
 
     constructor() {
-        _registerInterface(_LSP1_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP1);
     }
 
     function universalReceiver(bytes32 typeId, bytes memory data)
         external
         override
         returns (bytes memory returnValue)
-
     {
         emit UniversalReceiverCalled(typeId, data);
 
@@ -30,5 +29,6 @@ contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
     }
 
     receive() external payable {}
+
     fallback() external payable {}
 }

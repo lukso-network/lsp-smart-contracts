@@ -21,6 +21,6 @@ contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
         bool isNFT_
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
         _isNFT = isNFT_;
-        _registerInterface(_LSP7_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP7);
     }
 }
