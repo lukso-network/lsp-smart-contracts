@@ -11,6 +11,7 @@ import "./ILSP6KeyManager.sol";
 
 // libraries
 import "../Utils/LSP2Utils.sol";
+import "../Utils/LSP6Utils.sol";
 import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -47,6 +48,7 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     using LSP2Utils for bytes12;
     using ERC725Utils for ERC725Y;
+    using LSP6Utils for ERC725;
     using ECDSA for bytes32;
 
     ERC725 public account;
@@ -98,7 +100,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
         return
-            (_PERMISSION_SIGN & _getAddressPermissions(recoveredAddress)) ==
+            (_PERMISSION_SIGN & account.getPermissionsFor(recoveredAddress)) ==
                 _PERMISSION_SIGN
                 ? _INTERFACE_ID_ERC1271
                 : _ERC1271FAILVALUE;
@@ -240,7 +242,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 _verifyAllowedFunction(_from, functionCalled);
             }
         } else if (erc725Function == account.transferOwnership.selector) {
-            bytes32 permissions = _getAddressPermissions(_from);
+            bytes32 permissions = account.getPermissionsFor(_from);
 
             _hasPermission(_PERMISSION_CHANGEOWNER, permissions) ||
                 _notAuthorised(_from, "TRANSFEROWNERSHIP");
@@ -255,7 +257,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         internal
         view
     {
-        bytes32 permissions = _getAddressPermissions(_from);
+        bytes32 permissions = account.getPermissionsFor(_from);
 
         uint256 keyCount = uint256(bytes32(_data[68:100]));
         uint256 pointer = 100;
@@ -291,7 +293,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         internal
         view
     {
-        bytes32 permissions = _getAddressPermissions(_from);
+        bytes32 permissions = account.getPermissionsFor(_from);
 
         uint256 operationType = uint256(bytes32(_data[4:36]));
         uint256 value = uint256(bytes32(_data[68:100]));
@@ -358,27 +360,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
         revert NotAllowedFunction(_from, _functionSelector);
-    }
-
-    function _getAddressPermissions(address _address)
-        internal
-        view
-        returns (bytes32)
-    {
-        bytes memory permissions = ERC725Y(account).getDataSingle(
-            LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _ADDRESS_PERMISSIONS,
-                bytes20(_address)
-            )
-        );
-
-        if (bytes32(permissions) == bytes32(0)) {
-            revert(
-                "KeyManager:_getAddressPermissions: no permissions set for this address"
-            );
-        }
-
-        return bytes32(permissions);
     }
 
     function _hasPermission(bytes32 _permission, bytes32 _addressPermission)

@@ -1516,7 +1516,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       await expect(
         proxyKeyManager.connect(accounts[6]).execute(executePayload)
       ).toBeRevertedWith(
-        "KeyManager:_getAddressPermissions: no permissions set for this address"
+        "LSP6Utils:getPermissionsFor: no permissions set for this address"
       );
     });
 
