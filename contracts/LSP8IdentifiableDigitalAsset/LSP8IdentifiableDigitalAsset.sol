@@ -22,6 +22,6 @@ contract LSP8IdentifiableDigitalAsset is
         string memory symbol_,
         address newOwner_
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
-        _registerInterface(_LSP8_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP8);
     }
 }

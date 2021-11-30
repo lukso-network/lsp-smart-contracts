@@ -24,6 +24,6 @@ contract LSP8IdentifiableDigitalAssetInit is
     ) public virtual override initializer {
         LSP4DigitalAssetMetadataInit.initialize(name_, symbol_, newOwner_);
 
-        _registerInterface(_LSP8_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP8);
     }
 }

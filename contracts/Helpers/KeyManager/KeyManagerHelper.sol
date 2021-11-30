@@ -13,7 +13,7 @@ contract KeyManagerHelper is LSP6KeyManager {
     constructor(address _account) LSP6KeyManager(_account) {}
 
     function getInterfaceId() public pure returns (bytes4) {
-        return _LSP6_INTERFACE_ID;
+        return _INTERFACEID_LSP6;
     }
 
     function getAddressPermissions(address _address)
@@ -23,6 +23,7 @@ contract KeyManagerHelper is LSP6KeyManager {
     {
         return account.getPermissionsFor(_address);
     }
+
 
     function getAllowedAddresses(address _address)
         public
@@ -37,6 +38,7 @@ contract KeyManagerHelper is LSP6KeyManager {
         view
         returns (bytes memory)
     {
+
         return account.getAllowedFunctionsFor(_address);
     }
 
