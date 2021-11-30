@@ -508,7 +508,7 @@ describe("KeyManager", () => {
         await keyManager.connect(app).execute(executePayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("STATICCALL", app.address)
+          NotAuthorisedError(app.address, "STATICCALL")
         );
       }
     });
@@ -546,7 +546,7 @@ describe("KeyManager", () => {
         await keyManager.connect(app).execute(executePayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("CREATE", app.address)
+          NotAuthorisedError(app.address, "CREATE")
         );
       }
     });
@@ -609,7 +609,7 @@ describe("KeyManager", () => {
         await keyManager.connect(app).execute(transferPayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("TRANSFERVALUE", app.address)
+          NotAuthorisedError(app.address, "TRANSFERVALUE")
         );
       }
 
@@ -1741,7 +1741,7 @@ describe("SETDATA", () => {
           await keyManager.connect(cannotSetData).execute(payload);
         } catch (error) {
           expect(error.message).toMatch(
-            NotAuthorisedError("SETDATA", cannotSetData.address)
+            NotAuthorisedError(cannotSetData.address, "SETDATA")
           );
         }
       });
@@ -1951,7 +1951,7 @@ describe("SETDATA", () => {
           await keyManager.connect(cannotSetData).execute(payload);
         } catch (error) {
           expect(error.message).toMatch(
-            NotAuthorisedError("SETDATA", cannotSetData.address)
+            NotAuthorisedError(cannotSetData.address, "SETDATA")
           );
         }
       });
@@ -1981,7 +1981,7 @@ describe("SETDATA", () => {
           await keyManager.connect(cannotSetData).execute(payload);
         } catch (error) {
           expect(error.message).toMatch(
-            NotAuthorisedError("SETDATA", cannotSetData.address)
+            NotAuthorisedError(cannotSetData.address, "SETDATA")
           );
         }
       });
@@ -2021,7 +2021,7 @@ describe("SETDATA", () => {
           await keyManager.connect(cannotSetData).execute(payload);
         } catch (error) {
           expect(error.message).toMatch(
-            NotAuthorisedError("SETDATA", cannotSetData.address)
+            NotAuthorisedError(cannotSetData.address, "SETDATA")
           );
         }
       });
@@ -2158,8 +2158,8 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         } catch (error) {
           expect(error.message).toMatch(
             NotAuthorisedError(
-              "CHANGEPERMISSIONS",
-              canOnlyAddPermissions.address
+              canOnlyAddPermissions.address,
+              "CHANGEPERMISSIONS"
             )
           );
         }
@@ -2188,8 +2188,8 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         } catch (error) {
           expect(error.message).toMatch(
             NotAuthorisedError(
-              "ADDPERMISSIONS",
-              canOnlyChangePermissions.address
+              canOnlyChangePermissions.address,
+              "ADDPERMISSIONS"
             )
           );
         }
@@ -2228,8 +2228,8 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         } catch (error) {
           expect(error.message).toMatch(
             NotAuthorisedError(
-              "ADDPERMISSIONS",
-              canOnlyChangePermissions.address
+              canOnlyChangePermissions.address,
+              "ADDPERMISSIONS"
             )
           );
         }
@@ -2463,8 +2463,8 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       } catch (error) {
         expect(error.message).toMatch(
           NotAuthorisedError(
-            "CHANGEPERMISSIONS",
-            canSetDataAndAddPermissions.address
+            canSetDataAndAddPermissions.address,
+            "CHANGEPERMISSIONS"
           )
         );
       }
@@ -2502,8 +2502,8 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       } catch (error) {
         expect(error.message).toMatch(
           NotAuthorisedError(
-            "CHANGEPERMISSIONS",
-            canSetDataAndAddPermissions.address
+            canSetDataAndAddPermissions.address,
+            "CHANGEPERMISSIONS"
           )
         );
       }
@@ -2541,8 +2541,8 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       } catch (error) {
         expect(error.message).toMatch(
           NotAuthorisedError(
-            "ADDPERMISSIONS",
-            canSetDataAndAddPermissions.address
+            canSetDataAndAddPermissions.address,
+            "ADDPERMISSIONS"
           )
         );
       }
@@ -2613,8 +2613,8 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       } catch (error) {
         expect(error.message).toMatch(
           NotAuthorisedError(
-            "CHANGEPERMISSIONS",
-            canSetDataAndAddPermissions.address
+            canSetDataAndAddPermissions.address,
+            "CHANGEPERMISSIONS"
           )
         );
       }

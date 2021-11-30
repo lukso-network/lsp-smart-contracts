@@ -18,18 +18,19 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./LSP6Constants.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
 
-/** address `from` is not authorised to `permission`
+/**
+ * address `from` is not authorised to `permission`
  * @param permission permission required
  * @param from address not-authorised
  */
-error NotAuthorised(string permission, address from);
+error NotAuthorised(address from, string permission);
 
 /**
- * address `from` is not authorised to interact with `toAddressDisallowed` via account
+ * address `from` is not authorised to interact with `disallowedAddress` via account
  * @param from address making the request
- * @param toAddressDisallowed address that `from` is not authorised to call
+ * @param disallowedAddress address that `from` is not authorised to call
  */
-error NotAllowedAddress(address from, address toAddressDisallowed);
+error NotAllowedAddress(address from, address disallowedAddress);
 
 /**
  * address `from` is not authorised to run `disallowedFunction` via account
@@ -242,7 +243,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             bytes32 permissions = _getAddressPermissions(_from);
 
             _hasPermission(_PERMISSION_CHANGEOWNER, permissions) ||
-                _notAuthorised("TRANSFEROWNERSHIP", _from);
+                _notAuthorised(_from, "TRANSFEROWNERSHIP");
         } else {
             revert(
                 "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
@@ -271,15 +272,15 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
                 if (isNewAddress) {
                     _hasPermission(_PERMISSION_ADDPERMISSIONS, permissions) ||
-                        _notAuthorised("ADDPERMISSIONS", _from);
+                        _notAuthorised(_from, "ADDPERMISSIONS");
                 } else {
                     // prettier-ignore
                     _hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions) || 
-                        _notAuthorised("CHANGEPERMISSIONS", _from);
+                        _notAuthorised(_from, "CHANGEPERMISSIONS");
                 }
             } else {
                 _hasPermission(_PERMISSION_SETDATA, permissions) ||
-                    _notAuthorised("SETDATA", _from);
+                    _notAuthorised(_from, "SETDATA");
             }
 
             pointer += 32; // move calldata pointer
@@ -306,12 +307,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         ) = _extractPermissionFromOperation(operationType);
 
         _hasPermission(permissionRequired, permissions) ||
-            _notAuthorised(operationName, _from);
+            _notAuthorised(_from, operationName);
 
         if (
             (value > 0) &&
             !_hasPermission(_PERMISSION_TRANSFERVALUE, permissions)
-        ) _notAuthorised("TRANSFERVALUE", _from);
+        ) _notAuthorised(_from, "TRANSFERVALUE");
     }
 
     function _verifyAllowedAddress(address _from, address _to) internal view {
@@ -409,11 +410,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      *      eg1: _hasEnoughPermissions(...) || revert NotAuthorized(...)
      *      eg2: _isNotAdmin(...) && revert NotAuthorised(...)
      */
-    function _notAuthorised(string memory _permission, address _from)
+    function _notAuthorised(address _from, string memory _permission)
         private
         pure
         returns (bool)
     {
-        revert NotAuthorised(_permission, _from);
+        revert NotAuthorised(_from, _permission);
     }
 }

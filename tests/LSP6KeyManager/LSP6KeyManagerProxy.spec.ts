@@ -401,7 +401,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         await proxyKeyManager.connect(app).execute(dangerousPayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("CHANGEPERMISSIONS", app.address)
+          NotAuthorisedError(app.address, "CHANGEPERMISSIONS")
         );
       }
     });
@@ -508,7 +508,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         await proxyKeyManager.connect(app).execute(executePayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("STATICCALL", app.address)
+          NotAuthorisedError(app.address, "STATICCALL")
         );
       }
     });
@@ -546,7 +546,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         await proxyKeyManager.connect(app).execute(executePayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("CREATE", app.address)
+          NotAuthorisedError(app.address, "CREATE")
         );
       }
     });
@@ -611,7 +611,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         await proxyKeyManager.connect(app).execute(transferPayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("TRANSFERVALUE", app.address)
+          NotAuthorisedError(app.address, "TRANSFERVALUE")
         );
       }
 
