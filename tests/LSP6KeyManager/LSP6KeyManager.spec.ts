@@ -200,7 +200,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
         app.address
       );
       expect(
-        await keyManagerHelper.isAllowed(
+        await keyManagerHelper.hasPermission(
           ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
           appPermissions
         )

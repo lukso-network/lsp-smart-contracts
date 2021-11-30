@@ -24,7 +24,6 @@ contract KeyManagerHelper is LSP6KeyManager {
         return account.getPermissionsFor(_address);
     }
 
-
     function getAllowedAddresses(address _address)
         public
         view
@@ -38,7 +37,6 @@ contract KeyManagerHelper is LSP6KeyManager {
         view
         returns (bytes memory)
     {
-
         return account.getAllowedFunctionsFor(_address);
     }
 
@@ -56,7 +54,7 @@ contract KeyManagerHelper is LSP6KeyManager {
         super._verifyAllowedFunction(_sender, _function);
     }
 
-    function isAllowed(bytes32 _permission, bytes32 _addressPermission)
+    function hasPermission(bytes32 _permission, bytes32 _addressPermission)
         public
         pure
         returns (bool)
