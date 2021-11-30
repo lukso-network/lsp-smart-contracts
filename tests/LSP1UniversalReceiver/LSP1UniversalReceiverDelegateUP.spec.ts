@@ -21,10 +21,10 @@ import {
   ALL_PERMISSIONS_SET,
   PERMISSIONS,
   OPERATIONS,
+  INTERFACE_IDS,
 } from "../utils/constants";
 
 import {
-  RAW_INTERFACE_ID,
   LSP5_ARRAY_KEY,
   LSP10_ARRAY_KEY,
   ARRAY_LENGTH,
@@ -307,7 +307,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
         expect(await ethers.utils.getAddress(element1Address)).toEqual(
@@ -343,7 +343,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
             LSP5_ARRAY_KEY.ELEMENT2
           );
 
-        expect(tokenMapValue).toEqual("0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP7);
+        expect(tokenMapValue).toEqual("0x" + INDEX.ONE + INTERFACE_IDS.LSP7.substr(2));
         expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
           LSP7tokenB.address
@@ -399,10 +399,10 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
 
         expect(tokenAMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(tokenBMapValue).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
         expect(await ethers.utils.getAddress(element1Address)).toEqual(
@@ -441,7 +441,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
             LSP5_ARRAY_KEY.ELEMENT3
           );
 
-        expect(tokenMapValue).toEqual("0x" + INDEX.TWO + RAW_INTERFACE_ID.LSP7);
+        expect(tokenMapValue).toEqual("0x" + INDEX.TWO + INTERFACE_IDS.LSP7.substr(2));
         expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
         expect(await ethers.utils.getAddress(element3Address)).toEqual(
           LSP7tokenC.address
@@ -482,7 +482,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
 
         // Now the Map of Token C takes the index of the removed Token B and ELEMENT2 will be token C instead of B
         expect(tokenCMapValue).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(tokenBMapValue).toEqual("0x");
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
@@ -517,7 +517,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
             LSP5_ARRAY_KEY.ELEMENT3
           );
 
-        expect(tokenMapValue).toEqual("0x" + INDEX.TWO + RAW_INTERFACE_ID.LSP7);
+        expect(tokenMapValue).toEqual("0x" + INDEX.TWO + INTERFACE_IDS.LSP7.substr(2));
         expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
         expect(await ethers.utils.getAddress(element3Address)).toEqual(
           LSP7tokenD.address
@@ -557,7 +557,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           .getData([tokenDMapKey]);
 
         expect(tokenCMapValue).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(tokenDMapValue).toEqual("0x");
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
@@ -600,7 +600,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
 
         expect(tokenAMapValue).toEqual("0x");
         expect(tokenCMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(await ethers.utils.getAddress(element1Address)).toEqual(
           LSP7tokenC.address
@@ -668,7 +668,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenEMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(await ethers.utils.getAddress(element1Address)).toEqual(
           LSP7tokenE.address
@@ -708,7 +708,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenEMapValueUP1).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(await ethers.utils.getAddress(element1AddressUP1)).toEqual(
           LSP7tokenE.address
@@ -726,7 +726,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenEMapValueUP2).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(await ethers.utils.getAddress(element1AddressUP2)).toEqual(
           LSP7tokenE.address
@@ -778,7 +778,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenEMapValueUP2).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(await ethers.utils.getAddress(element1AddressUP2)).toEqual(
           LSP7tokenE.address
@@ -815,7 +815,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenDMapValue).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
           LSP7tokenD.address
@@ -853,7 +853,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenDMapValueUP1).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP7
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP7.substr(2)
         );
         expect(await ethers.utils.getAddress(element1AddressUP1)).toEqual(
           LSP7tokenD.address
@@ -1038,7 +1038,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenAMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
         expect(await ethers.utils.getAddress(element1Address)).toEqual(
@@ -1075,7 +1075,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenBMapValue).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
@@ -1112,7 +1112,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenCMapValue).toEqual(
-          "0x" + INDEX.TWO + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.TWO + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
         expect(await ethers.utils.getAddress(element3Address)).toEqual(
@@ -1151,7 +1151,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
 
         // Now the Map of Token C takes the index of the removed Token B and ELEMENT2 will be token C instead of B
         expect(tokenCMapValue).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(tokenBMapValue).toEqual("0x");
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
@@ -1187,7 +1187,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenDMapValue).toEqual(
-          "0x" + INDEX.TWO + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.TWO + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
         expect(await ethers.utils.getAddress(element3Address)).toEqual(
@@ -1229,7 +1229,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
         /* Now the none of the existing map doesn't change the index since 
                 the token removed is placed last in the array */
         expect(tokenCMapValue).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(tokenDMapValue).toEqual("0x");
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
@@ -1271,7 +1271,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
 
         expect(tokenAMapValue).toEqual("0x");
         expect(tokenCMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(await ethers.utils.getAddress(element1Address)).toEqual(
           LSP8tokenC.address
@@ -1338,7 +1338,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenEMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(await ethers.utils.getAddress(element1Address)).toEqual(
           LSP8tokenE.address
@@ -1392,7 +1392,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenEMapValueUP2).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(await ethers.utils.getAddress(element1AddressUP2)).toEqual(
           LSP8tokenE.address
@@ -1429,7 +1429,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenDMapValue).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
           LSP8tokenD.address
@@ -1467,7 +1467,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           );
 
         expect(tokenDMapValueUP1).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP8
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP8.substr(2)
         );
         expect(await ethers.utils.getAddress(element1AddressUP1)).toEqual(
           LSP8tokenD.address
@@ -1597,7 +1597,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
         expect(vaultMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP9
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP9.substr(2)
         );
       });
 
@@ -1622,7 +1622,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           VaultB.address
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-        expect(vaultMapValue).toEqual("0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP9);
+        expect(vaultMapValue).toEqual("0x" + INDEX.ONE + INTERFACE_IDS.LSP9.substr(2));
       });
 
       it("Should create a Vault with UP2 as owner and read Keys into UP Storage", async () => {
@@ -1647,7 +1647,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
         expect(vaultMapValue).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP9
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP9.substr(2)
         );
       });
     });
@@ -1692,7 +1692,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
         expect(arrayLengthUP2).toEqual(ARRAY_LENGTH.TWO);
         expect(vaultMapValueUP2).toEqual(
-          "0x" + INDEX.ONE + RAW_INTERFACE_ID.LSP9
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP9.substr(2)
         );
       });
 
@@ -1735,7 +1735,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
         expect(arrayLengthUP2).toEqual(ARRAY_LENGTH.THREE);
         expect(vaultMapValueUP2).toEqual(
-          "0x" + INDEX.TWO + RAW_INTERFACE_ID.LSP9
+          "0x" + INDEX.TWO + INTERFACE_IDS.LSP9.substr(2)
         );
       });
 
@@ -1774,7 +1774,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
         expect(arrayLengthUP1).toEqual(ARRAY_LENGTH.ONE);
         expect(vaultMapValueUP1).toEqual(
-          "0x" + INDEX.ZERO + RAW_INTERFACE_ID.LSP9
+          "0x" + INDEX.ZERO + INTERFACE_IDS.LSP9.substr(2)
         );
 
         expect(await ethers.utils.getAddress(element1AddressUP2)).toEqual(
