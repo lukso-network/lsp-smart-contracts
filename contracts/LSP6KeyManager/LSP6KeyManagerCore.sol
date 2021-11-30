@@ -26,14 +26,14 @@ import "@erc725/smart-contracts/contracts/constants.sol";
 error NotAuthorised(address from, string permission);
 
 /**
- * address `from` is not authorised to interact with `disallowedAddress` via account
+ * @dev address `from` is not authorised to interact with `disallowedAddress` via account
  * @param from address making the request
  * @param disallowedAddress address that `from` is not authorised to call
  */
 error NotAllowedAddress(address from, address disallowedAddress);
 
 /**
- * address `from` is not authorised to run `disallowedFunction` via account
+ * @dev address `from` is not authorised to run `disallowedFunction` via account
  * @param from address making the request
  * @param disallowedFunction bytes4 function selector that `from` is not authorised to run
  */
@@ -68,10 +68,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     /**
-     * Get latest nonce for `_from` in a specific channel (`_channelId`)
-     *
-     * @param _from caller address
-     * @param _channel channel id
+     * @inheritdoc ILSP6KeyManager
      */
     function getNonce(address _from, uint256 _channel)
         public
@@ -84,11 +81,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     /**
-     * @notice Checks if an owner signed `_data`.
-     * ERC1271 interface.
-     *
-     * @param _hash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
-     * @param _signature owner's signature(s) of the data
+     * @inheritdoc IERC1271
      */
     function isValidSignature(bytes32 _hash, bytes memory _signature)
         public
@@ -105,9 +98,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     /**
-     * @dev execute the payload _data on the ERC725 Account
-     * @param _data obtained via encodeABI() in web3
-     * @return result_ the data being returned by the ERC725 Account
+     * @inheritdoc ILSP6KeyManager
      */
     function execute(bytes calldata _data)
         external
@@ -134,17 +125,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             revert(abi.decode(result_, (string)));
         }
 
-        emit Executed(msg.value, _data);
+        if (success) emit Executed(msg.value, _data);
         return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
     /**
-     * @dev allows anybody to execute given they have a signed message from an executor
-     * @param _signedFor this KeyManager
-     * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
-     * @param _data obtained via encodeABI() in web3
-     * @param _signature bytes32 ethereum signature
-     * @return result_ the data being returned by the ERC725 Account
+     * @inheritdoc ILSP6KeyManager
      */
     function executeRelayCall(
         address _signedFor,
@@ -199,6 +185,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     /**
+     * @notice verify the nonce `_idx` for `_from` (obtained via `getNonce(...)`)
      * @dev "idx" is a 256bits (unsigned) integer, where:
      *          - the 128 leftmost bits = channelId
      *      and - the 128 rightmost bits = nonce within the channel
@@ -251,6 +238,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         }
     }
 
+    /**
+     * @dev verify if `_from` has the required permissions to set some keys
+     * on the linked ERC725Account
+     * @param _from the address who want to set the keys
+     * @param _data the ABI encoded payload `account.setData(keys, values)`
+     * containing a list of keys-value pairs
+     */
     function _verifyCanSetData(address _from, bytes calldata _data)
         internal
         view
@@ -287,6 +281,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         }
     }
 
+    /**
+     * @dev verify if `_from` has the required permissions to make an external call
+     * via the linked ERC725Account
+     * @param _from the address who want to run the execute function on the ERC725Account
+     * @param _data the ABI encoded payload `account.execute(...)`
+     */
     function _verifyCanExecute(address _from, bytes calldata _data)
         internal
         view
@@ -315,6 +315,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         ) _notAuthorised(_from, "TRANSFERVALUE");
     }
 
+    /**
+     * @dev verify if `_from` is authorised to use the linked ERC725Account
+     * to interact with address `_to`
+     * @param _from the caller address
+     * @param _to the address to interact with
+     */
     function _verifyAllowedAddress(address _from, address _to) internal view {
         bytes memory allowedAddresses = account.getAllowedAddressesFor(_from);
 
@@ -332,6 +338,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         revert NotAllowedAddress(_from, _to);
     }
 
+    /**
+     * @dev verify if `_from` is authorised to use the linked ERC725Account
+     * to run a specific function `_functionSelector` at a target contract
+     * @param _from the caller address
+     * @param _functionSelector the bytes4 function selector of the function to run
+     * at the target contract
+     */
     function _verifyAllowedFunction(address _from, bytes4 _functionSelector)
         internal
         view
@@ -352,14 +365,29 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         revert NotAllowedFunction(_from, _functionSelector);
     }
 
-    function _hasPermission(bytes32 _permission, bytes32 _addressPermission)
-        internal
-        pure
-        returns (bool)
-    {
-        return (_permission & _addressPermission) == _permission ? true : false;
+    /**
+     * @dev compare the permissions `_addressPermission` of an address with `_requiredPermission`
+     * @param _requiredPermission the permission required
+     * @param _addressPermission the permission of address that we want to check
+     * @return true if address has enough permissions, false otherwise
+     */
+    function _hasPermission(
+        bytes32 _requiredPermission,
+        bytes32 _addressPermission
+    ) internal pure returns (bool) {
+        return
+            (_requiredPermission & _addressPermission) == _requiredPermission
+                ? true
+                : false;
     }
 
+    /**
+     * @dev extract the required permission + a descriptive string, based on the `_operationType`
+     * being run via ERC725Account.execute(...)
+     * @param _operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
+     * @return bytes32 the permission associated with the `_operationType`
+     * @return string the opcode associated with `_operationType`
+     */
     function _extractPermissionFromOperation(uint256 _operationType)
         internal
         pure
