@@ -19,7 +19,7 @@ import "./LSP6Constants.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
 
 /**
- * address `from` is not authorised to `permission`
+ * @dev address `from` is not authorised to `permission`
  * @param permission permission required
  * @param from address not-authorised
  */
