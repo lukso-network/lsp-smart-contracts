@@ -45,4 +45,4 @@ jobs:
       - name: Generate ABIs for iOS using shell script
         run: |
           mkdir ios
-          node make-ios.js
+          npx ts-node make-ios.ts
