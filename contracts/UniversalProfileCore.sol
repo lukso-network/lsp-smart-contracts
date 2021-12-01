@@ -10,7 +10,7 @@ import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 
 /**
  * @title Core implementation of a LUKSO's Universal Profile based on LSP3
- * @author Fabian Vogelsteller <fabian@lukso.network>
+ * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera, Yamen Merhi
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
 abstract contract UniversalProfileCore is ERC165Storage, ERC725AccountCore {
@@ -28,7 +28,10 @@ abstract contract UniversalProfileCore is ERC165Storage, ERC725AccountCore {
         override
         onlyOwner
     {
-        require(_keys.length == _values.length, "Keys length not equal to values length");
+        require(
+            _keys.length == _values.length,
+            "Keys length not equal to values length"
+        );
         for (uint256 ii = 0; ii < _keys.length; ii++) {
             if (store[_keys[ii]].length == 0) {
                 dataKeys.push(_keys[ii]);

@@ -107,8 +107,8 @@ export function generateKeysAndValues(_elementObject) {
 const customRevertErrorMessage =
   "VM Exception while processing transaction: reverted with custom error";
 
-export const NotAuthorisedError = (_permission, _address) => {
-  return `${customRevertErrorMessage} 'NotAuthorised("${_permission}", "${_address}")'`;
+export const NotAuthorisedError = (_from, _permission) => {
+  return `${customRevertErrorMessage} 'NotAuthorised("${_from}", "${_permission}")'`;
 };
 
 export const NotAllowedAddressError = (_from, _to) => {

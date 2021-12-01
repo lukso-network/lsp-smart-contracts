@@ -7,7 +7,7 @@ import "../../LSP6KeyManager/LSP6KeyManager.sol";
  * Helper contract to test internal functions of the KeyManager
  */
 contract KeyManagerHelper is LSP6KeyManager {
-    using ERC725Utils for ERC725Y;
+    using LSP6Utils for ERC725;
 
     /* solhint-disable no-empty-blocks */
     constructor(address _account) LSP6KeyManager(_account) {}
@@ -16,36 +16,28 @@ contract KeyManagerHelper is LSP6KeyManager {
         return _INTERFACEID_LSP6;
     }
 
-    function getUserPermissions(address _user) public view returns (bytes32) {
-        return super._getAddressPermissions(_user);
+    function getAddressPermissions(address _address)
+        public
+        view
+        returns (bytes32)
+    {
+        return account.getPermissionsFor(_address);
     }
 
-    function getAllowedAddresses(address _sender)
+    function getAllowedAddresses(address _address)
         public
         view
         returns (bytes memory)
     {
-        return
-            ERC725Y(account).getDataSingle(
-                LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _ADDRESS_ALLOWEDADDRESSES,
-                    bytes20(_sender)
-                )
-            );
+        return account.getAllowedAddressesFor(_address);
     }
 
-    function getAllowedFunctions(address _sender)
+    function getAllowedFunctions(address _address)
         public
         view
         returns (bytes memory)
     {
-        return
-            ERC725Y(account).getDataSingle(
-                LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _ADDRESS_ALLOWEDFUNCTIONS,
-                    bytes20(_sender)
-                )
-            );
+        return account.getAllowedFunctionsFor(_address);
     }
 
     function verifyIfAllowedAddress(address _sender, address _recipient)
@@ -62,7 +54,7 @@ contract KeyManagerHelper is LSP6KeyManager {
         super._verifyAllowedFunction(_sender, _function);
     }
 
-    function isAllowed(bytes32 _permission, bytes32 _addressPermission)
+    function hasPermission(bytes32 _permission, bytes32 _addressPermission)
         public
         pure
         returns (bool)
