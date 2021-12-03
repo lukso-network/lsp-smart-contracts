@@ -13,8 +13,7 @@ contract LSP9Vault is LSP9VaultCore, ERC725 {
         // set SupportedStandards:LSP9Vault
         bytes32 key = 0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1;
         bytes memory value = hex"7c0334a1";
-        store[key] = value;
-        emit DataChanged(key, value);
+        _setData(key, value);
 
         _notifyVaultReceiver(_newOwner);
 
