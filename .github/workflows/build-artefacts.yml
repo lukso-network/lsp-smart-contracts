@@ -40,12 +40,8 @@ jobs:
         working-directory: ./java
         run: gradle build
 
-      # Build ios Artifact
-      - name: Build JSON ABIs
-        run: |-
-          npm run build --if-present
-
-      - name: Generate ABIs for iOS using shell script
+      # iOS artifacts
+      - name: Generate iOS artifacts
         run: |
           mkdir ios
           npx ts-node make-ios.ts
