@@ -54,7 +54,8 @@ const config: HardhatUserConfig = {
       // ------------------
       "UniversalProfile",
       "LSP6KeyManager",
-      "LSP1UniversalReceiverDelegate",
+      "LSP1UniversalReceiverDelegateUP",
+      "LSP1UniversalReceiverDelegateVault",
       "LSP7Mintable",
       "LSP8Mintable",
       "LSP7DigitalAsset",
@@ -65,7 +66,8 @@ const config: HardhatUserConfig = {
       // ------------------
       "UniversalProfileInit",
       "LSP6KeyManagerInit",
-      "LSP1UniversalReceiverDelegateInit",
+      "LSP1UniversalReceiverDelegateUPInit",
+      "LSP1UniversalReceiverDelegateVaultInit",
       "LSP7MintableInit",
       "LSP8MintableInit",
       "LSP7DigitalAssetInit",
