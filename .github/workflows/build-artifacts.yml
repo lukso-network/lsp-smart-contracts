@@ -1,5 +1,5 @@
-# This workflow builds Android and ios sdk artefacts
-name: Build Artefacts
+# This workflow builds Android and iOS SDK artifacts
+name: Build Artifacts
 
 on:
   pull_request:
