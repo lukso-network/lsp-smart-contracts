@@ -1,1 +1,0 @@
-solc --devdoc contracts/KeyManager/KeyManager.sol @openzeppelin/="$(pwd)"/node_modules/@openzeppelin/ ../submodules="$(pwd)"/submodules solidity-bytes-utils/="$(pwd)"/node_modules/solidity-bytes-utils/ -o ./docs/
