@@ -140,7 +140,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     ) external payable override returns (bytes memory) {
         require(
             _signedFor == address(this),
-            "KeyManager:executeRelayCall: Message not signed for this keyManager"
+            "executeRelayCall: Message not signed for this keyManager"
         );
 
         bytes memory blob = abi.encodePacked(
@@ -155,7 +155,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
         require(
             _isValidNonce(signer, _nonce),
-            "KeyManager:executeRelayCall: Incorrect nonce"
+            "executeRelayCall: Incorrect nonce"
         );
 
         // increase nonce after successful verification
@@ -233,7 +233,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 _notAuthorised(_from, "TRANSFEROWNERSHIP");
         } else {
             revert(
-                "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
+                "_verifyPermissions: unknown function selector on ERC725 account"
             );
         }
     }
@@ -298,7 +298,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
         require(
             operationType != 4,
-            "KeyManager:_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
+            "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
         );
 
         (
@@ -395,7 +395,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     {
         require(
             _operationType < 5,
-            "KeyManager:_extractPermissionFromOperation: invalid operation type"
+            "_extractPermissionFromOperation: invalid operation type"
         );
 
         if (_operationType == 0) return (_PERMISSION_CALL, "CALL");
