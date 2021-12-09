@@ -155,7 +155,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
 
         require(
             _isValidNonce(signer, _nonce),
-            "executeRelayCall: Incorrect nonce"
+            "executeRelayCall: Invalid nonce"
         );
 
         // increase nonce after successful verification
@@ -232,9 +232,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             _hasPermission(_PERMISSION_CHANGEOWNER, permissions) ||
                 _notAuthorised(_from, "TRANSFEROWNERSHIP");
         } else {
-            revert(
-                "_verifyPermissions: unknown function selector on ERC725 account"
-            );
+            revert("_verifyPermissions: unknown ERC725 selector");
         }
     }
 
