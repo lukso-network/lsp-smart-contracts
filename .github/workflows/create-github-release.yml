@@ -53,10 +53,14 @@ jobs:
         run: |-
           npm ci
 
-      # Build Android Artifact
-      - name: Generate Android artifacts using shell
+      # Android artifacts
+      - name: Install Web3j
         if: steps.check.outputs.changed == 'true'
-        run: bash make-jar.sh
+        run: curl -L get.web3j.io | sh && source ~/.web3j/source.sh
+
+      - name: Generate Android artifacts
+        if: steps.check.outputs.changed == 'true'
+        run: npx ts-node make-android.ts
 
       - name: Set up our JDK environment
         if: steps.check.outputs.changed == 'true'
@@ -73,17 +77,12 @@ jobs:
         working-directory: ./java
         run: gradle build
 
-      # Build ios Artifact
-      - name: Build JSON ABIs
-        if: steps.check.outputs.changed == 'true'
-        run: |-
-          npm run build --if-present
-
-      - name: Generate ABIs for iOS using shell script
+      # iOS artifacts
+      - name: Generate iOS artifacts
         if: steps.check.outputs.changed == 'true'
         run: |
           mkdir ios
-          node make-ios.js
+          npx ts-node make-ios.ts
 
       - name: Extract release notes from CHANGELOG
         if: steps.check.outputs.changed == 'true'

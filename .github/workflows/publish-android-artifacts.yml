@@ -28,9 +28,13 @@ jobs:
       - if: steps.check.outputs.changed == 'true'
         run: npm ci
 
-      - name: Step 1 - Generate artifacts using shell
+      - name: Install Web3j
         if: steps.check.outputs.changed == 'true'
-        run: bash make-jar.sh
+        run: curl -L get.web3j.io | sh && source ~/.web3j/source.sh
+
+      - name: Generate Android artifacts
+        if: steps.check.outputs.changed == 'true'
+        run: npx ts-node make-android.ts
 
       - name: Set up our JDK environment
         if: steps.check.outputs.changed == 'true'

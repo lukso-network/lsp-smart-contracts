@@ -1,5 +1,5 @@
-# This workflow builds Android and ios sdk artefacts 
-name: Build Artefacts
+# This workflow builds Android and iOS SDK artifacts
+name: Build Artifacts
 
 on:
   pull_request:
@@ -9,8 +9,8 @@ on:
 
 jobs:
   github-release:
-      runs-on: ubuntu-latest
-      steps: 
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
 
       - name: Use Node.js '16.x'
@@ -21,9 +21,12 @@ jobs:
 
       - run: npm ci
 
-      # Build Android Artifact
-      - name: Generate Android artifacts using shell
-        run: bash make-jar.sh
+      # Android artifacts
+      - name: Install Web3j
+        run: curl -L get.web3j.io | sh && source ~/.web3j/source.sh
+
+      - name: Generate Android artifacts
+        run: npx ts-node make-android.ts
 
       - name: Set up our JDK environment
         uses: actions/setup-java@v1.4.3
@@ -37,12 +40,8 @@ jobs:
         working-directory: ./java
         run: gradle build
 
-      # Build ios Artifact
-      - name: Build JSON ABIs
-        run: |-
-          npm run build --if-present
-
-      - name: Generate ABIs for iOS using shell script
+      # iOS artifacts
+      - name: Generate iOS artifacts
         run: |
           mkdir ios
           npx ts-node make-ios.ts
