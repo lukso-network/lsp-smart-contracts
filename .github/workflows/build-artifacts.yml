@@ -6,12 +6,21 @@ on:
     branches:
       - "main"
       - "develop"
+  push:
+    branches:
+      - "main"
 
 jobs:
-  github-release:
+  build-artifacts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
+
+      - name: Check if version changed
+        uses: EndBug/version-check@v1
+        id: check
 
       - name: Use Node.js '16.x'
         uses: actions/setup-node@v2
@@ -45,3 +54,27 @@ jobs:
         run: |
           mkdir ios
           npx ts-node make-ios.ts
+
+      # Upload Arifacts
+      - name: Upload iOS Artifact
+        uses: actions/upload-artifact@v2
+        if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
+        with:
+          name: UPContractsAbi.swift
+          path: ios/UPContractsAbi.swift 
+
+      - name: Upload Android Artifact
+        uses: actions/upload-artifact@v2
+        if: github.event_name == 'push'  && steps.check.outputs.changed == 'true'
+        with:
+          name: upcontracts.jar
+          path: java/build/libs/upcontracts.jar 
+
+      # Trigger Release
+      - name: Repository Dispatch
+        if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: trigger-release
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
