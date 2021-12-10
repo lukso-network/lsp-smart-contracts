@@ -1,8 +1,15 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiver.sol";
+
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP9 = 0x75edcee5;
+bytes4 constant _INTERFACEID_LSP9 = type(IERC725X).interfaceId ^
+    type(IERC725Y).interfaceId ^
+    type(ILSP1).interfaceId;
 
 // --- ERC725Y entries
 

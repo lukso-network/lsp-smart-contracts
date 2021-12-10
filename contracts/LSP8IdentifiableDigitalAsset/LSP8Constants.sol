@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import "./ILSP8IdentifiableDigitalAsset.sol";
+
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP8 = 0x49399145;
+bytes4 constant _INTERFACEID_LSP8 = type(ILSP8IdentifiableDigitalAsset)
+    .interfaceId;
 
 // --- ERC725Y entries
 
