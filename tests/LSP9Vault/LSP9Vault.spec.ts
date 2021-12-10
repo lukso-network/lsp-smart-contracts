@@ -17,14 +17,14 @@ import {
   SupportedStandards,
   INTERFACE_IDS,
   ERC725YKeys,
-  OPERATIONS
+  OPERATIONS,
 } from "../utils/constants";
 
 import {
   RANDOM_BYTES32,
   DUMMY_PAYLOAD,
   getMapAndArrayKeyValues,
-  LSP10_ARRAY_KEY
+  LSP10_ARRAY_KEY,
 } from "../utils/helpers";
 
 describe("LSP9Vault", () => {
@@ -49,7 +49,7 @@ describe("LSP9Vault", () => {
 
   describe("ERC165", () => {
     it("Supports ERC165", async () => {
-      const interfaceID = "0x01ffc9a7";
+      const interfaceID = INTERFACE_IDS.ERC165;
       const result = await LSP9Vault.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();
