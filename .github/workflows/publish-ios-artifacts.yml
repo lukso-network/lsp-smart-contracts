@@ -19,6 +19,8 @@ jobs:
           workflow_conclusion: success
           name: UPContractsAbi.swift
           path: ios/UPContractsAbi.swift 
+          branch: main
+          event: push
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         if: steps.check.outputs.changed == 'true'

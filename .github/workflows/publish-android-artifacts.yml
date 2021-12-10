@@ -18,8 +18,8 @@ jobs:
           workflow_conclusion: success
           name: upcontracts.jar
           path: java/build/libs/upcontracts.jar
-
-
+          branch: main
+          event: push
 
       - name: Publish jar
         working-directory: ./java

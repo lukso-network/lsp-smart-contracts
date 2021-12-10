@@ -40,6 +40,8 @@ jobs:
           workflow_conclusion: success
           name: upcontracts.jar
           path: java/build/libs/upcontracts.jar
+          branch: main
+          event: push
 
       # iOS artifacts
       - name: Download artifact
@@ -49,6 +51,8 @@ jobs:
           workflow_conclusion: success
           name: UPContractsAbi.swift
           path: ios/UPContractsAbi.swift 
+          branch: main
+          event: push
 
       # Create Github Release
       - name: Extract release notes from CHANGELOG
