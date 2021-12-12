@@ -527,7 +527,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       await expect(
         proxyKeyManager.connect(owner).execute(executePayload)
       ).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
+        "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
       );
     });
 
@@ -902,7 +902,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       );
 
       await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_extractPermissionFromOperation: invalid operation type"
+        "_extractPermissionFromOperation: invalid operation type"
       );
     });
 
@@ -910,7 +910,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       await expect(
         proxyKeyManager.execute("0xbad000000000000000000000000bad")
       ).toBeRevertedWith(
-        "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
+        "_verifyPermissions: unknown ERC725 selector"
       );
     });
 
@@ -1632,7 +1632,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           signature
         )
-      ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");
+      ).toBeRevertedWith("executeRelayCall: Invalid nonce");
     });
   });
 });
