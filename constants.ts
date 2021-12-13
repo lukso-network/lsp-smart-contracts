@@ -1,6 +1,3 @@
-import { ethers } from "hardhat";
-import { ERC725JSONSchema } from "@erc725/erc725.js";
-
 // ERC165
 // ----------
 
@@ -77,7 +74,7 @@ export const ERC725YKeys = {
   },
 };
 
-export const BasicUPSetup_Schema: ERC725JSONSchema[] = [
+export const BasicUPSetup_Schema = [
   {
     name: "LSP3Profile",
     key: ERC725YKeys.LSP3["LSP3Profile"],
@@ -147,11 +144,9 @@ export const enum OPERATIONS {
 // LSP6
 // ----------
 
-// hex =    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 // binary = .... 1111 1111 1111 (only 1s)
-export const ALL_PERMISSIONS_SET = ethers.utils.hexlify(
-  ethers.constants.MaxUint256
-);
+export const ALL_PERMISSIONS_SET =
+  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 // prettier-ignore
 export const enum PERMISSIONS {
     CHANGEOWNER       = 0x0000000000000000000000000000000000000000000000000000000000000001, // .... 0000 0000 0001
@@ -163,7 +158,7 @@ export const enum PERMISSIONS {
     DELEGATECALL      = 0x0000000000000000000000000000000000000000000000000000000000000040, // .... .... 0100 ....
     DEPLOY            = 0x0000000000000000000000000000000000000000000000000000000000000080, // .... .... 1000 ....
     TRANSFERVALUE     = 0x0000000000000000000000000000000000000000000000000000000000000100, // .... 0001 .... ....
-    SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200,  // .... 0010 .... ....
+    SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200, // .... 0010 .... ....
 }
 
 // ERC1271
