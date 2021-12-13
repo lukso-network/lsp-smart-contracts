@@ -1,3 +1,8 @@
+/**
+ * Set of constants values as defined by the LUKSO Standards Proposals.
+ * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
+ */
+
 // ERC165
 // ----------
 
@@ -13,6 +18,14 @@ export const enum INTERFACE_IDS {
   LSP7 = "0xe33f65c3",
   LSP8 = "0x49399145",
   LSP9 = "0x75edcee5",
+}
+
+// ERC1271
+// ----------
+
+export const enum ERC1271 {
+  MAGIC_VALUE = "0x1626ba7e",
+  FAIL_VALUE = "0xffffffff",
 }
 
 // ERC725Y
@@ -33,6 +46,10 @@ export const SupportedStandards = {
   },
 };
 
+/**
+ * For more infos on the type of each keys
+ * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
+ */
 export const ERC725YKeys = {
   LSP0: {
     // keccak256('LSP1UniversalReceiverDelegate')
@@ -43,34 +60,52 @@ export const ERC725YKeys = {
     // keccak256('LSP3Profile')
     LSP3Profile:
       "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
-    // LSP3IssuedAssetsMap:<address> --> bytes
+    // LSP3IssuedAssetsMap:<address>
     "LSP3IssuedAssetsMap:": "0x83f5e77bfb14241600000000",
     // keccak256('LSP3IssuedAssets[]')
     "LSP3IssuedAssets[]":
       "0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0",
   },
+  LSP4: {
+    // keccak256('LSP4TokenName')
+    LSP4TokenName:
+      "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1",
+    // keccak256('LSP4TokenSymbol')
+    LSP4TokenSymbol:
+      "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756",
+    // keccak256('LSP4Metadata')
+    LSP4Metadata:
+      "0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e",
+    // keccak256('"LSP4Creators[]')
+    "LSP4Creators[]":
+      "0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7",
+  },
   LSP5: {
     // LSP5ReceivedAssetsMap:<address>
     "LSP5ReceivedAssetsMap:": "0x812c4334633eb81600000000",
-    // LSP5ReceivedAssets[]
+    // keccak256('LSP5ReceivedAssets[]')
     "LSP5ReceivedAssets[]":
       "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
   },
   LSP6: {
-    // AddressPermissions[]
+    // keccak256('AddressPermissions[]')
     "AddressPermissions[]":
       "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
-    // AddressPermissions:Permissions:<address> --> bytes1
+    // AddressPermissions:Permissions:<address>
     "AddressPermissions:Permissions:": "0x4b80742d0000000082ac0000",
-    // AddressPermissions:AllowedAddresses:<address> --> address[]
+    // AddressPermissions:AllowedAddresses:<address>
     "AddressPermissions:AllowedAddresses:": "0x4b80742d00000000c6dd0000",
-    // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+    // AddressPermissions:AllowedFunctions:<address>
     "AddressPermissions:AllowedFunctions:": "0x4b80742d000000008efe0000",
+    // AddressPermissions:AllowedStandards:<address>
+    "AddressPermissions:AllowedStandards:": "0x4b80742d000000003efa0000",
   },
   LSP10: {
-    LSP10ReceivedVaultsMap: "0x5e5a4636eeb20bf100000000",
-    "LSP10ReceivedVaults[]":
-      "0xd8c6ec2b958bbebb976719e1eb233f126e0f355c63843f434220f9753b5ca9e5",
+    // keccak256('LSP10VaultsMap')
+    "LSP10VaultsMap:": "0x192448c3c0f88c7f00000000",
+    // keccak256('LSP10Vaults[]')
+    "LSP10Vaults[]":
+      "0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
   },
 };
 
@@ -159,12 +194,4 @@ export const enum PERMISSIONS {
     DEPLOY            = 0x0000000000000000000000000000000000000000000000000000000000000080, // .... .... 1000 ....
     TRANSFERVALUE     = 0x0000000000000000000000000000000000000000000000000000000000000100, // .... 0001 .... ....
     SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200, // .... 0010 .... ....
-}
-
-// ERC1271
-// ----------
-
-export const enum ERC1271 {
-  MAGIC_VALUE = "0x1626ba7e",
-  FAIL_VALUE = "0xffffffff",
 }
