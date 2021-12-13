@@ -71,9 +71,9 @@ export const ERC725YKeys = {
     "AddressPermissions:AllowedFunctions:": "0x4b80742d000000008efe0000",
   },
   LSP10: {
-    LSP10ReceivedVaultsMap: "0x5e5a4636eeb20bf100000000",
-    "LSP10ReceivedVaults[]":
-      "0xd8c6ec2b958bbebb976719e1eb233f126e0f355c63843f434220f9753b5ca9e5",
+    LSP10VaultsMap: "0x192448c3c0f88c7f00000000",
+    "LSP10Vaults[]":
+      "0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
   },
 };
 

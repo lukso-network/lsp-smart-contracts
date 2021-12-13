@@ -259,14 +259,14 @@ describe("LSP9Vault", () => {
         UniversalProfile.address
       );
       let vaultMapKey =
-        ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
+        ERC725YKeys.LSP10["LSP10VaultsMap"] +
         LSP9Vault.address.substr(2);
 
       let [vaultMapValue, arrayLength, element1Address] =
         await getMapAndArrayKeyValues(
           UniversalProfile,
           vaultMapKey,
-          ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+          ERC725YKeys.LSP10["LSP10Vaults[]"],
           LSP10_ARRAY_KEY.ELEMENT1
         );
 
