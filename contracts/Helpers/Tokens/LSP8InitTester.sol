@@ -6,18 +6,19 @@ import "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInit.sol"
 
 contract LSP8InitTester is LSP8IdentifiableDigitalAssetInit {
     function initialize(
-      string memory name,
-      string memory symbol,
-      address newOwner
-    )
-        public
-        initializer
-        override
-    {
+        string memory name,
+        string memory symbol,
+        address newOwner
+    ) public override initializer {
         LSP8IdentifiableDigitalAssetInit.initialize(name, symbol, newOwner);
     }
 
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public {
         _mint(to, tokenId, force, data);
     }
 

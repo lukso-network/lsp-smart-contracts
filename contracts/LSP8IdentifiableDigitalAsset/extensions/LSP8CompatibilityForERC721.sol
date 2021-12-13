@@ -12,7 +12,10 @@ import "./ILSP8CompatibilityForERC721.sol";
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
-contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP8IdentifiableDigitalAsset {
+contract LSP8CompatibilityForERC721 is
+    ILSP8CompatibilityForERC721,
+    LSP8IdentifiableDigitalAsset
+{
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /* solhint-disable no-empty-blocks */
@@ -25,24 +28,45 @@ contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP8Identifi
     /*
      * @dev Compatible with ERC721 ownerOf.
      */
-    function ownerOf(uint256 tokenId) external view virtual override returns (address) {
+    function ownerOf(uint256 tokenId)
+        external
+        view
+        virtual
+        override
+        returns (address)
+    {
         return tokenOwnerOf(bytes32(tokenId));
     }
 
     /*
      * @dev Compatible with ERC721 approve.
      */
-    function approve(address operator, uint256 tokenId) external virtual override {
+    function approve(address operator, uint256 tokenId)
+        external
+        virtual
+        override
+    {
         return authorizeOperator(operator, bytes32(tokenId));
     }
 
     /*
      * @dev Compatible with ERC721 getApproved.
      */
-    function getApproved(uint256 tokenId) external view virtual override returns (address) {
-        require(_exists(bytes32(tokenId)), "LSP8: can not query operator for non existent token");
+    function getApproved(uint256 tokenId)
+        external
+        view
+        virtual
+        override
+        returns (address)
+    {
+        require(
+            _exists(bytes32(tokenId)),
+            "LSP8: can not query operator for non existent token"
+        );
 
-        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[bytes32(tokenId)];
+        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[
+            bytes32(tokenId)
+        ];
         uint256 operatorListLength = operatorsForTokenId.length();
 
         if (operatorListLength == 0) {
@@ -67,7 +91,8 @@ contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP8Identifi
         address to,
         uint256 tokenId
     ) external virtual override {
-        return transfer(from, to, bytes32(tokenId), true, "compat-transferFrom");
+        return
+            transfer(from, to, bytes32(tokenId), true, "compat-transferFrom");
     }
 
     /*
@@ -79,6 +104,13 @@ contract LSP8CompatibilityForERC721 is ILSP8CompatibilityForERC721, LSP8Identifi
         address to,
         uint256 tokenId
     ) external virtual override {
-        return transfer(from, to, bytes32(tokenId), false, "compat-safeTransferFrom");
+        return
+            transfer(
+                from,
+                to,
+                bytes32(tokenId),
+                false,
+                "compat-safeTransferFrom"
+            );
     }
 }

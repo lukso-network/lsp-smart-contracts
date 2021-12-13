@@ -29,11 +29,21 @@ contract UniversalReceiverAddressStoreInit is
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 
-    function addAddress(address _address) public override onlyAccount returns (bool) {
+    function addAddress(address _address)
+        public
+        override
+        onlyAccount
+        returns (bool)
+    {
         return _addressStore.add(_address);
     }
 
-    function removeAddress(address _address) public override onlyAccount returns (bool) {
+    function removeAddress(address _address)
+        public
+        override
+        onlyAccount
+        returns (bool)
+    {
         return _addressStore.remove(_address);
     }
 
@@ -52,7 +62,10 @@ contract UniversalReceiverAddressStoreInit is
 
     /* Modifers */
     modifier onlyAccount() {
-        require(msg.sender == account, "Only the connected account call this function");
+        require(
+            msg.sender == account,
+            "Only the connected account call this function"
+        );
         _;
     }
 }
