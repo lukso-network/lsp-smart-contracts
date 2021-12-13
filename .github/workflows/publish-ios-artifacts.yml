@@ -3,11 +3,8 @@
 name: Upload iOS Github artifacts CD
 
 on:
-  push:
-    branches:
-      - "main"
-  # Enable to run workflow manually for debugging
-  workflow_dispatch:
+  repository_dispatch:
+      types: [trigger-release]
 
 jobs:
   upload-ios-artifacts:
@@ -15,25 +12,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check if NPM package version has changed
-        uses: EndBug/version-check@v1
-        id: check
-
-      - name: Use Node.js v16
-        if: steps.check.outputs.changed == 'true'
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16.x"
-          cache: "npm"
-
-      - if: steps.check.outputs.changed == 'true'
-        run: npm ci
-
-      - name: Write ABIs for iOS in Swift file
-        if: steps.check.outputs.changed == 'true'
-        run: |
-          mkdir ios
-          npx hardhat run make-ios.js
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with: 
+          workflow: build-artifacts.yml
+          workflow_conclusion: success
+          name: UPContractsAbi.swift
+          path: ios/UPContractsAbi.swift 
+          branch: main
+          event: push
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         if: steps.check.outputs.changed == 'true'

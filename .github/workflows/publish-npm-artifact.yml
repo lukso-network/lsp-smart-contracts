@@ -2,9 +2,8 @@
 name: Publish NPM artifacts
 
 on:
-  push:
-    branches:
-      - "main"
+  repository_dispatch:
+      types: [trigger-release]
 
 jobs:
   npm-build-artifacts:
@@ -12,12 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check if version changed
-        uses: EndBug/version-check@v1
-        id: check
-
       - name: Use Node.js v16
-        if: steps.check.outputs.changed == 'true'
         uses: actions/setup-node@v2
         with:
           node-version: "16.x"
@@ -26,18 +20,15 @@ jobs:
           cache: "npm"
 
       - name: Install
-        if: steps.check.outputs.changed == 'true'
         run: |
           npm ci
 
       - name: Build and Test
-        if: steps.check.outputs.changed == 'true'
         run: |
           npm run build --if-present
           npm run test
 
       - name: Publish
-        if: steps.check.outputs.changed == 'true'
         run: |
           npm run package
           npm publish --access public
