@@ -18,10 +18,13 @@ import {
 
 // constants
 import {
+  ALL_PERMISSIONS_SET,
+  PERMISSIONS,
+  OPERATIONS,
   INTERFACE_IDS,
   BasicUPSetup_Schema,
   ERC725YKeys,
-} from "../utils/constants";
+} from "../../constants";
 
 // helpers
 import {
@@ -35,12 +38,6 @@ import {
   getRandomAddresses,
   generateKeysAndValues,
 } from "../utils/helpers";
-
-import {
-  ALL_PERMISSIONS_SET,
-  PERMISSIONS,
-  OPERATIONS,
-} from "../utils/constants";
 
 describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   let abiCoder;
@@ -909,9 +906,7 @@ describe("KeyManager", () => {
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(
         keyManager.execute("0xbad000000000000000000000000bad")
-      ).toBeRevertedWith(
-        "_verifyPermissions: unknown ERC725 selector"
-      );
+      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
 
     it("Should revert with a revert reason string from TargetContract", async () => {

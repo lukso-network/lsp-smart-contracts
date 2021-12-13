@@ -1,5 +1,5 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import exp from "constants";
+
 import { ethers } from "hardhat";
 import {
   UniversalProfile,
@@ -22,7 +22,7 @@ import {
   PERMISSIONS,
   OPERATIONS,
   INTERFACE_IDS,
-} from "../utils/constants";
+} from "../../constants";
 
 import {
   LSP5_ARRAY_KEY,
@@ -343,7 +343,9 @@ describe("UniversalReceiverDelegateUP contract", () => {
             LSP5_ARRAY_KEY.ELEMENT2
           );
 
-        expect(tokenMapValue).toEqual("0x" + INDEX.ONE + INTERFACE_IDS.LSP7.substr(2));
+        expect(tokenMapValue).toEqual(
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP7.substr(2)
+        );
         expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
         expect(await ethers.utils.getAddress(element2Address)).toEqual(
           LSP7tokenB.address
@@ -441,7 +443,9 @@ describe("UniversalReceiverDelegateUP contract", () => {
             LSP5_ARRAY_KEY.ELEMENT3
           );
 
-        expect(tokenMapValue).toEqual("0x" + INDEX.TWO + INTERFACE_IDS.LSP7.substr(2));
+        expect(tokenMapValue).toEqual(
+          "0x" + INDEX.TWO + INTERFACE_IDS.LSP7.substr(2)
+        );
         expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
         expect(await ethers.utils.getAddress(element3Address)).toEqual(
           LSP7tokenC.address
@@ -517,7 +521,9 @@ describe("UniversalReceiverDelegateUP contract", () => {
             LSP5_ARRAY_KEY.ELEMENT3
           );
 
-        expect(tokenMapValue).toEqual("0x" + INDEX.TWO + INTERFACE_IDS.LSP7.substr(2));
+        expect(tokenMapValue).toEqual(
+          "0x" + INDEX.TWO + INTERFACE_IDS.LSP7.substr(2)
+        );
         expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
         expect(await ethers.utils.getAddress(element3Address)).toEqual(
           LSP7tokenD.address
@@ -1622,7 +1628,9 @@ describe("UniversalReceiverDelegateUP contract", () => {
           VaultB.address
         );
         expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-        expect(vaultMapValue).toEqual("0x" + INDEX.ONE + INTERFACE_IDS.LSP9.substr(2));
+        expect(vaultMapValue).toEqual(
+          "0x" + INDEX.ONE + INTERFACE_IDS.LSP9.substr(2)
+        );
       });
 
       it("Should create a Vault with UP2 as owner and read Keys into UP Storage", async () => {

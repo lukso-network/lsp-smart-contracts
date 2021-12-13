@@ -8,7 +8,7 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
-import { INTERFACE_IDS, SupportedStandards } from "../utils/constants";
+import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
 import type { BigNumber } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
@@ -55,7 +55,9 @@ export type LSP7TestContext = {
   initialSupply: BigNumber;
 };
 
-export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext>) => {
+export const shouldBehaveLikeLSP7 = (
+  buildContext: () => Promise<LSP7TestContext>
+) => {
   let context: LSP7TestContext;
 
   beforeEach(async () => {
@@ -73,7 +75,12 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         };
 
         await expect(
-          context.lsp7.mint(txParams.to, txParams.amount, txParams.force, txParams.data)
+          context.lsp7.mint(
+            txParams.to,
+            txParams.amount,
+            txParams.force,
+            txParams.data
+          )
         ).toBeRevertedWith("LSP7: mint to the zero address not allowed");
       });
     });
@@ -91,13 +98,21 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         try {
           await context.lsp7.balanceOf(txParams.to);
         } catch (error) {
-          if (error.message.search(/^LSP8: can not query non existent token/) === -1) {
+          if (
+            error.message.search(/^LSP8: can not query non existent token/) ===
+            -1
+          ) {
             throw error;
           }
         }
 
         // effects
-        await context.lsp7.mint(txParams.to, txParams.amount, txParams.force, txParams.data);
+        await context.lsp7.mint(
+          txParams.to,
+          txParams.amount,
+          txParams.force,
+          txParams.data
+        );
 
         // post-conditions
         const postBalanceOf = await context.lsp7.balanceOf(txParams.to);
@@ -116,24 +131,26 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
     describe("balanceOf", () => {
       describe("when the given address owns tokens", () => {
         it("should return the owned token count", async () => {
-          expect(await context.lsp7.balanceOf(context.accounts.owner.address)).toEqual(
-            context.initialSupply
-          );
+          expect(
+            await context.lsp7.balanceOf(context.accounts.owner.address)
+          ).toEqual(context.initialSupply);
         });
       });
 
       describe("when the given address does not own tokens", () => {
         it("should return zero", async () => {
-          expect(await context.lsp7.balanceOf(context.accounts.anyone.address)).toEqual(
-            ethers.constants.Zero
-          );
+          expect(
+            await context.lsp7.balanceOf(context.accounts.anyone.address)
+          ).toEqual(ethers.constants.Zero);
         });
       });
     });
 
     describe("decimals", () => {
       it("should return 18 as default value", async () => {
-        expect(await context.lsp7.decimals()).toEqual(ethers.BigNumber.from("18"));
+        expect(await context.lsp7.decimals()).toEqual(
+          ethers.BigNumber.from("18")
+        );
       });
     });
 
@@ -141,8 +158,13 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
       describe("when given operator is the tokenOwner", () => {
         it("should revert", async () => {
           await expect(
-            context.lsp7.authorizeOperator(context.accounts.owner.address, context.initialSupply)
-          ).toBeRevertedWith("LSP7: updating operator failed, can not use token owner as operator");
+            context.lsp7.authorizeOperator(
+              context.accounts.owner.address,
+              context.initialSupply
+            )
+          ).toBeRevertedWith(
+            "LSP7: updating operator failed, can not use token owner as operator"
+          );
         });
       });
 
@@ -155,13 +177,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
             const tx = await context.lsp7.authorizeOperator(operator, amount);
 
-            await expect(tx).toHaveEmittedWith(context.lsp7, "AuthorizedOperator", [
-              operator,
-              tokenOwner,
-              amount,
-            ]);
+            await expect(tx).toHaveEmittedWith(
+              context.lsp7,
+              "AuthorizedOperator",
+              [operator, tokenOwner, amount]
+            );
 
-            expect(await context.lsp7.isOperatorFor(operator, tokenOwner)).toEqual(amount);
+            expect(
+              await context.lsp7.isOperatorFor(operator, tokenOwner)
+            ).toEqual(amount);
           });
 
           describe("when operator is already authorized", () => {
@@ -181,13 +205,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
               const tx = await context.lsp7.authorizeOperator(operator, amount);
 
-              await expect(tx).toHaveEmittedWith(context.lsp7, "AuthorizedOperator", [
-                operator,
-                tokenOwner,
-                amount,
-              ]);
+              await expect(tx).toHaveEmittedWith(
+                context.lsp7,
+                "AuthorizedOperator",
+                [operator, tokenOwner, amount]
+              );
 
-              expect(await context.lsp7.isOperatorFor(operator, tokenOwner)).toEqual(amount);
+              expect(
+                await context.lsp7.isOperatorFor(operator, tokenOwner)
+              ).toEqual(amount);
             });
           });
         });
@@ -198,7 +224,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
             await expect(
               context.lsp7.authorizeOperator(operator, context.initialSupply)
-            ).toBeRevertedWith("LSP7: updating operator failed, operator can not be zero address");
+            ).toBeRevertedWith(
+              "LSP7: updating operator failed, operator can not be zero address"
+            );
           });
         });
       });
@@ -209,7 +237,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
         it("should revert", async () => {
           await expect(
             context.lsp7.revokeOperator(context.accounts.owner.address)
-          ).toBeRevertedWith("LSP7: updating operator failed, can not use token owner as operator");
+          ).toBeRevertedWith(
+            "LSP7: updating operator failed, can not use token owner as operator"
+          );
         });
       });
 
@@ -222,19 +252,22 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
 
             // pre-conditions
             await context.lsp7.authorizeOperator(operator, amount);
-            expect(await context.lsp7.isOperatorFor(operator, tokenOwner)).toEqual(amount);
+            expect(
+              await context.lsp7.isOperatorFor(operator, tokenOwner)
+            ).toEqual(amount);
 
             // effects
             const tx = await context.lsp7.revokeOperator(operator);
-            await expect(tx).toHaveEmittedWith(context.lsp7, "RevokedOperator", [
-              operator,
-              tokenOwner,
-            ]);
+            await expect(tx).toHaveEmittedWith(
+              context.lsp7,
+              "RevokedOperator",
+              [operator, tokenOwner]
+            );
 
             // post-conditions
-            expect(await context.lsp7.isOperatorFor(operator, tokenOwner)).toEqual(
-              ethers.constants.Zero
-            );
+            expect(
+              await context.lsp7.isOperatorFor(operator, tokenOwner)
+            ).toEqual(ethers.constants.Zero);
           });
         });
 
@@ -242,7 +275,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           it("should revert", async () => {
             const operator = ethers.constants.AddressZero;
 
-            await expect(context.lsp7.revokeOperator(operator)).toBeRevertedWith(
+            await expect(
+              context.lsp7.revokeOperator(operator)
+            ).toBeRevertedWith(
               "LSP7: updating operator failed, operator can not be zero address"
             );
           });
@@ -258,7 +293,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               context.accounts.owner.address,
               context.accounts.owner.address
             )
-          ).toEqual(await context.lsp7.balanceOf(context.accounts.owner.address));
+          ).toEqual(
+            await context.lsp7.balanceOf(context.accounts.owner.address)
+          );
         });
       });
 
@@ -362,10 +399,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           // pre-conditions
           const preFromBalanceOf = await context.lsp7.balanceOf(from);
           const preToBalanceOf = await context.lsp7.balanceOf(to);
-          const preIsOperatorFor = await context.lsp7.isOperatorFor(operator.address, from);
+          const preIsOperatorFor = await context.lsp7.isOperatorFor(
+            operator.address,
+            from
+          );
 
           // effect
-          const tx = await context.lsp7.connect(operator).transfer(from, to, amount, force, data);
+          const tx = await context.lsp7
+            .connect(operator)
+            .transfer(from, to, amount, force, data);
           await expect(tx).toHaveEmittedWith(context.lsp7, "Transfer", [
             operator.address,
             from,
@@ -383,20 +425,24 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           expect(postToBalanceOf).toEqual(preToBalanceOf.add(amount));
 
           if (operator.address !== from) {
-            const postIsOperatorFor = await context.lsp7.isOperatorFor(operator.address, from);
+            const postIsOperatorFor = await context.lsp7.isOperatorFor(
+              operator.address,
+              from
+            );
             expect(postIsOperatorFor).toEqual(preIsOperatorFor.sub(amount));
 
             if (postIsOperatorFor.eq("0")) {
-              await expect(tx).toHaveEmittedWith(context.lsp7, "RevokedOperator", [
-                context.accounts.operator.address,
-                from,
-              ]);
+              await expect(tx).toHaveEmittedWith(
+                context.lsp7,
+                "RevokedOperator",
+                [context.accounts.operator.address, from]
+              );
             } else {
-              await expect(tx).toHaveEmittedWith(context.lsp7, "AuthorizedOperator", [
-                context.accounts.operator.address,
-                from,
-                postIsOperatorFor,
-              ]);
+              await expect(tx).toHaveEmittedWith(
+                context.lsp7,
+                "AuthorizedOperator",
+                [context.accounts.operator.address, from, postIsOperatorFor]
+              );
             }
           }
 
@@ -409,11 +455,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           expectedError: string
         ) => {
           await expect(
-            context.lsp7.connect(operator).transfer(from, to, amount, force, data)
+            context.lsp7
+              .connect(operator)
+              .transfer(from, to, amount, force, data)
           ).toBeRevertedWith(expectedError);
         };
 
-        const sendingTransferTransactions = (getOperator: () => SignerWithAddress) => {
+        const sendingTransferTransactions = (
+          getOperator: () => SignerWithAddress
+        ) => {
           let operator: SignerWithAddress;
           beforeEach(() => {
             // passed as a thunk since other before hooks setup accounts map
@@ -448,7 +498,9 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                     to: ethers.constants.AddressZero,
                     amount: context.initialSupply,
                     force: true,
-                    data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert")),
+                    data: ethers.utils.hexlify(
+                      ethers.utils.toUtf8Bytes("should revert")
+                    ),
                   };
                   const expectedError = "LSP7: transfer to the zero address";
 
@@ -559,7 +611,8 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                     force,
                     data,
                   };
-                  const expectedError = "LSP7: token receiver contract missing LSP1 interface";
+                  const expectedError =
+                    "LSP7: token receiver contract missing LSP1 interface";
 
                   await transferFailScenario(txParams, operator, expectedError);
                 });
@@ -574,12 +627,18 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                 to: context.accounts.tokenReceiver.address,
                 amount: context.initialSupply.add(1),
                 force: true,
-                data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert")),
+                data: ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("should revert")
+                ),
               };
-              const expectedError = "LSP7: transfer amount exceeds tokenOwner balance";
+              const expectedError =
+                "LSP7: transfer amount exceeds tokenOwner balance";
 
               if (txParams.from !== operator.address) {
-                await context.lsp7.authorizeOperator(operator.address, txParams.amount);
+                await context.lsp7.authorizeOperator(
+                  operator.address,
+                  txParams.amount
+                );
               }
 
               await transferFailScenario(txParams, operator, expectedError);
@@ -602,9 +661,12 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                 to: helperContracts.tokenReceiverWithoutLSP1.address,
                 amount: context.initialSupply,
                 force: true,
-                data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert")),
+                data: ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("should revert")
+                ),
               };
-              const expectedError = "LSP7: transfer amount exceeds operator authorized amount";
+              const expectedError =
+                "LSP7: transfer amount exceeds operator authorized amount";
 
               await transferFailScenario(txParams, operator, expectedError);
             });
@@ -619,14 +681,17 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               to: context.accounts.tokenReceiver.address,
               amount: context.initialSupply,
               force: true,
-              data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert")),
+              data: ethers.utils.hexlify(
+                ethers.utils.toUtf8Bytes("should revert")
+              ),
             };
-            const expectedError = "LSP7: transfer amount exceeds operator authorized amount";
+            const expectedError =
+              "LSP7: transfer amount exceeds operator authorized amount";
 
             // pre-conditions
-            expect(await context.lsp7.isOperatorFor(operator.address, txParams.from)).toEqual(
-              ethers.constants.Zero
-            );
+            expect(
+              await context.lsp7.isOperatorFor(operator.address, txParams.from)
+            ).toEqual(ethers.constants.Zero);
 
             // effects
             await transferFailScenario(txParams, operator, expectedError);
@@ -696,20 +761,26 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                   operator.address,
                   from[index]
                 );
-                expect(postIsOperatorFor).toEqual(postIsOperatorFor.sub(amount[index]));
+                expect(postIsOperatorFor).toEqual(
+                  postIsOperatorFor.sub(amount[index])
+                );
 
                 if (postIsOperatorFor.eq("0")) {
-                  await expect(tx).toHaveEmittedWith(context.lsp7, "RevokedOperator", [
-                    context.accounts.operator.address,
-                    from[index],
-                    postIsOperatorFor,
-                  ]);
+                  await expect(tx).toHaveEmittedWith(
+                    context.lsp7,
+                    "RevokedOperator",
+                    [
+                      context.accounts.operator.address,
+                      from[index],
+                      postIsOperatorFor,
+                    ]
+                  );
                 } else {
-                  await expect(tx).toHaveEmittedWith(context.lsp7, "AuthorizedOperator", [
-                    context.accounts.operator.address,
-                    from,
-                    postIsOperatorFor,
-                  ]);
+                  await expect(tx).toHaveEmittedWith(
+                    context.lsp7,
+                    "AuthorizedOperator",
+                    [context.accounts.operator.address, from, postIsOperatorFor]
+                  );
                 }
               }
             })
@@ -724,11 +795,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
           expectedError: string
         ) => {
           await expect(
-            context.lsp7.connect(operator).transferBatch(from, to, amount, force, data)
+            context.lsp7
+              .connect(operator)
+              .transferBatch(from, to, amount, force, data)
           ).toBeRevertedWith(expectedError);
         };
 
-        const sendingTransferBatchTransactions = (getOperator: () => SignerWithAddress) => {
+        const sendingTransferBatchTransactions = (
+          getOperator: () => SignerWithAddress
+        ) => {
           let operator: SignerWithAddress;
           beforeEach(() => {
             // passed as a thunk since other before hooks setup accounts map
@@ -745,27 +820,46 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               describe("when `to` is the zero address", () => {
                 it("should revert", async () => {
                   const txParams = {
-                    from: [context.accounts.owner.address, context.accounts.owner.address],
-                    to: [context.accounts.tokenReceiver.address, ethers.constants.AddressZero],
-                    amount: [context.initialSupply.sub(1), ethers.BigNumber.from("1")],
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
+                    to: [
+                      context.accounts.tokenReceiver.address,
+                      ethers.constants.AddressZero,
+                    ],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
                     force,
                     data: [data, data],
                   };
                   const expectedError = "LSP7: transfer to the zero address";
 
-                  await transferBatchFailScenario(txParams, operator, expectedError);
+                  await transferBatchFailScenario(
+                    txParams,
+                    operator,
+                    expectedError
+                  );
                 });
               });
 
               describe("when `to` is not the zero address", () => {
                 it("should allow transfering", async () => {
                   const txParams = {
-                    from: [context.accounts.owner.address, context.accounts.owner.address],
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
                     to: [
                       context.accounts.tokenReceiver.address,
                       context.accounts.anotherTokenReceiver.address,
                     ],
-                    amount: [context.initialSupply.sub(1), ethers.BigNumber.from("1")],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
                     force,
                     data: [data, data],
                   };
@@ -779,17 +873,26 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               describe("when receiving contract supports LSP1", () => {
                 it("should allow transfering", async () => {
                   const txParams = {
-                    from: [context.accounts.owner.address, context.accounts.owner.address],
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
                     to: [
                       helperContracts.tokenReceiverWithLSP1.address,
                       helperContracts.tokenReceiverWithLSP1.address,
                     ],
-                    amount: [context.initialSupply.sub(1), ethers.BigNumber.from("1")],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
                     force,
                     data: [data, data],
                   };
 
-                  const tx = await transferBatchSuccessScenario(txParams, operator);
+                  const tx = await transferBatchSuccessScenario(
+                    txParams,
+                    operator
+                  );
 
                   await Promise.all(
                     txParams.amount.map((_, index) => async () => {
@@ -818,12 +921,18 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               describe("when receiving contract does not support LSP1", () => {
                 it("should allow transfering", async () => {
                   const txParams = {
-                    from: [context.accounts.owner.address, context.accounts.owner.address],
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
                     to: [
                       helperContracts.tokenReceiverWithoutLSP1.address,
                       helperContracts.tokenReceiverWithoutLSP1.address,
                     ],
-                    amount: [context.initialSupply.sub(1), ethers.BigNumber.from("1")],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
                     force,
                     data: [data, data],
                   };
@@ -843,18 +952,28 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
             describe("when `to` is an EOA", () => {
               it("should revert", async () => {
                 const txParams = {
-                  from: [context.accounts.owner.address, context.accounts.owner.address],
+                  from: [
+                    context.accounts.owner.address,
+                    context.accounts.owner.address,
+                  ],
                   to: [
                     context.accounts.tokenReceiver.address,
                     context.accounts.anotherTokenReceiver.address,
                   ],
-                  amount: [context.initialSupply.sub(1), ethers.BigNumber.from("1")],
+                  amount: [
+                    context.initialSupply.sub(1),
+                    ethers.BigNumber.from("1"),
+                  ],
                   force,
                   data: [data, data],
                 };
                 const expectedError = "LSP7: token receiver is EOA";
 
-                await transferBatchFailScenario(txParams, operator, expectedError);
+                await transferBatchFailScenario(
+                  txParams,
+                  operator,
+                  expectedError
+                );
               });
             });
 
@@ -862,12 +981,18 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               describe("when receiving contract supports LSP1", () => {
                 it("should allow transfering", async () => {
                   const txParams = {
-                    from: [context.accounts.owner.address, context.accounts.owner.address],
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
                     to: [
                       helperContracts.tokenReceiverWithLSP1.address,
                       helperContracts.tokenReceiverWithLSP1.address,
                     ],
-                    amount: [context.initialSupply.sub(1), ethers.BigNumber.from("1")],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
                     force,
                     data: [data, data],
                   };
@@ -879,18 +1004,29 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               describe("when receiving contract does not support LSP1", () => {
                 it("should revert", async () => {
                   const txParams = {
-                    from: [context.accounts.owner.address, context.accounts.owner.address],
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
                     to: [
                       helperContracts.tokenReceiverWithoutLSP1.address,
                       helperContracts.tokenReceiverWithoutLSP1.address,
                     ],
-                    amount: [context.initialSupply.sub(1), ethers.BigNumber.from("1")],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
                     force,
                     data: [data, data],
                   };
-                  const expectedError = "LSP7: token receiver contract missing LSP1 interface";
+                  const expectedError =
+                    "LSP7: token receiver contract missing LSP1 interface";
 
-                  await transferBatchFailScenario(txParams, operator, expectedError);
+                  await transferBatchFailScenario(
+                    txParams,
+                    operator,
+                    expectedError
+                  );
                 });
               });
             });
@@ -903,31 +1039,51 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                 to: [context.accounts.tokenReceiver.address],
                 amount: [context.initialSupply.add(1)],
                 force: true,
-                data: [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))],
+                data: [
+                  ethers.utils.hexlify(
+                    ethers.utils.toUtf8Bytes("should revert")
+                  ),
+                ],
               };
-              const expectedError = "LSP7: transfer amount exceeds tokenOwner balance";
+              const expectedError =
+                "LSP7: transfer amount exceeds tokenOwner balance";
 
-              if (txParams.from.filter((x) => x !== operator.address).length !== 0) {
+              if (
+                txParams.from.filter((x) => x !== operator.address).length !== 0
+              ) {
                 const totalAmount = txParams.amount.reduce(
                   (acc, amount) => acc.add(amount),
                   ethers.BigNumber.from("0")
                 );
-                await context.lsp7.authorizeOperator(operator.address, totalAmount);
+                await context.lsp7.authorizeOperator(
+                  operator.address,
+                  totalAmount
+                );
               }
 
-              await transferBatchFailScenario(txParams, operator, expectedError);
+              await transferBatchFailScenario(
+                txParams,
+                operator,
+                expectedError
+              );
             });
           });
 
           describe("when function parameters list length does not match", () => {
             it("should revert", async () => {
               const validTxParams = {
-                from: [context.accounts.owner.address, context.accounts.owner.address],
+                from: [
+                  context.accounts.owner.address,
+                  context.accounts.owner.address,
+                ],
                 to: [
                   context.accounts.tokenReceiver.address,
                   context.accounts.tokenReceiver.address,
                 ],
-                amount: [context.initialSupply.sub(1), ethers.BigNumber.from("1")],
+                amount: [
+                  context.initialSupply.sub(1),
+                  ethers.BigNumber.from("1"),
+                ],
                 force: true,
                 data: [
                   ethers.utils.toUtf8Bytes("should revert"),
@@ -938,7 +1094,10 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
               await Promise.all(
                 ["from", "to", "amount", "data"].map(async (arrayParam) => {
                   await transferBatchFailScenario(
-                    { ...validTxParams, [`${arrayParam}`]: [validTxParams[arrayParam][0]] },
+                    {
+                      ...validTxParams,
+                      [`${arrayParam}`]: [validTxParams[arrayParam][0]],
+                    },
                     operator,
                     "LSP7: transferBatch list length mismatch"
                   );
@@ -965,9 +1124,14 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                 force: true,
                 data: [ethers.utils.toUtf8Bytes("should revert")],
               };
-              const expectedError = "LSP7: transfer amount exceeds operator authorized amount";
+              const expectedError =
+                "LSP7: transfer amount exceeds operator authorized amount";
 
-              await transferBatchFailScenario(txParams, operator, expectedError);
+              await transferBatchFailScenario(
+                txParams,
+                operator,
+                expectedError
+              );
             });
           });
 
@@ -979,11 +1143,20 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
                 to: [context.accounts.tokenReceiver.address],
                 amount: [context.initialSupply],
                 force: true,
-                data: [ethers.utils.hexlify(ethers.utils.toUtf8Bytes("should revert"))],
+                data: [
+                  ethers.utils.hexlify(
+                    ethers.utils.toUtf8Bytes("should revert")
+                  ),
+                ],
               };
-              const expectedError = "LSP7: transfer amount exceeds operator authorized amount";
+              const expectedError =
+                "LSP7: transfer amount exceeds operator authorized amount";
 
-              await transferBatchFailScenario(txParams, operator, expectedError);
+              await transferBatchFailScenario(
+                txParams,
+                operator,
+                expectedError
+              );
             });
           });
         });
@@ -1013,33 +1186,45 @@ export const shouldInitializeLikeLSP7 = (
     });
 
     it("should have set expected entries with ERC725Y.setData", async () => {
-      await expect(context.initializeTransaction).toHaveEmittedWith(context.lsp7, "DataChanged", [
-        SupportedStandards.LSP4DigitalAsset.key,
-        SupportedStandards.LSP4DigitalAsset.value,
-      ]);
-      expect(await context.lsp7.getData([SupportedStandards.LSP4DigitalAsset.key])).toEqual([
-        SupportedStandards.LSP4DigitalAsset.value,
-      ]);
+      await expect(context.initializeTransaction).toHaveEmittedWith(
+        context.lsp7,
+        "DataChanged",
+        [
+          SupportedStandards.LSP4DigitalAsset.key,
+          SupportedStandards.LSP4DigitalAsset.value,
+        ]
+      );
+      expect(
+        await context.lsp7.getData([SupportedStandards.LSP4DigitalAsset.key])
+      ).toEqual([SupportedStandards.LSP4DigitalAsset.value]);
 
-      const nameKey = "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
+      const nameKey =
+        "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
-      await expect(context.initializeTransaction).toHaveEmittedWith(context.lsp7, "DataChanged", [
-        nameKey,
+      await expect(context.initializeTransaction).toHaveEmittedWith(
+        context.lsp7,
+        "DataChanged",
+        [nameKey, expectedNameValue]
+      );
+      expect(await context.lsp7.getData([nameKey])).toEqual([
         expectedNameValue,
       ]);
-      expect(await context.lsp7.getData([nameKey])).toEqual([expectedNameValue]);
 
-      const symbolKey = "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
+      const symbolKey =
+        "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );
-      await expect(context.initializeTransaction).toHaveEmittedWith(context.lsp7, "DataChanged", [
-        symbolKey,
+      await expect(context.initializeTransaction).toHaveEmittedWith(
+        context.lsp7,
+        "DataChanged",
+        [symbolKey, expectedSymbolValue]
+      );
+      expect(await context.lsp7.getData([symbolKey])).toEqual([
         expectedSymbolValue,
       ]);
-      expect(await context.lsp7.getData([symbolKey])).toEqual([expectedSymbolValue]);
     });
   });
 };

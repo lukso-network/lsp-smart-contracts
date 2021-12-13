@@ -12,11 +12,7 @@ import {
   LSP1UniversalReceiverDelegateVault__factory,
 } from "../../types";
 
-import {
-  ERC725YKeys,
-  OPERATIONS,
-  INTERFACE_IDS,
-} from "../utils/constants";
+import { ERC725YKeys, OPERATIONS, INTERFACE_IDS } from "../../constants";
 
 import {
   LSP5_ARRAY_KEY,

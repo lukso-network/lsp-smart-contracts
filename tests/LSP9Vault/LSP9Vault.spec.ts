@@ -17,14 +17,14 @@ import {
   SupportedStandards,
   INTERFACE_IDS,
   ERC725YKeys,
-  OPERATIONS
-} from "../utils/constants";
+  OPERATIONS,
+} from "../../constants";
 
 import {
   RANDOM_BYTES32,
   DUMMY_PAYLOAD,
   getMapAndArrayKeyValues,
-  LSP10_ARRAY_KEY
+  LSP10_ARRAY_KEY,
 } from "../utils/helpers";
 
 describe("LSP9Vault", () => {
