@@ -1,6 +1,9 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { CalculateERC165Selectors, CalculateERC165Selectors__factory } from "../../types";
+import {
+  CalculateERC165Selectors,
+  CalculateERC165Selectors__factory,
+} from "../../types";
 
 // utils
 import { INTERFACE_IDS } from "../utils/constants";
@@ -15,7 +18,9 @@ describe("Calculate Selectors", () => {
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
-    contract = await new CalculateERC165Selectors__factory(accounts[0]).deploy();
+    contract = await new CalculateERC165Selectors__factory(
+      accounts[0]
+    ).deploy();
   });
 
   it("LSP1", async () => {

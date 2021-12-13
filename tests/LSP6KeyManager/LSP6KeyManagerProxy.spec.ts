@@ -909,9 +909,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(
         proxyKeyManager.execute("0xbad000000000000000000000000bad")
-      ).toBeRevertedWith(
-        "_verifyPermissions: unknown ERC725 selector"
-      );
+      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
 
     it("Should revert with a revert reason string from TargetContract", async () => {
