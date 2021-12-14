@@ -24,7 +24,7 @@ hre.run("prepare-package").then(() => {
 
   // 2. add each swift abi in the file content,
   let swiftFileContent = `//
-//  UPContractsAbi.swift
+//  UpContractsAbi.swift
 //  universalprofile-ios-sdk
 //
 //  Created by lukso-network.
