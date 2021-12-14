@@ -28,6 +28,17 @@ export const enum ERC1271 {
   FAIL_VALUE = "0xffffffff",
 }
 
+// ERC725X
+// ----------
+
+export const enum OPERATIONS {
+  CALL = 0,
+  CREATE = 1,
+  CREATE2 = 2,
+  STATICCALL = 3,
+  DELEGATECALL = 4,
+}
+
 // ERC725Y
 // ----------
 
@@ -135,47 +146,6 @@ export const BasicUPSetup_Schema = [
   },
 ];
 
-// ----------
-
-export const EventSignatures = {
-  /**
-   * event UniversalReceiver(
-   *    address indexed from,
-   *    bytes32 indexed typeId,
-   *    bytes32 indexed returnedValue,
-   *    bytes receivedData
-   * )
-   *
-   * signature = keccak256('UniversalReceiver(address,bytes32,bytes32,bytes)')
-   */
-  UniversalReceiver:
-    "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3",
-  /**
-   * event ReceivedERC777(
-   *    address indexed token,
-   *    address indexed _operator,
-   *    address indexed _from,
-   *    address _to,
-   *    uint256 _amount
-   * )
-   *
-   * signature = keccak256('ReceivedERC777(address,address,address,address,uint256)')
-   */
-  ReceivedERC777:
-    "0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c",
-};
-
-// LSP0
-// ----------
-
-export const enum OPERATIONS {
-  CALL = 0,
-  CREATE = 1,
-  CREATE2 = 2,
-  STATICCALL = 3,
-  DELEGATECALL = 4,
-}
-
 // LSP6
 // ----------
 
@@ -184,14 +154,197 @@ export const ALL_PERMISSIONS_SET =
   "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 // prettier-ignore
 export const enum PERMISSIONS {
-    CHANGEOWNER       = 0x0000000000000000000000000000000000000000000000000000000000000001, // .... 0000 0000 0001
-    CHANGEPERMISSIONS = 0x0000000000000000000000000000000000000000000000000000000000000002, // .... .... .... 0010
-    ADDPERMISSIONS    = 0x0000000000000000000000000000000000000000000000000000000000000004, // .... .... .... 0100
-    SETDATA           = 0x0000000000000000000000000000000000000000000000000000000000000008, // .... .... .... 1000
-    CALL              = 0x0000000000000000000000000000000000000000000000000000000000000010, // .... .... 0001 ....
-    STATICCALL        = 0x0000000000000000000000000000000000000000000000000000000000000020, // .... .... 0010 ....
-    DELEGATECALL      = 0x0000000000000000000000000000000000000000000000000000000000000040, // .... .... 0100 ....
-    DEPLOY            = 0x0000000000000000000000000000000000000000000000000000000000000080, // .... .... 1000 ....
-    TRANSFERVALUE     = 0x0000000000000000000000000000000000000000000000000000000000000100, // .... 0001 .... ....
-    SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200, // .... 0010 .... ....
-}
+        CHANGEOWNER       = 0x0000000000000000000000000000000000000000000000000000000000000001, // .... 0000 0000 0001
+        CHANGEPERMISSIONS = 0x0000000000000000000000000000000000000000000000000000000000000002, // .... .... .... 0010
+        ADDPERMISSIONS    = 0x0000000000000000000000000000000000000000000000000000000000000004, // .... .... .... 0100
+        SETDATA           = 0x0000000000000000000000000000000000000000000000000000000000000008, // .... .... .... 1000
+        CALL              = 0x0000000000000000000000000000000000000000000000000000000000000010, // .... .... 0001 ....
+        STATICCALL        = 0x0000000000000000000000000000000000000000000000000000000000000020, // .... .... 0010 ....
+        DELEGATECALL      = 0x0000000000000000000000000000000000000000000000000000000000000040, // .... .... 0100 ....
+        DEPLOY            = 0x0000000000000000000000000000000000000000000000000000000000000080, // .... .... 1000 ....
+        TRANSFERVALUE     = 0x0000000000000000000000000000000000000000000000000000000000000100, // .... 0001 .... ....
+        SIGN              = 0x0000000000000000000000000000000000000000000000000000000000000200, // .... 0010 .... ....
+    }
+
+// ----------
+
+export const EventSignatures = {
+  ERC173: {
+    /**
+     * event OwnershipTransferred(
+     *    address indexed previousOwner,
+     *    address indexed newOwner,
+     * );
+     *
+     * signature = keccak256('OwnershipTransferred(address,address)')
+     */
+    OwnershipTransfered:
+      "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+  },
+  ERC725X: {
+    /**
+     * event ContractCreated(
+     *     uint256 indexed _operation,
+     *     address indexed _contractAddress,
+     *     uint256 indexed _value
+     * );
+     *
+     * signature = keccak256('ContractCreated(uint256,address,uint256)')
+     */
+    ContractCreated:
+      "0x01c42bd7e97a66166063b02fce6924e6656b6c2c61966630165095c4fb0b7b2f",
+    /**
+     * event Executed(
+     *      uint256 indexed _operation,
+     *      address indexed _to,
+     *      uint256 indexed _value,
+     *      bytes _data
+     * );
+     *
+     * signature = keccak256('Executed(uint256,address,uint256,bytes)')
+     */
+    Executed:
+      "0x1f920dbda597d7bf95035464170fa58d0a4b57f13a1c315ace6793b9f63688b8",
+  },
+  ERC725Y: {
+    /**
+     * event DataChanged(
+     *      bytes32 indexed key,
+     *      bytes value
+     * );
+     *
+     * signature = keccak256('DataChanged(bytes32,bytes)')
+     */
+    DataChanged:
+      "0xece574603820d07bc9b91f2a932baadf4628aabcb8afba49776529c14a6104b2",
+  },
+  // ERC725Account
+  LSP0: {
+    /**
+     * event ValueReceived(
+     *      address indexed sender,
+     *      uint256 indexed value
+     * );
+     *
+     * signature = keccak256('ValueReceived(address,uint256)')
+     */
+    ValueReceived:
+      "0x7e71433ddf847725166244795048ecf3e3f9f35628254ecbf736056664233493",
+  },
+  LSP1: {
+    /**
+     * event UniversalReceiver(
+     *    address indexed from,
+     *    bytes32 indexed typeId,
+     *    bytes32 indexed returnedValue,
+     *    bytes receivedData
+     * );
+     *
+     * signature = keccak256('UniversalReceiver(address,bytes32,bytes32,bytes)')
+     */
+    UniversalReceiver:
+      "0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3",
+  },
+  LSP6: {
+    /**
+     * event Executed(
+     *     uint256 indexed _value,
+     *     bytes _data
+     * );
+     *
+     * signature = keccak256('Executed(uint256,bytes)')
+     */
+    Executed:
+      "0x2e733a17851169f232b3859260eb3ad2a086afd54e999eb4ea9afb7791702e41",
+  },
+  LSP7: {
+    /**
+     * event Transfer(
+     *     address indexed operator,
+     *     address indexed from,
+     *     address indexed to,
+     *     uint256 amount,
+     *     bool force,
+     *     bytes data
+     * );
+     *
+     * signature = keccak256('Transfer(address,address,address,uint256,bool,bytes)')
+     */
+    Transfer:
+      "0x3997e418d2cef0b3b0e907b1e39605c3f7d32dbd061e82ea5b4a770d46a160a6",
+    /**
+     * event AuthorizedOperator(
+     *     address indexed operator,
+     *     address indexed tokenOwner,
+     *     uint256 indexed amount
+     * );
+     *
+     * signature = keccak256('AuthorizedOperator(address,address,uint256)')
+     */
+    AuthorizedOperator:
+      "0xd66aff874162a96578e919097b6f6d153dfd89a5cec41bb331fdb0c4aec16e2c",
+    /**
+     * event RevokedOperator(
+     *     address indexed operator,
+     *     address indexed tokenOwner
+     * );
+     *
+     * signature = keccak256('RevokedOperator(address,address)')
+     */
+    RevokedOperator:
+      "0x50546e66e5f44d728365dc3908c63bc5cfeeab470722c1677e3073a6ac294aa1",
+  },
+  LSP8: {
+    /**
+     * event Transfer(
+     *     address operator,
+     *     address indexed from,
+     *     address indexed to,
+     *     bytes32 indexed tokenId,
+     *     bool force,
+     *     bytes data
+     * );
+     *
+     * signature = keccak256('Transfer(address,address,address,bytes32,bool,bytes)')
+     */
+    Transfer:
+      "b333c813a7426a7a11e2b190cad52c44119421594b47f6f32ace6d8c7207b2bf",
+    /**
+     * event AuthorizedOperator(
+     *     address indexed operator,
+     *     address indexed tokenOwner,
+     *     bytes32 indexed tokenId
+     * );
+     *
+     * signature = keccak256('AuthorizedOperator(address,address,bytes32)')
+     */
+    AuthorizedOperator:
+      "34b797fc5a526f7bf1d2b5de25f6564fd85ae364e3ee939aee7c1ac27871a988",
+    /**
+     * event RevokedOperator(
+     *     address indexed operator,
+     *     address indexed tokenOwner,
+     *     bytes32 indexed tokenId
+     * );
+     *
+     * signature = keccak256('RevokedOperator(address,address,bytes32)')
+     */
+    RevokedOperator:
+      "17d5389f6ab6adb2647dfa0aa365c323d37adacc30b33a65310b6158ce1373d5",
+  },
+  Helpers: {
+    /**
+     * event ReceivedERC777(
+     *    address indexed token,
+     *    address indexed _operator,
+     *    address indexed _from,
+     *    address _to,
+     *    uint256 _amount
+     * );
+     *
+     * signature = keccak256('ReceivedERC777(address,address,address,address,uint256)')
+     */
+    ReceivedERC777:
+      "0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c",
+  },
+};
