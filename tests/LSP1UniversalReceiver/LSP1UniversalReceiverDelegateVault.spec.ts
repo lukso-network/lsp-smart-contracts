@@ -150,7 +150,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint tokenA and Register the Map and the Key in the Array", async () => {
           // Token const
           const tokenAMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenA.address.substr(2);
 
           let abi = LSP7tokenA.interface.encodeFunctionData("mint", [
@@ -195,7 +195,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint TokenB and Register the Map and the Key in the Array and Update the length", async () => {
           // Token const
           const tokenBMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenB.address.substr(2);
 
           let abi = LSP7tokenB.interface.encodeFunctionData("mint", [
@@ -240,10 +240,10 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should send more token A and B and don't add or change something", async () => {
           // Token const
           const tokenAMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenA.address.substr(2);
           const tokenBMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenB.address.substr(2);
 
           let abi = LSP7tokenB.interface.encodeFunctionData("mint", [
@@ -318,7 +318,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint token C and Register the Map and the key in the Array and update the length", async () => {
           // Token const
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenC.address.substr(2);
 
           let abi = LSP7tokenC.interface.encodeFunctionData("mint", [
@@ -362,10 +362,10 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should Burn token B and update the key in the Array and remove the map", async () => {
           // Token const
           const tokenBMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenB.address.substr(2);
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenC.address.substr(2);
 
           let abi = LSP7tokenB.interface.encodeFunctionData("burn", [
@@ -412,7 +412,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint Token D and registering the Map and the key in the Array", async () => {
           // Token const
           const tokenDMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenD.address.substr(2);
 
           let abi = LSP7tokenD.interface.encodeFunctionData("mint", [
@@ -454,10 +454,10 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should burn Token D and remove the Map and the key in the Array and update the length", async () => {
           // Token const
           const tokenDMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenD.address.substr(2);
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenC.address.substr(2);
 
           let abi = LSP7tokenD.interface.encodeFunctionData("burn", [
@@ -503,10 +503,10 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should burn token A and update the key in the array and remove Map and update array length", async () => {
           // Token const
           const tokenAMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenA.address.substr(2);
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenC.address.substr(2);
 
           let abi = LSP7tokenA.interface.encodeFunctionData("burn", [
@@ -552,7 +552,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should burn token C and update the key in the array and remove Map and update array length", async () => {
           // Token const
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenC.address.substr(2);
 
           let abi = LSP7tokenC.interface.encodeFunctionData("burn", [
@@ -590,7 +590,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint token E and register the Map and the key in the Array", async () => {
           // Token const
           const tokenEMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenE.address.substr(2);
 
           let abi = LSP7tokenE.interface.encodeFunctionData("mint", [
@@ -636,7 +636,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should transfer 5 tokensE to VaultB and keep 5 tokensE in VaultA and register the keys in VaultB and keep them also in VaultA", async () => {
           // Token const
           const tokenEMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenE.address.substr(2);
 
           let abi = LSP7tokenE.interface.encodeFunctionData("transfer", [
@@ -699,7 +699,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should transfer 5 tokensE to VaultB from VaultA and Keep 0 token E in VaultA then clear all keys", async () => {
           // Token const
           const tokenEMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenE.address.substr(2);
 
           let abi = LSP7tokenE.interface.encodeFunctionData("transfer", [
@@ -759,7 +759,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint token D to VaultB and register the map and the key in the array", async () => {
           // Token const
           const tokenDMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenD.address.substr(2);
 
           let abi = LSP7tokenD.interface.encodeFunctionData("mint", [
@@ -804,7 +804,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should Transfer token D from VaultB to VaultA and remove all Token D keys", async () => {
           // Token const
           const tokenDMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP7tokenD.address.substr(2);
 
           let abi = LSP7tokenD.interface.encodeFunctionData("transfer", [
@@ -1022,7 +1022,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint tokenA and Register the Map and the Key in the Array", async () => {
           // Token const
           const tokenAMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenA.address.substr(2);
 
           let abi = LSP8tokenA.interface.encodeFunctionData("mint", [
@@ -1066,7 +1066,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint TokenB and Register the Map and the Key in the Array and Update the length", async () => {
           // Token const
           const tokenBMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenB.address.substr(2);
 
           let abi = LSP8tokenB.interface.encodeFunctionData("mint", [
@@ -1110,7 +1110,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint token C and Register the Map and the key in the Array and update the length", async () => {
           // Token const
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenC.address.substr(2);
 
           let abi = LSP8tokenC.interface.encodeFunctionData("mint", [
@@ -1154,10 +1154,10 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should Burn token B and update the key in the Array and remove the map", async () => {
           // Token const
           const tokenBMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenB.address.substr(2);
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenC.address.substr(2);
 
           let abi = LSP8tokenB.interface.encodeFunctionData("burn", [
@@ -1199,7 +1199,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint Token D and registering the Map and the key in the Array", async () => {
           // Token const
           const tokenDMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenD.address.substr(2);
 
           let abi = LSP8tokenD.interface.encodeFunctionData("mint", [
@@ -1241,10 +1241,10 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should burn Token D and remove the Map and the key in the Array and update the length", async () => {
           // Token const
           const tokenDMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenD.address.substr(2);
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenC.address.substr(2);
 
           let abi = LSP8tokenD.interface.encodeFunctionData("burn", [
@@ -1291,10 +1291,10 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should burn token A and update the key in the array and remove Map and update array length", async () => {
           // Token const
           const tokenAMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenA.address.substr(2);
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenC.address.substr(2);
 
           let abi = LSP8tokenA.interface.encodeFunctionData("burn", [
@@ -1339,7 +1339,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should burn token C and update the key in the array and remove Map and update array length", async () => {
           // Token const
           const tokenCMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenC.address.substr(2);
 
           let abi = LSP8tokenC.interface.encodeFunctionData("burn", [
@@ -1376,7 +1376,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint token E and register the Map and the key in the Array", async () => {
           // Token const
           const tokenEMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenE.address.substr(2);
 
           let abi = LSP8tokenE.interface.encodeFunctionData("mint", [
@@ -1422,7 +1422,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should transfer token E to VaultB and register the keys in VaultB ", async () => {
           // Token const
           const tokenEMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenE.address.substr(2);
 
           let abi = LSP8tokenE.interface.encodeFunctionData("transfer", [
@@ -1481,7 +1481,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should mint token D to VaultB and register the map and the key in the array", async () => {
           // Token const
           const tokenDMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenD.address.substr(2);
 
           let abi = LSP8tokenD.interface.encodeFunctionData("mint", [
@@ -1526,7 +1526,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
         it("Should Transfer token D from VaultB to VaultA and remove all Token D keys", async () => {
           // Token const
           const tokenDMapKey =
-            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap:"] +
+            ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"] +
             LSP8tokenD.address.substr(2);
 
           let abi = LSP8tokenD.interface.encodeFunctionData("transfer", [

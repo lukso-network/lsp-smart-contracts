@@ -607,7 +607,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(receipt.logs[0].address).toEqual(proxy.address);
       // event signature
       expect(receipt.logs[0].topics[0]).toEqual(
-        EventSignatures.UniversalReceiver
+        EventSignatures.LSP1["UniversalReceiver"]
       );
       // from
       expect(receipt.logs[0].topics[1]).toEqual(
@@ -658,7 +658,9 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
         externalUniversalReceiver.address
       );
       // signature
-      expect(receipt.logs[0].topics[0]).toEqual(EventSignatures.ReceivedERC777);
+      expect(receipt.logs[0].topics[0]).toEqual(
+        EventSignatures.Helpers["ReceivedERC777"]
+      );
       // "token" is the checker
       expect(receipt.logs[0].topics[1]).toEqual(
         ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
@@ -674,7 +676,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(receipt.logs[1].address).toEqual(proxyAccount.address);
       // signature
       expect(receipt.logs[1].topics[0]).toEqual(
-        EventSignatures.UniversalReceiver
+        EventSignatures.LSP1["UniversalReceiver"]
       );
       // "from" is the checker
       expect(receipt.logs[1].topics[1]).toEqual(

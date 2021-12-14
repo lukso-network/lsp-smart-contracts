@@ -254,19 +254,18 @@ describe("LSP9Vault", () => {
       );
     });
 
-    it("Shouldnt read `LSP10ReceivedVaults` keys on the UP after transferring ownership as he didn't set the default URD", async () => {
+    it("Shouldnt read `LSP10Vaults` keys on the UP after transferring ownership as he didn't set the default URD", async () => {
       await LSP9Vault.connect(owner).transferOwnership(
         UniversalProfile.address
       );
       let vaultMapKey =
-        ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
-        LSP9Vault.address.substr(2);
+        ERC725YKeys.LSP10["LSP10VaultsMap"] + LSP9Vault.address.substr(2);
 
       let [vaultMapValue, arrayLength, element1Address] =
         await getMapAndArrayKeyValues(
           UniversalProfile,
           vaultMapKey,
-          ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+          ERC725YKeys.LSP10["LSP10Vaults[]"],
           LSP10_ARRAY_KEY.ELEMENT1
         );
 

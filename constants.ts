@@ -72,7 +72,7 @@ export const ERC725YKeys = {
     LSP3Profile:
       "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
     // LSP3IssuedAssetsMap:<address>
-    "LSP3IssuedAssetsMap:": "0x83f5e77bfb14241600000000",
+    LSP3IssuedAssetsMap: "0x83f5e77bfb14241600000000",
     // keccak256('LSP3IssuedAssets[]')
     "LSP3IssuedAssets[]":
       "0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0",
@@ -93,7 +93,7 @@ export const ERC725YKeys = {
   },
   LSP5: {
     // LSP5ReceivedAssetsMap:<address>
-    "LSP5ReceivedAssetsMap:": "0x812c4334633eb81600000000",
+    LSP5ReceivedAssetsMap: "0x812c4334633eb81600000000",
     // keccak256('LSP5ReceivedAssets[]')
     "LSP5ReceivedAssets[]":
       "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
@@ -103,17 +103,17 @@ export const ERC725YKeys = {
     "AddressPermissions[]":
       "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
     // AddressPermissions:Permissions:<address>
-    "AddressPermissions:Permissions:": "0x4b80742d0000000082ac0000",
+    "AddressPermissions:Permissions": "0x4b80742d0000000082ac0000",
     // AddressPermissions:AllowedAddresses:<address>
-    "AddressPermissions:AllowedAddresses:": "0x4b80742d00000000c6dd0000",
+    "AddressPermissions:AllowedAddresses": "0x4b80742d00000000c6dd0000",
     // AddressPermissions:AllowedFunctions:<address>
-    "AddressPermissions:AllowedFunctions:": "0x4b80742d000000008efe0000",
+    "AddressPermissions:AllowedFunctions": "0x4b80742d000000008efe0000",
     // AddressPermissions:AllowedStandards:<address>
-    "AddressPermissions:AllowedStandards:": "0x4b80742d000000003efa0000",
+    "AddressPermissions:AllowedStandards": "0x4b80742d000000003efa0000",
   },
   LSP10: {
     // keccak256('LSP10VaultsMap')
-    "LSP10VaultsMap:": "0x192448c3c0f88c7f00000000",
+    LSP10VaultsMap: "0x192448c3c0f88c7f00000000",
     // keccak256('LSP10Vaults[]')
     "LSP10Vaults[]":
       "0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
