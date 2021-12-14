@@ -25,7 +25,7 @@ hre.run("prepare-package").then(() => {
   // 2. add each swift abi in the file content,
   let swiftFileContent = `//
 //  UpContractsAbi.swift
-//  universalprofile-ios-sdk
+//  UniversalProfile
 //
 //  Created by lukso-network.
 //  LUKSO Blockchain GmbH © ${new Date().getFullYear()}
