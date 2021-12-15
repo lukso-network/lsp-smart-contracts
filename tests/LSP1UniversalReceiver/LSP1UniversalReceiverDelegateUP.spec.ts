@@ -1587,14 +1587,14 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
 
         let vaultMapKey =
-          ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
+          ERC725YKeys.LSP10["LSP10VaultsMap"] +
           VaultA.address.substr(2);
 
         let [vaultMapValue, arrayLength, element1Address] =
           await getMapAndArrayKeyValues(
             universalProfile1,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT1
           );
 
@@ -1613,14 +1613,14 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
 
         let vaultMapKey =
-          ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
+          ERC725YKeys.LSP10["LSP10VaultsMap"] +
           VaultB.address.substr(2);
 
         let [vaultMapValue, arrayLength, element2Address] =
           await getMapAndArrayKeyValues(
             universalProfile1,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT2
           );
 
@@ -1639,14 +1639,14 @@ describe("UniversalReceiverDelegateUP contract", () => {
         );
 
         let vaultMapKey =
-          ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
+          ERC725YKeys.LSP10["LSP10VaultsMap"] +
           VaultC.address.substr(2);
 
         let [vaultMapValue, arrayLength, element1Address] =
           await getMapAndArrayKeyValues(
             universalProfile2,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT1
           );
 
@@ -1663,7 +1663,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
     describe("Transferring vaults between UP", () => {
       it("Should transfer ownership of Vaul2 from UP1 to UP2 and update keys", async () => {
         let vaultMapKey =
-          ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
+          ERC725YKeys.LSP10["LSP10VaultsMap"] +
           VaultB.address.substr(2);
 
         let abi = VaultB.interface.encodeFunctionData("transferOwnership", [
@@ -1679,7 +1679,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           await getMapAndArrayKeyValues(
             universalProfile1,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT2
           );
 
@@ -1687,7 +1687,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           await getMapAndArrayKeyValues(
             universalProfile2,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT2
           );
 
@@ -1706,7 +1706,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
 
       it("Should transfer ownership of Vaul1 from UP1 to UP2 and update keys", async () => {
         let vaultMapKey =
-          ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
+          ERC725YKeys.LSP10["LSP10VaultsMap"] +
           VaultA.address.substr(2);
 
         let abi = VaultA.interface.encodeFunctionData("transferOwnership", [
@@ -1722,7 +1722,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           await getMapAndArrayKeyValues(
             universalProfile1,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT1
           );
 
@@ -1730,7 +1730,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           await getMapAndArrayKeyValues(
             universalProfile2,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT3
           );
 
@@ -1749,7 +1749,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
 
       it("Should send Vaul3 from UP2 to UP1 and update keys", async () => {
         let vaultMapKey =
-          ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
+          ERC725YKeys.LSP10["LSP10VaultsMap"] +
           VaultC.address.substr(2);
 
         let abi = VaultC.interface.encodeFunctionData("transferOwnership", [
@@ -1765,7 +1765,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           await getMapAndArrayKeyValues(
             universalProfile1,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT1
           );
 
@@ -1773,7 +1773,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           await getMapAndArrayKeyValues(
             universalProfile2,
             vaultMapKey,
-            ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+            ERC725YKeys.LSP10["LSP10Vaults[]"],
             LSP10_ARRAY_KEY.ELEMENT1
           );
 

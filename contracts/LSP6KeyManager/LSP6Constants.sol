@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "./ILSP6KeyManager.sol";
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP6 = type(ILSP6KeyManager).interfaceId;
+bytes4 constant _INTERFACEID_LSP6 = 0x6f4df48b;
 
 /* solhint-disable */
 // PERMISSION KEYS

@@ -49,7 +49,7 @@ describe("LSP9Vault", () => {
 
   describe("ERC165", () => {
     it("Supports ERC165", async () => {
-      const interfaceID = "0x01ffc9a7";
+      const interfaceID = INTERFACE_IDS.ERC165;
       const result = await LSP9Vault.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();
@@ -259,14 +259,14 @@ describe("LSP9Vault", () => {
         UniversalProfile.address
       );
       let vaultMapKey =
-        ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
+        ERC725YKeys.LSP10["LSP10VaultsMap"] +
         LSP9Vault.address.substr(2);
 
       let [vaultMapValue, arrayLength, element1Address] =
         await getMapAndArrayKeyValues(
           UniversalProfile,
           vaultMapKey,
-          ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+          ERC725YKeys.LSP10["LSP10Vaults[]"],
           LSP10_ARRAY_KEY.ELEMENT1
         );
 

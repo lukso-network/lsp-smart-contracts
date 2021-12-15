@@ -21,6 +21,7 @@ import {
 
 // constants
 import {
+  INTERFACE_IDS,
   SupportedStandards,
   ERC725YKeys,
   EventSignatures,
@@ -56,7 +57,7 @@ describe("UniversalProfile", () => {
 
   describe("ERC165", () => {
     it("Supports ERC165", async () => {
-      const interfaceID = "0x01ffc9a7";
+      const interfaceID = INTERFACE_IDS.ERC165;
       const result = await UniversalProfile.callStatic.supportsInterface(
         interfaceID
       );
@@ -65,7 +66,7 @@ describe("UniversalProfile", () => {
     });
 
     it("Supports ERC725X", async () => {
-      const interfaceID = "0x44c028fe";
+      const interfaceID = INTERFACE_IDS.ERC725X;
       const result = await UniversalProfile.callStatic.supportsInterface(
         interfaceID
       );
@@ -74,7 +75,7 @@ describe("UniversalProfile", () => {
     });
 
     it("Supports ERC725Y", async () => {
-      const interfaceID = "0x5a988c0f";
+      const interfaceID = INTERFACE_IDS.ERC725Y;
       const result = await UniversalProfile.callStatic.supportsInterface(
         interfaceID
       );
@@ -83,7 +84,7 @@ describe("UniversalProfile", () => {
     });
 
     it("Supports ERC1271", async () => {
-      const interfaceID = "0x1626ba7e";
+      const interfaceID = INTERFACE_IDS.ERC1271;
       const result = await UniversalProfile.callStatic.supportsInterface(
         interfaceID
       );
@@ -92,7 +93,7 @@ describe("UniversalProfile", () => {
     });
 
     it("Supports LSP1", async () => {
-      const interfaceID = "0x6bb56a14";
+      const interfaceID = INTERFACE_IDS.LSP1;
       const result = await UniversalProfile.callStatic.supportsInterface(
         interfaceID
       );
