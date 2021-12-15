@@ -22,7 +22,10 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         string memory name,
         string memory symbol,
         address[] memory defaultOperators
-    ) ERC725Y(newOwner) ERC777UniversalReceiver(name, symbol, defaultOperators) {
+    )
+        ERC725Y(newOwner)
+        ERC777UniversalReceiver(name, symbol, defaultOperators)
+    {
         minter = newOwner;
     }
 
@@ -32,7 +35,11 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
         return 0;
     }
 
-    function mint(address _address, uint256 _amount) external override onlyMinter {
+    function mint(address _address, uint256 _amount)
+        external
+        override
+        onlyMinter
+    {
         _tokenHolders.add(_address);
         _mint(_address, _amount, "", "");
     }
@@ -74,7 +81,11 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
 
     /* Public functions */
 
-    function setData(bytes32[] calldata _keys, bytes[] calldata _values) public override onlyOwner {
+    function setData(bytes32[] calldata _keys, bytes[] calldata _values)
+        public
+        override
+        onlyOwner
+    {
         for (uint256 ii = 0; ii < _keys.length; ii++) {
             if (store[_keys[ii]].length == 0) {
                 dataKeys.push(_keys[ii]);
@@ -104,12 +115,22 @@ contract LSP4DigitalCertificate is Pausable, ERC725Y, ERC777UniversalReceiver {
     ) internal override whenNotPaused {
         _tokenHolders.add(to);
 
-        ERC777UniversalReceiver._move(operator, from, to, amount, userData, operatorData);
+        ERC777UniversalReceiver._move(
+            operator,
+            from,
+            to,
+            amount,
+            userData,
+            operatorData
+        );
     }
 
     /* Modifers */
     modifier onlyDefaultOperators() {
-        require(_defaultOperators[_msgSender()], "Only default operators can call this function");
+        require(
+            _defaultOperators[_msgSender()],
+            "Only default operators can call this function"
+        );
         _;
     }
 

@@ -21,7 +21,9 @@ describe("LSP7CappedSupply", () => {
         newOwner: accounts.owner.address,
         tokenSupplyCap: ethers.BigNumber.from("2"),
       };
-      const lsp7CappedSupply = await new LSP7CappedSupplyTester__factory(accounts.owner).deploy(
+      const lsp7CappedSupply = await new LSP7CappedSupplyTester__factory(
+        accounts.owner
+      ).deploy(
         deployParams.name,
         deployParams.symbol,
         deployParams.newOwner,
@@ -63,17 +65,23 @@ describe("LSP7CappedSupply", () => {
         newOwner: accounts.owner.address,
         tokenSupplyCap: ethers.BigNumber.from("2"),
       };
-      const lsp7CappedSupplyInit = await new LSP7CappedSupplyInitTester__factory(
+      const lsp7CappedSupplyInit =
+        await new LSP7CappedSupplyInitTester__factory(accounts.owner).deploy();
+      const lsp7CappedSupplyProxy = await deployProxy(
+        lsp7CappedSupplyInit.address,
         accounts.owner
-      ).deploy();
-      const lsp7CappedSupplyProxy = await deployProxy(lsp7CappedSupplyInit.address, accounts.owner);
-      const lsp7CappedSupply = lsp7CappedSupplyInit.attach(lsp7CappedSupplyProxy);
+      );
+      const lsp7CappedSupply = lsp7CappedSupplyInit.attach(
+        lsp7CappedSupplyProxy
+      );
 
       return { accounts, lsp7CappedSupply, deployParams };
     };
 
     const initializeProxy = async (context: LSP7CappedSupplyTestContext) => {
-      return context.lsp7CappedSupply["initialize(string,string,address,uint256)"](
+      return context.lsp7CappedSupply[
+        "initialize(string,string,address,uint256)"
+      ](
         context.deployParams.name,
         context.deployParams.symbol,
         context.deployParams.newOwner,

@@ -59,8 +59,13 @@ describe("LSP8", () => {
         newOwner: accounts.owner.address,
       };
 
-      const lsp8TesterInit = await new LSP8InitTester__factory(accounts.owner).deploy();
-      const lsp8Proxy = await deployProxy(lsp8TesterInit.address, accounts.owner);
+      const lsp8TesterInit = await new LSP8InitTester__factory(
+        accounts.owner
+      ).deploy();
+      const lsp8Proxy = await deployProxy(
+        lsp8TesterInit.address,
+        accounts.owner
+      );
       const lsp8 = lsp8TesterInit.attach(lsp8Proxy);
 
       return { accounts, lsp8, deployParams };

@@ -10,7 +10,6 @@ import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
  * @dev Required interface of a LSP8 compliant contract.
  */
 interface ILSP7DigitalAsset is IERC165, IERC725Y {
-    
     // --- Events
 
     /**
@@ -37,12 +36,8 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
     /**
      * @dev Emitted when `tokenOwner` disables `operator` for `amount` tokens.
      */
-    event RevokedOperator(
-        address indexed operator,
-        address indexed tokenOwner
-    );
+    event RevokedOperator(address indexed operator, address indexed tokenOwner);
 
-    
     // --- Token queries
 
     /**
@@ -59,7 +54,6 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      */
     function totalSupply() external view returns (uint256);
 
-    
     // --- Token owner queries
 
     /**
@@ -67,7 +61,6 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      */
     function balanceOf(address tokenOwner) external view returns (uint256);
 
-    
     // --- Operator functionality
 
     /**
@@ -103,9 +96,11 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function isOperatorFor(address operator, address tokenOwner) external view returns (uint256);
+    function isOperatorFor(address operator, address tokenOwner)
+        external
+        view
+        returns (uint256);
 
-    
     // --- Transfer functionality
 
     /**

@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 /* solhint-disable */
 contract Reentrancy {
-
     bytes _payload;
     address _target;
 
@@ -14,9 +13,9 @@ contract Reentrancy {
     function loadPayload(bytes memory _dataPayload) public {
         _payload = _dataPayload;
     }
-    
+
     fallback() external payable {
-        _target.call(_payload); 
+        _target.call(_payload);
     }
 }
 /* solhint-enable */

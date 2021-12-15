@@ -50,7 +50,11 @@ describe("NFTStorageMerkle", () => {
       let leaf = merkletree.getHexLeaves()[3];
       let proof = merkletree.getHexProof(leaf);
 
-      let result = await nftStorage.callStatic.verifyMerkleProof(proof, root, leaf);
+      let result = await nftStorage.callStatic.verifyMerkleProof(
+        proof,
+        root,
+        leaf
+      );
       expect(result).toBeTruthy();
     });
   });

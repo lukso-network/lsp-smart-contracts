@@ -26,7 +26,9 @@ describe("LSP7Mintable", () => {
         isNFT: false,
       };
 
-      const lsp7Mintable: LSP7Mintable = await new LSP7Mintable__factory(accounts.owner).deploy(
+      const lsp7Mintable: LSP7Mintable = await new LSP7Mintable__factory(
+        accounts.owner
+      ).deploy(
         deployParams.name,
         deployParams.symbol,
         deployParams.newOwner,
@@ -69,12 +71,15 @@ describe("LSP7Mintable", () => {
         isNFT: false,
       };
 
-      const LSP7MintableInit: LSP7MintableInit = await new LSP7MintableInit__factory(
-        accounts.owner
-      ).deploy();
+      const LSP7MintableInit: LSP7MintableInit =
+        await new LSP7MintableInit__factory(accounts.owner).deploy();
 
-      const lsp7MintableProxy = await deployProxy(LSP7MintableInit.address, accounts.owner);
-      const lsp7Mintable: LSP7MintableInit = LSP7MintableInit.attach(lsp7MintableProxy);
+      const lsp7MintableProxy = await deployProxy(
+        LSP7MintableInit.address,
+        accounts.owner
+      );
+      const lsp7Mintable: LSP7MintableInit =
+        LSP7MintableInit.attach(lsp7MintableProxy);
 
       return { accounts, lsp7Mintable, deployParams };
     };

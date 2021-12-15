@@ -23,7 +23,10 @@ abstract contract LSP4Compatibility is ERC725Y, ILSP4Compatibility {
      * @dev Returns the name of the token.
      */
     function name() public view virtual override returns (string memory) {
-        bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_TOKEN_NAME_KEY);
+        bytes memory data = ERC725Utils.getDataSingle(
+            this,
+            _LSP4_METADATA_TOKEN_NAME_KEY
+        );
         return string(data);
     }
 
@@ -31,7 +34,10 @@ abstract contract LSP4Compatibility is ERC725Y, ILSP4Compatibility {
      * @dev Returns the symbol of the token, usually a shorter version of the name.
      */
     function symbol() public view virtual override returns (string memory) {
-        bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_TOKEN_SYMBOL_KEY);
+        bytes memory data = ERC725Utils.getDataSingle(
+            this,
+            _LSP4_METADATA_TOKEN_SYMBOL_KEY
+        );
         return string(data);
     }
 }
