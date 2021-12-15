@@ -49,7 +49,7 @@ describe("LSP9Vault", () => {
 
   describe("ERC165", () => {
     it("Supports ERC165", async () => {
-      const interfaceID = "0x01ffc9a7";
+      const interfaceID = INTERFACE_IDS.ERC165;
       const result = await LSP9Vault.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();

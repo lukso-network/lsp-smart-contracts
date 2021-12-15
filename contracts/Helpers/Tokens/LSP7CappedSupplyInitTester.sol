@@ -7,15 +7,11 @@ import "../../LSP7DigitalAsset/extensions/LSP7CappedSupplyInit.sol";
 
 contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInit {
     function initialize(
-      string memory name,
-      string memory symbol,
-      address newOwner,
-      uint256 tokenSupplyCap
-    )
-        public
-        virtual
-        initializer
-    {
+        string memory name,
+        string memory symbol,
+        address newOwner,
+        uint256 tokenSupplyCap
+    ) public virtual initializer {
         LSP7DigitalAssetInit.initialize(name, symbol, newOwner, true);
         LSP7CappedSupplyInit.initialize(tokenSupplyCap);
     }

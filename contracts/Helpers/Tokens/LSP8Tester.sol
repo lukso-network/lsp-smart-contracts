@@ -7,12 +7,17 @@ import "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
 contract LSP8Tester is LSP8IdentifiableDigitalAsset {
     /* solhint-disable no-empty-blocks */
     constructor(
-      string memory name,
-      string memory symbol,
-      address newOwner
+        string memory name,
+        string memory symbol,
+        address newOwner
     ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner) {}
-    
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
+
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public {
         _mint(to, tokenId, force, data);
     }
 

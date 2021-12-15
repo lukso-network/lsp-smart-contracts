@@ -9,13 +9,17 @@ import "../LSP8IdentifiableDigitalAsset.sol";
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset, LSP8CappedSupplyCore {
-
+abstract contract LSP8CappedSupply is
+    LSP8IdentifiableDigitalAsset,
+    LSP8CappedSupplyCore
+{
     constructor(uint256 tokenSupplyCap_) {
-      require(tokenSupplyCap_ > 0, "LSP8CappedSupply: tokenSupplyCap is zero");
-      _tokenSupplyCap = tokenSupplyCap_;
+        require(
+            tokenSupplyCap_ > 0,
+            "LSP8CappedSupply: tokenSupplyCap is zero"
+        );
+        _tokenSupplyCap = tokenSupplyCap_;
     }
-
 
     // --- Overrides
 
@@ -36,9 +40,9 @@ abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset, LSP8CappedSu
         bool force,
         bytes memory data
     )
-      internal
-      virtual
-      override(LSP8IdentifiableDigitalAssetCore, LSP8CappedSupplyCore)
+        internal
+        virtual
+        override(LSP8IdentifiableDigitalAssetCore, LSP8CappedSupplyCore)
     {
         super._mint(to, tokenId, force, data);
     }

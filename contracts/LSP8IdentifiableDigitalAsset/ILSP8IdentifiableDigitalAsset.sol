@@ -10,7 +10,6 @@ import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
  * @dev Required interface of a LSP8 compliant contract.
  */
 interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
-
     // --- Events
 
     /**
@@ -43,7 +42,6 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         bytes32 indexed tokenId
     );
 
-
     // --- Token queries
 
     /**
@@ -72,8 +70,10 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     /**
      * @dev Returns the list of `tokenIds` for the `tokenOwner` address.
      */
-    function tokenIdsOf(address tokenOwner) external view returns (bytes32[] memory);
-
+    function tokenIdsOf(address tokenOwner)
+        external
+        view
+        returns (bytes32[] memory);
 
     // --- Operator functionality
 
@@ -118,7 +118,10 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      */
-    function isOperatorFor(address operator, bytes32 tokenId) external view returns (bool);
+    function isOperatorFor(address operator, bytes32 tokenId)
+        external
+        view
+        returns (bool);
 
     /**
      * @dev Returns all `operator` addresses of `tokenId`.
@@ -127,8 +130,10 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      */
-    function getOperatorsOf(bytes32 tokenId) external view returns (address[] memory);
-
+    function getOperatorsOf(bytes32 tokenId)
+        external
+        view
+        returns (address[] memory);
 
     // --- Transfer functionality
 

@@ -8,7 +8,10 @@ import "../LSP8IdentifiableDigitalAssetInit.sol";
 /**
  * @dev LSP8 extension.
  */
-contract LSP8MintableInit is LSP8MintableCore, LSP8IdentifiableDigitalAssetInit {
+contract LSP8MintableInit is
+    LSP8MintableCore,
+    LSP8IdentifiableDigitalAssetInit
+{
     function initialize(
         string memory name_,
         string memory symbol_,

@@ -9,18 +9,16 @@ import "../LSP8IdentifiableDigitalAssetInit.sol";
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupplyInit is Initializable, LSP8IdentifiableDigitalAssetInit, LSP8CappedSupplyCore {
-
-    function initialize(uint256 tokenSupplyCap_)
-        public
-        virtual
-        initializer
-    {
-      require(tokenSupplyCap_ > 0, "LSP8Capped: tokenSupplyCap is zero");
-      _tokenSupplyCap = tokenSupplyCap_;
+abstract contract LSP8CappedSupplyInit is
+    Initializable,
+    LSP8IdentifiableDigitalAssetInit,
+    LSP8CappedSupplyCore
+{
+    function initialize(uint256 tokenSupplyCap_) public virtual initializer {
+        require(tokenSupplyCap_ > 0, "LSP8Capped: tokenSupplyCap is zero");
+        _tokenSupplyCap = tokenSupplyCap_;
     }
 
-    
     // --- Overrides
 
     /**
