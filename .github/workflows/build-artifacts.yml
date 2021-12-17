@@ -75,6 +75,6 @@ jobs:
         if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
         uses: peter-evans/repository-dispatch@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
           event-type: trigger-release
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
