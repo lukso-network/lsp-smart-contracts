@@ -39,7 +39,7 @@ jobs:
           workflow: build-artifacts.yml
           workflow_conclusion: success
           name: upcontracts.jar
-          path: java/build/libs/upcontracts.jar
+          path: java/build/libs
           branch: main
           event: push
 
@@ -50,7 +50,7 @@ jobs:
           workflow: build-artifacts.yml
           workflow_conclusion: success
           name: UPContractsAbi.swift
-          path: ios/UPContractsAbi.swift 
+          path: ios
           branch: main
           event: push
 
