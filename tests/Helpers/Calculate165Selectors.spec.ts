@@ -6,7 +6,7 @@ import {
 } from "../../types";
 
 // utils
-import { INTERFACE_IDS } from "../utils/constants";
+import { INTERFACE_IDS } from "../../constants";
 
 /**
  * @dev these tests also ensure that the interfaceIds (stored in utils/constant.ts)

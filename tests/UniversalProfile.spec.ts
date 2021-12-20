@@ -29,7 +29,7 @@ import {
   OPERATIONS,
   PERMISSIONS,
   ERC1271,
-} from "./utils/constants";
+} from "../constants";
 
 // helpers
 import { RANDOM_BYTES32, ERC777TokensRecipient } from "./utils/helpers";
@@ -511,7 +511,7 @@ describe("UniversalProfile", () => {
       expect(receipt.logs[0].address).toEqual(account.address);
       // event signature
       expect(receipt.logs[0].topics[0]).toEqual(
-        EventSignatures.UniversalReceiver
+        EventSignatures.LSP1["UniversalReceiver"]
       );
       // from
       expect(receipt.logs[0].topics[1]).toEqual(
@@ -572,7 +572,7 @@ describe("UniversalProfile", () => {
       );
       // signature
       expect(receipt.logs[0].topics[0]).toEqual(
-        "0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c"
+        EventSignatures.Helpers["ReceivedERC777"]
       );
       // "token" is the checker
       expect(receipt.logs[0].topics[1]).toEqual(
@@ -590,7 +590,7 @@ describe("UniversalProfile", () => {
       expect(receipt.logs[1].address).toEqual(account.address);
       // signature
       expect(receipt.logs[1].topics[0]).toEqual(
-        EventSignatures.UniversalReceiver
+        EventSignatures.LSP1["UniversalReceiver"]
       );
       // "from" is the checker
       expect(receipt.logs[1].topics[1]).toEqual(
@@ -944,7 +944,7 @@ describe("UniversalProfile", () => {
       // give all permissions to owner
       await UniversalProfile.connect(owner).setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             owner.address.substr(2),
         ],
         [ALL_PERMISSIONS_SET]
@@ -953,7 +953,7 @@ describe("UniversalProfile", () => {
       // give SIGN permission to signer
       await UniversalProfile.connect(owner).setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             signer.address.substr(2),
         ],
         [ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32)]
@@ -961,7 +961,7 @@ describe("UniversalProfile", () => {
       // give CALL permission to non-signer
       await UniversalProfile.connect(owner).setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             thirdParty.address.substr(2),
         ],
         ["0x08"]

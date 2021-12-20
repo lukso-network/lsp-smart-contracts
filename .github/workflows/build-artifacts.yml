@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-            fetch-depth: 0
+          fetch-depth: 0
 
       - name: Check if version changed
         uses: EndBug/version-check@v1
@@ -63,7 +63,7 @@ jobs:
         if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
         with:
           name: UPContractsAbi.swift
-          path: ios/UPContractsAbi.swift 
+          path: ios/UPContractsAbi.swift
 
       # - name: Upload Android Artifact
       #   uses: actions/upload-artifact@v2

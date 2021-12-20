@@ -18,7 +18,7 @@ import {
   INTERFACE_IDS,
   ERC725YKeys,
   OPERATIONS,
-} from "../utils/constants";
+} from "../../constants";
 
 import {
   RANDOM_BYTES32,
@@ -254,13 +254,12 @@ describe("LSP9Vault", () => {
       );
     });
 
-    it("Shouldnt read `LSP10ReceivedVaults` keys on the UP after transferring ownership as he didn't set the default URD", async () => {
+    it("Shouldnt read `LSP10Vaults` keys on the UP after transferring ownership as he didn't set the default URD", async () => {
       await LSP9Vault.connect(owner).transferOwnership(
         UniversalProfile.address
       );
       let vaultMapKey =
-        ERC725YKeys.LSP10["LSP10VaultsMap"] +
-        LSP9Vault.address.substr(2);
+        ERC725YKeys.LSP10["LSP10VaultsMap"] + LSP9Vault.address.substr(2);
 
       let [vaultMapValue, arrayLength, element1Address] =
         await getMapAndArrayKeyValues(
