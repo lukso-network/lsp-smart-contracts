@@ -18,7 +18,7 @@ jobs:
           workflow: build-artifacts.yml
           workflow_conclusion: success
           name: UPContractsAbi.swift
-          path: ios/UPContractsAbi.swift 
+          path: ios 
           branch: main
           event: push
 

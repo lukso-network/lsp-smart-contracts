@@ -11,21 +11,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Download artifact
-        uses: dawidd6/action-download-artifact@v2
-        with: 
-          workflow: build-artifacts.yml
-          workflow_conclusion: success
-          name: upcontracts.jar
-          path: java/build/libs/upcontracts.jar
-          branch: main
-          event: push
+      # Temporarily removing Android steps. Web3J installation script is broken, see https://github.com/web3j/web3j/issues/1579
 
-      - name: Publish jar
-        working-directory: ./java
-        run: gradle publish
-        env:
-          # https://github.com/actions/setup-node/issues/49
-          # Have to use my personal access token until the issue is resolved
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
-          GITHUB_ACTOR: ${{ secrets.PERSONAL_ACTOR }}
+      # - name: Download artifact
+      #   uses: dawidd6/action-download-artifact@v2
+      #   with: 
+      #     workflow: build-artifacts.yml
+      #     workflow_conclusion: success
+      #     name: upcontracts.jar
+      #     path: java/build/libs
+      #     branch: main
+      #     event: push
+
+      # - name: Publish jar
+      #   working-directory: ./java
+      #   run: gradle publish
+      #   env:
+      #     # https://github.com/actions/setup-node/issues/49
+      #     # Have to use my personal access token until the issue is resolved
+      #     GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+      #     GITHUB_ACTOR: ${{ secrets.PERSONAL_ACTOR }}
