@@ -7,6 +7,9 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "../LSP8IdentifiableDigitalAsset.sol";
 import "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 
+// libraries
+import "solidity-bytes-utils/contracts/BytesLib.sol";
+
 // interfaces
 import "./ILSP8CompatibilityForERC721.sol";
 
@@ -38,7 +41,12 @@ contract LSP8CompatibilityForERC721 is
      */
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_KEY);
-        return string(data);
+
+        // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
+        uint256 offset = 36;
+
+        bytes memory uriBytes = BytesLib.slice(data, offset, data.length - offset);
+        return string(uriBytes);
     }
 
     /*

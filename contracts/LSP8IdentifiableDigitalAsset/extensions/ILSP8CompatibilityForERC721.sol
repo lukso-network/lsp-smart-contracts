@@ -29,7 +29,7 @@ interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
     ) external;
 
     /*
-     * @dev Compatible with ERC721 transferFrom.
+     * @dev Compatible with ERC721 safeTransferFrom.
      */
     function safeTransferFrom(
         address from,
@@ -38,7 +38,7 @@ interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
     ) external;
 
     /*
-     * @dev Compatible with ERC721 transferFrom.
+     * @dev Compatible with ERC721 safeTransferFrom.
      */
     function safeTransferFrom(
         address from,

@@ -35,7 +35,7 @@ type LSP8CompatibilityForERC721TestContext = {
     name: string;
     symbol: string;
     newOwner: string;
-    tokenURIValue: string;
+    lsp4MetadataValue: string;
   };
 };
 
@@ -43,11 +43,23 @@ const buildTestContext =
   async (): Promise<LSP8CompatibilityForERC721TestContext> => {
     const accounts = await getNamedAccounts();
 
+    const tokenUriHex = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes("ipfs://some-cid")
+    );
+    const tokenUriHash = ethers.utils.keccak256(tokenUriHex);
+    const hashSig = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes("keccak256(utf8)")
+    );
+    const lsp4MetadataValue = `${hashSig.slice(0, 10)}${tokenUriHash.replace(
+      /^0x/,
+      ""
+    )}${tokenUriHex.replace(/^0x/, "")}`;
+
     const deployParams = {
       name: "Compat for ERC721",
       symbol: "NFT",
       newOwner: accounts.owner.address,
-      tokenURIValue: "LSP4Metadata -> JSONURL",
+      lsp4MetadataValue,
     };
 
     const lsp8CompatibilityForERC721 =
@@ -57,7 +69,7 @@ const buildTestContext =
         deployParams.name,
         deployParams.symbol,
         deployParams.newOwner,
-        deployParams.tokenURIValue
+        deployParams.lsp4MetadataValue
       );
 
     await lsp8CompatibilityForERC721.mint(
@@ -79,7 +91,7 @@ describe("LSP8CompatibilityForERC721", () => {
   });
 
   describe("when checking supported ERC165 interfaces", () => {
-    it("should support EC721", async () => {
+    it("should support ERC721", async () => {
       expect(
         await context.lsp8CompatibilityForERC721.supportsInterface(
           INTERFACE_IDS.ERC721
@@ -87,7 +99,7 @@ describe("LSP8CompatibilityForERC721", () => {
       ).toEqual(true);
     });
 
-    it("should support EC721Metadata", async () => {
+    it("should support ERC721Metadata", async () => {
       expect(
         await context.lsp8CompatibilityForERC721.supportsInterface(
           INTERFACE_IDS.ERC721Metadata
@@ -103,10 +115,9 @@ describe("LSP8CompatibilityForERC721", () => {
       expect(nameAsString).toEqual(context.deployParams.name);
 
       // using getData -> returns(bytes)
-      const data = await context.lsp8CompatibilityForERC721.getData([
+      const [nameAsBytes] = await context.lsp8CompatibilityForERC721.getData([
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")),
       ]);
-      const nameAsBytes = data[0];
       expect(ethers.utils.toUtf8String(nameAsBytes)).toEqual(
         context.deployParams.name
       );
@@ -120,10 +131,9 @@ describe("LSP8CompatibilityForERC721", () => {
       expect(symbolAsString).toEqual(context.deployParams.symbol);
 
       // using getData -> returns(bytes)
-      const data = await context.lsp8CompatibilityForERC721.getData([
+      const [symbolAsBytes] = await context.lsp8CompatibilityForERC721.getData([
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")),
       ]);
-      const symbolAsBytes = data[0];
       expect(ethers.utils.toUtf8String(symbolAsBytes)).toEqual(
         context.deployParams.symbol
       );
@@ -135,15 +145,21 @@ describe("LSP8CompatibilityForERC721", () => {
       // using compatibility getter -> returns(string)
       const tokenURIAsString =
         await context.lsp8CompatibilityForERC721.tokenURI(mintedTokenId);
-      expect(tokenURIAsString).toEqual(context.deployParams.tokenURIValue);
+      // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36 + 2 for prefix = 38
+      const offset = 36 * 2 + 2;
+      expect(tokenURIAsString).toEqual(
+        ethers.utils.toUtf8String(
+          `0x${context.deployParams.lsp4MetadataValue.slice(offset)}`
+        )
+      );
 
       // using getData -> returns(bytes)
-      const data = await context.lsp8CompatibilityForERC721.getData([
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4Metadata")),
-      ]);
-      const symbolAsBytes = data[0];
-      expect(ethers.utils.toUtf8String(symbolAsBytes)).toEqual(
-        context.deployParams.tokenURIValue
+      const [lsp4MetadataValueAsBytes] =
+        await context.lsp8CompatibilityForERC721.getData([
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4Metadata")),
+        ]);
+      expect(lsp4MetadataValueAsBytes).toEqual(
+        context.deployParams.lsp4MetadataValue
       );
     });
   });

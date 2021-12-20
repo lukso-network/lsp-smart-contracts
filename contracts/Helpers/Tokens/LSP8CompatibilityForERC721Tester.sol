@@ -12,11 +12,11 @@ contract LSP8CompatibilityForERC721Tester is LSP8CompatibilityForERC721 {
         string memory name,
         string memory symbol,
         address newOwner,
-        string memory tokenURIValue
+        bytes memory tokenURIValue
     ) LSP8CompatibilityForERC721(name, symbol, newOwner) {
         _setData(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name));
         _setData(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol));
-        _setData(_LSP4_METADATA_KEY, bytes(tokenURIValue));
+        _setData(_LSP4_METADATA_KEY, tokenURIValue);
     }
 
     function mint(
