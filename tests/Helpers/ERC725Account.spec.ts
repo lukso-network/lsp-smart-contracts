@@ -8,7 +8,7 @@ import { ethers } from "hardhat";
 
 import { ERC725Account, ERC725Account__factory } from "../../types";
 import { getRandomAddresses, generateKeysAndValues } from "../utils/helpers";
-import { BasicUPSetup_Schema } from "../utils/constants";
+import { BasicUPSetup_Schema } from "../../constants";
 
 describe("ERC725 Account", () => {
   let accounts: SignerWithAddress[];

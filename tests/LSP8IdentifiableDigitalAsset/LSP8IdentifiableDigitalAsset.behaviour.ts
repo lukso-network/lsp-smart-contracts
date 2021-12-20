@@ -9,7 +9,7 @@ import {
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
 import { tokenIdAsBytes32 } from "../utils/tokens";
-import { INTERFACE_IDS, SupportedStandards } from "../utils/constants";
+import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
 import type { BytesLike } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";

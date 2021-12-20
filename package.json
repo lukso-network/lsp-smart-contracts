@@ -9,6 +9,7 @@
     "contracts/**/*.sol",
     "!contracts/Helpers/**/*.sol",
     "artifacts/**/*.json",
+    "constants.ts",
     "README.md",
     "CONTRIBUTING.md",
     "LICENSE"

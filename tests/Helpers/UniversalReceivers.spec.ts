@@ -10,7 +10,7 @@ import {
   UniversalReceiverTester__factory,
 } from "../../types";
 
-import { ERC725YKeys } from "../utils/constants";
+import { ERC725YKeys } from "../../constants";
 import { ERC777TokensRecipient as TOKENS_RECIPIENT_INTERFACE_HASH } from "../utils/helpers";
 
 describe("Receivers", () => {

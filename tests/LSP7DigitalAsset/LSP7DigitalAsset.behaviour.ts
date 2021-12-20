@@ -8,7 +8,7 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
-import { INTERFACE_IDS, SupportedStandards } from "../utils/constants";
+import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
 import type { BigNumber } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";

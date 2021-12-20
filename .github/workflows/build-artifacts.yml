@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-            fetch-depth: 0
+          fetch-depth: 0
 
       - name: Check if version changed
         uses: EndBug/version-check@v1
@@ -31,16 +31,16 @@ jobs:
       - run: npm ci
 
       # Android artifacts
+      - name: Set up our JDK environment
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 1.11
+
       - name: Install Web3j
         run: curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
       - name: Generate Android artifacts
         run: npx ts-node make-android.ts
-
-      - name: Set up our JDK environment
-        uses: actions/setup-java@v1.4.3
-        with:
-          java-version: 1.11
 
       - name: Grant rights
         run: chmod +x java/build.gradle
@@ -61,14 +61,14 @@ jobs:
         if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
         with:
           name: UPContractsAbi.swift
-          path: ios/UPContractsAbi.swift 
+          path: ios/UPContractsAbi.swift
 
       - name: Upload Android Artifact
         uses: actions/upload-artifact@v2
         if: github.event_name == 'push'  && steps.check.outputs.changed == 'true'
         with:
           name: upcontracts.jar
-          path: java/build/libs/upcontracts.jar 
+          path: java/build/libs/upcontracts.jar
 
       # Trigger Release
       - name: Repository Dispatch
