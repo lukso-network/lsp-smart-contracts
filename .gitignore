@@ -135,6 +135,3 @@ flat_contracts/
 
 # Mac
 .DS_Store
-
-# Auto-generated docs
-docs/
