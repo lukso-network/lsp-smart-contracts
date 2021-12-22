@@ -16,6 +16,9 @@ contract LSP1UniversalReceiverDelegateVaultInit is
     Initializable,
     LSP1UniversalReceiverDelegateVaultCore
 {
+    /**
+     * @notice Register the LSP1UniversalReceiverDelegate InterfaceId
+     */
     function initialize() public initializer {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }

@@ -13,6 +13,10 @@ abstract contract LSP8CappedSupply is
     LSP8IdentifiableDigitalAsset,
     LSP8CappedSupplyCore
 {
+    /**
+     * @notice Sets the token max supply
+     * @param tokenSupplyCap_ The Token max supply
+     */
     constructor(uint256 tokenSupplyCap_) {
         require(
             tokenSupplyCap_ > 0,

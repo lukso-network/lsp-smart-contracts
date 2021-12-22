@@ -19,14 +19,20 @@ contract LSP8CompatibilityForERC721 is
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /* solhint-disable no-empty-blocks */
+    /**
+     * @notice Sets the name, the symbol and the owner of the token
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the token
+     */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_
     ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
 
-    /*
-     * @dev Compatible with ERC721 ownerOf.
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      */
     function ownerOf(uint256 tokenId)
         external
@@ -38,8 +44,8 @@ contract LSP8CompatibilityForERC721 is
         return tokenOwnerOf(bytes32(tokenId));
     }
 
-    /*
-     * @dev Compatible with ERC721 approve.
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      */
     function approve(address operator, uint256 tokenId)
         external
@@ -49,8 +55,8 @@ contract LSP8CompatibilityForERC721 is
         return authorizeOperator(operator, bytes32(tokenId));
     }
 
-    /*
-     * @dev Compatible with ERC721 getApproved.
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      */
     function getApproved(uint256 tokenId)
         external
@@ -82,7 +88,8 @@ contract LSP8CompatibilityForERC721 is
         }
     }
 
-    /*
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      * @dev Compatible with ERC721 transferFrom.
      * Using force=true so that EOA and any contract may receive the tokenId.
      */
@@ -95,7 +102,8 @@ contract LSP8CompatibilityForERC721 is
             transfer(from, to, bytes32(tokenId), true, "compat-transferFrom");
     }
 
-    /*
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      * @dev Compatible with ERC721 safeTransferFrom.
      * Using force=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */

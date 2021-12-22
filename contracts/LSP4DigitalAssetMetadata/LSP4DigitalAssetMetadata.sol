@@ -8,9 +8,17 @@ import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import "./LSP4Constants.sol";
 
 /**
+ * @title LSP4DigitalAssetMetadata
+ * @author Matthew Stevens
  * @dev Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP4DigitalAssetMetadata is ERC725Y {
+    /**
+     * @notice Sets the name, symbol of the token and the owner, and sets the SupportedStandards:LSP4DigitalAsset key
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the token contract
+     */
     constructor(
         string memory name_,
         string memory symbol_,

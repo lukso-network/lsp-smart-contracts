@@ -10,10 +10,16 @@ import "./LSP1UniversalReceiverDelegateUPCore.sol";
  *
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Delegate contract of the initial universal receiver
+ *
+ * Owner of the UniversalProfile MUST be a KeyManager that allows (this) address to setData on the UniversalProfile
+ *
  */
 contract LSP1UniversalReceiverDelegateUP is
     LSP1UniversalReceiverDelegateUPCore
 {
+    /**
+     * @notice Register the LSP1UniversalReceiverDelegate InterfaceId
+     */
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }

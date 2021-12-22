@@ -11,6 +11,10 @@ import "@erc725/smart-contracts/contracts/ERC725Account.sol";
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
 contract UniversalProfile is ERC725Account, UniversalProfileCore {
+    /**
+     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
+     * @param _newOwner the owner of the contract
+     */
     constructor(address _newOwner) ERC725Account(_newOwner) {
         // set SupportedStandards:LSP3UniversalProfile
         bytes32 key = 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6;
@@ -20,6 +24,9 @@ contract UniversalProfile is ERC725Account, UniversalProfileCore {
         dataKeys.push(key);
     }
 
+    /**
+     * @inheritdoc UniversalProfileCore
+     */
     function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
         override(UniversalProfileCore, ERC725YCore)

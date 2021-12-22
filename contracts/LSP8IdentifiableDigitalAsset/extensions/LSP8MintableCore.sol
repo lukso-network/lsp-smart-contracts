@@ -15,6 +15,9 @@ abstract contract LSP8MintableCore is
     ILSP8Mintable,
     LSP8IdentifiableDigitalAssetCore
 {
+    /**
+     * @inheritdoc ILSP8Mintable
+     */
     function mint(
         address to,
         bytes32 tokenId,

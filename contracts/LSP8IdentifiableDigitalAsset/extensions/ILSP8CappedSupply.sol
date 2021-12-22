@@ -11,6 +11,7 @@ import "../ILSP8IdentifiableDigitalAsset.sol";
 interface ILSP8CappedSupply is ILSP8IdentifiableDigitalAsset {
     /**
      * @dev Returns the number of tokens that can be minted.
+     * @return The token max supply
      */
     function tokenSupplyCap() external view returns (uint256);
 }

@@ -40,7 +40,7 @@ error NotAllowedAddress(address from, address disallowedAddress);
 error NotAllowedFunction(address from, bytes4 disallowedFunction);
 
 /**
- * @title Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
+ * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller, Jean Cavallera
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
