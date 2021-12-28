@@ -9,6 +9,8 @@
 export const enum INTERFACE_IDS {
   ERC165 = "0x01ffc9a7",
   ERC1271 = "0x1626ba7e",
+  ERC721 = "0x80ac58cd",
+  ERC721Metadata = "0x5b5e139f",
   ERC725X = "0x44c028fe",
   ERC725Y = "0x5a988c0f",
   ERC725Account = "0x63cb749b",
