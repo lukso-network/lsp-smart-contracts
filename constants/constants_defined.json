@@ -1,0 +1,739 @@
+{
+   "documentation":[
+      "Set of constants values as defined by the LUKSO Standards Proposals.",
+      "@see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md"
+   ],
+   "content":[
+      {
+         "name":"ERC1271",
+         "type":"enum",
+         "rawValueType":"String",
+         "documentation":"ERC1271\n----------",
+         "cases":[
+            {
+               "key":"MAGIC_VALUE",
+               "value":"0x1626ba7e"
+            },
+            {
+               "key":"FAIL_VALUE",
+               "value":"0xffffffff"
+            }
+         ]
+      },
+      {
+         "name":"INTERFACE_IDS",
+         "type":"enum",
+         "rawValueType":"String",
+         "documentation":"ERC165\n----------",
+         "cases":[
+            {
+               "key":"ERC165",
+               "value":"0x01ffc9a7"
+            },
+            {
+               "key":"ERC1271",
+               "value":"0x1626ba7e"
+            },
+            {
+               "key":"ERC725X",
+               "value":"0x44c028fe"
+            },
+            {
+               "key":"ERC725Y",
+               "value":"0x5a988c0f"
+            },
+            {
+               "key":"ERC725Account",
+               "value":"0x63cb749b"
+            },
+            {
+               "key":"LSP1",
+               "value":"0x6bb56a14"
+            },
+            {
+               "key":"LSP1Delegate",
+               "value":"0xc2d7bcc1"
+            },
+            {
+               "key":"LSP6",
+               "value":"0x6f4df48b"
+            },
+            {
+               "key":"LSP7",
+               "value":"0xe33f65c3"
+            },
+            {
+               "key":"LSP8",
+               "value":"0x49399145"
+            },
+            {
+               "key":"LSP9",
+               "value":"0x75edcee5"
+            }
+         ]
+      },
+      {
+         "name":"OPERATIONS",
+         "type":"enum",
+         "documentation":"ERC725X\n----------",
+         "rawValueType":"Int",
+         "cases":[
+            {
+               "key":"CALL",
+               "value":0
+            },
+            {
+               "key":"CREATE",
+               "value":1
+            },
+            {
+               "key":"CREATE2",
+               "value":2
+            },
+            {
+               "key":"STATICCALL",
+               "value":3
+            },
+            {
+               "key":"DELEGATECALL",
+               "value":4
+            }
+         ]
+      },
+      {
+         "name":"SupportedStandards",
+         "type":"json",
+         "documentation":"ERC725Y\n----------",
+         "members":[
+            {
+               "type":"JSONSchema",
+               "name":"LSP3UniversalProfile",
+               "documentation":"valueContent is first 4 bytes of web3.utils.sha3(\"LSP3UniversalProfile\")",
+               "key":"0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6",
+               "keyType":"Mapping",
+               "valueContent":"0xabe425d6",
+               "valueType":"bytes"
+            },
+            {
+               "type":"JSONSchema",
+               "documentation":"valueContent is first 4 bytes of web3.utils.sha3(\"LSP4DigitalAsset\")",
+               "name":"LSP4DigitalAsset",
+               "key":"0xeafec4d89fa9619884b6b89135626455000000000000000000000000a4d96624",
+               "keyType":"Mapping",
+               "valueContent":"0xa4d96624",
+               "valueType":"bytes"
+            },
+            {
+               "name":"LSP9Vault",
+               "documentation":"THIS SCHEMA IS DEFINED INCORRECTLY!!\nNEED MORE DETAILS ABOUT LSP9Vault.\n\nLSP9Vault: {\n\tkey: \"0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1\",\n\tvalue: \"0x7c0334a1\"\n}",
+               "type":"JSONSchema",
+               "key":"0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1",
+               "keyType":"Mapping",
+               "valueContent":"0x7c0334a1",
+               "valueType":"bytes"
+            }
+         ]
+      },
+      {
+         "name":"ERC725YKeys",
+         "type":"json",
+         "documentation":[
+            "For more infos on the type of each keys",
+            "@see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md"
+         ],
+         "members":[
+            {
+               "name":"LSP0",
+               "type":"json",
+               "documentation":null,
+               "members":[
+                  {
+                     "name":"LSP1UniversalReceiverDelegate",
+                     "documentation":"keccak256('LSP1UniversalReceiverDelegate')",
+                     "type":"JSONSchema",
+                     "key":"0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47",
+                     "keyType":"Singleton",
+                     "valueContent":"Address",
+                     "valueType":"address"
+                  }
+               ]
+            },
+            {
+               "name":"LSP3",
+               "type":"json",
+               "documentation":null,
+               "members":[
+                  {
+                     "name":"LSP3Profile",
+                     "documentation":"keccak256('LSP3Profile')",
+                     "type":"JSONSchema",
+                     "key":"0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
+                     "keyType":"Singleton",
+                     "valueContent":"JSONURL",
+                     "valueType":"bytes"
+                  },
+                  {
+                     "name":"LSP3IssuedAssetsMap",
+                     "documentation":"LSP3IssuedAssetsMap:<address>",
+                     "type":"JSONSchema",
+                     "key":"0x83f5e77bfb14241600000000",
+                     "keyType":"Mapping",
+                     "valueContent":"Mixed",
+                     "valueType":"bytes"
+                  },
+                  {
+                     "name":"LSP3IssuedAssets[]",
+                     "documentation":"keccak256('LSP3IssuedAssets[]')",
+                     "type":"JSONSchema",
+                     "key":"0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0",
+                     "keyType":"Array",
+                     "valueContent":"Address",
+                     "valueType":"address"
+                  }
+               ]
+            },
+            {
+               "name":"LSP4",
+               "type":"json",
+               "documentation":null,
+               "members":[
+                  {
+                     "name":"LSP4TokenName",
+                     "documentation":"keccak256('LSP4TokenName')",
+                     "type":"JSONSchema",
+                     "key":"0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1",
+                     "keyType":"Singleton",
+                     "valueContent":"String",
+                     "valueType":"string"
+                  },
+                  {
+                     "name":"LSP4TokenSymbol",
+                     "documentation":"keccak256('LSP4TokenSymbol')",
+                     "type":"JSONSchema",
+                     "key":"0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756",
+                     "keyType":"Singleton",
+                     "valueContent":"String",
+                     "valueType":"string"
+                  },
+                  {
+                     "name":"LSP4Creators[]",
+                     "documentation":"keccak256('LSP4Creators[]')",
+                     "key":"0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7",
+                     "type":"JSONSchema",
+                     "keyType":"Array",
+                     "valueContent":"Number",
+                     "valueType":"uint256",
+                     "elementValueContent":"Address",
+                     "elementValueType":"address"
+                  }
+               ]
+            },
+            {
+               "name":"LSP5",
+               "type":"json",
+               "documentation":null,
+               "members":[
+                  {
+                     "name":"LSP5ReceivedAssetsMap",
+                     "documentation":"LSP5ReceivedAssetsMap:<address>",
+                     "type":"JSONSchema",
+                     "key":"0x812c4334633eb81600000000",
+                     "keyType":"Mapping",
+                     "valueContent":"Mixed",
+                     "valueType":"bytes"
+                  },
+                  {
+                     "name":"LSP5ReceivedAssets[]",
+                     "documentation":"keccak256('LSP5ReceivedAssets[]')",
+                     "type":"JSONSchema",
+                     "key":"0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
+                     "keyType":"Array",
+                     "valueContent":"Address",
+                     "valueType":"address"
+                  }
+               ]
+            },
+            {
+               "name":"LSP6",
+               "type":"json",
+               "documentation":null,
+               "members":[
+                  {
+                     "name":"AddressPermissions[]",
+                     "documentation":"keccak256('AddressPermissions[]')",
+                     "type":"JSONSchema",
+                     "key":"0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
+                     "keyType":"Array",
+                     "valueContent":"Address",
+                     "valueType":"address"
+                  },
+                  {
+                     "name":"AddressPermissions:Permissions",
+                     "documentation":"AddressPermissions:Permissions:<address>",
+                     "type":"JSONSchema",
+                     "key":"0x4b80742d0000000082ac0000",
+                     "keyType":"Array",
+                     "valueContent":"Address",
+                     "valueType":"address"
+                  },
+                  {
+                     "name":"AddressPermissions:AllowedAddresses",
+                     "documentation":"AddressPermissions:AllowedAddresses:<address>",
+                     "type":"JSONSchema",
+                     "key":"0x4b80742d00000000c6dd0000",
+                     "keyType":"Bytes20MappingWithGrouping",
+                     "valueContent":"Address",
+                     "valueType":"address[]"
+                  },
+                  {
+                     "name":"AddressPermissions:AllowedFunctions",
+                     "documentation":"AddressPermissions:AllowedFunctions:<address>",
+                     "type":"JSONSchema",
+                     "key":"0x4b80742d000000008efe0000",
+                     "keyType":"Bytes20MappingWithGrouping",
+                     "valueContent":"Bytes4",
+                     "valueType":"bytes4[]"
+                  },
+                  {
+                     "name":"AddressPermissions:AllowedStandards",
+                     "documentation":"AddressPermissions:AllowedStandards:<address>",
+                     "type":"JSONSchema",
+                     "key":"0x4b80742d000000003efa0000",
+                     "keyType":"Bytes20MappingWithGrouping",
+                     "valueContent":"Bytes4",
+                     "valueType":"bytes4[]"
+                  }
+               ]
+            },
+            {
+               "name":"LSP10",
+               "type":"json",
+               "documentation":null,
+               "members":[
+                  {
+                     "name":"LSP10VaultsMap",
+                     "documentation":"LSP10VaultsMap:<address>",
+                     "type":"JSONSchema",
+                     "key":"0x192448c3c0f88c7f00000000",
+                     "keyType":"Mapping",
+                     "valueContent":"Mixed",
+                     "valueType":"bytes"
+                  },
+                  {
+                     "name":"LSP10Vaults[]",
+                     "documentation":"keccak256('LSP10Vaults[]]')",
+                     "type":"JSONSchema",
+                     "key":"0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
+                     "keyType":"Array",
+                     "valueContent":"Address",
+                     "valueType":"address"
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "name":"BasicUPSetup_Schema",
+         "type":"json",
+         "members":[
+            {
+               "name":"LSP3Profile",
+               "type":"JSONSchema",
+               "key":"ERC725YKeys.LSP3.LSP3Profile",
+               "keyType":"Singleton",
+               "valueContent":"JSONURL",
+               "valueType":"bytes"
+            },
+            {
+               "name":"LSP1UniversalReceiverDelegate",
+               "type":"JSONSchema",
+               "key":"ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate",
+               "keyType":"Singleton",
+               "valueContent":"Address",
+               "valueType":"address"
+            },
+            {
+               "name":"LSP3IssuedAssets[]",
+               "type":"JSONSchema",
+               "key":"ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
+               "keyType":"Array",
+               "valueContent":"Number",
+               "valueType":"uint256",
+               "elementValueContent":"Address",
+               "elementValueType":"address"
+            }
+         ]
+      },
+      {
+         "name":"ALL_PERMISSIONS_SET",
+         "type":"const",
+         "documentation":"binary = .... 1111 1111 1111 (only 1s)",
+         "value":"\"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\""
+      },
+      {
+         "name":"PERMISSIONS",
+         "type":"enum",
+         "documentation":"prettier-ignore",
+         "rawValueType":"Int",
+         "cases":[
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  ".... 0000 0000 0001"
+               ],
+               "key":"CHANGEOWNER",
+               "value":1
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  ".... .... .... 0010"
+               ],
+               "key":"CHANGEPERMISSIONS",
+               "value":2
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000004",
+                  ".... .... .... 0100"
+               ],
+               "key":"ADDPERMISSIONS",
+               "value":4
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000008",
+                  ".... .... .... 1000"
+               ],
+               "key":"SETDATA",
+               "value":8
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000010",
+                  ".... .... 0001 ...."
+               ],
+               "key":"CALL",
+               "value":16
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000020",
+                  ".... .... 0010 ...."
+               ],
+               "key":"STATICCALL",
+               "value":32
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000040",
+                  ".... .... 0100 ...."
+               ],
+               "key":"DELEGATECALL",
+               "value":64
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000080",
+                  ".... .... 1000 ...."
+               ],
+               "key":"DEPLOY",
+               "value":128
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000100",
+                  ".... 0001 .... ...."
+               ],
+               "key":"TRANSFERVALUE",
+               "value":256
+            },
+            {
+               "documentation":[
+                  "0x0000000000000000000000000000000000000000000000000000000000000200",
+                  ".... 0010 .... ...."
+               ],
+               "key":"SIGN",
+               "value":512
+            }
+         ]
+      },
+      {
+         "type":"json",
+         "name":"EventSignatures",
+         "members":[
+            {
+               "type":"json",
+               "name":"ERC173",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"OwnershipTransfered",
+                     "value":"\"0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0\"",
+                     "documentation":[
+                        "event OwnershipTransferred(",
+                        "   address indexed previousOwner,",
+                        "   address indexed newOwner,",
+                        ");",
+                        "",
+                        "signature = keccak256('OwnershipTransferred(address,address)')"
+                     ]
+                  }
+               ]
+            },
+            {
+               "type":"json",
+               "name":"ERC725X",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"ContractCreated",
+                     "value":"\"0x01c42bd7e97a66166063b02fce6924e6656b6c2c61966630165095c4fb0b7b2f\"",
+                     "documentation":[
+                        "event ContractCreated(",
+                        "    uint256 indexed _operation,",
+                        "    address indexed _contractAddress,",
+                        "    uint256 indexed _value",
+                        ");",
+                        "",
+                        "signature = keccak256('ContractCreated(uint256,address,uint256)')"
+                     ]
+                  },
+                  {
+                     "type":"const",
+                     "name":"Executed",
+                     "value":"\"0x1f920dbda597d7bf95035464170fa58d0a4b57f13a1c315ace6793b9f63688b8\"",
+                     "documentation":[
+                        "event Executed(",
+                        "     uint256 indexed _operation,",
+                        "     address indexed _to,",
+                        "     uint256 indexed _value,",
+                        "     bytes _data",
+                        ");",
+                        "",
+                        "signature = keccak256('Executed(uint256,address,uint256,bytes)')"
+                     ]
+                  }
+               ]
+            },
+            {
+               "type":"json",
+               "name":"ERC725Y",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"DataChanged",
+                     "value":"\"0xece574603820d07bc9b91f2a932baadf4628aabcb8afba49776529c14a6104b2\"",
+                     "documentation":[
+                        "event DataChanged(",
+                        "     bytes32 indexed key,",
+                        "     bytes value",
+                        ");",
+                        "",
+                        "signature = keccak256('DataChanged(bytes32,bytes)')"
+                     ]
+                  },
+                  {
+                     "type":"const",
+                     "name":"Executed",
+                     "value":"\"0x1f920dbda597d7bf95035464170fa58d0a4b57f13a1c315ace6793b9f63688b8\"",
+                     "documentation":[
+                        "event Executed(",
+                        "     uint256 indexed _operation,",
+                        "     address indexed _to,",
+                        "     uint256 indexed _value,",
+                        "     bytes _data",
+                        ");",
+                        "",
+                        "signature = keccak256('Executed(uint256,address,uint256,bytes)')"
+                     ]
+                  }
+               ]
+            },
+            {
+               "type":"json",
+               "name":"LSP0",
+               "documentation":"ERC725Account",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"ValueReceived",
+                     "value":"\"0x7e71433ddf847725166244795048ecf3e3f9f35628254ecbf736056664233493\"",
+                     "documentation":[
+                        "event ValueReceived(",
+                        "     address indexed sender,",
+                        "     uint256 indexed value",
+                        ");",
+                        "",
+                        "signature = keccak256('ValueReceived(address,uint256)')"
+                     ]
+                  }
+               ]
+            },
+            {
+               "type":"json",
+               "name":"LSP1",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"UniversalReceiver",
+                     "value":"\"0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3\"",
+                     "documentation":[
+                        "event UniversalReceiver(",
+                        "   address indexed from,",
+                        "   bytes32 indexed typeId,",
+                        "   bytes32 indexed returnedValue,",
+                        "   bytes receivedData",
+                        ");",
+                        "",
+                        "signature = keccak256('UniversalReceiver(address,bytes32,bytes32,bytes)')"
+                     ]
+                  }
+               ]
+            },
+            {
+               "type":"json",
+               "name":"LSP6",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"Executed",
+                     "value":"\"0x2e733a17851169f232b3859260eb3ad2a086afd54e999eb4ea9afb7791702e41\"",
+                     "documentation":[
+                        "event Executed(",
+                        "    uint256 indexed _value,",
+                        "    bytes _data",
+                        ");",
+                        "",
+                        "signature = keccak256('Executed(uint256,bytes)')"
+                     ]
+                  }
+               ]
+            },
+            {
+               "type":"json",
+               "name":"LSP7",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"Transfer",
+                     "value":"\"0x3997e418d2cef0b3b0e907b1e39605c3f7d32dbd061e82ea5b4a770d46a160a6\"",
+                     "documentation":[
+                        "event Transfer(",
+                        "    address indexed operator,",
+                        "    address indexed from,",
+                        "    address indexed to,",
+                        "    uint256 amount,",
+                        "    bool force,",
+                        "    bytes data",
+                        ");",
+                        "",
+                        "signature = keccak256('Transfer(address,address,address,uint256,bool,bytes)')"
+                     ]
+                  },
+                  {
+                     "type":"const",
+                     "name":"AuthorizedOperator",
+                     "value":"\"0xd66aff874162a96578e919097b6f6d153dfd89a5cec41bb331fdb0c4aec16e2c\"",
+                     "documentation":[
+                        "event AuthorizedOperator(",
+                        "    address indexed operator,",
+                        "    address indexed tokenOwner,",
+                        "    uint256 indexed amount",
+                        ");",
+                        "",
+                        "signature = keccak256('AuthorizedOperator(address,address,uint256)')"
+                     ]
+                  },
+                  {
+                     "type":"const",
+                     "name":"RevokedOperator",
+                     "value":"\"0x50546e66e5f44d728365dc3908c63bc5cfeeab470722c1677e3073a6ac294aa1\"",
+                     "documentation":[
+                        "event RevokedOperator(",
+                        "    address indexed operator,",
+                        "    address indexed tokenOwner",
+                        ");",
+                        "",
+                        "signature = keccak256('RevokedOperator(address,address)')"
+                     ]
+                  }
+               ]
+            },
+            {
+               "type":"json",
+               "name":"LSP8",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"Transfer",
+                     "value":"\"0xb333c813a7426a7a11e2b190cad52c44119421594b47f6f32ace6d8c7207b2bf\"",
+                     "documentation":[
+                        "event Transfer(",
+                        "    address operator,",
+                        "    address indexed from,",
+                        "    address indexed to,",
+                        "    bytes32 indexed tokenId,",
+                        "    bool force,",
+                        "    bytes data",
+                        ");",
+                        "",
+                        "signature = keccak256('Transfer(address,address,address,bytes32,bool,bytes)')"
+                     ]
+                  },
+                  {
+                     "type":"const",
+                     "name":"AuthorizedOperator",
+                     "value":"\"0x34b797fc5a526f7bf1d2b5de25f6564fd85ae364e3ee939aee7c1ac27871a988\"",
+                     "documentation":[
+                        "event AuthorizedOperator(",
+                        "    address indexed operator,",
+                        "    address indexed tokenOwner,",
+                        "    bytes32 indexed tokenId",
+                        ");",
+                        "",
+                        "signature = keccak256('AuthorizedOperator(address,address,bytes32)')"
+                     ]
+                  },
+                  {
+                     "type":"const",
+                     "name":"RevokedOperator",
+                     "value":"\"0x17d5389f6ab6adb2647dfa0aa365c323d37adacc30b33a65310b6158ce1373d5\"",
+                     "documentation":[
+                        "event RevokedOperator(",
+                        "    address indexed operator,",
+                        "    address indexed tokenOwner,",
+                        "    bytes32 indexed tokenId",
+                        ");",
+                        "",
+                        "signature = keccak256('RevokedOperator(address,address,bytes32)')"
+                     ]
+                  }
+               ]
+            },
+            {
+               "type":"json",
+               "name":"Helpers",
+               "members":[
+                  {
+                     "type":"const",
+                     "name":"ReceivedERC777",
+                     "value":"\"0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c\"",
+                     "documentation":[
+                        "event ReceivedERC777(",
+                        "   address indexed token,",
+                        "   address indexed _operator,",
+                        "   address indexed _from,",
+                        "   address _to,",
+                        "   uint256 _amount",
+                        ");",
+                        "",
+                        "signature = keccak256('ReceivedERC777(address,address,address,address,uint256)')"
+                     ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
