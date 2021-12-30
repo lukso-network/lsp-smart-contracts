@@ -14,6 +14,9 @@ import "./LSP1UniversalReceiverDelegateVaultCore.sol";
 contract LSP1UniversalReceiverDelegateVault is
     LSP1UniversalReceiverDelegateVaultCore
 {
+    /**
+     * @notice Register the LSP1UniversalReceiverDelegate InterfaceId
+     */
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }

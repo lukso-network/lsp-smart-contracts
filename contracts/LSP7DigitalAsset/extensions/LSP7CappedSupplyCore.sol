@@ -22,7 +22,7 @@ abstract contract LSP7CappedSupplyCore is
     // --- Token queries
 
     /**
-     * @dev Returns the number of tokens that have been minted.
+     * @inheritdoc ILSP7CappedSupply
      */
     function tokenSupplyCap() public view virtual override returns (uint256) {
         return _tokenSupplyCap;

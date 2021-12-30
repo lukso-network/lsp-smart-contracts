@@ -17,17 +17,25 @@ import "../LSP1UniversalReceiver/LSP1Constants.sol";
 import "./LSP9Constants.sol";
 
 /**
- * @title Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
+ * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
     using ERC725Utils for IERC725Y;
 
+    /**
+     * @notice Emitted when a native token is received
+     * @param sender The address of the sender
+     * @param value The amount of value sent
+     */
     event ValueReceived(address indexed sender, uint256 indexed value);
 
     // modifiers
 
+    /**
+     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
+     */
     modifier onlyAllowed() {
         if (msg.sender != owner()) {
             address universalReceiverAddress = address(
@@ -50,12 +58,23 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
 
     // public functions
 
+    /**
+     * @dev Emits an event when a native token is received
+     */
     receive() external payable {
         emit ValueReceived(_msgSender(), msg.value);
     }
 
     // ERC725Y
 
+    /**
+     * @inheritdoc IERC725Y
+     * @dev Sets array of data at multiple given `key`
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     * and the UniversalReceiverDelegate
+     *
+     * Emits a {DataChanged} event.
+     */
     function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
         virtual
@@ -108,6 +127,10 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
 
     // ERC173
 
+    /**
+     * @inheritdoc OwnableUnset
+     * @dev Transfer the ownership and notify the vault sender and vault receiver
+     */
     function transferOwnership(address newOwner)
         public
         virtual

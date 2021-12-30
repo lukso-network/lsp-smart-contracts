@@ -5,7 +5,17 @@ pragma solidity ^0.8.0;
 import "@erc725/smart-contracts/contracts/ERC725Init.sol";
 import "./LSP9VaultCore.sol";
 
+/**
+ * @title Proxy Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
+ * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
+ * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
+ */
 contract LSP9VaultInit is LSP9VaultCore, ERC725Init {
+    /**
+     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key and register
+     * LSP1UniversalReceiver and LSP9Vault InterfaceId
+     * @param _newOwner the owner of the contract
+     */
     function initialize(address _newOwner) public override initializer {
         ERC725Init.initialize(_newOwner);
 
@@ -20,6 +30,9 @@ contract LSP9VaultInit is LSP9VaultCore, ERC725Init {
         _registerInterface(_INTERFACEID_LSP9);
     }
 
+    /**
+     * @inheritdoc OwnableUnset
+     */
     function transferOwnership(address newOwner)
         public
         override(OwnableUnset, LSP9VaultCore)
@@ -28,6 +41,9 @@ contract LSP9VaultInit is LSP9VaultCore, ERC725Init {
         LSP9VaultCore.transferOwnership(newOwner);
     }
 
+    /**
+     * @inheritdoc LSP9VaultCore
+     */
     function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
         virtual

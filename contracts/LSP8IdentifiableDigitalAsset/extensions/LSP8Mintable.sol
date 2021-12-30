@@ -10,12 +10,21 @@ import "../LSP8IdentifiableDigitalAsset.sol";
  */
 contract LSP8Mintable is LSP8MintableCore, LSP8IdentifiableDigitalAsset {
     // solhint-disable no-empty-blocks
+    /**
+     * @notice Sets the token-Metadata and register LSP8InterfaceId
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the the token-Metadata
+     */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_
     ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
 
+    /**
+     * @inheritdoc LSP8MintableCore
+     */
     function mint(
         address to,
         bytes32 tokenId,

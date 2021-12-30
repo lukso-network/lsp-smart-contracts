@@ -27,6 +27,12 @@ contract LSP8CompatibilityForERC721 is
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /* solhint-disable no-empty-blocks */
+    /**
+     * @notice Sets the name, the symbol and the owner of the token
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the token
+     */
     constructor(
         string memory name_,
         string memory symbol_,
@@ -37,20 +43,30 @@ contract LSP8CompatibilityForERC721 is
     }
 
     /*
-     * @dev Compatible with ERC721Metadata tokenURI.
+     * @inheritdoc ILSP8CompatibilityForERC721
      */
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
         bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
         uint256 offset = 36;
 
-        bytes memory uriBytes = BytesLib.slice(data, offset, data.length - offset);
+        bytes memory uriBytes = BytesLib.slice(
+            data,
+            offset,
+            data.length - offset
+        );
         return string(uriBytes);
     }
 
-    /*
-     * @dev Compatible with ERC721 ownerOf.
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      */
     function ownerOf(uint256 tokenId)
         external
@@ -62,8 +78,8 @@ contract LSP8CompatibilityForERC721 is
         return tokenOwnerOf(bytes32(tokenId));
     }
 
-    /*
-     * @dev Compatible with ERC721 approve.
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      */
     function approve(address operator, uint256 tokenId)
         external
@@ -75,8 +91,8 @@ contract LSP8CompatibilityForERC721 is
         emit Approval(tokenOwnerOf(bytes32(tokenId)), operator, tokenId);
     }
 
-    /*
-     * @dev Compatible with ERC721 getApproved.
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      */
     function getApproved(uint256 tokenId)
         external
@@ -109,13 +125,19 @@ contract LSP8CompatibilityForERC721 is
     }
 
     /*
-     * @dev Compatible with ERC721 isApprovedForAll.
+     * @inheritdoc ILSP8CompatibilityForERC721
      */
-    function isApprovedForAll(uint256 tokenId) public virtual override returns(bool) {
+    function isApprovedForAll(uint256 tokenId)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         return false;
     }
 
-    /*
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      * @dev Compatible with ERC721 transferFrom.
      * Using force=true so that EOA and any contract may receive the tokenId.
      */
@@ -128,7 +150,8 @@ contract LSP8CompatibilityForERC721 is
             transfer(from, to, bytes32(tokenId), true, "compat-transferFrom");
     }
 
-    /*
+    /**
+     * @inheritdoc ILSP8CompatibilityForERC721
      * @dev Compatible with ERC721 safeTransferFrom.
      * Using force=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
@@ -162,28 +185,66 @@ contract LSP8CompatibilityForERC721 is
 
     // --- Overrides
 
-    function authorizeOperator(address operator, bytes32 tokenId) public virtual override(ILSP8IdentifiableDigitalAsset, LSP8IdentifiableDigitalAssetCore) {
+    function authorizeOperator(address operator, bytes32 tokenId)
+        public
+        virtual
+        override(
+            ILSP8IdentifiableDigitalAsset,
+            LSP8IdentifiableDigitalAssetCore
+        )
+    {
         super.authorizeOperator(operator, tokenId);
 
-        emit Approval(tokenOwnerOf(tokenId), operator, abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Approval(
+            tokenOwnerOf(tokenId),
+            operator,
+            abi.decode(abi.encodePacked(tokenId), (uint256))
+        );
     }
 
-    function _transfer(address from, address to, bytes32 tokenId, bool force, bytes memory data) internal virtual override {
+    function _transfer(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
         super._transfer(from, to, tokenId, force, data);
 
-        emit Transfer(from, to, abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(
+            from,
+            to,
+            abi.decode(abi.encodePacked(tokenId), (uint256))
+        );
     }
 
-    function _mint(address to, bytes32 tokenId, bool force, bytes memory data) internal virtual override {
+    function _mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
         super._mint(to, tokenId, force, data);
 
-        emit Transfer(address(0), to, abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(
+            address(0),
+            to,
+            abi.decode(abi.encodePacked(tokenId), (uint256))
+        );
     }
 
-    function _burn(bytes32 tokenId, bytes memory data) internal virtual override {
+    function _burn(bytes32 tokenId, bytes memory data)
+        internal
+        virtual
+        override
+    {
         super._burn(tokenId, data);
 
         address tokenOwner = tokenOwnerOf(tokenId);
-        emit Transfer(tokenOwner, address(0), abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(
+            tokenOwner,
+            address(0),
+            abi.decode(abi.encodePacked(tokenId), (uint256))
+        );
     }
 }

@@ -20,11 +20,9 @@ abstract contract LSP1UniversalReceiverDelegateVaultCore is
     TokenHandlingContract
 {
     /**
-     * @dev allows to register arrayKeys and Map of incoming assets and remove them on balance = 0
-     * @param sender token address
-     * @param typeId token hooks
-     * @param data concatenated data about token transfer
-     * @return result the return value
+     * @inheritdoc ILSP1UniversalReceiverDelegate
+     * @dev allows to register arrayKeys and Map of incoming assets and remove after being sent
+     * @return result The return value
      */
     function universalReceiverDelegate(
         address sender,

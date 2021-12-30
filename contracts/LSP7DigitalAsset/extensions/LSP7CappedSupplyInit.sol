@@ -14,6 +14,10 @@ abstract contract LSP7CappedSupplyInit is
     LSP7DigitalAssetInit,
     LSP7CappedSupplyCore
 {
+    /**
+     * @notice Sets the token max supply
+     * @param tokenSupplyCap_ The Token max supply
+     */
     function initialize(uint256 tokenSupplyCap_) public virtual initializer {
         require(tokenSupplyCap_ > 0, "LSP7Capped: tokenSupplyCap is zero");
         _tokenSupplyCap = tokenSupplyCap_;

@@ -11,12 +11,20 @@ import "./LSP8Constants.sol";
 import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
 /**
+ * @title LSP8IdentifiableDigitalAsset contract
+ * @author Matthew Stevens
  * @dev Implementation of a LSP8 compliant contract.
  */
 contract LSP8IdentifiableDigitalAsset is
     LSP4DigitalAssetMetadata,
     LSP8IdentifiableDigitalAssetCore
 {
+    /**
+     * @notice Sets the token-Metadata and register LSP8InterfaceId
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the the token-Metadata
+     */
     constructor(
         string memory name_,
         string memory symbol_,

@@ -10,12 +10,17 @@ import "../ILSP7DigitalAsset.sol";
  */
 interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
     /*
-     * @dev Compatible with ERC20 tranfer.
+     * @dev Compatible with ERC20 tranfer
+     * @param to The receiving address
+     * @param amount The amount of tokens to transfer
      */
     function transfer(address to, uint256 amount) external;
 
     /*
-     * @dev Compatible with ERC20 tranferFrom.
+     * @dev Compatible with ERC20 tranferFrom
+     * @param from The sending address
+     * @param to The receiving address
+     * @param amount The amount of tokens to transfer
      */
     function transferFrom(
         address from,
@@ -24,12 +29,17 @@ interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
     ) external;
 
     /*
-     * @dev Compatible with ERC20 approve.
+     * @dev Compatible with ERC20 approve
+     * @param operator The address to approve for `amount`
+     * @param amount The amount to approve
      */
     function approve(address operator, uint256 amount) external;
 
     /*
-     * @dev Compatible with ERC20 allowance.
+     * @dev Compatible with ERC20 allowance
+     * @param tokenOwner The address of the token owner
+     * @param operator The address approved by the `tokenOwner`
+     * @return The amount `operator` is approved by `tokenOwner`
      */
     function allowance(address tokenOwner, address operator)
         external

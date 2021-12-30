@@ -16,14 +16,20 @@ contract LSP7CompatibilityForERC20 is
     LSP7DigitalAsset
 {
     /* solhint-disable no-empty-blocks */
+    /**
+     * @notice Sets the name, the symbol and the owner of the token
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the token
+     */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_
     ) LSP7DigitalAsset(name_, symbol_, newOwner_, false) {}
 
-    /*
-     * @dev Compatible with ERC20 approve.
+    /**
+     * @inheritdoc ILSP7CompatibilityForERC20
      */
     function approve(address operator, uint256 amount)
         external
@@ -33,8 +39,8 @@ contract LSP7CompatibilityForERC20 is
         return authorizeOperator(operator, amount);
     }
 
-    /*
-     * @dev Compatible with ERC20 allowance.
+    /**
+     * @inheritdoc ILSP7CompatibilityForERC20
      */
     function allowance(address tokenOwner, address operator)
         external
@@ -46,7 +52,8 @@ contract LSP7CompatibilityForERC20 is
         return isOperatorFor(operator, tokenOwner);
     }
 
-    /*
+    /**
+     * @inheritdoc ILSP7CompatibilityForERC20
      * @dev Compatible with ERC20 transfer.
      * Using force=true so that EOA and any contract may receive the tokens.
      */
@@ -54,7 +61,8 @@ contract LSP7CompatibilityForERC20 is
         return transfer(_msgSender(), to, amount, true, "compat-transfer");
     }
 
-    /*
+    /**
+     * @inheritdoc ILSP7CompatibilityForERC20
      * @dev Compatible with ERC20 transferFrom.
      * Using force=true so that EOA and any contract may receive the tokens.
      */
