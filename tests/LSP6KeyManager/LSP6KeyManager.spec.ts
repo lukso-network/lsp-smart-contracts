@@ -12,6 +12,8 @@ import {
   LSP6KeyManager__factory,
   TargetContract,
   TargetContract__factory,
+  SignatureValidatorContract,
+  SignatureValidatorContract__factory,
   Reentrancy,
   Reentrancy__factory,
 } from "../../types";
@@ -24,6 +26,7 @@ import {
   INTERFACE_IDS,
   BasicUPSetup_Schema,
   ERC725YKeys,
+  ERC1271,
 } from "../../constants";
 
 // helpers
@@ -37,7 +40,9 @@ import {
   ONE_ETH,
   getRandomAddresses,
   generateKeysAndValues,
+  RANDOM_BYTES32,
 } from "../utils/helpers";
+import { Signer } from "ethers";
 
 describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   let abiCoder;
@@ -2696,6 +2701,147 @@ describe("Testing permissions of multiple empty bytes length", () => {
       ).toBeRevertedWith(
         "LSP6Utils:getPermissionsFor: no permissions set for this address"
       );
+    });
+  });
+});
+
+describe.only("ALLOWEDSTANDARDS", () => {
+  let abiCoder;
+  let accounts: SignerWithAddress[] = [];
+  let owner: SignerWithAddress;
+  let caller: SignerWithAddress;
+
+  let universalProfile: UniversalProfile,
+    keyManager: LSP6KeyManager,
+    targetContract: TargetContract,
+    signatureValidatorContract: SignatureValidatorContract;
+
+  beforeAll(async () => {
+    abiCoder = await ethers.utils.defaultAbiCoder;
+    accounts = await ethers.getSigners();
+
+    owner = accounts[0];
+    caller = accounts[1];
+
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(
+      universalProfile.address
+    );
+    targetContract = await new TargetContract__factory(owner).deploy();
+    signatureValidatorContract = await new SignatureValidatorContract__factory(
+      owner
+    ).deploy();
+
+    await universalProfile.setData(
+      [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          caller.address.substring(2),
+      ],
+      [ALL_PERMISSIONS_SET, ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32)],
+      { from: owner.address }
+    );
+
+    await universalProfile.transferOwnership(keyManager.address, {
+      from: owner.address,
+    });
+  });
+
+  describe("when caller has no value set for ALLOWEDSTANDARDS", () => {
+    it("should allow to interact with contract that has no interfaces implemented", async () => {
+      let newName = "Some Name";
+      let targetPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        [newName]
+      );
+
+      let upPayload = universalProfile.interface.encodeFunctionData("execute", [
+        OPERATIONS.CALL,
+        targetContract.address,
+        0,
+        targetPayload,
+      ]);
+
+      await keyManager.execute(upPayload), { from: owner.address };
+      let result = await targetContract.callStatic.getName();
+
+      expect(result).toEqual(newName);
+    });
+
+    describe("should allow to interact with a contract that has any interface implemented", () => {
+      it("example: ERC1271", async () => {
+        let sampleHash = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("Sample Message")
+        );
+        let sampleSignature = await owner.signMessage("Sample Message");
+
+        let payload = signatureValidatorContract.interface.encodeFunctionData(
+          "isValidSignature",
+          [sampleHash, sampleSignature]
+        );
+
+        let upPayload = universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+        );
+
+        let data = await keyManager
+          .connect(owner)
+          .callStatic.execute(upPayload);
+        let [result] = abiCoder.decode(["bytes4"], data);
+        expect(result).toEqual(ERC1271.MAGIC_VALUE);
+      });
+
+      /** @todo add test with contract that implements:
+       * - ERC165 (Standard Interface Detection)
+       * - LSP0 (ERC725Account)
+       */
+    });
+  });
+
+  describe("when caller has only one interface ID (eg: ERC1271) is set for ALLOWED STANDARDS", () => {
+    describe("when interacting with contract that implements ERC1271", () => {
+      it("should pass", async () => {
+        let sampleHash = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("Sample Message")
+        );
+        let sampleSignature = await caller.signMessage("Sample Message");
+
+        let payload = signatureValidatorContract.interface.encodeFunctionData(
+          "isValidSignature",
+          [sampleHash, sampleSignature]
+        );
+
+        let upPayload = universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+        );
+
+        let data = await keyManager
+          .connect(caller)
+          .callStatic.execute(upPayload);
+        let [result] = abiCoder.decode(["bytes4"], data);
+        expect(result).toEqual(ERC1271.MAGIC_VALUE);
+      });
+    });
+
+    describe("when interracting with contract that does not implement ERC1271", () => {
+      it("should fail", async () => {
+        let targetPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          ["New Name"]
+        );
+
+        let upPayload = universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+        );
+
+        await keyManager.connect(caller).execute(upPayload);
+      });
     });
   });
 });
