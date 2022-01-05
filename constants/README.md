@@ -180,8 +180,8 @@ Example:
          "type":"JSONSchema",
          "key":"ERC725YKeys.LSP3.LSP3Profile",
          "keyType":"Singleton",
-         "valueContent":"JSONURL",
-         "valueType":"bytes"
+         "valueType":"bytes",
+         "valueContent":"JSONURL"
       }
    ]
 },
@@ -194,8 +194,8 @@ export const BasicUPSetup_Schema =  {
 		name: "LSP3Profile",
 		key: ERC725YKeys.LSP3.LSP3Profile,
 		keyType: "Singleton",
+    valueType: "bytes",
 		valueContent: "JSONURL",
-		valueType: "bytes",
 	}
 }
 ```   
@@ -207,8 +207,8 @@ public class BasicUPSetup_Schema {
 		public val LSP3Profile = JSONSchema(name = "LSP3Profile",
 			key = "ERC725YKeys.LSP3.LSP3Profile", /// Flawed. Key should be either a HEX String or a reference to another schema (like in this case).
 			keyType = KeyType("Singleton"),
-			valueContent = ValueContent("JSONURL"),
-			valueType = ValueType("bytes"))
+      valueType = ValueType("bytes"),
+			valueContent = ValueContent("JSONURL"))
    }
 }         
 ```
@@ -252,8 +252,8 @@ A specific type that is expected as a separately declared class or struct in lan
 - `type` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
 - `key` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
 - `keyType` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
-- `valueContent` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
 - `valueType` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
+- `valueContent` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
  
 Example:
 ```json
@@ -262,8 +262,8 @@ Example:
    "type":"JSONSchema",
    "key":"ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
    "keyType":"Array",
-   "valueContent":"Number",
-   "valueType":"uint256"
+   "valueType":"uint256",
+   "valueContent":"Number"
 }
 ```
 
@@ -273,8 +273,8 @@ LSP3IssuedAssetsArray:  {
 	name: "LSP3IssuedAssets[]",
 	key: ERC725YKeys.LSP3.LSP3IssuedAssetsArray,
 	keyType: "Array",
-	valueContent: "Number",
-	valueType: "uint256"
+  valueType: "uint256",
+	valueContent: "Number"
 }
 ```
 
@@ -283,8 +283,8 @@ Output in Swift:
 public static let LSP3IssuedAssetsArray = JSONSchema(name: "LSP3IssuedAssets[]",
                                                      key: "ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
                                                      keyType: .Array,
-                                                     valueContent: .Number,
-                                                     valueType: .uint256)
+                                                     valueType: .uint256,
+                                                     valueContent: .Number)
 ```
 
 Output in Kotlin:
@@ -292,7 +292,7 @@ Output in Kotlin:
 public val LSP3IssuedAssets = JSONSchema(name = "LSP3IssuedAssets[]",
 	key = "ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
 	keyType = KeyType("Array"),
-	valueContent = ValueContent("Number"),
-	valueType = ValueType("uint256", 32))
+  valueType = ValueType("uint256", 32),
+	valueContent = ValueContent("Number"))
 ```
 
