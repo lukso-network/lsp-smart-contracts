@@ -18,10 +18,13 @@ import {
 
 // constants
 import {
+  ALL_PERMISSIONS_SET,
+  PERMISSIONS,
+  OPERATIONS,
   INTERFACE_IDS,
   BasicUPSetup_Schema,
   ERC725YKeys,
-} from "../utils/constants";
+} from "../../constants";
 
 // helpers
 import {
@@ -35,12 +38,6 @@ import {
   getRandomAddresses,
   generateKeysAndValues,
 } from "../utils/helpers";
-
-import {
-  ALL_PERMISSIONS_SET,
-  PERMISSIONS,
-  OPERATIONS,
-} from "../utils/constants";
 
 describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   let abiCoder;
@@ -73,7 +70,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             owner.address.substr(2),
         ],
         [ALL_PERMISSIONS_SET]
@@ -83,7 +80,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
     await universalProfile.setData(
       [
-        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
           owner.address.substr(2),
       ],
       [abiCoder.encode(["address[]"], [allowedAddresses])]
@@ -91,7 +88,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
     await universalProfile.setData(
       [
-        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
           owner.address.substr(2),
       ],
       [abiCoder.encode(["bytes4[]"], [allowedFunctions])]
@@ -106,7 +103,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             app.address.substr(2),
         ],
         [appPermissions]
@@ -139,7 +136,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
       expect([bytesResult]).toEqual(["0x"]);
 
       let resultFromAccount = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
           app.address.substr(2),
       ]);
       expect(resultFromAccount).toEqual(["0x"]);
@@ -154,7 +151,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
       expect(allowedOwnerFunctions).toEqual([allowedFunctions]);
 
       let resultFromAccount = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
           owner.address.substr(2),
       ]);
       let decodedResultFromAccount = abiCoder.decode(
@@ -173,7 +170,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
       expect([bytesResult]).toEqual(["0x"]);
 
       let resultFromAccount = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
           app.address.substr(2),
       ]);
       expect(resultFromAccount).toEqual(["0x"]);
@@ -300,15 +297,15 @@ describe("KeyManager", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             owner.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             user.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             externalApp.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             newUser.address.substr(2),
         ],
         [
@@ -324,9 +321,9 @@ describe("KeyManager", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
             app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
             externalApp.address.substr(2),
         ],
         [
@@ -346,9 +343,9 @@ describe("KeyManager", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
             app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
             externalApp.address.substr(2),
         ],
         [
@@ -424,7 +421,7 @@ describe("KeyManager", () => {
   describe("> Verifying permissions", () => {
     it("ensures owner is still universalProfile's admin (=all permissions)", async () => {
       let [permissions] = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           owner.address.substr(2),
       ]);
       expect(permissions).toEqual(ALL_PERMISSIONS_SET);
@@ -432,7 +429,7 @@ describe("KeyManager", () => {
 
     it("App permission should be SETDATA + CALL ('0x...0c')", async () => {
       let [permissions] = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           app.address.substr(2),
       ]);
       expect(permissions).toEqual(
@@ -909,9 +906,7 @@ describe("KeyManager", () => {
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(
         keyManager.execute("0xbad000000000000000000000000bad")
-      ).toBeRevertedWith(
-        "_verifyPermissions: unknown ERC725 selector"
-      );
+      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
 
     it("Should revert with a revert reason string from TargetContract", async () => {
@@ -1665,11 +1660,11 @@ describe("SETDATA", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             owner.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             canSetData.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             cannotSetData.address.substr(2),
         ],
         [
@@ -2058,15 +2053,15 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
     await universalProfile.connect(owner).setData(
       [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           owner.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyAddPermissions.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangePermissions.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           zeroBytes.address.substr(2),
       ],
       [
@@ -2087,7 +2082,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         let newControllerKey = new ethers.Wallet.createRandom();
 
         let key =
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKey.address.substr(2);
 
         let payload = universalProfile.interface.encodeFunctionData("setData", [
@@ -2103,7 +2098,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
       });
       it("should be allowed to change permissions", async () => {
         let key =
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substr(2);
 
         let payload = universalProfile.interface.encodeFunctionData("setData", [
@@ -2124,7 +2119,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         let newAddress = new ethers.Wallet.createRandom();
 
         let key =
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newAddress.address.substr(2);
 
         let payload = universalProfile.interface.encodeFunctionData("setData", [
@@ -2144,7 +2139,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
           "setData",
           [
             [
-              ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
                 canOnlyAddPermissions.address.substr(2),
             ],
             [ALL_PERMISSIONS_SET],
@@ -2175,7 +2170,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
         let maliciousPayload =
           await universalProfile.interface.encodeFunctionData("setData", [
             [
-              ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
                 maliciousControllerKey.address.substr(2),
             ],
             [ALL_PERMISSIONS_SET],
@@ -2197,7 +2192,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
 
       it("should be allowed to change permissions", async () => {
         let key =
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substr(2);
         let value = ethers.utils.hexZeroPad(
           PERMISSIONS.SETDATA + PERMISSIONS.CALL,
@@ -2217,7 +2212,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
       it("should not be allowed to add permissions for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
         let payload = universalProfile.interface.encodeFunctionData("setData", [
           [
-            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
               zeroBytes.address.substr(2),
           ],
           [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)],
@@ -2272,17 +2267,17 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
 
     await universalProfile.connect(owner).setData(
       [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           owner.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           canSetDataAndAddPermissions.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           canSetDataAndChangePermissions.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           canSetDataOnly.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substr(2),
       ],
       [
@@ -2312,9 +2307,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyTwo.address.substr(2),
       ];
 
@@ -2339,9 +2334,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substr(2),
       ];
 
@@ -2374,9 +2369,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substr(2),
       ];
 
@@ -2409,9 +2404,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyTwo.address.substr(2),
       ];
 
@@ -2436,9 +2431,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substr(2),
       ];
 
@@ -2478,9 +2473,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substr(2),
       ];
 
@@ -2520,9 +2515,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyTwo.address.substr(2),
       ];
 
@@ -2554,9 +2549,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substr(2),
       ];
 
@@ -2589,9 +2584,9 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
       let keys = [
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My SecondKey Key")),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           newControllerKeyOne.address.substr(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substr(2),
       ];
 
@@ -2656,13 +2651,13 @@ describe("Testing permissions of multiple empty bytes length", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             owner.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             moreThan32EmptyBytes.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             lessThan32EmptyBytes.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             oneEmptyByte.address.substr(2),
         ],
         [

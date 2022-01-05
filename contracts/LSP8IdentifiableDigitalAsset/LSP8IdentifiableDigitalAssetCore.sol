@@ -21,7 +21,9 @@ import "../LSP1UniversalReceiver/LSP1Constants.sol";
 import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
 /**
- * @dev Implementation of a LSP8 compliant contract.
+ * @title LSP8IdentifiableDigitalAsset contract
+ * @author Matthew Stevens
+ * @dev Core Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetCore is
     Context,
@@ -47,7 +49,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     // --- Token queries
 
     /**
-     * @dev Returns the number of existing tokens.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function totalSupply() public view override returns (uint256) {
         return _existingTokens;
@@ -56,7 +58,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     // --- Token owner queries
 
     /**
-     * @dev Returns the number of tokens in ``tokenOwner``'s account.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function balanceOf(address tokenOwner)
         public
@@ -68,11 +70,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     }
 
     /**
-     * @dev Returns the `tokenOwner` of the `tokenId`.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function tokenOwnerOf(bytes32 tokenId)
         public
@@ -89,6 +87,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         return tokenOwner;
     }
 
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
     function tokenIdsOf(address tokenOwner)
         public
         view
@@ -106,17 +107,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     // --- Operator functionality
 
     /**
-     * @dev Makes `operator` address an operator of `tokenId`.
-     *
-     * See {isOperatorFor}.
-     *
-     * Emits an {AuthorizedOperator} event.
-     *
-     * Requirements
-     *
-     * - `tokenId` must exist.
-     * - caller must be current `tokenOwner` of `tokenId`.
-     * - `operator` cannot be calling address.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function authorizeOperator(address operator, bytes32 tokenId)
         public
@@ -141,17 +132,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     }
 
     /**
-     * @dev Revoke `operator` address operator status for the `tokenId`.
-     *
-     * See {isOperatorFor}.
-     *
-     * Emits a {RevokedOperator} event.
-     *
-     * Requirements
-     *
-     * - `tokenId` must exist.
-     * - caller must be current `tokenOwner` of `tokenId`.
-     * - `operator` cannot be calling address.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function revokeOperator(address operator, bytes32 tokenId)
         public
@@ -177,13 +158,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     }
 
     /**
-     * @dev Returns whether `operator` address is an operator of `tokenId`.
-     * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
-     * operator.
-     *
-     * Requirements
-     *
-     * - `tokenId` must exist.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function isOperatorFor(address operator, bytes32 tokenId)
         public
@@ -201,11 +176,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     }
 
     /**
-     * @dev Returns all `operator` addresses of `tokenId`.
-     *
-     * Requirements
-     *
-     * - `tokenId` must exist.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function getOperatorsOf(bytes32 tokenId)
         public
@@ -236,16 +207,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     // --- Transfer functionality
 
     /**
-     * @dev Transfers `tokenId` token from `from` to `to`.
-     *
-     * Requirements:
-     *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     * - `tokenId` token must be owned by `from`.
-     * - If the caller is not `from`, it must be an `operator` address for this `tokenId`.
-     *
-     * Emits a {Transfer} event.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function transfer(
         address from,
@@ -262,18 +224,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     }
 
     /**
-     * @dev Transfers many tokens based on the list `from`, `to`, `tokenId`. If any transfer fails,
-     * the call will revert.
-     *
-     * Requirements:
-     *
-     * - `from`, `to`, `tokenId` lists are the same length.
-     * - no values in `from` can be the zero address.
-     * - no values in `to` can be the zero address.
-     * - each `tokenId` token must be owned by `from`.
-     * - If the caller is not `from`, it must be an operator of `tokenId`.
-     *
-     * Emits {Transfer} event for each transfered token.
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
     function transferBatch(
         address[] memory from,

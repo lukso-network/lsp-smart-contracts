@@ -15,6 +15,10 @@ contract UniversalProfileInit is
     ERC725AccountInit,
     UniversalProfileCore
 {
+    /**
+     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
+     * @param _newOwner the owner of the contract
+     */
     function initialize(address _newOwner) public virtual override {
         ERC725AccountInit.initialize(_newOwner);
 
@@ -26,6 +30,9 @@ contract UniversalProfileInit is
         dataKeys.push(key);
     }
 
+    /**
+     * @inheritdoc UniversalProfileCore
+     */
     function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
         override(UniversalProfileCore, ERC725YCore)

@@ -9,18 +9,20 @@ import "../LSP7DigitalAssetInit.sol";
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
-abstract contract LSP7CappedSupplyInit is Initializable, LSP7DigitalAssetInit, LSP7CappedSupplyCore {
-
-    function initialize(uint256 tokenSupplyCap_)
-        public
-        virtual
-        initializer
-    {
-      require(tokenSupplyCap_ > 0, "LSP7Capped: tokenSupplyCap is zero");
-      _tokenSupplyCap = tokenSupplyCap_;
+abstract contract LSP7CappedSupplyInit is
+    Initializable,
+    LSP7DigitalAssetInit,
+    LSP7CappedSupplyCore
+{
+    /**
+     * @notice Sets the token max supply
+     * @param tokenSupplyCap_ The Token max supply
+     */
+    function initialize(uint256 tokenSupplyCap_) public virtual initializer {
+        require(tokenSupplyCap_ > 0, "LSP7Capped: tokenSupplyCap is zero");
+        _tokenSupplyCap = tokenSupplyCap_;
     }
 
-    
     // --- Overrides
 
     /**
@@ -38,11 +40,7 @@ abstract contract LSP7CappedSupplyInit is Initializable, LSP7DigitalAssetInit, L
         uint256 amount,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-        override(LSP7DigitalAssetCore, LSP7CappedSupplyCore)
-    {
+    ) internal virtual override(LSP7DigitalAssetCore, LSP7CappedSupplyCore) {
         super._mint(to, amount, force, data);
     }
 }

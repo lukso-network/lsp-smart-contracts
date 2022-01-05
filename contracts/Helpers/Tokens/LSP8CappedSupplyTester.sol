@@ -8,11 +8,14 @@ import "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol";
 contract LSP8CappedSupplyTester is LSP8CappedSupply {
     /* solhint-disable no-empty-blocks */
     constructor(
-      string memory name,
-      string memory symbol,
-      address newOwner,
-      uint256 tokenSupplyCap
-    ) LSP8IdentifiableDigitalAsset(name, symbol, newOwner) LSP8CappedSupply(tokenSupplyCap) {}
+        string memory name,
+        string memory symbol,
+        address newOwner,
+        uint256 tokenSupplyCap
+    )
+        LSP8IdentifiableDigitalAsset(name, symbol, newOwner)
+        LSP8CappedSupply(tokenSupplyCap)
+    {}
 
     function mint(address to, bytes32 tokenId) public {
         _mint(to, tokenId, true, "token printer go brrr");

@@ -52,7 +52,10 @@ contract ERC777UniversalReceiver is ERC777 {
     }
 
     function mint(address _address, uint256 _amount) external virtual {
-        require(_defaultOperators[_msgSender()], "Only default operators can mint");
+        require(
+            _defaultOperators[_msgSender()],
+            "Only default operators can mint"
+        );
         _mint(_address, _amount, "", "");
     }
 
@@ -97,7 +100,10 @@ contract ERC777UniversalReceiver is ERC777 {
                 userData,
                 operatorData
             );
-            ILSP1UniversalReceiver(from).universalReceiver(_TOKENS_SENDER_INTERFACE_HASH, data);
+            ILSP1UniversalReceiver(from).universalReceiver(
+                _TOKENS_SENDER_INTERFACE_HASH,
+                data
+            );
         }
 
         /* solhint-disable */
@@ -151,7 +157,10 @@ contract ERC777UniversalReceiver is ERC777 {
                 userData,
                 operatorData
             );
-            ILSP1UniversalReceiver(to).universalReceiver(_TOKENS_RECIPIENT_INTERFACE_HASH, data);
+            ILSP1UniversalReceiver(to).universalReceiver(
+                _TOKENS_RECIPIENT_INTERFACE_HASH,
+                data
+            );
         } else if (requireReceptionAck) {
             require(
                 !to.isContract(),

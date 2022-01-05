@@ -12,6 +12,9 @@ import "./ILSP7Mintable.sol";
  * @dev LSP7 extension, mintable .
  */
 abstract contract LSP7MintableCore is ILSP7Mintable, LSP7DigitalAssetCore {
+    /**
+     * @inheritdoc ILSP7Mintable
+     */
     function mint(
         address to,
         uint256 amount,

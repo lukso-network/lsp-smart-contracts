@@ -17,14 +17,14 @@ import {
   SupportedStandards,
   INTERFACE_IDS,
   ERC725YKeys,
-  OPERATIONS
-} from "../utils/constants";
+  OPERATIONS,
+} from "../../constants";
 
 import {
   RANDOM_BYTES32,
   DUMMY_PAYLOAD,
   getMapAndArrayKeyValues,
-  LSP10_ARRAY_KEY
+  LSP10_ARRAY_KEY,
 } from "../utils/helpers";
 
 describe("LSP9Vault", () => {
@@ -49,7 +49,7 @@ describe("LSP9Vault", () => {
 
   describe("ERC165", () => {
     it("Supports ERC165", async () => {
-      const interfaceID = "0x01ffc9a7";
+      const interfaceID = INTERFACE_IDS.ERC165;
       const result = await LSP9Vault.callStatic.supportsInterface(interfaceID);
 
       expect(result).toBeTruthy();
@@ -254,19 +254,18 @@ describe("LSP9Vault", () => {
       );
     });
 
-    it("Shouldnt read `LSP10ReceivedVaults` keys on the UP after transferring ownership as he didn't set the default URD", async () => {
+    it("Shouldnt read `LSP10Vaults` keys on the UP after transferring ownership as he didn't set the default URD", async () => {
       await LSP9Vault.connect(owner).transferOwnership(
         UniversalProfile.address
       );
       let vaultMapKey =
-        ERC725YKeys.LSP10["LSP10ReceivedVaultsMap"] +
-        LSP9Vault.address.substr(2);
+        ERC725YKeys.LSP10["LSP10VaultsMap"] + LSP9Vault.address.substr(2);
 
       let [vaultMapValue, arrayLength, element1Address] =
         await getMapAndArrayKeyValues(
           UniversalProfile,
           vaultMapKey,
-          ERC725YKeys.LSP10["LSP10ReceivedVaults[]"],
+          ERC725YKeys.LSP10["LSP10Vaults[]"],
           LSP10_ARRAY_KEY.ELEMENT1
         );
 

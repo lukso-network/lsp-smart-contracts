@@ -7,15 +7,11 @@ import "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol";
 
 contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInit {
     function initialize(
-      string memory name,
-      string memory symbol,
-      address newOwner,
-      uint256 tokenSupplyCap
-    )
-        public
-        virtual
-        initializer
-    {
+        string memory name,
+        string memory symbol,
+        address newOwner,
+        uint256 tokenSupplyCap
+    ) public virtual initializer {
         LSP8IdentifiableDigitalAssetInit.initialize(name, symbol, newOwner);
         LSP8CappedSupplyInit.initialize(tokenSupplyCap);
     }

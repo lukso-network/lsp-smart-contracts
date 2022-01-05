@@ -11,29 +11,23 @@ import "./ILSP7CappedSupply.sol";
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
-abstract contract LSP7CappedSupplyCore is ILSP7CappedSupply, LSP7DigitalAssetCore {
-    
+abstract contract LSP7CappedSupplyCore is
+    ILSP7CappedSupply,
+    LSP7DigitalAssetCore
+{
     // --- Storage
 
     uint256 internal _tokenSupplyCap;
 
-
     // --- Token queries
 
     /**
-     * @dev Returns the number of tokens that have been minted.
+     * @inheritdoc ILSP7CappedSupply
      */
-    function tokenSupplyCap()
-        public
-        view
-        virtual
-        override
-        returns (uint256)
-    {
+    function tokenSupplyCap() public view virtual override returns (uint256) {
         return _tokenSupplyCap;
     }
 
-    
     // --- Transfer functionality
 
     /**
@@ -51,12 +45,11 @@ abstract contract LSP7CappedSupplyCore is ILSP7CappedSupply, LSP7DigitalAssetCor
         uint256 amount,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-        override
-    {
-        require(totalSupply() + amount <= tokenSupplyCap(), "LSP7CappedSupply: tokenSupplyCap reached");
+    ) internal virtual override {
+        require(
+            totalSupply() + amount <= tokenSupplyCap(),
+            "LSP7CappedSupply: tokenSupplyCap reached"
+        );
         super._mint(to, amount, force, data);
     }
 }

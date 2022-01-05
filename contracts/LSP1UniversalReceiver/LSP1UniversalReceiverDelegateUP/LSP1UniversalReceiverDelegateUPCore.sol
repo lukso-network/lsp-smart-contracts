@@ -13,6 +13,9 @@ import "../ILSP1UniversalReceiverDelegate.sol";
  *
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Delegate contract of the initial universal receiver
+ *
+ * Owner of the UniversalProfile MUST be a KeyManager that allows (this) address to setData on the UniversalProfile
+ *
  */
 abstract contract LSP1UniversalReceiverDelegateUPCore is
     ILSP1UniversalReceiverDelegate,
@@ -20,10 +23,8 @@ abstract contract LSP1UniversalReceiverDelegateUPCore is
     TokenAndVaultHandlingContract
 {
     /**
-     * @dev allows to register arrayKeys and Map of incoming vaults and assets and remove them on balance = 0
-     * @param sender token/vault address
-     * @param typeId token/vault hooks
-     * @param data concatenated data about token/vault transfer
+     * @inheritdoc ILSP1UniversalReceiverDelegate
+     * @dev Allows to register arrayKeys and Map of incoming vaults and assets and removing them after being sent
      * @return result the return value of keyManager's execute function
      */
     function universalReceiverDelegate(

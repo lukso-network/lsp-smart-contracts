@@ -50,8 +50,14 @@ const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultO
 
 #### in Solidity
 
-```solidity
-import UniversalProfile from "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
+```sol
+import "@lukso/universalprofile-smart-contracts/contracts/UniversalProfile.sol";
+
+contract MyUP is UniversalProfile {
+  constructor(address _newOwner) UniversalProfile(_newOwner) {
+    
+  }
+}
 ```
 
 

@@ -12,14 +12,16 @@ import {
 
 // custom helpers
 import { ONE_ETH, DUMMY_RECIPIENT } from "../utils/helpers";
-import { ERC725YKeys, ALL_PERMISSIONS_SET, PERMISSIONS } from "../utils/constants";
+import { ERC725YKeys, ALL_PERMISSIONS_SET, PERMISSIONS } from "../../constants";
 
 describe("Executor interacting with KeyManager", () => {
   let accounts: SignerWithAddress[] = [];
 
   let owner: SignerWithAddress;
 
-  let universalProfile: UniversalProfile, keyManager: LSP6KeyManager, executor: Executor;
+  let universalProfile: UniversalProfile,
+    keyManager: LSP6KeyManager,
+    executor: Executor;
 
   /**
    * @dev this is necessary when the function being called in the contract
@@ -34,8 +36,12 @@ describe("Executor interacting with KeyManager", () => {
   });
 
   beforeEach(async () => {
-    universalProfile = await new UniversalProfile__factory(owner).deploy(owner.address);
-    keyManager = await new LSP6KeyManager__factory(owner).deploy(universalProfile.address);
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(
+      universalProfile.address
+    );
     executor = await new Executor__factory(owner).deploy(
       universalProfile.address,
       keyManager.address
@@ -46,7 +52,10 @@ describe("Executor interacting with KeyManager", () => {
     await universalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + owner.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            owner.address.substr(2),
+        ],
         [ownerPermissions]
       );
 
@@ -58,7 +67,10 @@ describe("Executor interacting with KeyManager", () => {
     await universalProfile
       .connect(owner)
       .setData(
-        [ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + executor.address.substr(2)],
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            executor.address.substr(2),
+        ],
         [executorPermissions]
       );
 
@@ -69,7 +81,8 @@ describe("Executor interacting with KeyManager", () => {
   describe("Setup", () => {
     it("Executor should have permission SETDATA + CALL + TRANSFERVALUE", async () => {
       let [permissions] = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] + executor.address.substr(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          executor.address.substr(2),
       ]);
       expect(permissions).toEqual(
         "0x0000000000000000000000000000000000000000000000000000000000000118"
@@ -79,12 +92,16 @@ describe("Executor interacting with KeyManager", () => {
 
   describe("Interaction = `setData`", () => {
     // keccak256('MyFirstKey')
-    const key = "0x00b76b597620a89621ab37aedc4220d553ad6145a885461350e5990372b906f5";
+    const key =
+      "0x00b76b597620a89621ab37aedc4220d553ad6145a885461350e5990372b906f5";
     const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Hello Lukso"));
 
     // always reset storage before each tests
     beforeEach(async () => {
-      let resetPayload = universalProfile.interface.encodeFunctionData("setData", [[key], ["0x"]]);
+      let resetPayload = universalProfile.interface.encodeFunctionData(
+        "setData",
+        [[key], ["0x"]]
+      );
       await keyManager.connect(owner).execute(resetPayload);
     });
 
@@ -121,7 +138,9 @@ describe("Executor interacting with KeyManager", () => {
         expect(initialStorage).toEqual("0x");
 
         // make the executor call
-        await executor.setComputedKeyFromParams(key, value, { gasLimit: GAS_PROVIDED });
+        await executor.setComputedKeyFromParams(key, value, {
+          gasLimit: GAS_PROVIDED,
+        });
 
         // check that store[key] is now set to value
         let [newStorage] = await universalProfile.callStatic.getData([key]);
@@ -193,8 +212,12 @@ describe("Executor interacting with KeyManager", () => {
 
     describe("> Contract calls", () => {
       it("Should send 1 LYX to an address hardcoded in Executor (`sendOneLyxHardcoded`)", async () => {
-        let initialUPBalance = await provider.getBalance(universalProfile.address);
-        let initialRecipientBalance = await provider.getBalance(DUMMY_RECIPIENT);
+        let initialUPBalance = await provider.getBalance(
+          universalProfile.address
+        );
+        let initialRecipientBalance = await provider.getBalance(
+          DUMMY_RECIPIENT
+        );
         expect(initialUPBalance).toEqBN(ONE_ETH);
 
         await executor.sendOneLyxHardcoded();
@@ -203,14 +226,20 @@ describe("Executor interacting with KeyManager", () => {
         let newRecipientBalance = await provider.getBalance(DUMMY_RECIPIENT);
 
         expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(initialRecipientBalance.add(ONE_ETH));
+        expect(newRecipientBalance).toEqBN(
+          initialRecipientBalance.add(ONE_ETH)
+        );
       });
 
       it("Should send 1 LYX to an address provided to Executor (`sendOneLyxToRecipient`)", async () => {
         let recipient = accounts[1];
 
-        let initialUPBalance = await provider.getBalance(universalProfile.address);
-        let initialRecipientBalance = await provider.getBalance(recipient.address);
+        let initialUPBalance = await provider.getBalance(
+          universalProfile.address
+        );
+        let initialRecipientBalance = await provider.getBalance(
+          recipient.address
+        );
         expect(initialUPBalance).toEqBN(ONE_ETH);
 
         await executor.sendOneLyxToRecipient(recipient.address);
@@ -219,14 +248,20 @@ describe("Executor interacting with KeyManager", () => {
         let newRecipientBalance = await provider.getBalance(recipient.address);
 
         expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(initialRecipientBalance.add(ONE_ETH));
+        expect(newRecipientBalance).toEqBN(
+          initialRecipientBalance.add(ONE_ETH)
+        );
       });
     });
 
     describe("> Low-level calls", () => {
       it("Should send 1 LYX to an address hardcoded in Executor (`sendOneLyxHardcodedRawCall`)", async () => {
-        let initialUPBalance = await provider.getBalance(universalProfile.address);
-        let initialRecipientBalance = await provider.getBalance(DUMMY_RECIPIENT);
+        let initialUPBalance = await provider.getBalance(
+          universalProfile.address
+        );
+        let initialRecipientBalance = await provider.getBalance(
+          DUMMY_RECIPIENT
+        );
         expect(initialUPBalance).toEqBN(ONE_ETH);
 
         await executor.sendOneLyxHardcodedRawCall({ gasLimit: GAS_PROVIDED });
@@ -235,23 +270,33 @@ describe("Executor interacting with KeyManager", () => {
         let newRecipientBalance = await provider.getBalance(DUMMY_RECIPIENT);
 
         expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(initialRecipientBalance.add(ONE_ETH));
+        expect(newRecipientBalance).toEqBN(
+          initialRecipientBalance.add(ONE_ETH)
+        );
       });
 
       it("Should send 1 LYX to an address provided to Executor (`sendOneLyxToRecipientRawCall`)", async () => {
         let recipient = accounts[1];
 
-        let initialUPBalance = await provider.getBalance(universalProfile.address);
-        let initialRecipientBalance = await provider.getBalance(recipient.address);
+        let initialUPBalance = await provider.getBalance(
+          universalProfile.address
+        );
+        let initialRecipientBalance = await provider.getBalance(
+          recipient.address
+        );
         expect(initialUPBalance).toEqBN(ONE_ETH);
 
-        await executor.sendOneLyxToRecipientRawCall(recipient.address, { gasLimit: GAS_PROVIDED });
+        await executor.sendOneLyxToRecipientRawCall(recipient.address, {
+          gasLimit: GAS_PROVIDED,
+        });
 
         let newUPBalance = await provider.getBalance(universalProfile.address);
         let newRecipientBalance = await provider.getBalance(recipient.address);
 
         expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(initialRecipientBalance.add(ONE_ETH));
+        expect(newRecipientBalance).toEqBN(
+          initialRecipientBalance.add(ONE_ETH)
+        );
       });
     });
   });

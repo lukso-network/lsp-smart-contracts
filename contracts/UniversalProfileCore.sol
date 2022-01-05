@@ -18,10 +18,24 @@ abstract contract UniversalProfileCore is ERC165Storage, ERC725AccountCore {
 
     /* non-standard public functions */
 
+    /**
+     * @dev Returns all the keys set on the account
+     * @return The array of keys set on the account
+     */
     function allDataKeys() public view returns (bytes32[] memory) {
         return dataKeys;
     }
 
+    /* Standard public functions */
+
+    /**
+     * @inheritdoc IERC725Y
+     * @dev Sets array of data at multiple given `key`
+     * Push all the keys to the `dataKeys` array
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * Emits a {DataChanged} event.
+     */
     function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
         virtual

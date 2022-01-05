@@ -12,6 +12,6 @@ bytes32 constant _ARRAYKEY_LSP5 = 0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e63
 
 bytes32 constant _MAPHASH_LSP5 = 0x812c4334633eb816c80deebfa5fb7d2509eb438ca1b6418106442cb5ccc62f6c; // keccak256("LSP5ReceivedAssetsMap")
 
-bytes32 constant _ARRAYKEY_LSP10 = 0xd8c6ec2b958bbebb976719e1eb233f126e0f355c63843f434220f9753b5ca9e5; // keccak256("LSP10ReceivedVaults[]")
+bytes32 constant _ARRAYKEY_LSP10 = 0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06; // keccak256("LSP10Vaults[]")
 
-bytes32 constant _MAPHASH_LSP10 = 0x5e5a4636eeb20bf1149b49749202c4dacfa540d14197de0b556a7e44c63536a1; // keccak256("LSP10ReceivedVaultsMap")
+bytes32 constant _MAPHASH_LSP10 = 0x192448c3c0f88c7f238c7f70449c270032f9752568e88cc8936ce3a2cb18e3ec; // keccak256("LSP10VaultsMap")

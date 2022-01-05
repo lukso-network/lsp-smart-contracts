@@ -9,11 +9,19 @@ pragma solidity ^0.8.0;
  */
 library LSP2Utils {
     /* solhint-disable no-inline-assembly */
-    function generateSingletonKey(string memory _keyName) internal pure returns (bytes32) {
+    function generateSingletonKey(string memory _keyName)
+        internal
+        pure
+        returns (bytes32)
+    {
         return keccak256(bytes(_keyName));
     }
 
-    function generateArrayKey(string memory _keyName) internal pure returns (bytes32) {
+    function generateArrayKey(string memory _keyName)
+        internal
+        pure
+        returns (bytes32)
+    {
         bytes memory keyName = bytes(_keyName);
 
         // prettier-ignore
@@ -26,11 +34,10 @@ library LSP2Utils {
         return keccak256(keyName);
     }
 
-    function generateMappingKey(string memory _firstWord, string memory _lastWord)
-        internal
-        pure
-        returns (bytes32 key_)
-    {
+    function generateMappingKey(
+        string memory _firstWord,
+        string memory _lastWord
+    ) internal pure returns (bytes32 key_) {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
         bytes32 lastWordHash = keccak256(bytes(_lastWord));
 
@@ -45,14 +52,17 @@ library LSP2Utils {
         }
     }
 
-    function generateBytes20MappingKey(string memory _firstWord, address _address)
-        internal
-        pure
-        returns (bytes32 key_)
-    {
+    function generateBytes20MappingKey(
+        string memory _firstWord,
+        address _address
+    ) internal pure returns (bytes32 key_) {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
 
-        bytes memory temporaryBytes = abi.encodePacked(bytes8(firstWordHash), bytes4(0), _address);
+        bytes memory temporaryBytes = abi.encodePacked(
+            bytes8(firstWordHash),
+            bytes4(0),
+            _address
+        );
 
         assembly {
             key_ := mload(add(temporaryBytes, 32))
@@ -80,11 +90,10 @@ library LSP2Utils {
         }
     }
 
-    function generateBytes20MappingWithGroupingKey(bytes12 _keyPrefix, bytes20 _bytes20)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function generateBytes20MappingWithGroupingKey(
+        bytes12 _keyPrefix,
+        bytes20 _bytes20
+    ) internal pure returns (bytes32) {
         bytes memory generatedKey = bytes.concat(_keyPrefix, _bytes20);
         bytes32 toBytes32Key;
         // solhint-disable-next-line

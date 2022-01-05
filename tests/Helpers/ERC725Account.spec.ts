@@ -1,10 +1,14 @@
-import { encodeData, flattenEncodedData, KeyValuePair } from "@erc725/erc725.js";
+import {
+  encodeData,
+  flattenEncodedData,
+  KeyValuePair,
+} from "@erc725/erc725.js";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 import { ERC725Account, ERC725Account__factory } from "../../types";
 import { getRandomAddresses, generateKeysAndValues } from "../utils/helpers";
-import { BasicUPSetup_Schema } from "../utils/constants";
+import { BasicUPSetup_Schema } from "../../constants";
 
 describe("ERC725 Account", () => {
   let accounts: SignerWithAddress[];
@@ -18,7 +22,9 @@ describe("ERC725 Account", () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
 
-    erc725Account = await new ERC725Account__factory(owner).deploy(owner.address);
+    erc725Account = await new ERC725Account__factory(owner).deploy(
+      owner.address
+    );
   });
 
   describe("Display encoded abi for `setData`", () => {
@@ -28,7 +34,10 @@ describe("ERC725 Account", () => {
 
       let [keys, values] = generateKeysAndValues(element);
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = erc725Account.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
     });
 
     it("> 5 x singleton keys(same length)", async () => {
@@ -43,7 +52,10 @@ describe("ERC725 Account", () => {
 
       let [keys, values] = generateKeysAndValues(elements);
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = erc725Account.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
     });
 
     //
@@ -63,7 +75,10 @@ describe("ERC725 Account", () => {
         values.push(data.value);
       });
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = erc725Account.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
     });
 
     it("> basic Universal Profile setup (3 keys) => set `LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`", async () => {
@@ -77,7 +92,8 @@ describe("ERC725 Account", () => {
           "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
           "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
         ],
-        LSP1UniversalReceiverDelegate: "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
+        LSP1UniversalReceiverDelegate:
+          "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
       };
 
       let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
@@ -91,7 +107,10 @@ describe("ERC725 Account", () => {
         values.push(data.value);
       });
 
-      let payload = erc725Account.interface.encodeFunctionData("setData", [keys, values]);
+      let payload = erc725Account.interface.encodeFunctionData("setData", [
+        keys,
+        values,
+      ]);
     });
   });
 
@@ -114,7 +133,9 @@ describe("ERC725 Account", () => {
 
       await erc725Account.setData(keys, values);
 
-      const [length] = await erc725Account.getData([BasicUPSetup_Schema[2].key]);
+      const [length] = await erc725Account.getData([
+        BasicUPSetup_Schema[2].key,
+      ]);
       expect(parseInt(length)).toEqual(50);
     });
 
@@ -139,7 +160,9 @@ describe("ERC725 Account", () => {
 
       await erc725Account.setData(keys, values);
 
-      const [length] = await erc725Account.getData([BasicUPSetup_Schema[2].key]);
+      const [length] = await erc725Account.getData([
+        BasicUPSetup_Schema[2].key,
+      ]);
       expect(parseInt(length)).toEqual(51);
     });
   });

@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 // modules
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // interfaces
 import "../../../LSP6KeyManager/ILSP6KeyManager.sol";
@@ -13,6 +14,7 @@ import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 
 // constants
 import "../../LSP1Constants.sol";
+import "../../../LSP6KeyManager/LSP6Constants.sol";
 import "../../../LSP7DigitalAsset/LSP7Constants.sol";
 import "../../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import "../../../LSP9Vault/LSP9Constants.sol";
@@ -28,52 +30,36 @@ abstract contract TokenAndVaultHandlingContract {
         bytes32 typeId,
         bytes memory data
     ) internal returns (bytes memory result) {
-        (
-            bytes32 arrayKey,
-            bytes32 mapHash,
-            bytes4 interfaceID
-        ) = _getTransferData(typeId);
         address keyManagerAddress = ERC725Y(msg.sender).owner();
-        bytes32 mapKey = ERC725Utils.generateMapKey(
-            mapHash,
-            abi.encodePacked(sender)
-        );
-        bytes memory mapValue = IERC725Y(msg.sender).getDataSingle(mapKey);
-
         if (
-            typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
-            typeId == _TYPEID_LSP8_TOKENSRECIPIENT ||
-            typeId == _TYPEID_LSP9_VAULTRECIPIENT
+            ERC165Checker.supportsInterface(
+                keyManagerAddress,
+                _INTERFACEID_LSP6
+            )
         ) {
-            if (bytes12(mapValue) == bytes12(0)) {
-                (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
-                    .addMapAndArrayKey(
-                        IERC725Y(msg.sender),
-                        arrayKey,
-                        mapKey,
-                        sender,
-                        interfaceID
-                    );
+            (
+                bytes32 arrayKey,
+                bytes32 mapHash,
+                bytes4 interfaceID
+            ) = _getTransferData(typeId);
+            bytes32 mapKey = ERC725Utils.generateMapKey(
+                mapHash,
+                abi.encodePacked(sender)
+            );
+            bytes memory mapValue = IERC725Y(msg.sender).getDataSingle(mapKey);
 
-                result = _executeViaKeyManager(
-                    ILSP6KeyManager(keyManagerAddress),
-                    keys,
-                    values
-                );
-            }
-        } else if (
-            typeId == _TYPEID_LSP7_TOKENSSENDER ||
-            typeId == _TYPEID_LSP8_TOKENSSENDER ||
-            typeId == _TYPEID_LSP9_VAULTSENDER
-        ) {
-            if (bytes12(mapValue) != bytes12(0)) {
-                if (typeId == _TYPEID_LSP9_VAULTSENDER) {
+            if (
+                typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
+                typeId == _TYPEID_LSP8_TOKENSRECIPIENT ||
+                typeId == _TYPEID_LSP9_VAULTRECIPIENT
+            ) {
+                if (bytes12(mapValue) == bytes12(0)) {
                     (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
-                        .removeMapAndArrayKey(
+                        .addMapAndArrayKey(
                             IERC725Y(msg.sender),
                             arrayKey,
-                            mapHash,
                             mapKey,
+                            sender,
                             interfaceID
                         );
 
@@ -82,14 +68,14 @@ abstract contract TokenAndVaultHandlingContract {
                         keys,
                         values
                     );
-                } else if (
-                    typeId == _TYPEID_LSP7_TOKENSSENDER ||
-                    typeId == _TYPEID_LSP8_TOKENSSENDER
-                ) {
-                    uint256 balance = ILSP7DigitalAsset(sender).balanceOf(
-                        msg.sender
-                    );
-                    if ((balance - _tokenAmount(typeId, data)) == 0) {
+                }
+            } else if (
+                typeId == _TYPEID_LSP7_TOKENSSENDER ||
+                typeId == _TYPEID_LSP8_TOKENSSENDER ||
+                typeId == _TYPEID_LSP9_VAULTSENDER
+            ) {
+                if (bytes12(mapValue) != bytes12(0)) {
+                    if (typeId == _TYPEID_LSP9_VAULTSENDER) {
                         (
                             bytes32[] memory keys,
                             bytes[] memory values
@@ -106,6 +92,31 @@ abstract contract TokenAndVaultHandlingContract {
                             keys,
                             values
                         );
+                    } else if (
+                        typeId == _TYPEID_LSP7_TOKENSSENDER ||
+                        typeId == _TYPEID_LSP8_TOKENSSENDER
+                    ) {
+                        uint256 balance = ILSP7DigitalAsset(sender).balanceOf(
+                            msg.sender
+                        );
+                        if ((balance - _tokenAmount(typeId, data)) == 0) {
+                            (
+                                bytes32[] memory keys,
+                                bytes[] memory values
+                            ) = ERC725Utils.removeMapAndArrayKey(
+                                    IERC725Y(msg.sender),
+                                    arrayKey,
+                                    mapHash,
+                                    mapKey,
+                                    interfaceID
+                                );
+
+                            result = _executeViaKeyManager(
+                                ILSP6KeyManager(keyManagerAddress),
+                                keys,
+                                values
+                            );
+                        }
                     }
                 }
             }
