@@ -254,11 +254,7 @@ A specific type that is expected as a separately declared class or struct in lan
 - `keyType` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
 - `valueContent` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
 - `valueType` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
-    
-Optional attributes:
-- `elementValueContent` - ? (TBD) 
-- `elementValueType` - ? (TBD)
-    
+ 
 Example:
 ```json
 {
@@ -267,9 +263,7 @@ Example:
    "key":"ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
    "keyType":"Array",
    "valueContent":"Number",
-   "valueType":"uint256",
-   "elementValueContent":"Address",
-   "elementValueType":"address"
+   "valueType":"uint256"
 }
 ```
 
@@ -280,9 +274,7 @@ LSP3IssuedAssetsArray:  {
 	key: ERC725YKeys.LSP3.LSP3IssuedAssetsArray,
 	keyType: "Array",
 	valueContent: "Number",
-	valueType: "uint256",
-	elementValueContent: "Address",
-	elementValueType: "address",
+	valueType: "uint256"
 }
 ```
 
@@ -292,9 +284,7 @@ public static let LSP3IssuedAssetsArray = JSONSchema(name: "LSP3IssuedAssets[]",
                                                      key: "ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
                                                      keyType: .Array,
                                                      valueContent: .Number,
-                                                     valueType: .uint256,
-                                                     elementValueContent: .Address,
-                                                     elementValueType: .address)
+                                                     valueType: .uint256)
 ```
 
 Output in Kotlin:
@@ -303,8 +293,6 @@ public val LSP3IssuedAssets = JSONSchema(name = "LSP3IssuedAssets[]",
 	key = "ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
 	keyType = KeyType("Array"),
 	valueContent = ValueContent("Number"),
-	valueType = ValueType("uint256", 32),
-	elementValueContent = ElementValueContent("Address"),
-	elementValueType = ElementValueType("address"))
+	valueType = ValueType("uint256", 32))
 ```
 
