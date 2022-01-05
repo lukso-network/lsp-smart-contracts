@@ -16,27 +16,8 @@ public struct JSONSchema {
     public let name: String
     public let key: String
     public let keyType: JSONSchema.KeyType
-    public let valueContent: JSONSchema.ValueContent
     public let valueType: JSONSchema.ValueType
-    public let elementValueContent: JSONSchema.ElementValueContent?
-    public let elementValueType: JSONSchema.ElementValueType?
-    
-    
-    internal init(name: String,
-                  key: String,
-                  keyType: JSONSchema.KeyType,
-                  valueContent: JSONSchema.ValueContent,
-                  valueType: JSONSchema.ValueType,
-                  elementValueContent: JSONSchema.ElementValueContent? = nil,
-                  elementValueType: JSONSchema.ElementValueType? = nil) {
-        self.name = name
-        self.key = key
-        self.keyType = keyType
-        self.valueContent = valueContent
-        self.valueType = valueType
-        self.elementValueContent = elementValueContent
-        self.elementValueType = elementValueType
-    }
+    public let valueContent: JSONSchema.ValueContent
     
     public enum KeyType: String {
         /// A simple key.
@@ -152,13 +133,5 @@ public struct JSONSchema {
                     return "Mixed"
             }
         }
-    }
-    
-    public enum ElementValueContent: String {
-        case Address
-    }
-    
-    public enum ElementValueType {
-        case address
     }
 }

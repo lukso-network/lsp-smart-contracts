@@ -4,14 +4,6 @@ from common import *
 
 def parseIntoSwift(jsonConstant, parentJsonConstant=None, indentLevel=0):
 	jsonConstantMembers = jsonConstant.get("members")
-	if jsonConstant["name"] == "SupportedStandards":
-		print("parentJsonConstant == None    {}".format(parentJsonConstant == None))
-		print("jsonConstantMembers != None    {}".format(jsonConstantMembers != None))
-		print("indentLevel == 0    {} {}".format(indentLevel, indentLevel == 0))
-		print("isLastLayerOfMembers(jsonConstantMembers)    {}".format(isLastLayerOfMembers(jsonConstantMembers)))
-	
-	
-	
 	if parentJsonConstant == None and jsonConstantMembers != None and indentLevel == 0 and isLastLayerOfMembers(jsonConstantMembers):
 		jsonConstantMembers = [{ "name": "companion object", "type": "companion_object", "members": jsonConstantMembers}]
 		jsonConstant["members"] = jsonConstantMembers
@@ -65,55 +57,49 @@ def createDeclaration(jsonConstant, parentJsonConstant, indentLevel):
 			return "public class {}".format(validName)
 	
 	if unitType == "jsonschema":
-		valueContent = jsonConstant["valueContent"].strip()
-		if valueContent.startswith("0x"):
-			valueContent = "ValueContent(\"{}\", {})".format(valueContent, int(len(valueContent.replace("0x", "")) / 2)) 
-		elif valueContent.lower().startswith("bytes") and valueContent.lower() != "bytes":
-			valueContent = "ValueContent(\"{}\", {})".format(valueContent, valueContent.lower().replace("bytes", ""))
-		else:
-			valueContent = "ValueContent(\"{}\")".format(valueContent)
-		
-		valueType = jsonConstant["valueType"]
-		_bits =  re.search("[\d]+", valueType)
-		if valueType.startswith("0x"):
-			valueType = "ValueType(\"{}\", {})".format(valueType, int(len(valueType.replace("0x", "")) / 2)) 
-		elif _bits != None and valueType.lower().startswith("bytes") and valueType.lower() != "bytes":
-			valueType = "ValueType(\"{}\", {})".format(valueType, _bits.group())
-		elif _bits != None:
-			valueType = "ValueType(\"{}\", {})".format(valueType, int(int(_bits.group()) / 8))
-		else:
-			valueType = "ValueType(\"{}\")".format(valueType)
-
-		# 	ValueType(\"{}\")
-
-		# valueType = jsonConstant["valueType"].replace("[]", "Array")
-		# if valueType.lower().startswith("bytes") and valueType.lower().endswith("array"):
-		# 	valueType = "bytesNArray({})".format(valueType.lower()
-		# 												  .replace("bytes", "")
-		# 												  .replace("array", ""))
-
-		elementValueContent = jsonConstant.get("elementValueContent")
-		elementValueType = jsonConstant.get("elementValueType")
-		hasElementValueMetaData = elementValueContent != None and elementValueType != None
-
 		declarationLine = "public val {} = JSONSchema(".format(validName)
 		declarationLine = declarationLine + "name = \"{}\",\n".format(jsonConstant["name"])
 
-		# jsonConstant["valueType"]
-		# jsonConstant["valueContent"]
-		# keyTypeBytes = re.sub("[a-zA-Z]", "", jsonConstant["keyType"]) 
-
 		jsonSchemaAttrs = ["key = \"{}\",".format(jsonConstant["key"]),
 						   "keyType = KeyType(\"{}\"),".format(jsonConstant["keyType"]),
-						   "valueContent = {},".format(valueContent),
-						   "valueType = {}{}".format(valueType, ")\n" if not hasElementValueMetaData else ","),
-						   "elementValueContent = ElementValueContent(\"{}\"),".format(elementValueContent) if hasElementValueMetaData else None,
-						   "elementValueType = ElementValueType(\"{}\"))\n".format(elementValueType) if hasElementValueMetaData else None]
+						   "valueType = {},".format(getJsonSchemaValueType(jsonConstant)),
+						   "valueContent = {})\n".format(getJsonSchemaValueContent(jsonConstant))]
 
 		jsonSchemaAttrs = filter(lambda x: x != None, jsonSchemaAttrs)
 		return declarationLine + "\n".join(map(lambda attr: "\t" + attr, jsonSchemaAttrs))
 	
 	raise Exception("Unknown type '{}' in {}".format(unitType, jsonConstant))
+
+def getJsonSchemaValueType(jsonConstant):
+	""" 
+	Expects jsonConstant to be a JSONSchema object with "valueType" attribute
+	that is parsed into a valid `ValueType` Kotlin instance that is returned.
+	"""
+	valueType = jsonConstant["valueType"]
+	_bits =  re.search("[\d]+", valueType)
+	if valueType.startswith("0x"):
+		valueType = "ValueType(\"{}\", {})".format(valueType, int(len(valueType.replace("0x", "")) / 2)) 
+	elif _bits != None and valueType.lower().startswith("bytes") and valueType.lower() != "bytes":
+		valueType = "ValueType(\"{}\", {})".format(valueType, _bits.group())
+	elif _bits != None:
+		valueType = "ValueType(\"{}\", {})".format(valueType, int(int(_bits.group()) / 8))
+	else:
+		valueType = "ValueType(\"{}\")".format(valueType)
+	return valueType
+
+def getJsonSchemaValueContent(jsonConstant):
+	""" 
+	Expects jsonConstant to be a JSONSchema object with "valueContent" attribute
+	that is parsed into a valid `ValueContent` Kotlin instance that is returned.
+	"""
+	valueContent = jsonConstant["valueContent"].strip()
+	if valueContent.startswith("0x"):
+		valueContent = "ValueContent(\"{}\", {})".format(valueContent, int(len(valueContent.replace("0x", "")) / 2)) 
+	elif valueContent.lower().startswith("bytes") and valueContent.lower() != "bytes":
+		valueContent = "ValueContent(\"{}\", {})".format(valueContent, valueContent.lower().replace("bytes", ""))
+	else:
+		valueContent = "ValueContent(\"{}\")".format(valueContent)
+	return valueContent
 
 def getValidEnumType(rawValueType):
 	"""Returns Swift type that is extended by enum."""

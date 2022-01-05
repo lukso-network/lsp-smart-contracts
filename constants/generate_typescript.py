@@ -78,10 +78,8 @@ def createBody(jsonConstant, indentLevel=0):
 			    "\tname: \"{}\",".format(jsonConstant["name"]),
 				("\tkey: \"{}\"," if jsonConstant["key"].startswith("0x") else "\tkey: {},").format(jsonConstant["key"]),
 				"\tkeyType: \"{}\",".format(jsonConstant["keyType"]),
-				"\tvalueContent: \"{}\",".format(jsonConstant["valueContent"]),
 				"\tvalueType: \"{}\",".format(jsonConstant["valueType"]),
-				"\telementValueContent: \"{}\",".format(jsonConstant.get("elementValueContent")) if jsonConstant.get("elementValueContent") != None else None,
-				"\telementValueType: \"{}\",".format(jsonConstant.get("elementValueType")) if jsonConstant.get("elementValueType") != None else None
+				"\tvalueContent: \"{}\",".format(jsonConstant["valueContent"])
 				]
 
 		return filter(lambda x: x != None, jsonSchemaAttrs)

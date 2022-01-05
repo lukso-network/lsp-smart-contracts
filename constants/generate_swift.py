@@ -59,31 +59,13 @@ def createDeclaration(jsonConstant, parentJsonConstant, indentLevel):
 			# Inner class level variable
 			insert = " static "
 
-		valueContent = jsonConstant["valueContent"].strip()
-		if valueContent.startswith("0x"):
-			valueContent = "SpecificBytes(\"{}\")".format(valueContent) 
-		elif valueContent.lower().startswith("bytes") and valueContent.lower() != "bytes":
-			valueContent = "BytesN({})".format(valueContent.lower().replace("bytes", ""))
-
-		valueType = jsonConstant["valueType"].replace("[]", "Array")
-		if valueType.lower().startswith("bytes") and valueType.lower().endswith("array"):
-			valueType = "bytesNArray({})".format(valueType.lower()
-														  .replace("bytes", "")
-														  .replace("array", ""))
-
-		elementValueContent = jsonConstant.get("elementValueContent")
-		elementValueType = jsonConstant.get("elementValueType")
-		hasElementValueMetaData = elementValueContent != None and elementValueType != None
-
 		declarationLine = "public{}let {} = JSONSchema(".format(insert, validName)
 		indent = " " * len(declarationLine)
 		declarationLine = declarationLine + "name: \"{}\",\n".format(jsonConstant["name"])
 		jsonSchemaAttrs = ["key: \"{}\",".format(jsonConstant["key"]),
 						   "keyType: .{},".format(jsonConstant["keyType"]),
-						   "valueContent: .{},".format(valueContent),
-						   "valueType: .{}{}".format(valueType, ")\n" if not hasElementValueMetaData else ","),
-						   "elementValueContent: .{},".format(elementValueContent) if hasElementValueMetaData else None,
-						   "elementValueType: .{})\n".format(elementValueType) if hasElementValueMetaData else None]
+						   "valueType: .{},".format(getJsonSchemaValueType(jsonConstant)),
+						   "valueContent: .{})\n".format(getJsonSchemaValueContent(jsonConstant))]
 
 		jsonSchemaAttrs = filter(lambda x: x != None, jsonSchemaAttrs)
 		
@@ -91,6 +73,30 @@ def createDeclaration(jsonConstant, parentJsonConstant, indentLevel):
 		return declarationLine + "\n".join(map(lambda attr: indent + attr, jsonSchemaAttrs))
 	else:
 		raise Exception("Unknown type in {}".format(jsonConstant))
+
+def getJsonSchemaValueType(jsonConstant):
+	""" 
+	Expects jsonConstant to be a JSONSchema object with "valueType" attribute
+	that is parsed into a valid `ValueType` Swift enum instance that is returned.
+	"""
+	valueType = jsonConstant["valueType"].replace("[]", "Array")
+	if valueType.lower().startswith("bytes") and valueType.lower().endswith("array"):
+		valueType = "bytesNArray({})".format(valueType.lower()
+													  .replace("bytes", "")
+													  .replace("array", ""))
+	return valueType
+
+def getJsonSchemaValueContent(jsonConstant):
+	""" 
+	Expects jsonConstant to be a JSONSchema object with "valueContent" attribute
+	that is parsed into a valid `ValueContent` Swift enum instance that is returned.
+	"""
+	valueContent = jsonConstant["valueContent"].strip()
+	if valueContent.startswith("0x"):
+		valueContent = "SpecificBytes(\"{}\")".format(valueContent) 
+	elif valueContent.lower().startswith("bytes") and valueContent.lower() != "bytes":
+		valueContent = "BytesN({})".format(valueContent.lower().replace("bytes", ""))
+	return valueContent
 
 def getValidEnumType(rawValueType):
 	"""Returns Swift type that is extended by enum."""
