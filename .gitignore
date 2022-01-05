@@ -135,3 +135,6 @@ flat_contracts/
 
 # Mac
 .DS_Store
+
+# Other
+constants/__pycache__
