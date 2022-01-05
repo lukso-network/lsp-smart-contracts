@@ -358,9 +358,7 @@
                "key":"ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
                "keyType":"Array",
                "valueContent":"Number",
-               "valueType":"uint256",
-               "elementValueContent":"Address",
-               "elementValueType":"address"
+               "valueType":"uint256"
             }
          ]
       },
