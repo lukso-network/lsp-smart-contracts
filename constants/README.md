@@ -2,7 +2,7 @@
 
 ## What is here? 
 
-This directory contain JSON file that declares constants (`constants_defined.json`) and python scripts that generate source code files containing declared constants in different programming languages (like TypeScript, Swift and Kotlin).
+This directory contains a JSON file (`constants_defined.json`) that declares constants variables, and some python scripts that can generate source code files containing declared constants in different programming languages (like TypeScript, Swift and Kotlin).
 
 ## Purpose
 
