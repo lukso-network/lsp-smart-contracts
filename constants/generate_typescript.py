@@ -59,7 +59,7 @@ def createDeclaration(jsonConstant, parentJsonConstant, indentLevel):
 			raise Exception("Not supported: enum can only be on the top level of file structure. Nested enums are not supported.")
 
 		return "export const enum {}".format(validName)
-	if  unitType == "json" or unitType == "jsonschema":
+	if  unitType == "json" or unitType == "erc725y_jsonschema":
 		if parentJsonConstant == None:
 			return "export const {} = ".format(validName)
 		else:
@@ -73,22 +73,30 @@ def createBody(jsonConstant, indentLevel=0):
 	if unitType == "enum":
 		rawValueType = jsonConstant["rawValueType"].lower()
 		return ",\n".join(map(lambda x: createEnumCase(x, rawValueType), jsonConstant["cases"])).split("\n")
-	elif unitType == "jsonschema":
-		jsonSchemaAttrs = [
-			    "\tname: \"{}\",".format(jsonConstant["name"]),
-				("\tkey: \"{}\"," if jsonConstant["key"].startswith("0x") else "\tkey: {},").format(jsonConstant["key"]),
-				"\tkeyType: \"{}\",".format(jsonConstant["keyType"]),
-				"\tvalueType: \"{}\",".format(jsonConstant["valueType"]),
-				"\tvalueContent: \"{}\",".format(jsonConstant["valueContent"])
-				]
-
-		return filter(lambda x: x != None, jsonSchemaAttrs)
+	elif unitType == "erc725y_jsonschema":
+		return createJsonSchemaBody(jsonConstant)
 	else:
 		members = jsonConstant.get("members")
 		if members == None or len(members) == 0:
 			return [""]
 		else:
 			return map(lambda x: parseIntoTypeScript(x, jsonConstant, indentLevel+1), members)
+
+def createJsonSchemaBody(jsonConstant):
+	key = jsonConstant["key"]
+	
+	if re.search(hexStringRegEx, key).group() != key:
+		raise Exception("ERC725Y_JSONSchema \"key\" must be a hex string without white space characters.\n{}".format(jsonConstant))
+	
+	jsonSchemaAttrs = [
+		    "\tname: \"{}\",".format(jsonConstant["name"]),
+			("\tkey: \"{}\"," if jsonConstant["key"].startswith("0x") else "\tkey: {},").format(jsonConstant["key"]),
+			"\tkeyType: \"{}\",".format(jsonConstant["keyType"]),
+			"\tvalueType: \"{}\",".format(jsonConstant["valueType"]),
+			"\tvalueContent: \"{}\",".format(jsonConstant["valueContent"])
+			]
+
+	return filter(lambda x: x != None, jsonSchemaAttrs)
 			
 
 def createEnumCase(entry, rawValueType):
@@ -111,15 +119,14 @@ def generateTypeScriptFile():
 		for entry in content:
 			output.append(parseIntoTypeScript(entry))
 
-		constantsTypeScriptFile = "UpConstants.ts"
+		outputFile = "UpConstants.ts"
+		if os.path.exists(outputFile):
+	  		os.remove(outputFile)
 		
-		if os.path.exists(constantsTypeScriptFile):
-	  		os.remove(constantsTypeScriptFile)
-		
-		with open(constantsTypeScriptFile, "w") as fileToWriteTo:
+		with open(outputFile, "w") as fileToWriteTo:
 			fileToWriteTo.write("\n".join(output))
 
-		os.system("code UpConstants.ts")
+		os.system("code {}".format(outputFile))
 
 if __name__ == "__main__":
 	print("JSON to TypeScript generation started")

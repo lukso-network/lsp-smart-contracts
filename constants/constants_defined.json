@@ -106,7 +106,7 @@
          "documentation":"ERC725Y\n----------",
          "members":[
             {
-               "type":"JSONSchema",
+               "type":"ERC725Y_JSONSchema",
                "name":"LSP3UniversalProfile",
                "documentation":"valueContent is first 4 bytes of web3.utils.sha3(\"LSP3UniversalProfile\")",
                "key":"0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6",
@@ -115,7 +115,7 @@
                "valueContent":"0xabe425d6"
             },
             {
-               "type":"JSONSchema",
+               "type":"ERC725Y_JSONSchema",
                "documentation":"valueContent is first 4 bytes of web3.utils.sha3(\"LSP4DigitalAsset\")",
                "name":"LSP4DigitalAsset",
                "key":"0xeafec4d89fa9619884b6b89135626455000000000000000000000000a4d96624",
@@ -126,7 +126,7 @@
             {
                "name":"LSP9Vault",
                "documentation":"THIS SCHEMA IS DEFINED INCORRECTLY!!\nNEED MORE DETAILS ABOUT LSP9Vault.\n\nLSP9Vault: {\n\tkey: \"0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1\",\n\tvalue: \"0x7c0334a1\"\n}",
-               "type":"JSONSchema",
+               "type":"ERC725Y_JSONSchema",
                "key":"0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1",
                "keyType":"Mapping",
                "valueType":"bytes",
@@ -150,7 +150,7 @@
                   {
                      "name":"LSP1UniversalReceiverDelegate",
                      "documentation":"keccak256('LSP1UniversalReceiverDelegate')",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47",
                      "keyType":"Singleton",
                      "valueType":"address",
@@ -166,7 +166,7 @@
                   {
                      "name":"LSP3Profile",
                      "documentation":"keccak256('LSP3Profile')",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
                      "keyType":"Singleton",
                      "valueType":"bytes",
@@ -175,7 +175,7 @@
                   {
                      "name":"LSP3IssuedAssetsMap",
                      "documentation":"LSP3IssuedAssetsMap:<address>",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x83f5e77bfb14241600000000",
                      "keyType":"Mapping",
                      "valueType":"bytes",
@@ -184,7 +184,7 @@
                   {
                      "name":"LSP3IssuedAssets[]",
                      "documentation":"keccak256('LSP3IssuedAssets[]')",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0",
                      "keyType":"Array",
                      "valueType":"address",
@@ -200,7 +200,7 @@
                   {
                      "name":"LSP4TokenName",
                      "documentation":"keccak256('LSP4TokenName')",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1",
                      "keyType":"Singleton",
                      "valueType":"string",
@@ -209,7 +209,7 @@
                   {
                      "name":"LSP4TokenSymbol",
                      "documentation":"keccak256('LSP4TokenSymbol')",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756",
                      "keyType":"Singleton",
                      "valueType":"string",
@@ -219,7 +219,7 @@
                      "name":"LSP4Creators[]",
                      "documentation":"keccak256('LSP4Creators[]')",
                      "key":"0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "keyType":"Array",
                      "valueType":"uint256",
                      "valueContent":"Number"
@@ -234,7 +234,7 @@
                   {
                      "name":"LSP5ReceivedAssetsMap",
                      "documentation":"LSP5ReceivedAssetsMap:<address>",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x812c4334633eb81600000000",
                      "keyType":"Mapping",
                      "valueType":"bytes",
@@ -243,7 +243,7 @@
                   {
                      "name":"LSP5ReceivedAssets[]",
                      "documentation":"keccak256('LSP5ReceivedAssets[]')",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
                      "keyType":"Array",
                      "valueType":"address",
@@ -259,7 +259,7 @@
                   {
                      "name":"AddressPermissions[]",
                      "documentation":"keccak256('AddressPermissions[]')",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
                      "keyType":"Array",
                      "valueType":"address",
@@ -268,7 +268,7 @@
                   {
                      "name":"AddressPermissions:Permissions",
                      "documentation":"AddressPermissions:Permissions:<address>",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x4b80742d0000000082ac0000",
                      "keyType":"Array",
                      "valueType":"address",
@@ -277,7 +277,7 @@
                   {
                      "name":"AddressPermissions:AllowedAddresses",
                      "documentation":"AddressPermissions:AllowedAddresses:<address>",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x4b80742d00000000c6dd0000",
                      "keyType":"Bytes20MappingWithGrouping",
                      "valueType":"address[]",
@@ -286,7 +286,7 @@
                   {
                      "name":"AddressPermissions:AllowedFunctions",
                      "documentation":"AddressPermissions:AllowedFunctions:<address>",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x4b80742d000000008efe0000",
                      "keyType":"Bytes20MappingWithGrouping",
                      "valueContent":"Bytes4",
@@ -295,7 +295,7 @@
                   {
                      "name":"AddressPermissions:AllowedStandards",
                      "documentation":"AddressPermissions:AllowedStandards:<address>",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x4b80742d000000003efa0000",
                      "keyType":"Bytes20MappingWithGrouping",
                      "valueType":"bytes4[]",
@@ -311,7 +311,7 @@
                   {
                      "name":"LSP10VaultsMap",
                      "documentation":"LSP10VaultsMap:<address>",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x192448c3c0f88c7f00000000",
                      "keyType":"Mapping",
                      "valueType":"bytes",
@@ -320,7 +320,7 @@
                   {
                      "name":"LSP10Vaults[]",
                      "documentation":"keccak256('LSP10Vaults[]]')",
-                     "type":"JSONSchema",
+                     "type":"ERC725Y_JSONSchema",
                      "key":"0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
                      "keyType":"Array",
                      "valueType":"address",
@@ -336,24 +336,24 @@
          "members":[
             {
                "name":"LSP3Profile",
-               "type":"JSONSchema",
-               "key":"ERC725YKeys.LSP3.LSP3Profile",
+               "type":"ERC725Y_JSONSchema",
+               "key":"0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
                "keyType":"Singleton",
                "valueType":"bytes",
                "valueContent":"JSONURL"
             },
             {
                "name":"LSP1UniversalReceiverDelegate",
-               "type":"JSONSchema",
-               "key":"ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate",
+               "type":"ERC725Y_JSONSchema",
+               "key":"0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47",
                "keyType":"Singleton",
                "valueType":"address",
                "valueContent":"Address"
             },
             {
                "name":"LSP3IssuedAssets[]",
-               "type":"JSONSchema",
-               "key":"ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
+               "type":"ERC725Y_JSONSchema",
+               "key":"0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0",
                "keyType":"Array",
                "valueType":"uint256",
                "valueContent":"Number"

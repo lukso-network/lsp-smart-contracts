@@ -2,7 +2,7 @@ import json
 import os
 from common import *
 
-def parseIntoSwift(jsonConstant, parentJsonConstant=None, indentLevel=0):
+def parseIntoKotlin(jsonConstant, parentJsonConstant=None, indentLevel=0):
 	jsonConstantMembers = jsonConstant.get("members")
 	if parentJsonConstant == None and jsonConstantMembers != None and indentLevel == 0 and isLastLayerOfMembers(jsonConstantMembers):
 		jsonConstantMembers = [{ "name": "companion object", "type": "companion_object", "members": jsonConstantMembers}]
@@ -15,7 +15,7 @@ def parseIntoSwift(jsonConstant, parentJsonConstant=None, indentLevel=0):
 
 	output = ""
 
-	if entityType == "const" or entityType == "jsonschema":
+	if entityType == "const" or entityType == "erc725y_jsonschema":
 		output = declaration
 	else:	
 		declarationLine = "{} {{".format(declaration)
@@ -30,6 +30,7 @@ def createDeclaration(jsonConstant, parentJsonConstant, indentLevel):
 	"""Return declaration of an enum, class or immutable variable (val) in Kotlin."""
 	unitType = jsonConstant["type"].lower()
 	
+	# Syntactically valid name for Kotlin entity (object, enum, class, etc.)
 	validName = escapeProhibitedNameCharacters(jsonConstant["name"].replace(":", "_")) 
 
 	if parentJsonConstant == None:
@@ -56,23 +57,31 @@ def createDeclaration(jsonConstant, parentJsonConstant, indentLevel):
 		else:
 			return "public class {}".format(validName)
 	
-	if unitType == "jsonschema":
-		declarationLine = "public val {} = JSONSchema(".format(validName)
-		declarationLine = declarationLine + "name = \"{}\",\n".format(jsonConstant["name"])
-
-		jsonSchemaAttrs = ["key = \"{}\",".format(jsonConstant["key"]),
-						   "keyType = KeyType(\"{}\"),".format(jsonConstant["keyType"]),
-						   "valueType = {},".format(getJsonSchemaValueType(jsonConstant)),
-						   "valueContent = {})\n".format(getJsonSchemaValueContent(jsonConstant))]
-
-		jsonSchemaAttrs = filter(lambda x: x != None, jsonSchemaAttrs)
-		return declarationLine + "\n".join(map(lambda attr: "\t" + attr, jsonSchemaAttrs))
+	if unitType == "erc725y_jsonschema":
+		return declareJsonSchema(validName, jsonConstant)
 	
 	raise Exception("Unknown type '{}' in {}".format(unitType, jsonConstant))
 
+def declareJsonSchema(validName, jsonConstant):
+	key = jsonConstant["key"]
+	
+	if re.search(hexStringRegEx, key).group() != key:
+		raise Exception("ERC725Y_JSONSchema \"key\" must be a hex string without white space characters.\n{}".format(jsonConstant))
+
+	declarationLine = "public val {} = JSONSchema(".format(validName)
+	declarationLine = declarationLine + "name = \"{}\",\n".format(jsonConstant["name"])
+
+	jsonSchemaAttrs = ["key = \"{}\",".format(key),
+					   "keyType = KeyType(\"{}\"),".format(jsonConstant["keyType"]),
+					   "valueType = {},".format(getJsonSchemaValueType(jsonConstant)),
+					   "valueContent = {})\n".format(getJsonSchemaValueContent(jsonConstant))]
+
+	jsonSchemaAttrs = filter(lambda x: x != None, jsonSchemaAttrs)
+	return declarationLine + "\n".join(map(lambda attr: "\t" + attr, jsonSchemaAttrs))
+
 def getJsonSchemaValueType(jsonConstant):
 	""" 
-	Expects jsonConstant to be a JSONSchema object with "valueType" attribute
+	Expects jsonConstant to be a ERC725Y_JSONSchema object with "valueType" attribute
 	that is parsed into a valid `ValueType` Kotlin instance that is returned.
 	"""
 	valueType = jsonConstant["valueType"]
@@ -89,7 +98,7 @@ def getJsonSchemaValueType(jsonConstant):
 
 def getJsonSchemaValueContent(jsonConstant):
 	""" 
-	Expects jsonConstant to be a JSONSchema object with "valueContent" attribute
+	Expects jsonConstant to be a ERC725Y_JSONSchema object with "valueContent" attribute
 	that is parsed into a valid `ValueContent` Kotlin instance that is returned.
 	"""
 	valueContent = jsonConstant["valueContent"].strip()
@@ -102,7 +111,7 @@ def getJsonSchemaValueContent(jsonConstant):
 	return valueContent
 
 def getValidEnumType(rawValueType):
-	"""Returns Swift type that is extended by enum."""
+	"""Returns Kotlin type that is extended by enum."""
 	_type = rawValueType.lower()
 	if _type == "string":
 		return "String"
@@ -128,7 +137,7 @@ def createBody(jsonConstant,indentLevel=0):
 		if members == None or len(members) == 0:
 			return [""]
 		else:
-			return map(lambda x: parseIntoSwift(x, jsonConstant, indentLevel+1), members)
+			return map(lambda x: parseIntoKotlin(x, jsonConstant, indentLevel+1), members)
 			
 
 def createEnumCase(entry, rawValueType):
@@ -156,16 +165,16 @@ def generateKotlinFile():
 
 		content = data["content"]
 		for entry in content:
-			output.append(parseIntoSwift(entry))
+			output.append(parseIntoKotlin(entry))
 
-		constantsSwiftFile = "UpConstants.kt"
-		if os.path.exists(constantsSwiftFile):
-	  		os.remove(constantsSwiftFile)
+		outputFile = "UpConstants.kt"
+		if os.path.exists(outputFile):
+	  		os.remove(outputFile)
 
-		with open(constantsSwiftFile, "w") as fileToWriteTo:
+		with open(outputFile, "w") as fileToWriteTo:
 			fileToWriteTo.write("\n".join(output))
 
-		os.system("code UpConstants.kt")
+		os.system("code {}".format(outputFile))
 
 if __name__ == "__main__":
 	print("JSON to Kotlin generation started")

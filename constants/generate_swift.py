@@ -52,31 +52,38 @@ def createDeclaration(jsonConstant, parentJsonConstant, indentLevel):
 		return "public enum {}: {}".format(validName, rawValueType)
 	elif unitType == "json":
 		return "public class {}".format(validName)
-	elif unitType == "jsonschema":
-		# Top level variable
-		insert = " "
-		if parentJsonConstant != None:
-			# Inner class level variable
-			insert = " static "
-
-		declarationLine = "public{}let {} = JSONSchema(".format(insert, validName)
-		indent = " " * len(declarationLine)
-		declarationLine = declarationLine + "name: \"{}\",\n".format(jsonConstant["name"])
-		jsonSchemaAttrs = ["key: \"{}\",".format(jsonConstant["key"]),
-						   "keyType: .{},".format(jsonConstant["keyType"]),
-						   "valueType: .{},".format(getJsonSchemaValueType(jsonConstant)),
-						   "valueContent: .{})\n".format(getJsonSchemaValueContent(jsonConstant))]
-
-		jsonSchemaAttrs = filter(lambda x: x != None, jsonSchemaAttrs)
-		
-
-		return declarationLine + "\n".join(map(lambda attr: indent + attr, jsonSchemaAttrs))
+	elif unitType == "erc725y_jsonschema":
+		return declareJsonSchema(validName, jsonConstant, parentJsonConstant)
 	else:
 		raise Exception("Unknown type in {}".format(jsonConstant))
 
+def declareJsonSchema(validName, jsonConstant, parentJsonConstant):
+	key = jsonConstant["key"]
+
+	if re.search(hexStringRegEx, key).group() != key:
+		raise Exception("ERC725Y_JSONSchema \"key\" must be a hex string without white space characters.\n{}".format(jsonConstant))
+	
+	# Top level variable
+	insert = " "
+	if parentJsonConstant != None:
+		# Inner class level variable
+		insert = " static "
+
+	declarationLine = "public{}let {} = JSONSchema(".format(insert, validName)
+	indent = " " * len(declarationLine)
+	declarationLine = declarationLine + "name: \"{}\",\n".format(jsonConstant["name"])
+	jsonSchemaAttrs = ["key: \"{}\",".format(key),
+					   "keyType: .{},".format(jsonConstant["keyType"]),
+					   "valueType: .{},".format(getJsonSchemaValueType(jsonConstant)),
+					   "valueContent: .{})\n".format(getJsonSchemaValueContent(jsonConstant))]
+
+	jsonSchemaAttrs = filter(lambda x: x != None, jsonSchemaAttrs)
+
+	return declarationLine + "\n".join(map(lambda attr: indent + attr, jsonSchemaAttrs))
+
 def getJsonSchemaValueType(jsonConstant):
 	""" 
-	Expects jsonConstant to be a JSONSchema object with "valueType" attribute
+	Expects jsonConstant to be a ERC725Y_JSONSchema object with "valueType" attribute
 	that is parsed into a valid `ValueType` Swift enum instance that is returned.
 	"""
 	valueType = jsonConstant["valueType"].replace("[]", "Array")
@@ -88,7 +95,7 @@ def getJsonSchemaValueType(jsonConstant):
 
 def getJsonSchemaValueContent(jsonConstant):
 	""" 
-	Expects jsonConstant to be a JSONSchema object with "valueContent" attribute
+	Expects jsonConstant to be a ERC725Y_JSONSchema object with "valueContent" attribute
 	that is parsed into a valid `ValueContent` Swift enum instance that is returned.
 	"""
 	valueContent = jsonConstant["valueContent"].strip()
@@ -148,16 +155,16 @@ def generateSwiftFile():
 		for entry in content:
 			output.append(parseIntoSwift(entry))
 
-		constantsSwiftFile = "UpConstants.swift"
-		if os.path.exists(constantsSwiftFile):
-	  		os.remove(constantsSwiftFile)
+		outputFile = "UpConstants.swift"
+		if os.path.exists(outputFile):
+	  		os.remove(outputFile)
 
-		with open(constantsSwiftFile, "w") as fileToWriteTo:
+		with open(outputFile, "w") as fileToWriteTo:
 			fileToWriteTo.write("\n".join(output))
 
 		# https://github.com/nicklockwood/SwiftFormat
 		#os.system('mint run swiftformat')
-		os.system("code UpConstants.swift")
+		os.system("code {}".format(outputFile))
 
 if __name__ == "__main__":
 	print("JSON to Swift generation started")

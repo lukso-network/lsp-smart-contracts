@@ -1,6 +1,7 @@
 import re 
 
 unitNameRegEx = "[a-zA-Z_$][a-zA-Z_$0-9]*"
+hexStringRegEx = "^(0x)?[0-9a-fA-F]+$"
 
 def generateDocs(jsonConstant, singleLineDocWrappingSymbol="/// ", multilineDocWrappingSymbols=["/**", " ", " */"]):
 	""" 
