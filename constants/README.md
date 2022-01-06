@@ -7,7 +7,7 @@ This directory contains a JSON file (`constants_defined.json`) that declares con
 ## Purpose
 
 The main purpose is to (pros):
-- CI support - every time LSP is created/updated there is most likely some new JSONSchema, constant or enum to release. Now we are just one `python3.9 generate_all.py` command away from an update;
+- CI support - every time LSP is created/updated there is most likely some new ERC725Y keys (as JSONSchema), constants (_e.g.:_ ERC165 interface IDs) or enum (like Permissions in LSP6 - Key Manager) to release. Now we are just one `python3.9 generate_all.py` command away from an update;
 - reduce manual labor of updating each and every of the source code files written in different languages for different tools;
 - avoiding the need to be familiar with different programming lanuages of unrelated areas. It is not difficult to write simple files in unfamiliar programming languages but it could be somewhat cumbersome to validate the syntax of the source code as it could require a) to search for online REPL tools or validators that could easily be not ideal (sometimes they are intentionally limited) or b) manually preparing you local environment to use a specific language (can be a lot more difficult);
 - adding a backbone to add support for new languages. Provided scripts are very similar between each other. They could be used to add support for a new language quite easily. 
