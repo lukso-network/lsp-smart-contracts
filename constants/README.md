@@ -78,7 +78,7 @@ public val ALL_PERMISSIONS_SET = "0xffffffffffffffffffffffffffffffffffffffffffff
 
 <h4>`enum`</h4>
 
-Enumeration requires name, raw type like `String` or any other primitive type, and a list of cases (at least an empty list or scripts will crash).
+Enumeration requires name, raw type (`rawValueType`) like `String` or any other primitive type, and a list of cases (at least an empty list or scripts will crash).
 
 **Required attributes:**
 - `"type": "enum"`;
