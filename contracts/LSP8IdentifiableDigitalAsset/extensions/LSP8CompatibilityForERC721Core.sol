@@ -3,8 +3,15 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../LSP8IdentifiableDigitalAsset.sol";
-import "./LSP8CompatibilityForERC721Core.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "../LSP8IdentifiableDigitalAssetCore.sol";
+import "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
+
+// libraries
+import "solidity-bytes-utils/contracts/BytesLib.sol";
+
+// interfaces
+import "./ILSP8CompatibilityForERC721.sol";
 
 // constants
 import "./LSP8CompatibilityConstants.sol";
@@ -12,28 +19,13 @@ import "./LSP8CompatibilityConstants.sol";
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
-contract LSP8CompatibilityForERC721 is
-    LSP8IdentifiableDigitalAsset,
-    LSP8CompatibilityForERC721Core
+abstract contract LSP8CompatibilityForERC721Core is
+    LSP8IdentifiableDigitalAssetCore,
+    LSP4Compatibility,
+    ILSP8CompatibilityForERC721
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /**
-     * @notice Sets the name, the symbol and the owner of the token
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the token
-     */
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {
-        _registerInterface(_INTERFACEID_ERC721);
-        _registerInterface(_INTERFACEID_ERC721METADATA);
-    }
-
-    // solhint-disable no-unused-vars
     /*
      * @inheritdoc ILSP8CompatibilityForERC721
      */
@@ -116,7 +108,6 @@ contract LSP8CompatibilityForERC721 is
         }
     }
 
-    // solhint-disable no-unused-vars
     /*
      * @inheritdoc ILSP8CompatibilityForERC721
      */
@@ -182,11 +173,17 @@ contract LSP8CompatibilityForERC721 is
         public
         virtual
         override(
-            LSP8IdentifiableDigitalAssetCore,
-            LSP8CompatibilityForERC721Core
+            ILSP8IdentifiableDigitalAsset,
+            LSP8IdentifiableDigitalAssetCore
         )
     {
         super.authorizeOperator(operator, tokenId);
+
+        emit Approval(
+            tokenOwnerOf(tokenId),
+            operator,
+            abi.decode(abi.encodePacked(tokenId), (uint256))
+        );
     }
 
     function _transfer(
@@ -195,15 +192,14 @@ contract LSP8CompatibilityForERC721 is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-        override(
-            LSP8IdentifiableDigitalAssetCore,
-            LSP8CompatibilityForERC721Core
-        )
-    {
+    ) internal virtual override {
         super._transfer(from, to, tokenId, force, data);
+
+        emit Transfer(
+            from,
+            to,
+            abi.decode(abi.encodePacked(tokenId), (uint256))
+        );
     }
 
     function _mint(
@@ -211,25 +207,28 @@ contract LSP8CompatibilityForERC721 is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-        override(
-            LSP8IdentifiableDigitalAssetCore,
-            LSP8CompatibilityForERC721Core
-        )
-    {
+    ) internal virtual override {
         super._mint(to, tokenId, force, data);
+
+        emit Transfer(
+            address(0),
+            to,
+            abi.decode(abi.encodePacked(tokenId), (uint256))
+        );
     }
 
     function _burn(bytes32 tokenId, bytes memory data)
         internal
         virtual
-        override(
-            LSP8IdentifiableDigitalAssetCore,
-            LSP8CompatibilityForERC721Core
-        )
+        override
     {
         super._burn(tokenId, data);
+
+        address tokenOwner = tokenOwnerOf(tokenId);
+        emit Transfer(
+            tokenOwner,
+            address(0),
+            abi.decode(abi.encodePacked(tokenId), (uint256))
+        );
     }
 }
