@@ -17,12 +17,12 @@ Cons:
 
 ## How to use?
 
-First of all, when a new constant must be added you should think whether it is an `enum`, `JSONSchema`, `json` object or a single line declaration - `const`.
+First of all, when a new constant must be added you should think whether it is an `enum`, `ERC725Y_JSONSchema`, `json` object or a single line declaration - `const`.
 
 Supported types:
 - `enum`;
 - `json`;
-- `JSONSchema`;
+- `ERC725Y_JSONSchema`;
 - `const`.
 
 Optional attributes for all objects:
@@ -177,8 +177,8 @@ Example:
    "members":[
       {
          "name":"LSP3Profile",
-         "type":"JSONSchema",
-         "key":"ERC725YKeys.LSP3.LSP3Profile",
+         "type":"ERC725Y_JSONSchema",
+         "key":"0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
          "keyType":"Singleton",
          "valueType":"bytes",
          "valueContent":"JSONURL"
@@ -192,7 +192,7 @@ Output in TypeScript:
 export const BasicUPSetup_Schema =  {
 	LSP3Profile:  {
 		name: "LSP3Profile",
-		key: ERC725YKeys.LSP3.LSP3Profile,
+		key: "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
 		keyType: "Singleton",
     valueType: "bytes",
 		valueContent: "JSONURL",
@@ -200,12 +200,11 @@ export const BasicUPSetup_Schema =  {
 }
 ```   
 
-Output in Kotlin (flawed):
 ```kotlin
 public class BasicUPSetup_Schema {
 	public companion object {
 		public val LSP3Profile = JSONSchema(name = "LSP3Profile",
-			key = "ERC725YKeys.LSP3.LSP3Profile", /// Flawed. Key should be either a HEX String or a reference to another schema (like in this case).
+			key = "0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5",
 			keyType = KeyType("Singleton"),
       valueType = ValueType("bytes"),
 			valueContent = ValueContent("JSONURL"))
@@ -247,7 +246,7 @@ public val ALL_PERMISSIONS_SET = "0xffffffffffffffffffffffffffffffffffffffffffff
 A specific type that is expected as a separately declared class or struct in languages like `Swift` and `Kotlin`. In TypeScript source code an object with type `JSONSchema` will be declared as a complex JSON object.
 
 **Required attributes:**
-- `"type": "JSONSchema"`;
+- `"type": "ERC725Y_JSONSchema"`;
 - `name` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
 - `type` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
 - `key` - see [ERC725YJSONSchema specification](https://github.com/lukso-network/LIPs/blob/7f546aa94f4f9f661f223c7fee6d291926170447/LSPs/LSP-2-ERC725YJSONSchema.md#specification);
@@ -259,7 +258,7 @@ Example:
 ```json
 {
    "name":"LSP3IssuedAssets[]",
-   "type":"JSONSchema",
+   "type":"ERC725Y_JSONSchema",
    "key":"ERC725YKeys.LSP3.LSP3IssuedAssetsArray",
    "keyType":"Array",
    "valueType":"uint256",
