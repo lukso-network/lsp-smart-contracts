@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 /**
  * @dev sample contract that implements ERC1271 (Standard Signature Validation Method for Contracts)
@@ -9,7 +10,11 @@ import "@openzeppelin/contracts/interfaces/IERC1271.sol";
  *
  * implementation code taken from: https://eips.ethereum.org/EIPS/eip-1271
  */
-contract SignatureValidatorContract is IERC1271 {
+contract SignatureValidatorContract is IERC1271, ERC165Storage {
+    constructor() {
+        _registerInterface(type(IERC1271).interfaceId);
+    }
+
     /**
      * @notice Verifies that the signer is the owner of the signing contract.
      */

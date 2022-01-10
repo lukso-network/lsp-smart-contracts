@@ -2734,16 +2734,23 @@ describe.only("ALLOWEDSTANDARDS", () => {
       owner
     ).deploy();
 
-    await universalProfile.setData(
-      [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          caller.address.substring(2),
-      ],
-      [ALL_PERMISSIONS_SET, ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32)],
-      { from: owner.address }
-    );
+    await universalProfile
+      .connect(owner)
+      .setData(
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            owner.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            caller.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+            caller.address.substring(2),
+        ],
+        [
+          ALL_PERMISSIONS_SET,
+          ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+          abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
+        ]
+      );
 
     await universalProfile.transferOwnership(keyManager.address, {
       from: owner.address,
@@ -2765,7 +2772,7 @@ describe.only("ALLOWEDSTANDARDS", () => {
         targetPayload,
       ]);
 
-      await keyManager.execute(upPayload), { from: owner.address };
+      await keyManager.connect(owner).execute(upPayload);
       let result = await targetContract.callStatic.getName();
 
       expect(result).toEqual(newName);
@@ -2803,6 +2810,14 @@ describe.only("ALLOWEDSTANDARDS", () => {
   });
 
   describe("when caller has only one interface ID (eg: ERC1271) is set for ALLOWED STANDARDS", () => {
+    it("(for caller): output value stored for `AddressPermissions:AllowedStandards` key in ERC725Y key-value store", async () => {
+      let result = await universalProfile.getData([
+        ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          caller.address.substring(2),
+      ]);
+      console.log("ALLOWEDSTANDARDS (in storage) for caller: ", result);
+    });
+
     describe("when interacting with contract that implements ERC1271", () => {
       it("should pass", async () => {
         let sampleHash = ethers.utils.keccak256(
@@ -2840,7 +2855,9 @@ describe.only("ALLOWEDSTANDARDS", () => {
           [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
         );
 
-        await keyManager.connect(caller).execute(upPayload);
+        await expect(
+          keyManager.connect(caller).execute(upPayload)
+        ).toBeRevertedWith("Not Allowed Standards");
       });
     });
   });
