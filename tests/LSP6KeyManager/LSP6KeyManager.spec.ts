@@ -2705,16 +2705,21 @@ describe("Testing permissions of multiple empty bytes length", () => {
   });
 });
 
-describe.only("ALLOWEDSTANDARDS", () => {
+describe("ALLOWEDSTANDARDS", () => {
+  let provider = ethers.provider;
   let abiCoder;
+
   let accounts: SignerWithAddress[] = [];
-  let owner: SignerWithAddress;
-  let caller: SignerWithAddress;
+  let owner: SignerWithAddress,
+    caller: SignerWithAddress,
+    callerTwo: SignerWithAddress;
 
   let universalProfile: UniversalProfile,
     keyManager: LSP6KeyManager,
     targetContract: TargetContract,
     signatureValidatorContract: SignatureValidatorContract;
+
+  let otherUniversalProfile: UniversalProfile;
 
   beforeAll(async () => {
     abiCoder = await ethers.utils.defaultAbiCoder;
@@ -2722,6 +2727,7 @@ describe.only("ALLOWEDSTANDARDS", () => {
 
     owner = accounts[0];
     caller = accounts[1];
+    callerTwo = accounts[2];
 
     universalProfile = await new UniversalProfile__factory(owner).deploy(
       owner.address
@@ -2734,26 +2740,47 @@ describe.only("ALLOWEDSTANDARDS", () => {
       owner
     ).deploy();
 
-    await universalProfile
-      .connect(owner)
-      .setData(
-        [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            owner.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            caller.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
-            caller.address.substring(2),
-        ],
-        [
-          ALL_PERMISSIONS_SET,
-          ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-          abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
-        ]
-      );
+    // test to interact with an other universalProfile
+    otherUniversalProfile = await new UniversalProfile__factory(
+      accounts[3]
+    ).deploy(accounts[3].address);
+
+    await universalProfile.connect(owner).setData(
+      [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          caller.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          callerTwo.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          caller.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          callerTwo.address.substring(2),
+      ],
+      [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          32
+        ), // callerTwo
+        abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
+        abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.LSP7]]),
+      ]
+    );
 
     await universalProfile.transferOwnership(keyManager.address, {
       from: owner.address,
+    });
+
+    // fund the UP with some LYX
+    await owner.sendTransaction({
+      to: universalProfile.address,
+      value: ethers.utils.parseEther("10"),
     });
   });
 
@@ -2802,6 +2829,21 @@ describe.only("ALLOWEDSTANDARDS", () => {
         expect(result).toEqual(ERC1271.MAGIC_VALUE);
       });
 
+      it("example: LSP0 (ERC725Account", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key"));
+        let value = "0xcafecafecafecafe";
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [[key], [value]]
+        );
+
+        await keyManager.connect(owner).execute(setDataPayload);
+
+        let [result] = await universalProfile.callStatic.getData([key]);
+        expect(result).toEqual(value);
+      });
+
       /** @todo add test with contract that implements:
        * - ERC165 (Standard Interface Detection)
        * - LSP0 (ERC725Account)
@@ -2809,7 +2851,7 @@ describe.only("ALLOWEDSTANDARDS", () => {
     });
   });
 
-  describe("when caller has only one interface ID (eg: ERC1271) is set for ALLOWED STANDARDS", () => {
+  describe("when caller has only one interface ID (eg: ERC1271) set for ALLOWED STANDARDS", () => {
     it("(for caller): output value stored for `AddressPermissions:AllowedStandards` key in ERC725Y key-value store", async () => {
       let result = await universalProfile.getData([
         ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
@@ -2818,7 +2860,7 @@ describe.only("ALLOWEDSTANDARDS", () => {
       console.log("ALLOWEDSTANDARDS (in storage) for caller: ", result);
     });
 
-    describe("when interacting with contract that implements ERC1271", () => {
+    describe("when interacting with a contract that implements + register ERC1271 interface", () => {
       it("should pass", async () => {
         let sampleHash = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("Sample Message")
@@ -2843,7 +2885,32 @@ describe.only("ALLOWEDSTANDARDS", () => {
       });
     });
 
-    describe("when interracting with contract that does not implement ERC1271", () => {
+    describe("when trying to transfer LYX to a ERC725Account (LSP0)", () => {
+      it("should pass", async () => {
+        let initialAccountBalance = await provider.getBalance(
+          otherUniversalProfile.address
+        );
+
+        let transferLyxPayload =
+          otherUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            otherUniversalProfile.address,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
+
+        await keyManager.connect(caller).execute(transferLyxPayload);
+
+        let newAccountBalance = await provider.getBalance(
+          otherUniversalProfile.address
+        );
+        expect(parseInt(newAccountBalance)).toBeGreaterThan(
+          parseInt(initialAccountBalance)
+        );
+      });
+    });
+
+    describe("when interacting with contract that does not implement ERC1271", () => {
       it("should fail", async () => {
         let targetPayload = targetContract.interface.encodeFunctionData(
           "setName",
@@ -2858,6 +2925,47 @@ describe.only("ALLOWEDSTANDARDS", () => {
         await expect(
           keyManager.connect(caller).execute(upPayload)
         ).toBeRevertedWith("Not Allowed Standards");
+      });
+    });
+  });
+
+  describe("when caller has only LSP7 interface ID set for ALLOWED STANDARDS", () => {
+    describe("when interacting with a contract that implements + register ERC1271 interface", () => {
+      it("should fail", async () => {
+        let sampleHash = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("Sample Message")
+        );
+        let sampleSignature = await caller.signMessage("Sample Message");
+
+        let payload = signatureValidatorContract.interface.encodeFunctionData(
+          "isValidSignature",
+          [sampleHash, sampleSignature]
+        );
+
+        let upPayload = universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+        );
+
+        await expect(
+          keyManager.connect(callerTwo).callStatic.execute(upPayload)
+        ).toBeRevertedWith("Not Allowed Standards");
+      });
+    });
+
+    describe("when interacting with an ERC725Account (LSP0)", () => {
+      it("should fail", async () => {
+        let transferLyxPayload =
+          otherUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            otherUniversalProfile.address,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
+
+        await expect(
+          keyManager.connect(callerTwo).execute(transferLyxPayload)
+        ).toBeRevertedWith("Not Allowed Standard");
       });
     });
   });
