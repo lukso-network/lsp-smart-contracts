@@ -6,7 +6,7 @@
 
 
 
-
+*sample contract to test interaction + state changes:      - directly from Universal Profile      - via KeyManager &gt; UniversalProfile also used to test permissions ALLOWEDADDRESS and ALLOWEDSTANDARDS*
 
 ## Methods
 
