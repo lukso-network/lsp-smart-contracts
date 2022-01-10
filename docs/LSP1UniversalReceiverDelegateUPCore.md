@@ -6,7 +6,7 @@
 
 
 
-*Delegate contract of the initial universal receiver*
+*Delegate contract of the initial universal receiver Owner of the UniversalProfile MUST be a KeyManager that allows (this) address to setData on the UniversalProfile*
 
 ## Methods
 
@@ -40,15 +40,15 @@ function universalReceiverDelegate(address sender, bytes32 typeId, bytes data) e
 
 
 
-*allows to register arrayKeys and Map of incoming vaults and assets and remove them on balance = 0*
+*Allows to register arrayKeys and Map of incoming vaults and assets and removing them after being sent*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| sender | address | token/vault address
-| typeId | bytes32 | token/vault hooks
-| data | bytes | concatenated data about token/vault transfer
+| sender | address | The address calling the universalReceiver function
+| typeId | bytes32 | The hash of a specific standard or a hook
+| data | bytes | The arbitrary data received with the call
 
 #### Returns
 

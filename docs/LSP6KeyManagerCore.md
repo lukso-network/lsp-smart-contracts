@@ -2,7 +2,7 @@
 
 *Fabian Vogelsteller, Jean Cavallera*
 
-> Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
+> Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
 
 
 

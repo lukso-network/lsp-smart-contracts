@@ -40,21 +40,21 @@ function universalReceiverDelegate(address sender, bytes32 typeId, bytes data) e
 
 
 
-
+*Get called by the universalReceiver function, can be customized to have a specific logic*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| sender | address | undefined
-| typeId | bytes32 | undefined
-| data | bytes | undefined
+| sender | address | The address calling the universalReceiver function
+| typeId | bytes32 | The hash of a specific standard or a hook
+| data | bytes | The arbitrary data received with the call
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes | undefined
+| _0 | bytes | Any useful data could be returned
 
 
 

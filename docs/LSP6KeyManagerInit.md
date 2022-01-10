@@ -1,12 +1,12 @@
 # LSP6KeyManagerInit
 
+*Fabian Vogelsteller, Jean Cavallera*
+
+> Proxy implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
 
 
 
-
-
-
-
+*all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below*
 
 ## Methods
 
@@ -103,7 +103,7 @@ get latest nonce for `_from` for channel ID: `_channel`
 function initialize(address _account) external nonpayable
 ```
 
-
+Initiate the account with the address of the ERC725Account contract and sets LSP6KeyManager InterfaceId
 
 
 
@@ -111,7 +111,7 @@ function initialize(address _account) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| _account | address | undefined
+| _account | address | The address of the ER725Account to control
 
 ### isValidSignature
 

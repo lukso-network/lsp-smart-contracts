@@ -1,12 +1,12 @@
 # LSP9VaultInit
 
+*Fabian Vogelsteller, Yamen Merhi, Jean Cavallera*
+
+> Proxy Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
 
 
 
-
-
-
-
+*Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault*
 
 ## Methods
 
@@ -63,7 +63,7 @@ Gets array of data at multiple given `key`
 function initialize(address _newOwner) external nonpayable
 ```
 
-Sets the owner of the contract
+Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key and register LSP1UniversalReceiver and LSP9Vault InterfaceId
 
 
 
@@ -71,7 +71,7 @@ Sets the owner of the contract
 
 | Name | Type | Description |
 |---|---|---|
-| _newOwner | address | the owner of the contract.
+| _newOwner | address | the owner of the contract
 
 ### owner
 
@@ -109,7 +109,7 @@ function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 
 
 
-
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 and the UniversalReceiverDelegate Emits a {DataChanged} event.*
 
 #### Parameters
 
@@ -148,7 +148,7 @@ function transferOwnership(address newOwner) external nonpayable
 
 
 
-
+*Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.*
 
 #### Parameters
 
@@ -279,7 +279,7 @@ event UniversalReceiver(address indexed from, bytes32 indexed typeId, bytes inde
 event ValueReceived(address indexed sender, uint256 indexed value)
 ```
 
-
+Emitted when a native token is received
 
 
 

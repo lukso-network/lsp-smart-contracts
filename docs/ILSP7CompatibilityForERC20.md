@@ -64,8 +64,8 @@ function authorizeOperator(address operator, uint256 amount) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| amount | uint256 | undefined
+| operator | address | The address to authorize as an operator.
+| amount | uint256 | The amount of tokens operator has access to.
 
 ### balanceOf
 
@@ -81,13 +81,13 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of tokens owned by this address
 
 ### decimals
 
@@ -97,7 +97,7 @@ function decimals() external view returns (uint256)
 
 
 
-*Returns the number of decimals used to get its user representation. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {balanceOf} and {transfer}.*
+*Returns the number of decimals used to get its user representation If the contract represents a NFT then 0 SHOULD be used, otherwise 18 is the common value NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {balanceOf} and {transfer}.*
 
 
 #### Returns
@@ -142,14 +142,14 @@ function isOperatorFor(address operator, address tokenOwner) external view retur
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenOwner | address | undefined
+| operator | address | The address to query operator status for.
+| tokenOwner | address | The token owner.
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The amount of tokens `operator` address has access to from `tokenOwner`.
 
 ### revokeOperator
 
@@ -165,7 +165,7 @@ function revokeOperator(address operator) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
+| operator | address | The address to revoke as an operator.
 
 ### setData
 
@@ -221,7 +221,7 @@ function totalSupply() external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of existing tokens
 
 ### transfer
 
@@ -237,8 +237,8 @@ function transfer(address to, uint256 amount) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| to | address | undefined
-| amount | uint256 | undefined
+| to | address | The receiving address.
+| amount | uint256 | The amount of tokens to transfer.
 
 ### transferBatch
 
@@ -254,11 +254,11 @@ function transferBatch(address[] from, address[] to, uint256[] amount, bool forc
 
 | Name | Type | Description |
 |---|---|---|
-| from | address[] | undefined
-| to | address[] | undefined
-| amount | uint256[] | undefined
-| force | bool | undefined
-| data | bytes[] | undefined
+| from | address[] | The list of sending addresses.
+| to | address[] | The list of receiving addresses.
+| amount | uint256[] | The amount of tokens to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes[] | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### transferFrom
 

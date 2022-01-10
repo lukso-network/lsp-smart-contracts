@@ -24,8 +24,8 @@ function authorizeOperator(address operator, bytes32 tokenId) external nonpayabl
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to authorize as an operator.
+| tokenId | bytes32 | The tokenId operator has access to.
 
 ### balanceOf
 
@@ -41,13 +41,13 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of tokens owned by this address
 
 ### getData
 
@@ -85,13 +85,13 @@ function getOperatorsOf(bytes32 tokenId) external view returns (address[])
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | bytes32 | undefined
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address[] | undefined
+| _0 | address[] | The list of operators for the `tokenId`
 
 ### isOperatorFor
 
@@ -107,14 +107,14 @@ function isOperatorFor(address operator, bytes32 tokenId) external view returns 
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to query
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bool | undefined
+| _0 | bool | True if the owner of `tokenId` is `operator` address, false otherwise
 
 ### revokeOperator
 
@@ -130,8 +130,8 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to revoke as an operator.
+| tokenId | bytes32 | The tokenId `operator` is revoked from operating
 
 ### setData
 
@@ -186,13 +186,13 @@ function tokenIdsOf(address tokenOwner) external view returns (bytes32[])
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query owned tokens
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes32[] | undefined
+| _0 | bytes32[] | List of owned tokens by `tokenOwner` address
 
 ### tokenOwnerOf
 
@@ -208,13 +208,13 @@ function tokenOwnerOf(bytes32 tokenId) external view returns (address)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | bytes32 | undefined
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined
+| _0 | address | The address owning the `tokenId`
 
 ### totalSupply
 
@@ -231,7 +231,7 @@ function totalSupply() external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of existing tokens
 
 ### transfer
 
@@ -247,11 +247,11 @@ function transfer(address from, address to, bytes32 tokenId, bool force, bytes d
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | undefined
-| to | address | undefined
-| tokenId | bytes32 | undefined
-| force | bool | undefined
-| data | bytes | undefined
+| from | address | The sending address.
+| to | address | The receiving address.
+| tokenId | bytes32 | The tokenId to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### transferBatch
 
@@ -267,11 +267,11 @@ function transferBatch(address[] from, address[] to, bytes32[] tokenId, bool for
 
 | Name | Type | Description |
 |---|---|---|
-| from | address[] | undefined
-| to | address[] | undefined
-| tokenId | bytes32[] | undefined
-| force | bool | undefined
-| data | bytes[] | undefined
+| from | address[] | The list of sending addresses.
+| to | address[] | The list of receiving addresses.
+| tokenId | bytes32[] | The list of tokenId to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes[] | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 
 
@@ -291,9 +291,9 @@ event AuthorizedOperator(address indexed operator, address indexed tokenOwner, b
 
 | Name | Type | Description |
 |---|---|---|
-| operator `indexed` | address | undefined |
-| tokenOwner `indexed` | address | undefined |
-| tokenId `indexed` | bytes32 | undefined |
+| operator `indexed` | address | The address authorized as an operator |
+| tokenOwner `indexed` | address | The token owner |
+| tokenId `indexed` | bytes32 | The tokenId `operator` address has access to from `tokenOwner` |
 
 ### DataChanged
 
@@ -326,9 +326,9 @@ event RevokedOperator(address indexed operator, address indexed tokenOwner, byte
 
 | Name | Type | Description |
 |---|---|---|
-| operator `indexed` | address | undefined |
-| tokenOwner `indexed` | address | undefined |
-| tokenId `indexed` | bytes32 | undefined |
+| operator `indexed` | address | The address revoked from operating |
+| tokenOwner `indexed` | address | The token owner |
+| tokenId `indexed` | bytes32 | The tokenId `operator` is revoked from operating |
 
 ### Transfer
 
@@ -344,12 +344,12 @@ event Transfer(address operator, address indexed from, address indexed to, bytes
 
 | Name | Type | Description |
 |---|---|---|
-| operator  | address | undefined |
-| from `indexed` | address | undefined |
-| to `indexed` | address | undefined |
-| tokenId `indexed` | bytes32 | undefined |
-| force  | bool | undefined |
-| data  | bytes | undefined |
+| operator  | address | The address of operator sending tokens |
+| from `indexed` | address | The address which tokens are sent |
+| to `indexed` | address | The receiving address |
+| tokenId `indexed` | bytes32 | The tokenId transferred |
+| force  | bool | When set to TRUE, `to` may be any address but when set to FALSE `to` must be a contract that supports LSP1 UniversalReceiver |
+| data  | bytes | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses |
 
 
 

@@ -18,14 +18,14 @@ function approve(address operator, uint256 tokenId) external nonpayable
 
 
 
-
+*Compatible with ERC721 approve.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | uint256 | undefined
+| operator | address | The address to approve for `amount`
+| tokenId | uint256 | The tokenId to approve
 
 ### authorizeOperator
 
@@ -41,8 +41,8 @@ function authorizeOperator(address operator, bytes32 tokenId) external nonpayabl
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to authorize as an operator.
+| tokenId | bytes32 | The tokenId operator has access to.
 
 ### balanceOf
 
@@ -58,13 +58,13 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of tokens owned by this address
 
 ### getApproved
 
@@ -74,19 +74,19 @@ function getApproved(uint256 tokenId) external nonpayable returns (address)
 
 
 
-
+*Compatible with ERC721 getApproved.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | uint256 | undefined
+| tokenId | uint256 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined
+| _0 | address | The address of the operator for `tokenId`
 
 ### getData
 
@@ -124,13 +124,35 @@ function getOperatorsOf(bytes32 tokenId) external view returns (address[])
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | bytes32 | undefined
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address[] | undefined
+| _0 | address[] | The list of operators for the `tokenId`
+
+### isApprovedForAll
+
+```solidity
+function isApprovedForAll(uint256 tokenId) external nonpayable returns (bool)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenId | uint256 | undefined
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bool | undefined
 
 ### isOperatorFor
 
@@ -146,14 +168,14 @@ function isOperatorFor(address operator, bytes32 tokenId) external view returns 
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to query
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bool | undefined
+| _0 | bool | True if the owner of `tokenId` is `operator` address, false otherwise
 
 ### ownerOf
 
@@ -163,19 +185,19 @@ function ownerOf(uint256 tokenId) external nonpayable returns (address)
 
 
 
-
+*Compatible with ERC721 ownerOf.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | uint256 | undefined
+| tokenId | uint256 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined
+| _0 | address | The owner of the tokenId
 
 ### revokeOperator
 
@@ -191,26 +213,27 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to revoke as an operator.
+| tokenId | bytes32 | The tokenId `operator` is revoked from operating
 
 ### safeTransferFrom
 
 ```solidity
-function safeTransferFrom(address from, address to, uint256 tokenId) external nonpayable
+function safeTransferFrom(address from, address to, uint256 tokenId, bytes data) external nonpayable
 ```
 
 
 
-
+*Compatible with ERC721 safeTransferFrom.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | undefined
-| to | address | undefined
-| tokenId | uint256 | undefined
+| from | address | The sending address
+| to | address | The receiving address
+| tokenId | uint256 | The tokenId to transfer
+| data | bytes | The data to be sent with the transfer
 
 ### setData
 
@@ -265,13 +288,13 @@ function tokenIdsOf(address tokenOwner) external view returns (bytes32[])
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query owned tokens
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes32[] | undefined
+| _0 | bytes32[] | List of owned tokens by `tokenOwner` address
 
 ### tokenOwnerOf
 
@@ -287,13 +310,35 @@ function tokenOwnerOf(bytes32 tokenId) external view returns (address)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | bytes32 | undefined
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined
+| _0 | address | The address owning the `tokenId`
+
+### tokenURI
+
+```solidity
+function tokenURI(uint256 tokenId) external nonpayable returns (string)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenId | uint256 | undefined
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | undefined
 
 ### totalSupply
 
@@ -310,7 +355,7 @@ function totalSupply() external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of existing tokens
 
 ### transfer
 
@@ -326,11 +371,11 @@ function transfer(address from, address to, bytes32 tokenId, bool force, bytes d
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | undefined
-| to | address | undefined
-| tokenId | bytes32 | undefined
-| force | bool | undefined
-| data | bytes | undefined
+| from | address | The sending address.
+| to | address | The receiving address.
+| tokenId | bytes32 | The tokenId to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### transferBatch
 
@@ -346,11 +391,11 @@ function transferBatch(address[] from, address[] to, bytes32[] tokenId, bool for
 
 | Name | Type | Description |
 |---|---|---|
-| from | address[] | undefined
-| to | address[] | undefined
-| tokenId | bytes32[] | undefined
-| force | bool | undefined
-| data | bytes[] | undefined
+| from | address[] | The list of sending addresses.
+| to | address[] | The list of receiving addresses.
+| tokenId | bytes32[] | The list of tokenId to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes[] | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### transferFrom
 
@@ -360,19 +405,37 @@ function transferFrom(address from, address to, uint256 tokenId) external nonpay
 
 
 
-
+*Compatible with ERC721 tranferFrom.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | undefined
-| to | address | undefined
-| tokenId | uint256 | undefined
+| from | address | The sending address
+| to | address | The receiving address
+| tokenId | uint256 | The tokenId to transfer
 
 
 
 ## Events
+
+### Approval
+
+```solidity
+event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)
+```
+
+
+
+*To provide compatibility with indexing ERC721 events.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| owner `indexed` | address | The address of the owner of the `tokenId` |
+| approved `indexed` | address | The address set as operator |
+| tokenId `indexed` | uint256 | The approved tokenId |
 
 ### AuthorizedOperator
 
@@ -435,16 +498,16 @@ event Transfer(address operator, address indexed from, address indexed to, bytes
 
 
 
-
+*To provide compatibility with indexing ERC721 events*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | operator  | address | undefined |
-| from `indexed` | address | undefined |
-| to `indexed` | address | undefined |
-| tokenId `indexed` | bytes32 | undefined |
+| from `indexed` | address | The sending address |
+| to `indexed` | address | The receiving address |
+| tokenId `indexed` | bytes32 | The tokenId to transfer |
 | force  | bool | undefined |
 | data  | bytes | undefined |
 

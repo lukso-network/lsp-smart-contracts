@@ -1,12 +1,12 @@
 # LSP4DigitalAssetMetadataInit
 
+*Matthew Stevens*
+
+> LSP4DigitalAssetMetadata
 
 
 
-
-
-
-*Implementation of a LSP8 compliant contract.*
+*Proxy Implementation of a LSP8 compliant contract.*
 
 ## Methods
 
@@ -38,7 +38,7 @@ Gets array of data at multiple given `key`
 function initialize(address _newOwner) external nonpayable
 ```
 
-Sets the owner of the contract
+Sets the name, symbol of the token and the owner, and sets the SupportedStandards:LSP4DigitalAsset key
 
 
 

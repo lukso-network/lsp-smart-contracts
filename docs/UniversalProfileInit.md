@@ -18,14 +18,14 @@ function allDataKeys() external view returns (bytes32[])
 
 
 
-
+*Returns all the keys set on the account*
 
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes32[] | undefined
+| _0 | bytes32[] | The array of keys set on the account
 
 ### dataKeys
 
@@ -102,7 +102,7 @@ Gets array of data at multiple given `key`
 function initialize(address _newOwner) external nonpayable
 ```
 
-Sets the owner of the contract
+Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
 
 
 
@@ -110,7 +110,7 @@ Sets the owner of the contract
 
 | Name | Type | Description |
 |---|---|---|
-| _newOwner | address | the owner of the contract.
+| _newOwner | address | the owner of the contract
 
 ### isValidSignature
 
@@ -171,7 +171,7 @@ function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 
 
 
-
+*Sets array of data at multiple given `key` Push all the keys to the `dataKeys` array SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
 
 #### Parameters
 

@@ -2,37 +2,37 @@
 
 
 
+> The interface for LSP1UniversalReceiverDelegate
 
 
 
-
-*Contract module that allows for an external universal receiver smart contract,      that is the delegate of the initial universal receiver*
+*LSP1UniversalReceiverDelegate allows for an external universal receiver smart contract, that is the delegate of the initial universal receiver*
 
 ## Methods
 
 ### universalReceiverDelegate
 
 ```solidity
-function universalReceiverDelegate(address sender, bytes32 typeId, bytes data) external nonpayable returns (bytes)
+function universalReceiverDelegate(address sender, bytes32 typeId, bytes data) external nonpayable returns (bytes result)
 ```
 
 
 
-
+*Get called by the universalReceiver function, can be customized to have a specific logic*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| sender | address | undefined
-| typeId | bytes32 | undefined
-| data | bytes | undefined
+| sender | address | The address calling the universalReceiver function
+| typeId | bytes32 | The hash of a specific standard or a hook
+| data | bytes | The arbitrary data received with the call
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes | undefined
+| result | bytes | Any useful data could be returned
 
 
 

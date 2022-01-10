@@ -2,7 +2,7 @@
 
 *Fabian Vogelsteller, Yamen Merhi, Jean Cavallera*
 
-> Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
+> Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
 
 
 
@@ -91,16 +91,16 @@ function renounceOwnership() external nonpayable
 function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 ```
 
-Sets array of data at multiple given `key`
 
 
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 and the UniversalReceiverDelegate Emits a {DataChanged} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | the keys which values to retrieve
-| _values | bytes[] | the array of bytes to set.
+| _keys | bytes32[] | undefined
+| _values | bytes[] | undefined
 
 ### supportsInterface
 
@@ -132,7 +132,7 @@ function transferOwnership(address newOwner) external nonpayable
 
 
 
-*Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.*
+*Transfer the ownership and notify the vault sender and vault receiver*
 
 #### Parameters
 
@@ -263,7 +263,7 @@ event UniversalReceiver(address indexed from, bytes32 indexed typeId, bytes inde
 event ValueReceived(address indexed sender, uint256 indexed value)
 ```
 
-
+Emitted when a native token is received
 
 
 
@@ -271,8 +271,8 @@ event ValueReceived(address indexed sender, uint256 indexed value)
 
 | Name | Type | Description |
 |---|---|---|
-| sender `indexed` | address | undefined |
-| value `indexed` | uint256 | undefined |
+| sender `indexed` | address | The address of the sender |
+| value `indexed` | uint256 | The amount of value sent |
 
 
 
