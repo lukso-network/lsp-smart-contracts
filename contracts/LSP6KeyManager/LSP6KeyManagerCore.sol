@@ -12,7 +12,9 @@ import "./ILSP6KeyManager.sol";
 // libraries
 import "../Utils/LSP6Utils.sol";
 import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import "./LSP6Constants.sol";
@@ -47,7 +49,9 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     using ERC725Utils for ERC725Y;
     using LSP6Utils for ERC725;
+    using Address for address;
     using ECDSA for bytes32;
+    using ERC165Checker for address;
 
     ERC725 public account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
@@ -222,9 +226,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             address to = address(bytes20(_data[48:68]));
             _verifyAllowedAddress(_from, to);
 
-            if (_data.length >= 168) {
-                bytes4 functionCalled = bytes4(_data[164:168]);
-                _verifyAllowedFunction(_from, functionCalled);
+            if (to.isContract()) {
+                _verifyAllowedStandard(_from, to);
+
+                if (_data.length >= 168) {
+                    // extract bytes4 function selector from payload
+                    _verifyAllowedFunction(_from, bytes4(_data[164:168]));
+                }
             }
         } else if (erc725Function == account.transferOwnership.selector) {
             bytes32 permissions = account.getPermissionsFor(_from);
@@ -334,6 +342,23 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             if (_to == allowedAddressesList[ii]) return;
         }
         revert NotAllowedAddress(_from, _to);
+    }
+
+    function _verifyAllowedStandard(address _from, address to) internal view {
+        bytes memory allowedStandards = account.getAllowedStandardsFor(_from);
+
+        // whitelist any standard interface if nothing in the list
+        if (allowedStandards.length == 0) return;
+
+        bytes4[] memory allowedStandardsList = abi.decode(
+            allowedStandards,
+            (bytes4[])
+        );
+
+        for (uint256 ii = 0; ii < allowedStandardsList.length; ii++) {
+            if (to.supportsInterface(allowedStandardsList[ii])) return;
+        }
+        revert("Not Allowed Standards");
     }
 
     /**

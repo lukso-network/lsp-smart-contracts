@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+/**
+ * @dev sample contract to test interaction + state changes:
+ *      - directly from Universal Profile
+ *      - via KeyManager > UniversalProfile
+ *
+ * also used to test permissions ALLOWEDADDRESS and ALLOWEDSTANDARDS
+ */
 contract TargetContract {
     /* solhint-disable */
     uint256 number = 5;
