@@ -2740,7 +2740,7 @@ describe("ALLOWEDSTANDARDS", () => {
       owner
     ).deploy();
 
-    // test to interact with an other universalProfile
+    // test to interact with an other UniversalProfile (e.g.: transfer LYX)
     otherUniversalProfile = await new UniversalProfile__factory(
       accounts[3]
     ).deploy(accounts[3].address);
@@ -2767,9 +2767,9 @@ describe("ALLOWEDSTANDARDS", () => {
         ethers.utils.hexZeroPad(
           PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
           32
-        ), // callerTwo
+        ),
         abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
-        abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.LSP7]]),
+        abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.LSP7]]), // callerTwo
       ]
     );
 
@@ -2777,15 +2777,15 @@ describe("ALLOWEDSTANDARDS", () => {
       from: owner.address,
     });
 
-    // fund the UP with some LYX
+    // fund the UP with some LYX to test transfer LYX to an other UP
     await owner.sendTransaction({
       to: universalProfile.address,
       value: ethers.utils.parseEther("10"),
     });
   });
 
-  describe("when caller has no value set for ALLOWEDSTANDARDS", () => {
-    it("should allow to interact with contract that has no interfaces implemented", async () => {
+  describe("when caller has no value set for ALLOWEDSTANDARDS (= all interfaces whitelisted)", () => {
+    it("should allow to interact with contract that does not implement any interface", async () => {
       let newName = "Some Name";
       let targetPayload = targetContract.interface.encodeFunctionData(
         "setName",
@@ -2805,8 +2805,8 @@ describe("ALLOWEDSTANDARDS", () => {
       expect(result).toEqual(newName);
     });
 
-    describe("should allow to interact with a contract that has any interface implemented", () => {
-      it("example: ERC1271", async () => {
+    describe("should allow to interact with a contract that implement (+ register) any interface", () => {
+      it("ERC1271", async () => {
         let sampleHash = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("Sample Message")
         );
@@ -2829,7 +2829,7 @@ describe("ALLOWEDSTANDARDS", () => {
         expect(result).toEqual(ERC1271.MAGIC_VALUE);
       });
 
-      it("example: LSP0 (ERC725Account", async () => {
+      it("LSP0 (ERC725Account", async () => {
         let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key"));
         let value = "0xcafecafecafecafe";
 
@@ -2843,16 +2843,11 @@ describe("ALLOWEDSTANDARDS", () => {
         let [result] = await universalProfile.callStatic.getData([key]);
         expect(result).toEqual(value);
       });
-
-      /** @todo add test with contract that implements:
-       * - ERC165 (Standard Interface Detection)
-       * - LSP0 (ERC725Account)
-       */
     });
   });
 
-  describe("when caller has only one interface ID (eg: ERC1271) set for ALLOWED STANDARDS", () => {
-    it("(for caller): output value stored for `AddressPermissions:AllowedStandards` key in ERC725Y key-value store", async () => {
+  describe("when caller has only ERC1271 interface ID set for ALLOWED STANDARDS", () => {
+    it("output `caller` value stored for `AddressPermissions:AllowedStandards` key in ERC725Y key-value store", async () => {
       let result = await universalProfile.getData([
         ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
           caller.address.substring(2),
@@ -2885,8 +2880,8 @@ describe("ALLOWEDSTANDARDS", () => {
       });
     });
 
-    describe("when trying to transfer LYX to a ERC725Account (LSP0)", () => {
-      it("should pass", async () => {
+    describe("when trying to interact an ERC725Account (LSP0)", () => {
+      it("should allow to transfer LYX", async () => {
         let initialAccountBalance = await provider.getBalance(
           otherUniversalProfile.address
         );
@@ -2954,7 +2949,7 @@ describe("ALLOWEDSTANDARDS", () => {
     });
 
     describe("when interacting with an ERC725Account (LSP0)", () => {
-      it("should fail", async () => {
+      it("should fail when trying to transfer LYX", async () => {
         let transferLyxPayload =
           otherUniversalProfile.interface.encodeFunctionData("execute", [
             OPERATIONS.CALL,
