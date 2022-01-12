@@ -149,7 +149,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(result).toBeTruthy(); // "does not support interface `LSP1`"
     });
 
-    it("Should have Key: 'SupportedStandards:LSP3UniversalProfile' set to Value: 'LSP3UniversalProfile'", async () => {
+    it("Should have Key: 'SupportedStandards:LSP3UniversalProfile' set to Value: '0xabe425d6'", async () => {
       let [result] = await proxy.callStatic.getData([
         SupportedStandards.LSP3UniversalProfile.key,
       ]);

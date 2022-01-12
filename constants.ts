@@ -143,8 +143,6 @@ export const BasicUPSetup_Schema = [
     keyType: "Array",
     valueContent: "Number",
     valueType: "uint256",
-    elementValueContent: "Address",
-    elementValueType: "address",
   },
 ];
 

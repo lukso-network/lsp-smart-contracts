@@ -101,7 +101,7 @@ describe("UniversalProfile", () => {
       expect(result).toBeTruthy();
     });
 
-    it("Should have Key: 'SupportedStandards:LSP3UniversalProfile' set to Value: 'LSP3UniversalProfile'", async () => {
+    it("Should have Key: 'SupportedStandards:LSP3UniversalProfile' set to Value: '0xabe425d6'", async () => {
       const owner = accounts[2];
       let [result] = await UniversalProfile.callStatic.getData([
         SupportedStandards.LSP3UniversalProfile.key,
