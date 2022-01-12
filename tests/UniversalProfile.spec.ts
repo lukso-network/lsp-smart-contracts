@@ -83,6 +83,15 @@ describe("UniversalProfile", () => {
       expect(result).toBeTruthy();
     });
 
+    it("Supports LSP0 (ERC725Account)", async () => {
+      const interfaceID = INTERFACE_IDS.ERC725Account;
+      const result = await UniversalProfile.callStatic.supportsInterface(
+        interfaceID
+      );
+
+      expect(result).toBeTruthy();
+    });
+
     it("Supports ERC1271", async () => {
       const interfaceID = INTERFACE_IDS.ERC1271;
       const result = await UniversalProfile.callStatic.supportsInterface(
