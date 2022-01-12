@@ -31,27 +31,27 @@ describe("Calculate LSP interfaces", () => {
   });
 
   it("LSP1", async () => {
-    const result = await contract.callStatic.calculateSelectorLSP1();
+    const result = await contract.callStatic.calculateInterfaceLSP1();
     expect(result).toEqual(INTERFACE_IDS.LSP1);
   });
 
   it("LSP1Delegate", async () => {
-    const result = await contract.callStatic.calculateSelectorLSP1Delegate();
+    const result = await contract.callStatic.calculateInterfaceLSP1Delegate();
     expect(result).toEqual(INTERFACE_IDS.LSP1Delegate);
   });
 
   it("LSP7", async () => {
-    const result = await contract.callStatic.calculateSelectorLSP7();
+    const result = await contract.callStatic.calculateInterfaceLSP7();
     expect(result).toEqual(INTERFACE_IDS.LSP7);
   });
 
   it("LSP8", async () => {
-    const result = await contract.callStatic.calculateSelectorLSP8();
+    const result = await contract.callStatic.calculateInterfaceLSP8();
     expect(result).toEqual(INTERFACE_IDS.LSP8);
   });
 
   it("LSP6KeyManager", async () => {
-    const result = await contract.callStatic.calculateSelectorLSP6KeyManager();
+    const result = await contract.callStatic.calculateInterfaceLSP6KeyManager();
     expect(result).toEqual(INTERFACE_IDS.LSP6);
   });
 });

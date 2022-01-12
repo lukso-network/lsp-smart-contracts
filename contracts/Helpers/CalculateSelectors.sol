@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// modules
-import "../LSP9Vault/LSP9Vault.sol";
-
 // LSPs interfaces
 import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiver.sol";
 import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
@@ -24,9 +21,15 @@ import "../LSP1UniversalReceiver/LSP1Constants.sol";
 import "../LSP6KeyManager/LSP6Constants.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
 import "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import "../LSP9Vault/LSP9Vault.sol";
 
-contract CalculateERC165Selectors {
-    function calculateSelectorLSP1() public pure returns (bytes4) {
+/**
+ * @dev This contract calculates the ERC165 interface IDs of each LSP contract
+ *      and ensure that these values are correctly stored as hardcoded
+ *      Solidity constants.
+ */
+contract CalculateLSPInterfaces {
+    function calculateInterfaceLSP1() public pure returns (bytes4) {
         bytes4 selector = type(ILSP1).interfaceId;
         require(
             selector == _INTERFACEID_LSP1,
@@ -36,7 +39,7 @@ contract CalculateERC165Selectors {
         return selector;
     }
 
-    function calculateSelectorLSP1Delegate() public pure returns (bytes4) {
+    function calculateInterfaceLSP1Delegate() public pure returns (bytes4) {
         bytes4 selector = type(ILSP1Delegate).interfaceId;
         require(
             selector == _INTERFACEID_LSP1_DELEGATE,
@@ -46,7 +49,7 @@ contract CalculateERC165Selectors {
         return selector;
     }
 
-    function calculateSelectorLSP6KeyManager() public pure returns (bytes4) {
+    function calculateInterfaceLSP6KeyManager() public pure returns (bytes4) {
         bytes4 selector = type(ILSP6KeyManager).interfaceId;
         require(
             selector == _INTERFACEID_LSP6,
@@ -56,7 +59,7 @@ contract CalculateERC165Selectors {
         return selector;
     }
 
-    function calculateSelectorLSP7() public pure returns (bytes4) {
+    function calculateInterfaceLSP7() public pure returns (bytes4) {
         bytes4 selector = type(ILSP7DigitalAsset).interfaceId;
         require(
             selector == _INTERFACEID_LSP7,
@@ -66,7 +69,7 @@ contract CalculateERC165Selectors {
         return selector;
     }
 
-    function calculateSelectorLSP8() public pure returns (bytes4) {
+    function calculateInterfaceLSP8() public pure returns (bytes4) {
         bytes4 selector = type(ILSP8IdentifiableDigitalAsset).interfaceId;
         require(
             selector == _INTERFACEID_LSP8,
@@ -93,6 +96,9 @@ contract CalculateERC165Selectors {
     }
 }
 
+/**
+ * @dev Calculate the ERC165 interface IDs (for backward compatibility)
+ */
 contract CalculateERCInterfaces {
     function calculateInterfaceERC20() public pure returns (bytes4) {
         return type(IERC20).interfaceId;
