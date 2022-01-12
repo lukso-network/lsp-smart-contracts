@@ -2,7 +2,7 @@
 
 *Fabian Vogelsteller, Yamen Merhi, Jean Cavallera*
 
-> Proxy Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using        the LSP5-ReceivedAsset standard and removing the sent assets.
+> Deployable Proxy Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using        the LSP5-ReceivedAsset standard and removing the sent assets.
 
 
 
@@ -16,7 +16,7 @@
 function initialize() external nonpayable
 ```
 
-
+Register the LSP1UniversalReceiverDelegate InterfaceId
 
 
 
@@ -51,21 +51,21 @@ function universalReceiverDelegate(address sender, bytes32 typeId, bytes data) e
 
 
 
-*allows to register arrayKeys and Map of incoming assets and remove them on balance = 0*
+*allows to register arrayKeys and Map of incoming assets and remove after being sent*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| sender | address | token address
-| typeId | bytes32 | token hooks
-| data | bytes | concatenated data about token transfer
+| sender | address | The address calling the universalReceiver function
+| typeId | bytes32 | The hash of a specific standard or a hook
+| data | bytes | The arbitrary data received with the call
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| result | bytes | the return value
+| result | bytes | The return value
 
 
 

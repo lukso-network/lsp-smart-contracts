@@ -2,11 +2,11 @@
 
 
 
+> The interface for LSP1UniversalReceiver
 
 
 
-
-*Contract module that allows to receive arbitrary messages when assets are sent or received.*
+*LSP1UniversalReceiver allows to receive arbitrary messages and to be informed when assets are sent or received*
 
 ## Methods
 
@@ -18,14 +18,14 @@ function universalReceiver(bytes32 typeId, bytes data) external nonpayable retur
 
 
 
-
+*Emits an event when it&#39;s succesfully executed Call the universalReceiverDelegate function in the UniversalReceiverDelegate (URD) contract, if the address of the URD was set as a value for the `_UniversalReceiverKey` in the account key/value value store of the same contract implementing the universalReceiver function and if the URD contract has the LSP1UniversalReceiverDelegate Interface Id registred using ERC165 Emits a {UniversalReceiver} event*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| typeId | bytes32 | undefined
-| data | bytes | undefined
+| typeId | bytes32 | The hash of a specific standard or a hook
+| data | bytes | The arbitrary data received with the call
 
 #### Returns
 
@@ -43,7 +43,7 @@ function universalReceiver(bytes32 typeId, bytes data) external nonpayable retur
 event UniversalReceiver(address indexed from, bytes32 indexed typeId, bytes indexed returnedValue, bytes receivedData)
 ```
 
-
+Emitted when the universalReceiver function is succesfully executed
 
 
 
@@ -51,10 +51,10 @@ event UniversalReceiver(address indexed from, bytes32 indexed typeId, bytes inde
 
 | Name | Type | Description |
 |---|---|---|
-| from `indexed` | address | undefined |
-| typeId `indexed` | bytes32 | undefined |
-| returnedValue `indexed` | bytes | undefined |
-| receivedData  | bytes | undefined |
+| from `indexed` | address | The address calling the universalReceiver function |
+| typeId `indexed` | bytes32 | The hash of a specific standard or a hook |
+| returnedValue `indexed` | bytes | The return value of universalReceiver function |
+| receivedData  | bytes | The arbitrary data passed to universalReceiver function |
 
 
 

@@ -1,12 +1,12 @@
 # LSP6KeyManager
 
+*Fabian Vogelsteller, Jean Cavallera*
+
+> Implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
 
 
 
-
-
-
-
+*all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below*
 
 ## Methods
 

@@ -24,8 +24,8 @@ function authorizeOperator(address operator, bytes32 tokenId) external nonpayabl
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to authorize as an operator.
+| tokenId | bytes32 | The tokenId operator has access to.
 
 ### balanceOf
 
@@ -41,35 +41,35 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of tokens owned by this address
 
 ### getData
 
 ```solidity
-function getData(bytes32[] _keys) external view returns (bytes[])
+function getData(bytes32[] keys) external view returns (bytes[] values)
 ```
 
+Gets array of data at multiple given keys
 
 
-*Gets array of data at multiple given `key`*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | undefined
+| keys | bytes32[] | The array of keys which values to retrieve
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes[] | undefined
+| values | bytes[] | The array of data stored at multiple keys
 
 ### getOperatorsOf
 
@@ -85,13 +85,13 @@ function getOperatorsOf(bytes32 tokenId) external view returns (address[])
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | bytes32 | undefined
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address[] | undefined
+| _0 | address[] | The list of operators for the `tokenId`
 
 ### isOperatorFor
 
@@ -107,14 +107,14 @@ function isOperatorFor(address operator, bytes32 tokenId) external view returns 
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to query
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bool | undefined
+| _0 | bool | True if the owner of `tokenId` is `operator` address, false otherwise
 
 ### mint
 
@@ -124,16 +124,16 @@ function mint(address to, bytes32 tokenId, bool force, bytes data) external nonp
 
 
 
-
+*Mints `amount` tokens and transfers it to `to`. Requirements: - `to` cannot be the zero address. Emits a {Transfer} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| to | address | undefined
-| tokenId | bytes32 | undefined
-| force | bool | undefined
-| data | bytes | undefined
+| to | address | The address to mint tokens
+| tokenId | bytes32 | The tokenId to mint
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### revokeOperator
 
@@ -149,25 +149,25 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to revoke as an operator.
+| tokenId | bytes32 | The tokenId `operator` is revoked from operating
 
 ### setData
 
 ```solidity
-function setData(bytes32[] _keys, bytes[] _values) external nonpayable
+function setData(bytes32[] keys, bytes[] values) external nonpayable
 ```
 
 
 
-*Sets array of data at multiple given `key`. SHOULD only be callable by the owner of the contract set via ERC173. Emits a {DataChanged} event.*
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | undefined
-| _values | bytes[] | undefined
+| keys | bytes32[] | The array of keys which values to set
+| values | bytes[] | The array of values to set
 
 ### supportsInterface
 
@@ -205,13 +205,13 @@ function tokenIdsOf(address tokenOwner) external view returns (bytes32[])
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query owned tokens
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes32[] | undefined
+| _0 | bytes32[] | List of owned tokens by `tokenOwner` address
 
 ### tokenOwnerOf
 
@@ -227,13 +227,13 @@ function tokenOwnerOf(bytes32 tokenId) external view returns (address)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | bytes32 | undefined
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined
+| _0 | address | The address owning the `tokenId`
 
 ### totalSupply
 
@@ -250,7 +250,7 @@ function totalSupply() external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of existing tokens
 
 ### transfer
 
@@ -266,11 +266,11 @@ function transfer(address from, address to, bytes32 tokenId, bool force, bytes d
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | undefined
-| to | address | undefined
-| tokenId | bytes32 | undefined
-| force | bool | undefined
-| data | bytes | undefined
+| from | address | The sending address.
+| to | address | The receiving address.
+| tokenId | bytes32 | The tokenId to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### transferBatch
 
@@ -286,11 +286,11 @@ function transferBatch(address[] from, address[] to, bytes32[] tokenId, bool for
 
 | Name | Type | Description |
 |---|---|---|
-| from | address[] | undefined
-| to | address[] | undefined
-| tokenId | bytes32[] | undefined
-| force | bool | undefined
-| data | bytes[] | undefined
+| from | address[] | The list of sending addresses.
+| to | address[] | The list of receiving addresses.
+| tokenId | bytes32[] | The list of tokenId to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes[] | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 
 
@@ -320,7 +320,7 @@ event AuthorizedOperator(address indexed operator, address indexed tokenOwner, b
 event DataChanged(bytes32 indexed key, bytes value)
 ```
 
-
+Emitted when data at a key is changed
 
 
 

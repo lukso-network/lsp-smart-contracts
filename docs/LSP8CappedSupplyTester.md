@@ -18,14 +18,14 @@ function authorizeOperator(address operator, bytes32 tokenId) external nonpayabl
 
 
 
-*Makes `operator` address an operator of `tokenId`. See {isOperatorFor}. Emits an {AuthorizedOperator} event. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address.*
+*Makes `operator` address an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to authorize as an operator.
+| tokenId | bytes32 | The tokenId operator has access to.
 
 ### balanceOf
 
@@ -35,19 +35,19 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 
 
 
-*Returns the number of tokens in ``tokenOwner``&#39;s account.*
+*Returns the number of tokens owned by `tokenOwner`.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of tokens owned by this address
 
 ### burn
 
@@ -68,10 +68,10 @@ function burn(bytes32 tokenId) external nonpayable
 ### getData
 
 ```solidity
-function getData(bytes32[] _keys) external view returns (bytes[] values)
+function getData(bytes32[] keys) external view returns (bytes[] values)
 ```
 
-Gets array of data at multiple given `key`
+Gets array of data at multiple given keys
 
 
 
@@ -79,7 +79,7 @@ Gets array of data at multiple given `key`
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | the keys which values to retrieve
+| keys | bytes32[] | The array of keys which values to retrieve
 
 #### Returns
 
@@ -101,13 +101,13 @@ function getOperatorsOf(bytes32 tokenId) external view returns (address[])
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | bytes32 | undefined
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address[] | undefined
+| _0 | address[] | The list of operators for the `tokenId`
 
 ### isOperatorFor
 
@@ -123,14 +123,14 @@ function isOperatorFor(address operator, bytes32 tokenId) external view returns 
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to query
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bool | undefined
+| _0 | bool | True if the owner of `tokenId` is `operator` address, false otherwise
 
 ### mint
 
@@ -185,14 +185,14 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 
 
 
-*Revoke `operator` address operator status for the `tokenId`. See {isOperatorFor}. Emits a {RevokedOperator} event. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address.*
+*Removes `operator` address as an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenId | bytes32 | undefined
+| operator | address | The address to revoke as an operator.
+| tokenId | bytes32 | The tokenId `operator` is revoked from operating
 
 ### setData
 
@@ -200,16 +200,16 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 ```
 
-Sets array of data at multiple given `key`
 
 
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | the keys which values to retrieve
-| _values | bytes[] | the array of bytes to set.
+| _keys | bytes32[] | undefined
+| _values | bytes[] | undefined
 
 ### supportsInterface
 
@@ -247,13 +247,13 @@ function tokenIdsOf(address tokenOwner) external view returns (bytes32[])
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query owned tokens
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes32[] | undefined
+| _0 | bytes32[] | List of owned tokens by `tokenOwner` address
 
 ### tokenOwnerOf
 
@@ -263,19 +263,19 @@ function tokenOwnerOf(bytes32 tokenId) external view returns (address)
 
 
 
-*Returns the `tokenOwner` of the `tokenId`. Requirements: - `tokenId` must exist.*
+*Returns the `tokenOwner` address of the `tokenId` token. Requirements: - `tokenId` must exist.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | bytes32 | undefined
+| tokenId | bytes32 | The tokenId to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined
+| _0 | address | The address owning the `tokenId`
 
 ### tokenSupplyCap
 
@@ -285,14 +285,14 @@ function tokenSupplyCap() external view returns (uint256)
 
 
 
-*Returns the number of tokens that have been minted.*
+*Returns the number of tokens that can be minted.*
 
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The token max supply
 
 ### totalSupply
 
@@ -309,7 +309,7 @@ function totalSupply() external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of existing tokens
 
 ### transfer
 
@@ -319,17 +319,17 @@ function transfer(address from, address to, bytes32 tokenId, bool force, bytes d
 
 
 
-*Transfers `tokenId` token from `from` to `to`. Requirements: - `from` cannot be the zero address. - `to` cannot be the zero address. - `tokenId` token must be owned by `from`. - If the caller is not `from`, it must be an `operator` address for this `tokenId`. Emits a {Transfer} event.*
+*Transfers `tokenId` token from `from` to `to`. Requirements: - `from` cannot be the zero address. - `to` cannot be the zero address. - `tokenId` token must be owned by `from`. - If the caller is not `from`, it must be an operator of `tokenId`. Emits a {Transfer} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | undefined
-| to | address | undefined
-| tokenId | bytes32 | undefined
-| force | bool | undefined
-| data | bytes | undefined
+| from | address | The sending address.
+| to | address | The receiving address.
+| tokenId | bytes32 | The tokenId to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### transferBatch
 
@@ -339,17 +339,17 @@ function transferBatch(address[] from, address[] to, bytes32[] tokenId, bool for
 
 
 
-*Transfers many tokens based on the list `from`, `to`, `tokenId`. If any transfer fails, the call will revert. Requirements: - `from`, `to`, `tokenId` lists are the same length. - no values in `from` can be the zero address. - no values in `to` can be the zero address. - each `tokenId` token must be owned by `from`. - If the caller is not `from`, it must be an operator of `tokenId`. Emits {Transfer} event for each transfered token.*
+*Transfers many tokens based on the list `from`, `to`, `tokenId`. If any transfer fails the call will revert. Requirements: - `from`, `to`, `tokenId` lists are the same length. - no values in `from` can be the zero address. - no values in `to` can be the zero address. - each `tokenId` token must be owned by `from`. - If the caller is not `from`, it must be an operator of each `tokenId`. Emits {Transfer} events.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address[] | undefined
-| to | address[] | undefined
-| tokenId | bytes32[] | undefined
-| force | bool | undefined
-| data | bytes[] | undefined
+| from | address[] | The list of sending addresses.
+| to | address[] | The list of receiving addresses.
+| tokenId | bytes32[] | The list of tokenId to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes[] | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### transferOwnership
 
@@ -395,7 +395,7 @@ event AuthorizedOperator(address indexed operator, address indexed tokenOwner, b
 event DataChanged(bytes32 indexed key, bytes value)
 ```
 
-
+Emitted when data at a key is changed
 
 
 

@@ -44,6 +44,40 @@ function calculateSelectorERC1271() external pure returns (bytes4)
 |---|---|---|
 | _0 | bytes4 | undefined
 
+### calculateSelectorERC721
+
+```solidity
+function calculateSelectorERC721() external pure returns (bytes4)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bytes4 | undefined
+
+### calculateSelectorERC721Metadata
+
+```solidity
+function calculateSelectorERC721Metadata() external pure returns (bytes4)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bytes4 | undefined
+
 ### calculateSelectorLSP1
 
 ```solidity

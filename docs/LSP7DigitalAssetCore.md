@@ -1,12 +1,12 @@
 # LSP7DigitalAssetCore
 
+*Matthew Stevens*
+
+> LSP7DigitalAsset contract
 
 
 
-
-
-
-*Implementation of a LSP7 compliant contract.*
+*Core Implementation of a LSP7 compliant contract.*
 
 ## Methods
 
@@ -18,14 +18,14 @@ function authorizeOperator(address operator, uint256 amount) external nonpayable
 
 
 
-*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Emits an {AuthorizedOperator} event. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address.*
+*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| amount | uint256 | undefined
+| operator | address | The address to authorize as an operator.
+| amount | uint256 | The amount of tokens operator has access to.
 
 ### balanceOf
 
@@ -41,13 +41,13 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenOwner | address | undefined
+| tokenOwner | address | The address to query
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of tokens owned by this address
 
 ### decimals
 
@@ -57,7 +57,7 @@ function decimals() external view returns (uint256)
 
 
 
-*Returns the number of decimals used to get its user representation. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {balanceOf} and {transfer}.*
+*Returns the number of decimals used to get its user representation If the contract represents a NFT then 0 SHOULD be used, otherwise 18 is the common value NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {balanceOf} and {transfer}.*
 
 
 #### Returns
@@ -69,24 +69,24 @@ function decimals() external view returns (uint256)
 ### getData
 
 ```solidity
-function getData(bytes32[] _keys) external view returns (bytes[])
+function getData(bytes32[] keys) external view returns (bytes[] values)
 ```
 
+Gets array of data at multiple given keys
 
 
-*Gets array of data at multiple given `key`*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | undefined
+| keys | bytes32[] | The array of keys which values to retrieve
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes[] | undefined
+| values | bytes[] | The array of data stored at multiple keys
 
 ### isOperatorFor
 
@@ -102,14 +102,14 @@ function isOperatorFor(address operator, address tokenOwner) external view retur
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
-| tokenOwner | address | undefined
+| operator | address | The address to query operator status for.
+| tokenOwner | address | The token owner.
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The amount of tokens `operator` address has access to from `tokenOwner`.
 
 ### revokeOperator
 
@@ -119,30 +119,30 @@ function revokeOperator(address operator) external nonpayable
 
 
 
-*Removes `operator` address as an operator of callers tokens. See {isOperatorFor}. Emits a {RevokedOperator} event. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address.*
+*Removes `operator` address as an operator of callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | undefined
+| operator | address | The address to revoke as an operator.
 
 ### setData
 
 ```solidity
-function setData(bytes32[] _keys, bytes[] _values) external nonpayable
+function setData(bytes32[] keys, bytes[] values) external nonpayable
 ```
 
 
 
-*Sets array of data at multiple given `key`. SHOULD only be callable by the owner of the contract set via ERC173. Emits a {DataChanged} event.*
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | undefined
-| _values | bytes[] | undefined
+| keys | bytes32[] | The array of keys which values to set
+| values | bytes[] | The array of values to set
 
 ### supportsInterface
 
@@ -181,7 +181,7 @@ function totalSupply() external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined
+| _0 | uint256 | The number of existing tokens
 
 ### transfer
 
@@ -191,17 +191,17 @@ function transfer(address from, address to, uint256 amount, bool force, bytes da
 
 
 
-*Transfers `amount` tokens from `from` to `to`. Requirements: - `from` cannot be the zero address. - `to` cannot be the zero address. - `amount` tokens must be owned by `from`. - If the caller is not `from`, it must be an operator for `from` with access to at least `amount` tokens. Emits a {Transfer} event.*
+*Transfers `amount` of tokens from `from` to `to`. The `force` parameter will be used when notifying the token sender and receiver. Requirements: - `from` cannot be the zero address. - `to` cannot be the zero address. - `amount` tokens must be owned by `from`. - If the caller is not `from`, it must be an operator for `from` with access to at least `amount` tokens. Emits a {Transfer} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | undefined
-| to | address | undefined
-| amount | uint256 | undefined
-| force | bool | undefined
-| data | bytes | undefined
+| from | address | The sending address.
+| to | address | The receiving address.
+| amount | uint256 | The amount of tokens to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 ### transferBatch
 
@@ -211,17 +211,17 @@ function transferBatch(address[] from, address[] to, uint256[] amount, bool forc
 
 
 
-*Transfers many tokens based on the list `from`, `to`, `amount`. If any transfer fails, the call will revert. Requirements: - `from`, `to`, `amount` lists are the same length. - no values in `from` can be the zero address. - no values in `to` can be the zero address. - each `amount` tokens must be owned by `from`. - If the caller is not `from`, it must be an operator for `from` with access to at least `amount` tokens. Emits {Transfer} event for each transfered token.*
+*Transfers many tokens based on the list `from`, `to`, `amount`. If any transfer fails the call will revert. Requirements: - `from`, `to`, `amount` lists are the same length. - no values in `from` can be the zero address. - no values in `to` can be the zero address. - each `amount` tokens must be owned by `from`. - If the caller is not `from`, it must be an operator for `from` with access to at least `amount` tokens. Emits {Transfer} events.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address[] | undefined
-| to | address[] | undefined
-| amount | uint256[] | undefined
-| force | bool | undefined
-| data | bytes[] | undefined
+| from | address[] | The list of sending addresses.
+| to | address[] | The list of receiving addresses.
+| amount | uint256[] | The amount of tokens to transfer.
+| force | bool | When set to TRUE, to may be any address but when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+| data | bytes[] | Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
 
 
 
@@ -251,7 +251,7 @@ event AuthorizedOperator(address indexed operator, address indexed tokenOwner, u
 event DataChanged(bytes32 indexed key, bytes value)
 ```
 
-
+Emitted when data at a key is changed
 
 
 
