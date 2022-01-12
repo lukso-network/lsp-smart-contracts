@@ -4,16 +4,20 @@ pragma solidity ^0.8.0;
 // modules
 import "../LSP9Vault/LSP9Vault.sol";
 
-// interfaces
+// LSPs interfaces
+import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiver.sol";
+import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
 import "../LSP6KeyManager/ILSP6KeyManager.sol";
 import "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 import "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
-import "@erc725/smart-contracts/contracts/interfaces/IERC1271.sol";
-import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiver.sol";
-import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+
+// ERC interfaces
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@erc725/smart-contracts/contracts/interfaces/IERC1271.sol";
 
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -100,6 +104,14 @@ contract CalculateERCInterfaces {
 
     function calculateInterfaceERC721Metadata() public pure returns (bytes4) {
         return type(IERC721Metadata).interfaceId;
+    }
+
+    function calculateInterfaceERC777() public pure returns (bytes4) {
+        return type(IERC777).interfaceId;
+    }
+
+    function calculateInterfaceERC1155() public pure returns (bytes4) {
+        return type(IERC1155).interfaceId;
     }
 
     function calculateInterfaceERC1271() public pure returns (bytes4) {

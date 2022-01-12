@@ -11,8 +11,13 @@ import {
 import { INTERFACE_IDS } from "../../constants";
 
 /**
- * @dev these tests also ensure that the interfaceIds (stored in utils/constant.ts)
- *      are always correct, so that the other tests use the correct values
+ * @dev these tests check that the ERC165 interface IDs stored in `constant.ts`
+ *      match with the Solidity built-in function `type(InterfaceName).interfaceId`
+ *      (or the XOR of a specific set of function signatures, for custom interface IDs)
+ *
+ *      This ensure that:
+ *      - the file `constants.ts` always hold correct values (since it is part of the npm package)
+ *      - tests that use or check for these interface IDs rely on correct values
  */
 describe("Calculate LSP interfaces", () => {
   let accounts: SignerWithAddress[];
@@ -62,13 +67,11 @@ describe("Calculate ERC interfaces", () => {
 
   it("ERC20", async () => {
     const result = await contract.callStatic.calculateInterfaceERC20();
-    console.log("ERC20: ", result);
-    // expect(result).toEqual(INTERFACE_IDS.ERC20);
+    expect(result).toEqual(INTERFACE_IDS.ERC20);
   });
 
   it("ERC721", async () => {
     const result = await contract.callStatic.calculateInterfaceERC721();
-    console.log("ERC721: ", result);
     expect(result).toEqual(INTERFACE_IDS.ERC721);
   });
 
@@ -77,8 +80,18 @@ describe("Calculate ERC interfaces", () => {
     expect(result).toEqual(INTERFACE_IDS.ERC721Metadata);
   });
 
-  it("ERC721Metadata", async () => {
-    const result = await contract.callStatic.calculateInterfaceERC721Metadata();
-    expect(result).toEqual(INTERFACE_IDS.ERC721Metadata);
+  it("ERC777", async () => {
+    const result = await contract.callStatic.calculateInterfaceERC777();
+    expect(result).toEqual(INTERFACE_IDS.ERC777);
+  });
+
+  it("ERC1155", async () => {
+    const result = await contract.callStatic.calculateInterfaceERC1155();
+    expect(result).toEqual(INTERFACE_IDS.ERC1155);
+  });
+
+  it("ERC1271", async () => {
+    const result = await contract.callStatic.calculateInterfaceERC1271();
+    expect(result).toEqual(INTERFACE_IDS.ERC1271);
   });
 });
