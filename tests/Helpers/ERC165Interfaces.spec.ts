@@ -68,6 +68,11 @@ describe("Calculate ERC interfaces", () => {
     expect(result).toEqual(INTERFACE_IDS.ERC20);
   });
 
+  it("ERC223", async () => {
+    const result = await contract.callStatic.calculateInterfaceERC223();
+    expect(result).toEqual(INTERFACE_IDS.ERC223);
+  });
+
   it("ERC721", async () => {
     const result = await contract.callStatic.calculateInterfaceERC721();
     expect(result).toEqual(INTERFACE_IDS.ERC721);

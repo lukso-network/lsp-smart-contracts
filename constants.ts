@@ -10,6 +10,7 @@ export const enum INTERFACE_IDS {
   ERC165 = "0x01ffc9a7",
   ERC1271 = "0x1626ba7e",
   ERC20 = "0x36372b07",
+  ERC223 = "0x87d43052",
   ERC721 = "0x80ac58cd",
   ERC721Metadata = "0x5b5e139f",
   ERC777 = "0xe58e113c",

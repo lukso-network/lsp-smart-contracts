@@ -9,6 +9,7 @@ import "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 import "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
 
 // ERC interfaces
+import "./Tokens/IERC223.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
@@ -100,6 +101,10 @@ contract CalculateLSPInterfaces {
  * @dev Calculate the ERC165 interface IDs (for backward compatibility)
  */
 contract CalculateERCInterfaces {
+    function calculateInterfaceERC223() public pure returns (bytes4) {
+        return type(IERC223).interfaceId;
+    }
+
     function calculateInterfaceERC20() public pure returns (bytes4) {
         return type(IERC20).interfaceId;
     }
