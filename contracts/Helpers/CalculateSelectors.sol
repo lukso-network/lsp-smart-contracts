@@ -8,9 +8,9 @@ import "../LSP9Vault/LSP9Vault.sol";
 import "../LSP6KeyManager/ILSP6KeyManager.sol";
 import "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 import "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
-import "@erc725/smart-contracts/contracts/interfaces/IERC1271.sol";
-import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiver.sol";
-import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "../LSP0ERC725Account/IERC1271.sol";
+import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
@@ -22,7 +22,7 @@ import "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 
 contract CalculateERC165Selectors {
     function calculateSelectorLSP1() public pure returns (bytes4) {
-        bytes4 selector = type(ILSP1).interfaceId;
+        bytes4 selector = type(ILSP1UniversalReceiver).interfaceId;
         require(
             selector == _INTERFACEID_LSP1,
             "_LSP1_INTERFACE_ID does not match type(ILSP1).interfaceId"
@@ -32,7 +32,7 @@ contract CalculateERC165Selectors {
     }
 
     function calculateSelectorLSP1Delegate() public pure returns (bytes4) {
-        bytes4 selector = type(ILSP1Delegate).interfaceId;
+        bytes4 selector = type(ILSP1UniversalReceiverDelegate).interfaceId;
         require(
             selector == _INTERFACEID_LSP1_DELEGATE,
             "_LSP1_DELEGATE_INTERFACE_ID does not match type(ILSP1Delegate).interfaceId"
