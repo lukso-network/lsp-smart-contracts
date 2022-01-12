@@ -53,6 +53,21 @@ describe("UniversalReceiverDelegateVault contract", () => {
     URDRevert = await new URDRevert__factory(owner1).deploy();
   });
 
+  describe("Universal Receiver Delegate (for Vault) deployment", () => {
+    it("should support ERC165 interface", async () => {
+      let result = await universalReceiverDelegate.callStatic.supportsInterface(
+        INTERFACE_IDS.ERC165
+      );
+      expect(result).toBeTruthy();
+    });
+    it("should support LSP1Delegate interface", async () => {
+      let result = await universalReceiverDelegate.callStatic.supportsInterface(
+        INTERFACE_IDS.LSP1Delegate
+      );
+      expect(result).toBeTruthy();
+    });
+  });
+
   describe("Vault deployement", () => {
     it("Deploys correctly, and compare owners", async () => {
       const idOwner = await VaultA.callStatic.owner();
