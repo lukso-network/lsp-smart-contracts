@@ -8,7 +8,7 @@ import "../LSP9Vault/LSP9Vault.sol";
 import "../LSP6KeyManager/ILSP6KeyManager.sol";
 import "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 import "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
-import "../LSP0ERC725Account/IERC1271.sol";
+import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";

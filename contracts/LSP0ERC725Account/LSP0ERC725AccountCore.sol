@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "./IERC1271.sol";
+import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
