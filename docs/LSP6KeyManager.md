@@ -111,14 +111,14 @@ function isValidSignature(bytes32 _hash, bytes _signature) external view returns
 
 | Name | Type | Description |
 |---|---|---|
-| _hash | bytes32 | hash of the data signed//Arbitrary length data signed on the behalf of address(this)
-| _signature | bytes | Signature byte array associated with _data
+| _hash | bytes32 | undefined
+| _signature | bytes | undefined
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| magicValue | bytes4 | either 0x1626ba7e on success or 0xffffffff failure
+| magicValue | bytes4 | undefined
 
 ### supportsInterface
 
