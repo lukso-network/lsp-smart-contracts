@@ -1181,7 +1181,15 @@ export const shouldInitializeLikeLSP7 = (
   });
 
   describe("when the contract was initialized", () => {
-    it("should have registered its ERC165 interface", async () => {
+    it("should have registered the ERC165 interface", async () => {
+      expect(await context.lsp7.supportsInterface(INTERFACE_IDS.ERC165));
+    });
+
+    it("should have registered the ERC725Y interface", async () => {
+      expect(await context.lsp7.supportsInterface(INTERFACE_IDS.ERC725Y));
+    });
+
+    it("should have registered the LSP7 interface", async () => {
       expect(await context.lsp7.supportsInterface(INTERFACE_IDS.LSP7));
     });
 
