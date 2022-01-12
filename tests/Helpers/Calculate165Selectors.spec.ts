@@ -1,8 +1,8 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import {
-  CalculateERC165Selectors,
-  CalculateERC165Selectors__factory,
+  CalculateLSPInterfaces,
+  CalculateLSPInterfaces__factory,
   CalculateERCInterfaces,
   CalculateERCInterfaces__factory,
 } from "../../types";
@@ -21,13 +21,11 @@ import { INTERFACE_IDS } from "../../constants";
  */
 describe("Calculate LSP interfaces", () => {
   let accounts: SignerWithAddress[];
-  let contract: CalculateERC165Selectors;
+  let contract: CalculateLSPInterfaces;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
-    contract = await new CalculateERC165Selectors__factory(
-      accounts[0]
-    ).deploy();
+    contract = await new CalculateLSPInterfaces__factory(accounts[0]).deploy();
   });
 
   it("LSP1", async () => {
