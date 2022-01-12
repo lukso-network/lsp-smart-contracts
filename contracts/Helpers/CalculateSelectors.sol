@@ -11,6 +11,7 @@ import "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
 import "@erc725/smart-contracts/contracts/interfaces/IERC1271.sol";
 import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiver.sol";
 import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
@@ -71,12 +72,6 @@ contract CalculateERC165Selectors {
         return selector;
     }
 
-    function calculateSelectorERC1271() public pure returns (bytes4) {
-        bytes4 selector = type(IERC1271).interfaceId;
-
-        return selector;
-    }
-
     function calculateLSP9VaultInterfaceID() public pure returns (bytes4) {
         LSP9Vault i;
 
@@ -92,16 +87,22 @@ contract CalculateERC165Selectors {
 
         return selector;
     }
+}
 
-    function calculateSelectorERC721() public pure returns (bytes4) {
-        bytes4 selector = type(IERC721).interfaceId;
-
-        return selector;
+contract CalculateERCInterfaces {
+    function calculateInterfaceERC20() public pure returns (bytes4) {
+        return type(IERC20).interfaceId;
     }
 
-    function calculateSelectorERC721Metadata() public pure returns (bytes4) {
-        bytes4 selector = type(IERC721Metadata).interfaceId;
+    function calculateInterfaceERC721() public pure returns (bytes4) {
+        return type(IERC721).interfaceId;
+    }
 
-        return selector;
+    function calculateInterfaceERC721Metadata() public pure returns (bytes4) {
+        return type(IERC721Metadata).interfaceId;
+    }
+
+    function calculateInterfaceERC1271() public pure returns (bytes4) {
+        return type(IERC1271).interfaceId;
     }
 }
