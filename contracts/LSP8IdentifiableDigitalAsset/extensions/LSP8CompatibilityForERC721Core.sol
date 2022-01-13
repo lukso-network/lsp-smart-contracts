@@ -222,9 +222,10 @@ abstract contract LSP8CompatibilityForERC721Core is
         virtual
         override
     {
+        address tokenOwner = tokenOwnerOf(tokenId);
+
         super._burn(tokenId, data);
 
-        address tokenOwner = tokenOwnerOf(tokenId);
         emit Transfer(
             tokenOwner,
             address(0),

@@ -24,4 +24,11 @@ contract LSP8CompatibilityForERC721Tester is LSP8CompatibilityForERC721 {
         // using force=true so we can send to EOA in test
         _mint(to, bytes32(tokenId), true, data);
     }
+
+    function burn(
+        uint256 tokenId,
+        bytes calldata data
+    ) public {
+        _burn(bytes32(tokenId), data);
+    }
 }
