@@ -176,7 +176,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
             tokenId
           );
 
-          expect(tx).toHaveEmittedWith(
+          await expect(tx).toHaveEmittedWith(
             context.lsp8CompatibilityForERC721,
             "AuthorizedOperator",
             [
@@ -186,7 +186,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
             ]
           );
 
-          expect(tx).toHaveEmittedWith(
+          await expect(tx).toHaveEmittedWith(
             context.lsp8CompatibilityForERC721,
             "Approval",
             [
@@ -327,17 +327,17 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       const tx = await context.lsp8CompatibilityForERC721[transferFn](
         ...txArgs
       );
-      expect(tx).toHaveEmittedWith(
+      await expect(tx).toHaveEmittedWith(
         context.lsp8CompatibilityForERC721,
         "Transfer(address,address,address,bytes32,bool,bytes)",
         [operator, from, to, tokenIdAsBytes32(tokenId), force, expectedData]
       );
-      expect(tx).toHaveEmittedWith(
+      await expect(tx).toHaveEmittedWith(
         context.lsp8CompatibilityForERC721,
         "Transfer(address,address,uint256)",
         [from, to, ethers.BigNumber.from(tokenId)]
       );
-      expect(tx).toHaveEmittedWith(
+      await expect(tx).toHaveEmittedWith(
         context.lsp8CompatibilityForERC721,
         "RevokedOperator",
         [context.accounts.operator.address, from, tokenIdAsBytes32(tokenId)]
