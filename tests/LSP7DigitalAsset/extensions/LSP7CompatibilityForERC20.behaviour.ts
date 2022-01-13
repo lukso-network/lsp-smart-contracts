@@ -44,12 +44,6 @@ export const shouldBehaveLikeLSP7CompatibilityForERC20 = (
 
   beforeEach(async () => {
     context = await buildContext();
-
-    await context.lsp7CompatibilityForERC20.mint(
-      context.accounts.owner.address,
-      context.initialSupply,
-      ethers.utils.toUtf8Bytes("mint tokens for the owner")
-    );
   });
 
   describe("approve", () => {
@@ -236,6 +230,84 @@ export const shouldBehaveLikeLSP7CompatibilityForERC20 = (
     });
   });
 
+  describe("mint", () => {
+    describe("when a token is minted", () => {
+      it("should have expected events", async () => {
+        const txParams = {
+          to: context.accounts.owner.address,
+          amount: context.initialSupply,
+          data: ethers.utils.toUtf8Bytes("mint tokens for the owner"),
+        };
+        const operator = context.accounts.owner;
+
+        const tx = await context.lsp7CompatibilityForERC20
+          .connect(operator)
+          .mint(txParams.to, txParams.amount, txParams.data);
+
+        await expect(tx).toHaveEmittedWith(
+          context.lsp7CompatibilityForERC20,
+          "Transfer(address,address,address,uint256,bool,bytes)",
+          [
+            operator.address,
+            ethers.constants.AddressZero,
+            txParams.to,
+            txParams.amount,
+            true,
+            ethers.utils.hexlify(txParams.data),
+          ]
+        );
+        await expect(tx).toHaveEmittedWith(
+          context.lsp7CompatibilityForERC20,
+          "Transfer(address,address,uint256)",
+          [ethers.constants.AddressZero, txParams.to, txParams.amount]
+        );
+      });
+    });
+  });
+
+  describe("burn", () => {
+    describe("when a token is burned", () => {
+      beforeEach(async () => {
+        await context.lsp7CompatibilityForERC20.mint(
+          context.accounts.owner.address,
+          context.initialSupply,
+          ethers.utils.toUtf8Bytes("mint tokens for owner")
+        );
+      });
+
+      it("should have expected events", async () => {
+        const txParams = {
+          from: context.accounts.owner.address,
+          amount: context.initialSupply,
+          data: ethers.utils.toUtf8Bytes("burn tokens from the owner"),
+        };
+        const operator = context.accounts.owner;
+
+        const tx = await context.lsp7CompatibilityForERC20
+          .connect(operator)
+          .burn(txParams.from, txParams.amount, txParams.data);
+
+        await expect(tx).toHaveEmittedWith(
+          context.lsp7CompatibilityForERC20,
+          "Transfer(address,address,address,uint256,bool,bytes)",
+          [
+            operator.address,
+            txParams.from,
+            ethers.constants.AddressZero,
+            txParams.amount,
+            false,
+            ethers.utils.hexlify(txParams.data),
+          ]
+        );
+        await expect(tx).toHaveEmittedWith(
+          context.lsp7CompatibilityForERC20,
+          "Transfer(address,address,uint256)",
+          [txParams.from, ethers.constants.AddressZero, txParams.amount]
+        );
+      });
+    });
+  });
+
   describe("transfers", () => {
     type TestDeployedContracts = {
       tokenReceiverWithLSP1: TokenReceiverWithLSP1;
@@ -255,6 +327,13 @@ export const shouldBehaveLikeLSP7CompatibilityForERC20 = (
     });
 
     beforeEach(async () => {
+      // setup so we have tokens to transfer
+      await context.lsp7CompatibilityForERC20.mint(
+        context.accounts.owner.address,
+        context.initialSupply,
+        ethers.utils.toUtf8Bytes("mint tokens for the owner")
+      );
+
       // setup so we can observe allowance values during transfer tests
       await context.lsp7CompatibilityForERC20.approve(
         context.accounts.operator.address,
