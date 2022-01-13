@@ -9,6 +9,22 @@ import "../ILSP7DigitalAsset.sol";
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC20.
  */
 interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
+    /**
+     * @dev To provide compatibility with indexing ERC20 events.
+     * @param from The sending address
+     * @param to The receiving address
+     * @param value The amount of tokens transfered.
+     */
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    /**
+     * @dev To provide compatibility with indexing ERC20 events.
+     * @param owner The account giving approval
+     * @param spender The account receiving approval
+     * @param value The amount of tokens `spender` has access to from `owner`
+     */
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
     /*
      * @dev Compatible with ERC20 tranfer
      * @param to The receiving address
