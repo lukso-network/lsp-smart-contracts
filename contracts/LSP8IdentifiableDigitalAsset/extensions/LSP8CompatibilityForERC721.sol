@@ -42,6 +42,7 @@ contract LSP8CompatibilityForERC721 is
         _registerInterface(_INTERFACEID_ERC721METADATA);
     }
 
+    // solhint-disable no-unused-vars
     /*
      * @inheritdoc ILSP8CompatibilityForERC721
      */
@@ -124,6 +125,7 @@ contract LSP8CompatibilityForERC721 is
         }
     }
 
+    // solhint-disable no-unused-vars
     /*
      * @inheritdoc ILSP8CompatibilityForERC721
      */
