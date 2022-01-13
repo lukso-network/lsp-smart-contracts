@@ -629,6 +629,16 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
           INTERFACE_IDS.LSP8
         )
       );
+      expect(
+        await context.lsp8CompatibilityForERC721.supportsInterface(
+          INTERFACE_IDS.ERC721
+        )
+      );
+      expect(
+        await context.lsp8CompatibilityForERC721.supportsInterface(
+          INTERFACE_IDS.ERC721Metadata
+        )
+      );
     });
 
     it("should have set expected entries with ERC725Y.setData", async () => {
