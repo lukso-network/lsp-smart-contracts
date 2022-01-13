@@ -12,8 +12,8 @@ import {
   LSP6KeyManager__factory,
   TargetContract,
   TargetContract__factory,
-  SignatureValidatorContract,
-  SignatureValidatorContract__factory,
+  SignatureValidator,
+  SignatureValidator__factory,
   Reentrancy,
   Reentrancy__factory,
 } from "../../types";
@@ -2717,7 +2717,7 @@ describe("ALLOWEDSTANDARDS", () => {
   let universalProfile: UniversalProfile,
     keyManager: LSP6KeyManager,
     targetContract: TargetContract,
-    signatureValidatorContract: SignatureValidatorContract;
+    SignatureValidator: SignatureValidator;
 
   let otherUniversalProfile: UniversalProfile;
 
@@ -2736,9 +2736,7 @@ describe("ALLOWEDSTANDARDS", () => {
       universalProfile.address
     );
     targetContract = await new TargetContract__factory(owner).deploy();
-    signatureValidatorContract = await new SignatureValidatorContract__factory(
-      owner
-    ).deploy();
+    SignatureValidator = await new SignatureValidator__factory(owner).deploy();
 
     // test to interact with an other UniversalProfile (e.g.: transfer LYX)
     otherUniversalProfile = await new UniversalProfile__factory(
@@ -2812,14 +2810,14 @@ describe("ALLOWEDSTANDARDS", () => {
         );
         let sampleSignature = await owner.signMessage("Sample Message");
 
-        let payload = signatureValidatorContract.interface.encodeFunctionData(
+        let payload = SignatureValidator.interface.encodeFunctionData(
           "isValidSignature",
           [sampleHash, sampleSignature]
         );
 
         let upPayload = universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+          [OPERATIONS.CALL, SignatureValidator.address, 0, payload]
         );
 
         let data = await keyManager
@@ -2862,14 +2860,14 @@ describe("ALLOWEDSTANDARDS", () => {
         );
         let sampleSignature = await caller.signMessage("Sample Message");
 
-        let payload = signatureValidatorContract.interface.encodeFunctionData(
+        let payload = SignatureValidator.interface.encodeFunctionData(
           "isValidSignature",
           [sampleHash, sampleSignature]
         );
 
         let upPayload = universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+          [OPERATIONS.CALL, SignatureValidator.address, 0, payload]
         );
 
         let data = await keyManager
@@ -2932,14 +2930,14 @@ describe("ALLOWEDSTANDARDS", () => {
         );
         let sampleSignature = await caller.signMessage("Sample Message");
 
-        let payload = signatureValidatorContract.interface.encodeFunctionData(
+        let payload = SignatureValidator.interface.encodeFunctionData(
           "isValidSignature",
           [sampleHash, sampleSignature]
         );
 
         let upPayload = universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+          [OPERATIONS.CALL, SignatureValidator.address, 0, payload]
         );
 
         await expect(

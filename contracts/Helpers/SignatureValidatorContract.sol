@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
  *
  * implementation code taken from: https://eips.ethereum.org/EIPS/eip-1271
  */
-contract SignatureValidatorContract is IERC1271, ERC165Storage {
+contract SignatureValidator is IERC1271, ERC165Storage {
     constructor() {
         _registerInterface(type(IERC1271).interfaceId);
     }
