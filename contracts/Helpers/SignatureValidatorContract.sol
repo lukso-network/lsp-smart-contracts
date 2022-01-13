@@ -15,6 +15,7 @@ contract SignatureValidator is IERC1271, ERC165Storage {
         _registerInterface(type(IERC1271).interfaceId);
     }
 
+    // solhint-disable no-unused-vars
     /**
      * @notice Verifies that the signer is the owner of the signing contract.
      */
