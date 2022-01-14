@@ -298,13 +298,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             (bytes32[])
         );
 
-        bytes32 allowedERC725YKey = allowedERC725YKeys[0];
-
-        if (_erc725YKey == allowedERC725YKey) {
-            return;
-        } else {
-            revert("not allowed ERC725Y Key");
+        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
+            if (_erc725YKey == allowedERC725YKeys[ii]) return;
         }
+        revert("not allowed ERC725Y Key");
     }
 
     /**
