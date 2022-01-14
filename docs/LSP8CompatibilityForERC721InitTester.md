@@ -1,4 +1,4 @@
-# LSP8CompatibilityForERC721Tester
+# LSP8CompatibilityForERC721InitTester
 
 
 
@@ -148,6 +148,22 @@ function getOperatorsOf(bytes32 tokenId) external view returns (address[])
 | Name | Type | Description |
 |---|---|---|
 | _0 | address[] | The list of operators for the `tokenId`
+
+### initialize
+
+```solidity
+function initialize(address _newOwner) external nonpayable
+```
+
+Sets the name, the symbol and the owner of the token
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _newOwner | address | the owner of the contract
 
 ### isApprovedForAll
 

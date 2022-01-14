@@ -1,4 +1,4 @@
-# LSP8CompatibilityForERC721Tester
+# LSP8CompatibilityForERC721Core
 
 
 
@@ -6,7 +6,7 @@
 
 
 
-
+*LSP8 extension, for compatibility for clients / tools that expect ERC721.*
 
 ## Methods
 
@@ -65,23 +65,6 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | The number of tokens owned by this address
-
-### burn
-
-```solidity
-function burn(uint256 tokenId, bytes data) external nonpayable
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| tokenId | uint256 | undefined
-| data | bytes | undefined
 
 ### getApproved
 
@@ -193,24 +176,6 @@ function isOperatorFor(address operator, bytes32 tokenId) external view returns 
 | Name | Type | Description |
 |---|---|---|
 | _0 | bool | True if the owner of `tokenId` is `operator` address, false otherwise
-
-### mint
-
-```solidity
-function mint(address to, uint256 tokenId, bytes data) external nonpayable
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| to | address | undefined
-| tokenId | uint256 | undefined
-| data | bytes | undefined
 
 ### name
 
