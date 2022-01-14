@@ -281,9 +281,29 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             } else {
                 _hasPermission(_PERMISSION_SETDATA, permissions) ||
                     _notAuthorised(_from, "SETDATA");
+
+                _verifyAllowedERC725YKey(_from, key);
             }
 
             pointer += 32; // move calldata pointer
+        }
+    }
+
+    function _verifyAllowedERC725YKey(address _from, bytes32 _erc725YKey)
+        internal
+        view
+    {
+        bytes32[] memory allowedERC725YKeys = abi.decode(
+            account.getAllowedERC725YKeysFor(_from),
+            (bytes32[])
+        );
+
+        bytes32 allowedERC725YKey = allowedERC725YKeys[0];
+
+        if (_erc725YKey == allowedERC725YKey) {
+            return;
+        } else {
+            revert("not allowed ERC725Y Key");
         }
     }
 

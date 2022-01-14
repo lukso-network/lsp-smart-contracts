@@ -74,4 +74,18 @@ library LSP6Utils {
                 )
             );
     }
+
+    function getAllowedERC725YKeysFor(IERC725Y _account, address _address)
+        internal
+        view
+        returns (bytes memory)
+    {
+        return
+            _account.getDataSingle(
+                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                    _ADDRESS_ALLOWEDERC725YKEYS,
+                    bytes20(_address)
+                )
+            );
+    }
 }

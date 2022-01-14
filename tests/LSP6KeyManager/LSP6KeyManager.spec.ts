@@ -2963,3 +2963,159 @@ describe("ALLOWEDSTANDARDS", () => {
     });
   });
 });
+
+describe.only("ALLOWEDERC725YKEYS", () => {
+  let abiCoder;
+
+  let accounts: SignerWithAddress[] = [];
+
+  let owner: SignerWithAddress,
+    controllerOneKey: SignerWithAddress,
+    controllerManyKeys: SignerWithAddress;
+
+  let universalProfile: UniversalProfile, keyManager: LSP6KeyManager;
+
+  const customKey1 = ethers.utils.keccak256(
+    ethers.utils.toUtf8Bytes("OnlyOneKey")
+  );
+  const customKey2 = ethers.utils.keccak256(
+    ethers.utils.toUtf8Bytes("CustomKey1")
+  );
+  const customKey3 = ethers.utils.keccak256(
+    ethers.utils.toUtf8Bytes("CustomKey2")
+  );
+  const customKey4 = ethers.utils.keccak256(
+    ethers.utils.toUtf8Bytes("CustomKey3")
+  );
+
+  beforeAll(async () => {
+    abiCoder = ethers.utils.defaultAbiCoder;
+    accounts = await ethers.getSigners();
+
+    owner = accounts[0];
+    controllerOneKey = accounts[1];
+    controllerManyKeys = accounts[2];
+
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(
+      universalProfile.address
+    );
+
+    await universalProfile
+      .connect(owner)
+      .setData(
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            owner.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            controllerOneKey.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            controllerManyKeys.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+            controllerOneKey.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+            controllerManyKeys.address.substring(2),
+        ],
+        [
+          ALL_PERMISSIONS_SET,
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+          abiCoder.encode(["bytes32[]"], [[customKey1]]),
+          abiCoder.encode(
+            ["bytes32[]"],
+            [[customKey2, customKey3, customKey4]]
+          ),
+        ]
+      );
+
+    await universalProfile.transferOwnership(keyManager.address, {
+      from: owner.address,
+    });
+  });
+
+  describe("verify allowed ERC725Y keys set", () => {
+    it("`controllerOneKey` should have 1 x key in its list of allowed keys", async () => {
+      let [result] = await universalProfile.getData([
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          controllerOneKey.address.substring(2),
+      ]);
+      let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+
+      expect(decodedResult).toHaveLength(1);
+    });
+
+    it("`controllerManyKeys` should have 3 x keys in its list of allowed keys", async () => {
+      let [result] = await universalProfile.getData([
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          controllerManyKeys.address.substring(2),
+      ]);
+      let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+
+      expect(decodedResult).toHaveLength(3);
+    });
+
+    it("`controllerOneKey` should have the right keys set in its list of allowed keys", async () => {
+      let [result] = await universalProfile.getData([
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          controllerOneKey.address.substring(2),
+      ]);
+      let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+
+      expect(decodedResult).toContain(customKey1);
+    });
+
+    it("`controllerManyKeys` should have the right keys set in its list of allowed keys", async () => {
+      let [result] = await universalProfile.getData([
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          controllerManyKeys.address.substring(2),
+      ]);
+      let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+
+      expect(decodedResult).toContain(customKey2);
+      expect(decodedResult).toContain(customKey3);
+      expect(decodedResult).toContain(customKey4);
+    });
+  });
+
+  describe("when address can set only one key", () => {
+    it("should pass when setting the right key", async () => {
+      let key = customKey1;
+      let newValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("Some data")
+      );
+
+      let setDataPayload = universalProfile.interface.encodeFunctionData(
+        "setData",
+        [[key], [newValue]]
+      );
+      await keyManager.connect(controllerOneKey).execute(setDataPayload);
+
+      let [result] = await universalProfile.getData([key]);
+      expect(result).toEqual(newValue);
+    });
+
+    it("should fail when setting the wrong key", async () => {
+      let key = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("NotAllowedKey")
+      );
+      let newValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("Some data")
+      );
+
+      let setDataPayload = universalProfile.interface.encodeFunctionData(
+        "setData",
+        [[key], [newValue]]
+      );
+
+      await expect(
+        keyManager.connect(controllerOneKey).execute(setDataPayload)
+      ).toBeRevertedWith("not allowed ERC725Y Key");
+    });
+  });
+
+  describe("when address can set many keys", () => {});
+
+  describe("when address can set any keys", () => {});
+});

@@ -15,6 +15,7 @@ bytes12 constant _ADDRESS_PERMISSIONS = 0x4b80742d0000000082ac0000; // AddressPe
 bytes12 constant _ADDRESS_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
 bytes12 constant _ADDRESS_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
 bytes12 constant _ADDRESS_ALLOWEDSTANDARDS = 0x4b80742d000000003efa0000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+bytes12 constant _ADDRESS_ALLOWEDERC725YKEYS = 0x4b80742d0000000090b80000; // AddressPermissions:AllowedERC725YKeys:<address> --> bytes32[]
 /* solhint-enable */
 
 // PERMISSIONS VALUES

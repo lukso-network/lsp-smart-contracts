@@ -112,6 +112,8 @@ export const ERC725YKeys = {
     "AddressPermissions:AllowedFunctions": "0x4b80742d000000008efe0000",
     // AddressPermissions:AllowedStandards:<address>
     "AddressPermissions:AllowedStandards": "0x4b80742d000000003efa0000",
+    // AddressPermissions:AllowedERC725YKeys:<address>
+    "AddressPermissions:AllowedERC725YKeys": "0x4b80742d0000000090b80000",
   },
   LSP10: {
     // keccak256('LSP10VaultsMap')
