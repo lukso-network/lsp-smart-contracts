@@ -33,7 +33,6 @@ contract LSP8CompatibilityForERC721 is
         _registerInterface(_INTERFACEID_ERC721METADATA);
     }
 
-    // solhint-disable no-unused-vars
     /*
      * @inheritdoc ILSP8CompatibilityForERC721
      */
@@ -44,6 +43,8 @@ contract LSP8CompatibilityForERC721 is
         override
         returns (string memory)
     {
+        // silence compiler warning about unused variable
+        tokenId;
         bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
@@ -116,7 +117,6 @@ contract LSP8CompatibilityForERC721 is
         }
     }
 
-    // solhint-disable no-unused-vars
     /*
      * @inheritdoc ILSP8CompatibilityForERC721
      */
@@ -126,6 +126,9 @@ contract LSP8CompatibilityForERC721 is
         override
         returns (bool)
     {
+        // silence compiler warning about unused variable
+        tokenId;
+
         return false;
     }
 
