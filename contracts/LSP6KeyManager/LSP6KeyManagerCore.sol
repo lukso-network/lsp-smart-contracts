@@ -304,6 +304,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         }
     }
 
+    /**
+     * @dev if `_from` is restricted to set only specific ERC725Y keys,
+     * verify that the key being set (`_erc725Ykey`) is part of the list of `_allowedERC725YKeys`
+     * @param _erc725YKey the _erc725Ykey to set
+     * @param _allowedERC725YKeys a list of ERC725Y keys allowed
+     */
     function _verifyAllowedERC725YKey(
         bytes32 _erc725YKey,
         bytes32[] memory _allowedERC725YKeys
@@ -349,8 +355,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     /**
-     * @dev verify if `_from` is authorised to use the linked ERC725Account
-     * to interact with address `_to`
+     * @dev verify if `_from` is authorised to interact with address `_to` via the linked ERC725Account
      * @param _from the caller address
      * @param _to the address to interact with
      */
@@ -371,7 +376,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         revert NotAllowedAddress(_from, _to);
     }
 
-    function _verifyAllowedStandard(address _from, address to) internal view {
+    /**
+     * @dev if `_from` is restricted to interact with contracts that implement a specific interface,
+     * verify that `_to` implements one of these interface.
+     * @param _from the caller address
+     * @param _to the address of the contract to interact with
+     */
+    function _verifyAllowedStandard(address _from, address _to) internal view {
         bytes memory allowedStandards = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_ALLOWEDSTANDARDS,
@@ -379,7 +390,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             )
         );
 
-        // whitelist any standard interface if nothing in the list
+        // whitelist any standard interface (ERC165) if nothing in the list
         if (allowedStandards.length == 0) return;
 
         bytes4[] memory allowedStandardsList = abi.decode(
@@ -388,7 +399,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         );
 
         for (uint256 ii = 0; ii < allowedStandardsList.length; ii++) {
-            if (to.supportsInterface(allowedStandardsList[ii])) return;
+            if (_to.supportsInterface(allowedStandardsList[ii])) return;
         }
         revert("Not Allowed Standards");
     }
