@@ -48,6 +48,7 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     using ERC725Utils for ERC725Y;
+    using LSP2Utils for ERC725Y;
     using LSP6Utils for ERC725;
     using Address for address;
     using ECDSA for bytes32;
@@ -257,6 +258,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     {
         bytes32 permissions = account.getPermissionsFor(_from);
 
+        bytes memory allowedERC725Ykeys = ERC725Y(account).getDataSingle(
+            LSP2Utils.generateBytes20MappingWithGroupingKey(
+                _ADDRESS_ALLOWEDERC725YKEYS,
+                bytes20(_from)
+            )
+        );
+
+        // whitelist any ERC725Y key if nothing in the list
+        bool anyERC725YKeyAllowed = allowedERC725Ykeys.length == 0;
+
         uint256 keyCount = uint256(bytes32(_data[68:100]));
         uint256 pointer = 100;
 
@@ -282,26 +293,23 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 _hasPermission(_PERMISSION_SETDATA, permissions) ||
                     _notAuthorised(_from, "SETDATA");
 
-                _verifyAllowedERC725YKey(_from, key);
+                if (!anyERC725YKeyAllowed)
+                    _verifyAllowedERC725YKey(
+                        key,
+                        abi.decode(allowedERC725Ykeys, (bytes32[]))
+                    );
             }
 
             pointer += 32; // move calldata pointer
         }
     }
 
-    function _verifyAllowedERC725YKey(address _from, bytes32 _erc725YKey)
-        internal
-        view
-    {
-        bytes memory result = account.getAllowedERC725YKeysFor(_from);
-
-        // whitelist any ERC725Y key if nothing in the list
-        if (result.length == 0) return;
-
-        bytes32[] memory allowedERC725YKeys = abi.decode(result, (bytes32[]));
-
-        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
-            if (_erc725YKey == allowedERC725YKeys[ii]) return;
+    function _verifyAllowedERC725YKey(
+        bytes32 _erc725YKey,
+        bytes32[] memory _allowedERC725YKeys
+    ) internal pure {
+        for (uint256 ii = 0; ii < _allowedERC725YKeys.length; ii++) {
+            if (_erc725YKey == _allowedERC725YKeys[ii]) return;
         }
         revert("not allowed ERC725Y Key");
     }
@@ -364,7 +372,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     function _verifyAllowedStandard(address _from, address to) internal view {
-        bytes memory allowedStandards = account.getAllowedStandardsFor(_from);
+        bytes memory allowedStandards = ERC725Y(account).getDataSingle(
+            LSP2Utils.generateBytes20MappingWithGroupingKey(
+                _ADDRESS_ALLOWEDSTANDARDS,
+                bytes20(_from)
+            )
+        );
 
         // whitelist any standard interface if nothing in the list
         if (allowedStandards.length == 0) return;
