@@ -8,7 +8,7 @@ import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
-import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "../../../Utils/ERC725Utils.sol";
 
 // constants
 import "../../LSP1Constants.sol";
@@ -65,13 +65,7 @@ abstract contract TokenHandlingContract {
                 );
                 if ((balance - _tokenAmount(typeId, data)) == 0) {
                     (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
-                        .removeMapAndArrayKey(
-                            vault,
-                            arrayKey,
-                            mapHash,
-                            mapKey,
-                            interfaceId
-                        );
+                        .removeMapAndArrayKey(vault, arrayKey, mapHash, mapKey);
 
                     vault.setData(keys, values);
                 }

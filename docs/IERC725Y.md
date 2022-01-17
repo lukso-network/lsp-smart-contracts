@@ -2,52 +2,52 @@
 
 
 
-> ERC725 Y data store
+> The interface for ERC725Y General key/value store
 
 
 
-*Contract module which provides the ability to set arbitrary key value sets that can be changed over time. It is intended to standardise certain keys value pairs to allow automated retrievals and interactions from interfaces and other smart contracts. `setData` should only be callable by the owner of the contract set via ERC173.*
+*ERC725Y provides the ability to set arbitrary key value sets that can be changed over time It is intended to standardise certain keys value pairs to allow automated retrievals and interactions from interfaces and other smart contracts*
 
 ## Methods
 
 ### getData
 
 ```solidity
-function getData(bytes32[] _keys) external view returns (bytes[])
+function getData(bytes32[] keys) external view returns (bytes[] values)
 ```
 
+Gets array of data at multiple given keys
 
 
-*Gets array of data at multiple given `key`*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | undefined
+| keys | bytes32[] | The array of keys which values to retrieve
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes[] | undefined
+| values | bytes[] | The array of data stored at multiple keys
 
 ### setData
 
 ```solidity
-function setData(bytes32[] _keys, bytes[] _values) external nonpayable
+function setData(bytes32[] keys, bytes[] values) external nonpayable
 ```
 
 
 
-*Sets array of data at multiple given `key`. SHOULD only be callable by the owner of the contract set via ERC173. Emits a {DataChanged} event.*
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | undefined
-| _values | bytes[] | undefined
+| keys | bytes32[] | The array of keys which values to set
+| values | bytes[] | The array of values to set
 
 
 
@@ -59,16 +59,16 @@ function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 event DataChanged(bytes32 indexed key, bytes value)
 ```
 
+Emitted when data at a key is changed
 
 
-*Emitted when data at a key is changed.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| key `indexed` | bytes32 | undefined |
-| value  | bytes | undefined |
+| key `indexed` | bytes32 | The key which value is set |
+| value  | bytes | The value to set |
 
 
 

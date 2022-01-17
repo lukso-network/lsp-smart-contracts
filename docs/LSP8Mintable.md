@@ -52,10 +52,10 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 ### getData
 
 ```solidity
-function getData(bytes32[] _keys) external view returns (bytes[] values)
+function getData(bytes32[] keys) external view returns (bytes[] values)
 ```
 
-Gets array of data at multiple given `key`
+Gets array of data at multiple given keys
 
 
 
@@ -63,7 +63,7 @@ Gets array of data at multiple given `key`
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | the keys which values to retrieve
+| keys | bytes32[] | The array of keys which values to retrieve
 
 #### Returns
 
@@ -186,16 +186,16 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 ```
 
-Sets array of data at multiple given `key`
 
 
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | the keys which values to retrieve
-| _values | bytes[] | the array of bytes to set.
+| _keys | bytes32[] | undefined
+| _values | bytes[] | undefined
 
 ### supportsInterface
 
@@ -364,7 +364,7 @@ event AuthorizedOperator(address indexed operator, address indexed tokenOwner, b
 event DataChanged(bytes32 indexed key, bytes value)
 ```
 
-
+Emitted when data at a key is changed
 
 
 

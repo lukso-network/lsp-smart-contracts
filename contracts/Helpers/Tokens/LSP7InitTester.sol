@@ -2,15 +2,15 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP7DigitalAsset/LSP7DigitalAssetInit.sol";
+import "../../LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol";
 
-contract LSP7InitTester is LSP7DigitalAssetInit {
+contract LSP7InitTester is LSP7DigitalAssetInitAbstract {
     function initialize(
         string memory name,
         string memory symbol,
         address newOwner
     ) public override initializer {
-        LSP7DigitalAssetInit.initialize(name, symbol, newOwner, false);
+        LSP7DigitalAssetInitAbstract.initialize(name, symbol, newOwner, false);
     }
 
     function mint(
