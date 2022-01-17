@@ -293,10 +293,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         internal
         view
     {
-        bytes32[] memory allowedERC725YKeys = abi.decode(
-            account.getAllowedERC725YKeysFor(_from),
-            (bytes32[])
-        );
+        bytes memory result = account.getAllowedERC725YKeysFor(_from);
+
+        // whitelist any ERC725Y key if nothing in the list
+        if (result.length == 0) return;
+
+        bytes32[] memory allowedERC725YKeys = abi.decode(result, (bytes32[]));
 
         for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
             if (_erc725YKey == allowedERC725YKeys[ii]) return;

@@ -41,6 +41,7 @@ import {
   getRandomAddresses,
   generateKeysAndValues,
   RANDOM_BYTES32,
+  getRandomString,
 } from "../utils/helpers";
 import { Signer } from "ethers";
 
@@ -2962,7 +2963,7 @@ describe("ALLOWEDSTANDARDS", () => {
   });
 });
 
-describe.only("ALLOWEDERC725YKEYS", () => {
+describe("ALLOWEDERC725YKEYS", () => {
   let abiCoder;
 
   let accounts: SignerWithAddress[] = [];
@@ -3310,5 +3311,48 @@ describe.only("ALLOWEDERC725YKEYS", () => {
     });
   });
 
-  describe("when address can set any keys", () => {});
+  describe("when address can set any keys", () => {
+    describe("when setting one key", () => {
+      it("should pass when setting any random key", async () => {
+        let key = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes(getRandomString())
+        );
+        let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data"));
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [[key], [value]]
+        );
+        await keyManager.connect(owner).execute(setDataPayload);
+
+        let [result] = await universalProfile.getData([key]);
+        expect(result).toEqual(value);
+      });
+    });
+
+    describe("when setting multiple keys", () => {
+      it("should pass when setting any multiple keys", async () => {
+        let keys = [
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+        ];
+        let values = [
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 3")),
+        ];
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [keys, values]
+        );
+        await keyManager.connect(owner).execute(setDataPayload);
+
+        let result = await universalProfile.getData(keys);
+
+        expect(result).toEqual(values);
+      });
+    });
+  });
 });
