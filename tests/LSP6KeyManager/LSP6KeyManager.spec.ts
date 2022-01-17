@@ -3136,7 +3136,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
           keyManager.connect(controllerOneKey).execute(setDataPayload)
         ).toBeRevertedWith("not allowed ERC725Y Key");
       });
-      it("should fail, even when the key list contains the allowed key", async () => {
+      it("should fail, even if the list contains some of the allowed key", async () => {
         let keys = [
           customKey1,
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey1")),
@@ -3160,7 +3160,155 @@ describe.only("ALLOWEDERC725YKEYS", () => {
     });
   });
 
-  describe("when address can set many keys", () => {});
+  describe("when address can set many keys", () => {
+    describe("when trying to set one key", () => {
+      it("should pass when trying to set the 1st allowed key", async () => {
+        let key = customKey2;
+        let newValue = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("Some data")
+        );
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [[key], [newValue]]
+        );
+        await keyManager.connect(controllerManyKeys).execute(setDataPayload);
+
+        let [result] = await universalProfile.getData([key]);
+        expect(result).toEqual(newValue);
+      });
+      it("should pass when trying to set the 2nd allowed key", async () => {
+        let key = customKey3;
+        let newValue = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("Some data")
+        );
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [[key], [newValue]]
+        );
+        await keyManager.connect(controllerManyKeys).execute(setDataPayload);
+
+        let [result] = await universalProfile.getData([key]);
+        expect(result).toEqual(newValue);
+      });
+      it("should pass when trying to set the 3rd allowed key", async () => {
+        let key = customKey3;
+        let newValue = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("Some data")
+        );
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [[key], [newValue]]
+        );
+        await keyManager.connect(controllerManyKeys).execute(setDataPayload);
+
+        let [result] = await universalProfile.getData([key]);
+        expect(result).toEqual(newValue);
+      });
+
+      it("should fail when setting a non-allowed key", async () => {
+        let key = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("NotAllowedKey")
+        );
+        let newValue = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("Some data")
+        );
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [[key], [newValue]]
+        );
+
+        await expect(
+          keyManager.connect(controllerManyKeys).execute(setDataPayload)
+        ).toBeRevertedWith("not allowed ERC725Y Key");
+      });
+    });
+
+    describe("when trying to set many keys", () => {
+      it("should pass when the list is 2 of the allowed keys", async () => {
+        let keys = [customKey2, customKey3];
+        let values = [
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+        ];
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [keys, values]
+        );
+        await keyManager.connect(controllerManyKeys).execute(setDataPayload);
+
+        let result = await universalProfile.getData(keys);
+
+        expect(result).toEqual(values);
+      });
+
+      it("should pass when the list is all the allowed keys", async () => {
+        let keys = [customKey2, customKey3, customKey4];
+        let values = [
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 3")),
+        ];
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [keys, values]
+        );
+        await keyManager.connect(controllerManyKeys).execute(setDataPayload);
+
+        let result = await universalProfile.getData(keys);
+
+        expect(result).toEqual(values);
+      });
+
+      it("should fail when the list is none of the allowed keys", async () => {
+        let keys = [
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey1")),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey2")),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey3")),
+        ];
+        let values = [
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 1")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 2")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 3")),
+        ];
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [keys, values]
+        );
+
+        await expect(
+          keyManager.connect(controllerManyKeys).execute(setDataPayload)
+        ).toBeRevertedWith("not allowed ERC725Y Key");
+      });
+      it("should fail even if the list contains some of the allowed keys", async () => {
+        let keys = [
+          customKey2,
+          customKey3,
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey3")),
+        ];
+        let values = [
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some Data 1")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some Data 2")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 3")),
+        ];
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [keys, values]
+        );
+
+        await expect(
+          keyManager.connect(controllerManyKeys).execute(setDataPayload)
+        ).toBeRevertedWith("not allowed ERC725Y Key");
+      });
+    });
+  });
 
   describe("when address can set any keys", () => {});
 });
