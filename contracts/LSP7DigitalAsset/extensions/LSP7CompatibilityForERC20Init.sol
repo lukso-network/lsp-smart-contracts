@@ -3,10 +3,9 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../LSP7DigitalAssetInit.sol";
-import "./LSP7CompatibilityForERC20Core.sol";
+import "./LSP7CompatibilityForERC20InitAbstract.sol";
 
-contract LSP7CompatibilityForERC20Init is LSP7DigitalAssetInit, LSP7CompatibilityForERC20Core {
+contract LSP7CompatibilityForERC20Init is LSP7CompatibilityForERC20InitAbstract {
     /**
      * @notice Sets the name, the symbol and the owner of the token
      * @param name_ The name of the token
@@ -18,38 +17,6 @@ contract LSP7CompatibilityForERC20Init is LSP7DigitalAssetInit, LSP7Compatibilit
         string memory symbol_,
         address newOwner_
     ) public virtual override initializer {
-        LSP7DigitalAssetInit.initialize(name_, symbol_, newOwner_, false);
-    }
-
-    // --- Overrides
-
-    function authorizeOperator(address operator, uint256 amount)
-    public
-        virtual
-        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core)
-    {
-        super.authorizeOperator(operator, amount);
-    }
-
-    function _burn(address from, uint256 amount, bytes memory data)
-        internal
-        virtual
-        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core)
-    {
-        super._burn(from, amount, data);
-    }
-
-    function _mint(address to, uint256 amount, bool force, bytes memory data)
-    internal
-        virtual
-        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core) {
-            super._mint(to, amount, force, data);
-    }
-
-    function _transfer(address from, address to, uint256 amount, bool force, bytes memory data)
-    internal
-        virtual
-        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core) {
-            super._transfer(from, to, amount, force, data);
+        LSP7CompatibilityForERC20InitAbstract.initialize(name_, symbol_, newOwner_);
     }
 }
