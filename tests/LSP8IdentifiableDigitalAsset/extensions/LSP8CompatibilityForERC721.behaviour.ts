@@ -36,7 +36,7 @@ type LSP8CompatibilityForERC721DeployParams = {
   lsp4MetadataValue: string;
 };
 
-type LSP8CompatibilityForERC721TestContext = {
+export type LSP8CompatibilityForERC721TestContext = {
   accounts: LSP8CompatibilityForERC721TestAccounts;
   lsp8CompatibilityForERC721: LSP8CompatibilityForERC721Tester;
   deployParams: LSP8CompatibilityForERC721DeployParams;
