@@ -1,4 +1,4 @@
-# LSP7CompatibilityForERC20
+# LSP7CompatibilityForERC20Core
 
 
 
@@ -6,7 +6,7 @@
 
 
 
-
+*LSP7 extension, for compatibility for clients / tools that expect ERC20.*
 
 ## Methods
 

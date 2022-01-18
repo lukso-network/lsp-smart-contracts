@@ -282,6 +282,24 @@ function transferFrom(address from, address to, uint256 amount) external nonpaya
 
 ## Events
 
+### Approval
+
+```solidity
+event Approval(address indexed owner, address indexed spender, uint256 value)
+```
+
+
+
+*To provide compatibility with indexing ERC20 events.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| owner `indexed` | address | The account giving approval |
+| spender `indexed` | address | The account receiving approval |
+| value  | uint256 | The amount of tokens `spender` has access to from `owner` |
+
 ### AuthorizedOperator
 
 ```solidity
@@ -342,15 +360,15 @@ event Transfer(address indexed operator, address indexed from, address indexed t
 
 
 
-
+*To provide compatibility with indexing ERC20 events.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | operator `indexed` | address | undefined |
-| from `indexed` | address | undefined |
-| to `indexed` | address | undefined |
+| from `indexed` | address | The sending address |
+| to `indexed` | address | The receiving address |
 | amount  | uint256 | undefined |
 | force  | bool | undefined |
 | data  | bytes | undefined |

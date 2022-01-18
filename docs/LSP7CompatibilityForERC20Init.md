@@ -1,4 +1,4 @@
-# LSP7CompatibilityForERC20
+# LSP7CompatibilityForERC20Init
 
 
 
@@ -127,6 +127,22 @@ Gets array of data at multiple given keys
 | Name | Type | Description |
 |---|---|---|
 | values | bytes[] | The array of data stored at multiple keys
+
+### initialize
+
+```solidity
+function initialize(address _newOwner) external nonpayable
+```
+
+Sets the token-Metadata and register LSP7InterfaceId
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _newOwner | address | the owner of the contract
 
 ### isOperatorFor
 

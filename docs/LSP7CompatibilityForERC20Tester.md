@@ -58,14 +58,14 @@ function authorizeOperator(address operator, uint256 amount) external nonpayable
 
 
 
-*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | The address to authorize as an operator.
-| amount | uint256 | The amount of tokens operator has access to.
+| operator | address | undefined
+| amount | uint256 | undefined
 
 ### balanceOf
 
@@ -88,6 +88,24 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | The number of tokens owned by this address
+
+### burn
+
+```solidity
+function burn(address from, uint256 amount, bytes data) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| from | address | undefined
+| amount | uint256 | undefined
+| data | bytes | undefined
 
 ### decimals
 
@@ -168,6 +186,23 @@ function mint(address to, uint256 amount, bytes data) external nonpayable
 | to | address | undefined
 | amount | uint256 | undefined
 | data | bytes | undefined
+
+### name
+
+```solidity
+function name() external view returns (string)
+```
+
+
+
+*Returns the name of the token.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | The name of the token
 
 ### owner
 
@@ -251,6 +286,23 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 | Name | Type | Description |
 |---|---|---|
 | _0 | bool | undefined
+
+### symbol
+
+```solidity
+function symbol() external view returns (string)
+```
+
+
+
+*Returns the symbol of the token, usually a shorter version of the name.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | The symbol of the token
 
 ### totalSupply
 
@@ -343,6 +395,24 @@ function transferOwnership(address newOwner) external nonpayable
 
 
 ## Events
+
+### Approval
+
+```solidity
+event Approval(address indexed owner, address indexed spender, uint256 value)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| owner `indexed` | address | undefined |
+| spender `indexed` | address | undefined |
+| value  | uint256 | undefined |
 
 ### AuthorizedOperator
 

@@ -1,4 +1,4 @@
-# LSP7CompatibilityForERC20
+# LSP7CompatibilityForERC20InitTester
 
 
 
@@ -89,6 +89,24 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 |---|---|---|
 | _0 | uint256 | The number of tokens owned by this address
 
+### burn
+
+```solidity
+function burn(address from, uint256 amount, bytes data) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| from | address | undefined
+| amount | uint256 | undefined
+| data | bytes | undefined
+
 ### decimals
 
 ```solidity
@@ -128,6 +146,22 @@ Gets array of data at multiple given keys
 |---|---|---|
 | values | bytes[] | The array of data stored at multiple keys
 
+### initialize
+
+```solidity
+function initialize(address _newOwner) external nonpayable
+```
+
+Sets the token-Metadata and register LSP7InterfaceId
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _newOwner | address | the owner of the contract
+
 ### isOperatorFor
 
 ```solidity
@@ -150,6 +184,24 @@ function isOperatorFor(address operator, address tokenOwner) external view retur
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | The amount of tokens `operator` address has access to from `tokenOwner`.
+
+### mint
+
+```solidity
+function mint(address to, uint256 amount, bytes data) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| to | address | undefined
+| amount | uint256 | undefined
+| data | bytes | undefined
 
 ### name
 
