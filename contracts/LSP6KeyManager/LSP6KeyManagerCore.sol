@@ -265,9 +265,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             )
         );
 
-        // whitelist any ERC725Y key if nothing in the list
-        bool anyERC725YKeyAllowed = allowedERC725Ykeys.length == 0;
-
         uint256 keyCount = uint256(bytes32(_data[68:100]));
         uint256 pointer = 100;
 
@@ -293,7 +290,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 _hasPermission(_PERMISSION_SETDATA, permissions) ||
                     _notAuthorised(_from, "SETDATA");
 
-                if (!anyERC725YKeyAllowed)
+                // whitelist any ERC725Y key if nothing in the list
+                if (allowedERC725Ykeys.length != 0)
                     _verifyAllowedERC725YKey(
                         key,
                         abi.decode(allowedERC725Ykeys, (bytes32[]))
@@ -315,7 +313,47 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         bytes32[] memory _allowedERC725YKeys
     ) internal pure {
         for (uint256 ii = 0; ii < _allowedERC725YKeys.length; ii++) {
-            if (_erc725YKey == _allowedERC725YKeys[ii]) return;
+            // find the LSP2 keyType of the key we want to check
+
+            if (
+                // Mapping
+                _erc725YKey &
+                    0x00000000000000000000000000000000ffffffffffffffffffffffff00000000 ==
+                bytes32(0)
+            ) {
+                if (bytes16(_erc725YKey) == bytes16(_allowedERC725YKeys[ii])) {
+                    return; // stop if the key match
+                } else {
+                    // if the key does not match, check the next allowed key
+                    // (since we found the keyType, we do not need to check for the other keyTypes below,
+                    // so we can continue to iterate over the list of allowed ERC725Y keys)
+                    continue;
+                }
+            }
+
+            if (
+                // Bytes20Mapping
+                _erc725YKey &
+                    0x0000000000000000ffffffff0000000000000000000000000000000000000000 ==
+                bytes32(0) ||
+                // Bytes20MappingWithGrouping
+                _erc725YKey &
+                    0x00000000ffffffff0000ffff0000000000000000000000000000000000000000 ==
+                bytes32(0)
+            ) {
+                if (bytes12(_erc725YKey) == bytes12(_allowedERC725YKeys[ii])) {
+                    return;
+                } else {
+                    continue;
+                }
+            }
+
+            // Singleton
+            if (_erc725YKey == _allowedERC725YKeys[ii]) {
+                return;
+            } else {
+                continue;
+            }
         }
         revert("not allowed ERC725Y Key");
     }
