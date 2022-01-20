@@ -258,12 +258,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     {
         bytes32 permissions = account.getPermissionsFor(_from);
 
-        bytes memory allowedERC725Ykeys = ERC725Y(account).getDataSingle(
+        bytes memory allowedERC725YkeysRaw = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_ALLOWEDERC725YKEYS,
                 bytes20(_from)
             )
         );
+
+        bytes32[] memory allowedERC725YKeys = allowedERC725YkeysRaw.length == 0
+            ? new bytes32[](0)
+            : abi.decode(allowedERC725YkeysRaw, (bytes32[]));
 
         uint256 keyCount = uint256(bytes32(_data[68:100]));
         uint256 pointer = 100;
@@ -272,30 +276,35 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         for (uint256 ii = 0; ii < keyCount; ii++) {
             bytes32 key = bytes32(_data[pointer:pointer + 32]);
 
-            // check if the key is related to setting permissions
+            // if the key is a permission key
             if (bytes8(key) == _SET_PERMISSIONS) {
+                // check if the storage under this key is empty
                 bool isNewAddress = bytes32(
                     ERC725Y(account).getDataSingle(key)
                 ) == bytes32(0);
 
                 if (isNewAddress) {
+                    // if nothing is stored under this key,
+                    // we are trying to ADD permissions for a NEW address
                     _hasPermission(_PERMISSION_ADDPERMISSIONS, permissions) ||
                         _notAuthorised(_from, "ADDPERMISSIONS");
                 } else {
+                    // if there are already some value stored under this key,
+                    // we are trying to CHANGE the permissions of an address
+                    // (that has already some EXISTING permissions set)
                     // prettier-ignore
                     _hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions) || 
                         _notAuthorised(_from, "CHANGEPERMISSIONS");
                 }
+
+                // if it is any other key
             } else {
                 _hasPermission(_PERMISSION_SETDATA, permissions) ||
                     _notAuthorised(_from, "SETDATA");
 
                 // whitelist any ERC725Y key if nothing in the list
-                if (allowedERC725Ykeys.length != 0)
-                    _verifyAllowedERC725YKey(
-                        key,
-                        abi.decode(allowedERC725Ykeys, (bytes32[]))
-                    );
+                if (allowedERC725YKeys.length != 0)
+                    _verifyAllowedERC725YKey(key, allowedERC725YKeys);
             }
 
             pointer += 32; // move calldata pointer
