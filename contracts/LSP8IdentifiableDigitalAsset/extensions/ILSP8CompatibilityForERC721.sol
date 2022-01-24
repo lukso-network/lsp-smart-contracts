@@ -76,7 +76,7 @@ interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
      * @param tokenId The tokenId to query
      * @return The owner of the tokenId
      */
-    function ownerOf(uint256 tokenId) external returns (address);
+    function ownerOf(uint256 tokenId) external view returns (address);
 
     /**
      * @dev Compatible with ERC721 approve.
@@ -90,14 +90,14 @@ interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
      * @param tokenId The tokenId to query
      * @return The address of the operator for `tokenId`
      */
-    function getApproved(uint256 tokenId) external returns (address);
+    function getApproved(uint256 tokenId) external view returns (address);
 
     /*
      * @dev Compatible with ERC721 tokenURI.
      * @param tokenId The tokenId to query.
      * @return True if all tokenId are approved, false otherwise.
      */
-    function isApprovedForAll(uint256 tokenId) external returns (bool);
+    function isApprovedForAll(address owner, address operator) external view returns (bool);
 
     /*
      * @dev Compatible with ERC721Metadata tokenURI.

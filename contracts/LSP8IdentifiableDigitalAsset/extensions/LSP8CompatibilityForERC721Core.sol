@@ -111,12 +111,17 @@ abstract contract LSP8CompatibilityForERC721Core is
     /*
      * @inheritdoc ILSP8CompatibilityForERC721
      */
-    function isApprovedForAll(uint256 tokenId)
+    function isApprovedForAll(address tokenOwner, address operator)
         public
+        view
         virtual
         override
         returns (bool)
     {
+        // silence compiler warning about unused variable
+        tokenOwner;
+        operator;
+
         return false;
     }
 

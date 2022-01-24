@@ -231,6 +231,23 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
     });
   });
 
+  describe("isApprovedForAll", () => {
+    describe("when called", () => {
+      it("should return false", async () => {
+        const tokenOwner = context.accounts.tokenReceiver.address;
+        const operator = context.accounts.operator.address;
+
+        // LSP8 does not support approving an operator for all tokenIds of a tokenOwner
+        expect(
+          await context.lsp8CompatibilityForERC721.isApprovedForAll(
+            tokenOwner,
+            operator
+          )
+        ).toBe(false);
+      });
+    });
+  });
+
   describe("getApproved", () => {
     describe("when tokenId has not been minted", () => {
       it("should revert", async () => {
