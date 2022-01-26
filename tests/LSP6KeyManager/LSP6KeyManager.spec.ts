@@ -3386,17 +3386,17 @@ describe.only("ALLOWEDERC725YKEYS", () => {
     const customKey1 =
       "0xea855d57c13e1bdabfc76fbb18c7d7f600000000000000000000000059c050ad";
 
-    // FirstWord2:SecondWord2
+    // FirstWord1:SecondWord2
     const customKey2 =
-      "0xbda300ce9d14b842dd85494af91c159500000000000000000000000008150fbc";
+      "0xea855d57c13e1bdabfc76fbb18c7d7f600000000000000000000000008150fbc";
 
-    // FirstWord3:SecondWord3
+    // FirstWord1:SecondWord3
     const customKey3 =
-      "0x127735325bff14c0d2388fd6b6fb706e00000000000000000000000055f9529c";
+      "0xea855d57c13e1bdabfc76fbb18c7d7f600000000000000000000000055f9529c";
 
-    // FirstWord4:SecondWord4
+    // FirstWord1:SecondWord4
     const customKey4 =
-      "0x2b09980d8bc6ecd6a5a86feaafbf66c7000000000000000000000000770c514d";
+      "0xea855d57c13e1bdabfc76fbb18c7d7f6000000000000000000000000770c514d";
 
     beforeAll(async () => {
       owner = accounts[0];
@@ -3442,10 +3442,16 @@ describe.only("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[mappingKey], [mappingValue]]
           );
-          await keyManager
+          let tx = await keyManager
             .connect(controllerCanSetOneKey)
             .execute(setDataPayload);
 
+          let receipt = await tx.wait();
+
+          console.log(
+            "tx: ",
+            ethers.BigNumber.from(receipt.gasUsed).toNumber()
+          );
           let [result] = await universalProfile.getData([mappingKey]);
           expect(result).toEqual(mappingValue);
         });
@@ -3535,9 +3541,17 @@ describe.only("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[key], [value]]
           );
-          await keyManager
+
+          let tx = await keyManager
             .connect(controllerCanSetManyKeys)
             .execute(setDataPayload);
+
+          let receipt = await tx.wait();
+
+          console.log(
+            "tx: ",
+            ethers.BigNumber.from(receipt.gasUsed).toNumber()
+          );
 
           let [result] = await universalProfile.getData([key]);
           expect(result).toEqual(value);
@@ -3552,9 +3566,17 @@ describe.only("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[key], [value]]
           );
-          await keyManager
+
+          let tx = await keyManager
             .connect(controllerCanSetManyKeys)
             .execute(setDataPayload);
+
+          let receipt = await tx.wait();
+
+          console.log(
+            "tx: ",
+            ethers.BigNumber.from(receipt.gasUsed).toNumber()
+          );
 
           let [result] = await universalProfile.getData([key]);
           expect(result).toEqual(value);
@@ -3569,9 +3591,17 @@ describe.only("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[key], [value]]
           );
-          await keyManager
+
+          let tx = await keyManager
             .connect(controllerCanSetManyKeys)
             .execute(setDataPayload);
+
+          let receipt = await tx.wait();
+
+          console.log(
+            "tx: ",
+            ethers.BigNumber.from(receipt.gasUsed).toNumber()
+          );
 
           let [result] = await universalProfile.getData([key]);
           expect(result).toEqual(value);
@@ -3602,9 +3632,17 @@ describe.only("ALLOWEDERC725YKEYS", () => {
             "setData",
             [mappingKeys, mappingValues]
           );
-          await keyManager
+
+          let tx = await keyManager
             .connect(controllerCanSetManyKeys)
             .execute(setDataPayload);
+
+          let receipt = await tx.wait();
+
+          console.log(
+            "tx: ",
+            ethers.BigNumber.from(receipt.gasUsed).toNumber()
+          );
 
           let result = await universalProfile.getData(mappingKeys);
 
@@ -3619,9 +3657,17 @@ describe.only("ALLOWEDERC725YKEYS", () => {
             "setData",
             [mappingKeys, mappingValues]
           );
-          await keyManager
+
+          let tx = await keyManager
             .connect(controllerCanSetManyKeys)
             .execute(setDataPayload);
+
+          let receipt = await tx.wait();
+
+          console.log(
+            "tx: ",
+            ethers.BigNumber.from(receipt.gasUsed).toNumber()
+          );
 
           let result = await universalProfile.getData(mappingKeys);
 

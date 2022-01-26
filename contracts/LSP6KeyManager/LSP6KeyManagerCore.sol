@@ -15,6 +15,7 @@ import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // constants
 import "./LSP6Constants.sol";
@@ -321,48 +322,35 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         bytes32 _erc725YKey,
         bytes32[] memory _allowedERC725YKeys
     ) internal pure {
+        // convert the key ERC725Y key to check ONCE to save gas
+        bytes memory keyToSet = bytes.concat(_erc725YKey);
+        uint256 length;
+
         for (uint256 ii = 0; ii < _allowedERC725YKeys.length; ii++) {
-            // find the LSP2 keyType of the key we want to check
-
-            if (
-                // Mapping
-                _erc725YKey &
-                    0x00000000000000000000000000000000ffffffffffffffffffffffff00000000 ==
-                bytes32(0)
-            ) {
-                if (bytes16(_erc725YKey) == bytes16(_allowedERC725YKeys[ii])) {
-                    return; // stop if the key match
-                } else {
-                    // if the key does not match, check the next allowed key
-                    // (since we found the keyType, we do not need to check for the other keyTypes below,
-                    // so we can continue to iterate over the list of allowed ERC725Y keys)
-                    continue;
+            // check each individual bytes of the key to set, starting from the end (right to left)
+            for (uint256 index = 31; index >= 0; index--) {
+                // skip the empty bytes (0x00) and find where the first non-empty bytes start
+                if (keyToSet[index] != 0x00) {
+                    // if we find a non-empty bytes, save the length
+                    // so to know which part (= slice) of the keys to compare
+                    length = index + 1;
+                    break;
                 }
             }
 
+            // we cannot compare dynamic `bytes` in Solidity, but we can compare hashes
+            // so hash the parts of each keys, and compare the digests
             if (
-                // Bytes20Mapping
-                _erc725YKey &
-                    0x0000000000000000ffffffff0000000000000000000000000000000000000000 ==
-                bytes32(0) ||
-                // Bytes20MappingWithGrouping
-                _erc725YKey &
-                    0x00000000ffffffff0000ffff0000000000000000000000000000000000000000 ==
-                bytes32(0)
-            ) {
-                if (bytes12(_erc725YKey) == bytes12(_allowedERC725YKeys[ii])) {
-                    return;
-                } else {
-                    continue;
-                }
-            }
-
-            // Singleton
-            if (_erc725YKey == _allowedERC725YKeys[ii]) {
-                return;
-            } else {
-                continue;
-            }
+                // keccak256(keyToSet[0:length]) == keccak256(_allowedERC725YKeys[ii][0:length])
+                keccak256(BytesLib.slice(keyToSet, 0, length)) ==
+                keccak256(
+                    BytesLib.slice(
+                        bytes.concat(_allowedERC725YKeys[ii]),
+                        0,
+                        length
+                    )
+                )
+            ) return;
         }
         revert("not allowed ERC725Y Key");
     }
