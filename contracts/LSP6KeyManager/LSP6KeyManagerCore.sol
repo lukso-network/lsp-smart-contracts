@@ -330,7 +330,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             // check each individual bytes of the key to set, starting from the end (right to left)
             for (uint256 index = 31; index >= 0; index--) {
                 // skip the empty bytes (0x00) and find where the first non-empty bytes start
-                if (keyToSet[index] != 0x00) {
+                if (_allowedERC725YKeys[ii][index] != 0x00) {
                     // if we find a non-empty bytes, save the length
                     // so to know which part (= slice) of the keys to compare
                     length = index + 1;
