@@ -28,7 +28,7 @@ import {
   PERMISSIONS,
   OPERATIONS,
   ALL_PERMISSIONS_SET,
-} from "../utils/constants";
+} from "../../constants";
 
 import {
   EMPTY_PAYLOAD,
@@ -111,7 +111,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             owner.address.substr(2),
         ],
         [ALL_PERMISSIONS_SET]
@@ -126,7 +126,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             app.address.substr(2),
         ],
         [appPermissions]
@@ -135,7 +135,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
             app.address.substr(2),
         ],
         [
@@ -150,7 +150,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
             app.address.substr(2),
         ],
         [
@@ -170,7 +170,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             user.address.substr(2),
         ],
         [userPermissions]
@@ -185,7 +185,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             externalApp.address.substr(2),
         ],
         [externalAppPermissions]
@@ -194,7 +194,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses:"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
             externalApp.address.substr(2),
         ],
         [
@@ -209,7 +209,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
             externalApp.address.substr(2),
         ],
         [
@@ -225,7 +225,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       .connect(owner)
       .setData(
         [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             newUser.address.substr(2),
         ],
         [
@@ -313,7 +313,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
   describe("> Verifying permissions", () => {
     it("Owner should have ALL PERMISSIONS (= admin)", async () => {
       let [permissions] = await proxyUniversalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           owner.address.substr(2),
       ]);
       expect(permissions).toEqual(
@@ -323,7 +323,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
 
     it("App should have permissions SETDATA and CALL", async () => {
       let [permissions] = await proxyUniversalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           app.address.substr(2),
       ]);
       expect(permissions).toEqual(
@@ -358,7 +358,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
     it("Owner should be allowed to change keys", async () => {
       // change app's permissions
       let key =
-        ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         app.address.substr(2);
 
       let payload = proxyUniversalProfile.interface.encodeFunctionData(
@@ -390,7 +390,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         "setData",
         [
           [
-            ERC725YKeys.LSP6["AddressPermissions:Permissions:"] +
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
               app.address.substr(2),
           ],
           [ALL_PERMISSIONS_SET],
@@ -401,7 +401,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         await proxyKeyManager.connect(app).execute(dangerousPayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("CHANGEPERMISSIONS", app.address)
+          NotAuthorisedError(app.address, "CHANGEPERMISSIONS")
         );
       }
     });
@@ -508,7 +508,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         await proxyKeyManager.connect(app).execute(executePayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("STATICCALL", app.address)
+          NotAuthorisedError(app.address, "STATICCALL")
         );
       }
     });
@@ -527,7 +527,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       await expect(
         proxyKeyManager.connect(owner).execute(executePayload)
       ).toBeRevertedWith(
-        "KeyManager:_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
+        "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
       );
     });
 
@@ -546,7 +546,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         await proxyKeyManager.connect(app).execute(executePayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("CREATE", app.address)
+          NotAuthorisedError(app.address, "CREATE")
         );
       }
     });
@@ -611,7 +611,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         await proxyKeyManager.connect(app).execute(transferPayload);
       } catch (error) {
         expect(error.message).toMatch(
-          NotAuthorisedError("TRANSFERVALUE", app.address)
+          NotAuthorisedError(app.address, "TRANSFERVALUE")
         );
       }
 
@@ -902,16 +902,14 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       );
 
       await expect(proxyKeyManager.execute(payload)).toBeRevertedWith(
-        "KeyManager:_extractPermissionFromOperation: invalid operation type"
+        "_extractPermissionFromOperation: invalid operation type"
       );
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(
         proxyKeyManager.execute("0xbad000000000000000000000000bad")
-      ).toBeRevertedWith(
-        "KeyManager:_verifyPermissions: unknown function selector on ERC725 account"
-      );
+      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
 
     it("Should revert with a revert reason string from TargetContract", async () => {
@@ -1516,7 +1514,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
       await expect(
         proxyKeyManager.connect(accounts[6]).execute(executePayload)
       ).toBeRevertedWith(
-        "KeyManager:_getAddressPermissions: no permissions set for this address"
+        "LSP6Utils:getPermissionsFor: no permissions set for this address"
       );
     });
 
@@ -1632,7 +1630,7 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
           executeRelayCallPayload,
           signature
         )
-      ).toBeRevertedWith("KeyManager:executeRelayCall: Incorrect nonce");
+      ).toBeRevertedWith("executeRelayCall: Invalid nonce");
     });
   });
 });

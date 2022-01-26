@@ -2,9 +2,8 @@
 name: Create Github Release
 
 on:
-  push:
-    branches:
-      - "main"
+  repository_dispatch:
+      types: [trigger-release]
 
 jobs:
   github-release:
@@ -14,27 +13,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if version changed
-        uses: EndBug/version-check@v1
-        id: check
-
-      - name: Use Node.js v16
-        if: steps.check.outputs.changed == 'true'
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16.x"
-          registry-url: "https://registry.npmjs.org"
-          scope: "@lukso"
-          cache: "npm"
-
       - name: Git Config
-        if: steps.check.outputs.changed == 'true'
         run: |-
           git config --global user.email "release@lukso.network"
           git config --global user.name "LUKSO Bot"
 
       - name: Set Version
-        if: steps.check.outputs.changed == 'true'
         run: |-
           APP_VERSION="v$(node -pe "require('./package.json').version")"
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
@@ -44,49 +28,34 @@ jobs:
           ref: develop
 
       - name: Create and push Git Tag
-        if: steps.check.outputs.changed == 'true'
         run: |-
           git tag -a ${{ env.APP_VERSION }} -m "Release Version ${{ env.APP_VERSION }}"
           git push --set-upstream origin develop tag ${{ env.APP_VERSION }}
 
-      - if: steps.check.outputs.changed == 'true'
-        run: |-
-          npm ci
+      # Android artifacts
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with: 
+          workflow: build-artifacts.yml
+          workflow_conclusion: success
+          name: upcontracts.jar
+          path: java/build/libs
+          branch: main
+          event: push
 
-      # Build Android Artifact
-      - name: Generate Android artifacts using shell
-        if: steps.check.outputs.changed == 'true'
-        run: bash make-jar.sh
+      # iOS artifacts
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with: 
+          workflow: build-artifacts.yml
+          workflow_conclusion: success
+          name: UPContractsAbi.swift
+          path: ios
+          branch: main
+          event: push
 
-      - name: Set up our JDK environment
-        if: steps.check.outputs.changed == 'true'
-        uses: actions/setup-java@v1.4.3
-        with:
-          java-version: 1.11
-
-      - name: Grant rights
-        if: steps.check.outputs.changed == 'true'
-        run: chmod +x java/build.gradle
-
-      - name: Build jar
-        if: steps.check.outputs.changed == 'true'
-        working-directory: ./java
-        run: gradle build
-
-      # Build ios Artifact
-      - name: Build JSON ABIs
-        if: steps.check.outputs.changed == 'true'
-        run: |-
-          npm run build --if-present
-
-      - name: Generate ABIs for iOS using shell script
-        if: steps.check.outputs.changed == 'true'
-        run: |
-          mkdir ios
-          node make-ios.js
-
+      # Create Github Release
       - name: Extract release notes from CHANGELOG
-        if: steps.check.outputs.changed == 'true'
         id: extract-release-notes
         uses: ffurrer2/extract-release-notes@v1
         with:
@@ -104,9 +73,8 @@ jobs:
           echo ${PR_BODY}|cat - RELEASENOTES.md > /tmp/out && mv /tmp/out RELEASENOTES.md
 
       - uses: ncipollo/release-action@v1
-        if: steps.check.outputs.changed == 'true'
         with:
-          artifacts: "ios/UPContractsAbi.swift,java/build/libs/upcontracts.jar"
+          artifacts: "ios/UPContractsAbi.swift"
           bodyFile: "RELEASENOTES.md"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.APP_VERSION }}

@@ -1,38 +1,26 @@
-# This workflow build and publish iOS artifacts
+# This workflow build and publish iOS artifacts to the LUKSO iOS SDK repository on Github
 
 name: Upload iOS Github artifacts CD
 
 on:
-  push:
-    branches:
-      - "main"
+  repository_dispatch:
+      types: [trigger-release]
 
 jobs:
-  ios-build-artifacts:
-    # The type of runner
+  upload-ios-artifacts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check if version changed
-        uses: EndBug/version-check@v1
-        id: check
-
-      - name: Use Node.js v16
-        if: steps.check.outputs.changed == 'true'
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16.x"
-          cache: "npm"
-
-      - if: steps.check.outputs.changed == 'true'
-        run: npm ci
-
-      - name: Write ABIs for iOS in Swift file
-        if: steps.check.outputs.changed == 'true'
-        run: |
-          mkdir ios
-          npx hardhat run make-ios.js
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with: 
+          workflow: build-artifacts.yml
+          workflow_conclusion: success
+          name: UPContractsAbi.swift
+          path: ios 
+          branch: main
+          event: push
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
         if: steps.check.outputs.changed == 'true'
@@ -41,8 +29,9 @@ jobs:
           cd universalprofile-ios-sdk
           git config --global user.email "release@lukso.network"
           git config --global user.name "LUKSO Bot"
+          git push origin --delete abi-update-release
           git checkout -b abi-update-release
           cp ../ios/UPContractsAbi.swift universalprofile-ios-sdk/UPContractsAbi.swift
           git add .
-          git commit -m "Automatic publish new contracts abis from lukso-network/lsp-universalprofile-smart-contracts"
+          git commit -m "Automatic publish new contracts abis from lukso-network/lsp-smart-contracts"
           git push --set-upstream origin abi-update-release

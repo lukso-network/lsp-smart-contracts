@@ -7,7 +7,10 @@ import "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 // modules
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1UniversalReceiverDelegate {
+contract ExternalERC777UniversalReceiverTester is
+    ERC165Storage,
+    ILSP1UniversalReceiverDelegate
+{
     bytes4 internal constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
 
     bytes32 internal constant _TOKENS_SENDER_INTERFACE_HASH =
@@ -34,7 +37,12 @@ contract ExternalERC777UniversalReceiverTester is ERC165Storage, ILSP1UniversalR
         bytes memory data
     ) external override returns (bytes memory) {
         if (typeId == _TOKENS_RECIPIENT_INTERFACE_HASH) {
-            (address _operator, address _from, address _to, uint256 _amount) = _toERC777Data(data);
+            (
+                address _operator,
+                address _from,
+                address _to,
+                uint256 _amount
+            ) = _toERC777Data(data);
 
             emit ReceivedERC777(sender, _operator, _from, _to, _amount);
 

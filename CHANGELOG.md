@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.3](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.4.2...v0.4.3) (2022-01-10)
+
+### [0.4.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.4.1...v0.4.2) (2022-01-10)
+
+
+### Features
+
+* add a file `constants.ts` in npm package ([#87](https://github.com/lukso-network/lsp-smart-contracts/issues/87)) ([61abc09](https://github.com/lukso-network/lsp-smart-contracts/commit/61abc09f824e502778756d3c015d7f982ebe9258))
+* LSP8CompatibilityForERC721 sets ERC165 interfaces for ERC721 & … ([#89](https://github.com/lukso-network/lsp-smart-contracts/issues/89)) ([15265a3](https://github.com/lukso-network/lsp-smart-contracts/commit/15265a35e186f80031b53bb80514fa4f95b3f843))
+
+
+### Bug Fixes
+
+* :wastebasket: remove deprecated key `SupportedStandards:LSP4DigitalCertificate` ([59844f6](https://github.com/lukso-network/lsp-smart-contracts/commit/59844f602dd30f6e2ef7f0dae75b57f9cf2ed704))
+* android builds ([9223e30](https://github.com/lukso-network/lsp-smart-contracts/commit/9223e307f62e251b7b3c7eee7678552350f91d5e))
+* change make-ios script to ts file ([40ff091](https://github.com/lukso-network/lsp-smart-contracts/commit/40ff091444ced6488f11b55075ee9e029b9dbdae))
+* remove success check before emitting event ([cad39ae](https://github.com/lukso-network/lsp-smart-contracts/commit/cad39ae189f5757a50ff735d4067557b10ae7be8))
+
 ### [0.4.1](https://github.com/lukso-network/universalprofile-smart-contracts/compare/v0.4.0...v0.4.1) (2021-11-26)
 
 ## [0.4.0](https://github.com/lukso-network/universalprofile-smart-contracts/compare/v0.3.0...v0.4.0) (2021-11-26)

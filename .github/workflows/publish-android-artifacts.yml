@@ -1,12 +1,9 @@
-# Upload Github artifacts
-
+# Upload Android artifacts
 name: Upload Android Github artifacts CD
 
-# Controls when the workflow will run
 on:
-  push:
-    branches:
-      - "main"
+  repository_dispatch:
+      types: [trigger-release]
 
 jobs:
   android-build-artifacts:
@@ -14,41 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check if version changed
-        uses: EndBug/version-check@v1
-        id: check
-
-      - name: Use Node.js v16
-        if: steps.check.outputs.changed == 'true'
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16.x"
-          cache: "npm"
-
-      - if: steps.check.outputs.changed == 'true'
-        run: npm ci
-
-      - name: Step 1 - Generate artifacts using shell
-        if: steps.check.outputs.changed == 'true'
-        run: bash make-jar.sh
-
-      - name: Set up our JDK environment
-        if: steps.check.outputs.changed == 'true'
-        uses: actions/setup-java@v1.4.3
-        with:
-          java-version: 1.11
-
-      - name: Grant rights
-        if: steps.check.outputs.changed == 'true'
-        run: chmod +x java/build.gradle
-
-      - name: Build jar
-        if: steps.check.outputs.changed == 'true'
-        working-directory: ./java
-        run: gradle build
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with: 
+          workflow: build-artifacts.yml
+          workflow_conclusion: success
+          name: upcontracts.jar
+          path: java/build/libs
+          branch: main
+          event: push
 
       - name: Publish jar
-        if: steps.check.outputs.changed == 'true'
         working-directory: ./java
         run: gradle publish
         env:

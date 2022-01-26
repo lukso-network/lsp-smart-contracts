@@ -126,6 +126,7 @@ deployments
 java/github.properties
 java/.gradle
 java/.idea
+tmp/
 
 .idea
 

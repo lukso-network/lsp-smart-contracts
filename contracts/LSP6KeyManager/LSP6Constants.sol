@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-// interfaces
-import "./ILSP6KeyManager.sol";
-
 // --- ERC165 interface ids
-bytes4 constant _LSP6_INTERFACE_ID = type(ILSP6KeyManager).interfaceId;
+bytes4 constant _INTERFACEID_LSP6 = 0x6f4df48b;
 
 /* solhint-disable */
 // PERMISSION KEYS

@@ -11,11 +11,13 @@ import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 interface ILSP4Compatibility is IERC725Y {
     /**
      * @dev Returns the name of the token.
+     * @return The name of the token
      */
     function name() external view returns (string memory);
 
     /**
      * @dev Returns the symbol of the token, usually a shorter version of the name.
+     * @return The symbol of the token
      */
     function symbol() external view returns (string memory);
 }

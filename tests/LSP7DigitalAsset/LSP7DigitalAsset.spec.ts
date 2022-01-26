@@ -68,8 +68,13 @@ describe("LSP7", () => {
         newOwner: accounts.owner.address,
       };
 
-      const lsp7TesterInit = await new LSP7InitTester__factory(accounts.owner).deploy();
-      const lsp7Proxy = await deployProxy(lsp7TesterInit.address, accounts.owner);
+      const lsp7TesterInit = await new LSP7InitTester__factory(
+        accounts.owner
+      ).deploy();
+      const lsp7Proxy = await deployProxy(
+        lsp7TesterInit.address,
+        accounts.owner
+      );
       const lsp7 = lsp7TesterInit.attach(lsp7Proxy);
 
       await lsp7.mint(

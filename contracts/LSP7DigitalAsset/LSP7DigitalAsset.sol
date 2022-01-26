@@ -11,9 +11,18 @@ import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 /**
+ * @title LSP7DigitalAsset contract
+ * @author Matthew Stevens
  * @dev Implementation of a LSP7 compliant contract.
  */
 contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
+    /**
+     * @notice Sets the token-Metadata and register LSP7InterfaceId
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the the token-Metadata
+     * @param isNFT_ Specify if the LSP7 token is a fungible or non-fungible token
+     */
     constructor(
         string memory name_,
         string memory symbol_,
@@ -21,6 +30,6 @@ contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
         bool isNFT_
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
         _isNFT = isNFT_;
-        _registerInterface(_LSP7_INTERFACE_ID);
+        _registerInterface(_INTERFACEID_LSP7);
     }
 }

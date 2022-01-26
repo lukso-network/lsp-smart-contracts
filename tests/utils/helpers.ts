@@ -16,20 +16,42 @@ export const RANDOM_BYTES32 =
 export const ERC777TokensRecipient =
   "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 
-export const RAW_INTERFACE_ID = {
-  LSP7: "e33f65c3",
-  LSP8: "49399145",
+export const LSP5_ARRAY_KEY = {
+  ELEMENT1:
+    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000",
+  ELEMENT2:
+    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001",
+  ELEMENT3:
+    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002",
+  ELEMENT4:
+    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000003",
+  ELEMENT5:
+    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000004",
+  ELEMENT6:
+    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000005",
+  ELEMENT7:
+    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000006",
+  ELEMENT8:
+    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000007",
 };
 
-export const ITEMS_ARRAY_KEY = {
-  ITEM1: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000",
-  ITEM2: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001",
-  ITEM3: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002",
-  ITEM4: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000003",
-  ITEM5: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000004",
-  ITEM6: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000005",
-  ITEM7: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000006",
-  ITEM8: "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000007",
+export const LSP10_ARRAY_KEY = {
+  ELEMENT1:
+     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000000",
+  ELEMENT2:
+     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000001",
+  ELEMENT3:
+     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000002",
+  ELEMENT4:
+     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000003",
+  ELEMENT5:
+     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000004",
+  ELEMENT6:
+     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000005",
+  ELEMENT7:
+     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000006",
+  ELEMENT8:
+     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000007",
 };
 
 // bytes8 index
@@ -101,8 +123,8 @@ export function generateKeysAndValues(_elementObject) {
 const customRevertErrorMessage =
   "VM Exception while processing transaction: reverted with custom error";
 
-export const NotAuthorisedError = (_permission, _address) => {
-  return `${customRevertErrorMessage} 'NotAuthorised("${_permission}", "${_address}")'`;
+export const NotAuthorisedError = (_from, _permission) => {
+  return `${customRevertErrorMessage} 'NotAuthorised("${_from}", "${_permission}")'`;
 };
 
 export const NotAllowedAddressError = (_from, _to) => {
@@ -112,3 +134,18 @@ export const NotAllowedAddressError = (_from, _to) => {
 export const NotAllowedFunctionError = (_from, _functionSelector) => {
   return `${customRevertErrorMessage} 'NotAllowedFunction("${_from}", "${_functionSelector}")'`;
 };
+
+export async function getMapAndArrayKeyValues(
+  account,
+  vaultMapKey: string,
+  arrayKey: string,
+  elementInArray: string
+) {
+  let [mapValue, arrayLength, elementAddress] = await account.getData([
+    vaultMapKey,
+    arrayKey,
+    elementInArray,
+  ]);
+
+  return [mapValue, arrayLength, elementAddress];
+}

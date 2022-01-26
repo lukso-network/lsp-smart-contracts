@@ -23,11 +23,9 @@ describe("LSP8Mintable", () => {
         newOwner: accounts.owner.address,
       };
 
-      const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
-        deployParams.name,
-        deployParams.symbol,
-        deployParams.newOwner
-      );
+      const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(
+        accounts.owner
+      ).deploy(deployParams.name, deployParams.symbol, deployParams.newOwner);
 
       return { accounts, lsp8Mintable, deployParams };
     };
@@ -64,12 +62,15 @@ describe("LSP8Mintable", () => {
         newOwner: accounts.owner.address,
       };
 
-      const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
-        accounts.owner
-      ).deploy();
+      const LSP8MintableInit: LSP8MintableInit =
+        await new LSP8MintableInit__factory(accounts.owner).deploy();
 
-      const lsp8MintableProxy = await deployProxy(LSP8MintableInit.address, accounts.owner);
-      const lsp8Mintable: LSP8MintableInit = LSP8MintableInit.attach(lsp8MintableProxy);
+      const lsp8MintableProxy = await deployProxy(
+        LSP8MintableInit.address,
+        accounts.owner
+      );
+      const lsp8Mintable: LSP8MintableInit =
+        LSP8MintableInit.attach(lsp8MintableProxy);
 
       return { accounts, lsp8Mintable, deployParams };
     };

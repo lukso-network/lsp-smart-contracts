@@ -1,6 +1,6 @@
 {
-  "name": "@lukso/universalprofile-smart-contracts",
-  "version": "0.4.1",
+  "name": "@lukso/lsp-smart-contracts",
+  "version": "0.4.3",
   "description": "The reference implementation for universal profiles smart contracts",
   "directories": {
     "test": "test"
@@ -9,6 +9,7 @@
     "contracts/**/*.sol",
     "!contracts/Helpers/**/*.sol",
     "artifacts/**/*.json",
+    "constants.ts",
     "README.md",
     "CONTRIBUTING.md",
     "LICENSE"
@@ -27,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lukso-network/universalprofile-smart-contracts.git"
+    "url": "git+https://github.com/lukso-network/lsp-smart-contracts.git"
   },
   "keywords": [
     "LSP",
@@ -39,20 +40,21 @@
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/lukso-network/universalprofile-smart-contracts/issues"
+    "url": "https://github.com/lukso-network/lsp-smart-contracts/issues"
   },
-  "homepage": "https://github.com/lukso-network/universalprofile-smart-contracts#readme",
+  "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
   "dependencies": {
-    "@erc725/smart-contracts": "^2.1.6",
-    "@openzeppelin/contracts": "^4.3.0",
+    "@erc725/smart-contracts": "^2.3.0",
+    "@openzeppelin/contracts": "^4.3.1",
     "solidity-bytes-utils": "0.8.0"
   },
   "devDependencies": {
-    "@erc725/erc725.js": "0.6.2-beta.4",
+    "@erc725/erc725.js": "0.8.0",
     "@ethereum-waffle/jest": "^3.3.0",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@primitivefi/hardhat-dodoc": "^0.1.1",
     "@remix-project/remixd": "^0.5.1",
     "@typechain/ethers-v5": "^7.0.1",
     "@typechain/web3-v1": "^3.1.0",

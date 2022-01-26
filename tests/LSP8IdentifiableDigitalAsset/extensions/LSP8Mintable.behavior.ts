@@ -69,7 +69,12 @@ export const shouldBehaveLikeLSP8Mintable = (
       await expect(
         context.lsp8Mintable
           .connect(nonOwner)
-          .mint(context.accounts.tokenReceiver.address, randomTokenId, true, "0x")
+          .mint(
+            context.accounts.tokenReceiver.address,
+            randomTokenId,
+            true,
+            "0x"
+          )
       ).toBeRevertedWith("Ownable: caller is not the owner");
     });
   });

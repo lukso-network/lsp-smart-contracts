@@ -10,11 +10,17 @@ import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
  * @dev Required interface of a LSP8 compliant contract.
  */
 interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
-
     // --- Events
 
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
+     * @param operator The address of operator sending tokens
+     * @param from The address which tokens are sent
+     * @param to The receiving address
+     * @param tokenId The tokenId transferred
+     * @param force When set to TRUE, `to` may be any address but
+     * when set to FALSE `to` must be a contract that supports LSP1 UniversalReceiver
+     * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses
      */
     event Transfer(
         address operator,
@@ -27,6 +33,9 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
 
     /**
      * @dev Emitted when `tokenOwner` enables `operator` for `tokenId`.
+     * @param operator The address authorized as an operator
+     * @param tokenOwner The token owner
+     * @param tokenId The tokenId `operator` address has access to from `tokenOwner`
      */
     event AuthorizedOperator(
         address indexed operator,
@@ -36,6 +45,9 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
 
     /**
      * @dev Emitted when `tokenOwner` disables `operator` for `tokenId`.
+     * @param operator The address revoked from operating
+     * @param tokenOwner The token owner
+     * @param tokenId The tokenId `operator` is revoked from operating
      */
     event RevokedOperator(
         address indexed operator,
@@ -43,11 +55,11 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         bytes32 indexed tokenId
     );
 
-
     // --- Token queries
 
     /**
      * @dev Returns the number of existing tokens.
+     * @return The number of existing tokens
      */
     function totalSupply() external view returns (uint256);
 
@@ -57,10 +69,14 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
 
     /**
      * @dev Returns the number of tokens owned by `tokenOwner`.
+     * @param tokenOwner The address to query
+     * @return The number of tokens owned by this address
      */
     function balanceOf(address tokenOwner) external view returns (uint256);
 
     /**
+     * @param tokenId The tokenId to query
+     * @return The address owning the `tokenId`
      * @dev Returns the `tokenOwner` address of the `tokenId` token.
      *
      * Requirements:
@@ -71,13 +87,19 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
 
     /**
      * @dev Returns the list of `tokenIds` for the `tokenOwner` address.
+     * @param tokenOwner The address to query owned tokens
+     * @return List of owned tokens by `tokenOwner` address
      */
-    function tokenIdsOf(address tokenOwner) external view returns (bytes32[] memory);
-
+    function tokenIdsOf(address tokenOwner)
+        external
+        view
+        returns (bytes32[] memory);
 
     // --- Operator functionality
 
     /**
+     * @param operator The address to authorize as an operator.
+     * @param tokenId The tokenId operator has access to.
      * @dev Makes `operator` address an operator of `tokenId`.
      *
      * See {isOperatorFor}.
@@ -94,6 +116,8 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     function authorizeOperator(address operator, bytes32 tokenId) external;
 
     /**
+     * @param operator The address to revoke as an operator.
+     * @param tokenId The tokenId `operator` is revoked from operating
      * @dev Removes `operator` address as an operator of `tokenId`.
      *
      * See {isOperatorFor}.
@@ -110,6 +134,9 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     function revokeOperator(address operator, bytes32 tokenId) external;
 
     /**
+     * @param operator The address to query
+     * @param tokenId The tokenId to query
+     * @return True if the owner of `tokenId` is `operator` address, false otherwise
      * @dev Returns whether `operator` address is an operator of `tokenId`.
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
@@ -118,21 +145,34 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      */
-    function isOperatorFor(address operator, bytes32 tokenId) external view returns (bool);
+    function isOperatorFor(address operator, bytes32 tokenId)
+        external
+        view
+        returns (bool);
 
     /**
+     * @param tokenId The tokenId to query
+     * @return The list of operators for the `tokenId`
      * @dev Returns all `operator` addresses of `tokenId`.
      *
      * Requirements
      *
      * - `tokenId` must exist.
      */
-    function getOperatorsOf(bytes32 tokenId) external view returns (address[] memory);
-
+    function getOperatorsOf(bytes32 tokenId)
+        external
+        view
+        returns (address[] memory);
 
     // --- Transfer functionality
 
     /**
+     * @param from The sending address.
+     * @param to The receiving address.
+     * @param tokenId The tokenId to transfer.
+     * @param force When set to TRUE, to may be any address but
+     * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+     * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      * @dev Transfers `tokenId` token from `from` to `to`.
      *
      * Requirements:
@@ -153,6 +193,13 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     ) external;
 
     /**
+     * @param from The list of sending addresses.
+     * @param to The list of receiving addresses.
+     * @param tokenId The list of tokenId to transfer.
+     * @param force When set to TRUE, to may be any address but
+     * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
+     * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
+     *
      * @dev Transfers many tokens based on the list `from`, `to`, `tokenId`. If any transfer fails
      * the call will revert.
      *

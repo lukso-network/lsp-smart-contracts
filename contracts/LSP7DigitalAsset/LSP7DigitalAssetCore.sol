@@ -20,7 +20,9 @@ import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 /**
- * @dev Implementation of a LSP7 compliant contract.
+ * @title LSP7DigitalAsset contract
+ * @author Matthew Stevens
+ * @dev Core Implementation of a LSP7 compliant contract.
  */
 abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -37,23 +39,20 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     mapping(address => uint256) internal _tokenOwnerBalances;
 
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
-    mapping(address => mapping(address => uint256)) internal _operatorAuthorizedAmount;
+    mapping(address => mapping(address => uint256))
+        internal _operatorAuthorizedAmount;
 
     // --- Token queries
 
     /**
-     * @dev Returns the number of decimals used to get its user representation.
-     *
-     * NOTE: This information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * {balanceOf} and {transfer}.
+     * @inheritdoc ILSP7DigitalAsset
      */
     function decimals() public view override returns (uint256) {
         return _isNFT ? 0 : 18;
     }
 
     /**
-     * @dev Returns the number of existing tokens.
+     * @inheritdoc ILSP7DigitalAsset
      */
     function totalSupply() public view override returns (uint256) {
         return _existingTokens;
@@ -62,50 +61,39 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     // --- Token owner queries
 
     /**
-     * @dev Returns the number of tokens owned by `tokenOwner`.
+     * @inheritdoc ILSP7DigitalAsset
      */
-    function balanceOf(address tokenOwner) public view override returns (uint256) {
+    function balanceOf(address tokenOwner)
+        public
+        view
+        override
+        returns (uint256)
+    {
         return _tokenOwnerBalances[tokenOwner];
     }
 
     // --- Operator functionality
 
     /**
-     * @dev Sets `amount` as the amount of tokens `operator` address has access to from callers tokens.
-     *
-     * See {isOperatorFor}.
-     *
-     * Emits an {AuthorizedOperator} event.
-     *
-     * Requirements
-     *
-     * - `operator` cannot be calling address.
-     * - `operator` cannot be the zero address.
+     * @inheritdoc ILSP7DigitalAsset
      */
-    function authorizeOperator(address operator, uint256 amount) public virtual override {
+    function authorizeOperator(address operator, uint256 amount)
+        public
+        virtual
+        override
+    {
         _updateOperator(_msgSender(), operator, amount);
     }
 
     /**
-     * @dev Removes `operator` address as an operator of callers tokens.
-     *
-     * See {isOperatorFor}.
-     *
-     * Emits a {RevokedOperator} event.
-     *
-     * Requirements
-     *
-     * - `operator` cannot be calling address.
-     * - `operator` cannot be the zero address.
+     * @inheritdoc ILSP7DigitalAsset
      */
     function revokeOperator(address operator) public virtual override {
         _updateOperator(_msgSender(), operator, 0);
     }
 
     /**
-     * @dev Returns amount of tokens `operator` address has access to from `tokenOwner`.
-     * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
-     * operator.
+     * @inheritdoc ILSP7DigitalAsset
      */
     function isOperatorFor(address operator, address tokenOwner)
         public
@@ -124,17 +112,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     // --- Transfer functionality
 
     /**
-     * @dev Transfers `amount` tokens from `from` to `to`.
-     *
-     * Requirements:
-     *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     * - `amount` tokens must be owned by `from`.
-     * - If the caller is not `from`, it must be an operator for `from` with access to at least
-     * `amount` tokens.
-     *
-     * Emits a {Transfer} event.
+     * @inheritdoc ILSP7DigitalAsset
      */
     function transfer(
         address from,
@@ -150,26 +128,18 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
                 operatorAmount >= amount,
                 "LSP7: transfer amount exceeds operator authorized amount"
             );
-            _updateOperator(from, operator, _operatorAuthorizedAmount[from][operator] - amount);
+            _updateOperator(
+                from,
+                operator,
+                _operatorAuthorizedAmount[from][operator] - amount
+            );
         }
 
         _transfer(from, to, amount, force, data);
     }
 
     /**
-     * @dev Transfers many tokens based on the list `from`, `to`, `amount`. If any transfer fails,
-     * the call will revert.
-     *
-     * Requirements:
-     *
-     * - `from`, `to`, `amount` lists are the same length.
-     * - no values in `from` can be the zero address.
-     * - no values in `to` can be the zero address.
-     * - each `amount` tokens must be owned by `from`.
-     * - If the caller is not `from`, it must be an operator for `from` with access to at least
-     * `amount` tokens.
-     *
-     * Emits {Transfer} event for each transfered token.
+     * @inheritdoc ILSP7DigitalAsset
      */
     function transferBatch(
         address[] memory from,
@@ -179,7 +149,9 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bytes[] memory data
     ) external virtual override {
         require(
-            from.length == to.length && from.length == amount.length && from.length == data.length,
+            from.length == to.length &&
+                from.length == amount.length &&
+                from.length == data.length,
             "LSP7: transferBatch list length mismatch"
         );
 
@@ -379,10 +351,13 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     ) internal virtual {
         if (
             ERC165Checker.supportsERC165(from) &&
-            ERC165Checker.supportsInterface(from, _LSP1_INTERFACE_ID)
+            ERC165Checker.supportsInterface(from, _INTERFACEID_LSP1)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
-            ILSP1UniversalReceiver(from).universalReceiver(_LSP7TOKENSSENDER_TYPE_ID, packedData);
+            ILSP1UniversalReceiver(from).universalReceiver(
+                _TYPEID_LSP7_TOKENSSENDER,
+                packedData
+            );
         }
     }
 
@@ -401,10 +376,13 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     ) internal virtual {
         if (
             ERC165Checker.supportsERC165(to) &&
-            ERC165Checker.supportsInterface(to, _LSP1_INTERFACE_ID)
+            ERC165Checker.supportsInterface(to, _INTERFACEID_LSP1)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
-            ILSP1UniversalReceiver(to).universalReceiver(_LSP7TOKENSRECIPIENT_TYPE_ID, packedData);
+            ILSP1UniversalReceiver(to).universalReceiver(
+                _TYPEID_LSP7_TOKENSRECIPIENT,
+                packedData
+            );
         } else if (!force) {
             if (to.isContract()) {
                 revert("LSP7: token receiver contract missing LSP1 interface");
