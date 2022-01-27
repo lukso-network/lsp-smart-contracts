@@ -326,10 +326,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     }
 
     /**
-     * @dev if `_from` is restricted to set only specific ERC725Y keys,
+     * @dev verify if `_from` is restricted to set only specific ERC725Y keys,
      * verify that the key being set (`_erc725Ykey`) is part of the list of `_allowedERC725YKeys`
-     * @param _erc725YKey the _erc725Ykey to set
-     * @param _allowedERC725YKeys a list of ERC725Y keys allowed
+     * @param _erc725YKey the bytes32 key we want to set in the ERC725Y storage
+     * @param _allowedERC725YKeys a list of allowed bytes32 keys
      */
     function _isAllowedERC725YKey(
         bytes32 _erc725YKey,
@@ -341,11 +341,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         uint256 length;
 
         for (uint256 ii = 0; ii < _allowedERC725YKeys.length; ii++) {
-            // check each individual bytes of the key to set, starting from the end (right to left)
+            // check each individual bytes of the allowed key, starting from the end (right to left)
             for (uint256 index = 31; index >= 0; index--) {
-                // skip the empty bytes (0x00) and find where the first non-empty bytes start
+                // find where the first non-empty bytes starts (skip the empty bytes 0x00)
                 if (_allowedERC725YKeys[ii][index] != 0x00) {
-                    // if we find a non-empty bytes, save the length
+                    // as soon as we find a non-empty byte, save the length
                     // so to know which part (= slice) of the keys to compare
                     length = index + 1;
                     break;
