@@ -239,8 +239,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         } else if (erc725Function == account.transferOwnership.selector) {
             bytes32 permissions = account.getPermissionsFor(_from);
 
-            _hasPermission(_PERMISSION_CHANGEOWNER, permissions) ||
-                _notAuthorised(_from, "TRANSFEROWNERSHIP");
+            if (!_hasPermission(_PERMISSION_CHANGEOWNER, permissions)) {
+                revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
+            }
         } else {
             revert("_verifyPermissions: unknown ERC725 selector");
         }
@@ -286,28 +287,27 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             // if the key is a permission key
             if (bytes8(key) == _SET_PERMISSIONS) {
                 // check if the storage under this key is empty
-                bool isNewAddress = bytes32(
-                    ERC725Y(account).getDataSingle(key)
-                ) == bytes32(0);
-
-                if (isNewAddress) {
+                if (
+                    bytes32(ERC725Y(account).getDataSingle(key)) == bytes32(0)
+                ) {
                     // if nothing is stored under this key,
                     // we are trying to ADD permissions for a NEW address
-                    _hasPermission(_PERMISSION_ADDPERMISSIONS, permissions) ||
-                        _notAuthorised(_from, "ADDPERMISSIONS");
+                    if (
+                        !_hasPermission(_PERMISSION_ADDPERMISSIONS, permissions)
+                    ) revert NotAuthorised(_from, "ADDPERMISSIONS");
                 } else {
                     // if there are already some value stored under this key,
                     // we are trying to CHANGE the permissions of an address
                     // (that has already some EXISTING permissions set)
                     // prettier-ignore
-                    _hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions) ||
-                        _notAuthorised(_from, "CHANGEPERMISSIONS");
+                    if (!_hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions))
+                        revert NotAuthorised(_from, "CHANGEPERMISSIONS");
                 }
 
                 // if it is any other key
             } else {
-                _hasPermission(_PERMISSION_SETDATA, permissions) ||
-                    _notAuthorised(_from, "SETDATA");
+                if (!_hasPermission(_PERMISSION_SETDATA, permissions))
+                    revert NotAuthorised(_from, "SETDATA");
 
                 // whitelist any ERC725Y key if nothing in the list
                 if (allowedERC725YKeysEncoded.length != 0)
@@ -384,13 +384,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             string memory operationName
         ) = _extractPermissionFromOperation(operationType);
 
-        _hasPermission(permissionRequired, permissions) ||
-            _notAuthorised(_from, operationName);
+        if (!_hasPermission(permissionRequired, permissions))
+            revert NotAuthorised(_from, operationName);
 
         if (
             (value > 0) &&
             !_hasPermission(_PERMISSION_TRANSFERVALUE, permissions)
-        ) _notAuthorised(_from, "TRANSFERVALUE");
+        ) revert NotAuthorised(_from, "TRANSFERVALUE");
     }
 
     /**
@@ -507,18 +507,5 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         if (_operationType == 1) return (_PERMISSION_DEPLOY, "CREATE");
         if (_operationType == 2) return (_PERMISSION_DEPLOY, "CREATE2");
         if (_operationType == 3) return (_PERMISSION_DEPLOY, "STATICCALL");
-    }
-
-    /**
-     * @dev return a boolean here to allow short-circuiting syntax && or ||
-     *      eg1: _hasEnoughPermissions(...) || revert NotAuthorized(...)
-     *      eg2: _isNotAdmin(...) && revert NotAuthorised(...)
-     */
-    function _notAuthorised(address _from, string memory _permission)
-        private
-        pure
-        returns (bool)
-    {
-        revert NotAuthorised(_from, _permission);
     }
 }
