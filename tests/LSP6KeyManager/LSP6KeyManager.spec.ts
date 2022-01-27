@@ -3483,16 +3483,11 @@ describe("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[mappingKey], [mappingValue]]
           );
-          let tx = await keyManager
+
+          await keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
 
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
           let [result] = await universalProfile.getData([mappingKey]);
           expect(result).toEqual(mappingValue);
         });
@@ -3507,16 +3502,10 @@ describe("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[mappingKey], [mappingValue]]
           );
-          let tx = await keyManager
+          await keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
 
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
           let [result] = await universalProfile.getData([mappingKey]);
           expect(result).toEqual(mappingValue);
         });
@@ -3531,16 +3520,11 @@ describe("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[mappingKey], [mappingValue]]
           );
-          let tx = await keyManager
+
+          await keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
 
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
           let [result] = await universalProfile.getData([mappingKey]);
           expect(result).toEqual(mappingValue);
         });
@@ -3582,16 +3566,9 @@ describe("ALLOWEDERC725YKEYS", () => {
             [mappingKeys, mappingValues]
           );
 
-          let tx = await keyManager
+          await keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
-
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
 
           let result = await universalProfile.getData(mappingKeys);
           expect(result).toEqual(mappingValues);
@@ -3783,16 +3760,11 @@ describe("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[key], [value]]
           );
-          let tx = await keyManager
+
+          await keyManager
             .connect(controllerCanSetArrayKeys)
             .execute(setDataPayload);
 
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
           let [result] = await universalProfile.getData([key]);
           expect(result).toEqual(value);
         });
@@ -3806,16 +3778,11 @@ describe("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[key], [value]]
           );
-          let tx = await keyManager
+
+          await keyManager
             .connect(controllerCanSetArrayKeys)
             .execute(setDataPayload);
 
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
           let [result] = await universalProfile.getData([key]);
           expect(result).toEqual(value);
         });
@@ -3830,16 +3797,11 @@ describe("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[key], [value]]
           );
-          let tx = await keyManager
+
+          await keyManager
             .connect(controllerCanSetArrayKeys)
             .execute(setDataPayload);
 
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
           let [result] = await universalProfile.getData([key]);
           expect(result).toEqual(value);
         });
@@ -3854,16 +3816,11 @@ describe("ALLOWEDERC725YKEYS", () => {
             "setData",
             [[key], [value]]
           );
-          let tx = await keyManager
+
+          await keyManager
             .connect(controllerCanSetArrayKeys)
             .execute(setDataPayload);
 
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
           let [result] = await universalProfile.getData([key]);
           expect(result).toEqual(value);
         });
@@ -3902,16 +3859,9 @@ describe("ALLOWEDERC725YKEYS", () => {
             [keys, values]
           );
 
-          let tx = await keyManager
+          await keyManager
             .connect(controllerCanSetArrayKeys)
             .execute(setDataPayload);
-
-          let receipt = await tx.wait();
-
-          console.log(
-            "tx: ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
 
           let result = await universalProfile.getData(keys);
           expect(result).toEqual(values);
