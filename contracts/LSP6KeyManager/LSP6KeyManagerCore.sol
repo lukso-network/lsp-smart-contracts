@@ -259,23 +259,29 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     {
         bytes32 permissions = account.getPermissionsFor(_from);
 
-        bytes memory allowedERC725YkeysRaw = ERC725Y(account).getDataSingle(
+        bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_ALLOWEDERC725YKEYS,
                 bytes20(_from)
             )
         );
 
-        bytes32[] memory allowedERC725YKeys = allowedERC725YkeysRaw.length == 0
-            ? new bytes32[](0)
-            : abi.decode(allowedERC725YkeysRaw, (bytes32[]));
+        bytes32[] memory allowedERC725YKeys;
+
+        if (allowedERC725YKeysEncoded.length != 0) {
+            allowedERC725YKeys = abi.decode(
+                allowedERC725YKeysEncoded,
+                (bytes32[])
+            );
+        }
 
         uint256 keyCount = uint256(bytes32(_data[68:100]));
         uint256 pointer = 100;
 
         // loop through the keys
         for (uint256 ii = 0; ii < keyCount; ii++) {
-            bytes32 key = bytes32(_data[pointer:pointer + 32]);
+            // extract the key while moving the calldata pointer 32 bytes at a time
+            bytes32 key = bytes32(_data[pointer:pointer += 32]);
 
             // if the key is a permission key
             if (bytes8(key) == _SET_PERMISSIONS) {
@@ -294,7 +300,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     // we are trying to CHANGE the permissions of an address
                     // (that has already some EXISTING permissions set)
                     // prettier-ignore
-                    _hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions) || 
+                    _hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions) ||
                         _notAuthorised(_from, "CHANGEPERMISSIONS");
                 }
 
@@ -304,11 +310,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     _notAuthorised(_from, "SETDATA");
 
                 // whitelist any ERC725Y key if nothing in the list
-                if (allowedERC725YKeys.length != 0)
+                if (allowedERC725YKeysEncoded.length != 0)
                     _verifyAllowedERC725YKey(key, allowedERC725YKeys);
             }
-
-            pointer += 32; // move calldata pointer
         }
     }
 
