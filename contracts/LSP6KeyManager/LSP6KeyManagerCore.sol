@@ -43,6 +43,13 @@ error NotAllowedAddress(address from, address disallowedAddress);
 error NotAllowedFunction(address from, bytes4 disallowedFunction);
 
 /**
+ * @dev address `from` is not authorised to set the key `disallowedKey` on the account
+ * @param from address making the request
+ * @param disallowedKey a bytes32 key that `from` is not authorised to set on the ERC725Y storage
+ */
+error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
+
+/**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller, Jean Cavallera
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
@@ -310,8 +317,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     revert NotAuthorised(_from, "SETDATA");
 
                 // whitelist any ERC725Y key if nothing in the list
-                if (allowedERC725YKeysEncoded.length != 0)
-                    _verifyAllowedERC725YKey(key, allowedERC725YKeys);
+                if (
+                    allowedERC725YKeysEncoded.length != 0 &&
+                    !_isAllowedERC725YKey(key, allowedERC725YKeys)
+                ) revert NotAllowedERC725YKey(_from, key);
             }
         }
     }
@@ -322,11 +331,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
      * @param _erc725YKey the _erc725Ykey to set
      * @param _allowedERC725YKeys a list of ERC725Y keys allowed
      */
-    function _verifyAllowedERC725YKey(
+    function _isAllowedERC725YKey(
         bytes32 _erc725YKey,
         bytes32[] memory _allowedERC725YKeys
-    ) internal pure {
-        // convert the key ERC725Y key to check ONCE to save gas
+    ) internal pure returns (bool) {
+        // convert the key ERC725Y key we want to verify first
+        // (not on each iteration, so to save gas)
         bytes memory keyToSet = bytes.concat(_erc725YKey);
         uint256 length;
 
@@ -354,9 +364,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                         length
                     )
                 )
-            ) return;
+            ) return true;
         }
-        revert("not allowed ERC725Y Key");
+        return false;
     }
 
     /**

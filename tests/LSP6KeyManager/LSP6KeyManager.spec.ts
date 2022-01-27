@@ -36,6 +36,7 @@ import {
   NotAuthorisedError,
   NotAllowedAddressError,
   NotAllowedFunctionError,
+  NotAllowedERC725YKeyError,
   EMPTY_PAYLOAD,
   DUMMY_PAYLOAD,
   DUMMY_PRIVATEKEY,
@@ -2851,7 +2852,6 @@ describe("ALLOWEDSTANDARDS", () => {
         ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
           caller.address.substring(2),
       ]);
-      console.log("ALLOWEDSTANDARDS (in storage) for caller: ", result);
     });
 
     describe("when interacting with a contract that implements + register ERC1271 interface", () => {
@@ -3122,9 +3122,15 @@ describe("ALLOWEDERC725YKEYS", () => {
             [[key], [newValue]]
           );
 
-          await expect(
-            keyManager.connect(controllerCanSetOneKey).execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+          try {
+            await keyManager
+              .connect(controllerCanSetOneKey)
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              NotAllowedERC725YKeyError(controllerCanSetOneKey.address, key)
+            );
+          }
         });
       });
 
@@ -3146,9 +3152,16 @@ describe("ALLOWEDERC725YKEYS", () => {
             [keys, values]
           );
 
-          await expect(
-            keyManager.connect(controllerCanSetOneKey).execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+          try {
+            await keyManager
+              .connect(controllerCanSetOneKey)
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(controllerCanSetOneKey.address, keys[0])
+            );
+          }
         });
         it("should fail, even if the list contains some of the allowed key", async () => {
           let keys = [
@@ -3167,9 +3180,16 @@ describe("ALLOWEDERC725YKEYS", () => {
             [keys, values]
           );
 
-          await expect(
-            keyManager.connect(controllerCanSetOneKey).execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+          try {
+            await keyManager
+              .connect(controllerCanSetOneKey)
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the second not allowed key
+              NotAllowedERC725YKeyError(controllerCanSetOneKey.address, keys[1])
+            );
+          }
         });
       });
     });
@@ -3240,9 +3260,15 @@ describe("ALLOWEDERC725YKEYS", () => {
             [[key], [newValue]]
           );
 
-          await expect(
-            keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+          try {
+            await keyManager
+              .connect(controllerCanSetManyKeys)
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              NotAllowedERC725YKeyError(controllerCanSetManyKeys.address, key)
+            );
+          }
         });
       });
 
@@ -3263,7 +3289,6 @@ describe("ALLOWEDERC725YKEYS", () => {
             .execute(setDataPayload);
 
           let result = await universalProfile.getData(keys);
-
           expect(result).toEqual(values);
         });
 
@@ -3305,9 +3330,19 @@ describe("ALLOWEDERC725YKEYS", () => {
             [keys, values]
           );
 
-          await expect(
-            keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+          try {
+            await keyManager
+              .connect(controllerCanSetManyKeys)
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(
+                controllerCanSetManyKeys.address,
+                keys[0]
+              )
+            );
+          }
         });
         it("should fail even if the list contains some of the allowed keys", async () => {
           let keys = [
@@ -3326,9 +3361,19 @@ describe("ALLOWEDERC725YKEYS", () => {
             [keys, values]
           );
 
-          await expect(
-            keyManager.connect(controllerCanSetManyKeys).execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+          try {
+            await keyManager
+              .connect(controllerCanSetManyKeys)
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(
+                controllerCanSetManyKeys.address,
+                keys[2]
+              )
+            );
+          }
         });
       });
     });
@@ -3511,11 +3556,19 @@ describe("ALLOWEDERC725YKEYS", () => {
             [[notAllowedMappingKey], [notAllowedMappingValue]]
           );
 
-          await expect(
-            keyManager
+          try {
+            await keyManager
               .connect(controllerCanSetMappingKeys)
-              .execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(
+                controllerCanSetMappingKeys.address,
+                notAllowedMappingKey
+              )
+            );
+          }
         });
       });
 
@@ -3541,7 +3594,6 @@ describe("ALLOWEDERC725YKEYS", () => {
           );
 
           let result = await universalProfile.getData(mappingKeys);
-
           expect(result).toEqual(mappingValues);
         });
         it("should fail when the list contains none of the allowed Mapping keys", async () => {
@@ -3567,11 +3619,19 @@ describe("ALLOWEDERC725YKEYS", () => {
             [randomMappingKeys, randomMappingValues]
           );
 
-          await expect(
-            keyManager
+          try {
+            await keyManager
               .connect(controllerCanSetMappingKeys)
-              .execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(
+                controllerCanSetMappingKeys.address,
+                randomMappingKeys[0]
+              )
+            );
+          }
         });
         it("should fail, even if the list contains some keys starting with `SupportedStandards`", async () => {
           let mappingKeys = [
@@ -3594,11 +3654,19 @@ describe("ALLOWEDERC725YKEYS", () => {
             [mappingKeys, mappingValues]
           );
 
-          await expect(
-            keyManager
+          try {
+            await keyManager
               .connect(controllerCanSetMappingKeys)
-              .execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(
+                controllerCanSetMappingKeys.address,
+                mappingKeys[1]
+              )
+            );
+          }
         });
       });
     });
@@ -3808,11 +3876,19 @@ describe("ALLOWEDERC725YKEYS", () => {
             [[notAllowedArrayKey], ["0x00"]]
           );
 
-          await expect(
-            keyManager
+          try {
+            await keyManager
               .connect(controllerCanSetArrayKeys)
-              .execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(
+                controllerCanSetArrayKeys.address,
+                notAllowedArrayKey
+              )
+            );
+          }
         });
       });
 
@@ -3852,11 +3928,19 @@ describe("ALLOWEDERC725YKEYS", () => {
             [randomArrayKeys, ["0xdeadbeef", "0xdeadbeef", "0xdeadbeef"]]
           );
 
-          await expect(
-            keyManager
+          try {
+            await keyManager
               .connect(controllerCanSetArrayKeys)
-              .execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(
+                controllerCanSetArrayKeys.address,
+                randomArrayKeys[0]
+              )
+            );
+          }
         });
         it("should fail, even if the list contains a mix of allowed + not-allowed array element keys (MyArray[] + RandomArray[])", async () => {
           let keys = [
@@ -3872,11 +3956,19 @@ describe("ALLOWEDERC725YKEYS", () => {
             [keys, values]
           );
 
-          await expect(
-            keyManager
+          try {
+            await keyManager
               .connect(controllerCanSetArrayKeys)
-              .execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y Key");
+              .execute(setDataPayload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              // should fail at the first not allowed key
+              NotAllowedERC725YKeyError(
+                controllerCanSetArrayKeys.address,
+                keys[2]
+              )
+            );
+          }
         });
       });
     });

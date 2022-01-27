@@ -145,6 +145,10 @@ export const NotAllowedFunctionError = (_from, _functionSelector) => {
   return `${customRevertErrorMessage} 'NotAllowedFunction("${_from}", "${_functionSelector}")'`;
 };
 
+export const NotAllowedERC725YKeyError = (_from, _erc725YKey) => {
+  return `${customRevertErrorMessage} 'NotAllowedERC725YKey("${_from}", "${_erc725YKey}")'`;
+};
+
 export async function getMapAndArrayKeyValues(
   account,
   vaultMapKey: string,
