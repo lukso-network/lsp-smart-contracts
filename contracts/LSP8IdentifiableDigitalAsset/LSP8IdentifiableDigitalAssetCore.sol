@@ -12,7 +12,7 @@ import "./ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants

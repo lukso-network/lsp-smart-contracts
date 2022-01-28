@@ -2,7 +2,7 @@
 
 *Fabian Vogelsteller, Yamen Merhi, Jean Cavallera*
 
-> Proxy Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using        the LSP5-ReceivedAsset standard and removing the sent assets.
+> Deployable Proxy Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using        the LSP5-ReceivedAsset standard and removing the sent assets.
 
 
 

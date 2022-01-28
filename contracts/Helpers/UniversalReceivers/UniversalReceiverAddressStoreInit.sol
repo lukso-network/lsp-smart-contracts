@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@erc725/smart-contracts/contracts/interfaces/ILSP1_UniversalReceiverDelegate.sol";
+import "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import "../Registries/AddressRegistry.sol";
@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 contract UniversalReceiverAddressStoreInit is
     Initializable,
     ERC165Storage,
-    ILSP1Delegate,
+    ILSP1UniversalReceiverDelegate,
     AddressRegistry
 {
     using EnumerableSet for EnumerableSet.AddressSet;

@@ -7,10 +7,11 @@ import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // interfaces
 import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // library
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "../Utils/ERC725Utils.sol";
 
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -21,7 +22,7 @@ import "./LSP9Constants.sol";
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
+contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1UniversalReceiver {
     using ERC725Utils for IERC725Y;
 
     /**
@@ -99,7 +100,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
         returns (bytes memory returnValue)
     {
         bytes memory receiverData = IERC725Y(this).getDataSingle(
-            _UNIVERSAL_RECEIVER_DELEGATE_KEY
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
         );
         returnValue = "";
 
@@ -112,11 +113,12 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1 {
 
             if (
                 ERC165(universalReceiverAddress).supportsInterface(
-                    _INTERFACE_ID_LSP1DELEGATE
+                    _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                returnValue = ILSP1Delegate(universalReceiverAddress)
-                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
+                returnValue = ILSP1UniversalReceiverDelegate(
+                    universalReceiverAddress
+                ).universalReceiverDelegate(_msgSender(), _typeId, _data);
             }
         }
 

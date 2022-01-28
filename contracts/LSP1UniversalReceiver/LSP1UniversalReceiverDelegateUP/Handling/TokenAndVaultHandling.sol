@@ -10,7 +10,7 @@ import "../../../LSP6KeyManager/ILSP6KeyManager.sol";
 import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
-import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "../../../Utils/ERC725Utils.sol";
 
 // constants
 import "../../LSP1Constants.sol";
@@ -83,8 +83,7 @@ abstract contract TokenAndVaultHandlingContract {
                                 IERC725Y(msg.sender),
                                 arrayKey,
                                 mapHash,
-                                mapKey,
-                                interfaceID
+                                mapKey
                             );
 
                         result = _executeViaKeyManager(
@@ -107,8 +106,7 @@ abstract contract TokenAndVaultHandlingContract {
                                     IERC725Y(msg.sender),
                                     arrayKey,
                                     mapHash,
-                                    mapKey,
-                                    interfaceID
+                                    mapKey
                                 );
 
                             result = _executeViaKeyManager(

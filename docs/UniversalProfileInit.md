@@ -2,7 +2,7 @@
 
 *Fabian Vogelsteller &lt;fabian@lukso.network&gt;*
 
-> Proxy implementation of a LUKSO&#39;s Universal Profile based on LSP3
+> Deployable Proxy implementation of a LUKSO&#39;s Universal Profile based on LSP3
 
 
 
@@ -55,18 +55,18 @@ function dataKeys(uint256) external view returns (bytes32)
 function execute(uint256 _operation, address _to, uint256 _value, bytes _data) external payable returns (bytes result)
 ```
 
-Executes any other smart contract. Is only callable by the owner.
 
 
+*Executes any other smart contract. SHOULD only be callable by the owner of the contract set via ERC173 Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4 Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _operation | uint256 | the operation to execute: CALL = 0; CREATE = 1; CREATE2 = 2; STATICCALL = 3; DELEGATECALL = 4;
-| _to | address | the smart contract or address to interact with. `_to` will be unused if a contract is created (operation 1 and 2)
-| _value | uint256 | the value of ETH to transfer
-| _data | bytes | the call data, or the contract data to deploy
+| _operation | uint256 | undefined
+| _to | address | undefined
+| _value | uint256 | undefined
+| _data | bytes | undefined
 
 #### Returns
 
@@ -77,10 +77,10 @@ Executes any other smart contract. Is only callable by the owner.
 ### getData
 
 ```solidity
-function getData(bytes32[] _keys) external view returns (bytes[] values)
+function getData(bytes32[] keys) external view returns (bytes[] values)
 ```
 
-Gets array of data at multiple given `key`
+Gets array of data at multiple given keys
 
 
 
@@ -88,7 +88,7 @@ Gets array of data at multiple given `key`
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | the keys which values to retrieve
+| keys | bytes32[] | The array of keys which values to retrieve
 
 #### Returns
 
@@ -248,10 +248,10 @@ function universalReceiver(bytes32 _typeId, bytes _data) external nonpayable ret
 ### ContractCreated
 
 ```solidity
-event ContractCreated(uint256 indexed _operation, address indexed _contractAddress, uint256 indexed _value)
+event ContractCreated(uint256 indexed operation, address indexed contractAddress, uint256 indexed value)
 ```
 
-
+Emitted when a contract is created
 
 
 
@@ -259,9 +259,9 @@ event ContractCreated(uint256 indexed _operation, address indexed _contractAddre
 
 | Name | Type | Description |
 |---|---|---|
-| _operation `indexed` | uint256 | undefined |
-| _contractAddress `indexed` | address | undefined |
-| _value `indexed` | uint256 | undefined |
+| operation `indexed` | uint256 | undefined |
+| contractAddress `indexed` | address | undefined |
+| value `indexed` | uint256 | undefined |
 
 ### DataChanged
 
@@ -269,7 +269,7 @@ event ContractCreated(uint256 indexed _operation, address indexed _contractAddre
 event DataChanged(bytes32 indexed key, bytes value)
 ```
 
-
+Emitted when data at a key is changed
 
 
 
@@ -283,10 +283,10 @@ event DataChanged(bytes32 indexed key, bytes value)
 ### Executed
 
 ```solidity
-event Executed(uint256 indexed _operation, address indexed _to, uint256 indexed _value, bytes _data)
+event Executed(uint256 indexed operation, address indexed to, uint256 indexed value, bytes data)
 ```
 
-
+Emitted when a contract executed.
 
 
 
@@ -294,10 +294,10 @@ event Executed(uint256 indexed _operation, address indexed _to, uint256 indexed 
 
 | Name | Type | Description |
 |---|---|---|
-| _operation `indexed` | uint256 | undefined |
-| _to `indexed` | address | undefined |
-| _value `indexed` | uint256 | undefined |
-| _data  | bytes | undefined |
+| operation `indexed` | uint256 | undefined |
+| to `indexed` | address | undefined |
+| value `indexed` | uint256 | undefined |
+| data  | bytes | undefined |
 
 ### OwnershipTransferred
 
@@ -322,7 +322,7 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 event UniversalReceiver(address indexed from, bytes32 indexed typeId, bytes indexed returnedValue, bytes receivedData)
 ```
 
-
+Emitted when the universalReceiver function is succesfully executed
 
 
 
