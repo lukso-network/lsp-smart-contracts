@@ -3492,6 +3492,25 @@ describe("ALLOWEDERC725YKEYS", () => {
           expect(result).toEqual(mappingValue);
         });
 
+        it("should pass when overriding SupportedStandards:LSPX", async () => {
+          let mappingKey = LSPXKey;
+          let mappingValue = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("0x24ae6f23")
+          );
+
+          let setDataPayload = universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[mappingKey], [mappingValue]]
+          );
+
+          await keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          let [result] = await universalProfile.getData([mappingKey]);
+          expect(result).toEqual(mappingValue);
+        });
+
         it("should pass when setting SupportedStandards:LSPY", async () => {
           let mappingKey = LSPYKey;
           let mappingValue = ethers.utils.hexlify(
@@ -3558,7 +3577,7 @@ describe("ALLOWEDERC725YKEYS", () => {
 
       describe("when setting multiple keys", () => {
         it('should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-          let mappingKeys = [LSPXKey, LSPYKey];
+          let mappingKeys = [LSPYKey, LSPZKey];
           let mappingValues = ["0x5e8d18c5", "0x5e8d18c5"];
 
           let setDataPayload = universalProfile.interface.encodeFunctionData(
@@ -3573,6 +3592,70 @@ describe("ALLOWEDERC725YKEYS", () => {
           let result = await universalProfile.getData(mappingKeys);
           expect(result).toEqual(mappingValues);
         });
+
+        it('(override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
+          let mappingKeys = [LSPYKey, LSPZKey];
+          let mappingValues = ["0x5e8d18c5", "0x5e8d18c5"];
+
+          let setDataPayload = universalProfile.interface.encodeFunctionData(
+            "setData",
+            [mappingKeys, mappingValues]
+          );
+
+          await keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          let result = await universalProfile.getData(mappingKeys);
+          expect(result).toEqual(mappingValues);
+        });
+
+        it('(3 x keys) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
+          let mappingKeys = [
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000aaaaaaaa",
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000bbbbbbbb",
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000cccccccc",
+          ];
+          let mappingValues = ["0xaaaaaaaa", "0xbbbbbbbb", "0xcccccccc"];
+
+          let setDataPayload = universalProfile.interface.encodeFunctionData(
+            "setData",
+            [mappingKeys, mappingValues]
+          );
+
+          await keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          let result = await universalProfile["getData(bytes32[])"](
+            mappingKeys
+          );
+          expect(result).toEqual(mappingValues);
+        });
+
+        it('(3 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
+          let mappingKeys = [
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000aaaaaaaa",
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000bbbbbbbb",
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000cccccccc",
+          ];
+          let mappingValues = ["0xaaaaaaaa", "0xbbbbbbbb", "0xcccccccc"];
+
+          let setDataPayload = universalProfile.interface.encodeFunctionData(
+            "setData",
+            [mappingKeys, mappingValues]
+          );
+
+          await keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          let result = await universalProfile["getData(bytes32[])"](
+            mappingKeys
+          );
+          expect(result).toEqual(mappingValues);
+        });
+
         it("should fail when the list contains none of the allowed Mapping keys", async () => {
           let randomMappingKeys = [
             "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111",
@@ -3768,6 +3851,7 @@ describe("ALLOWEDERC725YKEYS", () => {
           let [result] = await universalProfile.getData([key]);
           expect(result).toEqual(value);
         });
+
         it("should pass when setting 1st array element MyArray[0]", async () => {
           let key = arrayKeyElement1;
           let value = ethers.utils.hexlify(
