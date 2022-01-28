@@ -246,9 +246,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         } else if (erc725Function == account.transferOwnership.selector) {
             bytes32 permissions = account.getPermissionsFor(_from);
 
-            if (!_hasPermission(_PERMISSION_CHANGEOWNER, permissions)) {
+            if (!_hasPermission(_PERMISSION_CHANGEOWNER, permissions))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
-            }
         } else {
             revert("_verifyPermissions: unknown ERC725 selector");
         }
@@ -400,7 +399,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         if (
             (value > 0) &&
             !_hasPermission(_PERMISSION_TRANSFERVALUE, permissions)
-        ) revert NotAuthorised(_from, "TRANSFERVALUE");
+        ) {
+            revert NotAuthorised(_from, "TRANSFERVALUE");
+        }
     }
 
     /**
