@@ -291,6 +291,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             // extract the key while moving the calldata pointer 32 bytes at a time
             bytes32 key = bytes32(_data[pointer:pointer += 32]);
 
+            // prettier-ignore
             // if the key is a permission key
             if (bytes8(key) == _SET_PERMISSIONS) {
                 // check if the storage under this key is empty
@@ -299,28 +300,27 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                 ) {
                     // if nothing is stored under this key,
                     // we are trying to ADD permissions for a NEW address
-                    if (
-                        !_hasPermission(_PERMISSION_ADDPERMISSIONS, permissions)
-                    ) revert NotAuthorised(_from, "ADDPERMISSIONS");
+                    if (!_hasPermission(_PERMISSION_ADDPERMISSIONS, permissions)) 
+                        revert NotAuthorised(_from, "ADDPERMISSIONS");
                 } else {
                     // if there are already some value stored under this key,
                     // we are trying to CHANGE the permissions of an address
                     // (that has already some EXISTING permissions set)
-                    // prettier-ignore
                     if (!_hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions))
                         revert NotAuthorised(_from, "CHANGEPERMISSIONS");
                 }
-
-                // if it is any other key
+            // if the key is any other bytes32 key
             } else {
                 if (!_hasPermission(_PERMISSION_SETDATA, permissions))
                     revert NotAuthorised(_from, "SETDATA");
 
                 // whitelist any ERC725Y key if nothing in the list
                 if (
-                    allowedERC725YKeysEncoded.length != 0 &&
-                    !_isAllowedERC725YKey(key, allowedERC725YKeys)
-                ) revert NotAllowedERC725YKey(_from, key);
+                    allowedERC725YKeysEncoded.length != 0 
+                    && !_isAllowedERC725YKey(key, allowedERC725YKeys)
+                ) {
+                    revert NotAllowedERC725YKey(_from, key);
+                }
             }
         }
     }
