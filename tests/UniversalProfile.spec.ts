@@ -137,7 +137,7 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(ERC1271.MAGIC_VALUE);
     });
 
-    it("Should fail when verifying signature from not-owner", async () => {
+    it("Should fail when verifying signature from non-owner", async () => {
       const owner = accounts[2];
       const signer = accounts[9];
 
@@ -259,12 +259,6 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("dataCount should be 7", async () => {
-      // 7 because the LSP3UniversalProfile-type is already set by the UniversalProfile implementation
-      let result = await UniversalProfile.callStatic.allDataKeys();
-      expect(result.length).toEqual(7);
-    });
-
     it("Update 32 bytes item 7", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
@@ -276,11 +270,6 @@ describe("UniversalProfile", () => {
 
       let [result] = await UniversalProfile.getData([key]);
       expect(result).toEqual(value);
-    });
-
-    it("dataCount should remain 7", async () => {
-      let result = await UniversalProfile.callStatic.allDataKeys();
-      expect(result.length).toEqual(7);
     });
 
     it("Store multiple 32 bytes item 8-10", async () => {
@@ -303,11 +292,6 @@ describe("UniversalProfile", () => {
       await UniversalProfile.connect(owner).setData(keys, values);
       let result = await UniversalProfile.callStatic.getData(keys);
       expect(result).toEqual(values);
-    });
-
-    it("dataCount should be 10", async () => {
-      let keys = await UniversalProfile.allDataKeys();
-      expect(keys.length).toEqual(10);
     });
   });
 
