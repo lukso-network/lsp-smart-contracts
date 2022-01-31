@@ -317,11 +317,6 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(await proxy.callStatic.getData(keys)).toEqual(values);
     });
 
-    it("dataCount should be 8", async () => {
-      let result = await proxy.allDataKeys();
-      expect(result.length).toEqual(8);
-    });
-
     it("Update 32 bytes item 8", async () => {
       let keys = [
         abiCoder.encode(
@@ -334,11 +329,6 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       await proxy.setData(keys, values);
 
       expect(await proxy.getData(keys)).toEqual(values);
-    });
-
-    it("dataCount should remain 8 (after updating item 8)", async () => {
-      let result = await proxy.callStatic.allDataKeys();
-      expect(result.length).toEqual(8);
     });
 
     it("Store multiple 32 bytes item 9-11", async () => {
@@ -359,11 +349,6 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       await proxy.setData(keys, values);
       let result = await proxy.callStatic.getData(keys);
       expect(result).toEqual(values);
-    });
-
-    it("dataCount should be 11", async () => {
-      let keys = await proxy.allDataKeys();
-      expect(keys.length).toEqual(11);
     });
   });
 
