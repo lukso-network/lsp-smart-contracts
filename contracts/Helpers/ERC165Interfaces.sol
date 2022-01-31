@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@erc725/smart-contracts/contracts/interfaces/IERC1271.sol";
+import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -31,69 +31,69 @@ import "../LSP9Vault/LSP9Vault.sol";
  */
 contract CalculateLSPInterfaces {
     function calculateInterfaceLSP1() public pure returns (bytes4) {
-        bytes4 selector = type(ILSP1UniversalReceiver).interfaceId;
+        bytes4 interfaceId = type(ILSP1UniversalReceiver).interfaceId;
         require(
-            selector == _INTERFACEID_LSP1,
+            interfaceId == _INTERFACEID_LSP1,
             "_LSP1_INTERFACE_ID does not match type(ILSP1).interfaceId"
         );
 
-        return selector;
+        return interfaceId;
     }
 
     function calculateInterfaceLSP1Delegate() public pure returns (bytes4) {
-        bytes4 selector = type(ILSP1UniversalReceiverDelegate).interfaceId;
+        bytes4 interfaceId = type(ILSP1UniversalReceiverDelegate).interfaceId;
         require(
-            selector == _INTERFACEID_LSP1_DELEGATE,
+            interfaceId == _INTERFACEID_LSP1_DELEGATE,
             "_LSP1_DELEGATE_INTERFACE_ID does not match type(ILSP1Delegate).interfaceId"
         );
 
-        return selector;
+        return interfaceId;
     }
 
     function calculateInterfaceLSP6KeyManager() public pure returns (bytes4) {
-        bytes4 selector = type(ILSP6KeyManager).interfaceId;
+        bytes4 interfaceId = type(ILSP6KeyManager).interfaceId;
         require(
-            selector == _INTERFACEID_LSP6,
+            interfaceId == _INTERFACEID_LSP6,
             "_LSP6_INTERFACE_ID does not match type(ILSP6).interfaceId"
         );
 
-        return selector;
+        return interfaceId;
     }
 
     function calculateInterfaceLSP7() public pure returns (bytes4) {
-        bytes4 selector = type(ILSP7DigitalAsset).interfaceId;
+        bytes4 interfaceId = type(ILSP7DigitalAsset).interfaceId;
         require(
-            selector == _INTERFACEID_LSP7,
+            interfaceId == _INTERFACEID_LSP7,
             "_LSP7_INTERFACE_ID does not match type(ILSP7).interfaceId"
         );
 
-        return selector;
+        return interfaceId;
     }
 
     function calculateInterfaceLSP8() public pure returns (bytes4) {
-        bytes4 selector = type(ILSP8IdentifiableDigitalAsset).interfaceId;
+        bytes4 interfaceId = type(ILSP8IdentifiableDigitalAsset).interfaceId;
         require(
-            selector == _INTERFACEID_LSP8,
+            interfaceId == _INTERFACEID_LSP8,
             "_LSP8_INTERFACE_ID does not match type(ILSP8).interfaceId"
         );
 
-        return selector;
+        return interfaceId;
     }
 
     function calculateLSP9VaultInterfaceID() public pure returns (bytes4) {
         LSP9Vault i;
 
-        bytes4 selector = i.getData.selector ^
+        bytes4 interfaceId = i.getData.selector ^
             i.setData.selector ^
             i.execute.selector ^
             i.universalReceiver.selector;
 
         require(
-            selector == _INTERFACEID_LSP9,
+            interfaceId == _INTERFACEID_LSP9,
             "_LSP9_INTERFACE_ID does not match XOR of the functions"
         );
 
-        return selector;
+        return interfaceId;
     }
 }
 
