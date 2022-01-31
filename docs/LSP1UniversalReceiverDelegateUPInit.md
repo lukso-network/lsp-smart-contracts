@@ -2,7 +2,7 @@
 
 *Fabian Vogelsteller, Yamen Merhi, Jean Cavallera*
 
-> Proxy Implementation of contract writing the received Vaults and LSP7, LSP8 assets into your ERC725Account using        the LSP5-ReceivedAsset and LSP10-ReceivedVaults standard and removing the sent vaults and assets.
+> Deployable Proxy Implementation of contract writing the received Vaults and LSP7, LSP8 assets into your ERC725Account using        the LSP5-ReceivedAsset and LSP10-ReceivedVaults standard and removing the sent vaults and assets.
 
 
 

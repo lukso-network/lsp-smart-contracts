@@ -11,13 +11,15 @@ import "./ILSP6KeyManager.sol";
 
 // libraries
 import "../Utils/LSP6Utils.sol";
-import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+
+import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import "./LSP6Constants.sol";
+import "../LSP0ERC725Account/LSP0Constants.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
 
 /**

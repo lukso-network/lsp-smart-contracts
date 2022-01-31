@@ -6,7 +6,7 @@ import {
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
-import { ERC725Account, ERC725Account__factory } from "../../types";
+import { LSP0ERC725Account, LSP0ERC725Account__factory } from "../../types";
 import { getRandomAddresses, generateKeysAndValues } from "../utils/helpers";
 import { BasicUPSetup_Schema } from "../../constants";
 
@@ -14,7 +14,7 @@ describe("ERC725 Account", () => {
   let accounts: SignerWithAddress[];
   let owner: SignerWithAddress;
 
-  let erc725Account: ERC725Account;
+  let erc725Account: LSP0ERC725Account;
 
   let lsp3IssuedAssets = [];
 
@@ -22,7 +22,7 @@ describe("ERC725 Account", () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
 
-    erc725Account = await new ERC725Account__factory(owner).deploy(
+    erc725Account = await new LSP0ERC725Account__factory(owner).deploy(
       owner.address
     );
   });

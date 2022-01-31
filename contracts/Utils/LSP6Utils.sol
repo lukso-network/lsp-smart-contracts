@@ -6,7 +6,7 @@ import "../LSP6KeyManager/LSP6Constants.sol";
 
 // libraries
 import "../Utils/LSP2Utils.sol";
-import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "..//Utils/ERC725Utils.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;

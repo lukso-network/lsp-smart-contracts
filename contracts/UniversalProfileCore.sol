@@ -2,18 +2,18 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "@erc725/smart-contracts/contracts/ERC725AccountCore.sol";
+import "./LSP0ERC725Account/LSP0ERC725AccountCore.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // libraries
-import "@erc725/smart-contracts/contracts/utils/ERC725Utils.sol";
+import "./Utils/ERC725Utils.sol";
 
 /**
  * @title Core implementation of a LUKSO's Universal Profile based on LSP3
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera, Yamen Merhi
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
-abstract contract UniversalProfileCore is ERC165Storage, ERC725AccountCore {
+abstract contract UniversalProfileCore is ERC165Storage, LSP0ERC725AccountCore {
     bytes32[] public dataKeys;
 
     /* non-standard public functions */

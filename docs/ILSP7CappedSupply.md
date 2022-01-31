@@ -69,24 +69,24 @@ function decimals() external view returns (uint256)
 ### getData
 
 ```solidity
-function getData(bytes32[] _keys) external view returns (bytes[])
+function getData(bytes32[] keys) external view returns (bytes[] values)
 ```
 
+Gets array of data at multiple given keys
 
 
-*Gets array of data at multiple given `key`*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | undefined
+| keys | bytes32[] | The array of keys which values to retrieve
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | bytes[] | undefined
+| values | bytes[] | The array of data stored at multiple keys
 
 ### isOperatorFor
 
@@ -130,19 +130,19 @@ function revokeOperator(address operator) external nonpayable
 ### setData
 
 ```solidity
-function setData(bytes32[] _keys, bytes[] _values) external nonpayable
+function setData(bytes32[] keys, bytes[] values) external nonpayable
 ```
 
 
 
-*Sets array of data at multiple given `key`. SHOULD only be callable by the owner of the contract set via ERC173. Emits a {DataChanged} event.*
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _keys | bytes32[] | undefined
-| _values | bytes[] | undefined
+| keys | bytes32[] | The array of keys which values to set
+| values | bytes[] | The array of values to set
 
 ### supportsInterface
 
@@ -268,7 +268,7 @@ event AuthorizedOperator(address indexed operator, address indexed tokenOwner, u
 event DataChanged(bytes32 indexed key, bytes value)
 ```
 
-
+Emitted when data at a key is changed
 
 
 

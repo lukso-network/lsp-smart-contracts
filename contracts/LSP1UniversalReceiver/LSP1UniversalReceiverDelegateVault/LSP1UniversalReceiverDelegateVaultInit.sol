@@ -2,24 +2,22 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP1UniversalReceiverDelegateVaultCore.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "./LSP1UniversalReceiverDelegateVaultInitAbstract.sol";
 
 /**
- * @title Proxy Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using
+ * @title Deployable Proxy Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using
  *        the LSP5-ReceivedAsset standard and removing the sent assets.
  *
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Delegate contract of the initial universal receiver
  */
 contract LSP1UniversalReceiverDelegateVaultInit is
-    Initializable,
-    LSP1UniversalReceiverDelegateVaultCore
+    LSP1UniversalReceiverDelegateVaultInitAbstract
 {
     /**
-     * @notice Register the LSP1UniversalReceiverDelegate InterfaceId
+     * @inheritdoc LSP1UniversalReceiverDelegateVaultInitAbstract
      */
-    function initialize() public initializer {
-        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
+    function initialize() public virtual override initializer {
+        LSP1UniversalReceiverDelegateVaultInitAbstract.initialize();
     }
 }

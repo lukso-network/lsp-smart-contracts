@@ -137,6 +137,13 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       expect(result).toBeTruthy(); // "does not support interface `ERC725Y`"
     });
 
+    it("Should support LSP0 (ERC725Account)", async () => {
+      let result = await proxy.callStatic.supportsInterface(
+        INTERFACE_IDS.ERC725Account
+      );
+      expect(result).toBeTruthy();
+    });
+
     it("Should support ERC1271", async () => {
       let result = await proxy.callStatic.supportsInterface(
         INTERFACE_IDS.ERC1271
@@ -565,7 +572,7 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       let receipt = await transaction.wait();
 
       expect(receipt.events[0].event).toEqual("ContractCreated");
-      expect(receipt.events[0].args._contractAddress).toEqual(
+      expect(receipt.events[0].args.contractAddress).toEqual(
         preComputedAddress
       );
     });
