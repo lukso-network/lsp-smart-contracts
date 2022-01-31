@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./UniversalProfileCore.sol";
 import "./LSP0ERC725Account/LSP0ERC725Account.sol";
 
 /**
@@ -10,7 +9,7 @@ import "./LSP0ERC725Account/LSP0ERC725Account.sol";
  * @author Fabian Vogelsteller <fabian@lukso.network>
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
-contract UniversalProfile is LSP0ERC725Account, UniversalProfileCore {
+contract UniversalProfile is LSP0ERC725Account {
     /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
      * @param _newOwner the owner of the contract
@@ -20,18 +19,5 @@ contract UniversalProfile is LSP0ERC725Account, UniversalProfileCore {
         bytes32 key = 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6;
         bytes memory value = hex"abe425d6";
         _setData(key, value);
-
-        dataKeys.push(key);
-    }
-
-    /**
-     * @inheritdoc UniversalProfileCore
-     */
-    function setData(bytes32[] memory _keys, bytes[] memory _values)
-        public
-        override(UniversalProfileCore, ERC725YCore)
-        onlyOwner
-    {
-        UniversalProfileCore.setData(_keys, _values);
     }
 }
