@@ -36,6 +36,9 @@ abstract contract LSP8CompatibilityForERC721Core is
         override
         returns (string memory)
     {
+        // silence compiler warning about unused variable
+        tokenId;
+
         bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
