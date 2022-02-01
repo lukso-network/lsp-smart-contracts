@@ -10,7 +10,8 @@ import "../ILSP7DigitalAsset.sol";
  */
 interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
     /**
-     * @dev To provide compatibility with indexing ERC20 events.
+     * @notice To provide compatibility with indexing ERC20 events.
+     * @dev Emitted when `amount` tokens is transferred from `from` to `to`.
      * @param from The sending address
      * @param to The receiving address
      * @param value The amount of tokens transfered.
@@ -18,7 +19,8 @@ interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     /**
-     * @dev To provide compatibility with indexing ERC20 events.
+     * @notice To provide compatibility with indexing ERC20 events.
+     * @dev Emitted when `owner` enables `spender` for `value` tokens.
      * @param owner The account giving approval
      * @param spender The account receiving approval
      * @param value The amount of tokens `spender` has access to from `owner`
@@ -26,14 +28,14 @@ interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     /*
-     * @dev Compatible with ERC20 tranfer
+     * @dev Compatible with ERC20 transfer
      * @param to The receiving address
      * @param amount The amount of tokens to transfer
      */
     function transfer(address to, uint256 amount) external;
 
     /*
-     * @dev Compatible with ERC20 tranferFrom
+     * @dev Compatible with ERC20 transferFrom
      * @param from The sending address
      * @param to The receiving address
      * @param amount The amount of tokens to transfer
