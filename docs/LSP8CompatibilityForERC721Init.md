@@ -151,7 +151,7 @@ Sets the name, the symbol and the owner of the token
 ### isApprovedForAll
 
 ```solidity
-function isApprovedForAll(uint256 tokenId) external nonpayable returns (bool)
+function isApprovedForAll(address tokenOwner, address operator) external view returns (bool)
 ```
 
 
@@ -162,7 +162,8 @@ function isApprovedForAll(uint256 tokenId) external nonpayable returns (bool)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | uint256 | undefined
+| tokenOwner | address | undefined
+| operator | address | undefined
 
 #### Returns
 
@@ -519,7 +520,7 @@ function transferOwnership(address newOwner) external nonpayable
 event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)
 ```
 
-
+To provide compatibility with indexing ERC721 events.
 
 
 
@@ -607,7 +608,7 @@ event RevokedOperator(address indexed operator, address indexed tokenOwner, byte
 event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data)
 ```
 
-
+To provide compatibility with indexing ERC721 events.
 
 
 
