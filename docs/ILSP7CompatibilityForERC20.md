@@ -288,9 +288,9 @@ function transferFrom(address from, address to, uint256 amount) external nonpaya
 event Approval(address indexed owner, address indexed spender, uint256 value)
 ```
 
+To provide compatibility with indexing ERC20 events.
 
-
-*To provide compatibility with indexing ERC20 events.*
+*Emitted when `owner` enables `spender` for `value` tokens.*
 
 #### Parameters
 
@@ -358,9 +358,9 @@ event RevokedOperator(address indexed operator, address indexed tokenOwner)
 event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data)
 ```
 
+To provide compatibility with indexing ERC20 events.
 
-
-*To provide compatibility with indexing ERC20 events.*
+*Emitted when `amount` tokens is transferred from `from` to `to`.*
 
 #### Parameters
 

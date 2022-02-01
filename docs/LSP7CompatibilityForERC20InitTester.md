@@ -418,7 +418,7 @@ function transferOwnership(address newOwner) external nonpayable
 event Approval(address indexed owner, address indexed spender, uint256 value)
 ```
 
-
+To provide compatibility with indexing ERC20 events.
 
 
 
@@ -505,7 +505,7 @@ event RevokedOperator(address indexed operator, address indexed tokenOwner)
 event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data)
 ```
 
-
+To provide compatibility with indexing ERC20 events.
 
 
 
