@@ -24,6 +24,7 @@ abstract contract LSP8CompatibilityForERC721Core is
     LSP4Compatibility,
     ILSP8CompatibilityForERC721
 {
+    using ERC725Utils for IERC725Y;
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /*
@@ -39,7 +40,7 @@ abstract contract LSP8CompatibilityForERC721Core is
         // silence compiler warning about unused variable
         tokenId;
 
-        bytes memory data = ERC725Utils.getDataSingle(this, _LSP4_METADATA_KEY);
+        bytes memory data = IERC725Y(this).getDataSingle(_LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
         uint256 offset = 36;
