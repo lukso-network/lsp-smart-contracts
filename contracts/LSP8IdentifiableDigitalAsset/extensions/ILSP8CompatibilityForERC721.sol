@@ -10,7 +10,8 @@ import "../ILSP8IdentifiableDigitalAsset.sol";
  */
 interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
     /**
-     * @dev To provide compatibility with indexing ERC721 events
+     * @notice To provide compatibility with indexing ERC721 events.
+     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
      * @param from The sending address
      * @param to The receiving address
      * @param tokenId The tokenId to transfer
@@ -22,7 +23,8 @@ interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
     );
 
     /**
-     * @dev To provide compatibility with indexing ERC721 events.
+     * @notice To provide compatibility with indexing ERC721 events.
+     * @dev Emitted when `owner` enables `approved` for `tokenId`.
      * @param owner The address of the owner of the `tokenId`
      * @param approved The address set as operator
      * @param tokenId The approved tokenId
