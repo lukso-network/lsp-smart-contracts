@@ -15,7 +15,7 @@ import "@erc725/smart-contracts/contracts/ERC725Y.sol";
  * @author Matthew Stevens
  * @dev Implementation of a LSP7 compliant contract.
  */
-contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
+contract LSP7DigitalAsset is LSP7DigitalAssetCore, LSP4DigitalAssetMetadata {
     /**
      * @notice Sets the token-Metadata and register LSP7InterfaceId
      * @param name_ The name of the token

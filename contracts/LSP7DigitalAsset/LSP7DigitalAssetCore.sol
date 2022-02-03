@@ -25,8 +25,6 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
  * @dev Core Implementation of a LSP7 compliant contract.
  */
 abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
-    using EnumerableSet for EnumerableSet.AddressSet;
-    using EnumerableSet for EnumerableSet.Bytes32Set;
     using Address for address;
 
     // --- Storage
