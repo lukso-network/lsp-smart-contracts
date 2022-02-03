@@ -3,8 +3,8 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../LSP8IdentifiableDigitalAsset.sol";
 import "./LSP8CompatibilityForERC721Core.sol";
+import "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 // constants
 import "./LSP8CompatibilityConstants.sol";
@@ -12,28 +12,26 @@ import "./LSP8CompatibilityConstants.sol";
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
-contract LSP8CompatibilityForERC721 is
-    LSP8IdentifiableDigitalAsset,
+contract LSP8CompatibilityForERC721InitAbstract is
+    LSP8IdentifiableDigitalAssetInitAbstract,
     LSP8CompatibilityForERC721Core
 {
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /**
      * @notice Sets the name, the symbol and the owner of the token
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the token
      */
-    constructor(
+    function initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {
+    ) public virtual override onlyInitializing {
+        LSP8IdentifiableDigitalAssetInitAbstract.initialize(name_, symbol_, newOwner_);
+
         _registerInterface(_INTERFACEID_ERC721);
         _registerInterface(_INTERFACEID_ERC721METADATA);
     }
-
-    // --- Overrides
 
     function authorizeOperator(address operator, bytes32 tokenId)
         public
