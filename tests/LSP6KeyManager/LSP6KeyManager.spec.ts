@@ -2965,7 +2965,7 @@ describe("ALLOWEDSTANDARDS", () => {
   });
 });
 
-describe.only("ALLOWEDERC725YKEYS", () => {
+describe("ALLOWEDERC725YKEYS", () => {
   let abiCoder;
 
   let accounts: SignerWithAddress[] = [];
@@ -2996,7 +2996,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
     owner = accounts[0];
   });
 
-  describe.skip("keyType: Singleton", () => {
+  describe("keyType: Singleton", () => {
     let controllerCanSetOneKey: SignerWithAddress,
       controllerCanSetManyKeys: SignerWithAddress;
 
@@ -3128,10 +3128,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              NotAllowedERC725YKeyError(
-                controllerCanSetOneKey.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
-              )
+              NotAllowedERC725YKeyError(controllerCanSetOneKey.address, key)
             );
           }
         });
@@ -3161,11 +3158,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              // should fail at the first not allowed key
-              NotAllowedERC725YKeyError(
-                controllerCanSetOneKey.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
-              )
+              NotAllowedERC725YKeyError(controllerCanSetOneKey.address, keys[2])
             );
           }
         });
@@ -3192,11 +3185,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              // should fail at the second not allowed key
-              NotAllowedERC725YKeyError(
-                controllerCanSetOneKey.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
-              )
+              NotAllowedERC725YKeyError(controllerCanSetOneKey.address, keys[2])
             );
           }
         });
@@ -3240,7 +3229,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
           expect(result).toEqual(newValue);
         });
         it("should pass when trying to set the 3rd allowed key", async () => {
-          let key = customKey3;
+          let key = customKey4;
           let newValue = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("Some data")
           );
@@ -3275,10 +3264,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              NotAllowedERC725YKeyError(
-                controllerCanSetManyKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
-              )
+              NotAllowedERC725YKeyError(controllerCanSetManyKeys.address, key)
             );
           }
         });
@@ -3351,7 +3337,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
+                keys[2]
               )
             );
           }
@@ -3382,7 +3368,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
+                keys[2]
               )
             );
           }
@@ -3438,7 +3424,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
     });
   });
 
-  describe.only("keyType: Mapping", () => {
+  describe("keyType: Mapping", () => {
     let controllerCanSetMappingKeys: SignerWithAddress;
 
     // all mapping keys starting with: SupportedStandards:...
@@ -3594,7 +3580,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetMappingKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
+                notAllowedMappingKey
               )
             );
           }
@@ -3740,7 +3726,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetMappingKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
+                randomMappingKeys[2]
               )
             );
           }
@@ -3775,7 +3761,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetMappingKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
+                mappingKeys[2]
               )
             );
           }
@@ -3978,7 +3964,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetArrayKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
+                notAllowedArrayKey
               )
             );
           }
@@ -4023,7 +4009,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetArrayKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
+                randomArrayKeys[2]
               )
             );
           }
@@ -4051,7 +4037,7 @@ describe.only("ALLOWEDERC725YKEYS", () => {
               // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetArrayKeys.address,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
+                keys[3]
               )
             );
           }

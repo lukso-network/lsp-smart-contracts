@@ -327,6 +327,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             bytes memory keyToSet;
 
             bool keyMatch;
+            bytes32 notAllowedKey;
 
             for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
                 // check each individual bytes of the allowed key, starting from the end (right to left)
@@ -345,10 +346,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     }
                 }
 
+                // loop through each keys given as input
                 for (uint256 jj = 0; jj < keys.length; jj++) {
                     // skip nulled keys
                     if (keys[jj] == bytes32(0)) continue;
 
+                    // if dynamic key, extravct the slice to compare with allowed key
                     keyToSet = BytesLib.slice(
                         bytes.concat(keys[jj]),
                         0,
@@ -358,44 +361,21 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
                     keyMatch =
                         keccak256(allowedKeyToCompare) == keccak256(keyToSet);
 
-                    if (keyMatch == false && jj == keys.length - 1) {
-                        revert NotAllowedERC725YKey(_from, bytes32(0));
-                    }
+                    // if the keys do not match, save this key as a not allowed key
+                    if (keyMatch == false) notAllowedKey = keys[jj];
                 }
+
+                // if after checking all the keys given as input we did not find any not allowed key
+                // stop checking the other allowed ERC725Y keys
+                /// TODO: test when the allowed key is the last one given in the array of inputs
+                if (keyMatch == true) break;
+            }
+
+            if (keyMatch == false) {
+                revert NotAllowedERC725YKey(_from, notAllowedKey);
             }
         }
     }
-
-    /**
-     * @dev verify if `_from` is restricted to set only specific ERC725Y keys,
-     * verify that the key being set (`_erc725Ykey`) is part of the list of `_allowedERC725YKeys`
-     * @param _erc725YKey the bytes32 key we want to set in the ERC725Y storage
-     * @param _allowedERC725YKeys a list of allowed bytes32 keys
-     */
-    // function _isAllowedERC725YKey(
-    //     bytes32 _erc725YKey,
-    //     bytes32[] memory _allowedERC725YKeys
-    // ) internal pure returns (bool) {
-    //     // convert the key ERC725Y key we want to verify first
-    //     // (not on each iteration, so to save gas)
-
-    //     uint256 length;
-
-    //     for (uint256 ii = 0; ii < _allowedERC725YKeys.length; ii++) {
-    //         if (
-    //             // keccak256(keyToSet[0:length]) == keccak256(_allowedERC725YKeys[ii][0:length])
-    //             keccak256(BytesLib.slice(keyToSet, 0, length)) ==
-    //             keccak256(
-    //                 BytesLib.slice(
-    //                     bytes.concat(_allowedERC725YKeys[ii]),
-    //                     0,
-    //                     length
-    //                 )
-    //             )
-    //         ) return true;
-    //     }
-    //     return false;
-    // }
 
     /**
      * @dev verify if `_from` has the required permissions to make an external call
