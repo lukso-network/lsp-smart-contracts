@@ -7,7 +7,7 @@ bytes4 constant _INTERFACEID_LSP6 = 0x6f4df48b;
 /* solhint-disable */
 // PERMISSION KEYS
 // prettier-ignore
-bytes8 constant _SET_PERMISSIONS           = 0x4b80742d00000000; // AddressPermissions:<...>
+bytes8 constant _SET_PERMISSIONS_PREFIX           = 0x4b80742d00000000; // AddressPermissions:<...>
 bytes12 constant _ADDRESS_PERMISSIONS = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes32
 bytes12 constant _ADDRESS_ALLOWEDADDRESSES = 0x4b80742d00000000c6dd0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
 bytes12 constant _ADDRESS_ALLOWEDFUNCTIONS = 0x4b80742d000000008efe0000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]

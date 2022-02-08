@@ -268,35 +268,26 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     {
         bytes32 permissions = account.getPermissionsFor(_from);
 
-        (bytes32[] memory keys, ) = abi.decode(_data[4:], (bytes32[], bytes[]));
+        (bytes32[] memory inputKeys, ) = abi.decode(
+            _data[4:],
+            (bytes32[], bytes[])
+        );
 
         bool isSettingERC725YKeys = false;
 
-        // loop through the keys
-        for (uint256 ii = 0; ii < keys.length; ii++) {
-            // extract the key while moving the calldata pointer 32 bytes at a time
-            bytes32 key = keys[ii];
+        // loop through the keys we are trying to set
+        for (uint256 ii = 0; ii < inputKeys.length; ii++) {
+            bytes32 key = inputKeys[ii];
 
             // prettier-ignore
             // if the key is a permission key
-            if (bytes8(key) == _SET_PERMISSIONS) {
-                // check if the storage under this key is empty
-                if (
-                    bytes32(ERC725Y(account).getDataSingle(key)) == bytes32(0)
-                ) {
-                    // if nothing is stored under this key,
-                    // we are trying to ADD permissions for a NEW address
-                    if (!_hasPermission(_PERMISSION_ADDPERMISSIONS, permissions)) 
-                        revert NotAuthorised(_from, "ADDPERMISSIONS");
-                } else {
-                    // if there are already some value stored under this key,
-                    // we are trying to CHANGE the permissions of an address
-                    // (that has already some EXISTING permissions set)
-                    if (!_hasPermission(_PERMISSION_CHANGEPERMISSIONS, permissions))
-                        revert NotAuthorised(_from, "CHANGEPERMISSIONS");
-                }
+            if (bytes8(key) == _SET_PERMISSIONS_PREFIX) {
+                _verifyCanSetPermissions(key, _from, permissions);
 
-                keys[ii] = bytes32(0);
+                // "nullify permission keys, 
+                // so that they do not get check against allowed ERC725Y keys
+                inputKeys[ii] = bytes32(0);
+
             // if the key is any other bytes32 key
             } else {
                 isSettingERC725YKeys = true;
@@ -306,8 +297,36 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         if (isSettingERC725YKeys) {
             if (!_hasPermission(_PERMISSION_SETDATA, permissions))
                 revert NotAuthorised(_from, "SETDATA");
-        }
 
+            _verifyAllowedERC725YKeys(_from, inputKeys);
+        }
+    }
+
+    function _verifyCanSetPermissions(
+        bytes32 _key,
+        address _from,
+        bytes32 _callerPermissions
+    ) internal view {
+        // prettier-ignore
+        // check if some permissions are already stored under this key
+        if (bytes32(ERC725Y(account).getDataSingle(_key)) == bytes32(0)) {
+            // if nothing is stored under this key,
+            // we are trying to ADD permissions for a NEW address
+            if (!_hasPermission(_PERMISSION_ADDPERMISSIONS, _callerPermissions))
+                revert NotAuthorised(_from, "ADDPERMISSIONS");
+        } else {
+            // if there are already a value stored under this key,
+            // we are trying to CHANGE the permissions of an address
+            // (that has already some EXISTING permissions set)
+            if (!_hasPermission(_PERMISSION_CHANGEPERMISSIONS, _callerPermissions)) 
+                revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+        }
+    }
+
+    function _verifyAllowedERC725YKeys(
+        address _from,
+        bytes32[] memory _inputKeys
+    ) internal view {
         bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _ADDRESS_ALLOWEDERC725YKEYS,
@@ -316,65 +335,60 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         );
 
         // whitelist any ERC725Y key if nothing in the list
-        if (allowedERC725YKeysEncoded.length != 0) {
-            bytes32[] memory allowedERC725YKeys = abi.decode(
-                allowedERC725YKeysEncoded,
-                (bytes32[])
+        if (allowedERC725YKeysEncoded.length == 0) return;
+
+        bytes32[] memory allowedERC725YKeys = abi.decode(
+            allowedERC725YKeysEncoded,
+            (bytes32[])
+        );
+
+        bytes memory allowedKeySlice;
+        bytes memory inputKeySlice;
+        uint256 sliceLength;
+
+        bool isAllowedKey;
+
+        // save the not allowed key for cusom revert error
+        bytes32 notAllowedKey;
+
+        // loop through each allowed ERC725Y key retrieved from storage
+        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
+            // save the length of the slice
+            // so to know which part to compare for each key we are trying to set
+            (allowedKeySlice, sliceLength) = _extractKeySlice(
+                allowedERC725YKeys[ii]
             );
 
-            uint256 length;
-            bytes memory allowedKeyToCompare;
-            bytes memory keyToSet;
+            // loop through each keys given as input
+            for (uint256 jj = 0; jj < _inputKeys.length; jj++) {
+                // skip permissions keys that have been "nulled" previously
+                if (_inputKeys[jj] == bytes32(0)) continue;
 
-            bool keyMatch;
-            bytes32 notAllowedKey;
+                // extract the slice to compare with the allowed key
+                inputKeySlice = BytesLib.slice(
+                    bytes.concat(_inputKeys[jj]),
+                    0,
+                    sliceLength
+                );
 
-            for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
-                // check each individual bytes of the allowed key, starting from the end (right to left)
-                for (uint256 index = 31; index >= 0; index--) {
-                    // find where the first non-empty bytes starts (skip the empty bytes 0x00)
-                    if (allowedERC725YKeys[ii][index] != 0x00) {
-                        // as soon as we find a non-empty byte, save the length
-                        // so to know which part (= slice) of the keys to compare
-                        length = index + 1;
-                        allowedKeyToCompare = BytesLib.slice(
-                            bytes.concat(allowedERC725YKeys[ii]),
-                            0,
-                            length
-                        );
-                        break;
-                    }
-                }
+                isAllowedKey =
+                    keccak256(allowedKeySlice) == keccak256(inputKeySlice);
 
-                // loop through each keys given as input
-                for (uint256 jj = 0; jj < keys.length; jj++) {
-                    // skip nulled keys
-                    if (keys[jj] == bytes32(0)) continue;
+                // if the keys match, the key is allowed so stop iteration
+                if (isAllowedKey) break;
 
-                    // if dynamic key, extravct the slice to compare with allowed key
-                    keyToSet = BytesLib.slice(
-                        bytes.concat(keys[jj]),
-                        0,
-                        length
-                    );
-
-                    keyMatch =
-                        keccak256(allowedKeyToCompare) == keccak256(keyToSet);
-
-                    // if the keys do not match, save this key as a not allowed key
-                    if (keyMatch == false) notAllowedKey = keys[jj];
-                }
-
-                // if after checking all the keys given as input we did not find any not allowed key
-                // stop checking the other allowed ERC725Y keys
-                /// TODO: test when the allowed key is the last one given in the array of inputs
-                if (keyMatch == true) break;
+                // if the keys do not match, save this key as a not allowed key
+                notAllowedKey = _inputKeys[jj];
             }
 
-            if (keyMatch == false) {
-                revert NotAllowedERC725YKey(_from, notAllowedKey);
-            }
+            // if after checking all the keys given as input we did not find any not allowed key
+            // stop checking the other allowed ERC725Y keys
+            if (isAllowedKey == true) break;
         }
+
+        // we always revert with the last not-allowed key that we found in the keys given as inputs
+        if (isAllowedKey == false)
+            revert NotAllowedERC725YKey(_from, notAllowedKey);
     }
 
     /**
@@ -504,6 +518,23 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             (_requiredPermission & _addressPermission) == _requiredPermission
                 ? true
                 : false;
+    }
+
+    function _extractKeySlice(bytes32 _key)
+        internal
+        pure
+        returns (bytes memory keySlice_, uint256 sliceLength_)
+    {
+        // check each individual bytes of the allowed key, starting from the end (right to left)
+        for (uint256 index = 31; index >= 0; index--) {
+            // find where the first non-empty bytes starts (skip empty bytes 0x00)
+            if (_key[index] != 0x00) {
+                // stop as soon as we find a non-empty byte
+                sliceLength_ = index + 1;
+                keySlice_ = BytesLib.slice(bytes.concat(_key), 0, sliceLength_);
+                break;
+            }
+        }
     }
 
     /**
