@@ -2061,15 +2061,15 @@ describe("CHANGE / ADD PERMISSIONS", () => {
     await universalProfile.connect(owner).setData(
       [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          owner.address.substr(2),
+          owner.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddPermissions.address.substr(2),
+          canOnlyAddPermissions.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyChangePermissions.address.substr(2),
+          canOnlyChangePermissions.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          bob.address.substr(2),
+          bob.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          zeroBytes.address.substr(2),
+          zeroBytes.address.substring(2),
       ],
       [
         ALL_PERMISSIONS_SET,
@@ -2097,7 +2097,11 @@ describe("CHANGE / ADD PERMISSIONS", () => {
           [PERMISSIONS.SETDATA],
         ]);
 
-        await keyManager.connect(owner).execute(payload);
+        let tx = await keyManager.connect(owner).execute(payload);
+        let receipt = await tx.wait();
+
+        console.log(ethers.BigNumber.from(receipt.gasUsed).toNumber());
+
         let [fetchedResult] = await universalProfile.callStatic.getData([key]);
         expect(fetchedResult).toEqual(
           ethers.utils.hexZeroPad(PERMISSIONS.SETDATA)
@@ -2113,7 +2117,11 @@ describe("CHANGE / ADD PERMISSIONS", () => {
           [PERMISSIONS.SETDATA],
         ]);
 
-        await keyManager.connect(owner).execute(payload);
+        let tx = await keyManager.connect(owner).execute(payload);
+        let receipt = await tx.wait();
+
+        console.log(ethers.BigNumber.from(receipt.gasUsed).toNumber());
+
         let [fetchedResult] = await universalProfile.callStatic.getData([key]);
         expect(fetchedResult).toEqual(
           ethers.utils.hexZeroPad(PERMISSIONS.SETDATA)
@@ -2200,7 +2208,7 @@ describe("CHANGE / ADD PERMISSIONS", () => {
       it("should be allowed to change permissions", async () => {
         let key =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          bob.address.substr(2);
+          bob.address.substring(2);
         let value = ethers.utils.hexZeroPad(
           PERMISSIONS.SETDATA + PERMISSIONS.CALL,
           32
@@ -3137,14 +3145,14 @@ describe("ALLOWEDERC725YKEYS", () => {
       describe("when setting multiple keys", () => {
         it("should fail when the list contains none of the allowed keys", async () => {
           let keys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey1")),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey2")),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey3")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ZZZZZZZZZZ")),
           ];
           let values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 1")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 2")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 3")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value ZZZZZZZZ")),
           ];
 
           let setDataPayload = universalProfile.interface.encodeFunctionData(
@@ -3165,13 +3173,13 @@ describe("ALLOWEDERC725YKEYS", () => {
         it("should fail, even if the list contains some of the allowed key", async () => {
           let keys = [
             customKey1,
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey1")),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey2")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
           ];
           let values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 1")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 2")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 1")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
           ];
 
           let setDataPayload = universalProfile.interface.encodeFunctionData(
@@ -3193,6 +3201,54 @@ describe("ALLOWEDERC725YKEYS", () => {
     });
 
     describe("when address can set multiple keys", () => {
+      it("should pass when the input is all the allowed keys", async () => {
+        let keys = [customKey2, customKey3, customKey4];
+        let values = [
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 3")),
+        ];
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [keys, values]
+        );
+        await keyManager
+          .connect(controllerCanSetManyKeys)
+          .execute(setDataPayload);
+
+        let result = await universalProfile.getData(keys);
+
+        expect(result).toEqual(values);
+      });
+
+      it("should fail when the input contains none of the allowed keys", async () => {
+        let keys = [
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ZZZZZZZZZZ")),
+        ];
+        let values = [
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value ZZZZZZZZ")),
+        ];
+
+        let setDataPayload = universalProfile.interface.encodeFunctionData(
+          "setData",
+          [keys, values]
+        );
+
+        try {
+          await keyManager
+            .connect(controllerCanSetManyKeys)
+            .execute(setDataPayload);
+        } catch (error) {
+          expect(error.message).toMatch(
+            NotAllowedERC725YKeyError(controllerCanSetManyKeys.address, keys[2])
+          );
+        }
+      });
       describe("when setting one key", () => {
         it("should pass when trying to set the 1st allowed key", async () => {
           let key = customKey2;
@@ -3270,108 +3326,638 @@ describe("ALLOWEDERC725YKEYS", () => {
         });
       });
 
+      describe("when setting 2 x keys", () => {
+        describe("should pass when", () => {
+          it("the input is the first two (subset) allowed keys", async () => {
+            let keys = [customKey2, customKey3];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+            await keyManager
+              .connect(controllerCanSetManyKeys)
+              .execute(setDataPayload);
+
+            let result = await universalProfile.getData(keys);
+            expect(result).toEqual(values);
+          });
+
+          it("the input is the last two (subset) allowed keys", async () => {
+            let keys = [customKey3, customKey4];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+            await keyManager
+              .connect(controllerCanSetManyKeys)
+              .execute(setDataPayload);
+
+            let result = await universalProfile.getData(keys);
+            expect(result).toEqual(values);
+          });
+
+          it("the input is the first + last (subset) allowed keys", async () => {
+            let keys = [customKey2, customKey4];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+            await keyManager
+              .connect(controllerCanSetManyKeys)
+              .execute(setDataPayload);
+
+            let result = await universalProfile.getData(keys);
+            expect(result).toEqual(values);
+          });
+        });
+      });
+
+      describe("when setting 3 x keys", () => {
+        describe("should fail when", () => {
+          it("1st key in input = 1st allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              customKey2,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 2")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+            ];
+
+            // console.log("customKey2: ", customKey2);
+            // console.log(
+            //   "RandomKey2: ",
+            //   ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey2"))
+            // );
+            // console.log(
+            //   "RandomKey3: ",
+            //   ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey3"))
+            // );
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[2]
+                )
+              );
+            }
+          });
+
+          it("2nd key in input = 1st allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              customKey2,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 2")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[2]
+                )
+              );
+            }
+          });
+
+          it("3rd key in input = 1st allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+              customKey2,
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 2")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[1]
+                )
+              );
+            }
+          });
+
+          it("1st key in input = 2nd allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              customKey3,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 2")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[2]
+                )
+              );
+            }
+          });
+
+          it("2nd key in input = 2nd allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              customKey3,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 3")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[2]
+                )
+              );
+            }
+          });
+
+          it("3rd key in input = 2nd allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+              customKey3,
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 3")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[1]
+                )
+              );
+            }
+          });
+
+          it("1st key in input = 3rd allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              customKey4,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 4")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[2]
+                )
+              );
+            }
+          });
+
+          it("2nd key in input = 3rd allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              customKey4,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 4")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[2]
+                )
+              );
+            }
+          });
+
+          it("3rd key in input = 3rd allowed key. Other 2 keys = not allowed", async () => {
+            let keys = [
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+              customKey4,
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value YYYYYYYY")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 4")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[1]
+                )
+              );
+            }
+          });
+
+          it("1st key in input = not allowed key. Other 2 keys = allowed", async () => {
+            let keys = [
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              customKey2,
+              customKey3,
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 2")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 3")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[0]
+                )
+              );
+            }
+          });
+
+          it("2nd key in input = not allowed key. Other 2 keys = allowed", async () => {
+            let keys = [
+              customKey2,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              customKey3,
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 2")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 3")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[0]
+                )
+              );
+            }
+          });
+
+          it("3rd key in input = not allowed key. Other 2 keys = allowed", async () => {
+            let keys = [
+              customKey2,
+              customKey3,
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+            ];
+            let values = [
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 2")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Custom Value 3")),
+              ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Value XXXXXXXX")),
+            ];
+
+            let setDataPayload = universalProfile.interface.encodeFunctionData(
+              "setData",
+              [keys, values]
+            );
+
+            try {
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
+            } catch (error) {
+              expect(error.message).toMatch(
+                NotAllowedERC725YKeyError(
+                  controllerCanSetManyKeys.address,
+                  keys[2]
+                )
+              );
+            }
+          });
+        });
+      });
+
       describe("when setting multiple keys", () => {
-        it("should pass when the list is a subset of the allowed keys", async () => {
-          let keys = [customKey2, customKey3];
-          let values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
-          ];
+        describe("when input is bigger than the number of allowed keys", () => {
+          describe("should fail when", () => {
+            it("input = all the allowed keys + 1 x not-allowed key", async () => {
+              let keys = [
+                customKey2,
+                customKey3,
+                customKey4,
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              ];
+              let values = [
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey2")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey3")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey4")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value XXXXXXXX")
+                ),
+              ];
 
-          let setDataPayload = universalProfile.interface.encodeFunctionData(
-            "setData",
-            [keys, values]
-          );
-          await keyManager
-            .connect(controllerCanSetManyKeys)
-            .execute(setDataPayload);
+              let setDataPayload =
+                universalProfile.interface.encodeFunctionData("setData", [
+                  keys,
+                  values,
+                ]);
 
-          let result = await universalProfile.getData(keys);
-          expect(result).toEqual(values);
-        });
+              try {
+                await keyManager
+                  .connect(controllerCanSetManyKeys)
+                  .execute(setDataPayload);
+              } catch (error) {
+                expect(error.message).toMatch(
+                  NotAllowedERC725YKeyError(
+                    controllerCanSetManyKeys.address,
+                    keys[3]
+                  )
+                );
+              }
+            });
 
-        it("should pass when the list is all the allowed keys", async () => {
-          let keys = [customKey2, customKey3, customKey4];
-          let values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 3")),
-          ];
+            it("input = all the allowed keys + 5 x not-allowed key", async () => {
+              let keys = [
+                customKey2,
+                customKey3,
+                customKey4,
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ZZZZZZZZZZ")),
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("AAAAAAAAAA")),
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BBBBBBBBBB")),
+              ];
+              let values = [
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Custom Value 2")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Custom Value 3")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Custom Value 4")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value XXXXXXXX")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value YYYYYYYY")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value ZZZZZZZZ")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value AAAAAAAA")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value BBBBBBBB")
+                ),
+              ];
 
-          let setDataPayload = universalProfile.interface.encodeFunctionData(
-            "setData",
-            [keys, values]
-          );
-          await keyManager
-            .connect(controllerCanSetManyKeys)
-            .execute(setDataPayload);
+              let setDataPayload =
+                universalProfile.interface.encodeFunctionData("setData", [
+                  keys,
+                  values,
+                ]);
 
-          let result = await universalProfile.getData(keys);
+              try {
+                await keyManager
+                  .connect(controllerCanSetManyKeys)
+                  .execute(setDataPayload);
+              } catch (error) {
+                expect(error.message).toMatch(
+                  NotAllowedERC725YKeyError(
+                    controllerCanSetManyKeys.address,
+                    keys[7]
+                  )
+                );
+              }
+            });
+          });
 
-          expect(result).toEqual(values);
-        });
+          describe("should pass when", () => {
+            it("input contains all the allowed keys as DUPLICATE", async () => {
+              let keys = [
+                customKey2,
+                customKey2,
+                customKey2,
+                customKey3,
+                customKey3,
+                customKey3,
+                customKey4,
+                customKey4,
+                customKey4,
+              ];
+              let values = [
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey2")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 1) for customKey2"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 2) for customKey2"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey3")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 1) for customKey3"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 2) for customKey3"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey4")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 1) for customKey4"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 2) for customKey4"
+                  )
+                ),
+              ];
 
-        it("should fail when the list is none of the allowed keys", async () => {
-          let keys = [
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey1")),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey2")),
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey3")),
-          ];
-          let values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 1")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 2")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 3")),
-          ];
+              let setDataPayload =
+                universalProfile.interface.encodeFunctionData("setData", [
+                  keys,
+                  values,
+                ]);
 
-          let setDataPayload = universalProfile.interface.encodeFunctionData(
-            "setData",
-            [keys, values]
-          );
+              await keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
 
-          try {
-            await keyManager
-              .connect(controllerCanSetManyKeys)
-              .execute(setDataPayload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              // should fail at the first not allowed key
-              NotAllowedERC725YKeyError(
-                controllerCanSetManyKeys.address,
-                keys[2]
-              )
-            );
-          }
-        });
-        it("should fail even if the list contains some of the allowed keys", async () => {
-          let keys = [
-            customKey2,
-            customKey3,
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomKey3")),
-          ];
-          let values = [
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some Data 1")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some Data 2")),
-            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Random Value 3")),
-          ];
-
-          let setDataPayload = universalProfile.interface.encodeFunctionData(
-            "setData",
-            [keys, values]
-          );
-
-          try {
-            await keyManager
-              .connect(controllerCanSetManyKeys)
-              .execute(setDataPayload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              // should fail at the first not allowed key
-              NotAllowedERC725YKeyError(
-                controllerCanSetManyKeys.address,
-                keys[2]
-              )
-            );
-          }
+              let result = await universalProfile.getData(keys);
+              expect(result).toEqual([
+                // when putting duplicates in the keys given as inputs,
+                // the last duplicate value for a key should be the one that override
+                values[2],
+                values[2],
+                values[2],
+                values[5],
+                values[5],
+                values[5],
+                values[8],
+                values[8],
+                values[8],
+              ]);
+            });
+          });
         });
       });
     });
@@ -3577,7 +4163,6 @@ describe("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetMappingKeys.address,
                 notAllowedMappingKey
@@ -3723,7 +4308,6 @@ describe("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetMappingKeys.address,
                 randomMappingKeys[2]
@@ -3758,7 +4342,6 @@ describe("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetMappingKeys.address,
                 mappingKeys[2]
@@ -3961,7 +4544,6 @@ describe("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetArrayKeys.address,
                 notAllowedArrayKey
@@ -4006,7 +4588,6 @@ describe("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetArrayKeys.address,
                 randomArrayKeys[2]
@@ -4034,7 +4615,6 @@ describe("ALLOWEDERC725YKEYS", () => {
               .execute(setDataPayload);
           } catch (error) {
             expect(error.message).toMatch(
-              // should fail at the first not allowed key
               NotAllowedERC725YKeyError(
                 controllerCanSetArrayKeys.address,
                 keys[3]
