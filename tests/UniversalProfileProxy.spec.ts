@@ -81,6 +81,8 @@ describe("UniversalProfile via EIP1167 Proxy + initializer", () => {
       const { receipt: txReceipt, gasUsed: proxyDeploymentCost } =
         await getDeploymentCost(transaction);
 
+      console.log("proxyDeploymentCost: ", proxyDeploymentCost);
+
       // 3) initialize contract (alternative to constructors)
       let testProxy = await attachUniversalProfileProxy(
         owner,
