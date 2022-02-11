@@ -13,8 +13,8 @@ import "./LSP8CompatibilityConstants.sol";
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
 contract LSP8CompatibilityForERC721InitAbstract is
-    LSP8IdentifiableDigitalAssetInitAbstract,
-    LSP8CompatibilityForERC721Core
+    LSP8CompatibilityForERC721Core,
+    LSP8IdentifiableDigitalAssetInitAbstract
 {
     /**
      * @notice Sets the name, the symbol and the owner of the token

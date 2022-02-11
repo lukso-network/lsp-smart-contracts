@@ -9,7 +9,7 @@ import "../LSP7DigitalAsset.sol";
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
-abstract contract LSP7CappedSupply is LSP7DigitalAsset, LSP7CappedSupplyCore {
+abstract contract LSP7CappedSupply is LSP7CappedSupplyCore, LSP7DigitalAsset {
     /**
      * @notice Sets the token max supply
      * @param tokenSupplyCap_ The Token max supply

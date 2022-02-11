@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
 import "../LSP7DigitalAsset.sol";
 import "./LSP7CompatibilityForERC20Core.sol";
 
-contract LSP7CompatibilityForERC20 is LSP7DigitalAsset, LSP7CompatibilityForERC20Core {
+contract LSP7CompatibilityForERC20 is LSP7CompatibilityForERC20Core, LSP7DigitalAsset {
     /* solhint-disable no-empty-blocks */
     /**
      * @notice Sets the name, the symbol and the owner of the token
