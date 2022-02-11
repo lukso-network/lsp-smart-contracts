@@ -15,8 +15,8 @@ import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
  * @dev Proxy Implementation of a LSP7 compliant contract.
  */
 abstract contract LSP7DigitalAssetInitAbstract is
-    LSP7DigitalAssetCore,
     Initializable,
+    LSP7DigitalAssetCore,
     LSP4DigitalAssetMetadataInitAbstract
 {
     /**
