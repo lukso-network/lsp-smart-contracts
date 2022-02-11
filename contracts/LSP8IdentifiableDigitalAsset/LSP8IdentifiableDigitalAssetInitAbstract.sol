@@ -15,8 +15,8 @@ import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
  * @dev Proxy Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
-    Initializable,
     LSP8IdentifiableDigitalAssetCore,
+    Initializable,
     LSP4DigitalAssetMetadataInitAbstract
 {
     /**
