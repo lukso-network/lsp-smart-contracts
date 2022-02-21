@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 // modules
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import "../../../LSP6KeyManager/LSP6KeyManager.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // interfaces
@@ -31,6 +32,8 @@ abstract contract TokenAndVaultHandlingContract {
         bytes memory data
     ) internal returns (bytes memory result) {
         address keyManagerAddress = ERC725Y(msg.sender).owner();
+        _profileChecker(keyManagerAddress);
+
         if (
             ERC165Checker.supportsInterface(
                 keyManagerAddress,
@@ -185,5 +188,12 @@ abstract contract TokenAndVaultHandlingContract {
         } else {
             amount = 1;
         }
+    }
+
+    function _profileChecker(address keyManagerAddress) private {
+        address profileAddress = address(
+            LSP6KeyManager(keyManagerAddress).account()
+        );
+        require(profileAddress == msg.sender, "Not the same Profile");
     }
 }
