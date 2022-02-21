@@ -194,6 +194,6 @@ abstract contract TokenAndVaultHandlingContract {
         address profileAddress = address(
             LSP6KeyManager(keyManagerAddress).account()
         );
-        require(profileAddress == msg.sender, "Not the same Profile");
+        require(profileAddress == msg.sender, "Incorrect KeyManager");
     }
 }
