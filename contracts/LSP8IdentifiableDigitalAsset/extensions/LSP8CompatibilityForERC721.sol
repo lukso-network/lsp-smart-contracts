@@ -13,8 +13,8 @@ import "./LSP8CompatibilityConstants.sol";
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
 contract LSP8CompatibilityForERC721 is
-    LSP8IdentifiableDigitalAsset,
-    LSP8CompatibilityForERC721Core
+    LSP8CompatibilityForERC721Core,
+    LSP8IdentifiableDigitalAsset
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 

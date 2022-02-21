@@ -18,7 +18,7 @@ import "./LSP4Constants.sol";
  * @author Matthew Stevens
  * @dev LSP4 extension, for compatibility with clients & tools that expect ERC20/721.
  */
-abstract contract LSP4Compatibility is ERC725YCore, ILSP4Compatibility {
+abstract contract LSP4Compatibility is ILSP4Compatibility, ERC725YCore {
     // --- Token queries
 
     /**

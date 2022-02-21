@@ -13,9 +13,9 @@ import "./ILSP7CompatibilityForERC20.sol";
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
 abstract contract LSP7CompatibilityForERC20Core is
+    ILSP7CompatibilityForERC20,
     LSP7DigitalAssetCore,
-    LSP4Compatibility,
-    ILSP7CompatibilityForERC20
+    LSP4Compatibility
 {
     /**
      * @inheritdoc ILSP7CompatibilityForERC20

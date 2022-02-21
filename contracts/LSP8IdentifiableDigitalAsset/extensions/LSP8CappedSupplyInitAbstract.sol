@@ -11,8 +11,8 @@ import "../LSP8IdentifiableDigitalAssetInit.sol";
  */
 abstract contract LSP8CappedSupplyInitAbstract is
     Initializable,
-    LSP8IdentifiableDigitalAssetInit,
-    LSP8CappedSupplyCore
+    LSP8CappedSupplyCore,
+    LSP8IdentifiableDigitalAssetInit
 {
     /**
      * @notice Sets the token max supply

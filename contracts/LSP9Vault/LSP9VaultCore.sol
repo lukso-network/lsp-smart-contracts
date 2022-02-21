@@ -22,7 +22,7 @@ import "./LSP9Constants.sol";
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1UniversalReceiver {
+contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
     using ERC725Utils for IERC725Y;
 
     /**
