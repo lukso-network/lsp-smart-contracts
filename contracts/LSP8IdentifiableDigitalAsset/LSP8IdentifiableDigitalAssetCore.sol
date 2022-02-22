@@ -224,7 +224,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     ) public virtual override {
         address operator = _msgSender();
 
-        if(!_isOperatorOrOwner(operator, tokenId)) {
+        if (!_isOperatorOrOwner(operator, tokenId)) {
             revert LSP8NotTokenOperator(tokenId, operator);
         }
 

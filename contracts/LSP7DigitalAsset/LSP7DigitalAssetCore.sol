@@ -186,7 +186,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         address operator,
         uint256 amount
     ) internal virtual {
-        if(operator == address(0)) {
+        if (operator == address(0)) {
             revert LSP7CannotUseAddressZeroAsOperator();
         }
 
@@ -219,7 +219,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual {
-        if(to == address(0)){
+        if (to == address(0)){
             revert LSP7CannotSendWithAddressZero();
         }
 
@@ -303,7 +303,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         }
 
         uint256 balance = _tokenOwnerBalances[from];
-        if(amount > balance) {
+        if (amount > balance) {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
