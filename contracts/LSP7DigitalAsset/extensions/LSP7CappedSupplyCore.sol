@@ -15,6 +15,11 @@ abstract contract LSP7CappedSupplyCore is
     ILSP7CappedSupply,
     LSP7DigitalAssetCore
 {
+    // --- Errors
+
+    error LSP7CappedSupplyRequired();
+    error LSP7CappedSupplyCannotMintOverCap();
+
     // --- Storage
 
     uint256 internal _tokenSupplyCap;
@@ -46,10 +51,10 @@ abstract contract LSP7CappedSupplyCore is
         bool force,
         bytes memory data
     ) internal virtual override {
-        require(
-            totalSupply() + amount <= tokenSupplyCap(),
-            "LSP7CappedSupply: tokenSupplyCap reached"
-        );
+        if (totalSupply() + amount > tokenSupplyCap()) {
+            revert LSP7CappedSupplyCannotMintOverCap();
+        }
+
         super._mint(to, amount, force, data);
     }
 }

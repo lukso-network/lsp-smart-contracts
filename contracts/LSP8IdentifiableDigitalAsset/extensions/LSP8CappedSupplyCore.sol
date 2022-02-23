@@ -15,6 +15,11 @@ abstract contract LSP8CappedSupplyCore is
     ILSP8CappedSupply,
     LSP8IdentifiableDigitalAssetCore
 {
+    // --- Errors
+
+    error LSP8CappedSupplyRequired();
+    error LSP8CappedSupplyCannotMintOverCap();
+
     // --- Storage
 
     uint256 internal _tokenSupplyCap;
@@ -47,10 +52,10 @@ abstract contract LSP8CappedSupplyCore is
         bool force,
         bytes memory data
     ) internal virtual override {
-        require(
-            totalSupply() + 1 <= tokenSupplyCap(),
-            "LSP8CappedSupply: tokenSupplyCap reached"
-        );
+        if (totalSupply() + 1 > tokenSupplyCap()) {
+            revert LSP8CappedSupplyCannotMintOverCap();
+        }
+
         super._mint(to, tokenId, force, data);
     }
 }
