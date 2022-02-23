@@ -93,11 +93,11 @@ export const TOKEN_ID = {
 };
 
 export function getRandomAddresses(count) {
-  let base = "0xa56039d89BD9451A1ac94a680a20302da2dE92";
-
   let addresses = [];
-  for (let ii = 10; ii < count + 10; ii++) {
-    let randomAddress = "0x" + parseInt(base + ii).toString(16);
+  for (let ii = 0; ii < count; ii++) {
+    // addresses stored under ERC725Y storage have always lowercases character.
+    // therefore, disable the checksum by converting to lowercase to avoid failing tests
+    let randomAddress = new ethers.Wallet.createRandom().address.toLowerCase();
     addresses.push(randomAddress);
   }
 
