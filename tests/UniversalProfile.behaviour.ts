@@ -4,12 +4,53 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { UniversalProfile } from "../types";
 
 // constants
-import { INTERFACE_IDS, SupportedStandards } from "../constants";
+import { ERC1271, INTERFACE_IDS, SupportedStandards } from "../constants";
 
 export type LSP3TestContext = {
   accounts: SignerWithAddress[];
   universalProfile: UniversalProfile;
   deployParams: { owner: SignerWithAddress };
+};
+
+export const shouldBehaveLikeLSP3 = (
+  buildContext: () => Promise<LSP3TestContext>
+) => {
+  let context: LSP3TestContext;
+
+  beforeEach(async () => {
+    context = await buildContext();
+  });
+
+  describe("when using `isValidSignature()` from ERC1271", () => {
+    it("should verify signature from owner", async () => {
+      const signer = context.deployParams.owner;
+
+      const dataToSign = "0xcafecafe";
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await signer.signMessage(dataToSign);
+
+      const result = await context.universalProfile.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).toEqual(ERC1271.MAGIC_VALUE);
+    });
+
+    it("should fail when verifying signature from non-owner", async () => {
+      const owner = context.deployParams.owner;
+      const signer = context.accounts[1];
+
+      const dataToSign = "0xcafecafe";
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await signer.signMessage(dataToSign);
+
+      const result = await context.universalProfile.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).toEqual(ERC1271.FAIL_VALUE);
+    });
+  });
 };
 
 export type LSP3InitializeTestContext = {
