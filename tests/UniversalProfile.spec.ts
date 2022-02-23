@@ -118,7 +118,7 @@ describe("UniversalProfile", () => {
     });
   });
 
-  describe("ERC1271", () => {
+  describe.skip("ERC1271", () => {
     it("Can verify signature from owner", async () => {
       const signer = accounts[9];
       const account = await new UniversalProfile__factory(owner).deploy(
@@ -155,11 +155,11 @@ describe("UniversalProfile", () => {
     });
   });
 
-  describe("Storage test", () => {
+  describe.skip("Storage test", () => {
     let abiCoder = ethers.utils.defaultAbiCoder;
     let count = 1000000000;
 
-    it("Create account", async () => {
+    it.skip("Create account", async () => {
       const owner = accounts[2];
       const newaccount = await new UniversalProfile__factory(owner).deploy(
         owner.address
@@ -175,7 +175,7 @@ describe("UniversalProfile", () => {
      *
      * This is set within the contract's constructor
      */
-    it("Store 32 bytes item 2", async () => {
+    it.skip("Store 32 bytes item 2", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
@@ -188,48 +188,48 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("Store 32 bytes item 3", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = "0x" + (count++).toString(16);
+    // it("Store 32 bytes item 3", async () => {
+    //   let key = abiCoder.encode(
+    //     ["bytes32"],
+    //     [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
+    //   );
+    //   let value = "0x" + (count++).toString(16);
 
-      await UniversalProfile.connect(owner).setData([key], [value]);
+    //   await UniversalProfile.connect(owner).setData([key], [value]);
 
-      let [result] = await UniversalProfile.callStatic.getData([key]);
-      expect(result).toEqual(value);
-    });
+    //   let [result] = await UniversalProfile.callStatic.getData([key]);
+    //   expect(result).toEqual(value);
+    // });
 
-    it("Store 32 bytes item 4", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = "0x" + (count++).toString(16);
+    // it("Store 32 bytes item 4", async () => {
+    //   let key = abiCoder.encode(
+    //     ["bytes32"],
+    //     [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
+    //   );
+    //   let value = "0x" + (count++).toString(16);
 
-      await UniversalProfile.connect(owner).setData([key], [value]);
+    //   await UniversalProfile.connect(owner).setData([key], [value]);
 
-      let [result] = await UniversalProfile.callStatic.getData([key]);
-      expect(result).toEqual(value);
-    });
+    //   let [result] = await UniversalProfile.callStatic.getData([key]);
+    //   expect(result).toEqual(value);
+    // });
 
-    it("Store 32 bytes item 5", async () => {
-      let owner = accounts[2];
+    // it("Store 32 bytes item 5", async () => {
+    //   let owner = accounts[2];
 
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
-      );
-      let value = "0x" + (count++).toString(16);
+    //   let key = abiCoder.encode(
+    //     ["bytes32"],
+    //     [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
+    //   );
+    //   let value = "0x" + (count++).toString(16);
 
-      await UniversalProfile.connect(owner).setData([key], [value]);
+    //   await UniversalProfile.connect(owner).setData([key], [value]);
 
-      let [result] = await UniversalProfile.callStatic.getData([key]);
-      expect(result).toEqual(value);
-    });
+    //   let [result] = await UniversalProfile.callStatic.getData([key]);
+    //   expect(result).toEqual(value);
+    // });
 
-    it("Store a long URL as bytes item 6: https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD", async () => {
+    it.skip("Store a long URL as bytes item 6: https://www.google.com/url?sa=i&url=https%3A%2F%2Ftwitter.com%2Ffeindura&psig=AOvVaw21YL9Wg3jSaEXMHyITcWDe&ust=1593272505347000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCKD-guDon-oCFQAAAAAdAAAAABAD", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + (count++).toString(16), 32)]
@@ -245,33 +245,33 @@ describe("UniversalProfile", () => {
       expect(result).toEqual(value);
     });
 
-    it("Store 32 bytes item 7", async () => {
+    // it("Store 32 bytes item 7", async () => {
+    //   let key = abiCoder.encode(
+    //     ["bytes32"],
+    //     [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]
+    //   );
+    //   let value = "0x" + count.toString(16);
+
+    //   await UniversalProfile.connect(owner).setData([key], [value]);
+
+    //   let [result] = await UniversalProfile.getData([key]);
+    //   expect(result).toEqual(value);
+    // });
+
+    it.skip("Update 32 bytes item 7", async () => {
       let key = abiCoder.encode(
         ["bytes32"],
         [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]
       );
-      let value = "0x" + count.toString(16);
 
+      let value = "0x" + count.toString(16);
       await UniversalProfile.connect(owner).setData([key], [value]);
 
       let [result] = await UniversalProfile.getData([key]);
       expect(result).toEqual(value);
     });
 
-    it("Update 32 bytes item 7", async () => {
-      let key = abiCoder.encode(
-        ["bytes32"],
-        [ethers.utils.hexZeroPad("0x" + count.toString(16), 32)]
-      );
-
-      let value = "0x" + count.toString(16);
-      await UniversalProfile.connect(owner).setData([key], [value]);
-
-      let [result] = await UniversalProfile.getData([key]);
-      expect(result).toEqual(value);
-    });
-
-    it("Store multiple 32 bytes item 8-10", async () => {
+    it.skip("Store multiple 32 bytes item 8-10", async () => {
       let keys = [];
       let values = [];
       // increase
