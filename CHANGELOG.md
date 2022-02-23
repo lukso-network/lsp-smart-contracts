@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.4.3...v0.5.0) (2022-02-23)
+
+
+### Features
+
+* add check for multiple `ERC725Y` keys ([5ee41c7](https://github.com/lukso-network/lsp-smart-contracts/commit/5ee41c7bd22ea30c013ad7a18ff974ddaa4b5657))
+* add check for partial keys + test for Mapping keys ([57923ca](https://github.com/lukso-network/lsp-smart-contracts/commit/57923ca13e67ee5256a5337e2c4610964452c440))
+* add custom error log for AllowedERC725YKey ([dcefa95](https://github.com/lukso-network/lsp-smart-contracts/commit/dcefa95364012b905c5377ac94ed3b3eb18bbbc2))
+* allow whitelisting any ERC725Y key if nothing set ([41dd20f](https://github.com/lukso-network/lsp-smart-contracts/commit/41dd20fbd6228b3c2b23f9b2ddb8748d8f85567f))
+* create LSP7CompatabilityForERC20InitAbstract ([516d195](https://github.com/lukso-network/lsp-smart-contracts/commit/516d1955a0d1aa68e1d3dde7818ffbf7d16432e5))
+* create LSP8CompatabilityForERC721InitAbstract ([1ded846](https://github.com/lukso-network/lsp-smart-contracts/commit/1ded8466049442c164c3ae0fc09411a6f046dd33))
+* first draft implementation of `AllowedERC725YKeys`, with only one key check ([ac567c3](https://github.com/lukso-network/lsp-smart-contracts/commit/ac567c3b52d3774780968ca9f7b54b958c4ca338))
+* LSP7CompatibilityForERC20 proxy and constructor version ([131eed0](https://github.com/lukso-network/lsp-smart-contracts/commit/131eed0b5e832d7d159de09eccfaee75bf9b81a0))
+* LSP8CompatibilityForERC721 proxy and constructor version ([ffccc4b](https://github.com/lukso-network/lsp-smart-contracts/commit/ffccc4b6ad6b4d986808183436973174786c6efc))
+
+
+### Bug Fixes
+
+* ILSP8CompatabilityForERC721 isApprovedForAll params match IERC721 ([fed55a9](https://github.com/lukso-network/lsp-smart-contracts/commit/fed55a9b25afda10ccfbfc559f3d359ad372572e))
+* LSP8 InitAbstract contract inheritance order ([e9e61c1](https://github.com/lukso-network/lsp-smart-contracts/commit/e9e61c1ce5047daef6dae906ecc43d8b0d397fb9))
+* security check in UniversalReceiverDelegateUP contract ([#109](https://github.com/lukso-network/lsp-smart-contracts/issues/109)) ([faac8df](https://github.com/lukso-network/lsp-smart-contracts/commit/faac8df65e12b4257e77358ed65290b02cbfc08a))
+
 ### [0.4.3](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.4.2...v0.4.3) (2022-01-10)
 
 ### [0.4.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.4.1...v0.4.2) (2022-01-10)
