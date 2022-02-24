@@ -11,8 +11,8 @@ import "../LSP7DigitalAssetInit.sol";
  */
 abstract contract LSP7CappedSupplyInitAbstract is
     Initializable,
-    LSP7DigitalAssetInit,
-    LSP7CappedSupplyCore
+    LSP7CappedSupplyCore,
+    LSP7DigitalAssetInit
 {
     /**
      * @notice Sets the token max supply

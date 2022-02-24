@@ -23,7 +23,6 @@ jobs:
           event: push
 
       - name: Push latest iOS artifacts to 'universalprofile-ios-sdk' repo
-        if: steps.check.outputs.changed == 'true'
         run: |
           git clone https://.:${{ secrets.IOSSDK_GITHUB_REPO_KEY }}@github.com/lukso-network/universalprofile-ios-sdk.git
           cd universalprofile-ios-sdk

@@ -3,16 +3,17 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../LSP7DigitalAsset/extensions/LSP7CompatibilityForERC20.sol";
+import "../../LSP7DigitalAsset/extensions/LSP7CompatibilityForERC20InitAbstract.sol";
 import "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 
-contract LSP7CompatibilityForERC20Tester is LSP7CompatibilityForERC20 {
-    /* solhint-disable no-empty-blocks */
-    constructor(
+contract LSP7CompatibilityForERC20InitTester is LSP7CompatibilityForERC20InitAbstract {
+    function initialize(
         string memory name,
         string memory symbol,
         address newOwner
-    ) LSP7CompatibilityForERC20(name, symbol, newOwner) {}
+    ) public virtual override initializer{ 
+        LSP7CompatibilityForERC20InitAbstract.initialize(name, symbol, newOwner);
+    }
 
     function mint(
         address to,

@@ -10,9 +10,9 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract UniversalReceiverAddressStoreInit is
+    ILSP1UniversalReceiverDelegate,
     Initializable,
     ERC165Storage,
-    ILSP1UniversalReceiverDelegate,
     AddressRegistry
 {
     using EnumerableSet for EnumerableSet.AddressSet;

@@ -6,7 +6,7 @@
 
 
 
-*LSP7 extension, for compatibility for clients / tools that expect ERC20.*
+
 
 ## Methods
 
@@ -58,14 +58,14 @@ function authorizeOperator(address operator, uint256 amount) external nonpayable
 
 
 
-*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | The address to authorize as an operator.
-| amount | uint256 | The amount of tokens operator has access to.
+| operator | address | undefined
+| amount | uint256 | undefined
 
 ### balanceOf
 
@@ -151,6 +151,23 @@ function isOperatorFor(address operator, address tokenOwner) external view retur
 |---|---|---|
 | _0 | uint256 | The amount of tokens `operator` address has access to from `tokenOwner`.
 
+### name
+
+```solidity
+function name() external view returns (string)
+```
+
+
+
+*Returns the name of the token.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | The name of the token
+
 ### owner
 
 ```solidity
@@ -233,6 +250,23 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 | Name | Type | Description |
 |---|---|---|
 | _0 | bool | undefined
+
+### symbol
+
+```solidity
+function symbol() external view returns (string)
+```
+
+
+
+*Returns the symbol of the token, usually a shorter version of the name.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | The symbol of the token
 
 ### totalSupply
 
@@ -326,6 +360,24 @@ function transferOwnership(address newOwner) external nonpayable
 
 ## Events
 
+### Approval
+
+```solidity
+event Approval(address indexed owner, address indexed spender, uint256 value)
+```
+
+To provide compatibility with indexing ERC20 events.
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| owner `indexed` | address | undefined |
+| spender `indexed` | address | undefined |
+| value  | uint256 | undefined |
+
 ### AuthorizedOperator
 
 ```solidity
@@ -401,7 +453,7 @@ event RevokedOperator(address indexed operator, address indexed tokenOwner)
 event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data)
 ```
 
-
+To provide compatibility with indexing ERC20 events.
 
 
 

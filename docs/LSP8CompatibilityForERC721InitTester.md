@@ -1,4 +1,4 @@
-# ILSP8CompatibilityForERC721
+# LSP8CompatibilityForERC721InitTester
 
 
 
@@ -6,7 +6,7 @@
 
 
 
-*LSP8 extension, for compatibility for clients / tools that expect ERC721.*
+
 
 ## Methods
 
@@ -35,14 +35,14 @@ function authorizeOperator(address operator, bytes32 tokenId) external nonpayabl
 
 
 
-*Makes `operator` address an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | The address to authorize as an operator.
-| tokenId | bytes32 | The tokenId operator has access to.
+| operator | address | undefined
+| tokenId | bytes32 | undefined
 
 ### balanceOf
 
@@ -65,6 +65,23 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | The number of tokens owned by this address
+
+### burn
+
+```solidity
+function burn(uint256 tokenId, bytes data) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenId | uint256 | undefined
+| data | bytes | undefined
 
 ### getApproved
 
@@ -132,10 +149,26 @@ function getOperatorsOf(bytes32 tokenId) external view returns (address[])
 |---|---|---|
 | _0 | address[] | The list of operators for the `tokenId`
 
+### initialize
+
+```solidity
+function initialize(address _newOwner) external nonpayable
+```
+
+Sets the name, the symbol and the owner of the token
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _newOwner | address | the owner of the contract
+
 ### isApprovedForAll
 
 ```solidity
-function isApprovedForAll(address owner, address operator) external view returns (bool)
+function isApprovedForAll(address tokenOwner, address operator) external view returns (bool)
 ```
 
 
@@ -146,7 +179,7 @@ function isApprovedForAll(address owner, address operator) external view returns
 
 | Name | Type | Description |
 |---|---|---|
-| owner | address | undefined
+| tokenOwner | address | undefined
 | operator | address | undefined
 
 #### Returns
@@ -178,6 +211,58 @@ function isOperatorFor(address operator, bytes32 tokenId) external view returns 
 |---|---|---|
 | _0 | bool | True if the owner of `tokenId` is `operator` address, false otherwise
 
+### mint
+
+```solidity
+function mint(address to, uint256 tokenId, bytes data) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| to | address | undefined
+| tokenId | uint256 | undefined
+| data | bytes | undefined
+
+### name
+
+```solidity
+function name() external view returns (string)
+```
+
+
+
+*Returns the name of the token.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | The name of the token
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+
+
+*Returns the address of the current owner.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address | undefined
+
 ### ownerOf
 
 ```solidity
@@ -199,6 +284,17 @@ function ownerOf(uint256 tokenId) external view returns (address)
 | Name | Type | Description |
 |---|---|---|
 | _0 | address | The owner of the tokenId
+
+### renounceOwnership
+
+```solidity
+function renounceOwnership() external nonpayable
+```
+
+
+
+*Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.*
+
 
 ### revokeOperator
 
@@ -239,7 +335,7 @@ function safeTransferFrom(address from, address to, uint256 tokenId, bytes data)
 ### setData
 
 ```solidity
-function setData(bytes32[] keys, bytes[] values) external nonpayable
+function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 ```
 
 
@@ -250,8 +346,8 @@ function setData(bytes32[] keys, bytes[] values) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| keys | bytes32[] | The array of keys which values to set
-| values | bytes[] | The array of values to set
+| _keys | bytes32[] | undefined
+| _values | bytes[] | undefined
 
 ### supportsInterface
 
@@ -261,7 +357,7 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 
 
 
-*Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas.*
+*See {IERC165-supportsInterface}.*
 
 #### Parameters
 
@@ -274,6 +370,23 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 | Name | Type | Description |
 |---|---|---|
 | _0 | bool | undefined
+
+### symbol
+
+```solidity
+function symbol() external view returns (string)
+```
+
+
+
+*Returns the symbol of the token, usually a shorter version of the name.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | The symbol of the token
 
 ### tokenIdsOf
 
@@ -322,7 +435,7 @@ function tokenOwnerOf(bytes32 tokenId) external view returns (address)
 ### tokenURI
 
 ```solidity
-function tokenURI(uint256 tokenId) external nonpayable returns (string)
+function tokenURI(uint256 tokenId) external view returns (string)
 ```
 
 
@@ -406,7 +519,7 @@ function transferFrom(address from, address to, uint256 tokenId) external nonpay
 
 
 
-*Compatible with ERC721 transferFrom.*
+*Compatible with ERC721 transferFrom. Using force=true so that EOA and any contract may receive the tokenId.*
 
 #### Parameters
 
@@ -415,6 +528,22 @@ function transferFrom(address from, address to, uint256 tokenId) external nonpay
 | from | address | The sending address
 | to | address | The receiving address
 | tokenId | uint256 | The tokenId to transfer
+
+### transferOwnership
+
+```solidity
+function transferOwnership(address newOwner) external nonpayable
+```
+
+
+
+*Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newOwner | address | undefined
 
 
 
@@ -428,15 +557,15 @@ event Approval(address indexed owner, address indexed approved, uint256 indexed 
 
 To provide compatibility with indexing ERC721 events.
 
-*Emitted when `owner` enables `approved` for `tokenId`.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| owner `indexed` | address | The address of the owner of the `tokenId` |
-| approved `indexed` | address | The address set as operator |
-| tokenId `indexed` | uint256 | The approved tokenId |
+| owner `indexed` | address | undefined |
+| approved `indexed` | address | undefined |
+| tokenId `indexed` | uint256 | undefined |
 
 ### AuthorizedOperator
 
@@ -473,6 +602,23 @@ Emitted when data at a key is changed
 | key `indexed` | bytes32 | undefined |
 | value  | bytes | undefined |
 
+### OwnershipTransferred
+
+```solidity
+event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| previousOwner `indexed` | address | undefined |
+| newOwner `indexed` | address | undefined |
+
 ### RevokedOperator
 
 ```solidity
@@ -499,16 +645,16 @@ event Transfer(address operator, address indexed from, address indexed to, bytes
 
 To provide compatibility with indexing ERC721 events.
 
-*Emitted when `tokenId` token is transferred from `from` to `to`.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | operator  | address | undefined |
-| from `indexed` | address | The sending address |
-| to `indexed` | address | The receiving address |
-| tokenId `indexed` | bytes32 | The tokenId to transfer |
+| from `indexed` | address | undefined |
+| to `indexed` | address | undefined |
+| tokenId `indexed` | bytes32 | undefined |
 | force  | bool | undefined |
 | data  | bytes | undefined |
 
