@@ -74,4 +74,47 @@ library LSP6Utils {
                 )
             );
     }
+
+    function setupPermissions(
+        IERC725Y _account,
+        address _address,
+        bytes memory permissions
+    ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
+        keys = new bytes32[](3);
+        values = new bytes[](3);
+
+        bytes memory rawArrayLength = ERC725Utils.getDataSingle(
+            _account,
+            _ADDRESS_PERMISSIONS_ARRAY
+        );
+
+        bytes12 permissionPreFix = hex"4b80742d0000000082ac0000";
+
+        keys[0] = _ADDRESS_PERMISSIONS_ARRAY;
+        keys[2] = permissionPreFix.generateBytes20MappingWithGroupingKey(
+            bytes20(_address)
+        );
+
+        values[1] = abi.encodePacked(_address);
+        values[2] = permissions;
+
+        if (rawArrayLength.length != 32) {
+            keys[1] = ERC725Utils.generateArrayKeyAtIndex(
+                _ADDRESS_PERMISSIONS_ARRAY,
+                0
+            );
+
+            values[0] = abi.encodePacked(uint256(1));
+        } else if (rawArrayLength.length == 32) {
+            uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
+            uint256 newArrayLength = arrayLength + 1;
+
+            keys[1] = ERC725Utils.generateArrayKeyAtIndex(
+                _ADDRESS_PERMISSIONS_ARRAY,
+                arrayLength
+            );
+
+            values[0] = abi.encodePacked(newArrayLength);
+        }
+    }
 }
