@@ -43,7 +43,7 @@ library ERC725Utils {
         values[1] = abi.encodePacked(_sender);
 
         if (rawArrayLength.length != 32) {
-            keys[1] = _generateArrayKeyAtIndex(_arrayKey, 0);
+            keys[1] = generateArrayKeyAtIndex(_arrayKey, 0);
 
             values[0] = abi.encodePacked(uint256(1));
             values[2] = abi.encodePacked(bytes8(0), _appendix);
@@ -51,7 +51,7 @@ library ERC725Utils {
             uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
             uint256 newArrayLength = arrayLength + 1;
 
-            keys[1] = _generateArrayKeyAtIndex(_arrayKey, newArrayLength - 1);
+            keys[1] = generateArrayKeyAtIndex(_arrayKey, newArrayLength - 1);
 
             values[0] = abi.encodePacked(newArrayLength);
             values[2] = abi.encodePacked(
@@ -74,8 +74,8 @@ library ERC725Utils {
         keys = new bytes32[](5);
         values = new bytes[](5);
 
-        uint64 index = _extractIndexFromMap(_account, _mapKeyToRemove);
-        bytes32 arrayKeyToRemove = _generateArrayKeyAtIndex(_arrayKey, index);
+        uint64 index = extractIndexFromMap(_account, _mapKeyToRemove);
+        bytes32 arrayKeyToRemove = generateArrayKeyAtIndex(_arrayKey, index);
 
         bytes memory rawArrayLength = getDataSingle(_account, _arrayKey);
         uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
@@ -91,7 +91,7 @@ library ERC725Utils {
             keys[2] = arrayKeyToRemove;
             values[2] = "";
         } else {
-            bytes32 lastKey = _generateArrayKeyAtIndex(_arrayKey, newLength);
+            bytes32 lastKey = generateArrayKeyAtIndex(_arrayKey, newLength);
             bytes memory lastKeyValue = getDataSingle(_account, lastKey);
 
             bytes32 mapOfLastkey = generateMapKey(mapHash, lastKeyValue);
@@ -123,13 +123,13 @@ library ERC725Utils {
             bytes4(0),
             _sender
         );
-        return _generateBytes32Key(mapKey);
+        return generateBytes32Key(mapKey);
     }
 
     // private functions
 
-    function _generateBytes32Key(bytes memory _rawKey)
-        private
+    function generateBytes32Key(bytes memory _rawKey)
+        internal
         pure
         returns (bytes32 key)
     {
@@ -140,8 +140,8 @@ library ERC725Utils {
         /* solhint-enable */
     }
 
-    function _generateArrayKeyAtIndex(bytes32 _arrayKey, uint256 _index)
-        private
+    function generateArrayKeyAtIndex(bytes32 _arrayKey, uint256 _index)
+        internal
         pure
         returns (bytes32)
     {
@@ -149,11 +149,11 @@ library ERC725Utils {
             bytes16(_arrayKey),
             bytes16(uint128(_index))
         );
-        return _generateBytes32Key(elementInArray);
+        return generateBytes32Key(elementInArray);
     }
 
-    function _extractIndexFromMap(IERC725Y _account, bytes32 _mapKey)
-        private
+    function extractIndexFromMap(IERC725Y _account, bytes32 _mapKey)
+        internal
         view
         returns (uint64)
     {
