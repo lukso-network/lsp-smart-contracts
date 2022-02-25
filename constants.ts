@@ -20,6 +20,7 @@ export const enum INTERFACE_IDS {
   LSP7 = "0xe33f65c3",
   LSP8 = "0x49399145",
   LSP9 = "0x75edcee5",
+  LSP11 = "0x65c8d0e5"
 }
 
 // ERC1271

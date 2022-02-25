@@ -13,6 +13,7 @@ import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import "../LSP11SocialRecovery/ILSP11SocialRecovery.sol";
 
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -101,6 +102,12 @@ contract CalculateERC165Selectors {
 
     function calculateSelectorERC721Metadata() public pure returns (bytes4) {
         bytes4 selector = type(IERC721Metadata).interfaceId;
+
+        return selector;
+    }
+
+    function calculateSelectorLSP11() public pure returns (bytes4) {
+        bytes4 selector = type(ILSP11SocialRecovery).interfaceId;
 
         return selector;
     }
