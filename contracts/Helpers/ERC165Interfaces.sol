@@ -16,6 +16,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import "../LSP11SocialRecovery/ILSP11SocialRecovery.sol";
 
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -92,6 +93,12 @@ contract CalculateLSPInterfaces {
             interfaceId == _INTERFACEID_LSP9,
             "_LSP9_INTERFACE_ID does not match XOR of the functions"
         );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP11() public pure returns (bytes4) {
+        bytes4 interfaceId = type(ILSP11SocialRecovery).interfaceId;
 
         return interfaceId;
     }
