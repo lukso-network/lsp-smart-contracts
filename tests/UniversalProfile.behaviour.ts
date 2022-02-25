@@ -146,7 +146,7 @@ export const shouldBehaveLikeLSP3 = (
         );
 
         lsp3IssuedAssetsValues.push(
-          new ethers.Wallet.createRandom().address.toLowerCase()
+          ethers.Wallet.createRandom().address.toLowerCase()
         );
 
         let keys = [
@@ -217,11 +217,6 @@ export const shouldInitializeLikeLSP3 = (
   });
 
   describe("when the contract was initialized", () => {
-    // it("should have set the right contract owner", async () => {
-    //   expect(await context.universalProfile.owner()).toEqual(
-    //     context.deployParams.owner
-    //   );
-    // });
     it("should support ERC165 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC165
