@@ -47,4 +47,9 @@ describe("Calculate Selectors", () => {
     const result = await contract.callStatic.calculateSelectorLSP6KeyManager();
     expect(result).toEqual(INTERFACE_IDS.LSP6);
   });
+  
+  it("LSP11SocialRecovery", async () => {
+    const result = await contract.callStatic.calculateSelectorLSP11();
+    expect(result).toEqual(INTERFACE_IDS.LSP11);
+  });
 });
