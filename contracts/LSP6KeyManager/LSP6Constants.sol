@@ -4,6 +4,8 @@ pragma solidity ^0.8.0;
 // --- ERC165 interface ids
 bytes4 constant _INTERFACEID_LSP6 = 0x6f4df48b;
 
+bytes32 constant _ADDRESS_PERMISSIONS_ARRAY = 0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3; // keccak256("AddressPermissions[]")
+
 /* solhint-disable */
 // PERMISSION KEYS
 // prettier-ignore
