@@ -37,21 +37,21 @@ export const LSP5_ARRAY_KEY = {
 
 export const LSP10_ARRAY_KEY = {
   ELEMENT1:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000000",
+    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000000",
   ELEMENT2:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000001",
+    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000001",
   ELEMENT3:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000002",
+    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000002",
   ELEMENT4:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000003",
+    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000003",
   ELEMENT5:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000004",
+    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000004",
   ELEMENT6:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000005",
+    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000005",
   ELEMENT7:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000006",
+    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000006",
   ELEMENT8:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000007",
+    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000007",
 };
 
 // bytes8 index
@@ -118,6 +118,16 @@ export function generateKeysAndValues(_elementObject) {
   return [keys, values];
 }
 
+export function getRandomString() {
+  const value =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const randoms = [];
+  for (let i = 0; i < 32; i++) {
+    randoms.push(value[Math.floor(Math.random() * value.length)]);
+  }
+  return randoms.join("");
+}
+
 // LSP6 - KeyManager
 
 const customRevertErrorMessage =
@@ -133,6 +143,10 @@ export const NotAllowedAddressError = (_from, _to) => {
 
 export const NotAllowedFunctionError = (_from, _functionSelector) => {
   return `${customRevertErrorMessage} 'NotAllowedFunction("${_from}", "${_functionSelector}")'`;
+};
+
+export const NotAllowedERC725YKeyError = (_from, _erc725YKey) => {
+  return `${customRevertErrorMessage} 'NotAllowedERC725YKey("${_from}", "${_erc725YKey}")'`;
 };
 
 export async function getMapAndArrayKeyValues(

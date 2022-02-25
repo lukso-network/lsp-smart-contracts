@@ -1,4 +1,4 @@
-# ILSP7CompatibilityForERC20
+# LSP7CompatibilityForERC20InitAbstract
 
 
 
@@ -6,14 +6,14 @@
 
 
 
-*LSP8 extension, for compatibility for clients / tools that expect ERC20.*
+
 
 ## Methods
 
 ### allowance
 
 ```solidity
-function allowance(address tokenOwner, address operator) external nonpayable returns (uint256)
+function allowance(address tokenOwner, address operator) external view returns (uint256)
 ```
 
 
@@ -58,14 +58,14 @@ function authorizeOperator(address operator, uint256 amount) external nonpayable
 
 
 
-*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| operator | address | The address to authorize as an operator.
-| amount | uint256 | The amount of tokens operator has access to.
+| operator | address | undefined
+| amount | uint256 | undefined
 
 ### balanceOf
 
@@ -128,6 +128,22 @@ Gets array of data at multiple given keys
 |---|---|---|
 | values | bytes[] | The array of data stored at multiple keys
 
+### initialize
+
+```solidity
+function initialize(address _newOwner) external nonpayable
+```
+
+Sets the token-Metadata and register LSP7InterfaceId
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _newOwner | address | the owner of the contract
+
 ### isOperatorFor
 
 ```solidity
@@ -151,6 +167,51 @@ function isOperatorFor(address operator, address tokenOwner) external view retur
 |---|---|---|
 | _0 | uint256 | The amount of tokens `operator` address has access to from `tokenOwner`.
 
+### name
+
+```solidity
+function name() external view returns (string)
+```
+
+
+
+*Returns the name of the token.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | The name of the token
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+
+
+*Returns the address of the current owner.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address | undefined
+
+### renounceOwnership
+
+```solidity
+function renounceOwnership() external nonpayable
+```
+
+
+
+*Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.*
+
+
 ### revokeOperator
 
 ```solidity
@@ -170,7 +231,7 @@ function revokeOperator(address operator) external nonpayable
 ### setData
 
 ```solidity
-function setData(bytes32[] keys, bytes[] values) external nonpayable
+function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 ```
 
 
@@ -181,8 +242,8 @@ function setData(bytes32[] keys, bytes[] values) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| keys | bytes32[] | The array of keys which values to set
-| values | bytes[] | The array of values to set
+| _keys | bytes32[] | undefined
+| _values | bytes[] | undefined
 
 ### supportsInterface
 
@@ -192,7 +253,7 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 
 
 
-*Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas.*
+*See {IERC165-supportsInterface}.*
 
 #### Parameters
 
@@ -205,6 +266,23 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 | Name | Type | Description |
 |---|---|---|
 | _0 | bool | undefined
+
+### symbol
+
+```solidity
+function symbol() external view returns (string)
+```
+
+
+
+*Returns the symbol of the token, usually a shorter version of the name.*
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | The symbol of the token
 
 ### totalSupply
 
@@ -231,7 +309,7 @@ function transfer(address to, uint256 amount) external nonpayable
 
 
 
-*Transfers `amount` of tokens from `from` to `to`. The `force` parameter will be used when notifying the token sender and receiver. Requirements: - `from` cannot be the zero address. - `to` cannot be the zero address. - `amount` tokens must be owned by `from`. - If the caller is not `from`, it must be an operator for `from` with access to at least `amount` tokens. Emits a {Transfer} event.*
+*Compatible with ERC20 transfer. Using force=true so that EOA and any contract may receive the tokens.*
 
 #### Parameters
 
@@ -268,7 +346,7 @@ function transferFrom(address from, address to, uint256 amount) external nonpaya
 
 
 
-
+*Compatible with ERC20 transferFrom. Using force=true so that EOA and any contract may receive the tokens.*
 
 #### Parameters
 
@@ -277,6 +355,22 @@ function transferFrom(address from, address to, uint256 amount) external nonpaya
 | from | address | undefined
 | to | address | undefined
 | amount | uint256 | undefined
+
+### transferOwnership
+
+```solidity
+function transferOwnership(address newOwner) external nonpayable
+```
+
+
+
+*Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newOwner | address | undefined
 
 
 
@@ -290,15 +384,15 @@ event Approval(address indexed owner, address indexed spender, uint256 value)
 
 To provide compatibility with indexing ERC20 events.
 
-*Emitted when `owner` enables `spender` for `value` tokens.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| owner `indexed` | address | The account giving approval |
-| spender `indexed` | address | The account receiving approval |
-| value  | uint256 | The amount of tokens `spender` has access to from `owner` |
+| owner `indexed` | address | undefined |
+| spender `indexed` | address | undefined |
+| value  | uint256 | undefined |
 
 ### AuthorizedOperator
 
@@ -335,6 +429,23 @@ Emitted when data at a key is changed
 | key `indexed` | bytes32 | undefined |
 | value  | bytes | undefined |
 
+### OwnershipTransferred
+
+```solidity
+event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| previousOwner `indexed` | address | undefined |
+| newOwner `indexed` | address | undefined |
+
 ### RevokedOperator
 
 ```solidity
@@ -360,15 +471,15 @@ event Transfer(address indexed operator, address indexed from, address indexed t
 
 To provide compatibility with indexing ERC20 events.
 
-*Emitted when `amount` tokens is transferred from `from` to `to`.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | operator `indexed` | address | undefined |
-| from `indexed` | address | The sending address |
-| to `indexed` | address | The receiving address |
+| from `indexed` | address | undefined |
+| to `indexed` | address | undefined |
 | amount  | uint256 | undefined |
 | force  | bool | undefined |
 | data  | bytes | undefined |

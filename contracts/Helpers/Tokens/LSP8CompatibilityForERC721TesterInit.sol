@@ -3,16 +3,18 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721.sol";
+import "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721InitAbstract.sol";
 import "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
 
-contract LSP8CompatibilityForERC721Tester is LSP8CompatibilityForERC721 {
-    constructor(
+contract LSP8CompatibilityForERC721InitTester is LSP8CompatibilityForERC721InitAbstract {
+    function initialize(
         string memory name,
         string memory symbol,
         address newOwner,
         bytes memory tokenURIValue
-    ) LSP8CompatibilityForERC721(name, symbol, newOwner) {
+    ) public virtual initializer {
+        LSP8CompatibilityForERC721InitAbstract.initialize(name, symbol, newOwner);
+
         _setData(_LSP4_METADATA_KEY, tokenURIValue);
     }
 

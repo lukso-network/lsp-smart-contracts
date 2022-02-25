@@ -11,8 +11,8 @@ import "./LSP0ERC725AccountCore.sol";
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
 abstract contract LSP0ERC725AccountInitAbstract is
-    ERC725InitAbstract,
-    LSP0ERC725AccountCore
+    LSP0ERC725AccountCore,
+    ERC725InitAbstract
 {
     /**
      * @notice Sets the owner of the contract and register ERC725Account, ERC1271 and LSP1UniversalReceiver interfacesId

@@ -26,10 +26,10 @@ import "../LSP0ERC725Account/LSP0Constants.sol";
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
 abstract contract LSP0ERC725AccountCore is
-    ERC725XCore,
-    ERC725YCore,
+    IERC1271,
     ILSP1UniversalReceiver,
-    IERC1271
+    ERC725XCore,
+    ERC725YCore
 {
     using ERC725Utils for IERC725Y;
 
