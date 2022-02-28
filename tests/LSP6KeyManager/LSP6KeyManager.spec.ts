@@ -4632,7 +4632,7 @@ describe("ALLOWEDERC725YKEYS", () => {
   });
 });
 
-describe("SIGN", () => {
+describe("SIGN (ERC1271)", () => {
   let provider = ethers.provider;
   let accounts: SignerWithAddress[] = [];
 
