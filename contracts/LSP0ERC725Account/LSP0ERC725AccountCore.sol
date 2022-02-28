@@ -12,7 +12,6 @@ import "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 
 // libraries
-import "../Utils/UtilsLib.sol";
 import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -69,7 +68,7 @@ abstract contract LSP0ERC725AccountCore is
     {
         // prettier-ignore
         // if OWNER is a contract
-        if (UtilsLib.isContract(owner())) {
+        if (owner().code.length != 0) {
             return 
                 supportsInterface(_INTERFACE_ID_ERC1271)
                     ? IERC1271(owner()).isValidSignature(_hash, _signature)

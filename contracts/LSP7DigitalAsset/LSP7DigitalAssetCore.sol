@@ -382,7 +382,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
                 packedData
             );
         } else if (!force) {
-            if (to.isContract()) {
+            if (to.code.length > 0) {
                 revert("LSP7: token receiver contract missing LSP1 interface");
             } else {
                 revert("LSP7: token receiver is EOA");

@@ -237,7 +237,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             address to = address(bytes20(_data[48:68]));
             _verifyAllowedAddress(_from, to);
 
-            if (to.isContract()) {
+            if (to.code.length > 0) {
                 _verifyAllowedStandard(_from, to);
 
                 if (_data.length >= 168) {

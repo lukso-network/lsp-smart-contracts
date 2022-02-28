@@ -460,7 +460,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 packedData
             );
         } else if (!force) {
-            if (to.isContract()) {
+            if (to.code.length > 0) {
                 revert("LSP8: token receiver contract missing LSP1 interface");
             } else {
                 revert("LSP8: token receiver is EOA");
