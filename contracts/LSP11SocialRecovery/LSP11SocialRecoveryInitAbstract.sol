@@ -25,7 +25,7 @@ contract LSP11SocialRecoveryInitAbstract is
      */
     function initialize(
         address newOwner,
-        address _account,
+        ERC725 _account,
         uint256 newThreshold
     ) public virtual onlyInitializing {
         account = ERC725(_account);

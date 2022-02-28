@@ -15,7 +15,7 @@ contract LSP11SocialRecoveryInit is LSP11SocialRecoveryInitAbstract {
      */
     function initialize(
         address newOwner,
-        address _account,
+        ERC725 _account,
         uint256 newThreshold
     ) public override initializer {
         LSP11SocialRecoveryInitAbstract.initialize(

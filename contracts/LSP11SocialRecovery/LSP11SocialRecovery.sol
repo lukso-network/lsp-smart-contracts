@@ -20,7 +20,7 @@ contract LSP11SocialRecovery is ERC165Storage, LSP11SocialRecoveryCore {
      */
     constructor(
         address newOwner,
-        address _account,
+        ERC725 _account,
         uint256 newThreshold
     ) {
         account = ERC725(_account);
