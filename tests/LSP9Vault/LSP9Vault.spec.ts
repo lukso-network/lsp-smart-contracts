@@ -9,7 +9,7 @@ import {
   UniversalProfile__factory,
   TargetContract,
   TargetContract__factory,
-  URDVaultSetter,
+  UniversalReceiverDelegateVaultSetter,
   URDVaultSetter__factory,
 } from "../../types";
 // constants
@@ -297,15 +297,17 @@ describe("LSP9Vault", () => {
   });
 
   describe("UniversalReceiver", () => {
-    let URDVaultSetter: URDVaultSetter;
+    let universalReceiverDelegateVaultSetter: UniversalReceiverDelegateVaultSetter;
 
     beforeAll(async () => {
-      URDVaultSetter = await new URDVaultSetter__factory(owner).deploy();
+      universalReceiverDelegateVaultSetter = await new URDVaultSetter__factory(
+        owner
+      ).deploy();
       LSP9Vault = await new LSP9Vault__factory(owner).deploy(owner.address);
     });
     it("Setting a UniversalReceiverDelegate", async () => {
       let key = ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate;
-      let value = URDVaultSetter.address;
+      let value = universalReceiverDelegateVaultSetter.address;
       await LSP9Vault.connect(owner).setData([key], [value]);
 
       let [result] = await LSP9Vault.callStatic.getData([key]);
@@ -315,7 +317,7 @@ describe("LSP9Vault", () => {
     it("UniversalReceiverDelegate able to setData", async () => {
       let key = RANDOM_BYTES32;
       let value = DUMMY_PAYLOAD;
-      await URDVaultSetter.universalReceiverDelegate(
+      await universalReceiverDelegateVaultSetter.universalReceiverDelegate(
         LSP9Vault.address,
         key,
         value
