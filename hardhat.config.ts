@@ -4,10 +4,13 @@ import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-web3";
 
 import "@typechain/hardhat";
-import "@primitivefi/hardhat-dodoc";
 import "hardhat-packager";
-
 import "hardhat-deploy";
+
+/**
+ * @dev uncomment to generate contract docs in Markdown
+ */
+// import "@primitivefi/hardhat-dodoc";
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
