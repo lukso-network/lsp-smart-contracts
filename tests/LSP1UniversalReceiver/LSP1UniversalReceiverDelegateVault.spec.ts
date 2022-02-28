@@ -29,7 +29,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
   let universalReceiverDelegate: LSP1UniversalReceiverDelegateVault;
   let VaultA: LSP9Vault;
   let VaultB: LSP9Vault;
-  let URDRevert;
+  let universalReceiverDelegateRevert;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
@@ -50,7 +50,9 @@ describe("UniversalReceiverDelegateVault contract", () => {
     );
     universalReceiverDelegate =
       await new LSP1UniversalReceiverDelegateVault__factory(owner1).deploy();
-    URDRevert = await new URDRevert__factory(owner1).deploy();
+    universalReceiverDelegateRevert = await new URDRevert__factory(
+      owner1
+    ).deploy();
   });
 
   describe("Universal Receiver Delegate (for Vault) deployment", () => {
@@ -880,11 +882,11 @@ describe("UniversalReceiverDelegateVault contract", () => {
         });
       });
 
-      describe("Implementing URDRevert", () => {
+      describe("Implementing UniversalReceiverDelegateRevert", () => {
         beforeAll(async () => {
           let abiSetData = VaultB.interface.encodeFunctionData("setData", [
             [ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate],
-            [URDRevert.address],
+            [universalReceiverDelegateRevert.address],
           ]);
 
           await UniversalProfileB.connect(owner2).execute(
@@ -895,7 +897,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
           );
         });
 
-        it("Should revert when sending tokens from VaultA to VaultB that implement URDRevert", async () => {
+        it("Should revert when sending tokens from VaultA to VaultB that implement UniversalReceiverDelegateRevert", async () => {
           let abi = LSP7tokenD.interface.encodeFunctionData("transfer", [
             VaultA.address,
             VaultB.address,
@@ -1602,11 +1604,11 @@ describe("UniversalReceiverDelegateVault contract", () => {
         });
       });
 
-      describe("Implementing URDRevert", () => {
+      describe("Implementing UniversalReceiverDelegateRevert", () => {
         beforeAll(async () => {
           let abiSetData = VaultB.interface.encodeFunctionData("setData", [
             [ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate],
-            [URDRevert.address],
+            [universalReceiverDelegateRevert.address],
           ]);
 
           await UniversalProfileB.connect(owner2).execute(
@@ -1617,7 +1619,7 @@ describe("UniversalReceiverDelegateVault contract", () => {
           );
         });
 
-        it("Should revert when sending tokens from VaultA to VaultB that implement URDRevert", async () => {
+        it("Should revert when sending tokens from VaultA to VaultB that implement UniversalReceiverDelegateRevert", async () => {
           let abi = LSP8tokenD.interface.encodeFunctionData("transfer", [
             VaultA.address,
             VaultB.address,

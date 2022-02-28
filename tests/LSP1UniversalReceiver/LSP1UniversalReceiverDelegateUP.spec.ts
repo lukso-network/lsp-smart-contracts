@@ -9,7 +9,7 @@ import {
   LSP9Vault__factory,
   LSP7Tester__factory,
   LSP8Tester__factory,
-  URDRevert,
+  UniversalReceiverDelegateRevert,
   URDRevert__factory,
   LSP6KeyManager__factory,
   LSP1UniversalReceiverDelegateUP,
@@ -39,7 +39,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
   let keyManager1: LSP6KeyManager, keyManager2: LSP6KeyManager;
   let universalReceiverDelegate: LSP1UniversalReceiverDelegateUP;
   let universalProfile1: UniversalProfile, universalProfile2: UniversalProfile;
-  let URDRevert: URDRevert;
+  let universalReceiverDelegateRevert: UniversalReceiverDelegateRevert;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
@@ -59,7 +59,9 @@ describe("UniversalReceiverDelegateUP contract", () => {
     );
     universalReceiverDelegate =
       await new LSP1UniversalReceiverDelegateUP__factory(owner1).deploy();
-    URDRevert = await new URDRevert__factory(owner1).deploy();
+    universalReceiverDelegateRevert = await new URDRevert__factory(
+      owner1
+    ).deploy();
 
     // Setting Permissions for UP1
 
@@ -897,13 +899,13 @@ describe("UniversalReceiverDelegateUP contract", () => {
       });
     });
 
-    describe("Implementing URDRevert", () => {
+    describe("Implementing UniversalReceiverDelegateRevert", () => {
       beforeAll(async () => {
         let abiSetData = universalProfile2.interface.encodeFunctionData(
           "setData",
           [
             [ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate],
-            [URDRevert.address],
+            [universalReceiverDelegateRevert.address],
           ]
         );
         await keyManager2
@@ -911,7 +913,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           .execute(abiSetData, { from: owner2.address });
       });
 
-      it("Should revert when sending tokens from UP1 to UP2 that implement URDRevert", async () => {
+      it("Should revert when sending tokens from UP1 to UP2 that implement UniversalReceiverDelegateRevert", async () => {
         let abi = LSP7tokenD.interface.encodeFunctionData("transfer", [
           universalProfile1.address,
           universalProfile2.address,
@@ -1511,13 +1513,13 @@ describe("UniversalReceiverDelegateUP contract", () => {
       });
     });
 
-    describe("Implementing URDRevert", () => {
+    describe("Implementing UniversalReceiverDelegateRevert", () => {
       beforeAll(async () => {
         let abiSetData = universalProfile2.interface.encodeFunctionData(
           "setData",
           [
             [ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate],
-            [URDRevert.address],
+            [universalReceiverDelegateRevert.address],
           ]
         );
         await keyManager2
@@ -1525,7 +1527,7 @@ describe("UniversalReceiverDelegateUP contract", () => {
           .execute(abiSetData, { from: owner2.address });
       });
 
-      it("Should revert when sending tokens from UP1 to UP2 that implement URDRevert", async () => {
+      it("Should revert when sending tokens from UP1 to UP2 that implement UniversalReceiverDelegateRevert", async () => {
         let abi = LSP8tokenD.interface.encodeFunctionData("transfer", [
           universalProfile1.address,
           universalProfile2.address,
