@@ -12,7 +12,6 @@ import "./LSP11SocialRecoveryCore.sol";
  */
 contract LSP11SocialRecoveryInitAbstract is
     Initializable,
-    ERC165Storage,
     LSP11SocialRecoveryCore
 {
     /**
@@ -35,6 +34,5 @@ contract LSP11SocialRecoveryInitAbstract is
         }
 
         recoverThreshold = newThreshold;
-        _registerInterface(_INTERFACEID_LSP11);
     }
 }

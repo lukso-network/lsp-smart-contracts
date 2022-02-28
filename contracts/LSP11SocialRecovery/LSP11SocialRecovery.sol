@@ -9,7 +9,7 @@ import "./LSP11SocialRecoveryCore.sol";
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @notice Recovers the permission of a key to control an ERC725 contract through LSP6KeyManager
  */
-contract LSP11SocialRecovery is ERC165Storage, LSP11SocialRecoveryCore {
+contract LSP11SocialRecovery is LSP11SocialRecoveryCore {
     /**
      * @notice Initiate the contract with the address of the ERC725 contract, set the owner, the recover threshold
      * and register LSP11SocialRecovery InterfaceId
@@ -30,6 +30,5 @@ contract LSP11SocialRecovery is ERC165Storage, LSP11SocialRecoveryCore {
         }
 
         recoverThreshold = newThreshold;
-        _registerInterface(_INTERFACEID_LSP11);
     }
 }

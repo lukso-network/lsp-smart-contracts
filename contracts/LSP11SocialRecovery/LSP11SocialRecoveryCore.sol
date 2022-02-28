@@ -26,6 +26,7 @@ import "./LSP11Constants.sol";
  */
 abstract contract LSP11SocialRecoveryCore is
     ILSP11SocialRecovery,
+    ERC165Storage,
     OwnableUnset
 {
     // The account to recover
@@ -64,6 +65,21 @@ abstract contract LSP11SocialRecoveryCore is
     }
 
     // public functions
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 _interfaceId)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
+        return
+            _interfaceId == _INTERFACEID_LSP11 ||
+            super.supportsInterface(_interfaceId);
+    }
 
     /**
      * @inheritdoc ILSP11SocialRecovery
