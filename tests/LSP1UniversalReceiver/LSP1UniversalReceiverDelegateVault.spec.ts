@@ -7,7 +7,7 @@ import {
   LSP9Vault__factory,
   LSP7Tester__factory,
   LSP8Tester__factory,
-  URDRevert__factory,
+  UniversalReceiverDelegateRevert__factory,
   LSP1UniversalReceiverDelegateVault,
   LSP1UniversalReceiverDelegateVault__factory,
 } from "../../types";
@@ -50,9 +50,8 @@ describe("UniversalReceiverDelegateVault contract", () => {
     );
     universalReceiverDelegate =
       await new LSP1UniversalReceiverDelegateVault__factory(owner1).deploy();
-    universalReceiverDelegateRevert = await new URDRevert__factory(
-      owner1
-    ).deploy();
+    universalReceiverDelegateRevert =
+      await new UniversalReceiverDelegateRevert__factory(owner1).deploy();
   });
 
   describe("Universal Receiver Delegate (for Vault) deployment", () => {

@@ -10,7 +10,7 @@ import {
   TargetContract,
   TargetContract__factory,
   UniversalReceiverDelegateVaultSetter,
-  URDVaultSetter__factory,
+  UniversalReceiverDelegateVaultSetter__factory,
 } from "../../types";
 // constants
 import {
@@ -300,9 +300,8 @@ describe("LSP9Vault", () => {
     let universalReceiverDelegateVaultSetter: UniversalReceiverDelegateVaultSetter;
 
     beforeAll(async () => {
-      universalReceiverDelegateVaultSetter = await new URDVaultSetter__factory(
-        owner
-      ).deploy();
+      universalReceiverDelegateVaultSetter =
+        await new UniversalReceiverDelegateVaultSetter__factory(owner).deploy();
       LSP9Vault = await new LSP9Vault__factory(owner).deploy(owner.address);
     });
     it("Setting a UniversalReceiverDelegate", async () => {

@@ -10,7 +10,7 @@ import {
   LSP7Tester__factory,
   LSP8Tester__factory,
   UniversalReceiverDelegateRevert,
-  URDRevert__factory,
+  UniversalReceiverDelegateRevert__factory,
   LSP6KeyManager__factory,
   LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
@@ -59,9 +59,8 @@ describe("UniversalReceiverDelegateUP contract", () => {
     );
     universalReceiverDelegate =
       await new LSP1UniversalReceiverDelegateUP__factory(owner1).deploy();
-    universalReceiverDelegateRevert = await new URDRevert__factory(
-      owner1
-    ).deploy();
+    universalReceiverDelegateRevert =
+      await new UniversalReceiverDelegateRevert__factory(owner1).deploy();
 
     // Setting Permissions for UP1
 
