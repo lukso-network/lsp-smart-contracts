@@ -15,6 +15,9 @@ import "../../../Utils/ERC725Utils.sol";
 
 // constants
 import "../../LSP1Constants.sol";
+import "../../../LSP5ReceivedAssets/LSP5Constants.sol";
+
+import "../../../LSP10ReceivedVaults/LSP10Constants.sol";
 import "../../../LSP6KeyManager/LSP6Constants.sol";
 import "../../../LSP7DigitalAsset/LSP7Constants.sol";
 import "../../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
