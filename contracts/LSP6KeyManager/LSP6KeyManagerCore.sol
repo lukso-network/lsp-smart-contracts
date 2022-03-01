@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "./ILSP6KeyManager.sol";
 
 // libraries
-import "../Utils/LSP6Utils.sol";
+import "./LSP6Utils.sol";
 
 import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/Address.sol";

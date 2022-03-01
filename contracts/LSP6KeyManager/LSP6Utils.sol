@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "../LSP6KeyManager/LSP6Constants.sol";
 
 // libraries
-import "../Utils/LSP2Utils.sol";
+import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "..//Utils/ERC725Utils.sol";
 
 library LSP6Utils {
