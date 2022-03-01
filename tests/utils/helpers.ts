@@ -11,8 +11,9 @@ export const DUMMY_RECIPIENT = ethers.utils.getAddress(
   "0xcafecafecafecafecafecafecafecafecafecafe"
 );
 
-export const RANDOM_BYTES32 =
-  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+export const LSP1_HOOK_PLACEHOLDER =
+  "0xffffffffffffffff0000000000000000aaaaaaaaaaaaaaaa1111111111111111";
+
 export const ERC777TokensRecipient =
   "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 

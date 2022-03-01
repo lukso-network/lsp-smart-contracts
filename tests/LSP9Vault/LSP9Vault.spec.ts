@@ -21,7 +21,6 @@ import {
 } from "../../constants";
 
 import {
-  RANDOM_BYTES32,
   DUMMY_PAYLOAD,
   getMapAndArrayKeyValues,
   LSP10_ARRAY_KEY,
@@ -314,7 +313,7 @@ describe("LSP9Vault", () => {
     });
 
     it("UniversalReceiverDelegate able to setData", async () => {
-      let key = RANDOM_BYTES32;
+      let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some key"));
       let value = DUMMY_PAYLOAD;
       await universalReceiverDelegateVaultSetter.universalReceiverDelegate(
         LSP9Vault.address,

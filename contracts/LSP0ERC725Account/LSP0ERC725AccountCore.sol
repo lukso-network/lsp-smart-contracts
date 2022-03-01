@@ -95,10 +95,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // call external contract
         if (receiverData.length == 20) {
-            address universalReceiverAddress = BytesLib.toAddress(
-                receiverData,
-                0
-            );
+            address universalReceiverAddress = address(bytes20(receiverData));
 
             if (
                 ERC165(universalReceiverAddress).supportsInterface(

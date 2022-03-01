@@ -1,26 +1,19 @@
 import { ethers } from "hardhat";
-import { ERC725, encodeData, flattenEncodedData } from "@erc725/erc725.js";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import {
-  UniversalProfile,
-  UniversalReceiverTester,
-  UniversalReceiverTester__factory,
-} from "../types";
+// types
+import { UniversalProfile } from "../types";
 
+// helpers
 import { getRandomAddresses } from "./utils/helpers";
 
 // constants
 import {
   ERC1271,
   ERC725YKeys,
-  EventSignatures,
   INTERFACE_IDS,
   SupportedStandards,
 } from "../constants";
-
-// helpers
-import { RANDOM_BYTES32 } from "./utils/helpers";
 
 export type LSP3TestContext = {
   accounts: SignerWithAddress[];
@@ -165,41 +158,6 @@ export const shouldBehaveLikeLSP3 = (
         expect(result).toEqual(values);
       });
     }
-  });
-
-  describe("when using with Universal Receiver", () => {
-    it("call the Universal Profile and check for UniversalReceiver event", async () => {
-      const owner = context.accounts[0];
-
-      const checker: UniversalReceiverTester =
-        await new UniversalReceiverTester__factory(owner).deploy();
-
-      let transaction = await checker
-        .connect(owner)
-        .callImplementationAndReturn(
-          context.universalProfile.address,
-          RANDOM_BYTES32
-        );
-
-      let receipt = await transaction.wait();
-
-      // event should come from account
-      expect(receipt.logs[0].address).toEqual(context.universalProfile.address);
-      // event signature
-      expect(receipt.logs[0].topics[0]).toEqual(
-        EventSignatures.LSP1["UniversalReceiver"]
-      );
-      // from
-      expect(receipt.logs[0].topics[1]).toEqual(
-        ethers.utils.hexZeroPad(checker.address.toLowerCase(), 32)
-      );
-      // typeId
-      expect(receipt.logs[0].topics[2]).toEqual(RANDOM_BYTES32);
-      // receivedData
-      expect(receipt.logs[0].data).toEqual(
-        "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000"
-      );
-    });
   });
 };
 
