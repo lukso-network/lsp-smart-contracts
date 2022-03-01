@@ -4,7 +4,7 @@ pragma solidity ^0.8.6;
 // modules
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import "@erc725/smart-contracts/contracts/ERC725.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // interfaces
 import "./ILSP6KeyManager.sol";
@@ -56,7 +56,7 @@ error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
  * @author Fabian Vogelsteller, Jean Cavallera
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
+abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     using ERC725Utils for ERC725Y;
     using LSP2Utils for ERC725Y;
     using LSP6Utils for ERC725;
@@ -74,10 +74,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         public
         view
         virtual
-        override(ERC165Storage)
+        override
         returns (bool)
     {
         return
+            interfaceId == _INTERFACEID_LSP6 ||
             interfaceId == _INTERFACEID_ERC1271 ||
             super.supportsInterface(interfaceId);
     }
