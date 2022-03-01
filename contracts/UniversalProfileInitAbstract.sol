@@ -25,7 +25,7 @@ abstract contract UniversalProfileInitAbstract is
     {
         LSP0ERC725AccountInitAbstract.initialize(_newOwner);
 
-        // set SupportedStandards:LSP3UniversalProfile
+        // set key SupportedStandards:LSP3UniversalProfile
         bytes32 key = 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6;
         bytes memory value = hex"abe425d6";
         _setData(key, value);

@@ -24,10 +24,11 @@ abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
     {
         ERC725InitAbstract.initialize(_newOwner);
 
-        // set SupportedStandards:LSP9Vault
-        bytes32 key = 0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1;
-        bytes memory value = hex"7c0334a1";
-        _setData(key, value);
+        // set key SupportedStandards:LSP9Vault
+        _setData(
+            _LSP9_SUPPORTED_STANDARDS_KEY, 
+            _LSP9_SUPPORTED_STANDARDS_VALUE
+        );
 
         _notifyVaultReceiver(_newOwner);
 
