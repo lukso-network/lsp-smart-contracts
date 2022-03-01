@@ -1,9 +1,17 @@
 import { ethers } from "hardhat";
 import {
+  ILSP1UniversalReceiver,
   UniversalProfileInit__factory,
   UniversalProfile__factory,
+  UniversalReceiverTester__factory,
 } from "../types";
 import { deployProxy } from "./utils/proxy";
+
+import {
+  LSP1TestContext,
+  shouldBehaveLikeLSP1,
+} from "./LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour";
+
 import {
   LSP3TestContext,
   shouldInitializeLikeLSP3,
@@ -12,7 +20,7 @@ import {
 
 describe("UniversalProfile", () => {
   describe("when using UniversalProfile contract with constructor", () => {
-    const buildTestContext = async (): Promise<LSP3TestContext> => {
+    const buildLSP3TestContext = async (): Promise<LSP3TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
@@ -24,11 +32,25 @@ describe("UniversalProfile", () => {
       return { accounts, universalProfile, deployParams };
     };
 
+    const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
+      const accounts = await ethers.getSigners();
+
+      const lsp1Implementation = (await new UniversalProfile__factory(
+        accounts[0]
+      ).deploy(accounts[0].address)) as ILSP1UniversalReceiver;
+
+      const lsp1Checker = await new UniversalReceiverTester__factory(
+        accounts[0]
+      ).deploy();
+
+      return { accounts, lsp1Implementation, lsp1Checker };
+    };
+
     describe("when deploying the contract", () => {
       let context: LSP3TestContext;
 
       beforeEach(async () => {
-        context = await buildTestContext();
+        context = await buildLSP3TestContext();
       });
 
       describe("when initializing the contract", () => {
@@ -43,12 +65,13 @@ describe("UniversalProfile", () => {
     });
 
     describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP3(buildTestContext);
+      shouldBehaveLikeLSP3(buildLSP3TestContext);
+      shouldBehaveLikeLSP1(buildLSP1TestContext);
     });
   });
 
   describe("when using UniversalProfile contract with proxy", () => {
-    const buildTestContext = async (): Promise<LSP3TestContext> => {
+    const buildLSP3TestContext = async (): Promise<LSP3TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
@@ -73,11 +96,33 @@ describe("UniversalProfile", () => {
       );
     };
 
+    const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
+      const accounts = await ethers.getSigners();
+
+      const universalProfileInit = await new UniversalProfileInit__factory(
+        accounts[0]
+      ).deploy();
+      const universalProfileProxy = await deployProxy(
+        universalProfileInit.address,
+        accounts[0]
+      );
+
+      const lsp1Implementation = universalProfileInit.attach(
+        universalProfileProxy
+      ) as ILSP1UniversalReceiver;
+
+      const lsp1Checker = await new UniversalReceiverTester__factory(
+        accounts[0]
+      ).deploy();
+
+      return { accounts, lsp1Implementation, lsp1Checker };
+    };
+
     describe("when deploying the contract as proxy", () => {
       let context: LSP3TestContext;
 
       beforeEach(async () => {
-        context = await buildTestContext();
+        context = await buildLSP3TestContext();
       });
 
       describe("when initializing the contract", () => {
@@ -105,9 +150,17 @@ describe("UniversalProfile", () => {
 
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP3(async () => {
-        let context = await buildTestContext();
+        let context = await buildLSP3TestContext();
         await initializeProxy(context);
         return context;
+      });
+
+      shouldBehaveLikeLSP1(async () => {
+        let lsp3Context = await buildLSP3TestContext();
+        await initializeProxy(lsp3Context);
+
+        let lsp1Context = await buildLSP1TestContext();
+        return lsp1Context;
       });
     });
   });
