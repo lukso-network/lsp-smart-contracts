@@ -329,7 +329,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     ) internal view {
         bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _ADDRESS_ALLOWEDERC725YKEYS,
+                _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX,
                 bytes20(_from)
             )
         );
@@ -458,7 +458,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     function _verifyAllowedStandard(address _from, address _to) internal view {
         bytes memory allowedStandards = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _ADDRESS_ALLOWEDSTANDARDS,
+                _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX,
                 bytes20(_from)
             )
         );
