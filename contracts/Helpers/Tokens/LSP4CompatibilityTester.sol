@@ -11,7 +11,7 @@ contract LSP4CompatibilityTester is ERC725Y, LSP4Compatibility {
         string memory symbol,
         address newOwner
     ) ERC725Y(newOwner) {
-        _setData(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name));
-        _setData(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol));
+        _setData(_LSP4_TOKEN_NAME_KEY, bytes(name));
+        _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol));
     }
 }

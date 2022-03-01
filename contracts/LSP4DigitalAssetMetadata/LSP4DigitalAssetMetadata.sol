@@ -30,7 +30,7 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
             _LSP4_SUPPORTED_STANDARDS_VALUE
         );
 
-        _setData(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name_));
-        _setData(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        _setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
     }
 }
