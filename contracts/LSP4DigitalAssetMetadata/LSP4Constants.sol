@@ -18,7 +18,7 @@ bytes32 constant _LSP4_TOKEN_SYMBOL_KEY = 0x2f0a68ab07768e01943a599e73362a0e17a6
 // keccak256('LSP4Creators[]')
 bytes32 constant _LSP4_CREATORS_ARRAY_KEY = 0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7;
 
-// bytes8('LSP4CreatorsMap') + bytes4(0)
+// bytes8(keccak256('LSP4CreatorsMap')) + bytes4(0)
 bytes12 constant _LSP4_CREATORS_MAP_KEY_PREFIX = 0x6de85eaf5d982b4e00000000;
 
 // keccak256('LSP4Metadata')
