@@ -70,15 +70,15 @@ abstract contract LSP0ERC725AccountCore is
         // if OWNER is a contract
         if (owner().code.length != 0) {
             return 
-                supportsInterface(_INTERFACE_ID_ERC1271)
+                supportsInterface(_INTERFACEID_ERC1271)
                     ? IERC1271(owner()).isValidSignature(_hash, _signature)
-                    : _ERC1271FAILVALUE;
+                    : _ERC1271_FAILVALUE;
         // if OWNER is a key
         } else {
             return 
                 owner() == ECDSA.recover(_hash, _signature)
-                    ? _INTERFACE_ID_ERC1271
-                    : _ERC1271FAILVALUE;
+                    ? _INTERFACEID_ERC1271
+                    : _ERC1271_FAILVALUE;
         }
     }
 

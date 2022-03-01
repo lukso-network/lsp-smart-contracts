@@ -78,7 +78,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         returns (bool)
     {
         return
-            interfaceId == _INTERFACE_ID_ERC1271 ||
+            interfaceId == _INTERFACEID_ERC1271 ||
             super.supportsInterface(interfaceId);
     }
 
@@ -108,8 +108,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         return
             (_PERMISSION_SIGN & account.getPermissionsFor(recoveredAddress)) ==
                 _PERMISSION_SIGN
-                ? _INTERFACE_ID_ERC1271
-                : _ERC1271FAILVALUE;
+                ? _INTERFACEID_ERC1271
+                : _ERC1271_FAILVALUE;
     }
 
     /**
