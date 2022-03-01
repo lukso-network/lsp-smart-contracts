@@ -1,5 +1,9 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { BytesLike } from "ethers";
+import type { TransactionResponse } from "@ethersproject/abstract-provider";
+
+// types
 import {
   LSP8IdentifiableDigitalAsset,
   LSP8Tester,
@@ -8,11 +12,12 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
-import { tokenIdAsBytes32 } from "../utils/tokens";
-import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
-import type { BytesLike } from "ethers";
-import type { TransactionResponse } from "@ethersproject/abstract-provider";
+// helpers
+import { tokenIdAsBytes32 } from "../utils/tokens";
+
+// constants
+import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
 export type LSP8TestAccounts = {
   owner: SignerWithAddress;

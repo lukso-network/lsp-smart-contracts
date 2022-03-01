@@ -43,7 +43,6 @@ import {
   ONE_ETH,
   getRandomAddresses,
   generateKeysAndValues,
-  RANDOM_BYTES32,
   getRandomString,
 } from "../utils/helpers";
 import { Signer } from "ethers";
