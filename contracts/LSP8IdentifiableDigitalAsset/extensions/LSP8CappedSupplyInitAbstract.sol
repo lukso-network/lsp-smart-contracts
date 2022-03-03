@@ -14,12 +14,8 @@ abstract contract LSP8CappedSupplyInitAbstract is
     LSP8CappedSupplyCore,
     LSP8IdentifiableDigitalAssetInit
 {
-    /**
-     * @notice Sets the token max supply
-     * @param tokenSupplyCap_ The Token max supply
-     */
-    function initialize(uint256 tokenSupplyCap_)
-        public
+    function _initialize(uint256 tokenSupplyCap_)
+        internal
         virtual
         onlyInitializing
     {
