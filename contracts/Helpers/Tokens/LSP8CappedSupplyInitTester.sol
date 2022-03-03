@@ -12,12 +12,12 @@ contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInitAbstract {
         address newOwner,
         uint256 tokenSupplyCap
     ) public virtual initializer {
-        LSP8IdentifiableDigitalAssetInitAbstract.initialize(
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name,
             symbol,
             newOwner
         );
-        LSP8CappedSupplyInitAbstract.initialize(tokenSupplyCap);
+        LSP8CappedSupplyInitAbstract._initialize(tokenSupplyCap);
     }
 
     function mint(address to, bytes32 tokenId) public {
