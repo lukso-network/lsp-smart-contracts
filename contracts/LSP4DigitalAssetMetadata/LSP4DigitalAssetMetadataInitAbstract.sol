@@ -16,17 +16,11 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is
     Initializable,
     ERC725YInitAbstract
 {
-    /**
-     * @notice Sets the name, symbol of the token and the owner, and sets the SupportedStandards:LSP4DigitalAsset key
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the token contract
-     */
-    function initialize(
+    function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual onlyInitializing {
+    ) internal virtual onlyInitializing {
         ERC725YInitAbstract.initialize(newOwner_);
 
         // set SupportedStandards:LSP4DigitalAsset

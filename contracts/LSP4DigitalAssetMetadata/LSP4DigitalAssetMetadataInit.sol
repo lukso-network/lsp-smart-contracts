@@ -14,14 +14,17 @@ abstract contract LSP4DigitalAssetMetadataInit is
     LSP4DigitalAssetMetadataInitAbstract
 {
     /**
-     * @inheritdoc LSP4DigitalAssetMetadataInitAbstract
+     * @notice Sets the name, symbol of the token and the owner, and sets the SupportedStandards:LSP4DigitalAsset key
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the token contract
      */
     function initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override initializer {
-        LSP4DigitalAssetMetadataInitAbstract.initialize(
+    ) public virtual initializer {
+        LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_
