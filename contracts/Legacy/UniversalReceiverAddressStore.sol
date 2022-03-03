@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
-import "../Registries/AddressRegistry.sol";
+import "./Registries/AddressRegistry.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 contract UniversalReceiverAddressStore is
