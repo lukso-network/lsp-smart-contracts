@@ -57,31 +57,40 @@ const config: HardhatUserConfig = {
       // Standard version
       // ------------------
       "UniversalProfile",
-      "LSP6KeyManager",
+      "LSP0ERC725Account",
       "LSP1UniversalReceiverDelegateUP",
       "LSP1UniversalReceiverDelegateVault",
-      "LSP7Mintable",
-      "LSP8Mintable",
+      "LSP6KeyManager",
       "LSP7DigitalAsset",
       "LSP7CappedSupply",
+      "LSP7Mintable",
       "LSP8IdentifiableDigitalAsset",
       "LSP8CappedSupply",
+      "LSP8Mintable",
+      "LSP9Vault",
       // Proxy version
       // ------------------
       "UniversalProfileInit",
-      "LSP6KeyManagerInit",
+      "LSP0ERC725Account",
       "LSP1UniversalReceiverDelegateUPInit",
       "LSP1UniversalReceiverDelegateVaultInit",
-      "LSP7MintableInit",
-      "LSP8MintableInit",
+      "LSP6KeyManagerInit",
       "LSP7DigitalAssetInit",
       "LSP7CappedSupplyInit",
+      "LSP7MintableInit",
       "LSP8IdentifiableDigitalAssetInit",
       "LSP8CappedSupplyInit",
+      "LSP8MintableInit",
+      "LSP9VaultInit",
       // ERC Compatible tokens
       // ------------------
       "LSP7CompatibilityForERC20",
+      "LSP7CompatibilityForERC20Init",
       "LSP8CompatibilityForERC721",
+      "LSP8CompatibilityForERC721Init",
+      // Legacy L14
+      // ------------------
+      "UniversalReceiverAddressStore",
       // Tools
       // ------------------
       "Create2Factory",
