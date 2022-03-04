@@ -24,12 +24,6 @@ library LSP6Utils {
             )
         );
 
-        if (bytes32(permissions) == bytes32(0)) {
-            revert(
-                "LSP6Utils:getPermissionsFor: no permissions set for this address"
-            );
-        }
-
         return bytes32(permissions);
     }
 
