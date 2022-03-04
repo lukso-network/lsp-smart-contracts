@@ -134,6 +134,10 @@ export function getRandomString() {
 const customRevertErrorMessage =
   "VM Exception while processing transaction: reverted with custom error";
 
+export const NoPermissionsSetError = (_from) => {
+  return `${customRevertErrorMessage} 'NoPermissionsSet("${_from}")'`;
+};
+
 export const NotAuthorisedError = (_from, _permission) => {
   return `${customRevertErrorMessage} 'NotAuthorised("${_from}", "${_permission}")'`;
 };
