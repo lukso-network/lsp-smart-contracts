@@ -2695,37 +2695,36 @@ describe("Testing permissions of multiple empty bytes length", () => {
   });
 
   describe("reading permissions", () => {
-    it("should revert when reading permissions stored as more than 32 empty bytes", async () => {
+    let abiCoder;
+    let expectedEmptyPermission;
+
+    beforeAll(async () => {
+      abiCoder = await ethers.utils.defaultAbiCoder;
+      expectedEmptyPermission = abiCoder.encode(
+        ["bytes32"],
+        ["0x0000000000000000000000000000000000000000000000000000000000000000"]
+      );
+    });
+
+    it("should cast permissions to 32 bytes when reading permissions stored as more than 32 empty bytes", async () => {
       const result = await keyManagerHelper.getAddressPermissions(
         moreThan32EmptyBytes.address
       );
-      console.log("result (more than 32 empty bytes): ", result);
-      //   await expect(
-      //   ).toBeRevertedWith(
-      //     "LSP6Utils:getPermissionsFor: no permissions set for this address"
-      //   );
+      expect(result).toEqual(expectedEmptyPermission);
     });
 
     it("should revert when reading permissions stored as less than 32 empty bytes", async () => {
       const result = await keyManagerHelper.getAddressPermissions(
         lessThan32EmptyBytes.address
       );
-      console.log("result (less than 32 empty bytes): ", result);
-      //   await expect(
-      //   ).toBeRevertedWith(
-      //     "LSP6Utils:getPermissionsFor: no permissions set for this address"
-      //   );
+      expect(result).toEqual(expectedEmptyPermission);
     });
 
     it("should revert when reading permissions stored as one empty byte", async () => {
       const result = await keyManagerHelper.getAddressPermissions(
         oneEmptyByte.address
       );
-      console.log("result (one empty byte): ", result);
-
-      //   await expect().toBeRevertedWith(
-      //     "LSP6Utils:getPermissionsFor: no permissions set for this address"
-      //   );
+      expect(result).toEqual(expectedEmptyPermission);
     });
   });
 });
