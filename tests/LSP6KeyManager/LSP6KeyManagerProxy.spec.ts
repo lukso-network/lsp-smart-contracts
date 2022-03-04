@@ -38,6 +38,7 @@ import {
   NotAuthorisedError,
   NotAllowedAddressError,
   NotAllowedFunctionError,
+  NoPermissionsSetError,
 } from "../utils/helpers";
 
 describe("KeyManager + LSP3 Account as Proxies", () => {
@@ -1511,11 +1512,13 @@ describe("KeyManager + LSP3 Account as Proxies", () => {
         [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
       );
 
-      await expect(
-        proxyKeyManager.connect(accounts[6]).execute(executePayload)
-      ).toBeRevertedWith(
-        "LSP6Utils:getPermissionsFor: no permissions set for this address"
-      );
+      try {
+        await proxyKeyManager.connect(app).execute(executePayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NoPermissionsSetError(accounts[6].address)
+        );
+      }
     });
 
     it("Should revert if STATICCALL tries to change state", async () => {

@@ -1,5 +1,4 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { loadFixture } from "@nomiclabs/hardhat-waffle";
 import { ethers } from "hardhat";
 import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
 import { solidityKeccak256 } from "ethers/lib/utils";
@@ -36,6 +35,7 @@ import {
   NotAllowedAddressError,
   NotAllowedFunctionError,
   NotAllowedERC725YKeyError,
+  NoPermissionsSetError,
   EMPTY_PAYLOAD,
   DUMMY_PAYLOAD,
   DUMMY_PRIVATEKEY,
@@ -43,7 +43,6 @@ import {
   getRandomAddresses,
   generateKeysAndValues,
   getRandomString,
-  NoPermissionsSetError,
 } from "../utils/helpers";
 import { Signer } from "ethers";
 
