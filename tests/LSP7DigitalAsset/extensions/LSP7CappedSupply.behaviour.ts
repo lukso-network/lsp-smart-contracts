@@ -81,7 +81,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
             context.accounts.tokenReceiver.address,
             1
           )
-        ).toBeRevertedWith("LSP7CappedSupply: tokenSupplyCap reached");
+        ).toBeRevertedWith("LSP7CappedSupplyCannotMintOverCap()");
       });
 
       it("should allow minting after burning", async () => {

@@ -108,7 +108,6 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      * - caller must be current `tokenOwner` of `tokenId`.
-     * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      *
      * Emits an {AuthorizedOperator} event.
@@ -126,7 +125,6 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      * - caller must be current `tokenOwner` of `tokenId`.
-     * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      *
      * Emits a {RevokedOperator} event.
