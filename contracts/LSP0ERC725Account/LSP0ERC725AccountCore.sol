@@ -12,7 +12,6 @@ import "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 
 // libraries
-import "../Utils/UtilsLib.sol";
 import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -69,17 +68,17 @@ abstract contract LSP0ERC725AccountCore is
     {
         // prettier-ignore
         // if OWNER is a contract
-        if (UtilsLib.isContract(owner())) {
+        if (owner().code.length != 0) {
             return 
-                supportsInterface(_INTERFACE_ID_ERC1271)
+                supportsInterface(_INTERFACEID_ERC1271)
                     ? IERC1271(owner()).isValidSignature(_hash, _signature)
-                    : _ERC1271FAILVALUE;
+                    : _ERC1271_FAILVALUE;
         // if OWNER is a key
         } else {
             return 
                 owner() == ECDSA.recover(_hash, _signature)
-                    ? _INTERFACE_ID_ERC1271
-                    : _ERC1271FAILVALUE;
+                    ? _INTERFACEID_ERC1271
+                    : _ERC1271_FAILVALUE;
         }
     }
 
@@ -96,10 +95,7 @@ abstract contract LSP0ERC725AccountCore is
 
         // call external contract
         if (receiverData.length == 20) {
-            address universalReceiverAddress = BytesLib.toAddress(
-                receiverData,
-                0
-            );
+            address universalReceiverAddress = address(bytes20(receiverData));
 
             if (
                 ERC165(universalReceiverAddress).supportsInterface(

@@ -16,8 +16,8 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore, ERC725 {
      * @param _newOwner the owner of the contract
      */
     constructor(address _newOwner) ERC725(_newOwner) {
-        _registerInterface(_INTERFACE_ID_ERC725ACCOUNT);
-        _registerInterface(_INTERFACE_ID_ERC1271);
+        _registerInterface(_INTERFACEID_LSP0);
+        _registerInterface(_INTERFACEID_ERC1271);
         _registerInterface(_INTERFACEID_LSP1);
     }
 }

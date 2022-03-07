@@ -36,13 +36,19 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
     // --- Errors
 
     error LSP8NonExistentTokenId(bytes32 tokenId);
-    error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
+    error LSP8NotTokenOwner(
+        address tokenOwner,
+        bytes32 tokenId,
+        address caller
+    );
     error LSP8NotTokenOperator(bytes32 tokenId, address caller);
     error LSP8CannotUseAddressZeroAsOperator();
     error LSP8CannotSendToAddressZero();
     error LSP8TokenIdAlreadyMinted(bytes32 tokenId);
     error LSP8InvalidTransferBatch();
-    error LSP8NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
+    error LSP8NotifyTokenReceiverContractMissingLSP1Interface(
+        address tokenReceiver
+    );
     error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
 
     // --- Storage
@@ -241,9 +247,11 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         bool force,
         bytes[] memory data
     ) external virtual override {
-        if (from.length != to.length ||
-                from.length != tokenId.length ||
-                from.length != data.length) {
+        if (
+            from.length != to.length ||
+            from.length != tokenId.length ||
+            from.length != data.length
+        ) {
             revert LSP8InvalidTransferBatch();
         }
 
@@ -481,7 +489,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 packedData
             );
         } else if (!force) {
-            if (to.isContract()) {
+            if (to.code.length > 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP8NotifyTokenReceiverIsEOA(to);

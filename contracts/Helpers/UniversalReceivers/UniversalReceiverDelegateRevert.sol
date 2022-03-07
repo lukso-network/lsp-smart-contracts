@@ -5,7 +5,10 @@ import "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 import "../../LSP1UniversalReceiver/LSP1Constants.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract URDRevert is ILSP1UniversalReceiverDelegate, ERC165Storage {
+contract UniversalReceiverDelegateRevert is
+    ILSP1UniversalReceiverDelegate,
+    ERC165Storage
+{
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }

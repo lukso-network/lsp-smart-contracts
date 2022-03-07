@@ -4,13 +4,13 @@ pragma solidity ^0.8.6;
 // modules
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import "@erc725/smart-contracts/contracts/ERC725.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // interfaces
 import "./ILSP6KeyManager.sol";
 
 // libraries
-import "../Utils/LSP6Utils.sol";
+import "./LSP6Utils.sol";
 
 import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
@@ -56,7 +56,7 @@ error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
  * @author Fabian Vogelsteller, Jean Cavallera
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
+abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     using ERC725Utils for ERC725Y;
     using LSP2Utils for ERC725Y;
     using LSP6Utils for ERC725;
@@ -74,11 +74,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         public
         view
         virtual
-        override(ERC165Storage)
+        override
         returns (bool)
     {
         return
-            interfaceId == _INTERFACE_ID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP6 ||
+            interfaceId == _INTERFACEID_ERC1271 ||
             super.supportsInterface(interfaceId);
     }
 
@@ -108,8 +109,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
         return
             (_PERMISSION_SIGN & account.getPermissionsFor(recoveredAddress)) ==
                 _PERMISSION_SIGN
-                ? _INTERFACE_ID_ERC1271
-                : _ERC1271FAILVALUE;
+                ? _INTERFACEID_ERC1271
+                : _ERC1271_FAILVALUE;
     }
 
     /**
@@ -237,7 +238,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
             address to = address(bytes20(_data[48:68]));
             _verifyAllowedAddress(_from, to);
 
-            if (to.isContract()) {
+            if (to.code.length > 0) {
                 _verifyAllowedStandard(_from, to);
 
                 if (_data.length >= 168) {
@@ -329,7 +330,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     ) internal view {
         bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _ADDRESS_ALLOWEDERC725YKEYS,
+                _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX,
                 bytes20(_from)
             )
         );
@@ -458,7 +459,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165Storage {
     function _verifyAllowedStandard(address _from, address _to) internal view {
         bytes memory allowedStandards = ERC725Y(account).getDataSingle(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _ADDRESS_ALLOWEDSTANDARDS,
+                _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX,
                 bytes20(_from)
             )
         );

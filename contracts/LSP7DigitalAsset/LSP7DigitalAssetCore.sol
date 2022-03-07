@@ -29,12 +29,23 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
 
     // --- Errors
 
-    error LSP7AmountExceedsBalance(uint256 balance, address tokenOwner, uint256 amount);
-    error LSP7AmountExceedsAuthorizedAmount(address tokenOwner, uint256 authorizedAmount, address operator, uint256 amount);
+    error LSP7AmountExceedsBalance(
+        uint256 balance,
+        address tokenOwner,
+        uint256 amount
+    );
+    error LSP7AmountExceedsAuthorizedAmount(
+        address tokenOwner,
+        uint256 authorizedAmount,
+        address operator,
+        uint256 amount
+    );
     error LSP7CannotUseAddressZeroAsOperator();
     error LSP7CannotSendWithAddressZero();
     error LSP7InvalidTransferBatch();
-    error LSP7NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
+    error LSP7NotifyTokenReceiverContractMissingLSP1Interface(
+        address tokenReceiver
+    );
     error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
 
     // --- Storage
@@ -133,14 +144,15 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         if (operator != from) {
             uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
             if (amount > operatorAmount) {
-                revert LSP7AmountExceedsAuthorizedAmount(from, operatorAmount, operator, amount);
+                revert LSP7AmountExceedsAuthorizedAmount(
+                    from,
+                    operatorAmount,
+                    operator,
+                    amount
+                );
             }
 
-            _updateOperator(
-                from,
-                operator,
-                operatorAmount - amount
-            );
+            _updateOperator(from, operator, operatorAmount - amount);
         }
 
         _transfer(from, to, amount, force, data);
@@ -156,9 +168,11 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes[] memory data
     ) external virtual override {
-        if (from.length != to.length ||
-                from.length != amount.length ||
-                from.length != data.length) {
+        if (
+            from.length != to.length ||
+            from.length != amount.length ||
+            from.length != data.length
+        ) {
             revert LSP7InvalidTransferBatch();
         }
 
@@ -219,7 +233,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual {
-        if (to == address(0)){
+        if (to == address(0)) {
             revert LSP7CannotSendWithAddressZero();
         }
 
@@ -262,9 +276,16 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
 
         address operator = _msgSender();
         if (operator != from) {
-            uint256 authorizedAmount = _operatorAuthorizedAmount[from][operator];
+            uint256 authorizedAmount = _operatorAuthorizedAmount[from][
+                operator
+            ];
             if (amount > authorizedAmount) {
-                revert LSP7AmountExceedsAuthorizedAmount(from, authorizedAmount, operator, amount);
+                revert LSP7AmountExceedsAuthorizedAmount(
+                    from,
+                    authorizedAmount,
+                    operator,
+                    amount
+                );
             }
             _operatorAuthorizedAmount[from][operator] -= amount;
         }
@@ -393,7 +414,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
                 packedData
             );
         } else if (!force) {
-            if (to.isContract()) {
+            if (to.code.length > 0) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP7NotifyTokenReceiverIsEOA(to);

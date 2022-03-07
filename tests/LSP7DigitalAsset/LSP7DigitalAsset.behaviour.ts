@@ -1,5 +1,9 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { BigNumber } from "ethers";
+import type { TransactionResponse } from "@ethersproject/abstract-provider";
+
+// types
 import {
   LSP7Tester,
   LSP7DigitalAsset,
@@ -8,10 +12,9 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
-import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
-import type { BigNumber } from "ethers";
-import type { TransactionResponse } from "@ethersproject/abstract-provider";
+// helpers
+import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
