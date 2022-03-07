@@ -19,7 +19,10 @@ abstract contract LSP7CappedSupplyInitAbstract is
         virtual
         onlyInitializing
     {
-        require(tokenSupplyCap_ > 0, "LSP7Capped: tokenSupplyCap is zero");
+        if (tokenSupplyCap_ == 0) {
+            revert LSP7CappedSupplyRequired();
+        }
+
         _tokenSupplyCap = tokenSupplyCap_;
     }
 

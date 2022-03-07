@@ -15,10 +15,10 @@ abstract contract LSP7CappedSupply is LSP7CappedSupplyCore, LSP7DigitalAsset {
      * @param tokenSupplyCap_ The Token max supply
      */
     constructor(uint256 tokenSupplyCap_) {
-        require(
-            tokenSupplyCap_ > 0,
-            "LSP7CappedSupply: tokenSupplyCap is zero"
-        );
+        if (tokenSupplyCap_ == 0) {
+            revert LSP7CappedSupplyRequired();
+        }
+
         _tokenSupplyCap = tokenSupplyCap_;
     }
 

@@ -10,45 +10,6 @@
 
 ## Methods
 
-### allDataKeys
-
-```solidity
-function allDataKeys() external view returns (bytes32[])
-```
-
-
-
-*Returns all the keys set on the account*
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | bytes32[] | The array of keys set on the account
-
-### dataKeys
-
-```solidity
-function dataKeys(uint256) external view returns (bytes32)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | bytes32 | undefined
-
 ### execute
 
 ```solidity
@@ -171,7 +132,7 @@ function setData(bytes32[] _keys, bytes[] _values) external nonpayable
 
 
 
-*Sets array of data at multiple given `key` Push all the keys to the `dataKeys` array SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
+*Sets array of data at multiple given `key` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.*
 
 #### Parameters
 
