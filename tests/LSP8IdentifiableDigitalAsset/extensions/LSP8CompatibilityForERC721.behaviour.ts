@@ -133,7 +133,9 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       it("should revert", async () => {
         await expect(
           context.lsp8CompatibilityForERC721.ownerOf(neverMintedTokenId)
-        ).toBeRevertedWith("LSP8: can not query non existent token");
+        ).toBeRevertedWith(
+          `LSP8NonExistentTokenId("${tokenIdAsBytes32(neverMintedTokenId)}")`
+        );
       });
     });
 
@@ -159,7 +161,9 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
           context.lsp8CompatibilityForERC721
             .connect(context.accounts.anyone)
             .approve(context.accounts.operator.address, neverMintedTokenId)
-        ).toBeRevertedWith("LSP8: can not query non existent token");
+        ).toBeRevertedWith(
+          `LSP8NonExistentTokenId("${tokenIdAsBytes32(neverMintedTokenId)}")`
+        );
       });
     });
 
@@ -179,7 +183,11 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
               .connect(context.accounts.anyone)
               .approve(context.accounts.operator.address, mintedTokenId)
           ).toBeRevertedWith(
-            "LSP8: caller can not authorize operator for token id"
+            `LSP8NotTokenOwner("${
+              context.accounts.owner.address
+            }", "${tokenIdAsBytes32(mintedTokenId)}", "${
+              context.accounts.anyone.address
+            }")`
           );
         });
       });
@@ -224,7 +232,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
 
             await expect(
               context.lsp8CompatibilityForERC721.approve(operator, tokenId)
-            ).toBeRevertedWith("LSP8: can not authorize zero address");
+            ).toBeRevertedWith("LSP8CannotUseAddressZeroAsOperator()");
           });
         });
       });
@@ -254,7 +262,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
         await expect(
           context.lsp8CompatibilityForERC721.getApproved(neverMintedTokenId)
         ).toBeRevertedWith(
-          "LSP8: can not query operator for non existent token"
+          `LSP8NonExistentTokenId("${tokenIdAsBytes32(neverMintedTokenId)}")`
         );
       });
     });
@@ -510,9 +518,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
     describe("transferFrom", () => {
       const transferFn = "transferFrom";
       const force = true;
-      const expectedData = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes("compat-transferFrom")
-      );
+      const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(""));
 
       describe("when the from address is the tokenId owner", () => {
         describe("when `to` is an EOA", () => {
@@ -575,13 +581,14 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       describe("when the from address is not the tokenId owner", () => {
         it("should revert", async () => {
           const txParams = {
-            operator: context.accounts.anyone.address,
+            operator: context.accounts.owner.address,
             from: context.accounts.anyone.address,
             to: deployedContracts.tokenReceiverWithoutLSP1.address,
             tokenId: mintedTokenId,
           };
-          const expectedError =
-            "LSP8: transfer of tokenId from incorrect owner";
+          const expectedError = `LSP8NotTokenOwner("${
+            context.accounts.owner.address
+          }", "${tokenIdAsBytes32(txParams.tokenId)}", "${txParams.from}")`;
 
           await transferFailScenario(txParams, transferFn, expectedError);
         });
@@ -591,9 +598,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
     describe("safeTransferFrom(address,address,uint256)", () => {
       const transferFn = "safeTransferFrom(address,address,uint256)";
       const force = false;
-      const expectedData = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes("compat-safeTransferFrom")
-      );
+      const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(""));
 
       describe("when the from address is the tokenId owner", () => {
         describe("when `to` is an EOA", () => {
@@ -604,7 +609,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
               to: context.accounts.tokenReceiver.address,
               tokenId: mintedTokenId,
             };
-            const expectedError = "LSP8: token receiver is EOA";
+            const expectedError = `LSP8NotifyTokenReceiverIsEOA("${txParams.to}")`;
 
             await transferFailScenario(txParams, transferFn, expectedError);
           });
@@ -637,8 +642,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
                 to: deployedContracts.tokenReceiverWithoutLSP1.address,
                 tokenId: mintedTokenId,
               };
-              const expectedError =
-                "LSP8: token receiver contract missing LSP1 interface";
+              const expectedError = `LSP8NotifyTokenReceiverContractMissingLSP1Interface("${txParams.to}")`;
 
               await transferFailScenario(txParams, transferFn, expectedError);
             });
@@ -649,13 +653,15 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       describe("when the from address is not the tokenId owner", () => {
         it("should revert", async () => {
           const txParams = {
-            operator: context.accounts.anyone.address,
+            operator: context.accounts.owner.address,
             from: context.accounts.anyone.address,
             to: deployedContracts.tokenReceiverWithoutLSP1.address,
             tokenId: mintedTokenId,
           };
-          const expectedError =
-            "LSP8: transfer of tokenId from incorrect owner";
+
+          const expectedError = `LSP8NotTokenOwner("${
+            context.accounts.owner.address
+          }", "${tokenIdAsBytes32(txParams.tokenId)}", "${txParams.from}")`;
 
           await transferFailScenario(txParams, transferFn, expectedError);
         });
@@ -679,7 +685,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
               tokenId: mintedTokenId,
               data: expectedData,
             };
-            const expectedError = "LSP8: token receiver is EOA";
+            const expectedError = `LSP8NotifyTokenReceiverIsEOA("${txParams.to}")`;
 
             await transferFailScenario(txParams, transferFn, expectedError);
           });
@@ -714,8 +720,7 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
                 tokenId: mintedTokenId,
                 data: expectedData,
               };
-              const expectedError =
-                "LSP8: token receiver contract missing LSP1 interface";
+              const expectedError = `LSP8NotifyTokenReceiverContractMissingLSP1Interface("${txParams.to}")`;
 
               await transferFailScenario(txParams, transferFn, expectedError);
             });
@@ -726,14 +731,15 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       describe("when the from address is not the tokenId owner", () => {
         it("should revert", async () => {
           const txParams = {
-            operator: context.accounts.anyone.address,
+            operator: context.accounts.owner.address,
             from: context.accounts.anyone.address,
             to: deployedContracts.tokenReceiverWithoutLSP1.address,
             tokenId: mintedTokenId,
             data: expectedData,
           };
-          const expectedError =
-            "LSP8: transfer of tokenId from incorrect owner";
+          const expectedError = `LSP8NotTokenOwner("${
+            context.accounts.owner.address
+          }", "${tokenIdAsBytes32(txParams.tokenId)}", "${txParams.from}")`;
 
           await transferFailScenario(txParams, transferFn, expectedError);
         });

@@ -88,7 +88,6 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *
      * Requirements
      *
-     * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      *
      * Emits an {AuthorizedOperator} event.
@@ -103,7 +102,6 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      *
      * Requirements
      *
-     * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      *
      * Emits a {RevokedOperator} event.
