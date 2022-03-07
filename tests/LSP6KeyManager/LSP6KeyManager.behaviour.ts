@@ -41,85 +41,73 @@ export const shouldBehaveLikeLSP6 = (
       .transferOwnership(context.keyManager.address);
   };
 
-  describe("SIGN (ERC1271)", () => {
-    let signer, nonSigner, noPermissionsSet;
-    const dataToSign = "0xcafecafe";
+  describe("CHANGE / ADD permissions", () => {
+    let canOnlyAddPermissions: SignerWithAddress,
+      canOnlyChangePermissions: SignerWithAddress,
+      // address being used to edit the permissions
+      addressToEditPermissions: SignerWithAddress;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       context = await buildContext();
 
-      signer = context.accounts[1];
-      nonSigner = context.accounts[2];
-      noPermissionsSet = context.accounts[3];
+      canOnlyAddPermissions = context.accounts[1];
+      canOnlyChangePermissions = context.accounts[2];
+      addressToEditPermissions = context.accounts[3];
 
-      /** @todo put all of this in a fixture to setUpKeyManager(...) */
-      const permissionsKeys = [
+      const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          signer.address.substring(2),
+          canOnlyAddPermissions.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          nonSigner.address.substring(2),
+          canOnlyChangePermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          addressToEditPermissions.address.substring(2),
       ];
 
       const permissionsValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        // placeholder permission
+        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
       ];
 
-      await setupKeyManager(permissionsKeys, permissionsValues);
+      await setupKeyManager(permissionKeys, permissionsValues);
     });
 
-    it("can verify signature from owner on KeyManager", async () => {
-      const messageHash = ethers.utils.hashMessage(dataToSign);
-      const signature = await context.owner.signMessage(dataToSign);
+    describe("when setting one permission key", () => {
+      describe("when caller is UP owner", () => {
+        it("should be allowed to ADD permissions", async () => {
+          let newController = new ethers.Wallet.createRandom();
 
-      const result = await context.keyManager.callStatic.isValidSignature(
-        messageHash,
-        signature
-      );
-      expect(result).toEqual(ERC1271.MAGIC_VALUE);
-    });
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            newController.address.substr(2);
 
-    it("can verify signature from signer on KeyManager", async () => {
-      const messageHash = ethers.utils.hashMessage(dataToSign);
-      const signature = await signer.signMessage(dataToSign);
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)]]
+          );
 
-      const result = await context.keyManager.callStatic.isValidSignature(
-        messageHash,
-        signature
-      );
-      expect(result).toEqual(ERC1271.MAGIC_VALUE);
-    });
+          await context.keyManager.connect(context.owner).execute(payload);
 
-    it("should fail when verifying signature from address with no SIGN permission", async () => {
-      const messageHash = ethers.utils.hashMessage(dataToSign);
-      const signature = await nonSigner.signMessage(dataToSign);
-
-      const result = await context.keyManager.callStatic.isValidSignature(
-        messageHash,
-        signature
-      );
-      expect(result).toEqual(ERC1271.FAIL_VALUE);
-    });
-
-    it("should fail when verifying signature from address with no permissions set", async () => {
-      const messageHash = ethers.utils.hashMessage(dataToSign);
-      const signature = await noPermissionsSet.signMessage(dataToSign);
-
-      const result = await context.keyManager.callStatic.isValidSignature(
-        messageHash,
-        signature
-      );
-      expect(result).toEqual(ERC1271.FAIL_VALUE);
+          const [result] = await context.universalProfile.callStatic.getData([
+            key,
+          ]);
+          expect(result).toEqual(
+            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
+          );
+        });
+      });
     });
   });
 
   describe("TRANSFERVALUE", () => {
     let provider = ethers.provider;
 
-    let canTransferValue, cannotTransferValue;
+    let canTransferValue: SignerWithAddress,
+      cannotTransferValue: SignerWithAddress;
 
     beforeAll(async () => {
       context = await buildContext();
@@ -245,6 +233,80 @@ export const shouldBehaveLikeLSP6 = (
       expect(parseInt(initialBalanceRecipient)).toBe(
         parseInt(newBalanceRecipient)
       );
+    });
+  });
+
+  describe("SIGN (ERC1271)", () => {
+    let signer, nonSigner, noPermissionsSet;
+    const dataToSign = "0xcafecafe";
+
+    beforeAll(async () => {
+      context = await buildContext();
+
+      signer = context.accounts[1];
+      nonSigner = context.accounts[2];
+      noPermissionsSet = context.accounts[3];
+
+      const permissionsKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          signer.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          nonSigner.address.substring(2),
+      ];
+
+      const permissionsValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      ];
+
+      await setupKeyManager(permissionsKeys, permissionsValues);
+    });
+
+    it("can verify signature from owner on KeyManager", async () => {
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await context.owner.signMessage(dataToSign);
+
+      const result = await context.keyManager.callStatic.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).toEqual(ERC1271.MAGIC_VALUE);
+    });
+
+    it("can verify signature from signer on KeyManager", async () => {
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await signer.signMessage(dataToSign);
+
+      const result = await context.keyManager.callStatic.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).toEqual(ERC1271.MAGIC_VALUE);
+    });
+
+    it("should fail when verifying signature from address with no SIGN permission", async () => {
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await nonSigner.signMessage(dataToSign);
+
+      const result = await context.keyManager.callStatic.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).toEqual(ERC1271.FAIL_VALUE);
+    });
+
+    it("should fail when verifying signature from address with no permissions set", async () => {
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await noPermissionsSet.signMessage(dataToSign);
+
+      const result = await context.keyManager.callStatic.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).toEqual(ERC1271.FAIL_VALUE);
     });
   });
 };

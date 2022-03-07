@@ -423,12 +423,12 @@ describe("KeyManager", () => {
     expect(owner).toEqual(keyManager.address);
   });
 
-  it("Should support LSP6", async () => {
-    let result = await keyManager.callStatic.supportsInterface(
-      INTERFACE_IDS.LSP6
-    );
-    expect(result).toBeTruthy();
-  });
+  // it("Should support LSP6", async () => {
+  //   let result = await keyManager.callStatic.supportsInterface(
+  //     INTERFACE_IDS.LSP6
+  //   );
+  //   expect(result).toBeTruthy();
+  // });
 
   describe("> Verifying permissions", () => {
     it("ensures owner is still universalProfile's admin (=all permissions)", async () => {
@@ -2053,8 +2053,13 @@ describe("CHANGE / ADD PERMISSIONS", () => {
     owner = accounts[0];
     canOnlyAddPermissions = accounts[1];
     canOnlyChangePermissions = accounts[2];
+    /** @todo rename this variable to addressToEditPermissions */
     bob = accounts[3];
     zeroBytes = accounts[4];
+    /**
+     * @todo should test that an address with only the permisssion SETDATA
+     * cannot edit permissions
+     */
 
     universalProfile = await new UniversalProfile__factory(owner).deploy(
       owner.address
