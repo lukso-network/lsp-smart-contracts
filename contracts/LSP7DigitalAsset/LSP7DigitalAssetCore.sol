@@ -27,6 +27,16 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     using Address for address;
 
+    // --- Errors
+
+    error LSP7AmountExceedsBalance(uint256 balance, address tokenOwner, uint256 amount);
+    error LSP7AmountExceedsAuthorizedAmount(address tokenOwner, uint256 authorizedAmount, address operator, uint256 amount);
+    error LSP7CannotUseAddressZeroAsOperator();
+    error LSP7CannotSendWithAddressZero();
+    error LSP7InvalidTransferBatch();
+    error LSP7NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
+    error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
+
     // --- Storage
 
     bool internal _isNFT;
@@ -122,14 +132,14 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         address operator = _msgSender();
         if (operator != from) {
             uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
-            require(
-                operatorAmount >= amount,
-                "LSP7: transfer amount exceeds operator authorized amount"
-            );
+            if (amount > operatorAmount) {
+                revert LSP7AmountExceedsAuthorizedAmount(from, operatorAmount, operator, amount);
+            }
+
             _updateOperator(
                 from,
                 operator,
-                _operatorAuthorizedAmount[from][operator] - amount
+                operatorAmount - amount
             );
         }
 
@@ -146,12 +156,11 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes[] memory data
     ) external virtual override {
-        require(
-            from.length == to.length &&
-                from.length == amount.length &&
-                from.length == data.length,
-            "LSP7: transferBatch list length mismatch"
-        );
+        if (from.length != to.length ||
+                from.length != amount.length ||
+                from.length != data.length) {
+            revert LSP7InvalidTransferBatch();
+        }
 
         for (uint256 i = 0; i < from.length; i++) {
             // using the public transfer function to handle updates to operator authorized amounts
@@ -170,7 +179,6 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
      *
      * Requirements
      *
-     * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      */
     function _updateOperator(
@@ -178,18 +186,14 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         address operator,
         uint256 amount
     ) internal virtual {
-        require(
-            operator != tokenOwner,
-            "LSP7: updating operator failed, can not use token owner as operator"
-        );
-        require(
-            operator != address(0),
-            "LSP7: updating operator failed, operator can not be zero address"
-        );
-        require(
-            tokenOwner != address(0),
-            "LSP7: updating operator failed, can not set operator for zero address"
-        );
+        if (operator == address(0)) {
+            revert LSP7CannotUseAddressZeroAsOperator();
+        }
+
+        // tokenOwner is always their own operator, no update required
+        if (operator == tokenOwner) {
+            return;
+        }
 
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
 
@@ -215,7 +219,9 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual {
-        require(to != address(0), "LSP7: mint to the zero address not allowed");
+        if (to == address(0)){
+            revert LSP7CannotSendWithAddressZero();
+        }
 
         address operator = _msgSender();
 
@@ -245,18 +251,21 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         uint256 amount,
         bytes memory data
     ) internal virtual {
-        require(from != address(0), "LSP7: burn from the zero address");
-        require(
-            _tokenOwnerBalances[from] >= amount,
-            "LSP7: burn amount exceeds tokenOwner balance"
-        );
+        if (from == address(0)) {
+            revert LSP7CannotSendWithAddressZero();
+        }
+
+        uint256 balance = _tokenOwnerBalances[from];
+        if (amount > balance) {
+            revert LSP7AmountExceedsBalance(balance, from, amount);
+        }
 
         address operator = _msgSender();
         if (operator != from) {
-            require(
-                _operatorAuthorizedAmount[from][operator] >= amount,
-                "LSP7: burn amount exceeds operator authorized amount"
-            );
+            uint256 authorizedAmount = _operatorAuthorizedAmount[from][operator];
+            if (amount > authorizedAmount) {
+                revert LSP7AmountExceedsAuthorizedAmount(from, authorizedAmount, operator, amount);
+            }
             _operatorAuthorizedAmount[from][operator] -= amount;
         }
 
@@ -289,12 +298,14 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual {
-        require(from != address(0), "LSP7: transfer from the zero address");
-        require(to != address(0), "LSP7: transfer to the zero address");
-        require(
-            _tokenOwnerBalances[from] >= amount,
-            "LSP7: transfer amount exceeds tokenOwner balance"
-        );
+        if (from == address(0) || to == address(0)) {
+            revert LSP7CannotSendWithAddressZero();
+        }
+
+        uint256 balance = _tokenOwnerBalances[from];
+        if (amount > balance) {
+            revert LSP7AmountExceedsBalance(balance, from, amount);
+        }
 
         address operator = _msgSender();
 
@@ -383,9 +394,9 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
             );
         } else if (!force) {
             if (to.isContract()) {
-                revert("LSP7: token receiver contract missing LSP1 interface");
+                revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
-                revert("LSP7: token receiver is EOA");
+                revert LSP7NotifyTokenReceiverIsEOA(to);
             }
         }
     }

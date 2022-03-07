@@ -6,6 +6,7 @@ import "@nomiclabs/hardhat-web3";
 import "@typechain/hardhat";
 import "@primitivefi/hardhat-dodoc";
 import "hardhat-packager";
+import "hardhat-contract-sizer";
 
 import "hardhat-deploy";
 
