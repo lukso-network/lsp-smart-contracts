@@ -27,7 +27,7 @@ describe("LSP6KeyManager", () => {
         universalProfile.address
       );
 
-      return { owner, universalProfile, keyManager };
+      return { accounts, owner, universalProfile, keyManager };
     };
 
     describe("when deploying the contract", () => {
@@ -63,7 +63,7 @@ describe("LSP6KeyManager", () => {
       const kmProxy = await deployProxy(baseKM.address, owner);
       const keyManager = await baseKM.attach(kmProxy);
 
-      return { owner, universalProfile, keyManager };
+      return { accounts, owner, universalProfile, keyManager };
     };
 
     const initializeProxy = async (context: LSP6TestContext) => {
