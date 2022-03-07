@@ -18,10 +18,10 @@ abstract contract LSP8CappedSupply is
      * @param tokenSupplyCap_ The Token max supply
      */
     constructor(uint256 tokenSupplyCap_) {
-        require(
-            tokenSupplyCap_ > 0,
-            "LSP8CappedSupply: tokenSupplyCap is zero"
-        );
+        if (tokenSupplyCap_ == 0) {
+            revert LSP8CappedSupplyRequired();
+        }
+
         _tokenSupplyCap = tokenSupplyCap_;
     }
 

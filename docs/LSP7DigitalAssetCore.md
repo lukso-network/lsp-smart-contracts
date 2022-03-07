@@ -18,7 +18,7 @@ function authorizeOperator(address operator, uint256 amount) external nonpayable
 
 
 
-*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
 
 #### Parameters
 
@@ -119,7 +119,7 @@ function revokeOperator(address operator) external nonpayable
 
 
 
-*Removes `operator` address as an operator of callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
+*Removes `operator` address as an operator of callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 
@@ -300,5 +300,110 @@ event Transfer(address indexed operator, address indexed from, address indexed t
 | force  | bool | undefined |
 | data  | bytes | undefined |
 
+
+
+## Events
+
+### LSP7AmountExceedsAuthorizedAmount
+
+```solidity
+error LSP7AmountExceedsAuthorizedAmount(address tokenOwner, uint256 authorizedAmount, address operator, uint256 amount)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenOwner | address | undefined |
+| authorizedAmount | uint256 | undefined |
+| operator | address | undefined |
+| amount | uint256 | undefined |
+
+### LSP7AmountExceedsBalance
+
+```solidity
+error LSP7AmountExceedsBalance(uint256 balance, address tokenOwner, uint256 amount)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| balance | uint256 | undefined |
+| tokenOwner | address | undefined |
+| amount | uint256 | undefined |
+
+### LSP7CannotSendWithAddressZero
+
+```solidity
+error LSP7CannotSendWithAddressZero()
+```
+
+
+
+
+
+
+### LSP7CannotUseAddressZeroAsOperator
+
+```solidity
+error LSP7CannotUseAddressZeroAsOperator()
+```
+
+
+
+
+
+
+### LSP7InvalidTransferBatch
+
+```solidity
+error LSP7InvalidTransferBatch()
+```
+
+
+
+
+
+
+### LSP7NotifyTokenReceiverContractMissingLSP1Interface
+
+```solidity
+error LSP7NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenReceiver | address | undefined |
+
+### LSP7NotifyTokenReceiverIsEOA
+
+```solidity
+error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenReceiver | address | undefined |
 
 

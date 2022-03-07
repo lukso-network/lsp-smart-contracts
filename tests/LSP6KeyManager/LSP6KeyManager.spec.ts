@@ -43,7 +43,6 @@ import {
   ONE_ETH,
   getRandomAddresses,
   generateKeysAndValues,
-  RANDOM_BYTES32,
   getRandomString,
 } from "../utils/helpers";
 import { Signer } from "ethers";
@@ -418,6 +417,11 @@ describe("KeyManager", () => {
       to: universalProfile.address,
       value: ethers.utils.parseEther("10"),
     });
+  });
+
+  it("Universal Profile's owner should be the Key Manager", async () => {
+    const owner = await universalProfile.owner();
+    expect(owner).toEqual(keyManager.address);
   });
 
   it("Should support LSP6", async () => {
@@ -4624,5 +4628,92 @@ describe("ALLOWEDERC725YKEYS", () => {
         });
       });
     });
+  });
+});
+
+describe("SIGN (ERC1271)", () => {
+  let provider = ethers.provider;
+  let accounts: SignerWithAddress[] = [];
+
+  let keyManager: LSP6KeyManager;
+  let UniversalProfile: UniversalProfile;
+  let owner: SignerWithAddress;
+  let signer: SignerWithAddress;
+  let thirdParty: SignerWithAddress;
+
+  beforeAll(async () => {
+    accounts = await ethers.getSigners();
+
+    owner = accounts[6];
+    signer = accounts[7];
+    thirdParty = accounts[8];
+    UniversalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+    keyManager = await new LSP6KeyManager__factory(owner).deploy(
+      UniversalProfile.address
+    );
+
+    // give all permissions to owner
+    await UniversalProfile.connect(owner).setData(
+      [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          owner.address.substr(2),
+      ],
+      [ALL_PERMISSIONS_SET]
+    );
+
+    // give SIGN permission to signer
+    await UniversalProfile.connect(owner).setData(
+      [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          signer.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          thirdParty.address.substring(2),
+      ],
+      [
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+        // give CALL permission to non-signer
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      ]
+    );
+
+    await UniversalProfile.connect(owner).transferOwnership(keyManager.address);
+  });
+
+  it("Can verify signature from owner on KeyManager", async () => {
+    const dataToSign = "0xcafecafe";
+    const messageHash = ethers.utils.hashMessage(dataToSign);
+    const signature = await owner.signMessage(dataToSign);
+
+    const result = await keyManager.callStatic.isValidSignature(
+      messageHash,
+      signature
+    );
+    expect(result).toEqual(ERC1271.MAGIC_VALUE);
+  });
+
+  it("Can verify signature from signer on KeyManager", async () => {
+    const dataToSign = "0xbeefbeef";
+    const messageHash = ethers.utils.hashMessage(dataToSign);
+    const signature = await signer.signMessage(dataToSign);
+
+    const result = await keyManager.callStatic.isValidSignature(
+      messageHash,
+      signature
+    );
+    expect(result).toEqual(ERC1271.MAGIC_VALUE);
+  });
+
+  it("Should fail when verifying signature from address with no SIGN permission", async () => {
+    const dataToSign = "0xabcdabcd";
+    const messageHash = ethers.utils.hashMessage(dataToSign);
+    const signature = await thirdParty.signMessage(dataToSign);
+
+    const result = await keyManager.callStatic.isValidSignature(
+      messageHash,
+      signature
+    );
+    expect(result).toEqual(ERC1271.FAIL_VALUE);
   });
 });

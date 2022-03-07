@@ -6,7 +6,7 @@ import "../../LSP1UniversalReceiver/LSP1Constants.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
-contract URDVaultSetter is ERC165Storage {
+contract UniversalReceiverDelegateVaultSetter is ERC165Storage {
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }

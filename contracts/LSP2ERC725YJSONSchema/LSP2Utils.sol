@@ -9,6 +9,18 @@ pragma solidity ^0.8.0;
  */
 library LSP2Utils {
     /* solhint-disable no-inline-assembly */
+
+    function generateBytes32Key(bytes memory _rawKey)
+        internal
+        pure
+        returns (bytes32 key)
+    {
+        // solhint-disable-next-line
+        assembly {
+            key := mload(add(_rawKey, 32))
+        }
+    }
+
     function generateSingletonKey(string memory _keyName)
         internal
         pure
@@ -34,10 +46,22 @@ library LSP2Utils {
         return keccak256(keyName);
     }
 
+    function generateArrayKeyAtIndex(bytes32 _arrayKey, uint256 _index)
+        internal
+        pure
+        returns (bytes32)
+    {
+        bytes memory elementInArray = abi.encodePacked(
+            bytes16(_arrayKey),
+            bytes16(uint128(_index))
+        );
+        return generateBytes32Key(elementInArray);
+    }
+
     function generateMappingKey(
         string memory _firstWord,
         string memory _lastWord
-    ) internal pure returns (bytes32 key_) {
+    ) internal pure returns (bytes32) {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
         bytes32 lastWordHash = keccak256(bytes(_lastWord));
 
@@ -47,15 +71,13 @@ library LSP2Utils {
             bytes4(lastWordHash)
         );
 
-        assembly {
-            key_ := mload(add(temporaryBytes, 32))
-        }
+        return generateBytes32Key(temporaryBytes);
     }
 
     function generateBytes20MappingKey(
         string memory _firstWord,
         address _address
-    ) internal pure returns (bytes32 key_) {
+    ) internal pure returns (bytes32) {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
 
         bytes memory temporaryBytes = abi.encodePacked(
@@ -64,16 +86,14 @@ library LSP2Utils {
             _address
         );
 
-        assembly {
-            key_ := mload(add(temporaryBytes, 32))
-        }
+        return generateBytes32Key(temporaryBytes);
     }
 
     function generateBytes20MappingWithGroupingKey(
         string memory _firstWord,
         string memory _secondWord,
         address _address
-    ) internal pure returns (bytes32 key_) {
+    ) internal pure returns (bytes32) {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
         bytes32 secondWordHash = keccak256(bytes(_secondWord));
 
@@ -85,9 +105,7 @@ library LSP2Utils {
             _address
         );
 
-        assembly {
-            key_ := mload(add(temporaryBytes, 32))
-        }
+        return generateBytes32Key(temporaryBytes);
     }
 
     function generateBytes20MappingWithGroupingKey(
@@ -95,12 +113,7 @@ library LSP2Utils {
         bytes20 _bytes20
     ) internal pure returns (bytes32) {
         bytes memory generatedKey = bytes.concat(_keyPrefix, _bytes20);
-        bytes32 toBytes32Key;
-        // solhint-disable-next-line
-        assembly {
-            toBytes32Key := mload(add(generatedKey, 32))
-        }
-        return toBytes32Key;
+        return generateBytes32Key(generatedKey);
     }
 
     function generateJSONURLValue(

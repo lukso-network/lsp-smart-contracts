@@ -1,5 +1,9 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { BytesLike } from "ethers";
+import type { TransactionResponse } from "@ethersproject/abstract-provider";
+
+// types
 import {
   LSP8IdentifiableDigitalAsset,
   LSP8Tester,
@@ -8,11 +12,12 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
-import { tokenIdAsBytes32 } from "../utils/tokens";
-import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
-import type { BytesLike } from "ethers";
-import type { TransactionResponse } from "@ethersproject/abstract-provider";
+// helpers
+import { tokenIdAsBytes32 } from "../utils/tokens";
+
+// constants
+import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
 export type LSP8TestAccounts = {
   owner: SignerWithAddress;
@@ -76,7 +81,7 @@ export const shouldBehaveLikeLSP8 = (
             txParams.force,
             txParams.data
           )
-        ).toBeRevertedWith("LSP8: tokenId already minted");
+        ).toBeRevertedWith(`LSP8TokenIdAlreadyMinted("${txParams.tokenId}")`);
       });
     });
 
@@ -99,7 +104,7 @@ export const shouldBehaveLikeLSP8 = (
               txParams.force,
               txParams.data
             )
-          ).toBeRevertedWith("LSP8: can not mint to zero address");
+          ).toBeRevertedWith("LSP8CannotSendToAddressZero()");
         });
       });
 
@@ -169,7 +174,7 @@ export const shouldBehaveLikeLSP8 = (
         it("should revert", async () => {
           await expect(
             context.lsp8.tokenOwnerOf(neverMintedTokenId)
-          ).toBeRevertedWith("LSP8: can not query non existent token");
+          ).toBeRevertedWith(`LSP8NonExistentTokenId("${neverMintedTokenId}")`);
         });
       });
 
@@ -198,14 +203,6 @@ export const shouldBehaveLikeLSP8 = (
           ).toEqual([]);
         });
       });
-
-      describe("when the given address is the zero address", () => {
-        it("should revert", async () => {
-          await expect(
-            context.lsp8.tokenIdsOf(ethers.constants.AddressZero)
-          ).toBeRevertedWith("LSP8: can not query token for zero address");
-        });
-      });
     });
 
     describe("authorizeOperator", () => {
@@ -216,7 +213,7 @@ export const shouldBehaveLikeLSP8 = (
               context.accounts.operator.address,
               neverMintedTokenId
             )
-          ).toBeRevertedWith("LSP8: can not query non existent token");
+          ).toBeRevertedWith(`LSP8NonExistentTokenId("${neverMintedTokenId}")`);
         });
       });
 
@@ -230,31 +227,45 @@ export const shouldBehaveLikeLSP8 = (
                 mintedTokenId
               )
           ).toBeRevertedWith(
-            "LSP8: caller can not authorize operator for token id"
+            `LSP8NotTokenOwner("${context.accounts.owner.address}", "${mintedTokenId}", "${context.accounts.anyone.address}")`
           );
         });
       });
 
       describe("when caller is owner of tokenId", () => {
-        describe("when given operator is the tokenOwner", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8.authorizeOperator(
-                context.accounts.owner.address,
-                mintedTokenId
-              )
-            ).toBeRevertedWith(
-              "LSP8: can not authorize token owner as operator"
+        describe("when operator is not the zero address", () => {
+          it("should succeed", async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = mintedTokenId;
+
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId);
+
+            await expect(tx).toHaveEmittedWith(
+              context.lsp8,
+              "AuthorizedOperator",
+              [operator, tokenOwner, tokenId]
+            );
+
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(
+              true
             );
           });
-        });
 
-        describe("when given operator is different than tokenOwner", () => {
-          describe("when operator is not the zero address", () => {
+          describe("when operator is already authorized", () => {
+            beforeEach(async () => {
+              await context.lsp8.authorizeOperator(
+                context.accounts.operator.address,
+                mintedTokenId
+              );
+            });
+
             it("should succeed", async () => {
               const operator = context.accounts.operator.address;
               const tokenOwner = context.accounts.owner.address;
               const tokenId = mintedTokenId;
+
+              await context.lsp8.authorizeOperator(operator, tokenId);
 
               const tx = await context.lsp8.authorizeOperator(
                 operator,
@@ -271,48 +282,16 @@ export const shouldBehaveLikeLSP8 = (
                 await context.lsp8.isOperatorFor(operator, tokenId)
               ).toEqual(true);
             });
+          });
 
-            describe("when operator is already authorized", () => {
-              beforeEach(async () => {
-                await context.lsp8.authorizeOperator(
-                  context.accounts.operator.address,
-                  mintedTokenId
-                );
-              });
+          describe("when operator is the zero address", () => {
+            it("should revert", async () => {
+              const operator = ethers.constants.AddressZero;
+              const tokenId = mintedTokenId;
 
-              it("should succeed", async () => {
-                const operator = context.accounts.operator.address;
-                const tokenOwner = context.accounts.owner.address;
-                const tokenId = mintedTokenId;
-
-                await context.lsp8.authorizeOperator(operator, tokenId);
-
-                const tx = await context.lsp8.authorizeOperator(
-                  operator,
-                  tokenId
-                );
-
-                await expect(tx).toHaveEmittedWith(
-                  context.lsp8,
-                  "AuthorizedOperator",
-                  [operator, tokenOwner, tokenId]
-                );
-
-                expect(
-                  await context.lsp8.isOperatorFor(operator, tokenId)
-                ).toEqual(true);
-              });
-            });
-
-            describe("when operator is the zero address", () => {
-              it("should revert", async () => {
-                const operator = ethers.constants.AddressZero;
-                const tokenId = mintedTokenId;
-
-                await expect(
-                  context.lsp8.authorizeOperator(operator, tokenId)
-                ).toBeRevertedWith("LSP8: can not authorize zero address");
-              });
+              await expect(
+                context.lsp8.authorizeOperator(operator, tokenId)
+              ).toBeRevertedWith("LSP8CannotUseAddressZeroAsOperator()");
             });
           });
         });
@@ -327,7 +306,7 @@ export const shouldBehaveLikeLSP8 = (
               context.accounts.operator.address,
               neverMintedTokenId
             )
-          ).toBeRevertedWith("LSP8: can not query non existent token");
+          ).toBeRevertedWith(`LSP8NonExistentTokenId("${neverMintedTokenId}")`);
         });
       });
 
@@ -338,62 +317,47 @@ export const shouldBehaveLikeLSP8 = (
               .connect(context.accounts.anyone)
               .revokeOperator(context.accounts.operator.address, mintedTokenId)
           ).toBeRevertedWith(
-            "LSP8: caller can not revoke operator for token id"
+            `LSP8NotTokenOwner("${context.accounts.owner.address}", "${mintedTokenId}", "${context.accounts.anyone.address}")`
           );
         });
       });
 
       describe("when caller is owner of tokenId", () => {
-        describe("when given operator is the tokenOwner", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8.revokeOperator(
-                context.accounts.owner.address,
-                mintedTokenId
-              )
-            ).toBeRevertedWith("LSP8: can not revoke token owner as operator");
+        describe("when operator is not the zero address", () => {
+          it("should succeed", async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = mintedTokenId;
+
+            // pre-conditions
+            await context.lsp8.authorizeOperator(operator, tokenId);
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(
+              true
+            );
+
+            // effects
+            const tx = await context.lsp8.revokeOperator(operator, tokenId);
+            await expect(tx).toHaveEmittedWith(
+              context.lsp8,
+              "RevokedOperator",
+              [operator, tokenOwner, tokenId]
+            );
+
+            // post-conditions
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).toEqual(
+              false
+            );
           });
         });
 
-        describe("when given operator is different than tokenOwner", () => {
-          describe("when operator is not the zero address", () => {
-            it("should succeed", async () => {
-              const operator = context.accounts.operator.address;
-              const tokenOwner = context.accounts.owner.address;
-              const tokenId = mintedTokenId;
+        describe("when operator is the zero address", () => {
+          it("should revert", async () => {
+            const operator = ethers.constants.AddressZero;
+            const tokenId = mintedTokenId;
 
-              // pre-conditions
-              await context.lsp8.authorizeOperator(operator, tokenId);
-              expect(
-                await context.lsp8.isOperatorFor(operator, tokenId)
-              ).toEqual(true);
-
-              // effects
-              const tx = await context.lsp8.revokeOperator(operator, tokenId);
-              await expect(tx).toHaveEmittedWith(
-                context.lsp8,
-                "RevokedOperator",
-                [operator, tokenOwner, tokenId]
-              );
-
-              // post-conditions
-              expect(
-                await context.lsp8.isOperatorFor(operator, tokenId)
-              ).toEqual(false);
-            });
-          });
-
-          describe("when operator is the zero address", () => {
-            it("should revert", async () => {
-              const operator = ethers.constants.AddressZero;
-              const tokenId = mintedTokenId;
-
-              await expect(
-                context.lsp8.revokeOperator(operator, tokenId)
-              ).toBeRevertedWith(
-                "LSP8: can not revoke zero address as operator"
-              );
-            });
+            await expect(
+              context.lsp8.revokeOperator(operator, tokenId)
+            ).toBeRevertedWith("LSP8CannotUseAddressZeroAsOperator()");
           });
         });
       });
@@ -407,9 +371,7 @@ export const shouldBehaveLikeLSP8 = (
               context.accounts.operator.address,
               neverMintedTokenId
             )
-          ).toBeRevertedWith(
-            "LSP8: can not query operator for non existent token"
-          );
+          ).toBeRevertedWith(`LSP8NonExistentTokenId("${neverMintedTokenId}")`);
         });
       });
 
@@ -474,9 +436,7 @@ export const shouldBehaveLikeLSP8 = (
         it("should revert", async () => {
           await expect(
             context.lsp8.getOperatorsOf(neverMintedTokenId)
-          ).toBeRevertedWith(
-            "LSP8: can not query operator for non existent token"
-          );
+          ).toBeRevertedWith(`LSP8NonExistentTokenId("${neverMintedTokenId}")`);
         });
       });
 
@@ -668,8 +628,7 @@ export const shouldBehaveLikeLSP8 = (
                     force,
                     data,
                   };
-                  const expectedError =
-                    "LSP8: can not transfer to zero address";
+                  const expectedError = "LSP8CannotSendToAddressZero()";
 
                   await transferFailScenario(txParams, operator, expectedError);
                 });
@@ -754,7 +713,7 @@ export const shouldBehaveLikeLSP8 = (
                   force,
                   data,
                 };
-                const expectedError = "LSP8: token receiver is EOA";
+                const expectedError = `LSP8NotifyTokenReceiverIsEOA("${txParams.to}")`;
 
                 await transferFailScenario(txParams, operator, expectedError);
               });
@@ -804,8 +763,7 @@ export const shouldBehaveLikeLSP8 = (
                     force,
                     data,
                   };
-                  const expectedError =
-                    "LSP8: token receiver contract missing LSP1 interface";
+                  const expectedError = `LSP8NotifyTokenReceiverContractMissingLSP1Interface("${txParams.to}")`;
 
                   await transferFailScenario(txParams, operator, expectedError);
                 });
@@ -833,8 +791,7 @@ export const shouldBehaveLikeLSP8 = (
                   ethers.utils.toUtf8Bytes("should revert")
                 ),
               };
-              const expectedError =
-                "LSP8: can not transfer, caller is not the owner or operator of token";
+              const expectedError = `LSP8NotTokenOperator("${txParams.tokenId}", "${operator.address}")`;
 
               await transferFailScenario(txParams, operator, expectedError);
             });
@@ -853,8 +810,7 @@ export const shouldBehaveLikeLSP8 = (
                 ethers.utils.toUtf8Bytes("should revert")
               ),
             };
-            const expectedError =
-              "LSP8: transfer of tokenId from incorrect owner";
+            const expectedError = `LSP8NotTokenOwner("${context.accounts.owner.address}", "${txParams.tokenId}", "${txParams.from}")`;
 
             await transferFailScenario(txParams, operator, expectedError);
           });
@@ -872,7 +828,7 @@ export const shouldBehaveLikeLSP8 = (
                 ethers.utils.toUtf8Bytes("should revert")
               ),
             };
-            const expectedError = "LSP8: can not query non existent token";
+            const expectedError = `LSP8NonExistentTokenId("${txParams.tokenId}")`;
 
             await transferFailScenario(txParams, operator, expectedError);
           });
@@ -1046,8 +1002,7 @@ export const shouldBehaveLikeLSP8 = (
                     force,
                     data: [data, data],
                   };
-                  const expectedError =
-                    "LSP8: can not transfer to zero address";
+                  const expectedError = "LSP8CannotSendToAddressZero()";
 
                   await transferBatchFailScenario(
                     txParams,
@@ -1159,13 +1114,13 @@ export const shouldBehaveLikeLSP8 = (
                   ],
                   to: [
                     context.accounts.tokenReceiver.address,
-                    context.accounts.tokenReceiver.address,
+                    helperContracts.tokenReceiverWithLSP1.address,
                   ],
                   tokenId: [mintedTokenId, anotherMintedTokenId],
                   force,
                   data: [data, data],
                 };
-                const expectedError = "LSP8: token receiver is EOA";
+                const expectedError = `LSP8NotifyTokenReceiverIsEOA("${txParams.to[0]}")`;
 
                 await transferBatchFailScenario(
                   txParams,
@@ -1205,14 +1160,13 @@ export const shouldBehaveLikeLSP8 = (
                     ],
                     to: [
                       helperContracts.tokenReceiverWithoutLSP1.address,
-                      helperContracts.tokenReceiverWithoutLSP1.address,
+                      helperContracts.tokenReceiverWithLSP1.address,
                     ],
                     tokenId: [mintedTokenId, anotherMintedTokenId],
                     force,
                     data: [data, data],
                   };
-                  const expectedError =
-                    "LSP8: token receiver contract missing LSP1 interface";
+                  const expectedError = `LSP8NotifyTokenReceiverContractMissingLSP1Interface("${txParams.to[0]}")`;
 
                   await transferBatchFailScenario(
                     txParams,
@@ -1237,8 +1191,7 @@ export const shouldBehaveLikeLSP8 = (
                   ),
                 ],
               };
-              const expectedError =
-                "LSP8: transfer of tokenId from incorrect owner";
+              const expectedError = `LSP8NotTokenOwner("${context.accounts.owner.address}", "${txParams.tokenId[0]}", "${txParams.from[0]}")`;
 
               await transferBatchFailScenario(
                 txParams,
@@ -1261,7 +1214,7 @@ export const shouldBehaveLikeLSP8 = (
                   ),
                 ],
               };
-              const expectedError = "LSP8: can not query non existent token";
+              const expectedError = `LSP8NonExistentTokenId("${txParams.tokenId[0]}")`;
 
               await transferBatchFailScenario(
                 txParams,
@@ -1298,7 +1251,7 @@ export const shouldBehaveLikeLSP8 = (
                       [`${arrayParam}`]: [validTxParams[arrayParam][0]],
                     },
                     operator,
-                    "LSP8: transferBatch list length mismatch"
+                    "LSP8InvalidTransferBatch()"
                   );
                 })
               );
@@ -1327,8 +1280,7 @@ export const shouldBehaveLikeLSP8 = (
                   ),
                 ],
               };
-              const expectedError =
-                "LSP8: can not transfer, caller is not the owner or operator of token";
+              const expectedError = `LSP8NotTokenOperator("${txParams.tokenId[0]}", "${operator.address}")`;
 
               await transferBatchFailScenario(
                 txParams,

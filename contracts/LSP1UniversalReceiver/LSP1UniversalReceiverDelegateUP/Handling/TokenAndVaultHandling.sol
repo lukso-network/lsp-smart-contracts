@@ -12,9 +12,15 @@ import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
 import "../../../Utils/ERC725Utils.sol";
+import "../../../LSP5ReceivedAssets/LSP5Utils.sol";
+
+import "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import "../../LSP1Constants.sol";
+import "../../../LSP5ReceivedAssets/LSP5Constants.sol";
+
+import "../../../LSP10ReceivedVaults/LSP10Constants.sol";
 import "../../../LSP6KeyManager/LSP6Constants.sol";
 import "../../../LSP7DigitalAsset/LSP7Constants.sol";
 import "../../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
@@ -42,13 +48,15 @@ abstract contract TokenAndVaultHandlingContract {
         ) {
             (
                 bytes32 arrayKey,
-                bytes32 mapHash,
+                bytes12 mapPrefix,
                 bytes4 interfaceID
             ) = _getTransferData(typeId);
-            bytes32 mapKey = ERC725Utils.generateMapKey(
-                mapHash,
-                abi.encodePacked(sender)
+
+            bytes32 mapKey = LSP2Utils.generateBytes20MappingWithGroupingKey(
+                mapPrefix,
+                bytes20(sender)
             );
+
             bytes memory mapValue = IERC725Y(msg.sender).getDataSingle(mapKey);
 
             if (
@@ -57,7 +65,7 @@ abstract contract TokenAndVaultHandlingContract {
                 typeId == _TYPEID_LSP9_VAULTRECIPIENT
             ) {
                 if (bytes12(mapValue) == bytes12(0)) {
-                    (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
+                    (bytes32[] memory keys, bytes[] memory values) = LSP5Utils
                         .addMapAndArrayKey(
                             IERC725Y(msg.sender),
                             arrayKey,
@@ -82,10 +90,10 @@ abstract contract TokenAndVaultHandlingContract {
                         (
                             bytes32[] memory keys,
                             bytes[] memory values
-                        ) = ERC725Utils.removeMapAndArrayKey(
+                        ) = LSP5Utils.removeMapAndArrayKey(
                                 IERC725Y(msg.sender),
                                 arrayKey,
-                                mapHash,
+                                mapPrefix,
                                 mapKey
                             );
 
@@ -105,10 +113,10 @@ abstract contract TokenAndVaultHandlingContract {
                             (
                                 bytes32[] memory keys,
                                 bytes[] memory values
-                            ) = ERC725Utils.removeMapAndArrayKey(
+                            ) = LSP5Utils.removeMapAndArrayKey(
                                     IERC725Y(msg.sender),
                                     arrayKey,
-                                    mapHash,
+                                    mapPrefix,
                                     mapKey
                                 );
 
@@ -131,7 +139,7 @@ abstract contract TokenAndVaultHandlingContract {
         pure
         returns (
             bytes32 _arrayKey,
-            bytes32 _mapHash,
+            bytes12 _mapPrefix,
             bytes4 _interfaceID
         )
     {
@@ -141,8 +149,8 @@ abstract contract TokenAndVaultHandlingContract {
             _typeId == _TYPEID_LSP8_TOKENSSENDER ||
             _typeId == _TYPEID_LSP8_TOKENSRECIPIENT
         ) {
-            _arrayKey = _ARRAYKEY_LSP5;
-            _mapHash = _MAPHASH_LSP5;
+            _arrayKey = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
+            _mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
             if (
                 _typeId == _TYPEID_LSP7_TOKENSSENDER ||
                 _typeId == _TYPEID_LSP7_TOKENSRECIPIENT
@@ -155,8 +163,8 @@ abstract contract TokenAndVaultHandlingContract {
             _typeId == _TYPEID_LSP9_VAULTSENDER ||
             _typeId == _TYPEID_LSP9_VAULTRECIPIENT
         ) {
-            _arrayKey = _ARRAYKEY_LSP10;
-            _mapHash = _MAPHASH_LSP10;
+            _arrayKey = _LSP10_VAULTS_ARRAY_KEY;
+            _mapPrefix = _LSP10_VAULTS_MAP_KEY_PREFIX;
             _interfaceID = _INTERFACEID_LSP9;
         }
     }

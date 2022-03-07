@@ -106,10 +106,7 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
 
         // call external contract
         if (receiverData.length == 20) {
-            address universalReceiverAddress = BytesLib.toAddress(
-                receiverData,
-                0
-            );
+            address universalReceiverAddress = address(bytes20(receiverData));
 
             if (
                 ERC165(universalReceiverAddress).supportsInterface(

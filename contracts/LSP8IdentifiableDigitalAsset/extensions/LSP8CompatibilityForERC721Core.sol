@@ -89,13 +89,11 @@ abstract contract LSP8CompatibilityForERC721Core is
         override
         returns (address)
     {
-        require(
-            _exists(bytes32(tokenId)),
-            "LSP8: can not query operator for non existent token"
-        );
+        bytes32 tokenIdAsBytes32 = bytes32(tokenId);
+        _existsOrError(tokenIdAsBytes32);
 
         EnumerableSet.AddressSet storage operatorsForTokenId = _operators[
-            bytes32(tokenId)
+            tokenIdAsBytes32
         ];
         uint256 operatorListLength = operatorsForTokenId.length();
 
@@ -140,7 +138,7 @@ abstract contract LSP8CompatibilityForERC721Core is
         uint256 tokenId
     ) external virtual override {
         return
-            transfer(from, to, bytes32(tokenId), true, "compat-transferFrom");
+            transfer(from, to, bytes32(tokenId), true, "");
     }
 
     /**
@@ -159,7 +157,7 @@ abstract contract LSP8CompatibilityForERC721Core is
                 to,
                 bytes32(tokenId),
                 false,
-                "compat-safeTransferFrom"
+                ""
             );
     }
 

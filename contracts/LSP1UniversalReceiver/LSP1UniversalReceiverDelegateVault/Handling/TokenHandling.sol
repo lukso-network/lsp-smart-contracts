@@ -9,9 +9,12 @@ import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
 import "../../../Utils/ERC725Utils.sol";
+import "../../../LSP5ReceivedAssets/LSP5Utils.sol";
 
 // constants
 import "../../LSP1Constants.sol";
+
+import "../../../LSP5ReceivedAssets/LSP5Constants.sol";
 import "../../../LSP7DigitalAsset/LSP7Constants.sol";
 import "../../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import "../../../LSP9Vault/LSP9Constants.sol";
@@ -29,12 +32,12 @@ abstract contract TokenHandlingContract {
     ) internal returns (bytes memory) {
         (
             bytes32 arrayKey,
-            bytes32 mapHash,
+            bytes12 mapPrefix,
             bytes4 interfaceId
         ) = _getTransferData(typeId);
-        bytes32 mapKey = ERC725Utils.generateMapKey(
-            mapHash,
-            abi.encodePacked(sender)
+        bytes32 mapKey = LSP2Utils.generateBytes20MappingWithGroupingKey(
+            mapPrefix,
+            bytes20(sender)
         );
         IERC725Y vault = IERC725Y(msg.sender);
         bytes memory mapValue = vault.getDataSingle(mapKey);
@@ -44,7 +47,7 @@ abstract contract TokenHandlingContract {
             typeId == _TYPEID_LSP8_TOKENSRECIPIENT
         ) {
             if (bytes12(mapValue) == bytes12(0)) {
-                (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
+                (bytes32[] memory keys, bytes[] memory values) = LSP5Utils
                     .addMapAndArrayKey(
                         vault,
                         arrayKey,
@@ -64,8 +67,13 @@ abstract contract TokenHandlingContract {
                     msg.sender
                 );
                 if ((balance - _tokenAmount(typeId, data)) == 0) {
-                    (bytes32[] memory keys, bytes[] memory values) = ERC725Utils
-                        .removeMapAndArrayKey(vault, arrayKey, mapHash, mapKey);
+                    (bytes32[] memory keys, bytes[] memory values) = LSP5Utils
+                        .removeMapAndArrayKey(
+                            vault,
+                            arrayKey,
+                            mapPrefix,
+                            mapKey
+                        );
 
                     vault.setData(keys, values);
                 }
@@ -80,12 +88,12 @@ abstract contract TokenHandlingContract {
         pure
         returns (
             bytes32 arrayKey,
-            bytes32 mapHash,
+            bytes12 mapPrefix,
             bytes4 interfaceID
         )
     {
-        arrayKey = _ARRAYKEY_LSP5;
-        mapHash = _MAPHASH_LSP5;
+        arrayKey = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
+        mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
         if (
             _typeId == _TYPEID_LSP7_TOKENSSENDER ||
             _typeId == _TYPEID_LSP7_TOKENSRECIPIENT

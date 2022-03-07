@@ -11,8 +11,9 @@ export const DUMMY_RECIPIENT = ethers.utils.getAddress(
   "0xcafecafecafecafecafecafecafecafecafecafe"
 );
 
-export const RANDOM_BYTES32 =
-  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
+export const LSP1_HOOK_PLACEHOLDER =
+  "0xffffffffffffffff0000000000000000aaaaaaaaaaaaaaaa1111111111111111";
+
 export const ERC777TokensRecipient =
   "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
 
@@ -93,11 +94,11 @@ export const TOKEN_ID = {
 };
 
 export function getRandomAddresses(count) {
-  let base = "0xa56039d89BD9451A1ac94a680a20302da2dE92";
-
   let addresses = [];
-  for (let ii = 10; ii < count + 10; ii++) {
-    let randomAddress = "0x" + parseInt(base + ii).toString(16);
+  for (let ii = 0; ii < count; ii++) {
+    // addresses stored under ERC725Y storage have always lowercases character.
+    // therefore, disable the checksum by converting to lowercase to avoid failing tests
+    let randomAddress = new ethers.Wallet.createRandom().address.toLowerCase();
     addresses.push(randomAddress);
   }
 

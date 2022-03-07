@@ -26,8 +26,8 @@ abstract contract LSP0ERC725AccountInitAbstract is
     {
         ERC725InitAbstract.initialize(_newOwner);
 
-        _registerInterface(_INTERFACE_ID_ERC725ACCOUNT);
-        _registerInterface(_INTERFACE_ID_ERC1271);
+        _registerInterface(_INTERFACEID_LSP0);
+        _registerInterface(_INTERFACEID_ERC1271);
         _registerInterface(_INTERFACEID_LSP1);
     }
 }
