@@ -561,78 +561,78 @@ describe("KeyManager", () => {
     });
   });
 
-  describe("> testing permission: TRANSFERVALUE", () => {
-    let provider = ethers.provider;
+  // describe("> testing permission: TRANSFERVALUE", () => {
+  //   let provider = ethers.provider;
 
-    it("Owner should be allowed to transfer LYX to app", async () => {
-      let initialAccountBalance = await provider.getBalance(
-        universalProfile.address
-      );
-      let initialAppBalance = await provider.getBalance(app.address);
+  //   it("Owner should be allowed to transfer LYX to app", async () => {
+  //     let initialAccountBalance = await provider.getBalance(
+  //       universalProfile.address
+  //     );
+  //     let initialAppBalance = await provider.getBalance(app.address);
 
-      let transferPayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATIONS.CALL,
-          app.address,
-          ethers.utils.parseEther("3"),
-          EMPTY_PAYLOAD,
-        ]
-      );
+  //     let transferPayload = universalProfile.interface.encodeFunctionData(
+  //       "execute",
+  //       [
+  //         OPERATIONS.CALL,
+  //         app.address,
+  //         ethers.utils.parseEther("3"),
+  //         EMPTY_PAYLOAD,
+  //       ]
+  //     );
 
-      let callResult = await keyManager.callStatic.execute(transferPayload);
-      expect(callResult).toBeTruthy();
+  //     let callResult = await keyManager.callStatic.execute(transferPayload);
+  //     expect(callResult).toBeTruthy();
 
-      await keyManager.execute(transferPayload);
+  //     await keyManager.execute(transferPayload);
 
-      let newAccountBalance = await provider.getBalance(
-        universalProfile.address
-      );
-      expect(parseInt(newAccountBalance)).toBeLessThan(
-        parseInt(initialAccountBalance)
-      );
+  //     let newAccountBalance = await provider.getBalance(
+  //       universalProfile.address
+  //     );
+  //     expect(parseInt(newAccountBalance)).toBeLessThan(
+  //       parseInt(initialAccountBalance)
+  //     );
 
-      let newAppBalance = await provider.getBalance(app.address);
-      expect(parseInt(newAppBalance)).toBeGreaterThan(
-        parseInt(initialAppBalance)
-      );
-    });
+  //     let newAppBalance = await provider.getBalance(app.address);
+  //     expect(parseInt(newAppBalance)).toBeGreaterThan(
+  //       parseInt(initialAppBalance)
+  //     );
+  //   });
 
-    it("App should not be allowed to transfer LYX", async () => {
-      let initialAccountBalance = await provider.getBalance(
-        universalProfile.address
-      );
-      let initialUserBalance = await provider.getBalance(user.address);
+  //   it("App should not be allowed to transfer LYX", async () => {
+  //     let initialAccountBalance = await provider.getBalance(
+  //       universalProfile.address
+  //     );
+  //     let initialUserBalance = await provider.getBalance(user.address);
 
-      let transferPayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATIONS.CALL,
-          user.address,
-          ethers.utils.parseEther("3"),
-          EMPTY_PAYLOAD,
-        ]
-      );
+  //     let transferPayload = universalProfile.interface.encodeFunctionData(
+  //       "execute",
+  //       [
+  //         OPERATIONS.CALL,
+  //         user.address,
+  //         ethers.utils.parseEther("3"),
+  //         EMPTY_PAYLOAD,
+  //       ]
+  //     );
 
-      try {
-        await keyManager.connect(app).execute(transferPayload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAuthorisedError(app.address, "TRANSFERVALUE")
-        );
-      }
+  //     try {
+  //       await keyManager.connect(app).execute(transferPayload);
+  //     } catch (error) {
+  //       expect(error.message).toMatch(
+  //         NotAuthorisedError(app.address, "TRANSFERVALUE")
+  //       );
+  //     }
 
-      let newAccountBalance = await provider.getBalance(
-        universalProfile.address
-      );
-      let newUserBalance = await provider.getBalance(user.address);
+  //     let newAccountBalance = await provider.getBalance(
+  //       universalProfile.address
+  //     );
+  //     let newUserBalance = await provider.getBalance(user.address);
 
-      expect(initialAccountBalance.toString()).toBe(
-        newAccountBalance.toString()
-      );
-      expect(initialUserBalance.toString()).toBe(newUserBalance.toString());
-    });
-  });
+  //     expect(initialAccountBalance.toString()).toBe(
+  //       newAccountBalance.toString()
+  //     );
+  //     expect(initialUserBalance.toString()).toBe(newUserBalance.toString());
+  //   });
+  // });
 
   describe("> testing permissions: ALLOWEDADDRESSES", () => {
     it("All addresses whitelisted = Owner should be allowed to interact with any address", async () => {
@@ -4640,97 +4640,97 @@ describe("ALLOWEDERC725YKEYS", () => {
   });
 });
 
-describe("SIGN (ERC1271)", () => {
-  let provider = ethers.provider;
-  let accounts: SignerWithAddress[] = [];
+// describe("SIGN (ERC1271)", () => {
+//   let provider = ethers.provider;
+//   let accounts: SignerWithAddress[] = [];
 
-  let keyManager: LSP6KeyManager;
-  let UniversalProfile: UniversalProfile;
+//   let keyManager: LSP6KeyManager;
+//   let UniversalProfile: UniversalProfile;
 
-  let owner: SignerWithAddress;
-  let signer: SignerWithAddress;
-  let thirdParty: SignerWithAddress;
-  let noPermissionsSet: SignerWithAddress;
+//   let owner: SignerWithAddress;
+//   let signer: SignerWithAddress;
+//   let thirdParty: SignerWithAddress;
+//   let noPermissionsSet: SignerWithAddress;
 
-  beforeAll(async () => {
-    accounts = await ethers.getSigners();
+//   beforeAll(async () => {
+//     accounts = await ethers.getSigners();
 
-    owner = accounts[6];
-    signer = accounts[7];
-    thirdParty = accounts[8];
-    noPermissionsSet = accounts[9];
+//     owner = accounts[6];
+//     signer = accounts[7];
+//     thirdParty = accounts[8];
+//     noPermissionsSet = accounts[9];
 
-    UniversalProfile = await new UniversalProfile__factory(owner).deploy(
-      owner.address
-    );
-    keyManager = await new LSP6KeyManager__factory(owner).deploy(
-      UniversalProfile.address
-    );
+//     UniversalProfile = await new UniversalProfile__factory(owner).deploy(
+//       owner.address
+//     );
+//     keyManager = await new LSP6KeyManager__factory(owner).deploy(
+//       UniversalProfile.address
+//     );
 
-    await UniversalProfile.connect(owner).setData(
-      [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          signer.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          thirdParty.address.substring(2),
-      ],
-      [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-      ]
-    );
+//     await UniversalProfile.connect(owner).setData(
+//       [
+//         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+//           owner.address.substring(2),
+//         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+//           signer.address.substring(2),
+//         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+//           thirdParty.address.substring(2),
+//       ],
+//       [
+//         ALL_PERMISSIONS_SET,
+//         ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+//         ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+//       ]
+//     );
 
-    await UniversalProfile.connect(owner).transferOwnership(keyManager.address);
-  });
+//     await UniversalProfile.connect(owner).transferOwnership(keyManager.address);
+//   });
 
-  it("can verify signature from owner on KeyManager", async () => {
-    const dataToSign = "0xcafecafe";
-    const messageHash = ethers.utils.hashMessage(dataToSign);
-    const signature = await owner.signMessage(dataToSign);
+//   it("can verify signature from owner on KeyManager", async () => {
+//     const dataToSign = "0xcafecafe";
+//     const messageHash = ethers.utils.hashMessage(dataToSign);
+//     const signature = await owner.signMessage(dataToSign);
 
-    const result = await keyManager.callStatic.isValidSignature(
-      messageHash,
-      signature
-    );
-    expect(result).toEqual(ERC1271.MAGIC_VALUE);
-  });
+//     const result = await keyManager.callStatic.isValidSignature(
+//       messageHash,
+//       signature
+//     );
+//     expect(result).toEqual(ERC1271.MAGIC_VALUE);
+//   });
 
-  it("can verify signature from signer on KeyManager", async () => {
-    const dataToSign = "0xbeefbeef";
-    const messageHash = ethers.utils.hashMessage(dataToSign);
-    const signature = await signer.signMessage(dataToSign);
+//   it("can verify signature from signer on KeyManager", async () => {
+//     const dataToSign = "0xbeefbeef";
+//     const messageHash = ethers.utils.hashMessage(dataToSign);
+//     const signature = await signer.signMessage(dataToSign);
 
-    const result = await keyManager.callStatic.isValidSignature(
-      messageHash,
-      signature
-    );
-    expect(result).toEqual(ERC1271.MAGIC_VALUE);
-  });
+//     const result = await keyManager.callStatic.isValidSignature(
+//       messageHash,
+//       signature
+//     );
+//     expect(result).toEqual(ERC1271.MAGIC_VALUE);
+//   });
 
-  it("should fail when verifying signature from address with no SIGN permission", async () => {
-    const dataToSign = "0xabcdabcd";
-    const messageHash = ethers.utils.hashMessage(dataToSign);
-    const signature = await thirdParty.signMessage(dataToSign);
+//   it("should fail when verifying signature from address with no SIGN permission", async () => {
+//     const dataToSign = "0xabcdabcd";
+//     const messageHash = ethers.utils.hashMessage(dataToSign);
+//     const signature = await thirdParty.signMessage(dataToSign);
 
-    const result = await keyManager.callStatic.isValidSignature(
-      messageHash,
-      signature
-    );
-    expect(result).toEqual(ERC1271.FAIL_VALUE);
-  });
+//     const result = await keyManager.callStatic.isValidSignature(
+//       messageHash,
+//       signature
+//     );
+//     expect(result).toEqual(ERC1271.FAIL_VALUE);
+//   });
 
-  it("should fail when verifying signature from address with no permissions set", async () => {
-    const dataToSign = "0xabcdabcd";
-    const messageHash = ethers.utils.hashMessage(dataToSign);
-    const signature = await noPermissionsSet.signMessage(dataToSign);
+//   it("should fail when verifying signature from address with no permissions set", async () => {
+//     const dataToSign = "0xabcdabcd";
+//     const messageHash = ethers.utils.hashMessage(dataToSign);
+//     const signature = await noPermissionsSet.signMessage(dataToSign);
 
-    const result = await keyManager.callStatic.isValidSignature(
-      messageHash,
-      signature
-    );
-    expect(result).toEqual(ERC1271.FAIL_VALUE);
-  });
-});
+//     const result = await keyManager.callStatic.isValidSignature(
+//       messageHash,
+//       signature
+//     );
+//     expect(result).toEqual(ERC1271.FAIL_VALUE);
+//   });
+// });

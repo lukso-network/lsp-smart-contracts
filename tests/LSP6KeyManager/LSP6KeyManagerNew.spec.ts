@@ -1,3 +1,4 @@
+import { build } from "esbuild";
 import { ethers } from "hardhat";
 
 import {
@@ -12,6 +13,7 @@ import { deployProxy } from "../utils/proxy";
 import {
   LSP6TestContext,
   shouldInitializeLikeLSP6,
+  shouldBehaveLikeLSP6,
 } from "./LSP6KeyManager.behaviour";
 
 describe("LSP6KeyManager", () => {
@@ -47,6 +49,10 @@ describe("LSP6KeyManager", () => {
           };
         });
       });
+    });
+
+    describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP6(buildTestContext);
     });
   });
 
@@ -106,6 +112,14 @@ describe("LSP6KeyManager", () => {
             "Initializable: contract is already initialized"
           );
         });
+      });
+    });
+
+    describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP6(async () => {
+        let context = await buildTestContext();
+        await initializeProxy(context);
+        return context;
       });
     });
   });
