@@ -4,7 +4,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   LSP6KeyManager,
   UniversalProfile,
-  UniversalProfile__factory,
   TargetContract__factory,
 } from "../../types";
 
@@ -16,6 +15,7 @@ import {
   INTERFACE_IDS,
   OPERATIONS,
   PERMISSIONS,
+  EventSignatures,
 } from "../../constants";
 
 // helpers
@@ -393,7 +393,6 @@ export const shouldBehaveLikeLSP6 = (
       it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-        console.log("contractBytecodeToDeploy: ", contractBytecodeToDeploy);
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
           [
@@ -404,18 +403,34 @@ export const shouldBehaveLikeLSP6 = (
           ]
         );
 
-        let estimatedGas = await context.keyManager
+        const expectedContractAddress = await context.keyManager
           .connect(context.owner)
-          .estimateGas.execute(payload);
+          .callStatic.execute(payload);
 
-        let suppliedGas =
-          ethers.BigNumber.from(estimatedGas).toNumber() + 10_000;
+        let tx = await context.keyManager
+          .connect(context.owner)
+          .execute(payload);
+        let receipt = await tx.wait();
 
-        await context.keyManager.connect(context.owner).execute(payload, {
-          gasLimit: suppliedGas,
-        });
+        // should be the ContractCreated event (= event signature)
+        expect(receipt.logs[0].topics[0]).toEqual(
+          EventSignatures.ERC725X["ContractCreated"]
+        );
 
-        // console.log("result: ", result);
+        // operation type
+        expect(receipt.logs[0].topics[1]).toEqual(
+          ethers.utils.hexZeroPad(OPERATIONS.CREATE, 32)
+        );
+
+        // address of contract created
+        expect(receipt.logs[0].topics[2]).toEqual(
+          ethers.utils.hexZeroPad(expectedContractAddress, 32)
+        );
+
+        // value
+        expect(receipt.logs[0].topics[3]).toEqual(
+          ethers.utils.hexZeroPad(0, 32)
+        );
       });
     });
   });
