@@ -9,8 +9,8 @@ contract LSP8InitTester is LSP8IdentifiableDigitalAssetInitAbstract {
         string memory name,
         string memory symbol,
         address newOwner
-    ) public override initializer {
-        LSP8IdentifiableDigitalAssetInitAbstract.initialize(
+    ) public initializer {
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name,
             symbol,
             newOwner

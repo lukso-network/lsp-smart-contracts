@@ -19,10 +19,7 @@ abstract contract LSP1UniversalReceiverDelegateUPInitAbstract is
     Initializable,
     LSP1UniversalReceiverDelegateUPCore
 {
-    /**
-     * @notice Register the LSP1UniversalReceiverDelegate InterfaceId
-     */
-    function initialize() public virtual onlyInitializing {
+    function _initialize() internal virtual onlyInitializing {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }
 }

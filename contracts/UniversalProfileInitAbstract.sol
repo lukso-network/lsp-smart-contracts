@@ -13,17 +13,13 @@ abstract contract UniversalProfileInitAbstract is
     Initializable,
     LSP0ERC725AccountInitAbstract
 {
-    /**
-     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
-     * @param _newOwner the owner of the contract
-     */
-    function initialize(address _newOwner)
-        public
+    function _initialize(address _newOwner)
+        internal
         virtual
         override
         onlyInitializing
     {
-        LSP0ERC725AccountInitAbstract.initialize(_newOwner);
+        LSP0ERC725AccountInitAbstract._initialize(_newOwner);
 
         // set key SupportedStandards:LSP3UniversalProfile
         bytes32 key = 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6;
