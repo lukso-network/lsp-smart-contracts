@@ -41,11 +41,112 @@ export const shouldBehaveLikeLSP6 = (
       .transferOwnership(context.keyManager.address);
   };
 
+  describe("CHANGEOWNER", () => {
+    let canChangeOwner: SignerWithAddress,
+      cannotChangeOwner: SignerWithAddress,
+      newOwner: SignerWithAddress;
+
+    let permissionsKeys: string[];
+    let permissionsValues: string[];
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      canChangeOwner = context.accounts[1];
+      cannotChangeOwner = context.accounts[2];
+      newOwner = context.accounts[3];
+
+      permissionsKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canChangeOwner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          cannotChangeOwner.address.substring(2),
+      ];
+
+      permissionsValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEOWNER, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+      ];
+
+      await setupKeyManager(permissionsKeys, permissionsValues);
+    });
+
+    describe("when caller is owner and `transferOwnership(...)` to EOA", () => {
+      it("UP owner() should have changed", async () => {
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "transferOwnership",
+          [newOwner.address]
+        );
+
+        await context.keyManager.connect(context.owner).execute(payload);
+
+        const upOwner = await context.universalProfile.callStatic.owner();
+        expect(upOwner).toEqual(newOwner.address);
+      });
+
+      it("new UP owner should be able to interact directly (eg: setData(...) with UP", async () => {
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "transferOwnership",
+          [newOwner.address]
+        );
+
+        await context.keyManager.connect(context.owner).execute(payload);
+
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Value"));
+
+        await context.universalProfile
+          .connect(newOwner)
+          .setData([key], [value]);
+
+        const [result] = await context.universalProfile.getData([key]);
+        expect(result).toEqual(value);
+      });
+    });
+
+    describe("when caller is an address with permission CHANGEOWNER and `transferOwnership(...)` to EOA", () => {
+      it("UP owner() should have changed", async () => {
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "transferOwnership",
+          [newOwner.address]
+        );
+
+        await context.keyManager.connect(canChangeOwner).execute(payload);
+
+        const upOwner = await context.universalProfile.callStatic.owner();
+        expect(upOwner).toEqual(newOwner.address);
+      });
+
+      it("new UP owner should be able to interact directly (eg: setData(...) with UP", async () => {
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "transferOwnership",
+          [newOwner.address]
+        );
+
+        await context.keyManager.connect(canChangeOwner).execute(payload);
+
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Value"));
+
+        await context.universalProfile
+          .connect(newOwner)
+          .setData([key], [value]);
+
+        const [result] = await context.universalProfile.getData([key]);
+        expect(result).toEqual(value);
+      });
+    });
+  });
+
   describe("CHANGE / ADD permissions", () => {
     let canOnlyAddPermissions: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress,
-      // address being used to edit the permissions
-      addressToEditPermissions: SignerWithAddress;
+      // address being used to CHANGE (= edit) permissions
+      addressToEditPermissions: SignerWithAddress,
+      addressWithZeroHexPermissions: SignerWithAddress;
 
     beforeEach(async () => {
       context = await buildContext();
@@ -53,6 +154,7 @@ export const shouldBehaveLikeLSP6 = (
       canOnlyAddPermissions = context.accounts[1];
       canOnlyChangePermissions = context.accounts[2];
       addressToEditPermissions = context.accounts[3];
+      addressWithZeroHexPermissions = context.accounts[4];
 
       const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -63,6 +165,8 @@ export const shouldBehaveLikeLSP6 = (
           canOnlyChangePermissions.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           addressToEditPermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          addressWithZeroHexPermissions.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -71,6 +175,8 @@ export const shouldBehaveLikeLSP6 = (
         ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
         // placeholder permission
         ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
+        // 0x0000... = similar to empty, or 'no permissions set'
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
       ];
 
       await setupKeyManager(permissionKeys, permissionsValues);
@@ -98,6 +204,154 @@ export const shouldBehaveLikeLSP6 = (
           expect(result).toEqual(
             ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
           );
+        });
+
+        it("should be allowed to CHANGE permissions", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            addressToEditPermissions.address.substring(2);
+
+          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [value]]
+          );
+
+          await context.keyManager.connect(context.owner).execute(payload);
+
+          const [result] = await context.universalProfile.callStatic.getData([
+            key,
+          ]);
+          expect(result).toEqual(value);
+        });
+      });
+
+      describe("when caller is an address with permission ADDPERMISSIONS", () => {
+        it("should be allowed to add permissions", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            newController.address.substring(2);
+
+          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [value]]
+          );
+
+          await context.keyManager
+            .connect(canOnlyAddPermissions)
+            .execute(payload);
+
+          const [result] = await context.universalProfile.callStatic.getData([
+            key,
+          ]);
+          expect(result).toEqual(value);
+        });
+        it("should not be allowed to CHANGE permission", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            addressToEditPermissions.address.substring(2);
+
+          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [value]]
+          );
+
+          try {
+            await context.keyManager
+              .connect(canOnlyAddPermissions)
+              .execute(payload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              NotAuthorisedError(
+                canOnlyAddPermissions.address,
+                "CHANGEPERMISSIONS"
+              )
+            );
+          }
+        });
+      });
+
+      describe("when caller is an address with permission CHANGEPERMISSION", () => {
+        it("should not be allowed to ADD permissions", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            newController.address.substr(2);
+
+          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [value]]
+          );
+
+          try {
+            await context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              NotAuthorisedError(
+                canOnlyChangePermissions.address,
+                "ADDPERMISSIONS"
+              )
+            );
+          }
+        });
+
+        it("should not be allowed to set (= ADD) permissions for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            addressWithZeroHexPermissions.address.substring(2);
+          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [value]]
+          );
+
+          try {
+            await context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              NotAuthorisedError(
+                canOnlyChangePermissions.address,
+                "ADDPERMISSIONS"
+              )
+            );
+          }
+        });
+
+        it("should be allowed to CHANGE permissions", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            addressToEditPermissions.address.substring(2);
+
+          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [value]]
+          );
+
+          await context.keyManager
+            .connect(canOnlyChangePermissions)
+            .execute(payload);
+
+          let [result] = await context.universalProfile.callStatic.getData([
+            key,
+          ]);
+          expect(result).toEqual(value);
         });
       });
     });
