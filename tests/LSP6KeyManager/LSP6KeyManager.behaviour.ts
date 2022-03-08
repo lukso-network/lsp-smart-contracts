@@ -1,7 +1,12 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { LSP6KeyManager, UniversalProfile } from "../../types";
+import {
+  LSP6KeyManager,
+  UniversalProfile,
+  UniversalProfile__factory,
+  TargetContract__factory,
+} from "../../types";
 
 // constants
 import {
@@ -353,6 +358,64 @@ export const shouldBehaveLikeLSP6 = (
           ]);
           expect(result).toEqual(value);
         });
+      });
+    });
+  });
+
+  describe("DEPLOY", () => {
+    let canDeploy: SignerWithAddress, cannotDeploy: SignerWithAddress;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      canDeploy = context.accounts[1];
+      cannotDeploy = context.accounts[2];
+
+      let permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canDeploy.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          cannotDeploy.address.substring(2),
+      ];
+
+      let permissionsValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.DEPLOY, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      ];
+
+      await setupKeyManager(permissionKeys, permissionsValues);
+    });
+
+    describe("when caller is owner", () => {
+      it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
+        let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+
+        console.log("contractBytecodeToDeploy: ", contractBytecodeToDeploy);
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [
+            OPERATIONS.CREATE, // operation type
+            ethers.constants.AddressZero, // recipient
+            0, // value
+            contractBytecodeToDeploy,
+          ]
+        );
+
+        let estimatedGas = await context.keyManager
+          .connect(context.owner)
+          .estimateGas.execute(payload);
+
+        let suppliedGas =
+          ethers.BigNumber.from(estimatedGas).toNumber() + 10_000;
+
+        await context.keyManager.connect(context.owner).execute(payload, {
+          gasLimit: suppliedGas,
+        });
+
+        // console.log("result: ", result);
       });
     });
   });
