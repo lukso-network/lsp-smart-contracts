@@ -18,7 +18,7 @@ function authorizeOperator(address operator, bytes32 tokenId) external nonpayabl
 
 
 
-*Makes `operator` address an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+*Makes `operator` address an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
 
 #### Parameters
 
@@ -124,7 +124,7 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 
 
 
-*Removes `operator` address as an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
+*Removes `operator` address as an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 
