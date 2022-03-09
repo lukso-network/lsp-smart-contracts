@@ -11,9 +11,11 @@ import "./LSP9VaultInitAbstract.sol";
  */
 contract LSP9VaultInit is LSP9VaultInitAbstract {
     /**
-     * @inheritdoc LSP9VaultInitAbstract
+     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key and register
+     * LSP1UniversalReceiver and LSP9Vault InterfaceId
+     * @param _newOwner the owner of the contract
      */
     function initialize(address _newOwner) public override initializer {
-        LSP9VaultInitAbstract.initialize(_newOwner);
+        LSP9VaultInitAbstract._initialize(_newOwner);
     }
 }

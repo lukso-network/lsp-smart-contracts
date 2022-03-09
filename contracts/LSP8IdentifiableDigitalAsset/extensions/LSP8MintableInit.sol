@@ -19,6 +19,6 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
         string memory symbol_,
         address newOwner_
     ) public virtual override initializer {
-        LSP8MintableInitAbstract.initialize(name_, symbol_, newOwner_);
+        LSP8MintableInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 }

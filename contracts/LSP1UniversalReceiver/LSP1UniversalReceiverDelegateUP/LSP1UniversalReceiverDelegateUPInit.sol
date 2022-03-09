@@ -18,9 +18,9 @@ contract LSP1UniversalReceiverDelegateUPInit is
     LSP1UniversalReceiverDelegateUPInitAbstract
 {
     /**
-     * @inheritdoc LSP1UniversalReceiverDelegateUPInitAbstract
+     * @notice Register the LSP1UniversalReceiverDelegate InterfaceId
      */
-    function initialize() public virtual override initializer {
-        LSP1UniversalReceiverDelegateUPInitAbstract.initialize();
+    function initialize() public virtual initializer {
+        LSP1UniversalReceiverDelegateUPInitAbstract._initialize();
     }
 }

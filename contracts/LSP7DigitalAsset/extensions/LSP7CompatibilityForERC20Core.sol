@@ -47,7 +47,7 @@ abstract contract LSP7CompatibilityForERC20Core is
      * Using force=true so that EOA and any contract may receive the tokens.
      */
     function transfer(address to, uint256 amount) external virtual override {
-        return transfer(_msgSender(), to, amount, true, "compat-transfer");
+        return transfer(_msgSender(), to, amount, true, "");
     }
 
     /**
@@ -60,7 +60,7 @@ abstract contract LSP7CompatibilityForERC20Core is
         address to,
         uint256 amount
     ) external virtual override {
-        return transfer(from, to, amount, true, "compat-transferFrom");
+        return transfer(from, to, amount, true, "");
     }
 
     // --- Overrides

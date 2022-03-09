@@ -11,9 +11,10 @@ import "./UniversalProfileInitAbstract.sol";
  */
 contract UniversalProfileInit is UniversalProfileInitAbstract {
     /**
-     * @inheritdoc UniversalProfileInitAbstract
+     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
+     * @param _newOwner the owner of the contract
      */
     function initialize(address _newOwner) public virtual override initializer {
-        UniversalProfileInitAbstract.initialize(_newOwner);
+        UniversalProfileInitAbstract._initialize(_newOwner);
     }
 }

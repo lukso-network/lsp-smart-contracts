@@ -21,7 +21,11 @@ contract LSP8CompatibilityForERC721Init is
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override initializer {
-        LSP8CompatibilityForERC721InitAbstract.initialize(name_, symbol_, newOwner_);
+    ) public virtual initializer {
+        LSP8CompatibilityForERC721InitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_
+        );
     }
 }

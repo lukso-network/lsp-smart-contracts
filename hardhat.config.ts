@@ -5,6 +5,8 @@ import "@nomiclabs/hardhat-web3";
 
 import "@typechain/hardhat";
 import "hardhat-packager";
+import "hardhat-contract-sizer";
+
 import "hardhat-deploy";
 
 /**

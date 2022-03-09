@@ -21,6 +21,6 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
         address newOwner_,
         bool isNFT_
     ) public virtual override initializer {
-        LSP7MintableInitAbstract.initialize(name_, symbol_, newOwner_, isNFT_);
+        LSP7MintableInitAbstract._initialize(name_, symbol_, newOwner_, isNFT_);
     }
 }
