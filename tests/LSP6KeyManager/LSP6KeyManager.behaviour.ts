@@ -595,6 +595,28 @@ export const shouldBehaveLikeLSP6 = (
     });
 
     describe("when caller has permission STATICCALL", () => {
+      it("should pass and return data", async () => {
+        let expectedName = await targetContract.callStatic.getName();
+
+        let targetContractPayload =
+          targetContract.interface.encodeFunctionData("getName");
+
+        let executePayload =
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.STATICCALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
+
+        let result = await context.keyManager
+          .connect(addressCanMakeStaticCall)
+          .callStatic.execute(executePayload);
+
+        let [decodedResult] = abiCoder.decode(["string"], result);
+        expect(decodedResult).toEqual(expectedName);
+      });
+
       it("should revert when trying to change state at the target contract", async () => {
         let initialValue = await targetContract.callStatic.getName();
 
