@@ -474,35 +474,35 @@ describe("KeyManager", () => {
 
   describe("> testing permissions: CALL, DEPLOY, STATICCALL & DELEGATECALL", () => {
     /** @call */
-    it("Owner should be allowed to make a CALL", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, allowedAddresses[0], 0, DUMMY_PAYLOAD]
-      );
+    // it("Owner should be allowed to make a CALL", async () => {
+    //   let executePayload = universalProfile.interface.encodeFunctionData(
+    //     "execute",
+    //     [OPERATIONS.CALL, allowedAddresses[0], 0, DUMMY_PAYLOAD]
+    //   );
 
-      let result = await keyManager.callStatic.execute(executePayload, {
-        from: owner.address,
-      });
-      expect(result).toBeTruthy();
-    });
+    //   let result = await keyManager.callStatic.execute(executePayload, {
+    //     from: owner.address,
+    //   });
+    //   expect(result).toBeTruthy();
+    // });
 
     /** @call */
-    it("App should be allowed to make a CALL", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContract.interface.encodeFunctionData("setName", ["Example"]),
-        ]
-      );
+    // it("App should be allowed to make a CALL", async () => {
+    //   let executePayload = universalProfile.interface.encodeFunctionData(
+    //     "execute",
+    //     [
+    //       OPERATIONS.CALL,
+    //       targetContract.address,
+    //       0,
+    //       targetContract.interface.encodeFunctionData("setName", ["Example"]),
+    //     ]
+    //   );
 
-      let executeResult = await keyManager
-        .connect(app)
-        .callStatic.execute(executePayload);
-      expect(executeResult).toBeTruthy();
-    });
+    //   let executeResult = await keyManager
+    //     .connect(app)
+    //     .callStatic.execute(executePayload);
+    //   expect(executeResult).toBeTruthy();
+    // });
 
     it("App should not be allowed to make a STATICCALL", async () => {
       let executePayload = universalProfile.interface.encodeFunctionData(
@@ -868,42 +868,42 @@ describe("KeyManager", () => {
     });
 
     /** @call */
-    it("Should return `name` variable", async () => {
-      let initialName = await targetContract.callStatic.getName();
+    // it("Should return `name` variable", async () => {
+    //   let initialName = await targetContract.callStatic.getName();
 
-      let targetContractPayload =
-        targetContract.interface.encodeFunctionData("getName");
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
-      );
+    //   let targetContractPayload =
+    //     targetContract.interface.encodeFunctionData("getName");
+    //   let executePayload = universalProfile.interface.encodeFunctionData(
+    //     "execute",
+    //     [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+    //   );
 
-      let result = await keyManager
-        .connect(owner)
-        .callStatic.execute(executePayload);
+    //   let result = await keyManager
+    //     .connect(owner)
+    //     .callStatic.execute(executePayload);
 
-      let [decodedResult] = abiCoder.decode(["string"], result);
-      expect(decodedResult).toEqual(initialName);
-    });
+    //   let [decodedResult] = abiCoder.decode(["string"], result);
+    //   expect(decodedResult).toEqual(initialName);
+    // });
 
     /** @call */
-    it("Should return `number` variable", async () => {
-      let initialNumber = await targetContract.callStatic.getNumber();
+    // it("Should return `number` variable", async () => {
+    //   let initialNumber = await targetContract.callStatic.getNumber();
 
-      let targetContractPayload =
-        targetContract.interface.encodeFunctionData("getNumber");
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
-      );
+    //   let targetContractPayload =
+    //     targetContract.interface.encodeFunctionData("getNumber");
+    //   let executePayload = universalProfile.interface.encodeFunctionData(
+    //     "execute",
+    //     [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+    //   );
 
-      let result = await keyManager
-        .connect(owner)
-        .callStatic.execute(executePayload);
+    //   let result = await keyManager
+    //     .connect(owner)
+    //     .callStatic.execute(executePayload);
 
-      let [decodedResult] = abiCoder.decode(["uint256"], result);
-      expect(decodedResult).toEqual(initialNumber);
-    });
+    //   let [decodedResult] = abiCoder.decode(["uint256"], result);
+    //   expect(decodedResult).toEqual(initialNumber);
+    // });
   });
 
   describe("> testing other revert causes", () => {
@@ -929,21 +929,21 @@ describe("KeyManager", () => {
     });
 
     /** @call */
-    it("Should revert with a revert reason string from TargetContract", async () => {
-      let targetContractPayload =
-        targetContract.interface.encodeFunctionData("revertCall");
+    // it("Should revert with a revert reason string from TargetContract", async () => {
+    //   let targetContractPayload =
+    //     targetContract.interface.encodeFunctionData("revertCall");
 
-      let payload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        targetContractPayload,
-      ]);
+    //   let payload = universalProfile.interface.encodeFunctionData("execute", [
+    //     OPERATIONS.CALL,
+    //     targetContract.address,
+    //     0,
+    //     targetContractPayload,
+    //   ]);
 
-      await expect(keyManager.execute(payload)).toBeRevertedWith(
-        "TargetContract:revertCall: this function has reverted!"
-      );
-    });
+    //   await expect(keyManager.execute(payload)).toBeRevertedWith(
+    //     "TargetContract:revertCall: this function has reverted!"
+    //   );
+    // });
   });
 
   describe("> testing `executeRelay(...)`", () => {
@@ -1540,32 +1540,32 @@ describe("KeyManager", () => {
     });
 
     /** @staticcall */
-    it("Should revert if STATICCALL tries to change state", async () => {
-      let initialValue = targetContract.callStatic.getName();
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "setName",
-        ["Another Contract Name"]
-      );
+    // it("Should revert if STATICCALL tries to change state", async () => {
+    //   let initialValue = targetContract.callStatic.getName();
+    //   let targetContractPayload = targetContract.interface.encodeFunctionData(
+    //     "setName",
+    //     ["Another Contract Name"]
+    //   );
 
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATIONS.STATICCALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]
-      );
+    //   let executePayload = universalProfile.interface.encodeFunctionData(
+    //     "execute",
+    //     [
+    //       OPERATIONS.STATICCALL,
+    //       targetContract.address,
+    //       0,
+    //       targetContractPayload,
+    //     ]
+    //   );
 
-      await expect(
-        keyManager.connect(owner).execute(executePayload)
-      ).toBeReverted();
+    //   await expect(
+    //     keyManager.connect(owner).execute(executePayload)
+    //   ).toBeReverted();
 
-      let newValue = targetContract.callStatic.getName();
+    //   let newValue = targetContract.callStatic.getName();
 
-      // ensure state hasn't changed.
-      expect(initialValue).toEqual(newValue);
-    });
+    //   // ensure state hasn't changed.
+    //   expect(initialValue).toEqual(newValue);
+    // });
 
     it("Permissions should prevent ReEntrancy and stop contract from re-calling and re-transfering ETH.", async () => {
       // we assume the owner is not aware that some malicious code is present at the recipient address (the recipient being a smart contract)
