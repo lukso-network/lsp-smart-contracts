@@ -84,7 +84,7 @@ export const shouldBehaveLikeLSP6 = (
       await setupKeyManager(permissionsKeys, permissionsValues);
     });
 
-    describe("when caller is owner and `transferOwnership(...)` to EOA", () => {
+    describe("when caller has ALL PERMISSIONS and `transferOwnership(...)` to EOA", () => {
       it("UP owner() should have changed", async () => {
         let payload = context.universalProfile.interface.encodeFunctionData(
           "transferOwnership",
@@ -193,7 +193,7 @@ export const shouldBehaveLikeLSP6 = (
     });
 
     describe("when setting one permission key", () => {
-      describe("when caller is UP owner", () => {
+      describe("when caller is an address with ALL PERMISSIONS", () => {
         it("should be allowed to ADD permissions", async () => {
           let newController = new ethers.Wallet.createRandom();
 
@@ -391,7 +391,7 @@ export const shouldBehaveLikeLSP6 = (
     });
 
     describe("when trying to make a DELEGATECALL via UP", () => {
-      it("should revert, even if caller is UP owner", async () => {
+      it("should revert, even if caller has ALL PERMISSIONS", async () => {
         let executePayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
             OPERATIONS.DELEGATECALL,
@@ -455,7 +455,7 @@ export const shouldBehaveLikeLSP6 = (
       await setupKeyManager(permissionKeys, permissionsValues);
     });
 
-    describe("when caller is owner", () => {
+    describe("when caller has ALL PERMISSIONS", () => {
       it("should be allowed to deploy a contract TargetContract via CREATE", async () => {
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
@@ -710,7 +710,7 @@ export const shouldBehaveLikeLSP6 = (
       });
     });
 
-    it("owner should be allowed to transfer value", async () => {
+    it("address with ALL PERMISSIONS should be allowed to transfer value", async () => {
       let initialBalanceUP = await provider.getBalance(
         context.universalProfile.address
       );
@@ -834,7 +834,7 @@ export const shouldBehaveLikeLSP6 = (
       await setupKeyManager(permissionsKeys, permissionsValues);
     });
 
-    it("can verify signature from owner on KeyManager", async () => {
+    it("can verify signature from address with ALL PERMISSIONS on KeyManager", async () => {
       const messageHash = ethers.utils.hashMessage(dataToSign);
       const signature = await context.owner.signMessage(dataToSign);
 

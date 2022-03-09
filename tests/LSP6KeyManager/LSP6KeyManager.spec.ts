@@ -473,6 +473,7 @@ describe("KeyManager", () => {
   });
 
   describe("> testing permissions: CALL, DEPLOY, STATICCALL & DELEGATECALL", () => {
+    /** @call */
     it("Owner should be allowed to make a CALL", async () => {
       let executePayload = universalProfile.interface.encodeFunctionData(
         "execute",
@@ -485,6 +486,7 @@ describe("KeyManager", () => {
       expect(result).toBeTruthy();
     });
 
+    /** @call */
     it("App should be allowed to make a CALL", async () => {
       let executePayload = universalProfile.interface.encodeFunctionData(
         "execute",
@@ -750,6 +752,7 @@ describe("KeyManager", () => {
   });
 
   describe("> testing interactions with a TargetContract", () => {
+    /** @call */
     it("Owner should be allowed to set `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
       let newName = "Updated Name";
@@ -864,6 +867,7 @@ describe("KeyManager", () => {
       );
     });
 
+    /** @call */
     it("Should return `name` variable", async () => {
       let initialName = await targetContract.callStatic.getName();
 
@@ -882,6 +886,7 @@ describe("KeyManager", () => {
       expect(decodedResult).toEqual(initialName);
     });
 
+    /** @call */
     it("Should return `number` variable", async () => {
       let initialNumber = await targetContract.callStatic.getNumber();
 
@@ -902,6 +907,7 @@ describe("KeyManager", () => {
   });
 
   describe("> testing other revert causes", () => {
+    /** @miscellaneous */
     it("Should revert because of wrong operation type", async () => {
       let payload = universalProfile.interface.encodeFunctionData("execute", [
         5648941657,
@@ -915,12 +921,14 @@ describe("KeyManager", () => {
       );
     });
 
+    /** @miscellaneous */
     it("Should revert because calling an unexisting function in ERC725", async () => {
       await expect(
         keyManager.execute("0xbad000000000000000000000000bad")
       ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
 
+    /** @call */
     it("Should revert with a revert reason string from TargetContract", async () => {
       let targetContractPayload =
         targetContract.interface.encodeFunctionData("revertCall");
@@ -1531,6 +1539,7 @@ describe("KeyManager", () => {
       }
     });
 
+    /** @staticcall */
     it("Should revert if STATICCALL tries to change state", async () => {
       let initialValue = targetContract.callStatic.getName();
       let targetContractPayload = targetContract.interface.encodeFunctionData(
