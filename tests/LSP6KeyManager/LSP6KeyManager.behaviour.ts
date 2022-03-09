@@ -1,4 +1,4 @@
-import { ethers, waffle } from "hardhat";
+import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { calculateCreate2 } from "eth-create2-calculator";
 
@@ -8,6 +8,9 @@ import {
   TargetContract__factory,
   TargetContract,
 } from "../../types";
+
+// effects
+import { shouldBehaveLikeAllowedAddresses } from "./effects/AllowedAddresses.test";
 
 // constants
 import {
@@ -34,23 +37,24 @@ export type LSP6TestContext = {
   keyManager: LSP6KeyManager;
 };
 
+export async function setupKeyManager(
+  _context: LSP6TestContext,
+  _permissionsKeys: string[],
+  _permissionsValues: string[]
+) {
+  await _context.universalProfile
+    .connect(_context.owner)
+    .setData(_permissionsKeys, _permissionsValues);
+
+  await _context.universalProfile
+    .connect(_context.owner)
+    .transferOwnership(_context.keyManager.address);
+}
+
 export const shouldBehaveLikeLSP6 = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
-
-  const setupKeyManager = async (
-    _permissionsKeys: string[],
-    _permissionsValues: string[]
-  ) => {
-    await context.universalProfile
-      .connect(context.owner)
-      .setData(_permissionsKeys, _permissionsValues);
-
-    await context.universalProfile
-      .connect(context.owner)
-      .transferOwnership(context.keyManager.address);
-  };
 
   describe("CHANGEOWNER", () => {
     let canChangeOwner: SignerWithAddress,
@@ -82,7 +86,7 @@ export const shouldBehaveLikeLSP6 = (
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
       ];
 
-      await setupKeyManager(permissionsKeys, permissionsValues);
+      await setupKeyManager(context, permissionsKeys, permissionsValues);
     });
 
     describe("when caller has ALL PERMISSIONS and `transferOwnership(...)` to EOA", () => {
@@ -190,7 +194,7 @@ export const shouldBehaveLikeLSP6 = (
         "0x0000000000000000000000000000000000000000000000000000000000000000",
       ];
 
-      await setupKeyManager(permissionKeys, permissionsValues);
+      await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
     describe("when setting one permission key", () => {
@@ -400,7 +404,7 @@ export const shouldBehaveLikeLSP6 = (
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
       ];
 
-      await setupKeyManager(permissionKeys, permissionsValues);
+      await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
     describe("when caller has ALL PERMISSIONS", () => {
@@ -567,7 +571,7 @@ export const shouldBehaveLikeLSP6 = (
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
       ];
 
-      await setupKeyManager(permissionKeys, permissionsValues);
+      await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
     describe("when caller has ALL PERMISSIONS", () => {
@@ -719,7 +723,7 @@ export const shouldBehaveLikeLSP6 = (
         ethers.utils.hexZeroPad(PERMISSIONS.DELEGATECALL, 32),
       ];
 
-      await setupKeyManager(permissionKeys, permissionsValues);
+      await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
     describe("when trying to make a DELEGATECALL via UP", () => {
@@ -769,7 +773,7 @@ export const shouldBehaveLikeLSP6 = (
       addressCanDeploy = context.accounts[1];
       addressCannotDeploy = context.accounts[2];
 
-      let permissionKeys = [
+      const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -778,13 +782,13 @@ export const shouldBehaveLikeLSP6 = (
           addressCannotDeploy.address.substring(2),
       ];
 
-      let permissionsValues = [
+      const permissionsValues = [
         ALL_PERMISSIONS_SET,
         ethers.utils.hexZeroPad(PERMISSIONS.DEPLOY, 32),
         ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
       ];
 
-      await setupKeyManager(permissionKeys, permissionsValues);
+      await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
     describe("when caller has ALL PERMISSIONS", () => {
@@ -1034,7 +1038,7 @@ export const shouldBehaveLikeLSP6 = (
         ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
       ];
 
-      await setupKeyManager(permissionsKeys, permissionsValues);
+      await setupKeyManager(context, permissionsKeys, permissionsValues);
 
       await context.owner.sendTransaction({
         to: context.universalProfile.address,
@@ -1163,7 +1167,7 @@ export const shouldBehaveLikeLSP6 = (
         ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
       ];
 
-      await setupKeyManager(permissionsKeys, permissionsValues);
+      await setupKeyManager(context, permissionsKeys, permissionsValues);
     });
 
     it("can verify signature from address with ALL PERMISSIONS on KeyManager", async () => {
@@ -1211,6 +1215,10 @@ export const shouldBehaveLikeLSP6 = (
     });
   });
 
+  describe("ALLOWEDADDRESSES", () => {
+    shouldBehaveLikeAllowedAddresses(buildContext);
+  });
+
   describe("miscellaneous", () => {
     let targetContract: TargetContract;
 
@@ -1228,7 +1236,7 @@ export const shouldBehaveLikeLSP6 = (
 
       const permissionsValues = [ALL_PERMISSIONS_SET];
 
-      await setupKeyManager(permissionsKeys, permissionsValues);
+      await setupKeyManager(context, permissionsKeys, permissionsValues);
     });
 
     it("Should revert because of wrong operation type", async () => {

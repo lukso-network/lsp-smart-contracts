@@ -44,7 +44,6 @@ import {
   generateKeysAndValues,
   getRandomString,
 } from "../utils/helpers";
-import { Signer } from "ethers";
 
 describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   let abiCoder;
@@ -239,6 +238,95 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
 
     it("_verifyAllowedAddress(...) - Should not revert when user has no address listed (= all addresses whitelisted)", async () => {
       await keyManagerHelper.verifyIfAllowedAddress(user.address, app.address);
+    });
+  });
+});
+
+describe("KeyManagerHelper: reading permissions of multiple empty bytes length", () => {
+  let abiCoder;
+  let accounts: SignerWithAddress[] = [];
+
+  let owner: SignerWithAddress,
+    moreThan32EmptyBytes: SignerWithAddress,
+    lessThan32EmptyBytes: SignerWithAddress,
+    oneEmptyByte: SignerWithAddress;
+
+  let universalProfile: UniversalProfile, keyManagerHelper: KeyManagerHelper;
+
+  beforeAll(async () => {
+    abiCoder = await ethers.utils.defaultAbiCoder;
+    accounts = await ethers.getSigners();
+
+    owner = accounts[0];
+    moreThan32EmptyBytes = accounts[1];
+    lessThan32EmptyBytes = accounts[2];
+    oneEmptyByte = accounts[3];
+
+    universalProfile = await new UniversalProfile__factory(owner).deploy(
+      owner.address
+    );
+
+    keyManagerHelper = await new KeyManagerHelper__factory(owner).deploy(
+      universalProfile.address
+    );
+
+    await universalProfile
+      .connect(owner)
+      .setData(
+        [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            owner.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            moreThan32EmptyBytes.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            lessThan32EmptyBytes.address.substr(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            oneEmptyByte.address.substr(2),
+        ],
+        [
+          ALL_PERMISSIONS_SET,
+          "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000000000",
+          "0x00",
+        ]
+      );
+
+    await universalProfile
+      .connect(owner)
+      .transferOwnership(keyManagerHelper.address);
+  });
+
+  describe("reading permissions", () => {
+    let abiCoder;
+    let expectedEmptyPermission;
+
+    beforeAll(async () => {
+      abiCoder = await ethers.utils.defaultAbiCoder;
+      expectedEmptyPermission = abiCoder.encode(
+        ["bytes32"],
+        ["0x0000000000000000000000000000000000000000000000000000000000000000"]
+      );
+    });
+
+    it("should cast permissions to 32 bytes when reading permissions stored as more than 32 empty bytes", async () => {
+      const result = await keyManagerHelper.getAddressPermissions(
+        moreThan32EmptyBytes.address
+      );
+      expect(result).toEqual(expectedEmptyPermission);
+    });
+
+    it("should cast permissions to 32 bytes when reading permissions stored as less than 32 empty bytes", async () => {
+      const result = await keyManagerHelper.getAddressPermissions(
+        lessThan32EmptyBytes.address
+      );
+      expect(result).toEqual(expectedEmptyPermission);
+    });
+
+    it("should cast permissions to 32 bytes when reading permissions stored as one empty byte", async () => {
+      const result = await keyManagerHelper.getAddressPermissions(
+        oneEmptyByte.address
+      );
+      expect(result).toEqual(expectedEmptyPermission);
     });
   });
 });
@@ -465,82 +553,6 @@ describe("KeyManager", () => {
     }
   });
 
-  describe("> testing permissions: ALLOWEDADDRESSES", () => {
-    it("All addresses whitelisted = Owner should be allowed to interact with any address", async () => {
-      let payload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        "0xcafecafecafecafecafecafecafecafecafecafe",
-        0,
-        DUMMY_PAYLOAD,
-      ]);
-
-      let result = await keyManager.callStatic.execute(payload);
-      expect(result).toBeTruthy();
-
-      let secondPayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATIONS.CALL,
-          "0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd",
-          0,
-          DUMMY_PAYLOAD,
-        ]
-      );
-
-      let secondResult = await keyManager.callStatic.execute(secondPayload);
-      expect(secondResult).toBeTruthy();
-    });
-
-    it("App should be allowed to interact with `TargetContract`", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "setName",
-        ["Test"]
-      );
-
-      let keyManagerPayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
-      );
-
-      let result = await keyManager
-        .connect(app)
-        .callStatic.execute(keyManagerPayload);
-      expect(result).toBeTruthy();
-    });
-
-    it("App should be allowed to interact with `user`", async () => {
-      let payload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        user.address,
-        0,
-        EMPTY_PAYLOAD,
-      ]);
-
-      let result = await keyManager.connect(app).callStatic.execute(payload);
-      expect(result).toBeTruthy();
-    });
-
-    it("App should not be allowed to interact with `0xdeadbeef...` (not allowed address)", async () => {
-      let disallowedAddress = ethers.utils.getAddress(
-        "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-      );
-      let payload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        disallowedAddress,
-        0,
-        DUMMY_PAYLOAD,
-      ]);
-
-      try {
-        await keyManager.connect(app).execute(payload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAllowedAddressError(app.address, disallowedAddress)
-        );
-      }
-    });
-  });
-
   describe("> testing permissions: ALLOWEDFUNCTIONS", () => {
     it("App should not be allowed to run a non-allowed function (function signature = `0xbeefbeef`)", async () => {
       let payload = universalProfile.interface.encodeFunctionData("execute", [
@@ -580,6 +592,7 @@ describe("KeyManager", () => {
     });
   });
 
+  /** @alreadyMigrated ? */
   describe("> testing interactions with a TargetContract", () => {
     /** @call */
     it("Owner should be allowed to set `name` variable", async () => {
@@ -2350,95 +2363,6 @@ describe("setting mixed keys (SETDATA + CHANGE / ADD PERMISSIONS)", () => {
           )
         );
       }
-    });
-  });
-});
-
-describe("Testing permissions of multiple empty bytes length", () => {
-  let abiCoder;
-  let accounts: SignerWithAddress[] = [];
-
-  let owner: SignerWithAddress,
-    moreThan32EmptyBytes: SignerWithAddress,
-    lessThan32EmptyBytes: SignerWithAddress,
-    oneEmptyByte: SignerWithAddress;
-
-  let universalProfile: UniversalProfile, keyManagerHelper: KeyManagerHelper;
-
-  beforeAll(async () => {
-    abiCoder = await ethers.utils.defaultAbiCoder;
-    accounts = await ethers.getSigners();
-
-    owner = accounts[0];
-    moreThan32EmptyBytes = accounts[1];
-    lessThan32EmptyBytes = accounts[2];
-    oneEmptyByte = accounts[3];
-
-    universalProfile = await new UniversalProfile__factory(owner).deploy(
-      owner.address
-    );
-
-    keyManagerHelper = await new KeyManagerHelper__factory(owner).deploy(
-      universalProfile.address
-    );
-
-    await universalProfile
-      .connect(owner)
-      .setData(
-        [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            owner.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            moreThan32EmptyBytes.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            lessThan32EmptyBytes.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            oneEmptyByte.address.substr(2),
-        ],
-        [
-          ALL_PERMISSIONS_SET,
-          "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-          "0x000000000000000000000000000000",
-          "0x00",
-        ]
-      );
-
-    await universalProfile
-      .connect(owner)
-      .transferOwnership(keyManagerHelper.address);
-  });
-
-  describe("reading permissions", () => {
-    let abiCoder;
-    let expectedEmptyPermission;
-
-    beforeAll(async () => {
-      abiCoder = await ethers.utils.defaultAbiCoder;
-      expectedEmptyPermission = abiCoder.encode(
-        ["bytes32"],
-        ["0x0000000000000000000000000000000000000000000000000000000000000000"]
-      );
-    });
-
-    it("should cast permissions to 32 bytes when reading permissions stored as more than 32 empty bytes", async () => {
-      const result = await keyManagerHelper.getAddressPermissions(
-        moreThan32EmptyBytes.address
-      );
-      expect(result).toEqual(expectedEmptyPermission);
-    });
-
-    it("should revert when reading permissions stored as less than 32 empty bytes", async () => {
-      const result = await keyManagerHelper.getAddressPermissions(
-        lessThan32EmptyBytes.address
-      );
-      expect(result).toEqual(expectedEmptyPermission);
-    });
-
-    it("should revert when reading permissions stored as one empty byte", async () => {
-      const result = await keyManagerHelper.getAddressPermissions(
-        oneEmptyByte.address
-      );
-      expect(result).toEqual(expectedEmptyPermission);
     });
   });
 });
