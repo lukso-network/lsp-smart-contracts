@@ -522,43 +522,43 @@ describe("KeyManager", () => {
       }
     });
 
-    it("DELEGATECALL via UP should be disallowed", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATIONS.DELEGATECALL,
-          "0xcafecafecafecafecafecafecafecafecafecafe",
-          0,
-          DUMMY_PAYLOAD,
-        ]
-      );
+    // it("DELEGATECALL via UP should be disallowed", async () => {
+    //   let executePayload = universalProfile.interface.encodeFunctionData(
+    //     "execute",
+    //     [
+    //       OPERATIONS.DELEGATECALL,
+    //       "0xcafecafecafecafecafecafecafecafecafecafe",
+    //       0,
+    //       DUMMY_PAYLOAD,
+    //     ]
+    //   );
 
-      await expect(
-        keyManager.connect(owner).execute(executePayload)
-      ).toBeRevertedWith(
-        "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
-      );
-    });
+    //   await expect(
+    //     keyManager.connect(owner).execute(executePayload)
+    //   ).toBeRevertedWith(
+    //     "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
+    //   );
+    // });
 
-    it("App should not be allowed to DEPLOY a contract", async () => {
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATIONS.CREATE,
-          "0x0000000000000000000000000000000000000000",
-          0,
-          DUMMY_PAYLOAD,
-        ]
-      );
+    // it("App should not be allowed to DEPLOY a contract", async () => {
+    //   let executePayload = universalProfile.interface.encodeFunctionData(
+    //     "execute",
+    //     [
+    //       OPERATIONS.CREATE,
+    //       "0x0000000000000000000000000000000000000000",
+    //       0,
+    //       DUMMY_PAYLOAD,
+    //     ]
+    //   );
 
-      try {
-        await keyManager.connect(app).execute(executePayload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAuthorisedError(app.address, "CREATE")
-        );
-      }
-    });
+    //   try {
+    //     await keyManager.connect(app).execute(executePayload);
+    //   } catch (error) {
+    //     expect(error.message).toMatch(
+    //       NotAuthorisedError(app.address, "CREATE")
+    //     );
+    //   }
+    // });
   });
 
   // describe("> testing permission: TRANSFERVALUE", () => {
