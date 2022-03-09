@@ -534,7 +534,7 @@ export const shouldBehaveLikeLSP6 = (
     });
   });
 
-  describe.only("STATICCALL", () => {
+  describe("STATICCALL", () => {
     let abiCoder = ethers.utils.defaultAbiCoder;
 
     let addressCanMakeStaticCall: SignerWithAddress,
@@ -1208,6 +1208,52 @@ export const shouldBehaveLikeLSP6 = (
         signature
       );
       expect(result).toEqual(ERC1271.FAIL_VALUE);
+    });
+  });
+
+  describe("miscellaneous", () => {
+    let targetContract: TargetContract;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      targetContract = await new TargetContract__factory(
+        context.accounts[0]
+      ).deploy();
+
+      const permissionsKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+      ];
+
+      const permissionsValues = [ALL_PERMISSIONS_SET];
+
+      await setupKeyManager(permissionsKeys, permissionsValues);
+    });
+
+    it("Should revert because of wrong operation type", async () => {
+      let targetPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["new name"]
+      );
+
+      const INVALID_OPERATION_TYPE = 8;
+
+      let payload = context.universalProfile.interface.encodeFunctionData(
+        "execute",
+        [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
+      );
+
+      await expect(context.keyManager.execute(payload)).toBeRevertedWith(
+        "_extractPermissionFromOperation: invalid operation type"
+      );
+    });
+
+    it("Should revert because calling an unexisting function in ERC725", async () => {
+      const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
+      await expect(
+        context.keyManager.execute(INVALID_PAYLOAD)
+      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
   });
 };
