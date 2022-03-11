@@ -1,14 +1,13 @@
 import { ethers } from "hardhat";
 import {
   LSP1UniversalReceiverDelegateUP,
-  LSP1UniversalReceiverDelegateUP__factory,
   UniversalProfile,
-  UniversalProfile__factory,
   LSP6KeyManager,
-  LSP6KeyManager__factory,
 } from "../../types";
 import { deployProxy } from "../utils/proxy";
-import { setupProfileWithKeyManagerWithURD, callPayload } from "../utils/fixtures";
+import {
+  setupProfileWithKeyManagerWithURD,
+} from "../utils/fixtures";
 
 import {
   LSP1TestContext,
@@ -28,7 +27,8 @@ describe("LSP1UniversalReceiverDelegateUP", () => {
       const [UP2, KM2] = await setupProfileWithKeyManagerWithURD(
         accounts.owner2
       );
-      const lsp1universalReceiverDelegateUP = LSP1_URD_UP as LSP1UniversalReceiverDelegateUP;
+      const lsp1universalReceiverDelegateUP =
+        LSP1_URD_UP as LSP1UniversalReceiverDelegateUP;
       const universalProfile1 = UP1 as UniversalProfile;
       const universalProfile2 = UP2 as UniversalProfile;
       const lsp6KeyManager1 = KM1 as LSP6KeyManager;

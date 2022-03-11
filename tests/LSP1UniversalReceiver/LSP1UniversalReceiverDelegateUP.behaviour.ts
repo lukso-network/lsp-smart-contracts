@@ -4,11 +4,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 // types
 import {
   LSP1UniversalReceiverDelegateUP,
-  LSP1UniversalReceiverDelegateUP__factory,
   UniversalProfile,
-  UniversalProfile__factory,
   LSP6KeyManager,
-  LSP6KeyManager__factory,
   LSP7Tester,
   LSP7Tester__factory,
   LSP8Tester,
@@ -18,29 +15,24 @@ import {
 } from "../../types";
 
 // helpers
-import { getRandomAddresses } from "../utils/helpers";
-
 import {
-  LSP5_ARRAY_KEY,
-  LSP10_ARRAY_KEY,
   ARRAY_LENGTH,
-  INDEX,
   TOKEN_ID,
 } from "../utils/helpers";
 
 // constants
 import {
-  ERC1271,
   ERC725YKeys,
   INTERFACE_IDS,
-  SupportedStandards,
 } from "../../constants";
+
+// fixtures
 import {
   callPayload,
   getLSP10MapAndArrayKeysValue,
   getLSP5MapAndArrayKeysValue,
 } from "../utils/fixtures";
-import { tokenToString } from "typescript";
+
 
 export type LSP1TestAccounts = {
   owner1: SignerWithAddress;

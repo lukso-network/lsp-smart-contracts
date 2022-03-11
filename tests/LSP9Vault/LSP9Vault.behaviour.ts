@@ -5,30 +5,20 @@ import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 // types
 import {
-  LSP1UniversalReceiverDelegateUP,
-  LSP1UniversalReceiverDelegateUP__factory,
   LSP6KeyManager,
-  LSP8IdentifiableDigitalAsset,
-  LSP8Tester,
   LSP9Vault,
-  TokenReceiverWithLSP1,
-  TokenReceiverWithLSP1__factory,
-  TokenReceiverWithoutLSP1,
-  TokenReceiverWithoutLSP1__factory,
   UniversalProfile,
-  UniversalReceiverDelegateVaultSetter,
   UniversalReceiverDelegateVaultSetter__factory,
 } from "../../types";
 
+// helpers
 import {
   ARRAY_LENGTH,
   generateKeysAndValues,
   NotAllowedAddressError,
 } from "../utils/helpers";
 
-// helpers
-import { tokenIdAsBytes32 } from "../utils/tokens";
-
+// fixtures
 import { callPayload } from "../utils/fixtures";
 
 // constants
@@ -38,7 +28,6 @@ import {
   SupportedStandards,
   PERMISSIONS,
 } from "../../constants";
-import { executionAsyncId } from "async_hooks";
 
 export type LSP9TestAccounts = {
   owner: SignerWithAddress;
@@ -189,8 +178,8 @@ export const shouldBehaveLikeLSP9 = (
         );
 
         let disallowedAddress = ethers.utils.getAddress(
-        context.universalProfile.address
-      );
+          context.universalProfile.address
+        );
 
         try {
           await context.lsp6KeyManager
@@ -204,7 +193,10 @@ export const shouldBehaveLikeLSP9 = (
             );
         } catch (error) {
           expect(error.message).toMatch(
-            NotAllowedAddressError(context.accounts.friend.address, disallowedAddress)
+            NotAllowedAddressError(
+              context.accounts.friend.address,
+              disallowedAddress
+            )
           );
         }
       });

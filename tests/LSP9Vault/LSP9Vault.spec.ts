@@ -1,12 +1,12 @@
 import {
   LSP9Vault__factory,
   LSP9VaultInit__factory,
-  LSP1UniversalReceiverDelegateUP,
-  LSP1UniversalReceiverDelegateUP__factory,
   UniversalProfile,
   LSP6KeyManager,
 } from "../../types";
+
 import { deployProxy } from "../utils/proxy";
+
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP9,
