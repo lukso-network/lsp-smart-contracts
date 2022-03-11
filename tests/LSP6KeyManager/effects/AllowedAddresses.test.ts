@@ -1,6 +1,12 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
+import { TargetContract, TargetContract__factory } from "../../../types";
+
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
+
 // constants
 import {
   ALL_PERMISSIONS_SET,
@@ -9,20 +15,19 @@ import {
   PERMISSIONS,
 } from "../../../constants";
 
-import { LSP6TestContext, setupKeyManager } from "../LSP6KeyManager.behaviour";
-import { TargetContract, TargetContract__factory } from "../../../types";
+// helpers
 import {
   EMPTY_PAYLOAD,
   getRandomAddresses,
   NotAllowedAddressError,
 } from "../../utils/helpers";
 
+const abiCoder = ethers.utils.defaultAbiCoder;
+const provider = ethers.provider;
+
 export const shouldBehaveLikeAllowedAddresses = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
-  const abiCoder = ethers.utils.defaultAbiCoder;
-  const provider = ethers.provider;
-
   let context: LSP6TestContext;
 
   let canCallOnlyTwoAddresses: SignerWithAddress;

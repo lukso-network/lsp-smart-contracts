@@ -1,20 +1,19 @@
-import { build } from "esbuild";
 import { ethers } from "hardhat";
 
 import {
   UniversalProfile__factory,
   LSP6KeyManager__factory,
   UniversalProfileInit__factory,
-  LSP6KeyManagerInit,
   LSP6KeyManagerInit__factory,
 } from "../../types";
 import { deployProxy } from "../utils/proxy";
 
 import {
-  LSP6TestContext,
   shouldInitializeLikeLSP6,
   shouldBehaveLikeLSP6,
 } from "./LSP6KeyManager.behaviour";
+
+import { LSP6TestContext } from "../utils/context";
 
 describe("LSP6KeyManager", () => {
   describe("when using LSP6KeyManager with constructor", () => {
