@@ -8,15 +8,15 @@ import { deployProxy } from "../utils/proxy";
 import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
 
 import {
-  LSP1TestContext,
+  LSP1DelegateTestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP1Delegate,
-  shouldInitializeLikeLSP1,
+  shouldInitializeLikeLSP1Delegate,
 } from "./LSP1UniversalReceiverDelegateUP.behaviour";
 
 describe("LSP1UniversalReceiverDelegateUP", () => {
   describe("when testing deployed contract", () => {
-    const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
+    const buildLSP1DelegateTestContext = async (): Promise<LSP1DelegateTestContext> => {
       const accounts = await getNamedAccounts();
 
       const [UP1, KM1, LSP1_URD_UP] = await setupProfileWithKeyManagerWithURD(
@@ -44,14 +44,14 @@ describe("LSP1UniversalReceiverDelegateUP", () => {
     };
 
     describe("when deploying the contract", () => {
-      let context: LSP1TestContext;
+      let context: LSP1DelegateTestContext;
 
       beforeEach(async () => {
-        context = await buildLSP1TestContext();
+        context = await buildLSP1DelegateTestContext();
       });
 
       describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP1(async () => {
+        shouldInitializeLikeLSP1Delegate(async () => {
           const { lsp1universalReceiverDelegateUP } = context;
 
           return {
@@ -62,7 +62,7 @@ describe("LSP1UniversalReceiverDelegateUP", () => {
     });
 
     describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP1Delegate(buildLSP1TestContext);
+      shouldBehaveLikeLSP1Delegate(buildLSP1DelegateTestContext);
     });
   });
 });

@@ -45,7 +45,7 @@ export const getNamedAccounts = async (): Promise<LSP1TestAccounts> => {
   };
 };
 
-export type LSP1TestContext = {
+export type LSP1DelegateTestContext = {
   accounts: LSP1TestAccounts;
   universalProfile1: UniversalProfile;
   lsp6KeyManager1: LSP6KeyManager;
@@ -55,9 +55,9 @@ export type LSP1TestContext = {
 };
 
 export const shouldBehaveLikeLSP1Delegate = (
-  buildContext: () => Promise<LSP1TestContext>
+  buildContext: () => Promise<LSP1DelegateTestContext>
 ) => {
-  let context: LSP1TestContext;
+  let context: LSP1DelegateTestContext;
 
   beforeAll(async () => {
     context = await buildContext();
@@ -1558,14 +1558,14 @@ export const shouldBehaveLikeLSP1Delegate = (
   });
 };
 
-export type LSP1InitializeTestContext = {
+export type LSP1DelegateInitializeTestContext = {
   lsp1universalReceiverDelegateUP: LSP1UniversalReceiverDelegateUP;
 };
 
-export const shouldInitializeLikeLSP1 = (
-  buildContext: () => Promise<LSP1InitializeTestContext>
+export const shouldInitializeLikeLSP1Delegate = (
+  buildContext: () => Promise<LSP1DelegateInitializeTestContext>
 ) => {
-  let context: LSP1InitializeTestContext;
+  let context: LSP1DelegateInitializeTestContext;
 
   beforeEach(async () => {
     context = await buildContext();
