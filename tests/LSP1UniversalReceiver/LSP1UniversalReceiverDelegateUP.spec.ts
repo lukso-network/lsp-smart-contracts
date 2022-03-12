@@ -5,14 +5,13 @@ import {
   LSP6KeyManager,
 } from "../../types";
 import { deployProxy } from "../utils/proxy";
-import {
-  setupProfileWithKeyManagerWithURD,
-} from "../utils/fixtures";
+import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
 
 import {
   LSP1TestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP1Delegate,
+  shouldInitializeLikeLSP1,
 } from "./LSP1UniversalReceiverDelegateUP.behaviour";
 
 describe("LSP1UniversalReceiverDelegateUP", () => {
@@ -43,7 +42,27 @@ describe("LSP1UniversalReceiverDelegateUP", () => {
         lsp1universalReceiverDelegateUP,
       };
     };
-    // executing tests with the context above
-    shouldBehaveLikeLSP1Delegate(buildLSP1TestContext);
+
+    describe("when deploying the contract", () => {
+      let context: LSP1TestContext;
+
+      beforeEach(async () => {
+        context = await buildLSP1TestContext();
+      });
+
+      describe("when initializing the contract", () => {
+        shouldInitializeLikeLSP1(async () => {
+          const { lsp1universalReceiverDelegateUP } = context;
+
+          return {
+            lsp1universalReceiverDelegateUP,
+          };
+        });
+      });
+    });
+
+    describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP1Delegate(buildLSP1TestContext);
+    });
   });
 });

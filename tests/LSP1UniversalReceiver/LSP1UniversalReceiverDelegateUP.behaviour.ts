@@ -15,16 +15,10 @@ import {
 } from "../../types";
 
 // helpers
-import {
-  ARRAY_LENGTH,
-  TOKEN_ID,
-} from "../utils/helpers";
+import { ARRAY_LENGTH, TOKEN_ID } from "../utils/helpers";
 
 // constants
-import {
-  ERC725YKeys,
-  INTERFACE_IDS,
-} from "../../constants";
+import { ERC725YKeys, INTERFACE_IDS } from "../../constants";
 
 // fixtures
 import {
@@ -1560,6 +1554,38 @@ export const shouldBehaveLikeLSP1Delegate = (
           expect(elementAddress).toEqual(lsp9VaultC.address);
         });
       });
+    });
+  });
+};
+
+export type LSP1InitializeTestContext = {
+  lsp1universalReceiverDelegateUP: LSP1UniversalReceiverDelegateUP;
+};
+
+export const shouldInitializeLikeLSP1 = (
+  buildContext: () => Promise<LSP1InitializeTestContext>
+) => {
+  let context: LSP1InitializeTestContext;
+
+  beforeEach(async () => {
+    context = await buildContext();
+  });
+
+  describe("when the contract was initialized", () => {
+    it("should have registered the ERC165 interface", async () => {
+      expect(
+        await context.lsp1universalReceiverDelegateUP.supportsInterface(
+          INTERFACE_IDS.ERC165
+        )
+      );
+    });
+
+    it("should have registered the LSP1Delegate interface", async () => {
+      expect(
+        await context.lsp1universalReceiverDelegateUP.supportsInterface(
+          INTERFACE_IDS.LSP1Delegate
+        )
+      );
     });
   });
 };
