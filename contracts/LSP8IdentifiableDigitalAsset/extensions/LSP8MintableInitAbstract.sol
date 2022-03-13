@@ -12,18 +12,12 @@ abstract contract LSP8MintableInitAbstract is
     LSP8MintableCore,
     LSP8IdentifiableDigitalAssetInit
 {
-    /**
-     * @notice Sets the token-Metadata and register LSP8InterfaceId
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
-     */
-    function initialize(
+    function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override onlyInitializing {
-        LSP8IdentifiableDigitalAssetInitAbstract.initialize(
+    ) internal virtual override onlyInitializing {
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_

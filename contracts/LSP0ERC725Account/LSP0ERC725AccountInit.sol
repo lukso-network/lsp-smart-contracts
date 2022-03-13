@@ -11,10 +11,10 @@ import "./LSP0ERC725AccountInitAbstract.sol";
  */
 contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
     /**
-     * @inheritdoc LSP0ERC725AccountInitAbstract
+     * @notice Sets the owner of the contract and register ERC725Account, ERC1271 and LSP1UniversalReceiver interfacesId
+     * @param _newOwner the owner of the contract
      */
-
     function initialize(address _newOwner) public virtual override initializer {
-        LSP0ERC725AccountInitAbstract.initialize(_newOwner);
+        LSP0ERC725AccountInitAbstract._initialize(_newOwner);
     }
 }

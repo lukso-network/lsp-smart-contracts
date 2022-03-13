@@ -1,5 +1,4 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { loadFixture } from "@nomiclabs/hardhat-waffle";
 import { ethers } from "hardhat";
 import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
 import { solidityKeccak256 } from "ethers/lib/utils";
@@ -28,7 +27,6 @@ import {
   BasicUPSetup_Schema,
   ERC725YKeys,
   ERC1271,
-  SupportedStandards,
 } from "../../constants";
 
 // helpers
@@ -37,6 +35,7 @@ import {
   NotAllowedAddressError,
   NotAllowedFunctionError,
   NotAllowedERC725YKeyError,
+  NoPermissionsSetError,
   EMPTY_PAYLOAD,
   DUMMY_PAYLOAD,
   DUMMY_PRIVATEKEY,
@@ -1512,7 +1511,7 @@ describe("KeyManager", () => {
     let provider = ethers.provider;
     let channelId = 0;
 
-    it("Should revert because caller has no permissions set", async () => {
+    it("Should revert when caller has no permissions set", async () => {
       let targetContractPayload = targetContract.interface.encodeFunctionData(
         "setName",
         ["New Contract Name"]
@@ -1523,11 +1522,13 @@ describe("KeyManager", () => {
         [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
       );
 
-      await expect(
-        keyManager.connect(accounts[6]).execute(executePayload)
-      ).toBeRevertedWith(
-        "LSP6Utils:getPermissionsFor: no permissions set for this address"
-      );
+      try {
+        await keyManager.connect(app).execute(executePayload);
+      } catch (error) {
+        expect(error.message).toMatch(
+          NoPermissionsSetError(accounts[6].address)
+        );
+      }
     });
 
     it("Should revert if STATICCALL tries to change state", async () => {
@@ -2693,28 +2694,36 @@ describe("Testing permissions of multiple empty bytes length", () => {
   });
 
   describe("reading permissions", () => {
-    it("should revert when reading permissions stored as more than 32 empty bytes", async () => {
-      await expect(
-        keyManagerHelper.getAddressPermissions(moreThan32EmptyBytes.address)
-      ).toBeRevertedWith(
-        "LSP6Utils:getPermissionsFor: no permissions set for this address"
+    let abiCoder;
+    let expectedEmptyPermission;
+
+    beforeAll(async () => {
+      abiCoder = await ethers.utils.defaultAbiCoder;
+      expectedEmptyPermission = abiCoder.encode(
+        ["bytes32"],
+        ["0x0000000000000000000000000000000000000000000000000000000000000000"]
       );
+    });
+
+    it("should cast permissions to 32 bytes when reading permissions stored as more than 32 empty bytes", async () => {
+      const result = await keyManagerHelper.getAddressPermissions(
+        moreThan32EmptyBytes.address
+      );
+      expect(result).toEqual(expectedEmptyPermission);
     });
 
     it("should revert when reading permissions stored as less than 32 empty bytes", async () => {
-      await expect(
-        keyManagerHelper.getAddressPermissions(lessThan32EmptyBytes.address)
-      ).toBeRevertedWith(
-        "LSP6Utils:getPermissionsFor: no permissions set for this address"
+      const result = await keyManagerHelper.getAddressPermissions(
+        lessThan32EmptyBytes.address
       );
+      expect(result).toEqual(expectedEmptyPermission);
     });
 
     it("should revert when reading permissions stored as one empty byte", async () => {
-      await expect(
-        keyManagerHelper.getAddressPermissions(oneEmptyByte.address)
-      ).toBeRevertedWith(
-        "LSP6Utils:getPermissionsFor: no permissions set for this address"
+      const result = await keyManagerHelper.getAddressPermissions(
+        oneEmptyByte.address
       );
+      expect(result).toEqual(expectedEmptyPermission);
     });
   });
 });
@@ -4637,9 +4646,11 @@ describe("SIGN (ERC1271)", () => {
 
   let keyManager: LSP6KeyManager;
   let UniversalProfile: UniversalProfile;
+
   let owner: SignerWithAddress;
   let signer: SignerWithAddress;
   let thirdParty: SignerWithAddress;
+  let noPermissionsSet: SignerWithAddress;
 
   beforeAll(async () => {
     accounts = await ethers.getSigners();
@@ -4647,6 +4658,8 @@ describe("SIGN (ERC1271)", () => {
     owner = accounts[6];
     signer = accounts[7];
     thirdParty = accounts[8];
+    noPermissionsSet = accounts[9];
+
     UniversalProfile = await new UniversalProfile__factory(owner).deploy(
       owner.address
     );
@@ -4654,26 +4667,18 @@ describe("SIGN (ERC1271)", () => {
       UniversalProfile.address
     );
 
-    // give all permissions to owner
     await UniversalProfile.connect(owner).setData(
       [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          owner.address.substr(2),
-      ],
-      [ALL_PERMISSIONS_SET]
-    );
-
-    // give SIGN permission to signer
-    await UniversalProfile.connect(owner).setData(
-      [
+          owner.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           signer.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           thirdParty.address.substring(2),
       ],
       [
+        ALL_PERMISSIONS_SET,
         ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-        // give CALL permission to non-signer
         ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
       ]
     );
@@ -4681,7 +4686,7 @@ describe("SIGN (ERC1271)", () => {
     await UniversalProfile.connect(owner).transferOwnership(keyManager.address);
   });
 
-  it("Can verify signature from owner on KeyManager", async () => {
+  it("can verify signature from owner on KeyManager", async () => {
     const dataToSign = "0xcafecafe";
     const messageHash = ethers.utils.hashMessage(dataToSign);
     const signature = await owner.signMessage(dataToSign);
@@ -4693,7 +4698,7 @@ describe("SIGN (ERC1271)", () => {
     expect(result).toEqual(ERC1271.MAGIC_VALUE);
   });
 
-  it("Can verify signature from signer on KeyManager", async () => {
+  it("can verify signature from signer on KeyManager", async () => {
     const dataToSign = "0xbeefbeef";
     const messageHash = ethers.utils.hashMessage(dataToSign);
     const signature = await signer.signMessage(dataToSign);
@@ -4705,10 +4710,22 @@ describe("SIGN (ERC1271)", () => {
     expect(result).toEqual(ERC1271.MAGIC_VALUE);
   });
 
-  it("Should fail when verifying signature from address with no SIGN permission", async () => {
+  it("should fail when verifying signature from address with no SIGN permission", async () => {
     const dataToSign = "0xabcdabcd";
     const messageHash = ethers.utils.hashMessage(dataToSign);
     const signature = await thirdParty.signMessage(dataToSign);
+
+    const result = await keyManager.callStatic.isValidSignature(
+      messageHash,
+      signature
+    );
+    expect(result).toEqual(ERC1271.FAIL_VALUE);
+  });
+
+  it("should fail when verifying signature from address with no permissions set", async () => {
+    const dataToSign = "0xabcdabcd";
+    const messageHash = ethers.utils.hashMessage(dataToSign);
+    const signature = await noPermissionsSet.signMessage(dataToSign);
 
     const result = await keyManager.callStatic.isValidSignature(
       messageHash,

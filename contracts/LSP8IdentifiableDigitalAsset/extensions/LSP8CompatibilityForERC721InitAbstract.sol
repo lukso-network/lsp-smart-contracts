@@ -16,18 +16,16 @@ contract LSP8CompatibilityForERC721InitAbstract is
     LSP8CompatibilityForERC721Core,
     LSP8IdentifiableDigitalAssetInitAbstract
 {
-    /**
-     * @notice Sets the name, the symbol and the owner of the token
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the token
-     */
-    function initialize(
+    function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override onlyInitializing {
-        LSP8IdentifiableDigitalAssetInitAbstract.initialize(name_, symbol_, newOwner_);
+    ) internal virtual override onlyInitializing {
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_
+        );
 
         _registerInterface(_INTERFACEID_ERC721);
         _registerInterface(_INTERFACEID_ERC721METADATA);

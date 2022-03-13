@@ -93,23 +93,27 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
 
     // LSP1
 
+    /**
+     * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
+     * @dev Forwards the call to the UniversalReceiverDelegate if set.
+     * @param _typeId The type of call received.
+     * @param _data The data received.
+     */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
         external
         virtual
         override
         returns (bytes memory returnValue)
     {
-        bytes memory receiverData = IERC725Y(this).getDataSingle(
+        bytes memory data = IERC725Y(this).getDataSingle(
             _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
         );
-        returnValue = "";
 
-        // call external contract
-        if (receiverData.length == 20) {
-            address universalReceiverAddress = address(bytes20(receiverData));
-
+        if (data.length >= 20) {
+            address universalReceiverAddress = BytesLib.toAddress(data, 0);
             if (
-                ERC165(universalReceiverAddress).supportsInterface(
+                ERC165Checker.supportsInterface(
+                    universalReceiverAddress,
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
@@ -118,10 +122,7 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
                 ).universalReceiverDelegate(_msgSender(), _typeId, _data);
             }
         }
-
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
-
-        return returnValue;
     }
 
     // ERC173
@@ -145,6 +146,9 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
 
     // internal functions
 
+    /**
+     * @dev Calls the universalReceiver function of the sender if supports LSP1 InterfaceId
+     */
     function _notifyVaultSender(address _sender) internal virtual {
         if (
             ERC165Checker.supportsERC165(_sender) &&
@@ -157,6 +161,9 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
         }
     }
 
+    /**
+     * @dev Calls the universalReceiver function of the recipient if supports LSP1 InterfaceId
+     */
     function _notifyVaultReceiver(address _receiver) internal virtual {
         if (
             ERC165Checker.supportsERC165(_receiver) &&

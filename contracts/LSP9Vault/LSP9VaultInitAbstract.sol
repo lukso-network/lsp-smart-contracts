@@ -11,22 +11,12 @@ import "./LSP9VaultCore.sol";
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
-    /**
-     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key and register
-     * LSP1UniversalReceiver and LSP9Vault InterfaceId
-     * @param _newOwner the owner of the contract
-     */
-    function initialize(address _newOwner)
-        public
-        virtual
-        override
-        onlyInitializing
-    {
+    function _initialize(address _newOwner) internal virtual onlyInitializing {
         ERC725InitAbstract.initialize(_newOwner);
 
         // set key SupportedStandards:LSP9Vault
         _setData(
-            _LSP9_SUPPORTED_STANDARDS_KEY, 
+            _LSP9_SUPPORTED_STANDARDS_KEY,
             _LSP9_SUPPORTED_STANDARDS_VALUE
         );
 

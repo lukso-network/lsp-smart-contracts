@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
+import "../Utils/UtilsLib.sol";
+
 /**
  * @title ERC725 Utility library to encode key types
  * @author Jean Cavallera (CJ-42)
@@ -51,7 +53,7 @@ library LSP2Utils {
         pure
         returns (bytes32)
     {
-        bytes memory elementInArray = abi.encodePacked(
+        bytes memory elementInArray = UtilsLib.concatTwoBytes16(
             bytes16(_arrayKey),
             bytes16(uint128(_index))
         );

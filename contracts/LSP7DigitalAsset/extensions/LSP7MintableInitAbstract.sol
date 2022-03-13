@@ -12,20 +12,13 @@ abstract contract LSP7MintableInitAbstract is
     LSP7MintableCore,
     LSP7DigitalAssetInit
 {
-    /**
-     * @notice Sets the token-Metadata and register LSP7InterfaceId
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
-     * @param isNFT_ Specify if the LSP7 token is a fungible or non-fungible token
-     */
-    function initialize(
+    function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         bool isNFT_
-    ) public virtual override onlyInitializing {
-        LSP7DigitalAssetInitAbstract.initialize(
+    ) internal virtual override onlyInitializing {
+        LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
