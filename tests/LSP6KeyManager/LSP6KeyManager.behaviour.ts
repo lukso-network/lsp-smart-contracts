@@ -22,6 +22,7 @@ import {
   shouldBehaveLikePermissionTransferValue,
   shouldBehaveLikePermissionSign,
   shouldBehaveLikeAllowedAddresses,
+  shouldBehaveLikeAllowedFunctions,
 } from "./effects";
 
 // constants
@@ -70,6 +71,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("ALLOWEDADDRESSES", () => {
     shouldBehaveLikeAllowedAddresses(buildContext);
+  });
+
+  describe("ALLOWEDFUNCTIONS", () => {
+    shouldBehaveLikeAllowedFunctions(buildContext);
   });
 
   describe("miscellaneous", () => {
@@ -124,9 +129,9 @@ export type LSP6InitializeTestContext = {
 };
 
 export const shouldInitializeLikeLSP6 = (
-  buildContext: () => Promise<LSP6InitializeTestContext>
+  buildContext: () => Promise<LSP6TestContext>
 ) => {
-  let context: LSP6InitializeTestContext;
+  let context: LSP6TestContext;
 
   beforeEach(async () => {
     context = await buildContext();

@@ -506,6 +506,7 @@ describe("KeyManager", () => {
     });
   });
 
+  /** @initialise ??? */
   it("Universal Profile's owner should be the Key Manager", async () => {
     const owner = await universalProfile.owner();
     expect(owner).toEqual(keyManager.address);
@@ -553,26 +554,8 @@ describe("KeyManager", () => {
     }
   });
 
-  describe("> testing permissions: ALLOWEDFUNCTIONS", () => {
-    it("App should not be allowed to run a non-allowed function (function signature = `0xbeefbeef`)", async () => {
-      let payload = universalProfile.interface.encodeFunctionData("execute", [
-        OPERATIONS.CALL,
-        targetContract.address,
-        0,
-        "0xbeefbeef123456780000000000",
-      ]);
-
-      try {
-        await keyManager.connect(app).execute(payload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAllowedFunctionError(app.address, "0xbeefbeef")
-        );
-      }
-    });
-  });
-
   describe("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", () => {
+    /** @bug this test is likely to be incorrect */
     it("Should pass if no addresses / functions are stored for a user", async () => {
       let randomPayload = "0xfafbfcfd1201456875dd";
       let executePayload = universalProfile.interface.encodeFunctionData(
@@ -589,124 +572,6 @@ describe("KeyManager", () => {
         .connect(user)
         .callStatic.execute(executePayload);
       expect(callResult).toBeTruthy();
-    });
-  });
-
-  /** @alreadyMigrated ? */
-  describe("> testing interactions with a TargetContract", () => {
-    /** @call */
-    it("Owner should be allowed to set `name` variable", async () => {
-      let initialName = await targetContract.callStatic.getName();
-      let newName = "Updated Name";
-
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "setName",
-        [newName]
-      );
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
-      );
-
-      let callResult = await keyManager
-        .connect(owner)
-        .callStatic.execute(executePayload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(owner).execute(executePayload);
-      let result = await targetContract.callStatic.getName();
-      expect(result !== initialName);
-      expect(result).toEqual(
-        newName,
-        `name variable in TargetContract should now be ${newName}`
-      );
-    });
-
-    it("App should be allowed to set `name` variable", async () => {
-      let initialName = await targetContract.callStatic.getName();
-      let newName = "Updated Name";
-
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "setName",
-        [newName]
-      );
-
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
-      );
-
-      let callResult = await keyManager
-        .connect(app)
-        .callStatic.execute(executePayload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(app).execute(executePayload);
-      let result = await targetContract.callStatic.getName();
-      expect(result !== initialName);
-      expect(result).toEqual(newName);
-    });
-
-    it("Owner should be allowed to set `number` variable", async () => {
-      let initialNumber = await targetContract.callStatic.getNumber();
-      let newNumber = 18;
-
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "setNumber",
-        [newNumber]
-      );
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
-      );
-
-      let callResult = await keyManager
-        .connect(owner)
-        .callStatic.execute(executePayload);
-      expect(callResult).toBeTruthy();
-
-      await keyManager.connect(owner).execute(executePayload);
-      let result = await targetContract.callStatic.getNumber();
-      expect(
-        parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
-          ethers.BigNumber.from(initialNumber).toNumber()
-      );
-      expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(
-        newNumber
-      );
-    });
-
-    it("App should not be allowed to set `number` variable", async () => {
-      let initialNumber = await targetContract.callStatic.getNumber();
-      let newNumber = 18;
-
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "setNumber",
-        [newNumber]
-      );
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
-      );
-
-      try {
-        await keyManager.connect(app).execute(executePayload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAllowedFunctionError(
-            app.address,
-            targetContract.interface.getSighash("setNumber")
-          )
-        );
-      }
-
-      let result = await targetContract.callStatic.getNumber();
-      expect(
-        parseInt(ethers.BigNumber.from(result).toNumber(), 10) !== newNumber
-      );
-      expect(parseInt(ethers.BigNumber.from(result).toNumber(), 10)).toEqual(
-        ethers.BigNumber.from(initialNumber).toNumber()
-      );
     });
   });
 
