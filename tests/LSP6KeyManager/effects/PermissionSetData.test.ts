@@ -11,8 +11,6 @@ import {
   ERC725YKeys,
   ALL_PERMISSIONS_SET,
   PERMISSIONS,
-  OPERATIONS,
-  EventSignatures,
   BasicUPSetup_Schema,
 } from "../../../constants";
 
