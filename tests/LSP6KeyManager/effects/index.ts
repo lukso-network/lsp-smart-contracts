@@ -1,5 +1,6 @@
 export * from "./PermissionChangeOwner.test";
 export * from "./PermissionChangeAddPermissions.test";
+export * from "./PermissionSetData.test";
 export * from "./PermissionCall.test";
 export * from "./PermissionStaticCall.test";
 export * from "./PermissionDelegateCall.test";

@@ -15,6 +15,7 @@ import { setupKeyManager } from "../utils/fixtures";
 import {
   shouldBehaveLikePermissionChangeOwner,
   shouldBehaveLikePermissionChangeOrAddPermissions,
+  shouldBehaveLikePermissionSetData,
   shouldBehaveLikePermissionCall,
   shouldBehaveLikePermissionStaticCall,
   shouldBehaveLikePermissionDelegateCall,
@@ -45,6 +46,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("CHANGE / ADD permissions", () => {
     shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
+  });
+
+  describe("SETDATA", () => {
+    shouldBehaveLikePermissionSetData(buildContext);
   });
 
   describe("CALL", () => {
