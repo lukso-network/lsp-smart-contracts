@@ -569,47 +569,6 @@ describe("KeyManager", () => {
     });
   });
 
-  describe("> testing `executeRelay(...)`", () => {
-    // Use channelId = 0 for sequential nonce
-    let channelId = 0;
-
-    it("should execute a signed tx successfully", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "setName",
-        ["Another name"]
-      );
-      let nonce = await keyManager.callStatic.getNonce(
-        externalApp.address,
-        channelId
-      );
-
-      let executeRelayCallPayload =
-        universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
-
-      let hash = ethers.utils.solidityKeccak256(
-        ["address", "uint256", "bytes"],
-        [keyManager.address, nonce, executeRelayCallPayload]
-      );
-
-      let signature = await externalApp.signMessage(
-        ethers.utils.arrayify(hash)
-      );
-
-      let result = await keyManager.callStatic.executeRelayCall(
-        keyManager.address,
-        nonce,
-        executeRelayCallPayload,
-        signature
-      );
-      expect(result).toBeTruthy();
-    });
-  });
-
   /** @relayer */
   describe("> testing sequential nonces (= channel 0)", () => {
     let channelId = 0;
