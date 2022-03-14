@@ -26,6 +26,7 @@ import {
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
   shouldBehaveLikeAllowedERC725YKeys,
+  shouldBehaveLikeMultiChannelNonce,
 } from "./effects";
 
 // constants
@@ -90,6 +91,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("ALLOWEDERC725YKeys", () => {
     shouldBehaveLikeAllowedERC725YKeys(buildContext);
+  });
+
+  describe("Multi Channel nonces", () => {
+    shouldBehaveLikeMultiChannelNonce(buildContext);
   });
 
   describe("miscellaneous", () => {
