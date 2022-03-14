@@ -7,6 +7,7 @@ import "../LSP6KeyManager/LSP6Constants.sol";
 // libraries
 import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "..//Utils/ERC725Utils.sol";
+import "./ILSP6KeyManager.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;
@@ -53,5 +54,18 @@ library LSP6Utils {
                     bytes20(_address)
                 )
             );
+    }
+
+    function setDataViaKeyManager(
+        address keyManagerAddress,
+        bytes32[] memory keys,
+        bytes[] memory values
+    ) internal returns (bytes memory result) {
+        bytes memory payload = abi.encodeWithSelector(
+            hex"14a6e293",
+            keys,
+            values
+        );
+        result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 }
