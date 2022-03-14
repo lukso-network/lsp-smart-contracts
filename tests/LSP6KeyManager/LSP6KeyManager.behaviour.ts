@@ -23,6 +23,8 @@ import {
   shouldBehaveLikePermissionSign,
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
+  shouldBehaveLikeAllowedStandards,
+  shouldBehaveLikeAllowedERC725YKeys,
 } from "./effects";
 
 // constants
@@ -75,6 +77,14 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("ALLOWEDFUNCTIONS", () => {
     shouldBehaveLikeAllowedFunctions(buildContext);
+  });
+
+  describe.skip("ALLOWEDSTANDARDS", () => {
+    shouldBehaveLikeAllowedStandards(buildContext);
+  });
+
+  describe("ALLOWEDERC725YKeys", () => {
+    shouldBehaveLikeAllowedERC725YKeys(buildContext);
   });
 
   describe("miscellaneous", () => {
@@ -158,7 +168,5 @@ export const shouldInitializeLikeLSP6 = (
       );
       expect(result).toBeTruthy();
     });
-
-    /// @todo it should have set the account it is linked to
   });
 };

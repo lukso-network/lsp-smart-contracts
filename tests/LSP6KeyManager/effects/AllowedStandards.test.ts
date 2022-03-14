@@ -17,6 +17,7 @@ import { setupKeyManager } from "../../utils/fixtures";
 // constants
 import {
   ALL_PERMISSIONS_SET,
+  ERC1271,
   ERC725YKeys,
   INTERFACE_IDS,
   OPERATIONS,
@@ -24,6 +25,7 @@ import {
 } from "../../../constants";
 
 const abiCoder = ethers.utils.defaultAbiCoder;
+const provider = ethers.provider;
 
 export const shouldBehaveLikeAllowedStandards = (
   buildContext: () => Promise<LSP6TestContext>
@@ -77,5 +79,188 @@ export const shouldBehaveLikeAllowedStandards = (
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
+  });
+
+  describe("when caller has no value set for ALLOWEDSTANDARDS (= all interfaces whitelisted)", () => {
+    it("should allow to interact with contract that does not implement any interface", async () => {
+      let newName = "Some Name";
+      let targetPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        [newName]
+      );
+
+      let upPayload = context.universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+      );
+
+      await context.keyManager.connect(context.owner).execute(upPayload);
+      let result = await targetContract.callStatic.getName();
+
+      expect(result).toEqual(newName);
+    });
+
+    describe("should allow to interact with a contract that implement (+ register) any interface", () => {
+      it("ERC1271", async () => {
+        let sampleHash = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("Sample Message")
+        );
+        let sampleSignature = await context.owner.signMessage("Sample Message");
+
+        let payload = signatureValidatorContract.interface.encodeFunctionData(
+          "isValidSignature",
+          [sampleHash, sampleSignature]
+        );
+
+        let upPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+        );
+
+        let data = await context.keyManager
+          .connect(context.owner)
+          .callStatic.execute(upPayload);
+        let [result] = abiCoder.decode(["bytes4"], data);
+        expect(result).toEqual(ERC1271.MAGIC_VALUE);
+      });
+
+      it("LSP0 (ERC725Account", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key"));
+        let value = "0xcafecafecafecafe";
+
+        let setDataPayload =
+          context.universalProfile.interface.encodeFunctionData("setData", [
+            [key],
+            [value],
+          ]);
+
+        await context.keyManager.connect(context.owner).execute(setDataPayload);
+
+        let [result] = await context.universalProfile.callStatic.getData([key]);
+        expect(result).toEqual(value);
+      });
+    });
+  });
+
+  describe("when caller has only ERC1271 interface ID set for ALLOWED STANDARDS", () => {
+    describe("when interacting with a contract that implements + register ERC1271 interface", () => {
+      it("should pass", async () => {
+        let sampleHash = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("Sample Message")
+        );
+        let sampleSignature =
+          await addressCanInteractOnlyWithERC1271.signMessage("Sample Message");
+
+        let payload = signatureValidatorContract.interface.encodeFunctionData(
+          "isValidSignature",
+          [sampleHash, sampleSignature]
+        );
+
+        let upPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+        );
+
+        let data = await context.keyManager
+          .connect(addressCanInteractOnlyWithERC1271)
+          .callStatic.execute(upPayload);
+        let [result] = abiCoder.decode(["bytes4"], data);
+        expect(result).toEqual(ERC1271.MAGIC_VALUE);
+      });
+    });
+
+    describe("when trying to interact an ERC725Account (LSP0)", () => {
+      it("should allow to transfer LYX", async () => {
+        let initialAccountBalance = await provider.getBalance(
+          otherUniversalProfile.address
+        );
+
+        let transferLyxPayload =
+          otherUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            otherUniversalProfile.address,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
+
+        await context.keyManager
+          .connect(addressCanInteractOnlyWithERC1271)
+          .execute(transferLyxPayload);
+
+        let newAccountBalance = await provider.getBalance(
+          otherUniversalProfile.address
+        );
+        expect(parseInt(newAccountBalance)).toBeGreaterThan(
+          parseInt(initialAccountBalance)
+        );
+      });
+    });
+
+    describe("when interacting with contract that does not implement ERC1271", () => {
+      it("should fail", async () => {
+        let targetPayload = targetContract.interface.encodeFunctionData(
+          "setName",
+          ["New Name"]
+        );
+
+        let upPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+        );
+
+        await expect(
+          context.keyManager
+            .connect(addressCanInteractOnlyWithERC1271)
+            .execute(upPayload)
+        ).toBeRevertedWith("Not Allowed Standards");
+      });
+    });
+  });
+
+  describe("when caller has only LSP7 interface ID set for ALLOWED STANDARDS", () => {
+    describe("when interacting with a contract that implements + register ERC1271 interface", () => {
+      it("should fail", async () => {
+        let sampleHash = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("Sample Message")
+        );
+        let sampleSignature = await addressCanInteractOnlyWithLSP7.signMessage(
+          "Sample Message"
+        );
+
+        let payload = signatureValidatorContract.interface.encodeFunctionData(
+          "isValidSignature",
+          [sampleHash, sampleSignature]
+        );
+
+        let upPayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+        );
+
+        await expect(
+          context.keyManager
+            .connect(addressCanInteractOnlyWithLSP7)
+            .execute(upPayload)
+        ).toBeRevertedWith("Not Allowed Standards");
+      });
+    });
+
+    describe("when interacting with an ERC725Account (LSP0)", () => {
+      it("should fail when trying to transfer LYX", async () => {
+        let transferLyxPayload =
+          otherUniversalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            otherUniversalProfile.address,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
+
+        await expect(
+          context.keyManager
+            .connect(addressCanInteractOnlyWithLSP7)
+            .execute(transferLyxPayload)
+        ).toBeRevertedWith("Not Allowed Standard");
+      });
+    });
   });
 };
