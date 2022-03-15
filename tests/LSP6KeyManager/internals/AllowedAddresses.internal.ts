@@ -15,8 +15,7 @@ import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
 
 // helpers
-import { NotAllowedAddressError } from "../../utils/helpers";
-const abiCoder = ethers.utils.defaultAbiCoder;
+import { abiCoder, NotAllowedAddressError } from "../../utils/helpers";
 
 export const testAllowedAddressesInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>

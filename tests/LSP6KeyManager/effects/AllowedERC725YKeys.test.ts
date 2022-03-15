@@ -14,10 +14,10 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
+  abiCoder,
   getRandomString,
   NotAllowedERC725YKeyError,
 } from "../../utils/helpers";
-const abiCoder = ethers.utils.defaultAbiCoder;
 
 export const shouldBehaveLikeAllowedERC725YKeys = (
   buildContext: () => Promise<LSP6TestContext>
@@ -44,8 +44,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
     beforeAll(async () => {
       context = await buildContext();
 
-      controllerCanSetOneKey = context.accounts[0];
-      controllerCanSetManyKeys = context.accounts[1];
+      controllerCanSetOneKey = context.accounts[1];
+      controllerCanSetManyKeys = context.accounts[2];
 
       const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -1071,7 +1071,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
     beforeAll(async () => {
       context = await buildContext();
 
-      controllerCanSetMappingKeys = context.accounts[0];
+      controllerCanSetMappingKeys = context.accounts[1];
 
       const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +

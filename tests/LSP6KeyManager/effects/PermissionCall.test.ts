@@ -16,8 +16,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { NotAuthorisedError } from "../../utils/helpers";
-const abiCoder = ethers.utils.defaultAbiCoder;
+import { abiCoder, NotAuthorisedError } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: () => Promise<LSP6TestContext>

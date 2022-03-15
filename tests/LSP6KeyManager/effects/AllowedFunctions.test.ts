@@ -11,8 +11,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { NotAllowedFunctionError } from "../../utils/helpers";
-const abiCoder = ethers.utils.defaultAbiCoder;
+import { abiCoder, NotAllowedFunctionError } from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>

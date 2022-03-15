@@ -13,7 +13,7 @@ import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
 
 // helpers
-const abiCoder = ethers.utils.defaultAbiCoder;
+import { abiCoder } from "../../utils/helpers";
 
 export const testReadingPermissionsInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>
@@ -130,6 +130,43 @@ export const testReadingPermissionsInternals = (
         oneEmptyByte.address
       );
       expect(result).toEqual(expectedEmptyPermission);
+    });
+  });
+
+  describe("`hasPermissions(...)`", () => {
+    let addressCanSetData: SignerWithAddress;
+
+    beforeAll(async () => {
+      context = await buildContext();
+
+      addressCanSetData = context.accounts[1];
+
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          addressCanSetData.address.substring(2),
+      ];
+
+      const permissionValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+      ];
+
+      await setupKeyManagerHelper(context, permissionKeys, permissionValues);
+    });
+
+    it("Should return true when checking if has permission SETDATA", async () => {
+      let appPermissions = await context.keyManagerHelper.getPermissionsFor(
+        addressCanSetData.address
+      );
+
+      expect(
+        await context.keyManagerHelper.hasPermission(
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+          appPermissions
+        )
+      ).toBeTruthy();
     });
   });
 

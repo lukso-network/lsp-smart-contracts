@@ -12,10 +12,13 @@ import {
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-const provider = ethers.provider;
 
 // helpers
-import { EMPTY_PAYLOAD, NotAuthorisedError } from "../../utils/helpers";
+import {
+  provider,
+  EMPTY_PAYLOAD,
+  NotAuthorisedError,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionTransferValue = (
   buildContext: () => Promise<LSP6TestContext>

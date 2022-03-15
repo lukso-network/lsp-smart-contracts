@@ -24,8 +24,8 @@ import {
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-const abiCoder = ethers.utils.defaultAbiCoder;
-const provider = ethers.provider;
+// helpers
+import { abiCoder, provider } from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedStandards = (
   buildContext: () => Promise<LSP6TestContext>

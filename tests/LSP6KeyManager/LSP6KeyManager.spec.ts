@@ -1,328 +1,145 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 import {
-  UniversalProfile,
   UniversalProfile__factory,
-  KeyManagerHelper,
-  KeyManagerHelper__factory,
-  LSP6KeyManager,
   LSP6KeyManager__factory,
-  TargetContract,
-  TargetContract__factory,
-  SignatureValidator,
-  SignatureValidator__factory,
-  Reentrancy,
-  Reentrancy__factory,
+  UniversalProfileInit__factory,
+  LSP6KeyManagerInit__factory,
+  KeyManagerHelper__factory,
 } from "../../types";
 
-// constants
+import { LSP6TestContext } from "../utils/context";
+import { deployProxy } from "../utils/proxy";
+
 import {
-  ALL_PERMISSIONS_SET,
-  PERMISSIONS,
-  OPERATIONS,
-  INTERFACE_IDS,
-  BasicUPSetup_Schema,
-  ERC725YKeys,
-  ERC1271,
-} from "../../constants";
+  shouldInitializeLikeLSP6,
+  shouldBehaveLikeLSP6,
+  testLSP6InternalFunctions,
+} from "./LSP6KeyManager.behaviour";
 
-// helpers
-import {
-  NotAuthorisedError,
-  NotAllowedAddressError,
-  NotAllowedFunctionError,
-  NotAllowedERC725YKeyError,
-  NoPermissionsSetError,
-  EMPTY_PAYLOAD,
-  DUMMY_PAYLOAD,
-  DUMMY_PRIVATEKEY,
-  ONE_ETH,
-  getRandomAddresses,
-  generateKeysAndValues,
-  getRandomString,
-} from "../utils/helpers";
+describe("LSP6KeyManager", () => {
+  describe("when using LSP6KeyManager with constructor", () => {
+    const buildTestContext = async (): Promise<LSP6TestContext> => {
+      const accounts = await ethers.getSigners();
+      const owner = accounts[0];
 
-describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
-  let abiCoder;
-  let accounts: SignerWithAddress[] = [];
-
-  let owner: SignerWithAddress, app: SignerWithAddress, user: SignerWithAddress;
-
-  let universalProfile: UniversalProfile, keyManagerHelper: KeyManagerHelper;
-
-  let allowedAddresses;
-
-  beforeAll(async () => {
-    abiCoder = await ethers.utils.defaultAbiCoder;
-    accounts = await ethers.getSigners();
-
-    owner = accounts[0];
-    app = accounts[1];
-    user = accounts[2];
-
-    universalProfile = await new UniversalProfile__factory(owner).deploy(
-      owner.address
-    );
-    keyManagerHelper = await new KeyManagerHelper__factory(owner).deploy(
-      universalProfile.address
-    );
-
-    allowedAddresses = getRandomAddresses(2);
-
-    await universalProfile
-      .connect(owner)
-      .setData(
-        [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            owner.address.substr(2),
-        ],
-        [ALL_PERMISSIONS_SET]
+      const universalProfile = await new UniversalProfile__factory(
+        owner
+      ).deploy(owner.address);
+      const keyManager = await new LSP6KeyManager__factory(owner).deploy(
+        universalProfile.address
       );
 
-    let allowedFunctions = ["0xaabbccdd", "0x3fb5c1cb", "0xc47f0027"];
+      return { accounts, owner, universalProfile, keyManager };
+    };
 
-    await universalProfile.setData(
-      [
-        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-          owner.address.substr(2),
-      ],
-      [abiCoder.encode(["address[]"], [allowedAddresses])]
-    );
+    describe("when deploying the contract", () => {
+      let context: LSP6TestContext;
 
-    await universalProfile.setData(
-      [
-        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
-          owner.address.substr(2),
-      ],
-      [abiCoder.encode(["bytes4[]"], [allowedFunctions])]
-    );
+      beforeEach(async () => {
+        context = await buildTestContext();
+      });
 
-    // app permissions
-    let appPermissions = ethers.utils.hexZeroPad(
-      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
-      32
-    );
-    await universalProfile
-      .connect(owner)
-      .setData(
-        [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            app.address.substr(2),
-        ],
-        [appPermissions]
-      );
-  });
-
-  /** @permissions */
-  describe("Testing allowed permissions", () => {
-    it("Should return true for operation setData", async () => {
-      let appPermissions = await keyManagerHelper.getPermissionsFor(
-        app.address
-      );
-      expect(
-        await keyManagerHelper.hasPermission(
-          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-          appPermissions
-        )
-      ).toBeTruthy();
-    });
-  });
-});
-
-describe("KeyManager", () => {
-  let abiCoder;
-  let accounts: SignerWithAddress[] = [];
-
-  let owner: SignerWithAddress,
-    app: SignerWithAddress,
-    user: SignerWithAddress,
-    externalApp: SignerWithAddress,
-    newUser: SignerWithAddress;
-
-  let universalProfile: UniversalProfile,
-    keyManager: LSP6KeyManager,
-    targetContract: TargetContract,
-    maliciousContract: Reentrancy;
-
-  let addressPermissions, allowedAddresses;
-
-  beforeAll(async () => {
-    abiCoder = await ethers.utils.defaultAbiCoder;
-    accounts = await ethers.getSigners();
-
-    owner = accounts[0];
-    app = accounts[1];
-    user = accounts[2];
-    externalApp = new ethers.Wallet(DUMMY_PRIVATEKEY, ethers.provider);
-    newUser = accounts[5];
-
-    universalProfile = await new UniversalProfile__factory(owner).deploy(
-      owner.address
-    );
-    keyManager = await new LSP6KeyManager__factory(owner).deploy(
-      universalProfile.address
-    );
-    targetContract = await new TargetContract__factory(owner).deploy();
-    maliciousContract = await new Reentrancy__factory(accounts[6]).deploy(
-      keyManager.address
-    );
-
-    allowedAddresses = getRandomAddresses(2);
-
-    let appPermissions = ethers.utils.hexZeroPad(
-      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
-      32
-    );
-    let userPermissions = ethers.utils.hexZeroPad(
-      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
-      32
-    );
-    let externalAppPermissions = ethers.utils.hexZeroPad(
-      PERMISSIONS.SETDATA + PERMISSIONS.CALL,
-      32
-    );
-    let newUserPermissions = ethers.utils.hexZeroPad(
-      PERMISSIONS.SETDATA + PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-      32
-    );
-
-    await universalProfile
-      .connect(owner)
-      .setData(
-        [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            owner.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            user.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            externalApp.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-            newUser.address.substr(2),
-        ],
-        [
-          ALL_PERMISSIONS_SET,
-          appPermissions,
-          userPermissions,
-          externalAppPermissions,
-          newUserPermissions,
-        ]
-      );
-
-    await universalProfile
-      .connect(owner)
-      .setData(
-        [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-            app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-            externalApp.address.substr(2),
-        ],
-        [
-          abiCoder.encode(
-            ["address[]"],
-            [[targetContract.address, user.address]]
-          ),
-          abiCoder.encode(
-            ["address[]"],
-            [[targetContract.address, user.address]]
-          ),
-        ]
-      );
-
-    // do not allow the app to `setNumber` on TargetContract
-    await universalProfile
-      .connect(owner)
-      .setData(
-        [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
-            app.address.substr(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
-            externalApp.address.substr(2),
-        ],
-        [
-          abiCoder.encode(
-            ["bytes4[]"],
-            [[targetContract.interface.getSighash("setName(string)")]]
-          ),
-          abiCoder.encode(
-            ["bytes4[]"],
-            [[targetContract.interface.getSighash("setName(string)")]]
-          ),
-        ]
-      );
-
-    // Set AddressPermissions array
-    addressPermissions = [
-      { key: ERC725YKeys.LSP6["AddressPermissions[]"], value: "0x05" },
-      {
-        key:
-          ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
-          "00000000000000000000000000000000",
-        value: owner.address,
-      },
-      {
-        key:
-          ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
-          "00000000000000000000000000000001",
-        value: app.address,
-      },
-      {
-        key:
-          ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
-          "00000000000000000000000000000002",
-        value: user.address,
-      },
-      {
-        key:
-          ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
-          "00000000000000000000000000000003",
-        value: ethers.utils.getAddress(externalApp.address),
-      },
-      {
-        key:
-          ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
-          "00000000000000000000000000000004",
-        value: newUser.address,
-      },
-    ];
-
-    addressPermissions.map(async (element) => {
-      await universalProfile
-        .connect(owner)
-        .setData([element.key], [element.value]);
+      describe("when initializing the contract", () => {
+        shouldInitializeLikeLSP6(async () => {
+          const { accounts, owner, universalProfile, keyManager } = context;
+          return {
+            accounts,
+            owner,
+            universalProfile,
+            keyManager,
+          };
+        });
+      });
     });
 
-    // switch account management to KeyManager
-    await universalProfile.connect(owner).transferOwnership(keyManager.address);
+    describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP6(buildTestContext);
+    });
 
-    /** @todo find other way to ensure ERC725 Account has always 10 LYX before each test (and not transfer every time test is re-run) */
-    await owner.sendTransaction({
-      to: universalProfile.address,
-      value: ethers.utils.parseEther("10"),
+    describe("testing internal functions", () => {
+      testLSP6InternalFunctions(async () => {
+        const accounts = await ethers.getSigners();
+        const owner = accounts[0];
+
+        const universalProfile = await new UniversalProfile__factory(
+          owner
+        ).deploy(owner.address);
+        const keyManagerHelper = await new KeyManagerHelper__factory(
+          owner
+        ).deploy(universalProfile.address);
+
+        return { owner, accounts, universalProfile, keyManagerHelper };
+      });
     });
   });
 
-  describe("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", () => {
-    /** @bug this test is likely to be incorrect */
-    it("Should pass if no addresses / functions are stored for a user", async () => {
-      let randomPayload = "0xfafbfcfd1201456875dd";
-      let executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATIONS.CALL,
-          "0xcafecafecafecafecafecafecafecafecafecafe",
-          0,
-          randomPayload,
-        ]
+  describe("when using LSP6KeyManager with proxy", () => {
+    const buildTestContext = async (): Promise<LSP6TestContext> => {
+      const accounts = await ethers.getSigners();
+      const owner = accounts[0];
+
+      const baseUP = await new UniversalProfileInit__factory(owner).deploy();
+      const upProxy = await deployProxy(baseUP.address, owner);
+      const universalProfile = await baseUP.attach(upProxy);
+
+      const baseKM = await new LSP6KeyManagerInit__factory(owner).deploy();
+      const kmProxy = await deployProxy(baseKM.address, owner);
+      const keyManager = await baseKM.attach(kmProxy);
+
+      return { accounts, owner, universalProfile, keyManager };
+    };
+
+    const initializeProxy = async (context: LSP6TestContext) => {
+      await context.universalProfile["initialize(address)"](
+        context.owner.address
       );
 
-      let callResult = await keyManager
-        .connect(user)
-        .callStatic.execute(executePayload);
-      expect(callResult).toBeTruthy();
+      await context.keyManager["initialize(address)"](
+        context.universalProfile.address
+      );
+
+      return context;
+    };
+
+    describe("when deploying the contract as proxy", () => {
+      let context: LSP6TestContext;
+
+      beforeEach(async () => {
+        context = await buildTestContext();
+      });
+
+      describe("when initializing the contract", () => {
+        shouldInitializeLikeLSP6(async () => {
+          const { accounts, owner, universalProfile, keyManager } = context;
+          await initializeProxy(context);
+
+          return {
+            accounts,
+            owner,
+            universalProfile,
+            keyManager,
+          };
+        });
+      });
+
+      describe("when calling `initialize(...) more than once`", () => {
+        it("should revert", async () => {
+          await initializeProxy(context);
+
+          await expect(initializeProxy(context)).toBeRevertedWith(
+            "Initializable: contract is already initialized"
+          );
+        });
+      });
+    });
+
+    describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP6(async () => {
+        let context = await buildTestContext();
+        await initializeProxy(context);
+        return context;
+      });
     });
   });
 });

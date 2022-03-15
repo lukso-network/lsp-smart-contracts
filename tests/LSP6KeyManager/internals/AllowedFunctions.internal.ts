@@ -2,14 +2,14 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
+import { ERC725YKeys, PERMISSIONS } from "../../../constants";
 
 // setup
 import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
 
 // helpers
-import { ERC725YKeys, PERMISSIONS } from "../../../constants";
-const abiCoder = ethers.utils.defaultAbiCoder;
+import { abiCoder } from "../../utils/helpers";
 
 export const testAllowedFunctionsInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>

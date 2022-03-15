@@ -22,11 +22,11 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
+  provider,
   EMPTY_PAYLOAD,
   NoPermissionsSetError,
   ONE_ETH,
 } from "../../utils/helpers";
-const provider = ethers.provider;
 
 export const testSecurityScenarios = (
   buildContext: () => Promise<LSP6TestContext>

@@ -17,13 +17,12 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
+  abiCoder,
+  provider,
   EMPTY_PAYLOAD,
   getRandomAddresses,
   NotAllowedAddressError,
 } from "../../utils/helpers";
-
-const abiCoder = ethers.utils.defaultAbiCoder;
-const provider = ethers.provider;
 
 export const shouldBehaveLikeAllowedAddresses = (
   buildContext: () => Promise<LSP6TestContext>
