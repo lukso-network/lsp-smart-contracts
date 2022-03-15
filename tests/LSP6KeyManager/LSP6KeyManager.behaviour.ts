@@ -8,7 +8,7 @@ import {
 } from "../../types";
 
 // setup
-import { LSP6TestContext } from "../utils/context";
+import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 import { setupKeyManager } from "../utils/fixtures";
 
 // effects
@@ -28,6 +28,13 @@ import {
   shouldBehaveLikeAllowedERC725YKeys,
   shouldBehaveLikeMultiChannelNonce,
 } from "./effects";
+
+// internal
+import {
+  testAllowedAddressesInternals,
+  testAllowedFunctionsInternals,
+  testReadingPermissionsInternals,
+} from "./internals";
 
 // constants
 import {
@@ -117,6 +124,10 @@ export const shouldBehaveLikeLSP6 = (
       await setupKeyManager(context, permissionsKeys, permissionsValues);
     });
 
+    it.skip("send an empty payload to `keyManager.execute('0x')`", async () => {
+      await context.keyManager.connect(context.owner).execute("0x");
+    });
+
     it("Should revert because of wrong operation type", async () => {
       let targetPayload = targetContract.interface.encodeFunctionData(
         "setName",
@@ -142,10 +153,6 @@ export const shouldBehaveLikeLSP6 = (
       ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
   });
-};
-
-export type LSP6InitializeTestContext = {
-  keyManager: LSP6KeyManager;
 };
 
 export const shouldInitializeLikeLSP6 = (
@@ -178,5 +185,18 @@ export const shouldInitializeLikeLSP6 = (
       );
       expect(result).toBeTruthy();
     });
+
+    it("should be linked to the right ERC725 account contract", async () => {
+      let account = await context.keyManager.account();
+      expect(account).toEqual(context.universalProfile.address);
+    });
   });
+};
+
+export const testLSP6InternalFunctions = (
+  buildContext: () => Promise<LSP6InternalsTestContext>
+) => {
+  testAllowedAddressesInternals(buildContext);
+  testAllowedFunctionsInternals(buildContext);
+  testReadingPermissionsInternals(buildContext);
 };

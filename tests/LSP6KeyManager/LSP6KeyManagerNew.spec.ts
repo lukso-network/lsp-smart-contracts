@@ -5,12 +5,14 @@ import {
   LSP6KeyManager__factory,
   UniversalProfileInit__factory,
   LSP6KeyManagerInit__factory,
+  KeyManagerHelper__factory,
 } from "../../types";
 import { deployProxy } from "../utils/proxy";
 
 import {
   shouldInitializeLikeLSP6,
   shouldBehaveLikeLSP6,
+  testLSP6InternalFunctions,
 } from "./LSP6KeyManager.behaviour";
 
 import { LSP6TestContext } from "../utils/context";
@@ -52,6 +54,22 @@ describe("LSP6KeyManager", () => {
 
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP6(buildTestContext);
+    });
+
+    describe("testing internal functions", () => {
+      testLSP6InternalFunctions(async () => {
+        const accounts = await ethers.getSigners();
+        const owner = accounts[0];
+
+        const universalProfile = await new UniversalProfile__factory(
+          owner
+        ).deploy(owner.address);
+        const keyManagerHelper = await new KeyManagerHelper__factory(
+          owner
+        ).deploy(universalProfile.address);
+
+        return { owner, accounts, universalProfile, keyManagerHelper };
+      });
     });
   });
 
