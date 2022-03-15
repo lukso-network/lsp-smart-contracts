@@ -134,4 +134,94 @@ export const testReadingPermissionsInternals = (
       expect(result).toEqual(expectedEmptyPermission);
     });
   });
+
+  describe("AddressPermissions[]", () => {
+    let firstBeneficiary: SignerWithAddress,
+      secondBeneficiary: SignerWithAddress,
+      thirdBeneficiary: SignerWithAddress,
+      fourthBeneficiary: SignerWithAddress;
+
+    let permissionArrayKeys: string[] = [];
+    let permissionArrayValues: string[] = [];
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      firstBeneficiary = context.accounts[1];
+      secondBeneficiary = context.accounts[2];
+      thirdBeneficiary = context.accounts[3];
+      fourthBeneficiary = context.accounts[4];
+
+      let permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          firstBeneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          secondBeneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          thirdBeneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          fourthBeneficiary.address.substring(2),
+      ];
+
+      let permissionValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+      ];
+
+      // set AddressPermissions array keys
+      permissionArrayKeys = [
+        ERC725YKeys.LSP6["AddressPermissions[]"],
+        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+          "00000000000000000000000000000000",
+        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+          "00000000000000000000000000000001",
+        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+          "00000000000000000000000000000002",
+        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+          "00000000000000000000000000000003",
+        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+          "00000000000000000000000000000004",
+      ];
+
+      // set AddressPermissions array values
+      permissionArrayValues = [
+        "0x05",
+        context.owner.address,
+        firstBeneficiary.address,
+        secondBeneficiary.address,
+        thirdBeneficiary.address,
+        fourthBeneficiary.address,
+      ];
+
+      permissionKeys = permissionKeys.concat(permissionArrayKeys);
+      permissionValues = permissionValues.concat(permissionArrayValues);
+
+      await setupKeyManagerHelper(context, permissionKeys, permissionValues);
+    });
+
+    it("Value should be 5 for key 'AddressPermissions[]'", async () => {
+      console.log(permissionArrayKeys);
+      let [result] = await context.universalProfile.getData([
+        ERC725YKeys.LSP6["AddressPermissions[]"],
+      ]);
+      expect(result).toEqual("0x05");
+    });
+
+    // check array indexes individually
+    for (let ii = 1; ii <= 5; ii++) {
+      it(`Checking address (=value) stored at AddressPermissions[${ii}]'`, async () => {
+        let [result] = await context.universalProfile.getData([
+          permissionArrayKeys[ii],
+        ]);
+        // raw bytes are stored lower case, so we need to checksum the address retrieved
+        result = ethers.utils.getAddress(result);
+        expect(result).toEqual(permissionArrayValues[ii]);
+      });
+    }
+  });
 };

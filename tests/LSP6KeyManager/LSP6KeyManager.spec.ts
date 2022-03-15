@@ -305,30 +305,6 @@ describe("KeyManager", () => {
     });
   });
 
-  describe("> Verifying permissions", () => {
-    // check the array length
-    it("Value should be 5 for key 'AddressPermissions[]'", async () => {
-      let [result] = await universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions[]"],
-      ]);
-      expect(result).toEqual(addressPermissions[0].value);
-    });
-
-    // check array indexes individually
-    for (let ii = 1; ii <= 5; ii++) {
-      it(`Checking address (=value) stored at AddressPermissions[${
-        ii - 1
-      }]'`, async () => {
-        let [result] = await universalProfile.getData([
-          addressPermissions[ii].key,
-        ]);
-        // raw bytes are stored lower case, so we need to checksum the address retrieved
-        result = ethers.utils.getAddress(result);
-        expect(result).toEqual(addressPermissions[ii].value);
-      });
-    }
-  });
-
   describe("> testing: ALL ADDRESSES + FUNCTIONS whitelisted", () => {
     /** @bug this test is likely to be incorrect */
     it("Should pass if no addresses / functions are stored for a user", async () => {
