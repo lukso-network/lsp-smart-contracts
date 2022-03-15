@@ -117,7 +117,7 @@ describe("Testing KeyManager's internal functions (KeyManagerHelper)", () => {
   /** @permissions */
   describe("Testing allowed permissions", () => {
     it("Should return true for operation setData", async () => {
-      let appPermissions = await keyManagerHelper.getAddressPermissions(
+      let appPermissions = await keyManagerHelper.getPermissionsFor(
         app.address
       );
       expect(

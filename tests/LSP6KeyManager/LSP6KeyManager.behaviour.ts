@@ -86,7 +86,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedFunctions(buildContext);
   });
 
-  describe.skip("ALLOWEDSTANDARDS", () => {
+  describe("ALLOWEDSTANDARDS", () => {
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 

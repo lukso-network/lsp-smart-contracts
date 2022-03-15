@@ -37,6 +37,8 @@ export const testSecurityScenarios = (
     relayer: SignerWithAddress,
     addressWithNoPermissions: SignerWithAddress;
 
+  let attacker: SignerWithAddress;
+
   let targetContract: TargetContract, maliciousContract: Reentrancy;
 
   beforeEach(async () => {
@@ -46,13 +48,15 @@ export const testSecurityScenarios = (
     relayer = context.accounts[2];
     addressWithNoPermissions = context.accounts[3];
 
+    attacker = context.accounts[4];
+
     targetContract = await new TargetContract__factory(
       context.accounts[0]
     ).deploy();
 
-    maliciousContract = await new Reentrancy__factory(
-      context.accounts[6]
-    ).deploy(context.keyManager.address);
+    maliciousContract = await new Reentrancy__factory(attacker).deploy(
+      context.keyManager.address
+    );
 
     const permissionKeys = [
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -118,12 +122,10 @@ export const testSecurityScenarios = (
       // every time the contract receives LYX
       await maliciousContract.loadPayload(executePayload);
 
-      console.log("maliciousContract: ", maliciousContract);
-
       let initialAccountBalance = await provider.getBalance(
         context.universalProfile.address
       );
-      let initialAttackerBalance = await provider.getBalance(
+      let initialAttackerContractBalance = await provider.getBalance(
         maliciousContract.address
       );
 
@@ -135,14 +137,14 @@ export const testSecurityScenarios = (
       let newAccountBalance = await provider.getBalance(
         context.universalProfile.address
       );
-      let newAttackerBalance = await provider.getBalance(
+      let newAttackerContractBalance = await provider.getBalance(
         maliciousContract.address
       );
 
       expect(parseInt(newAccountBalance.toString())).toEqual(
         initialAccountBalance.toString() - ONE_ETH.toString()
       );
-      expect(parseInt(newAttackerBalance.toString())).toEqual(
+      expect(parseInt(newAttackerContractBalance.toString())).toEqual(
         parseInt(ONE_ETH.toString())
       );
     });

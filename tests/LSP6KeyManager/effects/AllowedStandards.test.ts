@@ -42,8 +42,8 @@ export const shouldBehaveLikeAllowedStandards = (
   beforeEach(async () => {
     context = await buildContext();
 
-    addressCanInteractOnlyWithERC1271 = context.accounts[0];
-    addressCanInteractOnlyWithLSP7 = context.accounts[1];
+    addressCanInteractOnlyWithERC1271 = context.accounts[1];
+    addressCanInteractOnlyWithLSP7 = context.accounts[2];
 
     targetContract = await new TargetContract__factory(
       context.accounts[0]
@@ -79,6 +79,11 @@ export const shouldBehaveLikeAllowedStandards = (
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
+
+    await context.owner.sendTransaction({
+      to: context.universalProfile.address,
+      value: ethers.utils.parseEther("10"),
+    });
   });
 
   describe("when caller has no value set for ALLOWEDSTANDARDS (= all interfaces whitelisted)", () => {
@@ -124,7 +129,7 @@ export const shouldBehaveLikeAllowedStandards = (
         expect(result).toEqual(ERC1271.MAGIC_VALUE);
       });
 
-      it("LSP0 (ERC725Account", async () => {
+      it("LSP0 (ERC725Account)", async () => {
         let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Key"));
         let value = "0xcafecafecafecafe";
 

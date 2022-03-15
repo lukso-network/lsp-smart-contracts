@@ -44,8 +44,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
     beforeAll(async () => {
       context = await buildContext();
 
-      controllerCanSetOneKey = context.accounts[1];
-      controllerCanSetManyKeys = context.accounts[2];
+      controllerCanSetOneKey = context.accounts[0];
+      controllerCanSetManyKeys = context.accounts[1];
 
       const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -1071,7 +1071,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
     beforeAll(async () => {
       context = await buildContext();
 
-      controllerCanSetMappingKeys = context.accounts[1];
+      controllerCanSetMappingKeys = context.accounts[0];
 
       const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -1105,16 +1105,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               [mappingValue],
             ]);
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
-
-          let receipt = await tx.wait();
-
-          console.log(
-            "set SupportedStandardsL:LSPX ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
 
           let [result] = await context.universalProfile.getData([mappingKey]);
           expect(result).toEqual(mappingValue);
@@ -1132,16 +1125,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               [mappingValue],
             ]);
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
-
-          let receipt = await tx.wait();
-
-          console.log(
-            "override SupportedStandards:LSPX ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
 
           let [result] = await context.universalProfile.getData([mappingKey]);
           expect(result).toEqual(mappingValue);
@@ -1224,16 +1210,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               mappingValues,
             ]);
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
-
-          let receipt = await tx.wait();
-
-          console.log(
-            "set SupportedStandards:LSPY + LSPZ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
 
           let result = await context.universalProfile.getData(mappingKeys);
           expect(result).toEqual(mappingValues);
@@ -1249,16 +1228,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               mappingValues,
             ]);
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
-
-          let receipt = await tx.wait();
-
-          console.log(
-            "override SupportedStandards:LSPY + LSPZ",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
 
           let result = await context.universalProfile.getData(mappingKeys);
           expect(result).toEqual(mappingValues);
@@ -1278,16 +1250,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               mappingValues,
             ]);
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
-
-          let receipt = await tx.wait();
-
-          console.log(
-            "set SupportedStandards:LSPA + LSPB + LSPC",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
 
           let result = await context.universalProfile.getData(mappingKeys);
           expect(result).toEqual(mappingValues);
@@ -1307,20 +1272,11 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               mappingValues,
             ]);
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
 
-          let receipt = await tx.wait();
-
-          console.log(
-            "set SupportedStandards:LSPA + LSPB + LSPC",
-            ethers.BigNumber.from(receipt.gasUsed).toNumber()
-          );
-
-          let result = await context.universalProfile["getData(bytes32[])"](
-            mappingKeys
-          );
+          let result = await context.universalProfile.getData(mappingKeys);
           expect(result).toEqual(mappingValues);
         });
 
