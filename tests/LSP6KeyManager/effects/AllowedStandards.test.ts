@@ -10,10 +10,6 @@ import {
   UniversalProfile__factory,
 } from "../../../types";
 
-// setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-
 // constants
 import {
   ALL_PERMISSIONS_SET,
@@ -23,6 +19,10 @@ import {
   OPERATIONS,
   PERMISSIONS,
 } from "../../../constants";
+
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 const abiCoder = ethers.utils.defaultAbiCoder;
 const provider = ethers.provider;

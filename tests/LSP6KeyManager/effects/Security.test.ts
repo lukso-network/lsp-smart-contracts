@@ -8,10 +8,6 @@ import {
   TargetContract__factory,
 } from "../../../types";
 
-// setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-
 // constants
 import {
   ALL_PERMISSIONS_SET,
@@ -20,13 +16,16 @@ import {
   PERMISSIONS,
 } from "../../../constants";
 
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
+
 // helpers
 import {
   EMPTY_PAYLOAD,
   NoPermissionsSetError,
   ONE_ETH,
 } from "../../utils/helpers";
-
 const provider = ethers.provider;
 
 export const testSecurityScenarios = (

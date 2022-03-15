@@ -3,10 +3,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
 
-// setup
-import { LSP6InternalsTestContext } from "../../utils/context";
-import { setupKeyManagerHelper } from "../../utils/fixtures";
-
 // constants
 import {
   ALL_PERMISSIONS_SET,
@@ -14,9 +10,12 @@ import {
   PERMISSIONS,
 } from "../../../constants";
 
+// setup
+import { LSP6InternalsTestContext } from "../../utils/context";
+import { setupKeyManagerHelper } from "../../utils/fixtures";
+
 // helpers
 import { NotAllowedAddressError } from "../../utils/helpers";
-
 const abiCoder = ethers.utils.defaultAbiCoder;
 
 export const testAllowedAddressesInternals = (

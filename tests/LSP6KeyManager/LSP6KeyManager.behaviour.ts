@@ -1,15 +1,15 @@
-import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-
-import {
-  LSP6KeyManager,
-  TargetContract__factory,
-  TargetContract,
-} from "../../types";
+import { TargetContract__factory, TargetContract } from "../../types";
 
 // setup
 import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 import { setupKeyManager } from "../utils/fixtures";
+
+// constants
+import {
+  ALL_PERMISSIONS_SET,
+  ERC725YKeys,
+  INTERFACE_IDS,
+} from "../../constants";
 
 // effects
 import {
@@ -30,19 +30,12 @@ import {
   testSecurityScenarios,
 } from "./effects";
 
-// internal
+// internals
 import {
   testAllowedAddressesInternals,
   testAllowedFunctionsInternals,
   testReadingPermissionsInternals,
 } from "./internals";
-
-// constants
-import {
-  ALL_PERMISSIONS_SET,
-  ERC725YKeys,
-  INTERFACE_IDS,
-} from "../../constants";
 
 export const shouldBehaveLikeLSP6 = (
   buildContext: () => Promise<LSP6TestContext>
@@ -155,7 +148,7 @@ export const shouldBehaveLikeLSP6 = (
     });
   });
 
-  describe.only("Security", () => {
+  describe("Security", () => {
     testSecurityScenarios(buildContext);
   });
 };

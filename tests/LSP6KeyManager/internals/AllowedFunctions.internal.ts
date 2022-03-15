@@ -9,7 +9,6 @@ import { setupKeyManagerHelper } from "../../utils/fixtures";
 
 // helpers
 import { ERC725YKeys, PERMISSIONS } from "../../../constants";
-
 const abiCoder = ethers.utils.defaultAbiCoder;
 
 export const testAllowedFunctionsInternals = (

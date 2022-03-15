@@ -7,6 +7,8 @@ import {
   LSP6KeyManagerInit__factory,
   KeyManagerHelper__factory,
 } from "../../types";
+
+import { LSP6TestContext } from "../utils/context";
 import { deployProxy } from "../utils/proxy";
 
 import {
@@ -14,8 +16,6 @@ import {
   shouldBehaveLikeLSP6,
   testLSP6InternalFunctions,
 } from "./LSP6KeyManager.behaviour";
-
-import { LSP6TestContext } from "../utils/context";
 
 describe("LSP6KeyManager", () => {
   describe("when using LSP6KeyManager with constructor", () => {
@@ -42,8 +42,9 @@ describe("LSP6KeyManager", () => {
 
       describe("when initializing the contract", () => {
         shouldInitializeLikeLSP6(async () => {
-          const { owner, universalProfile, keyManager } = context;
+          const { accounts, owner, universalProfile, keyManager } = context;
           return {
+            accounts,
             owner,
             universalProfile,
             keyManager,
@@ -52,7 +53,7 @@ describe("LSP6KeyManager", () => {
       });
     });
 
-    describe.only("when testing deployed contract", () => {
+    describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP6(buildTestContext);
     });
 
@@ -110,10 +111,11 @@ describe("LSP6KeyManager", () => {
 
       describe("when initializing the contract", () => {
         shouldInitializeLikeLSP6(async () => {
-          const { owner, universalProfile, keyManager } = context;
+          const { accounts, owner, universalProfile, keyManager } = context;
           await initializeProxy(context);
 
           return {
+            accounts,
             owner,
             universalProfile,
             keyManager,

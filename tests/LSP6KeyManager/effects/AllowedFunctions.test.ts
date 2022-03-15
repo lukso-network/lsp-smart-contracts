@@ -3,16 +3,15 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
 
+// constants
+import { ERC725YKeys, OPERATIONS, PERMISSIONS } from "../../../constants";
+
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-// constants
-import { ERC725YKeys, OPERATIONS, PERMISSIONS } from "../../../constants";
-
 // helpers
 import { NotAllowedFunctionError } from "../../utils/helpers";
-
 const abiCoder = ethers.utils.defaultAbiCoder;
 
 export const shouldBehaveLikeAllowedFunctions = (

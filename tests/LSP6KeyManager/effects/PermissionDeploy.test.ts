@@ -4,10 +4,6 @@ import { calculateCreate2 } from "eth-create2-calculator";
 
 import { TargetContract__factory } from "../../../types";
 
-// setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-
 // constants
 import {
   ERC725YKeys,
@@ -16,6 +12,10 @@ import {
   OPERATIONS,
   EventSignatures,
 } from "../../../constants";
+
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import { NotAuthorisedError } from "../../utils/helpers";

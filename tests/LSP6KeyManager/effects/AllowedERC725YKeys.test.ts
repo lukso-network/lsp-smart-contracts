@@ -1,26 +1,23 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
+// constants
+import {
+  ALL_PERMISSIONS_SET,
+  ERC725YKeys,
+  PERMISSIONS,
+} from "../../../constants";
+
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-// constants
-import {
-  ALL_PERMISSIONS_SET,
-  ERC1271,
-  ERC725YKeys,
-  INTERFACE_IDS,
-  OPERATIONS,
-  PERMISSIONS,
-} from "../../../constants";
+// helpers
 import {
   getRandomString,
   NotAllowedERC725YKeyError,
 } from "../../utils/helpers";
-
 const abiCoder = ethers.utils.defaultAbiCoder;
-const provider = ethers.provider;
 
 export const shouldBehaveLikeAllowedERC725YKeys = (
   buildContext: () => Promise<LSP6TestContext>

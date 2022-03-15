@@ -1,10 +1,6 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-// setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-
 // constants
 import {
   ERC725YKeys,
@@ -13,8 +9,12 @@ import {
   OPERATIONS,
 } from "../../../constants";
 
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
+
 // helpers
-import { DUMMY_PAYLOAD, NotAuthorisedError } from "../../utils/helpers";
+import { DUMMY_PAYLOAD } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionDelegateCall = (
   buildContext: () => Promise<LSP6TestContext>

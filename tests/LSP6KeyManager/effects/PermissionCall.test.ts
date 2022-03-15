@@ -3,10 +3,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
 
-// setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-
 // constants
 import {
   ERC725YKeys,
@@ -15,18 +11,22 @@ import {
   OPERATIONS,
 } from "../../../constants";
 
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
+
 // helpers
 import { NotAuthorisedError } from "../../utils/helpers";
+const abiCoder = ethers.utils.defaultAbiCoder;
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
 
-  let abiCoder = ethers.utils.defaultAbiCoder;
-
   let addressCanMakeCall: SignerWithAddress,
     addressCannotMakeCall: SignerWithAddress;
+
   let targetContract: TargetContract;
 
   beforeEach(async () => {

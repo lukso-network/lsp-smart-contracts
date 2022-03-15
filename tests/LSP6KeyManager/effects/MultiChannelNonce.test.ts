@@ -1,9 +1,7 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-// setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
 import {
@@ -13,8 +11,9 @@ import {
   PERMISSIONS,
 } from "../../../constants";
 
-// helpers
-import { TargetContract, TargetContract__factory } from "../../../types";
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 export const shouldBehaveLikeMultiChannelNonce = (
   buildContext: () => Promise<LSP6TestContext>
@@ -22,7 +21,6 @@ export const shouldBehaveLikeMultiChannelNonce = (
   let context: LSP6TestContext;
 
   let signer: SignerWithAddress, relayer: SignerWithAddress;
-
   let targetContract: TargetContract;
 
   beforeEach(async () => {

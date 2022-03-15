@@ -2,10 +2,6 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
 
-// setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-
 // constants
 import {
   ERC725YKeys,
@@ -13,6 +9,10 @@ import {
   PERMISSIONS,
   BasicUPSetup_Schema,
 } from "../../../constants";
+
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {

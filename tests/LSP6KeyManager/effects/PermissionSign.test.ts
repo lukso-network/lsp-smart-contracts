@@ -1,10 +1,6 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-// setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-
 // constants
 import {
   ERC725YKeys,
@@ -12,6 +8,10 @@ import {
   PERMISSIONS,
   ERC1271,
 } from "../../../constants";
+
+// setup
+import { LSP6TestContext } from "../../utils/context";
+import { setupKeyManager } from "../../utils/fixtures";
 
 export const shouldBehaveLikePermissionSign = (
   buildContext: () => Promise<LSP6TestContext>

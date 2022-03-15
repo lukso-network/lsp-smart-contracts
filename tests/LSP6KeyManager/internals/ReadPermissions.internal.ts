@@ -1,18 +1,18 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-// setup
-import { LSP6InternalsTestContext } from "../../utils/context";
-import { setupKeyManagerHelper } from "../../utils/fixtures";
-
 // constants
 import {
   ALL_PERMISSIONS_SET,
   ERC725YKeys,
-  OPERATIONS,
   PERMISSIONS,
 } from "../../../constants";
 
+// setup
+import { LSP6InternalsTestContext } from "../../utils/context";
+import { setupKeyManagerHelper } from "../../utils/fixtures";
+
+// helpers
 const abiCoder = ethers.utils.defaultAbiCoder;
 
 export const testReadingPermissionsInternals = (
