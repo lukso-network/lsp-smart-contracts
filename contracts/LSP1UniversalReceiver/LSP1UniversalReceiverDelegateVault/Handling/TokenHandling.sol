@@ -3,120 +3,78 @@ pragma solidity ^0.8.0;
 
 // modules
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import "../../../LSP6KeyManager/LSP6KeyManager.sol";
 
 // interfaces
 import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import "../../../Utils/ERC725Utils.sol";
+import "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../../../LSP5ReceivedAssets/LSP5Utils.sol";
+import "../../LSP1Utils.sol";
 
 // constants
 import "../../LSP1Constants.sol";
 
-import "../../../LSP5ReceivedAssets/LSP5Constants.sol";
-import "../../../LSP7DigitalAsset/LSP7Constants.sol";
-import "../../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
-import "../../../LSP9Vault/LSP9Constants.sol";
-
 /**
- * @dev Function logic to add and remove the MapAndArrayKey of incoming assets
+ * @dev Function logic to add and remove the MapAndArrayKey of incoming assets and vaults
  */
-abstract contract TokenHandlingContract {
+abstract contract TokenHandling {
     using ERC725Utils for IERC725Y;
 
+    // internal functions
     function _tokenHandling(
         address sender,
         bytes32 typeId,
         bytes memory data
-    ) internal returns (bytes memory) {
+    ) internal returns (bytes memory result) {
+        if (!ERC165Checker.supportsInterface(msg.sender, _INTERFACEID_LSP9))
+            return "";
+
         (
+            bool senderHook,
             bytes32 arrayKey,
             bytes12 mapPrefix,
-            bytes4 interfaceId
-        ) = _getTransferData(typeId);
+            bytes4 interfaceID
+        ) = LSP1Utils.getTransferDetails(typeId);
+
         bytes32 mapKey = LSP2Utils.generateBytes20MappingWithGroupingKey(
             mapPrefix,
             bytes20(sender)
         );
-        IERC725Y vault = IERC725Y(msg.sender);
-        bytes memory mapValue = vault.getDataSingle(mapKey);
+        bytes memory mapValue = IERC725Y(msg.sender).getDataSingle(mapKey);
 
-        if (
-            typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
-            typeId == _TYPEID_LSP8_TOKENSRECIPIENT
-        ) {
-            if (bytes12(mapValue) == bytes12(0)) {
-                (bytes32[] memory keys, bytes[] memory values) = LSP5Utils
-                    .addMapAndArrayKey(
-                        vault,
-                        arrayKey,
-                        mapKey,
-                        sender,
-                        interfaceId
-                    );
+        if (!senderHook) {
+            // if the map is already set, then do nothing
+            if (bytes12(mapValue) != bytes12(0)) return "";
 
-                vault.setData(keys, values);
-            }
-        } else if (
-            typeId == _TYPEID_LSP7_TOKENSSENDER ||
-            typeId == _TYPEID_LSP8_TOKENSSENDER
-        ) {
-            if (bytes12(mapValue) != bytes12(0)) {
-                uint256 balance = ILSP7DigitalAsset(sender).balanceOf(
-                    msg.sender
+            (bytes32[] memory keys, bytes[] memory values) = LSP5Utils
+                .addMapAndArrayKey(
+                    IERC725Y(msg.sender),
+                    arrayKey,
+                    mapKey,
+                    sender,
+                    interfaceID
                 );
-                if ((balance - _tokenAmount(typeId, data)) == 0) {
-                    (bytes32[] memory keys, bytes[] memory values) = LSP5Utils
-                        .removeMapAndArrayKey(
-                            vault,
-                            arrayKey,
-                            mapPrefix,
-                            mapKey
-                        );
+            IERC725Y(msg.sender).setData(keys, values);
+        } else if (senderHook) {
+            // if there is no map for the asset to remove, then do nothing
+            if (bytes12(mapValue) == bytes12(0)) return "";
+            uint256 balance = ILSP7DigitalAsset(sender).balanceOf(msg.sender);
+            // if the amount sent is not the full balance, then do nothing
+            if (balance - LSP5Utils.extractTokenAmount(typeId, data) != 0)
+                return "";
 
-                    vault.setData(keys, values);
-                }
-            }
-        }
-    }
-
-    // helper functions
-
-    function _getTransferData(bytes32 _typeId)
-        private
-        pure
-        returns (
-            bytes32 arrayKey,
-            bytes12 mapPrefix,
-            bytes4 interfaceID
-        )
-    {
-        arrayKey = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-        mapPrefix = _LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX;
-        if (
-            _typeId == _TYPEID_LSP7_TOKENSSENDER ||
-            _typeId == _TYPEID_LSP7_TOKENSRECIPIENT
-        ) {
-            interfaceID = _INTERFACEID_LSP7;
-        } else {
-            interfaceID = _INTERFACEID_LSP8;
-        }
-    }
-
-    function _tokenAmount(bytes32 _typeId, bytes memory _data)
-        private
-        pure
-        returns (uint256 amount)
-    {
-        if (_typeId == _TYPEID_LSP7_TOKENSSENDER) {
-            /* solhint-disable */
-            assembly {
-                amount := mload(add(add(_data, 0x20), 0x28))
-            }
-            /* solhint-enable */
-        } else {
-            amount = 1;
+            (bytes32[] memory keys, bytes[] memory values) = LSP5Utils
+                .removeMapAndArrayKey(
+                    IERC725Y(msg.sender),
+                    arrayKey,
+                    mapPrefix,
+                    mapKey
+                );
+            IERC725Y(msg.sender).setData(keys, values);
         }
     }
 }

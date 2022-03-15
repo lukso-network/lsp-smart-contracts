@@ -74,8 +74,6 @@ const config: HardhatUserConfig = {
       // ------------------
       "UniversalProfileInit",
       "LSP0ERC725Account",
-      "LSP1UniversalReceiverDelegateUPInit",
-      "LSP1UniversalReceiverDelegateVaultInit",
       "LSP6KeyManagerInit",
       "LSP7DigitalAssetInit",
       "LSP7CappedSupplyInit",
