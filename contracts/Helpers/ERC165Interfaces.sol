@@ -24,6 +24,7 @@ import "../LSP6KeyManager/LSP6Constants.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
 import "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import "../LSP9Vault/LSP9Vault.sol";
+import "../LSP11BasicSocialRecovery/LSP11Constants.sol";
 
 /**
  * @dev This contract calculates the ERC165 interface IDs of each LSP contract
@@ -99,6 +100,11 @@ contract CalculateLSPInterfaces {
 
     function calculateInterfaceLSP11() public pure returns (bytes4) {
         bytes4 interfaceId = type(ILSP11SocialRecovery).interfaceId;
+
+        require(
+            interfaceId == _INTERFACEID_LSP11,
+            "_LSP9_INTERFACE_ID does not match XOR of the functions"
+        );
 
         return interfaceId;
     }
