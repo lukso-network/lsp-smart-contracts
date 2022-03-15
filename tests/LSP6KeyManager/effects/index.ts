@@ -12,3 +12,4 @@ export * from "./AllowedFunctions.test";
 export * from "./AllowedStandards.test";
 export * from "./AllowedERC725YKeys.test";
 export * from "./MultiChannelNonce.test";
+export * from "./Security.test";

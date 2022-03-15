@@ -52,11 +52,11 @@ describe("LSP6KeyManager", () => {
       });
     });
 
-    describe("when testing deployed contract", () => {
+    describe.only("when testing deployed contract", () => {
       shouldBehaveLikeLSP6(buildTestContext);
     });
 
-    describe.only("testing internal functions", () => {
+    describe("testing internal functions", () => {
       testLSP6InternalFunctions(async () => {
         const accounts = await ethers.getSigners();
         const owner = accounts[0];

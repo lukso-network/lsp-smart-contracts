@@ -27,6 +27,7 @@ import {
   shouldBehaveLikeAllowedStandards,
   shouldBehaveLikeAllowedERC725YKeys,
   shouldBehaveLikeMultiChannelNonce,
+  testSecurityScenarios,
 } from "./effects";
 
 // internal
@@ -152,6 +153,10 @@ export const shouldBehaveLikeLSP6 = (
         context.keyManager.execute(INVALID_PAYLOAD)
       ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
+  });
+
+  describe.only("Security", () => {
+    testSecurityScenarios(buildContext);
   });
 };
 
