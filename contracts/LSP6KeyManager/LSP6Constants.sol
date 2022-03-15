@@ -10,7 +10,7 @@ bytes4 constant _INTERFACEID_LSP6 = 0x6f4df48b;
 bytes8 constant _SET_PERMISSIONS_PREFIX = 0x4b80742d00000000; // AddressPermissions:<...>
 
 // keccak256('AddressPermissions[]')
-bytes32 constant _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY = 0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06;
+bytes32 constant _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY = 0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3;
 
 // bytes4(keccak256('AddressPermissions')) + bytes4(0) + bytes2(keccak256('Permissions')) + bytes2(0)
 bytes12 constant _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes32
