@@ -15,6 +15,7 @@ import "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import "../Utils/UtilsLib.sol";
 import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -71,7 +72,7 @@ abstract contract LSP0ERC725AccountCore is
         // if OWNER is a contract
         if (UtilsLib.isContract(owner())) {
             return 
-                supportsInterface(_INTERFACE_ID_ERC1271)
+                ERC165Checker.supportsInterface(owner(),_INTERFACE_ID_ERC1271)
                     ? IERC1271(owner()).isValidSignature(_hash, _signature)
                     : _ERC1271FAILVALUE;
         // if OWNER is a key
