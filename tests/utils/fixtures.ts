@@ -11,8 +11,35 @@ import {
 import { ERC725YKeys, ALL_PERMISSIONS_SET } from "../../constants";
 import { ARRAY_LENGTH } from "../utils/helpers";
 import { PERMISSIONS } from "../../constants";
+import { LSP6TestContext, LSP6InternalsTestContext } from "./context";
 
-// prettier-ignore
+export async function setupKeyManager(
+  _context: LSP6TestContext,
+  _permissionsKeys: string[],
+  _permissionsValues: string[]
+) {
+  await _context.universalProfile
+    .connect(_context.owner)
+    .setData(_permissionsKeys, _permissionsValues);
+
+  await _context.universalProfile
+    .connect(_context.owner)
+    .transferOwnership(_context.keyManager.address);
+}
+
+export async function setupKeyManagerHelper(
+  _context: LSP6InternalsTestContext,
+  _permissionsKeys: string[],
+  _permissionsValues: string[]
+) {
+  await _context.universalProfile
+    .connect(_context.owner)
+    .setData(_permissionsKeys, _permissionsValues);
+
+  await _context.universalProfile
+    .connect(_context.owner)
+    .transferOwnership(_context.keyManagerHelper.address);
+}
 
 /**
  * Deploy 1 Profile + 1 KeyManager + 1 URD and set all needed permissions
@@ -28,9 +55,7 @@ export async function setupProfileWithKeyManagerWithURD(
   );
 
   const lsp1universalReceiverDelegateUP =
-    await new LSP1UniversalReceiverDelegateUP__factory(
-      EOA
-    ).deploy();
+    await new LSP1UniversalReceiverDelegateUP__factory(EOA).deploy();
 
   await universalProfile
     .connect(EOA)
@@ -62,7 +87,7 @@ export async function setupProfileWithKeyManagerWithURD(
     to: universalProfile.address,
     value: ethers.utils.parseEther("10"),
   });
-  return [ universalProfile, lsp6KeyManager, lsp1universalReceiverDelegateUP ];
+  return [universalProfile, lsp6KeyManager, lsp1universalReceiverDelegateUP];
 }
 
 /**
@@ -75,7 +100,7 @@ export function callPayload(from: any, to: string, abi: string) {
 
 /**
  * Returns the LSP5 arraylength, elementAddress, index and interfaceId of the token provided
- * for the account provided. 
+ * for the account provided.
  */
 export async function getLSP5MapAndArrayKeysValue(account, token) {
   let mapKey = ERC725YKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substr(2);
@@ -103,7 +128,7 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
 
 /**
  * Returns the LSP10 arraylength, elementAddress, index and interfaceId of the vault provided
- * for the account provided. 
+ * for the account provided.
  */
 export async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
   let mapKey = ERC725YKeys.LSP10.LSP10VaultsMap + lsp9Vault.address.substr(2);
