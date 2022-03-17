@@ -46,7 +46,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
-  describe("CHANGE / ADD permissions", () => {
+  describe.only("CHANGE / ADD permissions", () => {
     shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
   });
 
