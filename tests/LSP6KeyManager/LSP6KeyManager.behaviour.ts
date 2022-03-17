@@ -28,7 +28,7 @@ import {
   shouldBehaveLikeAllowedERC725YKeys,
   shouldBehaveLikeMultiChannelNonce,
   testSecurityScenarios,
-} from "./effects";
+} from "./tests";
 
 // internals
 import {

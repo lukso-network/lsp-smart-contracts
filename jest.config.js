@@ -18,7 +18,8 @@ module.exports = async () => {
 			ethers,
 		},
 		testMatch: ['**/?(*.)+(spec|test).[t]s?(x)'],
-		testPathIgnorePatterns: ['effects'],
+		// do not run tests located under any tests/ subdirectory 
+		testPathIgnorePatterns: ['<rootDir>/tests/[^/]+/tests/'],
 		logHeapUsage: true,
 		testEnvironment: 'node',
 		setupFilesAfterEnv: ['./jest.setup.ts'],
