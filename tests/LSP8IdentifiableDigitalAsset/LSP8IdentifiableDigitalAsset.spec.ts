@@ -1,11 +1,13 @@
 import { LSP8Tester__factory, LSP8InitTester__factory } from "../../types";
-import { deployProxy } from "../utils/proxy";
+
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP8,
   shouldInitializeLikeLSP8,
   LSP8TestContext,
 } from "./LSP8IdentifiableDigitalAsset.behaviour";
+
+import { deployProxy } from "../utils/fixtures";
 
 describe("LSP8", () => {
   describe("when using LSP8 contract with constructor", () => {

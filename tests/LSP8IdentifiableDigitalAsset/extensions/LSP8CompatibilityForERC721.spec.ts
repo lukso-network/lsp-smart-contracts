@@ -4,13 +4,15 @@ import {
   LSP8CompatibilityForERC721Tester__factory,
   LSP8CompatibilityForERC721InitTester__factory,
 } from "../../../types";
-import { deployProxy } from "../../utils/proxy";
+
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP8CompatibilityForERC721,
   shouldInitializeLikeLSP8CompatibilityForERC721,
   LSP8CompatibilityForERC721TestContext,
 } from "./LSP8CompatibilityForERC721.behaviour";
+
+import { deployProxy } from "../../utils/fixtures";
 
 describe("LSP8CompatibilityForERC721", () => {
   describe("when using LSP8CompatibilityForERC721 contract with constructor", () => {

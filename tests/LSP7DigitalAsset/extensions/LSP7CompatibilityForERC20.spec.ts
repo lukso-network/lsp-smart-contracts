@@ -1,18 +1,18 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { deployProxy } from "../../utils/proxy";
+
 import {
-  LSP7CompatibilityForERC20Tester,
   LSP7CompatibilityForERC20Tester__factory,
-  LSP7CompatibilityForERC20InitTester,
   LSP7CompatibilityForERC20InitTester__factory,
 } from "../../../types";
+
 import {
   getNamedAccounts,
   LSP7CompatibilityForERC20TestContext,
   shouldInitializeLikeLSP7CompatibilityForERC20,
   shouldBehaveLikeLSP7CompatibilityForERC20,
 } from "./LSP7CompatibilityForERC20.behaviour";
+
+import { deployProxy } from "../../utils/fixtures";
 
 describe("LSP7CompatibilityForERC20", () => {
   describe("when using LSP7 contract with constructor", () => {

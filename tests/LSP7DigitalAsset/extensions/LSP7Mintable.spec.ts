@@ -4,7 +4,6 @@ import {
   LSP7Mintable,
   LSP7Mintable__factory,
 } from "../../../types";
-import { deployProxy } from "../../utils/proxy";
 
 import { shouldInitializeLikeLSP7 } from "../LSP7DigitalAsset.behaviour";
 import {
@@ -13,6 +12,8 @@ import {
   LSP7MintableTestContext,
   LSP7MintableDeployParams,
 } from "./LSP7Mintable.behavior";
+
+import { deployProxy } from "../../utils/fixtures";
 
 describe("LSP7Mintable", () => {
   describe("when using LSP7Mintable with constructor", () => {

@@ -5,7 +5,7 @@ import {
   UniversalProfile__factory,
   UniversalReceiverTester__factory,
 } from "../types";
-import { deployProxy } from "./utils/proxy";
+import { deployProxy } from "./utils/fixtures";
 
 import {
   LSP1TestContext,

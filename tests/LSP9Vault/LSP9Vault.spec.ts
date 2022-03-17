@@ -5,8 +5,6 @@ import {
   LSP6KeyManager,
 } from "../../types";
 
-import { deployProxy } from "../utils/proxy";
-
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP9,
@@ -14,7 +12,10 @@ import {
   LSP9TestContext,
 } from "./LSP9Vault.behaviour";
 
-import { setupProfileWithKeyManagerWithURD } from "../utils/fixtures";
+import {
+  deployProxy,
+  setupProfileWithKeyManagerWithURD,
+} from "../utils/fixtures";
 
 describe("LSP9Vault", () => {
   describe("when using LSP9Vault contract with constructor", () => {
@@ -27,11 +28,8 @@ describe("LSP9Vault", () => {
         deployParams.newOwner
       );
 
-      const [
-        UP1,
-        KM1,
-        lsp1universalReceiverDelegateUP,
-      ] = await setupProfileWithKeyManagerWithURD(accounts.owner);
+      const [UP1, KM1, lsp1universalReceiverDelegateUP] =
+        await setupProfileWithKeyManagerWithURD(accounts.owner);
 
       const universalProfile = UP1 as UniversalProfile;
       const lsp6KeyManager = KM1 as LSP6KeyManager;
@@ -86,11 +84,8 @@ describe("LSP9Vault", () => {
       );
       const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
 
-      const [
-        UP1,
-        KM1,
-        lsp1universalReceiverDelegateUP,
-      ] = await setupProfileWithKeyManagerWithURD(accounts.owner);
+      const [UP1, KM1, lsp1universalReceiverDelegateUP] =
+        await setupProfileWithKeyManagerWithURD(accounts.owner);
 
       const universalProfile = UP1 as UniversalProfile;
       const lsp6KeyManager = KM1 as LSP6KeyManager;

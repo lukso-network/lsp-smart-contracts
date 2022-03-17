@@ -9,7 +9,7 @@ import {
 } from "../../types";
 
 import { LSP6TestContext } from "../utils/context";
-import { deployProxy } from "../utils/proxy";
+import { deployProxy } from "../utils/fixtures";
 
 import {
   shouldInitializeLikeLSP6,

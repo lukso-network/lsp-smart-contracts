@@ -4,13 +4,15 @@ import {
   LSP8MintableInit,
   LSP8MintableInit__factory,
 } from "../../../types";
-import { deployProxy } from "../../utils/proxy";
+
+import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
 import {
   shouldBehaveLikeLSP8Mintable,
   LSP8MintableTestContext,
   getNamedAccounts,
 } from "./LSP8Mintable.behavior";
-import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
+
+import { deployProxy } from "../../utils/fixtures";
 
 describe("LSP8Mintable", () => {
   describe("when using LSP8Mintable with constructor", () => {
