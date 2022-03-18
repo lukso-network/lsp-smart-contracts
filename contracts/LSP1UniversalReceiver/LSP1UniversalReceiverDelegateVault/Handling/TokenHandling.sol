@@ -25,11 +25,10 @@ abstract contract TokenHandling {
     using ERC725Utils for IERC725Y;
 
     // internal functions
-    function _tokenHandling(
-        address sender,
-        bytes32 typeId,
-        bytes memory data
-    ) internal returns (bytes memory result) {
+    function _tokenHandling(address sender, bytes32 typeId)
+        internal
+        returns (bytes memory result)
+    {
         if (!ERC165Checker.supportsInterface(msg.sender, _INTERFACEID_LSP9))
             return "";
 

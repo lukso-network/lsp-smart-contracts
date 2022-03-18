@@ -25,11 +25,10 @@ abstract contract TokenAndVaultHandling {
     using ERC725Utils for IERC725Y;
 
     // internal functions
-    function _tokenAndVaultHandling(
-        address sender,
-        bytes32 typeId,
-        bytes memory data
-    ) internal returns (bytes memory result) {
+    function _tokenAndVaultHandling(address sender, bytes32 typeId)
+        internal
+        returns (bytes memory result)
+    {
         address keyManager = ERC725Y(msg.sender).owner();
         if (!ERC165Checker.supportsInterface(keyManager, _INTERFACEID_LSP6))
             return "";
