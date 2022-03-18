@@ -40,7 +40,7 @@ contract LSP1UniversalReceiverDelegateUP is
             typeId == _TYPEID_LSP9_VAULTSENDER ||
             typeId == _TYPEID_LSP9_VAULTRECIPIENT
         ) {
-            result = _tokenAndVaultHandling(sender, typeId, data);
+            result = _tokenAndVaultHandling(sender, typeId);
         }
 
         /* @TODO
