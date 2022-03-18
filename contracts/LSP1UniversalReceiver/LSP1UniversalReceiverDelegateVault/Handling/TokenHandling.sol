@@ -64,8 +64,7 @@ abstract contract TokenHandling {
             if (bytes12(mapValue) == bytes12(0)) return "";
             uint256 balance = ILSP7DigitalAsset(sender).balanceOf(msg.sender);
             // if the amount sent is not the full balance, then do nothing
-            if (balance - LSP5Utils.extractTokenAmount(typeId, data) != 0)
-                return "";
+            if (balance != 0) return "";
 
             (bytes32[] memory keys, bytes[] memory values) = LSP5Utils
                 .removeMapAndArrayKey(

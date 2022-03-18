@@ -42,7 +42,6 @@ abstract contract TokenAndVaultHandling {
             bytes12 mapPrefix,
             bytes4 interfaceID
         ) = LSP1Utils.getTransferDetails(typeId);
-        (typeId);
 
         bytes32 mapKey = LSP2Utils.generateBytes20MappingWithGroupingKey(
             mapPrefix,
@@ -69,8 +68,7 @@ abstract contract TokenAndVaultHandling {
                     msg.sender
                 );
                 // if the amount sent is not the full balance, then do nothing
-                if (balance - LSP5Utils.extractTokenAmount(typeId, data) != 0)
-                    return "";
+                if (balance != 0) return "";
             }
             result = LSP5Utils.removeMapAndArrayKeyViaKeyManager(
                 IERC725Y(msg.sender),
