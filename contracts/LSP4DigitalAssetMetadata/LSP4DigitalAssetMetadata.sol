@@ -24,13 +24,13 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
         string memory symbol_,
         address newOwner_
     ) ERC725Y(newOwner_) {
-        // SupportedStandards:LSP4DigitalAsset
+        // set key SupportedStandards:LSP4DigitalAsset
         _setData(
             _LSP4_SUPPORTED_STANDARDS_KEY,
             _LSP4_SUPPORTED_STANDARDS_VALUE
         );
 
-        _setData(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name_));
-        _setData(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        _setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
     }
 }

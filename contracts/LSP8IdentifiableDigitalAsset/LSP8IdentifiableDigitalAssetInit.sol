@@ -13,14 +13,17 @@ contract LSP8IdentifiableDigitalAssetInit is
     LSP8IdentifiableDigitalAssetInitAbstract
 {
     /**
-     * @inheritdoc LSP8IdentifiableDigitalAssetInitAbstract
+     * @notice Sets the token-Metadata and register LSP8InterfaceId
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the the token-Metadata
      */
     function initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override initializer {
-        LSP8IdentifiableDigitalAssetInitAbstract.initialize(
+    ) public virtual initializer {
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_

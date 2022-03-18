@@ -15,25 +15,18 @@ import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
  * @dev Proxy Implementation of a LSP7 compliant contract.
  */
 abstract contract LSP7DigitalAssetInitAbstract is
+    LSP7DigitalAssetCore,
     Initializable,
-    LSP4DigitalAssetMetadataInitAbstract,
-    LSP7DigitalAssetCore
+    LSP4DigitalAssetMetadataInitAbstract
 {
-    /**
-     * @notice Sets the token-Metadata and register LSP7InterfaceId
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
-     * @param isNFT_ Specify if the LSP7 token is a fungible or non-fungible token
-     */
-    function initialize(
+    function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         bool isNFT_
-    ) public virtual onlyInitializing {
+    ) internal virtual onlyInitializing {
         _isNFT = isNFT_;
-        LSP4DigitalAssetMetadataInitAbstract.initialize(
+        LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_

@@ -11,19 +11,18 @@ import "../LSP8IdentifiableDigitalAssetInit.sol";
  */
 abstract contract LSP8CappedSupplyInitAbstract is
     Initializable,
-    LSP8IdentifiableDigitalAssetInit,
-    LSP8CappedSupplyCore
+    LSP8CappedSupplyCore,
+    LSP8IdentifiableDigitalAssetInit
 {
-    /**
-     * @notice Sets the token max supply
-     * @param tokenSupplyCap_ The Token max supply
-     */
-    function initialize(uint256 tokenSupplyCap_)
-        public
+    function _initialize(uint256 tokenSupplyCap_)
+        internal
         virtual
         onlyInitializing
     {
-        require(tokenSupplyCap_ > 0, "LSP8Capped: tokenSupplyCap is zero");
+        if (tokenSupplyCap_ == 0) {
+            revert LSP8CappedSupplyRequired();
+        }
+
         _tokenSupplyCap = tokenSupplyCap_;
     }
 

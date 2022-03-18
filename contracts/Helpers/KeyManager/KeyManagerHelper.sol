@@ -12,19 +12,11 @@ contract KeyManagerHelper is LSP6KeyManager {
     /* solhint-disable no-empty-blocks */
     constructor(address _account) LSP6KeyManager(_account) {}
 
-    function getInterfaceId() public pure returns (bytes4) {
-        return _INTERFACEID_LSP6;
-    }
-
-    function getAddressPermissions(address _address)
-        public
-        view
-        returns (bytes32)
-    {
+    function getPermissionsFor(address _address) public view returns (bytes32) {
         return account.getPermissionsFor(_address);
     }
 
-    function getAllowedAddresses(address _address)
+    function getAllowedAddressesFor(address _address)
         public
         view
         returns (bytes memory)
@@ -32,7 +24,7 @@ contract KeyManagerHelper is LSP6KeyManager {
         return account.getAllowedAddressesFor(_address);
     }
 
-    function getAllowedFunctions(address _address)
+    function getAllowedFunctionsFor(address _address)
         public
         view
         returns (bytes memory)
@@ -40,14 +32,14 @@ contract KeyManagerHelper is LSP6KeyManager {
         return account.getAllowedFunctionsFor(_address);
     }
 
-    function verifyIfAllowedAddress(address _sender, address _recipient)
+    function verifyAllowedAddress(address _sender, address _recipient)
         public
         view
     {
         super._verifyAllowedAddress(_sender, _recipient);
     }
 
-    function verifyIfAllowedFunction(address _sender, bytes4 _function)
+    function verifyAllowedFunction(address _sender, bytes4 _function)
         public
         view
     {

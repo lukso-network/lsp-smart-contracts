@@ -7,15 +7,12 @@ import "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721
 import "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
 
 contract LSP8CompatibilityForERC721Tester is LSP8CompatibilityForERC721 {
-    /* solhint-disable no-empty-blocks */
     constructor(
         string memory name,
         string memory symbol,
         address newOwner,
         bytes memory tokenURIValue
     ) LSP8CompatibilityForERC721(name, symbol, newOwner) {
-        _setData(_LSP4_METADATA_TOKEN_NAME_KEY, bytes(name));
-        _setData(_LSP4_METADATA_TOKEN_SYMBOL_KEY, bytes(symbol));
         _setData(_LSP4_METADATA_KEY, tokenURIValue);
     }
 
@@ -26,5 +23,12 @@ contract LSP8CompatibilityForERC721Tester is LSP8CompatibilityForERC721 {
     ) public {
         // using force=true so we can send to EOA in test
         _mint(to, bytes32(tokenId), true, data);
+    }
+
+    function burn(
+        uint256 tokenId,
+        bytes calldata data
+    ) public {
+        _burn(bytes32(tokenId), data);
     }
 }

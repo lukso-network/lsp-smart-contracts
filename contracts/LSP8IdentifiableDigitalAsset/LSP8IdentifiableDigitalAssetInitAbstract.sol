@@ -15,22 +15,16 @@ import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
  * @dev Proxy Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
+    LSP8IdentifiableDigitalAssetCore,
     Initializable,
-    LSP4DigitalAssetMetadataInitAbstract,
-    LSP8IdentifiableDigitalAssetCore
+    LSP4DigitalAssetMetadataInitAbstract
 {
-    /**
-     * @notice Sets the token-Metadata and register LSP8InterfaceId
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
-     */
-    function initialize(
+    function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override onlyInitializing {
-        LSP4DigitalAssetMetadataInitAbstract.initialize(
+    ) internal virtual override onlyInitializing {
+        LSP4DigitalAssetMetadataInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_

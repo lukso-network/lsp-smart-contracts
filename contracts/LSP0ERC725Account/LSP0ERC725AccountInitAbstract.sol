@@ -11,23 +11,14 @@ import "./LSP0ERC725AccountCore.sol";
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
 abstract contract LSP0ERC725AccountInitAbstract is
-    ERC725InitAbstract,
-    LSP0ERC725AccountCore
+    LSP0ERC725AccountCore,
+    ERC725InitAbstract
 {
-    /**
-     * @notice Sets the owner of the contract and register ERC725Account, ERC1271 and LSP1UniversalReceiver interfacesId
-     * @param _newOwner the owner of the contract
-     */
-    function initialize(address _newOwner)
-        public
-        virtual
-        override
-        onlyInitializing
-    {
+    function _initialize(address _newOwner) internal virtual onlyInitializing {
         ERC725InitAbstract.initialize(_newOwner);
 
-        _registerInterface(_INTERFACE_ID_ERC725ACCOUNT);
-        _registerInterface(_INTERFACE_ID_ERC1271);
+        _registerInterface(_INTERFACEID_LSP0);
+        _registerInterface(_INTERFACEID_ERC1271);
         _registerInterface(_INTERFACEID_LSP1);
     }
 }

@@ -9,8 +9,8 @@ contract LSP7InitTester is LSP7DigitalAssetInitAbstract {
         string memory name,
         string memory symbol,
         address newOwner
-    ) public override initializer {
-        LSP7DigitalAssetInitAbstract.initialize(name, symbol, newOwner, false);
+    ) public initializer {
+        LSP7DigitalAssetInitAbstract._initialize(name, symbol, newOwner, false);
     }
 
     function mint(

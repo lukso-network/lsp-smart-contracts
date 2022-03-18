@@ -66,6 +66,23 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 |---|---|---|
 | _0 | uint256 | The number of tokens owned by this address
 
+### burn
+
+```solidity
+function burn(uint256 tokenId, bytes data) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenId | uint256 | undefined
+| data | bytes | undefined
+
 ### getApproved
 
 ```solidity
@@ -135,7 +152,7 @@ function getOperatorsOf(bytes32 tokenId) external view returns (address[])
 ### isApprovedForAll
 
 ```solidity
-function isApprovedForAll(uint256 tokenId) external nonpayable returns (bool)
+function isApprovedForAll(address tokenOwner, address operator) external view returns (bool)
 ```
 
 
@@ -146,7 +163,8 @@ function isApprovedForAll(uint256 tokenId) external nonpayable returns (bool)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | uint256 | undefined
+| tokenOwner | address | undefined
+| operator | address | undefined
 
 #### Returns
 
@@ -270,7 +288,7 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 
 
 
-*Removes `operator` address as an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
+*Removes `operator` address as an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 
@@ -521,7 +539,7 @@ function transferOwnership(address newOwner) external nonpayable
 event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)
 ```
 
-
+To provide compatibility with indexing ERC721 events.
 
 
 
@@ -609,7 +627,7 @@ event RevokedOperator(address indexed operator, address indexed tokenOwner, byte
 event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data)
 ```
 
-
+To provide compatibility with indexing ERC721 events.
 
 
 
@@ -624,5 +642,140 @@ event Transfer(address operator, address indexed from, address indexed to, bytes
 | force  | bool | undefined |
 | data  | bytes | undefined |
 
+
+
+## Events
+
+### LSP8CannotSendToAddressZero
+
+```solidity
+error LSP8CannotSendToAddressZero()
+```
+
+
+
+
+
+
+### LSP8CannotUseAddressZeroAsOperator
+
+```solidity
+error LSP8CannotUseAddressZeroAsOperator()
+```
+
+
+
+
+
+
+### LSP8InvalidTransferBatch
+
+```solidity
+error LSP8InvalidTransferBatch()
+```
+
+
+
+
+
+
+### LSP8NonExistentTokenId
+
+```solidity
+error LSP8NonExistentTokenId(bytes32 tokenId)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenId | bytes32 | undefined |
+
+### LSP8NotTokenOperator
+
+```solidity
+error LSP8NotTokenOperator(bytes32 tokenId, address caller)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenId | bytes32 | undefined |
+| caller | address | undefined |
+
+### LSP8NotTokenOwner
+
+```solidity
+error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenOwner | address | undefined |
+| tokenId | bytes32 | undefined |
+| caller | address | undefined |
+
+### LSP8NotifyTokenReceiverContractMissingLSP1Interface
+
+```solidity
+error LSP8NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenReceiver | address | undefined |
+
+### LSP8NotifyTokenReceiverIsEOA
+
+```solidity
+error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenReceiver | address | undefined |
+
+### LSP8TokenIdAlreadyMinted
+
+```solidity
+error LSP8TokenIdAlreadyMinted(bytes32 tokenId)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenId | bytes32 | undefined |
 
 

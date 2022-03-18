@@ -35,7 +35,7 @@ function authorizeOperator(address operator, bytes32 tokenId) external nonpayabl
 
 
 
-*Makes `operator` address an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+*Makes `operator` address an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
 
 #### Parameters
 
@@ -69,7 +69,7 @@ function balanceOf(address tokenOwner) external view returns (uint256)
 ### getApproved
 
 ```solidity
-function getApproved(uint256 tokenId) external nonpayable returns (address)
+function getApproved(uint256 tokenId) external view returns (address)
 ```
 
 
@@ -135,7 +135,7 @@ function getOperatorsOf(bytes32 tokenId) external view returns (address[])
 ### isApprovedForAll
 
 ```solidity
-function isApprovedForAll(uint256 tokenId) external nonpayable returns (bool)
+function isApprovedForAll(address owner, address operator) external view returns (bool)
 ```
 
 
@@ -146,7 +146,8 @@ function isApprovedForAll(uint256 tokenId) external nonpayable returns (bool)
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | uint256 | undefined
+| owner | address | undefined
+| operator | address | undefined
 
 #### Returns
 
@@ -180,7 +181,7 @@ function isOperatorFor(address operator, bytes32 tokenId) external view returns 
 ### ownerOf
 
 ```solidity
-function ownerOf(uint256 tokenId) external nonpayable returns (address)
+function ownerOf(uint256 tokenId) external view returns (address)
 ```
 
 
@@ -207,7 +208,7 @@ function revokeOperator(address operator, bytes32 tokenId) external nonpayable
 
 
 
-*Removes `operator` address as an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
+*Removes `operator` address as an operator of `tokenId`. See {isOperatorFor}. Requirements - `tokenId` must exist. - caller must be current `tokenOwner` of `tokenId`. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 
@@ -405,7 +406,7 @@ function transferFrom(address from, address to, uint256 tokenId) external nonpay
 
 
 
-*Compatible with ERC721 tranferFrom.*
+*Compatible with ERC721 transferFrom.*
 
 #### Parameters
 
@@ -425,9 +426,9 @@ function transferFrom(address from, address to, uint256 tokenId) external nonpay
 event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)
 ```
 
+To provide compatibility with indexing ERC721 events.
 
-
-*To provide compatibility with indexing ERC721 events.*
+*Emitted when `owner` enables `approved` for `tokenId`.*
 
 #### Parameters
 
@@ -496,9 +497,9 @@ event RevokedOperator(address indexed operator, address indexed tokenOwner, byte
 event Transfer(address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data)
 ```
 
+To provide compatibility with indexing ERC721 events.
 
-
-*To provide compatibility with indexing ERC721 events*
+*Emitted when `tokenId` token is transferred from `from` to `to`.*
 
 #### Parameters
 

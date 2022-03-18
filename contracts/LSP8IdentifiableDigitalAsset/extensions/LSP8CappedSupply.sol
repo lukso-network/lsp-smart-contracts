@@ -10,18 +10,18 @@ import "../LSP8IdentifiableDigitalAsset.sol";
  * @dev LSP8 extension, adds token supply cap.
  */
 abstract contract LSP8CappedSupply is
-    LSP8IdentifiableDigitalAsset,
-    LSP8CappedSupplyCore
+    LSP8CappedSupplyCore,
+    LSP8IdentifiableDigitalAsset
 {
     /**
      * @notice Sets the token max supply
      * @param tokenSupplyCap_ The Token max supply
      */
     constructor(uint256 tokenSupplyCap_) {
-        require(
-            tokenSupplyCap_ > 0,
-            "LSP8CappedSupply: tokenSupplyCap is zero"
-        );
+        if (tokenSupplyCap_ == 0) {
+            revert LSP8CappedSupplyRequired();
+        }
+
         _tokenSupplyCap = tokenSupplyCap_;
     }
 

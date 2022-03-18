@@ -58,7 +58,7 @@ function authorizeOperator(address operator, uint256 amount) external nonpayable
 
 
 
-*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
 
 #### Parameters
 
@@ -159,7 +159,7 @@ function revokeOperator(address operator) external nonpayable
 
 
 
-*Removes `operator` address as an operator of callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be calling address. - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
+*Removes `operator` address as an operator of callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 
@@ -282,6 +282,24 @@ function transferFrom(address from, address to, uint256 amount) external nonpaya
 
 ## Events
 
+### Approval
+
+```solidity
+event Approval(address indexed owner, address indexed spender, uint256 value)
+```
+
+To provide compatibility with indexing ERC20 events.
+
+*Emitted when `owner` enables `spender` for `value` tokens.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| owner `indexed` | address | The account giving approval |
+| spender `indexed` | address | The account receiving approval |
+| value  | uint256 | The amount of tokens `spender` has access to from `owner` |
+
 ### AuthorizedOperator
 
 ```solidity
@@ -340,17 +358,17 @@ event RevokedOperator(address indexed operator, address indexed tokenOwner)
 event Transfer(address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data)
 ```
 
+To provide compatibility with indexing ERC20 events.
 
-
-
+*Emitted when `amount` tokens is transferred from `from` to `to`.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | operator `indexed` | address | undefined |
-| from `indexed` | address | undefined |
-| to `indexed` | address | undefined |
+| from `indexed` | address | The sending address |
+| to `indexed` | address | The receiving address |
 | amount  | uint256 | undefined |
 | force  | bool | undefined |
 | data  | bytes | undefined |

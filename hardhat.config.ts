@@ -4,10 +4,15 @@ import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-web3";
 
 import "@typechain/hardhat";
-import "@primitivefi/hardhat-dodoc";
 import "hardhat-packager";
+import "hardhat-contract-sizer";
 
 import "hardhat-deploy";
+
+/**
+ * @dev uncomment to generate contract docs in Markdown
+ */
+// import "@primitivefi/hardhat-dodoc";
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -54,31 +59,38 @@ const config: HardhatUserConfig = {
       // Standard version
       // ------------------
       "UniversalProfile",
-      "LSP6KeyManager",
+      "LSP0ERC725Account",
       "LSP1UniversalReceiverDelegateUP",
       "LSP1UniversalReceiverDelegateVault",
-      "LSP7Mintable",
-      "LSP8Mintable",
+      "LSP6KeyManager",
       "LSP7DigitalAsset",
       "LSP7CappedSupply",
+      "LSP7Mintable",
       "LSP8IdentifiableDigitalAsset",
       "LSP8CappedSupply",
+      "LSP8Mintable",
+      "LSP9Vault",
       // Proxy version
       // ------------------
       "UniversalProfileInit",
+      "LSP0ERC725Account",
       "LSP6KeyManagerInit",
-      "LSP1UniversalReceiverDelegateUPInit",
-      "LSP1UniversalReceiverDelegateVaultInit",
-      "LSP7MintableInit",
-      "LSP8MintableInit",
       "LSP7DigitalAssetInit",
       "LSP7CappedSupplyInit",
+      "LSP7MintableInit",
       "LSP8IdentifiableDigitalAssetInit",
       "LSP8CappedSupplyInit",
+      "LSP8MintableInit",
+      "LSP9VaultInit",
       // ERC Compatible tokens
       // ------------------
       "LSP7CompatibilityForERC20",
+      "LSP7CompatibilityForERC20Init",
       "LSP8CompatibilityForERC721",
+      "LSP8CompatibilityForERC721Init",
+      // Legacy L14
+      // ------------------
+      "UniversalReceiverAddressStore",
       // Tools
       // ------------------
       "Create2Factory",

@@ -15,12 +15,7 @@ abstract contract LSP6KeyManagerInitAbstract is
     Initializable,
     LSP6KeyManagerCore
 {
-    /**
-     * @notice Initiate the account with the address of the ERC725Account contract and sets LSP6KeyManager InterfaceId
-     * @param _account The address of the ER725Account to control
-     */
-    function initialize(address _account) public virtual onlyInitializing {
+    function _initialize(address _account) internal virtual onlyInitializing {
         account = ERC725(_account);
-        _registerInterface(_INTERFACEID_LSP6);
     }
 }

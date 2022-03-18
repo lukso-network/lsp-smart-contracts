@@ -4,17 +4,9 @@ pragma solidity ^0.8.0;
 
 // modules
 import "../LSP7DigitalAsset.sol";
+import "./LSP7CompatibilityForERC20Core.sol";
 
-// interfaces
-import "./ILSP7CompatibilityForERC20.sol";
-
-/**
- * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
- */
-contract LSP7CompatibilityForERC20 is
-    ILSP7CompatibilityForERC20,
-    LSP7DigitalAsset
-{
+contract LSP7CompatibilityForERC20 is LSP7CompatibilityForERC20Core, LSP7DigitalAsset {
     /* solhint-disable no-empty-blocks */
     /**
      * @notice Sets the name, the symbol and the owner of the token
@@ -26,51 +18,39 @@ contract LSP7CompatibilityForERC20 is
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP7DigitalAsset(name_, symbol_, newOwner_, false) {}
+    ) LSP7DigitalAsset(name_, symbol_, newOwner_, false) {
 
-    /**
-     * @inheritdoc ILSP7CompatibilityForERC20
-     */
-    function approve(address operator, uint256 amount)
-        external
+    }
+
+    // --- Overrides
+
+    function authorizeOperator(address operator, uint256 amount)
+    public
         virtual
-        override
+        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core)
     {
-        return authorizeOperator(operator, amount);
+        super.authorizeOperator(operator, amount);
     }
 
-    /**
-     * @inheritdoc ILSP7CompatibilityForERC20
-     */
-    function allowance(address tokenOwner, address operator)
-        external
-        view
+    function _burn(address from, uint256 amount, bytes memory data)
+        internal
         virtual
-        override
-        returns (uint256)
+        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core)
     {
-        return isOperatorFor(operator, tokenOwner);
+        super._burn(from, amount, data);
     }
 
-    /**
-     * @inheritdoc ILSP7CompatibilityForERC20
-     * @dev Compatible with ERC20 transfer.
-     * Using force=true so that EOA and any contract may receive the tokens.
-     */
-    function transfer(address to, uint256 amount) external virtual override {
-        return transfer(_msgSender(), to, amount, true, "compat-transfer");
+    function _mint(address to, uint256 amount, bool force, bytes memory data)
+    internal
+        virtual
+        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core) {
+            super._mint(to, amount, force, data);
     }
 
-    /**
-     * @inheritdoc ILSP7CompatibilityForERC20
-     * @dev Compatible with ERC20 transferFrom.
-     * Using force=true so that EOA and any contract may receive the tokens.
-     */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external virtual override {
-        return transfer(from, to, amount, true, "compat-transferFrom");
+    function _transfer(address from, address to, uint256 amount, bool force, bytes memory data)
+    internal
+        virtual
+        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core) {
+            super._transfer(from, to, amount, force, data);
     }
 }

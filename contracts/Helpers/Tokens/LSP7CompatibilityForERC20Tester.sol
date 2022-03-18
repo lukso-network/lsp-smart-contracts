@@ -22,4 +22,12 @@ contract LSP7CompatibilityForERC20Tester is LSP7CompatibilityForERC20 {
         // using force=true so we can send to EOA in test
         _mint(to, amount, true, data);
     }
+
+    function burn(
+        address from,
+        uint256 amount,
+        bytes calldata data
+    ) public {
+        _burn(from, amount, data);
+    }
 }

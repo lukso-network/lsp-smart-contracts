@@ -16,6 +16,5 @@ contract LSP6KeyManager is LSP6KeyManagerCore {
      */
     constructor(address _account) {
         account = ERC725(_account);
-        _registerInterface(_INTERFACEID_LSP6);
     }
 }
