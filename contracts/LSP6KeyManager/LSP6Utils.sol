@@ -76,7 +76,7 @@ library LSP6Utils {
         values[1] = UtilsLib.addressToBytes(_address);
         values[2] = permissions;
 
-        if (rawArrayLength.length != 32) {
+        if (bytes32(rawArrayLength) == bytes32(0)) {
             keys[1] = LSP2Utils.generateArrayKeyAtIndex(
                 _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY,
                 0
@@ -101,8 +101,8 @@ library LSP6Utils {
         bytes32[] memory keys,
         bytes[] memory values
     ) internal returns (bytes memory result) {
-        bytes memory payload = abi.encodeWithSelector(
-            hex"14a6e293",
+        bytes memory payload = abi.encodeWithSignature(
+            "setData(bytes32[],bytes[])",
             keys,
             values
         );
