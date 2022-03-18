@@ -3,7 +3,7 @@ import {
   shouldInitializeLikeLSP11,
   LSP11TestContext,
   shouldBehaveLikeLSP11,
-} from "./LSP11BasicSocialRecovery.behavior";
+} from "./LSP11BasicSocialRecovery.behaviour";
 
 import { deployProxy } from "../utils/proxy";
 
