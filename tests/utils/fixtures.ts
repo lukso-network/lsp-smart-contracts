@@ -3,10 +3,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
   LSP1UniversalReceiverDelegateUP__factory,
-  LSP11SocialRecovery,
-  LSP11SocialRecoveryInit,
-  LSP11SocialRecovery__factory,
-  LSP11SocialRecoveryInit__factory,
   LSP6KeyManager,
   LSP6KeyManager__factory,
   UniversalProfile,
@@ -16,8 +12,35 @@ import { ERC725YKeys, ALL_PERMISSIONS_SET } from "../../constants";
 import { ARRAY_LENGTH } from "./helpers";
 import { deployProxy } from "./proxy";
 import { PERMISSIONS } from "../../constants";
+import { LSP6TestContext, LSP6InternalsTestContext } from "./context";
 
-// prettier-ignore
+export async function setupKeyManager(
+  _context: LSP6TestContext,
+  _permissionsKeys: string[],
+  _permissionsValues: string[]
+) {
+  await _context.universalProfile
+    .connect(_context.owner)
+    .setData(_permissionsKeys, _permissionsValues);
+
+  await _context.universalProfile
+    .connect(_context.owner)
+    .transferOwnership(_context.keyManager.address);
+}
+
+export async function setupKeyManagerHelper(
+  _context: LSP6InternalsTestContext,
+  _permissionsKeys: string[],
+  _permissionsValues: string[]
+) {
+  await _context.universalProfile
+    .connect(_context.owner)
+    .setData(_permissionsKeys, _permissionsValues);
+
+  await _context.universalProfile
+    .connect(_context.owner)
+    .transferOwnership(_context.keyManagerHelper.address);
+}
 
 /**
  * Deploy 1 Profile + 1 KeyManager + 1 URD and set all needed permissions
@@ -96,7 +119,6 @@ const [rawPermissionArrayLength] = await universalProfile
     ],
   ]);
   await lsp6KeyManager.connect(EOA).execute(payload);
-
 }
 
 /**

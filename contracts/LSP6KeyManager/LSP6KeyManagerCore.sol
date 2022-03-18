@@ -568,6 +568,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         if (_operationType == 0) return (_PERMISSION_CALL, "CALL");
         if (_operationType == 1) return (_PERMISSION_DEPLOY, "CREATE");
         if (_operationType == 2) return (_PERMISSION_DEPLOY, "CREATE2");
-        if (_operationType == 3) return (_PERMISSION_DEPLOY, "STATICCALL");
+        if (_operationType == 3) return (_PERMISSION_STATICCALL, "STATICCALL");
     }
 }
