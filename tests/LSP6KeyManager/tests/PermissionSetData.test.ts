@@ -28,7 +28,7 @@ export const shouldBehaveLikePermissionSetData = (
 ) => {
   let context: LSP6TestContext;
 
-  describe("when caller is an EOA", () => {
+  describe.skip("when caller is an EOA", () => {
     let canSetData: SignerWithAddress, cannotSetData: SignerWithAddress;
 
     beforeEach(async () => {
@@ -414,19 +414,26 @@ export const shouldBehaveLikePermissionSetData = (
     });
   });
 
-  describe("when caller is a contract", () => {
+  describe.only("when caller is a contract", () => {
     let contractCanSetData: Executor;
 
     const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Key"));
     const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some value"));
-    console.log("key: ", key);
+
+    /**
+     * @dev this is necessary when the function being called in the contract
+     *  perform a raw / low-level call (in the function body)
+     *  otherwise, the deeper layer of interaction (UP.execute) fails
+     */
+    const GAS_PROVIDED = 500_000;
 
     beforeEach(async () => {
       context = await buildContext();
 
-      contractCanSetData = await new Executor__factory(
-        context.accounts[0]
-      ).deploy(context.universalProfile.address, context.keyManager.address);
+      contractCanSetData = await new Executor__factory(context.owner).deploy(
+        context.universalProfile.address,
+        context.keyManager.address
+      );
 
       const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -493,57 +500,24 @@ export const shouldBehaveLikePermissionSetData = (
       });
     });
 
-    describe.skip("> Low-level calls", () => {
-      it("should allow to set a key hardcoded inside a function of the calling contract", async () => {
+    describe.only("> Low-level calls", () => {
+      it("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
         // check that nothing is set at store[key]
         let [initialStorage] =
           await context.universalProfile.callStatic.getData([key]);
         expect(initialStorage).toEqual("0x");
 
         // check if low-level call succeeded
-        let result =
-          await contractCanSetData.callStatic.setHardcodedKeyRawCall();
+        let result = await contractCanSetData.callStatic.setHardcodedKeyRawCall(
+          {
+            gasLimit: GAS_PROVIDED,
+          }
+        );
         expect(result).toBeTruthy();
 
         // make the executor call
         await contractCanSetData.setHardcodedKeyRawCall({
-          gasLimit: 10_000_000,
-        });
-
-        // check that store[key] is now set to value
-        let [newStorage] = await context.universalProfile.callStatic.getData([
-          key,
-        ]);
-        expect(newStorage).toEqual(value);
-      });
-
-      it("Should allow to set a key computed inside a function of the calling contract", async () => {
-        // check that nothing is set at store[key]
-        let [initialStorage] =
-          await context.universalProfile.callStatic.getData([key]);
-        expect(initialStorage).toEqual("0x");
-
-        // make the executor call
-        await contractCanSetData.setComputedKeyRawCall({
-          gasLimit: 10_000_000,
-        });
-
-        // check that store[key] is now set to value
-        let [newStorage] = await context.universalProfile.callStatic.getData([
-          key,
-        ]);
-        expect(newStorage).toEqual(value);
-      });
-
-      it("Should allow to set a key computed from parameters given to a function of the calling contract", async () => {
-        // check that nothing is set at store[key]
-        let [initialStorage] =
-          await context.universalProfile.callStatic.getData([key]);
-        expect(initialStorage).toEqual("0x");
-
-        // make the executor call
-        await contractCanSetData.setComputedKeyFromParamsRawCall(key, value, {
-          gasLimit: 500_000,
+          gasLimit: GAS_PROVIDED,
         });
 
         // check that store[key] is now set to value

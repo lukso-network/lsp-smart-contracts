@@ -50,7 +50,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
   });
 
-  describe("SETDATA", () => {
+  describe.only("SETDATA", () => {
     shouldBehaveLikePermissionSetData(buildContext);
   });
 
