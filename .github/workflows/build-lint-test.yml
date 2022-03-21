@@ -31,6 +31,8 @@ jobs:
 
       - name: Build contract artifacts
       - run: npm run build --if-present
+
+      - name: Generate typechain types
       - run: npm run generate-types
 
       - name: Run tests
