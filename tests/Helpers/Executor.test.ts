@@ -11,7 +11,6 @@ import {
 } from "../../types";
 
 // custom helpers
-import { ONE_ETH, DUMMY_RECIPIENT } from "../utils/helpers";
 import { ERC725YKeys, ALL_PERMISSIONS_SET, PERMISSIONS } from "../../constants";
 
 describe("Executor interacting with KeyManager", () => {
@@ -194,109 +193,6 @@ describe("Executor interacting with KeyManager", () => {
         // check that store[key] is now set to value
         let [newStorage] = await universalProfile.callStatic.getData([key]);
         expect(newStorage).toEqual(value);
-      });
-    });
-  });
-
-  describe("Interaction = transfering LYX", () => {
-    let provider = ethers.provider;
-
-    beforeEach(async () => {
-      let ownerBalance = await provider.getBalance(owner.address);
-
-      await owner.sendTransaction({
-        to: universalProfile.address,
-        value: ethers.utils.parseEther("1"),
-      });
-    });
-
-    describe("> Contract calls", () => {
-      it("Should send 1 LYX to an address hardcoded in Executor (`sendOneLyxHardcoded`)", async () => {
-        let initialUPBalance = await provider.getBalance(
-          universalProfile.address
-        );
-        let initialRecipientBalance = await provider.getBalance(
-          DUMMY_RECIPIENT
-        );
-        expect(initialUPBalance).toEqBN(ONE_ETH);
-
-        await executor.sendOneLyxHardcoded();
-
-        let newUPBalance = await provider.getBalance(universalProfile.address);
-        let newRecipientBalance = await provider.getBalance(DUMMY_RECIPIENT);
-
-        expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(
-          initialRecipientBalance.add(ONE_ETH)
-        );
-      });
-
-      it("Should send 1 LYX to an address provided to Executor (`sendOneLyxToRecipient`)", async () => {
-        let recipient = accounts[1];
-
-        let initialUPBalance = await provider.getBalance(
-          universalProfile.address
-        );
-        let initialRecipientBalance = await provider.getBalance(
-          recipient.address
-        );
-        expect(initialUPBalance).toEqBN(ONE_ETH);
-
-        await executor.sendOneLyxToRecipient(recipient.address);
-
-        let newUPBalance = await provider.getBalance(universalProfile.address);
-        let newRecipientBalance = await provider.getBalance(recipient.address);
-
-        expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(
-          initialRecipientBalance.add(ONE_ETH)
-        );
-      });
-    });
-
-    describe("> Low-level calls", () => {
-      it("Should send 1 LYX to an address hardcoded in Executor (`sendOneLyxHardcodedRawCall`)", async () => {
-        let initialUPBalance = await provider.getBalance(
-          universalProfile.address
-        );
-        let initialRecipientBalance = await provider.getBalance(
-          DUMMY_RECIPIENT
-        );
-        expect(initialUPBalance).toEqBN(ONE_ETH);
-
-        await executor.sendOneLyxHardcodedRawCall({ gasLimit: GAS_PROVIDED });
-
-        let newUPBalance = await provider.getBalance(universalProfile.address);
-        let newRecipientBalance = await provider.getBalance(DUMMY_RECIPIENT);
-
-        expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(
-          initialRecipientBalance.add(ONE_ETH)
-        );
-      });
-
-      it("Should send 1 LYX to an address provided to Executor (`sendOneLyxToRecipientRawCall`)", async () => {
-        let recipient = accounts[1];
-
-        let initialUPBalance = await provider.getBalance(
-          universalProfile.address
-        );
-        let initialRecipientBalance = await provider.getBalance(
-          recipient.address
-        );
-        expect(initialUPBalance).toEqBN(ONE_ETH);
-
-        await executor.sendOneLyxToRecipientRawCall(recipient.address, {
-          gasLimit: GAS_PROVIDED,
-        });
-
-        let newUPBalance = await provider.getBalance(universalProfile.address);
-        let newRecipientBalance = await provider.getBalance(recipient.address);
-
-        expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(
-          initialRecipientBalance.add(ONE_ETH)
-        );
       });
     });
   });
