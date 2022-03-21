@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
-import { UniversalProfile } from "../types";
+import { UniversalProfile, TargetContract__factory } from "../types";
 
 // helpers
 import { getRandomAddresses } from "./utils/helpers";
@@ -58,6 +58,23 @@ export const shouldBehaveLikeLSP3 = (
       );
       expect(result).toEqual(ERC1271.FAIL_VALUE);
     });
+
+    it("should return failValue when the owner doesn't support ERC1271", async () => {
+      const signer = context.accounts[1];
+
+      const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
+      await context.universalProfile.connect(context.accounts[0]).transferOwnership(targetContract.address);
+
+      const dataToSign = "0xcafecafe";
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await signer.signMessage(dataToSign);
+
+      const result = await context.universalProfile.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).toEqual(ERC1271.FAIL_VALUE);
+    })
   });
 
   describe("when interacting with the ERC725Y storage", () => {
