@@ -290,13 +290,13 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
             _operatorAuthorizedAmount[from][operator] -= amount;
         }
 
-        _notifyTokenSender(from, address(0), amount, data);
-
         _beforeTokenTransfer(from, address(0), amount);
 
         _tokenOwnerBalances[from] -= amount;
 
         emit Transfer(operator, from, address(0), amount, false, data);
+
+        _notifyTokenSender(from, address(0), amount, data);
     }
 
     /**
@@ -330,8 +330,6 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
 
         address operator = _msgSender();
 
-        _notifyTokenSender(from, to, amount, data);
-
         _beforeTokenTransfer(from, to, amount);
 
         _tokenOwnerBalances[from] -= amount;
@@ -339,6 +337,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
 
         emit Transfer(operator, from, to, amount, force, data);
 
+        _notifyTokenSender(from, to, amount, data);
         _notifyTokenReceiver(from, to, amount, force, data);
     }
 
