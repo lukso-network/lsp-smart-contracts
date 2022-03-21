@@ -28,7 +28,7 @@ export const shouldBehaveLikePermissionSetData = (
 ) => {
   let context: LSP6TestContext;
 
-  describe.skip("when caller is an EOA", () => {
+  describe("when caller is an EOA", () => {
     let canSetData: SignerWithAddress, cannotSetData: SignerWithAddress;
 
     beforeEach(async () => {
@@ -414,7 +414,7 @@ export const shouldBehaveLikePermissionSetData = (
     });
   });
 
-  describe.only("when caller is a contract", () => {
+  describe("when caller is a contract", () => {
     let contractCanSetData: Executor;
 
     const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Key"));
@@ -500,7 +500,7 @@ export const shouldBehaveLikePermissionSetData = (
       });
     });
 
-    describe.only("> Low-level calls", () => {
+    describe("> Low-level calls", () => {
       it("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
         // check that nothing is set at store[key]
         let [initialStorage] =
