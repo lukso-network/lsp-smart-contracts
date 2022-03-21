@@ -36,7 +36,7 @@ contract LSP1UniversalReceiverDelegateVault is
             typeId == _TYPEID_LSP8_TOKENSSENDER ||
             typeId == _TYPEID_LSP8_TOKENSRECIPIENT
         ) {
-            result = _tokenHandling(sender, typeId, data);
+            result = _tokenHandling(sender, typeId);
         }
     }
 

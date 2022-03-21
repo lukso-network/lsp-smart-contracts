@@ -359,8 +359,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         address tokenOwner = tokenOwnerOf(tokenId);
         address operator = _msgSender();
 
-        _notifyTokenSender(tokenOwner, address(0), tokenId, data);
-
         _beforeTokenTransfer(tokenOwner, address(0), tokenId);
 
         _clearOperators(tokenOwner, tokenId);
@@ -369,6 +367,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
         delete _tokenOwners[tokenId];
 
         emit Transfer(operator, tokenOwner, address(0), tokenId, false, data);
+
+        _notifyTokenSender(tokenOwner, address(0), tokenId, data);
     }
 
     /**
@@ -399,8 +399,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         address operator = _msgSender();
 
-        _notifyTokenSender(from, to, tokenId, data);
-
         _beforeTokenTransfer(from, to, tokenId);
 
         _clearOperators(from, tokenId);
@@ -411,6 +409,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
 
         emit Transfer(operator, from, to, tokenId, force, data);
 
+        _notifyTokenSender(from, to, tokenId, data);
         _notifyTokenReceiver(from, to, tokenId, force, data);
     }
 
