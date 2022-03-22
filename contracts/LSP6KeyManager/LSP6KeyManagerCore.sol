@@ -74,6 +74,20 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     ERC725 public account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
+    modifier onlyValidERC725Selector(bytes calldata _data) {
+        bytes4 selector = bytes4(_data[:4]);
+
+        // prettier-ignore
+        require(
+            selector == IERC725Y.setData.selector ||
+            selector == IERC725X.execute.selector ||
+            selector == account.transferOwnership.selector,
+            "unknown ERC725 selector"
+        );
+
+        _;
+    }
+
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -127,6 +141,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         external
         payable
         override
+        onlyValidERC725Selector(_data)
         returns (bytes memory)
     {
         _verifyPermissions(msg.sender, _data);
@@ -160,7 +175,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         uint256 _nonce,
         bytes calldata _data,
         bytes memory _signature
-    ) external payable override returns (bytes memory) {
+    )
+        external
+        payable
+        override
+        onlyValidERC725Selector(_data)
+        returns (bytes memory)
+    {
         require(
             _signedFor == address(this),
             "executeRelayCall: Message not signed for this keyManager"
@@ -254,7 +275,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         if (erc725Function == account.setData.selector) {
             _verifyCanSetData(_from, _data);
-        } else if (erc725Function == account.execute.selector) {
+        }
+
+        if (erc725Function == account.execute.selector) {
             _verifyCanExecute(_from, _data);
 
             address to = address(bytes20(_data[48:68]));
@@ -268,11 +291,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                     _verifyAllowedFunction(_from, bytes4(_data[164:168]));
                 }
             }
-        } else if (erc725Function == account.transferOwnership.selector) {
+        }
+
+        if (erc725Function == account.transferOwnership.selector) {
             if (!_hasPermission(_PERMISSION_CHANGEOWNER, permissions))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
-        } else {
-            revert("_verifyPermissions: unknown ERC725 selector");
         }
     }
 
