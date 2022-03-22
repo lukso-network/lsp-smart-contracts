@@ -235,6 +235,21 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         internal
         view
     {
+        // get the permissions of the caller
+        bytes32 permissions = account.getPermissionsFor(_from);
+        if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
+
+        // if caller has all permissions, no need to make checks
+        // no need to analyze the payload for required permissions
+        if (
+            _hasPermission(
+                0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+                permissions
+            )
+        ) {
+            return;
+        }
+
         bytes4 erc725Function = bytes4(_data[:4]);
 
         if (erc725Function == account.setData.selector) {
@@ -254,9 +269,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 }
             }
         } else if (erc725Function == account.transferOwnership.selector) {
-            bytes32 permissions = account.getPermissionsFor(_from);
-            if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
-
             if (!_hasPermission(_PERMISSION_CHANGEOWNER, permissions))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
         } else {
@@ -520,6 +532,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     }
 
     /**
+     * TODO; move to LSP6 library
      * @dev compare the permissions `_addressPermission` of an address with `_requiredPermission`
      * @param _requiredPermission the permission required
      * @param _addressPermission the permission of address that we want to check
