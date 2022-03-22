@@ -74,20 +74,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     ERC725 public account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
-    modifier onlyValidERC725Selector(bytes calldata _data) {
-        bytes4 selector = bytes4(_data[:4]);
-
-        // prettier-ignore
-        require(
-            selector == IERC725Y.setData.selector ||
-            selector == IERC725X.execute.selector ||
-            selector == account.transferOwnership.selector,
-            "unknown ERC725 selector"
-        );
-
-        _;
-    }
-
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -141,7 +127,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         external
         payable
         override
-        onlyValidERC725Selector(_data)
         returns (bytes memory)
     {
         _verifyPermissions(msg.sender, _data);
@@ -175,13 +160,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         uint256 _nonce,
         bytes calldata _data,
         bytes memory _signature
-    )
-        external
-        payable
-        override
-        onlyValidERC725Selector(_data)
-        returns (bytes memory)
-    {
+    ) external payable override returns (bytes memory) {
         require(
             _signedFor == address(this),
             "executeRelayCall: Message not signed for this keyManager"
@@ -256,6 +235,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         internal
         view
     {
+        bytes4 erc725Function = _extractERC725Selector(_data);
+
         // get the permissions of the caller
         bytes32 permissions = account.getPermissionsFor(_from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
@@ -264,8 +245,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         // no need to analyze the payload for required permissions
         bool isAdmin = _hasPermission(_ALL_EXECUTION_PERMISSIONS, permissions);
         if (isAdmin) return;
-
-        bytes4 erc725Function = bytes4(_data[:4]);
 
         if (erc725Function == account.setData.selector) {
             _verifyCanSetData(_from, permissions, _data);
@@ -281,7 +260,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 _verifyAllowedStandard(_from, to);
 
                 if (_data.length >= 168) {
-                    // extract bytes4 function selector from payload
+                    // extract bytes4 function selector from payload passed to ERC725X.execute(...)
                     _verifyAllowedFunction(_from, bytes4(_data[164:168]));
                 }
             }
@@ -556,6 +535,22 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     ) internal pure returns (bool) {
         return
             (_requiredPermission & _addressPermission) == _requiredPermission;
+    }
+
+    function _extractERC725Selector(bytes calldata _data)
+        internal
+        view
+        returns (bytes4 selector_)
+    {
+        selector_ = bytes4(_data[:4]);
+
+        // prettier-ignore
+        require(
+            selector_ == IERC725Y.setData.selector ||
+            selector_ == IERC725X.execute.selector ||
+            selector_ == account.transferOwnership.selector,
+            "unknown ERC725 selector"
+        );
     }
 
     function _extractKeySlice(bytes32 _key)
