@@ -262,23 +262,17 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         // if caller has all permissions, no need to make checks
         // no need to analyze the payload for required permissions
-        if (
-            _hasPermission(
-                0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
-                permissions
-            )
-        ) {
-            return;
-        }
+        bool isAdmin = _hasPermission(_ALL_EXECUTION_PERMISSIONS, permissions);
+        if (isAdmin) return;
 
         bytes4 erc725Function = bytes4(_data[:4]);
 
         if (erc725Function == account.setData.selector) {
-            _verifyCanSetData(_from, _data);
+            _verifyCanSetData(_from, permissions, _data);
         }
 
         if (erc725Function == account.execute.selector) {
-            _verifyCanExecute(_from, _data);
+            _verifyCanExecute(_from, permissions, _data);
 
             address to = address(bytes20(_data[48:68]));
             _verifyAllowedAddress(_from, to);
@@ -306,13 +300,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _data the ABI encoded payload `account.setData(keys, values)`
      * containing a list of keys-value pairs
      */
-    function _verifyCanSetData(address _from, bytes calldata _data)
-        internal
-        view
-    {
-        bytes32 permissions = account.getPermissionsFor(_from);
-        if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
-
+    function _verifyCanSetData(
+        address _from,
+        bytes32 _permissions,
+        bytes calldata _data
+    ) internal view {
         (bytes32[] memory inputKeys, ) = abi.decode(
             _data[4:],
             (bytes32[], bytes[])
@@ -327,7 +319,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             // prettier-ignore
             // if the key is a permission key
             if (bytes8(key) == _SET_PERMISSIONS_PREFIX) {
-                _verifyCanSetPermissions(key, _from, permissions);
+                _verifyCanSetPermissions(key, _from, _permissions);
 
                 // "nullify permission keys, 
                 // so that they do not get check against allowed ERC725Y keys
@@ -335,16 +327,15 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
             // if the key is any other bytes32 key
             } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
-                if (!_hasPermission(_PERMISSION_ADDPERMISSIONS, permissions))
+                if (!_hasPermission(_PERMISSION_ADDPERMISSIONS, _permissions))
                     revert NotAuthorised(_from, "ADDPERMISSIONS");
             } else {
-
                 isSettingERC725YKeys = true;
             }
         }
 
         if (isSettingERC725YKeys) {
-            if (!_hasPermission(_PERMISSION_SETDATA, permissions))
+            if (!_hasPermission(_PERMISSION_SETDATA, _permissions))
                 revert NotAuthorised(_from, "SETDATA");
 
             _verifyAllowedERC725YKeys(_from, inputKeys);
@@ -446,13 +437,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _from the address who want to run the execute function on the ERC725Account
      * @param _data the ABI encoded payload `account.execute(...)`
      */
-    function _verifyCanExecute(address _from, bytes calldata _data)
-        internal
-        view
-    {
-        bytes32 permissions = account.getPermissionsFor(_from);
-        if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
-
+    function _verifyCanExecute(
+        address _from,
+        bytes32 _permissions,
+        bytes calldata _data
+    ) internal pure {
         uint256 operationType = uint256(bytes32(_data[4:36]));
         uint256 value = uint256(bytes32(_data[68:100]));
 
@@ -466,12 +455,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             string memory operationName
         ) = _extractPermissionFromOperation(operationType);
 
-        if (!_hasPermission(permissionRequired, permissions))
+        if (!_hasPermission(permissionRequired, _permissions))
             revert NotAuthorised(_from, operationName);
 
         if (
             (value > 0) &&
-            !_hasPermission(_PERMISSION_TRANSFERVALUE, permissions)
+            !_hasPermission(_PERMISSION_TRANSFERVALUE, _permissions)
         ) {
             revert NotAuthorised(_from, "TRANSFERVALUE");
         }
@@ -555,7 +544,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     }
 
     /**
-     * TODO; move to LSP6 library
+     * TODO; rename + move to LSP6 library
      * @dev compare the permissions `_addressPermission` of an address with `_requiredPermission`
      * @param _requiredPermission the permission required
      * @param _addressPermission the permission of address that we want to check
@@ -566,9 +555,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         bytes32 _addressPermission
     ) internal pure returns (bool) {
         return
-            (_requiredPermission & _addressPermission) == _requiredPermission
-                ? true
-                : false;
+            (_requiredPermission & _addressPermission) == _requiredPermission;
     }
 
     function _extractKeySlice(bytes32 _key)
