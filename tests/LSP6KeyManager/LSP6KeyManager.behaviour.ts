@@ -1,3 +1,6 @@
+import { ethers } from "hardhat";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+
 import { TargetContract__factory, TargetContract } from "../../types";
 
 // setup
@@ -9,6 +12,7 @@ import {
   ALL_PERMISSIONS_SET,
   ERC725YKeys,
   INTERFACE_IDS,
+  PERMISSIONS,
 } from "../../constants";
 
 // effects
@@ -46,7 +50,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
-  describe.only("CHANGE / ADD permissions", () => {
+  describe("CHANGE / ADD permissions", () => {
     shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
   });
 
@@ -101,8 +105,12 @@ export const shouldBehaveLikeLSP6 = (
   describe("miscellaneous", () => {
     let targetContract: TargetContract;
 
+    let addressCanMakeCall: SignerWithAddress;
+
     beforeEach(async () => {
       context = await buildContext();
+
+      addressCanMakeCall = context.accounts[1];
 
       targetContract = await new TargetContract__factory(
         context.accounts[0]
@@ -111,9 +119,14 @@ export const shouldBehaveLikeLSP6 = (
       const permissionsKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          addressCanMakeCall.address.substring(2),
       ];
 
-      const permissionsValues = [ALL_PERMISSIONS_SET];
+      const permissionsValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
     });
@@ -122,7 +135,7 @@ export const shouldBehaveLikeLSP6 = (
       await context.keyManager.connect(context.owner).execute("0x");
     });
 
-    it("Should revert because of wrong operation type", async () => {
+    it("Should revert because of wrong operation type when caller has ALL PERMISSIONS", async () => {
       let targetPayload = targetContract.interface.encodeFunctionData(
         "setName",
         ["new name"]
@@ -136,15 +149,33 @@ export const shouldBehaveLikeLSP6 = (
       );
 
       await expect(context.keyManager.execute(payload)).toBeRevertedWith(
-        "_extractPermissionFromOperation: invalid operation type"
+        "Wrong operation type"
       );
+    });
+
+    it("Should revert because of wrong operation type when caller has not ALL PERMISSIONS", async () => {
+      let targetPayload = targetContract.interface.encodeFunctionData(
+        "setName",
+        ["new name"]
+      );
+
+      const INVALID_OPERATION_TYPE = 8;
+
+      let payload = context.universalProfile.interface.encodeFunctionData(
+        "execute",
+        [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
+      );
+
+      await expect(
+        context.keyManager.connect(addressCanMakeCall).execute(payload)
+      ).toBeRevertedWith("LSP6KeyManager: invalid operation type");
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
         context.keyManager.execute(INVALID_PAYLOAD)
-      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
+      ).toBeRevertedWith("unknown ERC725 selector");
     });
   });
 

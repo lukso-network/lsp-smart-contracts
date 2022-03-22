@@ -592,18 +592,15 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @dev extract the required permission + a descriptive string, based on the `_operationType`
      * being run via ERC725Account.execute(...)
      * @param _operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
-     * @return bytes32 the permission associated with the `_operationType`
-     * @return string the opcode associated with `_operationType`
+     * @return permissionsRequired_ (bytes32) the permission associated with the `_operationType`
+     * @return operationName_ (string) the name of the opcode associated with `_operationType`
      */
     function _extractPermissionFromOperation(uint256 _operationType)
         internal
         pure
-        returns (bytes32, string memory)
+        returns (bytes32 permissionsRequired_, string memory operationName_)
     {
-        require(
-            _operationType < 5,
-            "_extractPermissionFromOperation: invalid operation type"
-        );
+        require(_operationType < 5, "LSP6KeyManager: invalid operation type");
 
         if (_operationType == 0) return (_PERMISSION_CALL, "CALL");
         if (_operationType == 1) return (_PERMISSION_DEPLOY, "CREATE");
