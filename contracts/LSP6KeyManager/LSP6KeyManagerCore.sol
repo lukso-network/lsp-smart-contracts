@@ -241,8 +241,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         bytes32 permissions = account.getPermissionsFor(_from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
 
-        // if caller has all permissions, no need to make checks
-        // no need to analyze the payload for required permissions
+        // skip permissions check if caller has all permissions (except SIGN as not required)
         bool isAdmin = permissions.includesPermissions(
             _ALL_EXECUTION_PERMISSIONS
         );
