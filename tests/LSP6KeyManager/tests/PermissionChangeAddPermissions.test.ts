@@ -237,29 +237,6 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           ]);
           expect(result).toEqual(value);
         });
-
-        it.skip("should not be allowed to edit the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
-          let value = ethers.utils.hexZeroPad(8, 32);
-
-          let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData",
-            [[key], [value]]
-          );
-
-          try {
-            await context.keyManager
-              .connect(canOnlyChangePermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canOnlyChangePermissions.address,
-                "ADDPERMISSIONS"
-              )
-            );
-          }
-        });
       });
 
       describe("when caller is an address with permission SETDATA", () => {
