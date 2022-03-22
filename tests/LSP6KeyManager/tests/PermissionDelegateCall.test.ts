@@ -1,6 +1,11 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
+import {
+  ERC725YDelegateCall,
+  ERC725YDelegateCall__factory,
+} from "../../../types";
+
 // constants
 import {
   ERC725YKeys,
@@ -23,10 +28,16 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
   let addressCanDelegateCall: SignerWithAddress;
 
+  let erc725YDelegateCallContract: ERC725YDelegateCall;
+
   beforeEach(async () => {
     context = await buildContext();
 
     addressCanDelegateCall = context.accounts[1];
+
+    erc725YDelegateCallContract = await new ERC725YDelegateCall__factory(
+      context.owner
+    ).deploy(context.universalProfile.address);
 
     const permissionKeys = [
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -44,23 +55,41 @@ export const shouldBehaveLikePermissionDelegateCall = (
   });
 
   describe("when trying to make a DELEGATECALL via UP", () => {
-    it("should revert, even if caller has ALL PERMISSIONS", async () => {
+    it("should pass when the caller has ALL PERMISSIONS", async () => {
+      const key =
+        "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+      const value = "0xbbbbbbbbbbbbbbbb";
+
+      // first check that nothing is set under this key
+      // inside the storage of the calling UP
+      const [currentStorage] = await context.universalProfile.getData([key]);
+      expect(currentStorage).toEqual("0x");
+
+      // Doing a delegatecall to the setData function of another UP
+      // should update the ERC725Y storage of the UP making the delegatecall
+      let delegateCallPayload =
+        erc725YDelegateCallContract.interface.encodeFunctionData("setData", [
+          [key],
+          [value],
+        ]);
+
       let executePayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATIONS.DELEGATECALL,
-          "0xcafecafecafecafecafecafecafecafecafecafe",
+          erc725YDelegateCallContract.address,
           0,
-          DUMMY_PAYLOAD,
+          delegateCallPayload,
         ]);
 
-      await expect(
-        context.keyManager.connect(context.owner).execute(executePayload)
-      ).toBeRevertedWith(
-        "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
-      );
+      await context.keyManager.connect(context.owner).execute(executePayload);
+
+      // verify that the setData ran in the context of the calling UP
+      // and that it updated its ERC725Y storage
+      const [newStorage] = await context.universalProfile.getData([key]);
+      expect(newStorage).toEqual(value);
     });
 
-    it("should revert, even if caller is has permission DELEGATECALL", async () => {
+    it("should revert, if caller has permission DELEGATECALL, but not ALL PERMISSIONS", async () => {
       let executePayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATIONS.DELEGATECALL,

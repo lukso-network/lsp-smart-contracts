@@ -66,7 +66,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
-    describe.only("when setting one permission key", () => {
+    describe("when setting one permission key", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
         it("should be allowed to ADD permissions", async () => {
           let newController = new ethers.Wallet.createRandom();
@@ -162,7 +162,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
       });
 
-      describe.only("when caller is an address with permission CHANGEPERMISSION", () => {
+      describe("when caller is an address with permission CHANGEPERMISSION", () => {
         it("should not be allowed to ADD permissions", async () => {
           let newController = new ethers.Wallet.createRandom();
 
@@ -238,7 +238,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           expect(result).toEqual(value);
         });
 
-        it.only("should not be allowed to edit the 'AddressPermissions[]' key (length)", async () => {
+        it.skip("should not be allowed to edit the 'AddressPermissions[]' key (length)", async () => {
           let key = ERC725YKeys.LSP6["AddressPermissions[]"];
           let value = ethers.utils.hexZeroPad(8, 32);
 
