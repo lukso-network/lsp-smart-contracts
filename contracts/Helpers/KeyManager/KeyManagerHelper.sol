@@ -7,7 +7,7 @@ import "../../LSP6KeyManager/LSP6KeyManager.sol";
  * Helper contract to test internal functions of the KeyManager
  */
 contract KeyManagerHelper is LSP6KeyManager {
-    using LSP6Utils for ERC725;
+    using LSP6Utils for *;
 
     /* solhint-disable no-empty-blocks */
     constructor(address _account) LSP6KeyManager(_account) {}
@@ -46,11 +46,10 @@ contract KeyManagerHelper is LSP6KeyManager {
         super._verifyAllowedFunction(_sender, _function);
     }
 
-    function hasPermission(bytes32 _permission, bytes32 _addressPermission)
-        public
-        pure
-        returns (bool)
-    {
-        return super._hasPermission(_permission, _addressPermission);
+    function includesPermissions(
+        bytes32 _addressPermission,
+        bytes32 _permissions
+    ) public pure returns (bool) {
+        return _addressPermission.includesPermissions(_permissions);
     }
 }

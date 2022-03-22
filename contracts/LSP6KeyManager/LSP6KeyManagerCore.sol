@@ -66,7 +66,7 @@ error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     using ERC725Utils for ERC725Y;
     using LSP2Utils for ERC725Y;
-    using LSP6Utils for ERC725;
+    using LSP6Utils for *;
     using Address for address;
     using ECDSA for bytes32;
     using ERC165Checker for address;
@@ -243,7 +243,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         // if caller has all permissions, no need to make checks
         // no need to analyze the payload for required permissions
-        bool isAdmin = _hasPermission(_ALL_EXECUTION_PERMISSIONS, permissions);
+        bool isAdmin = permissions.includesPermissions(
+            _ALL_EXECUTION_PERMISSIONS
+        );
         if (isAdmin) return;
 
         if (erc725Function == account.setData.selector) {
@@ -267,7 +269,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         if (erc725Function == account.transferOwnership.selector) {
-            if (!_hasPermission(_PERMISSION_CHANGEOWNER, permissions))
+            if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
         }
     }
@@ -306,7 +308,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
             // if the key is any other bytes32 key
             } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
-                if (!_hasPermission(_PERMISSION_ADDPERMISSIONS, _permissions))
+                if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
                     revert NotAuthorised(_from, "ADDPERMISSIONS");
             } else {
                 isSettingERC725YKeys = true;
@@ -314,7 +316,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         if (isSettingERC725YKeys) {
-            if (!_hasPermission(_PERMISSION_SETDATA, _permissions))
+            if (!_permissions.includesPermissions(_PERMISSION_SETDATA))
                 revert NotAuthorised(_from, "SETDATA");
 
             _verifyAllowedERC725YKeys(_from, inputKeys);
@@ -331,13 +333,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         if (bytes32(ERC725Y(account).getDataSingle(_key)) == bytes32(0)) {
             // if nothing is stored under this key,
             // we are trying to ADD permissions for a NEW address
-            if (!_hasPermission(_PERMISSION_ADDPERMISSIONS, _callerPermissions))
+            if (!_callerPermissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
                 revert NotAuthorised(_from, "ADDPERMISSIONS");
         } else {
             // if there are already a value stored under this key,
             // we are trying to CHANGE the permissions of an address
             // (that has already some EXISTING permissions set)
-            if (!_hasPermission(_PERMISSION_CHANGEPERMISSIONS, _callerPermissions)) 
+            if (!_callerPermissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS)) 
                 revert NotAuthorised(_from, "CHANGEPERMISSIONS");
         }
     }
@@ -434,12 +436,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             string memory operationName
         ) = _extractPermissionFromOperation(operationType);
 
-        if (!_hasPermission(permissionRequired, _permissions))
+        if (!_permissions.includesPermissions(permissionRequired))
             revert NotAuthorised(_from, operationName);
 
         if (
             (value > 0) &&
-            !_hasPermission(_PERMISSION_TRANSFERVALUE, _permissions)
+            !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)
         ) {
             revert NotAuthorised(_from, "TRANSFERVALUE");
         }
@@ -520,21 +522,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
         revert NotAllowedFunction(_from, _functionSelector);
-    }
-
-    /**
-     * TODO; rename + move to LSP6 library
-     * @dev compare the permissions `_addressPermission` of an address with `_requiredPermission`
-     * @param _requiredPermission the permission required
-     * @param _addressPermission the permission of address that we want to check
-     * @return true if address has enough permissions, false otherwise
-     */
-    function _hasPermission(
-        bytes32 _requiredPermission,
-        bytes32 _addressPermission
-    ) internal pure returns (bool) {
-        return
-            (_requiredPermission & _addressPermission) == _requiredPermission;
     }
 
     function _extractERC725Selector(bytes calldata _data)

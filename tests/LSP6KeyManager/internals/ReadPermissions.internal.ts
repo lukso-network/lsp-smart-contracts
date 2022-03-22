@@ -162,9 +162,9 @@ export const testReadingPermissionsInternals = (
       );
 
       expect(
-        await context.keyManagerHelper.hasPermission(
-          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-          appPermissions
+        await context.keyManagerHelper.includesPermissions(
+          appPermissions,
+          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
         )
       ).toBeTruthy();
     });
