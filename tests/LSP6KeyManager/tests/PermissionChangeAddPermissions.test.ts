@@ -50,6 +50,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           addressToEditPermissions.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           addressWithZeroHexPermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions[]"],
       ];
 
       const permissionsValues = [
@@ -61,12 +62,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
         // 0x0000... = similar to empty, or 'no permissions set'
         "0x0000000000000000000000000000000000000000000000000000000000000000",
+        // example for AddressPermissions[].length = 5
+        ethers.utils.hexZeroPad(5, 32),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
-    describe("when setting one permission key", () => {
+    describe.only("when setting one permission key", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
         it("should be allowed to ADD permissions", async () => {
           let newController = new ethers.Wallet.createRandom();
@@ -239,7 +242,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
       });
 
-      describe("when caller is an address with permission SETDATA", () => {
+      describe.only("when caller is an address with permission SETDATA", () => {
         it("should not be allowed to ADD permissions", async () => {
           let newController = new ethers.Wallet.createRandom();
 
@@ -302,6 +305,54 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
             );
           }
+        });
+
+        it.only("should not be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let value = ethers.utils.hexZeroPad(8, 32);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [value]]
+          );
+
+          try {
+            await context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload);
+          } catch (error) {
+            expect(error.message).toMatch(
+              NotAuthorisedError(
+                canOnlyChangePermissions.address,
+                "ADDPERMISSIONS"
+              )
+            );
+          }
+        });
+
+        it.only("should not be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let value = ethers.utils.hexZeroPad(3, 32);
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData",
+            [[key], [value]]
+          );
+
+          console.log("payload: ", payload);
+
+          // try {
+          //   await context.keyManager
+          //     .connect(canOnlyChangePermissions)
+          //     .execute(payload);
+          // } catch (error) {
+          //   expect(error.message).toMatch(
+          //     NotAuthorisedError(
+          //       canOnlyChangePermissions.address,
+          //       "CHANGEPERMISSIONS"
+          //     )
+          //   );
+          // }
         });
       });
 

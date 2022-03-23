@@ -292,6 +292,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         bool isSettingERC725YKeys = false;
 
+        uint256 valuesOffset = uint256(bytes32(_data[68:100]));
+
         // loop through the keys we are trying to set
         for (uint256 ii = 0; ii < inputKeys.length; ii++) {
             bytes32 key = inputKeys[ii];
@@ -307,8 +309,40 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
             // if the key is any other bytes32 key
             } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
-                if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
-                    revert NotAuthorised(_from, "ADDPERMISSIONS");
+                uint256 arrayLength = uint256(bytes32(ERC725Y(account).getDataSingle(key)));
+                uint256 newLength;
+
+                /// TODO: put in an internal function
+                {
+                    // calldata pointer where the bytes[] values array starts
+                    uint256 valuesArrayOffset = uint256(bytes32(_data[36:68]));
+
+                    // offset to add to find where (= at which pointer) in the calldata
+                    // the array index element is stored, 
+                    uint256 valuePointerOffset = uint256(
+                        bytes32(
+                            _data[4 + valuesArrayOffset + (32 * (ii + 1)):4 + valuesArrayOffset + (32 * (ii + 1)) + 32]
+                        )
+                    );
+
+                    // final value pointer of the 
+                    uint256 valuePointer = valuesArrayOffset + valuePointerOffset + 32;
+
+                    // bytes are always stored as bytes.length + bytes value
+                    // so add 32 to skip the length and get the actual bytes value
+                    newLength = uint256(bytes32(_data[4 + valuePointer + (32 * (ii + 1)):4 + valuePointer + (32 * (ii + 1)) + 32]));
+                }
+
+                if (newLength > arrayLength) {
+                    if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
+                        revert NotAuthorised(_from, "ADDPERMISSIONS");
+                }
+
+                if (newLength < arrayLength) {
+                    if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
+                        revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+                }
+                
             } else {
                 isSettingERC725YKeys = true;
             }
