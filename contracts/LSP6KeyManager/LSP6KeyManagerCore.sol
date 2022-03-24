@@ -292,8 +292,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         bool isSettingERC725YKeys = false;
 
-        uint256 valuesOffset = uint256(bytes32(_data[68:100]));
-
         // loop through the keys we are trying to set
         for (uint256 ii = 0; ii < inputKeys.length; ii++) {
             bytes32 key = inputKeys[ii];
