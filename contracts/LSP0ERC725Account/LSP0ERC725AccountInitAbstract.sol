@@ -16,9 +16,22 @@ abstract contract LSP0ERC725AccountInitAbstract is
 {
     function _initialize(address _newOwner) internal virtual onlyInitializing {
         ERC725InitAbstract.initialize(_newOwner);
+    }
 
-        _registerInterface(_INTERFACEID_LSP0);
-        _registerInterface(_INTERFACEID_ERC1271);
-        _registerInterface(_INTERFACEID_LSP1);
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP0 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            super.supportsInterface(interfaceId);
     }
 }

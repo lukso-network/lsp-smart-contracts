@@ -17,7 +17,7 @@ import "@erc725/smart-contracts/contracts/ERC725Y.sol";
  */
 contract LSP7DigitalAsset is LSP7DigitalAssetCore, LSP4DigitalAssetMetadata {
     /**
-     * @notice Sets the token-Metadata and register LSP7InterfaceId
+     * @notice Sets the token-Metadata
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the the token-Metadata
@@ -30,6 +30,20 @@ contract LSP7DigitalAsset is LSP7DigitalAssetCore, LSP4DigitalAssetMetadata {
         bool isNFT_
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
         _isNFT = isNFT_;
-        _registerInterface(_INTERFACEID_LSP7);
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC165Storage)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP7 ||
+            super.supportsInterface(interfaceId);
     }
 }
