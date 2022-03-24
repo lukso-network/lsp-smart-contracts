@@ -40,11 +40,7 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
     modifier onlyAllowed() {
         if (msg.sender != owner()) {
             address universalReceiverAddress = address(
-                bytes20(
-                    IERC725Y(this).getDataSingle(
-                        _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-                    )
-                )
+                bytes20(_getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY))
             );
             require(
                 ERC165Checker.supportsInterface(
@@ -105,9 +101,7 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
         override
         returns (bytes memory returnValue)
     {
-        bytes memory data = IERC725Y(this).getDataSingle(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-        );
+        bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
         if (data.length >= 20) {
             address universalReceiverAddress = BytesLib.toAddress(data, 0);
