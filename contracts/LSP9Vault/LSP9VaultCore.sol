@@ -131,10 +131,9 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
         override
         onlyOwner
     {
-        _notifyVaultSender(msg.sender);
-
         OwnableUnset.transferOwnership(newOwner);
 
+        _notifyVaultSender(msg.sender);
         _notifyVaultReceiver(newOwner);
     }
 
