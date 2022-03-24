@@ -31,7 +31,20 @@ abstract contract LSP7DigitalAssetInitAbstract is
             symbol_,
             newOwner_
         );
+    }
 
-        _registerInterface(_INTERFACEID_LSP7);
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC165Storage)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP7 ||
+            super.supportsInterface(interfaceId);
     }
 }

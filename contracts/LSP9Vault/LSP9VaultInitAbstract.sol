@@ -21,9 +21,6 @@ abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
         );
 
         _notifyVaultReceiver(_newOwner);
-
-        _registerInterface(_INTERFACEID_LSP1);
-        _registerInterface(_INTERFACEID_LSP9);
     }
 
     /**
@@ -47,5 +44,21 @@ abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
         onlyAllowed
     {
         LSP9VaultCore.setData(_keys, _values);
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP9 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            super.supportsInterface(interfaceId);
     }
 }

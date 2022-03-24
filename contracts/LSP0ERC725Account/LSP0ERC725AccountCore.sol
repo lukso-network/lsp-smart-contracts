@@ -96,9 +96,7 @@ abstract contract LSP0ERC725AccountCore is
         override
         returns (bytes memory returnValue)
     {
-        bytes memory data = IERC725Y(this).getDataSingle(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-        );
+        bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
         if (data.length >= 20) {
             address universalReceiverAddress = BytesLib.toAddress(data, 0);

@@ -12,12 +12,25 @@ import "@erc725/smart-contracts/contracts/ERC725.sol";
  */
 contract LSP0ERC725Account is LSP0ERC725AccountCore, ERC725 {
     /**
-     * @notice Sets the owner of the contract and register ERC725Account, ERC1271 and LSP1UniversalReceiver interfacesId
+     * @notice Sets the owner of the contract
      * @param _newOwner the owner of the contract
      */
-    constructor(address _newOwner) ERC725(_newOwner) {
-        _registerInterface(_INTERFACEID_LSP0);
-        _registerInterface(_INTERFACEID_ERC1271);
-        _registerInterface(_INTERFACEID_LSP1);
+    constructor(address _newOwner) ERC725(_newOwner) {}
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP0 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            super.supportsInterface(interfaceId);
     }
 }
