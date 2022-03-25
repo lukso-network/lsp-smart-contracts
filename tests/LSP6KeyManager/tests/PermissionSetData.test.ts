@@ -526,6 +526,42 @@ export const shouldBehaveLikePermissionSetData = (
         ]);
         expect(newStorage).toEqual(value);
       });
+
+      it("Should allow to `setComputedKeyRawCall` on UP", async () => {
+        // check that nothing is set at store[key]
+        let [initialStorage] =
+          await context.universalProfile.callStatic.getData([key]);
+        expect(initialStorage).toEqual("0x");
+
+        // make the executor call
+        await contractCanSetData.setComputedKeyRawCall({
+          gasLimit: GAS_PROVIDED,
+        });
+
+        // check that store[key] is now set to value
+        let [newStorage] = await context.universalProfile.callStatic.getData([
+          key,
+        ]);
+        expect(newStorage).toEqual(value);
+      });
+
+      it("Should allow to `setComputedKeyFromParamsRawCall` on UP", async () => {
+        // check that nothing is set at store[key]
+        let [initialStorage] =
+          await context.universalProfile.callStatic.getData([key]);
+        expect(initialStorage).toEqual("0x");
+
+        // make the executor call
+        await contractCanSetData.setComputedKeyFromParamsRawCall(key, value, {
+          gasLimit: GAS_PROVIDED,
+        });
+
+        // check that store[key] is now set to value
+        let [newStorage] = await context.universalProfile.callStatic.getData([
+          key,
+        ]);
+        expect(newStorage).toEqual(value);
+      });
     });
   });
 };

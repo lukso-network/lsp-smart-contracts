@@ -197,7 +197,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       await context.owner.sendTransaction({
         to: context.universalProfile.address,
-        value: ethers.utils.parseEther("10"),
+        value: ethers.utils.parseEther("1"),
       });
     });
 
@@ -209,7 +209,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         let initialRecipientBalance = await provider.getBalance(
           hardcodedRecipient
         );
-        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("10"));
+        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("1"));
 
         await contractCanTransferValue.sendOneLyxHardcoded({
           gasLimit: GAS_PROVIDED,
@@ -220,7 +220,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
         let newRecipientBalance = await provider.getBalance(hardcodedRecipient);
 
-        expect(newUPBalance).toEqBN(ethers.utils.parseEther("9"));
+        expect(newUPBalance).toEqBN(0);
         expect(newRecipientBalance).toEqBN(
           initialRecipientBalance.add(ethers.utils.parseEther("1"))
         );
@@ -235,7 +235,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         let initialRecipientBalance = await provider.getBalance(
           recipient.address
         );
-        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("10"));
+        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("1"));
 
         await contractCanTransferValue.sendOneLyxToRecipient(
           recipient.address,
@@ -249,7 +249,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
         let newRecipientBalance = await provider.getBalance(recipient.address);
 
-        expect(newUPBalance).toEqBN(ethers.utils.parseEther("9"));
+        expect(newUPBalance).toEqBN(0);
         expect(newRecipientBalance).toEqBN(
           initialRecipientBalance.add(ethers.utils.parseEther("1"))
         );
@@ -264,7 +264,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         let initialRecipientBalance = await provider.getBalance(
           hardcodedRecipient
         );
-        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("10"));
+        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("1"));
 
         await contractCanTransferValue.sendOneLyxHardcodedRawCall({
           gasLimit: GAS_PROVIDED,
@@ -275,7 +275,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
         let newRecipientBalance = await provider.getBalance(hardcodedRecipient);
 
-        expect(newUPBalance).toEqBN(ethers.utils.parseEther("9"));
+        expect(newUPBalance).toEqBN(0);
         expect(newRecipientBalance).toEqBN(
           initialRecipientBalance.add(ethers.utils.parseEther("1"))
         );
@@ -290,7 +290,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         let initialRecipientBalance = await provider.getBalance(
           recipient.address
         );
-        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("10"));
+        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("1"));
 
         await contractCanTransferValue.sendOneLyxToRecipientRawCall(
           recipient.address,
@@ -304,7 +304,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
         let newRecipientBalance = await provider.getBalance(recipient.address);
 
-        expect(newUPBalance).toEqBN(ethers.utils.parseEther("9"));
+        expect(newUPBalance).toEqBN(0);
         expect(newRecipientBalance).toEqBN(
           initialRecipientBalance.add(ethers.utils.parseEther("1"))
         );
