@@ -68,16 +68,17 @@ abstract contract LSP0ERC725AccountCore is
         returns (bytes4 magicValue)
     {
         // prettier-ignore
+        address _owner = owner();
         // if OWNER is a contract
-        if (owner().code.length != 0) {
-            return 
-                supportsInterface(_INTERFACEID_ERC1271)
-                    ? IERC1271(owner()).isValidSignature(_hash, _signature)
+        if (_owner.code.length != 0) {
+            return
+                ERC165Checker.supportsInterface(_owner, _INTERFACEID_ERC1271)
+                    ? IERC1271(_owner).isValidSignature(_hash, _signature)
                     : _ERC1271_FAILVALUE;
-        // if OWNER is a key
+            // if OWNER is a key
         } else {
-            return 
-                owner() == ECDSA.recover(_hash, _signature)
+            return
+                _owner == ECDSA.recover(_hash, _signature)
                     ? _INTERFACEID_ERC1271
                     : _ERC1271_FAILVALUE;
         }
@@ -95,9 +96,7 @@ abstract contract LSP0ERC725AccountCore is
         override
         returns (bytes memory returnValue)
     {
-        bytes memory data = IERC725Y(this).getDataSingle(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-        );
+        bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
         if (data.length >= 20) {
             address universalReceiverAddress = BytesLib.toAddress(data, 0);

@@ -25,11 +25,10 @@ abstract contract TokenAndVaultHandling {
     using ERC725Utils for IERC725Y;
 
     // internal functions
-    function _tokenAndVaultHandling(
-        address sender,
-        bytes32 typeId,
-        bytes memory data
-    ) internal returns (bytes memory result) {
+    function _tokenAndVaultHandling(address sender, bytes32 typeId)
+        internal
+        returns (bytes memory result)
+    {
         address keyManager = ERC725Y(msg.sender).owner();
         if (!ERC165Checker.supportsInterface(keyManager, _INTERFACEID_LSP6))
             return "";
@@ -42,7 +41,6 @@ abstract contract TokenAndVaultHandling {
             bytes12 mapPrefix,
             bytes4 interfaceID
         ) = LSP1Utils.getTransferDetails(typeId);
-        (typeId);
 
         bytes32 mapKey = LSP2Utils.generateBytes20MappingWithGroupingKey(
             mapPrefix,
@@ -69,8 +67,7 @@ abstract contract TokenAndVaultHandling {
                     msg.sender
                 );
                 // if the amount sent is not the full balance, then do nothing
-                if (balance - LSP5Utils.extractTokenAmount(typeId, data) != 0)
-                    return "";
+                if (balance != 0) return "";
             }
             result = LSP5Utils.removeMapAndArrayKeyViaKeyManager(
                 IERC725Y(msg.sender),

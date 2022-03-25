@@ -29,7 +29,20 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
             symbol_,
             newOwner_
         );
+    }
 
-        _registerInterface(_INTERFACEID_LSP8);
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC165Storage)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP8 ||
+            super.supportsInterface(interfaceId);
     }
 }

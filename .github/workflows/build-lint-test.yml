@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI - Build + Test
+name: Node.js CI - Build + Lint + Test
 
 on:
   pull_request:
@@ -23,7 +23,17 @@ jobs:
           node-version: "16.x"
           cache: "npm"
 
-      - run: npm ci
-      - run: npm run build --if-present
-      - run: npm run generate-types
-      - run: npm test
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Solhint linter on smart Contracts
+        run: npm run linter
+
+      - name: Build contract artifacts
+        run: npm run build --if-present
+
+      - name: Generate typechain types
+        run: npm run generate-types
+
+      - name: Run tests
+        run: npm test

@@ -20,7 +20,7 @@ contract LSP8IdentifiableDigitalAsset is
     LSP4DigitalAssetMetadata
 {
     /**
-     * @notice Sets the token-Metadata and register LSP8InterfaceId
+     * @notice Sets the token-Metadata
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the the token-Metadata
@@ -29,7 +29,20 @@ contract LSP8IdentifiableDigitalAsset is
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
-        _registerInterface(_INTERFACEID_LSP8);
+    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {}
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC165Storage)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP8 ||
+            super.supportsInterface(interfaceId);
     }
 }

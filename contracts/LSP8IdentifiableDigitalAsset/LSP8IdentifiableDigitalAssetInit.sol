@@ -13,7 +13,7 @@ contract LSP8IdentifiableDigitalAssetInit is
     LSP8IdentifiableDigitalAssetInitAbstract
 {
     /**
-     * @notice Sets the token-Metadata and register LSP8InterfaceId
+     * @notice Sets the token-Metadata
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the the token-Metadata

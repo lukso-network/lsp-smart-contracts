@@ -28,10 +28,7 @@ contract LSP8CompatibilityForERC721 is
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {
-        _registerInterface(_INTERFACEID_ERC721);
-        _registerInterface(_INTERFACEID_ERC721METADATA);
-    }
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
 
     // --- Overrides
 
@@ -88,5 +85,21 @@ contract LSP8CompatibilityForERC721 is
         )
     {
         super._burn(tokenId, data);
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, LSP8IdentifiableDigitalAsset)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_ERC721 ||
+            interfaceId == _INTERFACEID_ERC721METADATA ||
+            super.supportsInterface(interfaceId);
     }
 }
