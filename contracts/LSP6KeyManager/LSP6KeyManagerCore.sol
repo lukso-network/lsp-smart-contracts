@@ -283,7 +283,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         bytes32 _permissions,
         bytes calldata _data
     ) internal view {
-        (bytes32[] memory inputKeys, ) = abi.decode(
+        (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
             _data[4:],
             (bytes32[], bytes[])
         );
@@ -303,6 +303,23 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 // so that they do not get check against allowed ERC725Y keys
                 inputKeys[ii] = bytes32(0);
 
+            } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
+                uint256 arrayLength = uint256(bytes32(ERC725Y(account).getDataSingle(key)));
+                uint256 newLength = uint256(bytes32(inputValues[ii]));
+
+                if (newLength > arrayLength) {
+                    if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
+                        revert NotAuthorised(_from, "ADDPERMISSIONS");
+                } else {
+                    if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
+                        revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+                }
+
+            } else if (bytes16(key) == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY_PREFIX) {
+
+                if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
+                    revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+                    
             // if the key is any other bytes32 key
             } else {
                 isSettingERC725YKeys = true;
@@ -420,6 +437,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         uint256 operationType = uint256(bytes32(_data[4:36]));
         uint256 value = uint256(bytes32(_data[68:100]));
 
+        // TODO: to be removed, as delegatecall should be allowed in the future
         require(
             operationType != 4,
             "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
