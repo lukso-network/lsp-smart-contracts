@@ -235,23 +235,21 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         internal
         view
     {
-        bytes4 erc725Function = _extractERC725Selector(_data);
-
         // get the permissions of the caller
         bytes32 permissions = account.getPermissionsFor(_from);
-        if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
 
         // skip permissions check if caller has all permissions (except SIGN as not required)
-        bool isAdmin = permissions.includesPermissions(
-            _ALL_EXECUTION_PERMISSIONS
-        );
-        if (isAdmin) return;
+        if (permissions.includesPermissions(_ALL_EXECUTION_PERMISSIONS)) {
+            return;
+        }
+
+        if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
+
+        bytes4 erc725Function = bytes4(_data[:4]);
 
         if (erc725Function == account.setData.selector) {
             _verifyCanSetData(_from, permissions, _data);
-        }
-
-        if (erc725Function == account.execute.selector) {
+        } else if (erc725Function == account.execute.selector) {
             _verifyCanExecute(_from, permissions, _data);
 
             address to = address(bytes20(_data[48:68]));
@@ -265,11 +263,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                     _verifyAllowedFunction(_from, bytes4(_data[164:168]));
                 }
             }
-        }
-
-        if (erc725Function == account.transferOwnership.selector) {
+        } else if (erc725Function == account.transferOwnership.selector) {
             if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
+        } else {
+            revert("_verifyPermissions: unknown ERC725 selector");
         }
     }
 
@@ -536,22 +534,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
         revert NotAllowedFunction(_from, _functionSelector);
-    }
-
-    function _extractERC725Selector(bytes calldata _data)
-        internal
-        view
-        returns (bytes4 selector_)
-    {
-        selector_ = bytes4(_data[:4]);
-
-        // prettier-ignore
-        require(
-            selector_ == IERC725Y.setData.selector ||
-            selector_ == IERC725X.execute.selector ||
-            selector_ == account.transferOwnership.selector,
-            "unknown ERC725 selector"
-        );
     }
 
     function _extractKeySlice(bytes32 _key)

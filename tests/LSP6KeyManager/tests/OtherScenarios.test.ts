@@ -131,8 +131,8 @@ export const otherTestScenarios = (
     it("Should revert because calling an unexisting function in ERC725", async () => {
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
-        context.keyManager.execute(INVALID_PAYLOAD)
-      ).toBeRevertedWith("unknown ERC725 selector");
+        context.keyManager.connect(addressCanMakeCall).execute(INVALID_PAYLOAD)
+      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
   });
 
