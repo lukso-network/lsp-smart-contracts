@@ -1,15 +1,18 @@
 import { ethers } from "hardhat";
+
 import {
   LSP7CappedSupplyTester__factory,
   LSP7CappedSupplyInitTester__factory,
 } from "../../../types";
-import { deployProxy } from "../../utils/proxy";
+
+import { shouldInitializeLikeLSP7 } from "../LSP7DigitalAsset.behaviour";
 import {
   shouldBehaveLikeLSP7CappedSupply,
   LSP7CappedSupplyTestContext,
   getNamedAccounts,
 } from "./LSP7CappedSupply.behaviour";
-import { shouldInitializeLikeLSP7 } from "../LSP7DigitalAsset.behaviour";
+
+import { deployProxy } from "../../utils/fixtures";
 
 describe("LSP7CappedSupply", () => {
   describe("when using LSP7CappedSupply with constructor", () => {

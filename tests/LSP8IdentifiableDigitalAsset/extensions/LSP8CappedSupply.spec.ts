@@ -3,13 +3,15 @@ import {
   LSP8CappedSupplyTester__factory,
   LSP8CappedSupplyInitTester__factory,
 } from "../../../types";
-import { deployProxy } from "../../utils/proxy";
+
+import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
 import {
   shouldBehaveLikeLSP8CappedSupply,
   LSP8CappedSupplyTestContext,
   getNamedAccounts,
 } from "./LSP8CappedSupply.behaviour";
-import { shouldInitializeLikeLSP8 } from "../LSP8IdentifiableDigitalAsset.behaviour";
+
+import { deployProxy } from "../../utils/fixtures";
 
 describe("LSP8CappedSupply", () => {
   describe("when using LSP8CappedSupply with constructor", () => {

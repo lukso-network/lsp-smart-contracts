@@ -1,12 +1,14 @@
 import { ethers } from "hardhat";
 import { LSP7Tester__factory, LSP7InitTester__factory } from "../../types";
-import { deployProxy } from "../utils/proxy";
+
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7,
   shouldInitializeLikeLSP7,
   LSP7TestContext,
 } from "./LSP7DigitalAsset.behaviour";
+
+import { deployProxy } from "../utils/fixtures";
 
 describe("LSP7", () => {
   describe("when using LSP7 contract with constructor", () => {

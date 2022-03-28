@@ -181,7 +181,7 @@ export const shouldBehaveLikeAllowedStandards = (
         );
 
         let transferLyxPayload =
-          otherUniversalProfile.interface.encodeFunctionData("execute", [
+          context.universalProfile.interface.encodeFunctionData("execute", [
             OPERATIONS.CALL,
             otherUniversalProfile.address,
             ethers.utils.parseEther("1"),
@@ -253,7 +253,7 @@ export const shouldBehaveLikeAllowedStandards = (
     describe("when interacting with an ERC725Account (LSP0)", () => {
       it("should fail when trying to transfer LYX", async () => {
         let transferLyxPayload =
-          otherUniversalProfile.interface.encodeFunctionData("execute", [
+          context.universalProfile.interface.encodeFunctionData("execute", [
             OPERATIONS.CALL,
             otherUniversalProfile.address,
             ethers.utils.parseEther("1"),

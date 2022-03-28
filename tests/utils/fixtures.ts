@@ -1,17 +1,48 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+
 import {
-  LSP1UniversalReceiverDelegateUP,
-  LSP6KeyManager,
   LSP6KeyManager__factory,
-  UniversalProfile,
   UniversalProfile__factory,
   LSP1UniversalReceiverDelegateUP__factory,
 } from "../../types";
-import { ERC725YKeys, ALL_PERMISSIONS_SET } from "../../constants";
+
+import { PERMISSIONS, ERC725YKeys, ALL_PERMISSIONS_SET } from "../../constants";
+
+// helpers
 import { ARRAY_LENGTH } from "../utils/helpers";
-import { PERMISSIONS } from "../../constants";
 import { LSP6TestContext, LSP6InternalsTestContext } from "./context";
+
+/**
+ * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
+ *
+ * @param baseContractAddress
+ * @param deployer
+ * @returns
+ */
+export async function deployProxy(
+  baseContractAddress: string,
+  deployer: SignerWithAddress
+): Promise<string> {
+  /**
+   * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
+   * The first 10 x hex opcodes copy the runtime code into memory and return it.
+   */
+  const eip1167RuntimeCodeTemplate =
+    "0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3";
+
+  // deploy proxy contract
+  let proxyBytecode = eip1167RuntimeCodeTemplate.replace(
+    "bebebebebebebebebebebebebebebebebebebebe",
+    baseContractAddress.substr(2)
+  );
+  let tx = await deployer.sendTransaction({
+    data: proxyBytecode,
+  });
+  let receipt = await tx.wait();
+
+  return receipt.contractAddress;
+}
 
 export async function setupKeyManager(
   _context: LSP6TestContext,
