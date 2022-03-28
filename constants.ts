@@ -157,7 +157,8 @@ export const BasicUPSetup_Schema = [
 
 // binary = .... 1111 1111 1111 (only 1s)
 export const ALL_PERMISSIONS_SET =
-  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+  "0x00000000000000000000000000000000000000000000000000000000000003ff";
+
 // prettier-ignore
 export const enum PERMISSIONS {
         CHANGEOWNER       = 0x0000000000000000000000000000000000000000000000000000000000000001, // .... 0000 0000 0001
