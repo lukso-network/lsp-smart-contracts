@@ -30,25 +30,58 @@ abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
 
     /**
      * @inheritdoc OwnableUnset
+     * @dev Transfer the ownership and notify the vault sender and vault receiver
      */
     function transferOwnership(address newOwner)
         public
-        override(OwnableUnset, LSP9VaultCore)
+        virtual
+        override
         onlyOwner
     {
-        LSP9VaultCore.transferOwnership(newOwner);
+        OwnableUnset.transferOwnership(newOwner);
+
+        _notifyVaultSender(msg.sender);
+        _notifyVaultReceiver(newOwner);
     }
 
     /**
-     * @inheritdoc LSP9VaultCore
+     * @inheritdoc IERC725Y
+     * @dev Sets data as bytes in the vault storage for a single key.
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     * and the UniversalReceiverDelegate
+     *
+     * Emits a {DataChanged} event.
+     */
+    function setData(bytes32 _key, bytes memory _value)
+        public
+        virtual
+        override
+        onlyAllowed
+    {
+        _setData(_key, _value);
+    }
+
+    /**
+     * @inheritdoc IERC725Y
+     * @dev Sets array of data at multiple given `key`
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     * and the UniversalReceiverDelegate
+     *
+     * Emits a {DataChanged} event.
      */
     function setData(bytes32[] memory _keys, bytes[] memory _values)
         public
         virtual
-        override(ERC725YCore, LSP9VaultCore)
+        override
         onlyAllowed
     {
-        LSP9VaultCore.setData(_keys, _values);
+        require(
+            _keys.length == _values.length,
+            "Keys length not equal to values length"
+        );
+        for (uint256 i = 0; i < _keys.length; i++) {
+            _setData(_keys[i], _values[i]);
+        }
     }
 
     /**
