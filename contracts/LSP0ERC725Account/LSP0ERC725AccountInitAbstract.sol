@@ -14,8 +14,13 @@ abstract contract LSP0ERC725AccountInitAbstract is
     LSP0ERC725AccountCore,
     ERC725InitAbstract
 {
-    function _initialize(address _newOwner) internal virtual onlyInitializing {
-        ERC725InitAbstract.initialize(_newOwner);
+    function _initialize(address _newOwner)
+        internal
+        virtual
+        override
+        onlyInitializing
+    {
+        ERC725InitAbstract._initialize(_newOwner);
     }
 
     /**
