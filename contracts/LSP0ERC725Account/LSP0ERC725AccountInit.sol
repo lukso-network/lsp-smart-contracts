@@ -14,7 +14,7 @@ contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
      * @notice Sets the owner of the contract
      * @param _newOwner the owner of the contract
      */
-    function initialize(address _newOwner) public virtual override initializer {
+    function initialize(address _newOwner) public virtual initializer {
         LSP0ERC725AccountInitAbstract._initialize(_newOwner);
     }
 }
