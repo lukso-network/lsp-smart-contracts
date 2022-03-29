@@ -10,6 +10,9 @@ contract Executor {
     // prettier-ignore
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
+    bytes4 constant setDataMultipleSelector =
+        bytes4(keccak256("setData(bytes32[],bytes[]"));
+
     LSP6KeyManager private _keyManager;
     UniversalProfile private _universalProfile;
 
@@ -32,7 +35,7 @@ contract Executor {
         values[0] = "Some value";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -48,7 +51,7 @@ contract Executor {
         values[0] = abi.encodePacked("Some value");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -67,7 +70,7 @@ contract Executor {
         values[0] = _value;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -118,7 +121,7 @@ contract Executor {
         values[0] = "Some value";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -141,7 +144,7 @@ contract Executor {
         values[0] = abi.encodePacked("Some value");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -167,7 +170,7 @@ contract Executor {
         values[0] = _value;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );

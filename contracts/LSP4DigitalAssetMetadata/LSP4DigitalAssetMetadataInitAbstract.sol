@@ -21,7 +21,7 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is
         string memory symbol_,
         address newOwner_
     ) internal virtual onlyInitializing {
-        ERC725YInitAbstract.initialize(newOwner_);
+        ERC725YInitAbstract._initialize(newOwner_);
 
         // set SupportedStandards:LSP4DigitalAsset
         _setData(

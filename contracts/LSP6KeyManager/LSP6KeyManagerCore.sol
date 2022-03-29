@@ -247,7 +247,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         bytes4 erc725Function = bytes4(_data[:4]);
 
-        if (erc725Function == account.setData.selector) {
+        /// TODO: move as a constant
+        bytes4 setDataMultipleSelector = bytes4(
+            keccak256("setData(bytes32[],bytes[]")
+        );
+
+        if (erc725Function == setDataMultipleSelector) {
             _verifyCanSetData(_from, permissions, _data);
         } else if (erc725Function == account.execute.selector) {
             _verifyCanExecute(_from, permissions, _data);
