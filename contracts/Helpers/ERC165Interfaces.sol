@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+import "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+
 // LSPs interfaces
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
-import "../LSP6KeyManager/ILSP6KeyManager.sol";
-import "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
-import "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
+import {ILSP1UniversalReceiver as ILSP1} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiverDelegate as ILSP1Delegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
+import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
+import {ILSP8IdentifiableDigitalAsset as ILSP8} from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
 
 // ERC interfaces
 import "./Tokens/IERC223.sol";
@@ -18,11 +21,12 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 // constants
-import "../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../LSP6KeyManager/LSP6Constants.sol";
-import "../LSP7DigitalAsset/LSP7Constants.sol";
-import "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
-import "../LSP9Vault/LSP9Vault.sol";
+import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
+import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
+import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
+import {_INTERFACEID_LSP8} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
 
 /**
  * @dev This contract calculates the ERC165 interface IDs of each LSP contract
@@ -30,67 +34,82 @@ import "../LSP9Vault/LSP9Vault.sol";
  *      Solidity constants.
  */
 contract CalculateLSPInterfaces {
+    function calculateInterfaceLSP0() public pure returns (bytes4) {
+        // prettier-ignore
+        bytes4 interfaceId = 
+            type(IERC725Y).interfaceId ^
+            type(IERC725X).interfaceId ^
+            type(ILSP1).interfaceId ^
+            type(IERC1271).interfaceId;
+
+        require(
+            interfaceId == _INTERFACEID_LSP0,
+            "hardcoded _INTERFACEID_LSP0 does not match XOR of the functions selectors"
+        );
+
+        return interfaceId;
+    }
+
     function calculateInterfaceLSP1() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP1UniversalReceiver).interfaceId;
+        bytes4 interfaceId = type(ILSP1).interfaceId;
         require(
             interfaceId == _INTERFACEID_LSP1,
-            "_LSP1_INTERFACE_ID does not match type(ILSP1).interfaceId"
+            "hardcoded _INTERFACEID_LSP1 does not match type(ILSP1).interfaceId"
         );
 
         return interfaceId;
     }
 
     function calculateInterfaceLSP1Delegate() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP1UniversalReceiverDelegate).interfaceId;
+        bytes4 interfaceId = type(ILSP1Delegate).interfaceId;
         require(
             interfaceId == _INTERFACEID_LSP1_DELEGATE,
-            "_LSP1_DELEGATE_INTERFACE_ID does not match type(ILSP1Delegate).interfaceId"
+            "hardcoded _INTERFACEID_LSP1_DELEGATE does not match type(ILSP1Delegate).interfaceId"
         );
 
         return interfaceId;
     }
 
     function calculateInterfaceLSP6KeyManager() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP6KeyManager).interfaceId;
+        bytes4 interfaceId = type(ILSP6).interfaceId;
         require(
             interfaceId == _INTERFACEID_LSP6,
-            "_LSP6_INTERFACE_ID does not match type(ILSP6).interfaceId"
+            "hardcoded _INTERFACEID_LSP6 does not match type(ILSP6).interfaceId"
         );
 
         return interfaceId;
     }
 
     function calculateInterfaceLSP7() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP7DigitalAsset).interfaceId;
+        bytes4 interfaceId = type(ILSP7).interfaceId;
         require(
             interfaceId == _INTERFACEID_LSP7,
-            "_LSP7_INTERFACE_ID does not match type(ILSP7).interfaceId"
+            "hardcoded _INTERFACEID_LSP7 does not match type(ILSP7).interfaceId"
         );
 
         return interfaceId;
     }
 
     function calculateInterfaceLSP8() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP8IdentifiableDigitalAsset).interfaceId;
+        bytes4 interfaceId = type(ILSP8).interfaceId;
         require(
             interfaceId == _INTERFACEID_LSP8,
-            "_LSP8_INTERFACE_ID does not match type(ILSP8).interfaceId"
+            "hardcoded _INTERFACEID_LSP8 does not match type(ILSP8).interfaceId"
         );
 
         return interfaceId;
     }
 
-    function calculateLSP9VaultInterfaceID() public pure returns (bytes4) {
-        LSP9Vault i;
-
-        bytes4 interfaceId = i.getData.selector ^
-            i.setData.selector ^
-            i.execute.selector ^
-            i.universalReceiver.selector;
+    function calculateInterfaceLSP9() public pure returns (bytes4) {
+        // prettier-ignore
+        bytes4 interfaceId = 
+            type(IERC725X).interfaceId ^
+            type(IERC725Y).interfaceId ^
+            type(ILSP1).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_LSP9,
-            "_LSP9_INTERFACE_ID does not match XOR of the functions"
+            "hardcoded _INTERFACEID_LSP9 does not match XOR of the functions"
         );
 
         return interfaceId;

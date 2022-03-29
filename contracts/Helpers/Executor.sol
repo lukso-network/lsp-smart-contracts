@@ -3,15 +3,13 @@ pragma solidity ^0.8.0;
 
 import "../UniversalProfile.sol";
 import "../LSP6KeyManager/LSP6KeyManager.sol";
+import {setDataMultipleSelector} from "../LSP6KeyManager/LSP6Constants.sol";
 
 contract Executor {
     uint256 internal constant _OPERATION_CALL = 0;
 
     // prettier-ignore
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
-
-    bytes4 constant setDataMultipleSelector =
-        bytes4(keccak256("setData(bytes32[],bytes[]"));
 
     LSP6KeyManager private _keyManager;
     UniversalProfile private _universalProfile;
