@@ -240,18 +240,18 @@ export const testReadingPermissionsInternals = (
     });
 
     it("Value should be 5 for key 'AddressPermissions[]'", async () => {
-      let [result] = await context.universalProfile.getData([
-        ERC725YKeys.LSP6["AddressPermissions[]"],
-      ]);
+      let result = await context.universalProfile["getData(bytes32)"](
+        ERC725YKeys.LSP6["AddressPermissions[]"]
+      );
       expect(result).toEqual("0x05");
     });
 
     // check array indexes individually
     for (let ii = 1; ii <= 5; ii++) {
       it(`Checking address (=value) stored at AddressPermissions[${ii}]'`, async () => {
-        let [result] = await context.universalProfile.getData([
-          permissionArrayKeys[ii],
-        ]);
+        let result = await context.universalProfile["getData(bytes32)"](
+          permissionArrayKeys[ii]
+        );
         // raw bytes are stored lower case, so we need to checksum the address retrieved
         result = ethers.utils.getAddress(result);
         expect(result).toEqual(permissionArrayValues[ii]);

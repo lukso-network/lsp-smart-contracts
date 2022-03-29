@@ -87,10 +87,12 @@ export const testAllowedAddressesInternals = (
       );
       expect([bytesResult]).toEqual(["0x"]);
 
-      let resultFromAccount = await context.universalProfile.getData([
+      let resultFromAccount = await context.universalProfile[
+        "getData(bytes32)"
+      ](
         ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-          context.owner.address.substring(2),
-      ]);
+          context.owner.address.substring(2)
+      );
       expect(resultFromAccount).toEqual(["0x"]);
     });
   });
