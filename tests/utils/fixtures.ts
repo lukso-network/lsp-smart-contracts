@@ -51,7 +51,7 @@ export async function setupKeyManager(
 ) {
   await _context.universalProfile
     .connect(_context.owner)
-    .setData(_permissionsKeys, _permissionsValues);
+    ["setData(bytes32[],bytes[])"](_permissionsKeys, _permissionsValues);
 
   await _context.universalProfile
     .connect(_context.owner)
@@ -65,7 +65,7 @@ export async function setupKeyManagerHelper(
 ) {
   await _context.universalProfile
     .connect(_context.owner)
-    .setData(_permissionsKeys, _permissionsValues);
+    ["setData(bytes32[],bytes[])"](_permissionsKeys, _permissionsValues);
 
   await _context.universalProfile
     .connect(_context.owner)
@@ -90,7 +90,7 @@ export async function setupProfileWithKeyManagerWithURD(
 
   await universalProfile
     .connect(EOA)
-    .setData(
+    ["setData(bytes32[],bytes[])"](
       [
         ERC725YKeys.LSP6["AddressPermissions[]"],
         ERC725YKeys.LSP6["AddressPermissions[]"].substring(0, 34) +
