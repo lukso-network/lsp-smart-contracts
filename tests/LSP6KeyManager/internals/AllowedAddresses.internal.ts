@@ -93,7 +93,7 @@ export const testAllowedAddressesInternals = (
         ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
           context.owner.address.substring(2)
       );
-      expect(resultFromAccount).toEqual(["0x"]);
+      expect(resultFromAccount).toEqual("0x");
     });
   });
 
