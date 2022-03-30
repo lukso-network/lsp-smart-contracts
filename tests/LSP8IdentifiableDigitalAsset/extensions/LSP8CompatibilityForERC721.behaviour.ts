@@ -79,9 +79,9 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       expect(nameAsString).toEqual(context.deployParams.name);
 
       // using getData -> returns(bytes)
-      const [nameAsBytes] = await context.lsp8CompatibilityForERC721.getData([
+      const nameAsBytes = await context.lsp8CompatibilityForERC721["getData(bytes32)"](
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")),
-      ]);
+      );
       expect(ethers.utils.toUtf8String(nameAsBytes)).toEqual(
         context.deployParams.name
       );
@@ -95,9 +95,9 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       expect(symbolAsString).toEqual(context.deployParams.symbol);
 
       // using getData -> returns(bytes)
-      const [symbolAsBytes] = await context.lsp8CompatibilityForERC721.getData([
+      const symbolAsBytes = await context.lsp8CompatibilityForERC721["getData(bytes32)"](
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")),
-      ]);
+      );
       expect(ethers.utils.toUtf8String(symbolAsBytes)).toEqual(
         context.deployParams.symbol
       );
@@ -118,10 +118,10 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       );
 
       // using getData -> returns(bytes)
-      const [lsp4MetadataValueAsBytes] =
-        await context.lsp8CompatibilityForERC721.getData([
+      const lsp4MetadataValueAsBytes =
+        await context.lsp8CompatibilityForERC721["getData(bytes32)"](
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4Metadata")),
-        ]);
+        );
       expect(lsp4MetadataValueAsBytes).toEqual(
         context.deployParams.lsp4MetadataValue
       );
@@ -792,10 +792,10 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
         ]
       );
       expect(
-        await context.lsp8CompatibilityForERC721.getData([
+        await context.lsp8CompatibilityForERC721["getData(bytes32)"](
           SupportedStandards.LSP4DigitalAsset.key,
-        ])
-      ).toEqual([SupportedStandards.LSP4DigitalAsset.value]);
+        )
+      ).toEqual(SupportedStandards.LSP4DigitalAsset.value);
 
       const nameKey =
         "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
@@ -808,8 +808,8 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
         [nameKey, expectedNameValue]
       );
       expect(
-        await context.lsp8CompatibilityForERC721.getData([nameKey])
-      ).toEqual([expectedNameValue]);
+        await context.lsp8CompatibilityForERC721["getData(bytes32)"](nameKey)
+      ).toEqual(expectedNameValue);
 
       const symbolKey =
         "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
@@ -822,8 +822,8 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
         [symbolKey, expectedSymbolValue]
       );
       expect(
-        await context.lsp8CompatibilityForERC721.getData([symbolKey])
-      ).toEqual([expectedSymbolValue]);
+        await context.lsp8CompatibilityForERC721["getData(bytes32)"](symbolKey)
+      ).toEqual(expectedSymbolValue);
     });
   });
 };
