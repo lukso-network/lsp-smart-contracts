@@ -12,7 +12,6 @@ import "./ILSP6KeyManager.sol";
 // libraries
 import "./LSP6Utils.sol";
 
-import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -64,7 +63,6 @@ error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
-    using ERC725Utils for ERC725Y;
     using LSP2Utils for ERC725Y;
     using LSP6Utils for *;
     using Address for address;

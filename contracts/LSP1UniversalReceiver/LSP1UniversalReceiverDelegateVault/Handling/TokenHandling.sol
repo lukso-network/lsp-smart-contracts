@@ -10,7 +10,6 @@ import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import "../../../Utils/ERC725Utils.sol";
 import "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../../../LSP5ReceivedAssets/LSP5Utils.sol";
 import "../../LSP1Utils.sol";
@@ -22,7 +21,6 @@ import "../../LSP1Constants.sol";
  * @dev Function logic to add and remove the MapAndArrayKey of incoming assets and vaults
  */
 abstract contract TokenHandling {
-    using ERC725Utils for IERC725Y;
 
     // internal functions
     function _tokenHandling(address sender, bytes32 typeId)

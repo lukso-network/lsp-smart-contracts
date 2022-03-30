@@ -7,9 +7,6 @@ import "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 // interfaces
 import "./ILSP4Compatibility.sol";
 
-// libraries
-import "../Utils/ERC725Utils.sol";
-
 // constants
 import "./LSP4Constants.sol";
 

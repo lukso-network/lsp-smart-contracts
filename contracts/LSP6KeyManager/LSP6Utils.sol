@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+
 // constants
 import "../LSP6KeyManager/LSP6Constants.sol";
 
 // libraries
 import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import "..//Utils/ERC725Utils.sol";
 import "./ILSP6KeyManager.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;
-    using ERC725Utils for IERC725Y;
 
     function getPermissionsFor(IERC725Y _account, address _address)
         internal

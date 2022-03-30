@@ -11,7 +11,6 @@ import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // library
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import "../Utils/ERC725Utils.sol";
 
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -23,7 +22,6 @@ import "./LSP9Constants.sol";
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
-    using ERC725Utils for IERC725Y;
 
     /**
      * @notice Emitted when a native token is received

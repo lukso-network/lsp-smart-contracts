@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
-import "../Utils/ERC725Utils.sol";
 import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
 import "../LSP6KeyManager/LSP6Utils.sol";
