@@ -304,7 +304,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 inputKeys[ii] = bytes32(0);
 
             } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
-                uint256 arrayLength = uint256(bytes32(ERC725Y(account).getDataSingle(key)));
+                uint256 arrayLength = uint256(bytes32(ERC725Y(account).getData(key)));
                 uint256 newLength = uint256(bytes32(inputValues[ii]));
 
                 if (newLength > arrayLength) {
@@ -341,7 +341,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     ) internal view {
         // prettier-ignore
         // check if some permissions are already stored under this key
-        if (bytes32(ERC725Y(account).getDataSingle(_key)) == bytes32(0)) {
+        if (bytes32(ERC725Y(account).getData(_key)) == bytes32(0)) {
             // if nothing is stored under this key,
             // we are trying to ADD permissions for a NEW address
             if (!_callerPermissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
@@ -359,7 +359,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         address _from,
         bytes32[] memory _inputKeys
     ) internal view {
-        bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getDataSingle(
+        bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX,
                 bytes20(_from)
@@ -488,7 +488,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _to the address of the contract to interact with
      */
     function _verifyAllowedStandard(address _from, address _to) internal view {
-        bytes memory allowedStandards = ERC725Y(account).getDataSingle(
+        bytes memory allowedStandards = ERC725Y(account).getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX,
                 bytes20(_from)
