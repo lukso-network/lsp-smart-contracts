@@ -46,7 +46,6 @@ abstract contract TokenAndVaultHandling {
             mapPrefix,
             bytes20(sender)
         );
-        // bytes memory mapValue = IERC725Y(msg.sender).getDataSingle(mapKey);
         bytes memory mapValue = IERC725Y(msg.sender).getData(mapKey);
 
         if (!senderHook) {
