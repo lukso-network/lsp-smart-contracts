@@ -228,7 +228,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         });
         it("should update lsp5keys: arrayLength 2, no map, no tokenC address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenC.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -271,7 +271,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp5keys: arrayLength 1, no map, no tokenA address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenA.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -328,7 +328,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         });
         it("should update lsp5keys: arrayLength 0, no map, no tokenB address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -424,7 +424,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp5keys: arrayLength 2, no map, no tokenA address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenA.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -553,7 +553,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp5keys (no pop and swap as TokenB has the last index): arrayLength 1, no map, no tokenB address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -598,7 +598,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp5keys (no pop and swap as TokenC has the last index): arrayLength 0, no map, no tokenB address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -706,13 +706,13 @@ export const shouldBehaveLikeLSP1Delegate = (
           );
       });
       it("should remove all lsp5 keys on both UP", async () => {
-        const [arrayLengthUP1] = await context.universalProfile1.getData([
+        const arrayLengthUP1 = await context.universalProfile1["getData(bytes32)"](
           ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-        ]);
+        );
 
-        const [arrayLengthUP2] = await context.universalProfile2.getData([
+        const arrayLengthUP2 = await context.universalProfile2["getData(bytes32)"](
           ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-        ]);
+        );
 
         expect(arrayLengthUP1).toEqual(ARRAY_LENGTH.ZERO);
         expect(arrayLengthUP2).toEqual(ARRAY_LENGTH.ZERO);
@@ -866,7 +866,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         });
         it("should update lsp5keys: arrayLength 2, no map, no tokenC address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenC.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -908,7 +908,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp5keys: arrayLength 1, no map, no tokenA address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenA.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -963,7 +963,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         });
         it("should update lsp5keys: arrayLength 0, no map, no tokenB address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -1068,7 +1068,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp5keys: arrayLength 2, no map, no tokenA address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenA.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -1197,7 +1197,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp5keys (no pop and swap as TokenB has the last index): arrayLength 1, no map, no tokenB address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -1242,7 +1242,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp5keys (no pop and swap as TokenC has the last index): arrayLength 0, no map, no tokenB address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
               ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
@@ -1434,7 +1434,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should update lsp10keys (no pop and swap as VaultB has the last index): arrayLength 1, no map, no VaultB address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP10.LSP10VaultsMap + lsp9VaultB.address.substr(2),
               ERC725YKeys.LSP10["LSP10Vaults[]"],
               ERC725YKeys.LSP10["LSP10Vaults[]"].substr(0, 34) +
@@ -1475,7 +1475,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         it("should remove all lsp10keys : arrayLength 0, no map, no VaultC address in UP1", async () => {
           const [mapValue, arrayLength, elementAddress] =
-            await context.universalProfile1.getData([
+            await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP10.LSP10VaultsMap + lsp9VaultB.address.substr(2),
               ERC725YKeys.LSP10["LSP10Vaults[]"],
               ERC725YKeys.LSP10["LSP10Vaults[]"].substr(0, 34) +

@@ -38,9 +38,9 @@ describe("LSP1UniversalReceiverDelegateVault", () => {
 
       // Setting lsp1UniversalReceiverDelegateVault as URD for the Vault
 
-      const abi = lsp9Vault1.interface.encodeFunctionData("setData", [
-        [ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate],
-        [lsp1universalReceiverDelegateVault.address],
+      const abi = lsp9Vault1.interface.encodeFunctionData("setData(bytes32,bytes)", [
+        ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+        lsp1universalReceiverDelegateVault.address,
       ]);
 
       await universalProfile
