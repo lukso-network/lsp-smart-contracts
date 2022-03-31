@@ -101,6 +101,17 @@ export const testSecurityScenarios = (
     }
   });
 
+  it("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", async () => {
+    let payload =
+      context.universalProfile.interface.encodeFunctionData(
+        "renounceOwnership"
+      );
+
+    await expect(
+      context.keyManager.connect(context.owner).execute(payload)
+    ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+  });
+
   describe("when sending LYX to a contract", () => {
     it("Permissions should prevent ReEntrancy and stop malicious contract with a re-entrant fallback() function.", async () => {
       // the Universal Profile wants to send 1 x LYX from its UP to another smart contract
