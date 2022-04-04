@@ -29,6 +29,8 @@ abstract contract TokenHandling {
         internal
         returns (bytes memory result)
     {
+        if (sender.code.length == 0) return "";
+
         if (!ERC165Checker.supportsInterface(msg.sender, _INTERFACEID_LSP9))
             return "";
 
