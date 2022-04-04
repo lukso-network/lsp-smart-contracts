@@ -101,15 +101,46 @@ export const testSecurityScenarios = (
     }
   });
 
-  it("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", async () => {
-    let payload =
-      context.universalProfile.interface.encodeFunctionData(
-        "renounceOwnership"
+  describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
+    it("via `execute(...)`", async () => {
+      let payload =
+        context.universalProfile.interface.encodeFunctionData(
+          "renounceOwnership"
+        );
+
+      await expect(
+        context.keyManager.connect(context.owner).execute(payload)
+      ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+    });
+
+    it("via `executeRelayCall()`", async () => {
+      let nonce = await context.keyManager.getNonce(context.owner.address, 0);
+
+      let payload =
+        context.universalProfile.interface.encodeFunctionData(
+          "renounceOwnership"
+        );
+
+      let hash = ethers.utils.solidityKeccak256(
+        ["address", "uint256", "bytes"],
+        [context.keyManager.address, nonce, payload]
       );
 
-    await expect(
-      context.keyManager.connect(context.owner).execute(payload)
-    ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+      let signature = await context.owner.signMessage(
+        ethers.utils.arrayify(hash)
+      );
+
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          .executeRelayCall(
+            context.keyManager.address,
+            nonce,
+            payload,
+            signature
+          )
+      ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+    });
   });
 
   describe("when sending LYX to a contract", () => {
