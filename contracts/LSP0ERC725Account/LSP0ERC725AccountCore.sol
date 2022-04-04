@@ -99,15 +99,15 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
         if (data.length >= 20) {
-            address universalReceiverAddress = BytesLib.toAddress(data, 0);
+            address universalReceiverDelegate = BytesLib.toAddress(data, 0);
             if (
                 ERC165Checker.supportsInterface(
-                    universalReceiverAddress,
+                    universalReceiverDelegate,
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(
-                    universalReceiverAddress
+                    universalReceiverDelegate
                 ).universalReceiverDelegate(_msgSender(), _typeId, _data);
             }
         }
