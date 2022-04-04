@@ -40,8 +40,9 @@ export const shouldBehaveLikeAllowedAddresses = (
     context = await buildContext();
 
     canCallOnlyTwoAddresses = context.accounts[1];
-    allowedEOA = context.accounts[2];
-    notAllowedEOA = context.accounts[3];
+
+    allowedEOA = context.accounts[3];
+    notAllowedEOA = context.accounts[4];
 
     allowedTargetContract = await new TargetContract__factory(
       context.accounts[0]
