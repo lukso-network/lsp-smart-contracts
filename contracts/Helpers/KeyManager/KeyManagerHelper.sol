@@ -13,7 +13,7 @@ contract KeyManagerHelper is LSP6KeyManager {
     constructor(address _account) LSP6KeyManager(_account) {}
 
     function getPermissionsFor(address _address) public view returns (bytes32) {
-        return account.getPermissionsFor(_address);
+        return ERC725Y(account).getPermissionsFor(_address);
     }
 
     function getAllowedAddressesFor(address _address)
@@ -21,7 +21,7 @@ contract KeyManagerHelper is LSP6KeyManager {
         view
         returns (bytes memory)
     {
-        return account.getAllowedAddressesFor(_address);
+        return ERC725Y(account).getAllowedAddressesFor(_address);
     }
 
     function getAllowedFunctionsFor(address _address)
@@ -29,7 +29,7 @@ contract KeyManagerHelper is LSP6KeyManager {
         view
         returns (bytes memory)
     {
-        return account.getAllowedFunctionsFor(_address);
+        return ERC725Y(account).getAllowedFunctionsFor(_address);
     }
 
     function verifyAllowedAddress(address _sender, address _recipient)
