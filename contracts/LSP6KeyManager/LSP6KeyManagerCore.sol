@@ -18,7 +18,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // constants
-import {_INTERFACEID_ERC1271, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
+import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
 
 /**
@@ -110,12 +110,14 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         returns (bytes4 magicValue)
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
-        return
-            (_PERMISSION_SIGN &
-                ERC725Y(account).getPermissionsFor(recoveredAddress)) ==
-                _PERMISSION_SIGN
-                ? _INTERFACEID_ERC1271
-                : _ERC1271_FAILVALUE;
+
+        return (
+            ERC725Y(account)
+                .getPermissionsFor(recoveredAddress)
+                .includesPermissions(_PERMISSION_SIGN)
+                ? _ERC1271_MAGICVALUE
+                : _ERC1271_FAILVALUE
+        );
     }
 
     /**
