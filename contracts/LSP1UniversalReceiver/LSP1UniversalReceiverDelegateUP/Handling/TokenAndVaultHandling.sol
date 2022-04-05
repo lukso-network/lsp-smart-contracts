@@ -27,6 +27,8 @@ abstract contract TokenAndVaultHandling {
         internal
         returns (bytes memory result)
     {
+        if (sender.code.length == 0) return "";
+
         address keyManager = ERC725Y(msg.sender).owner();
         if (!ERC165Checker.supportsInterface(keyManager, _INTERFACEID_LSP6))
             return "";
