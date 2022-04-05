@@ -15,7 +15,7 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore, ERC725 {
      * @notice Sets the owner of the contract
      * @param _newOwner the owner of the contract
      */
-    constructor(address _newOwner) ERC725(_newOwner) {}
+    constructor(address _newOwner) ERC725(_newOwner) {} // solhint-disable no-empty-blocks
 
     /**
      * @dev See {IERC165-supportsInterface}.

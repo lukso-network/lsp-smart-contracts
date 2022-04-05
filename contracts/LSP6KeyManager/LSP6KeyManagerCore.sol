@@ -12,7 +12,6 @@ import "./ILSP6KeyManager.sol";
 // libraries
 import "./LSP6Utils.sol";
 
-import "../Utils/ERC725Utils.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
@@ -64,7 +63,6 @@ error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
-    using ERC725Utils for ERC725Y;
     using LSP2Utils for ERC725Y;
     using LSP6Utils for *;
     using Address for address;
@@ -248,7 +246,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
 
-        if (erc725Function == account.setData.selector) {
+        if (erc725Function == setDataMultipleSelector) {
             _verifyCanSetData(_from, permissions, _data);
         } else if (erc725Function == account.execute.selector) {
             _verifyCanExecute(_from, permissions, _data);
@@ -305,7 +303,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 inputKeys[ii] = bytes32(0);
 
             } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
-                uint256 arrayLength = uint256(bytes32(ERC725Y(account).getDataSingle(key)));
+                uint256 arrayLength = uint256(bytes32(ERC725Y(account).getData(key)));
                 uint256 newLength = uint256(bytes32(inputValues[ii]));
 
                 if (newLength > arrayLength) {
@@ -342,7 +340,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     ) internal view {
         // prettier-ignore
         // check if some permissions are already stored under this key
-        if (bytes32(ERC725Y(account).getDataSingle(_key)) == bytes32(0)) {
+        if (bytes32(ERC725Y(account).getData(_key)) == bytes32(0)) {
             // if nothing is stored under this key,
             // we are trying to ADD permissions for a NEW address
             if (!_callerPermissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
@@ -360,7 +358,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         address _from,
         bytes32[] memory _inputKeys
     ) internal view {
-        bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getDataSingle(
+        bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX,
                 bytes20(_from)
@@ -489,7 +487,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _to the address of the contract to interact with
      */
     function _verifyAllowedStandard(address _from, address _to) internal view {
-        bytes memory allowedStandards = ERC725Y(account).getDataSingle(
+        bytes memory allowedStandards = ERC725Y(account).getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX,
                 bytes20(_from)
@@ -540,7 +538,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     function _validateERC725Selector(bytes4 _selector) internal view {
         // prettier-ignore
         require(
-            _selector == IERC725Y.setData.selector ||
+            _selector == setDataMultipleSelector ||
             _selector == IERC725X.execute.selector ||
             _selector == account.transferOwnership.selector,
             "_validateERC725Selector: invalid ERC725 selector"

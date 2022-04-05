@@ -24,7 +24,6 @@ abstract contract LSP8CompatibilityForERC721Core is
     LSP8IdentifiableDigitalAssetCore,
     LSP4Compatibility
 {
-    using ERC725Utils for IERC725Y;
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /*

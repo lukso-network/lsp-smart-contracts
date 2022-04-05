@@ -1333,8 +1333,8 @@ export const shouldInitializeLikeLSP8 = (
         ]
       );
       expect(
-        await context.lsp8.getData([SupportedStandards.LSP4DigitalAsset.key])
-      ).toEqual([SupportedStandards.LSP4DigitalAsset.value]);
+        await context.lsp8["getData(bytes32)"](SupportedStandards.LSP4DigitalAsset.key)
+      ).toEqual(SupportedStandards.LSP4DigitalAsset.value);
 
       const nameKey =
         "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
@@ -1346,9 +1346,9 @@ export const shouldInitializeLikeLSP8 = (
         "DataChanged",
         [nameKey, expectedNameValue]
       );
-      expect(await context.lsp8.getData([nameKey])).toEqual([
+      expect(await context.lsp8["getData(bytes32)"](nameKey)).toEqual(
         expectedNameValue,
-      ]);
+      );
 
       const symbolKey =
         "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
@@ -1360,9 +1360,9 @@ export const shouldInitializeLikeLSP8 = (
         "DataChanged",
         [symbolKey, expectedSymbolValue]
       );
-      expect(await context.lsp8.getData([symbolKey])).toEqual([
+      expect(await context.lsp8["getData(bytes32)"](symbolKey)).toEqual(
         expectedSymbolValue,
-      ]);
+      );
     });
   });
 };

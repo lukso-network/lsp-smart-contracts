@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
-import "../Utils/ERC725Utils.sol";
 import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
 import "../LSP6KeyManager/LSP6Utils.sol";
@@ -24,10 +23,7 @@ library LSP5Utils {
         keys = new bytes32[](3);
         values = new bytes[](3);
 
-        bytes memory rawArrayLength = ERC725Utils.getDataSingle(
-            _account,
-            _arrayKey
-        );
+        bytes memory rawArrayLength = _account.getData(_arrayKey);
 
         keys[0] = _arrayKey;
         keys[2] = _mapKey;
@@ -69,10 +65,8 @@ library LSP5Utils {
             index
         );
 
-        bytes memory rawArrayLength = ERC725Utils.getDataSingle(
-            _account,
-            _arrayKey
-        );
+        bytes memory rawArrayLength = _account.getData(_arrayKey);
+
         uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
         uint256 newLength = arrayLength - 1;
 
@@ -102,10 +96,8 @@ library LSP5Utils {
                 _arrayKey,
                 newLength
             );
-            bytes memory lastKeyValue = ERC725Utils.getDataSingle(
-                _account,
-                lastKey
-            );
+
+            bytes memory lastKeyValue = _account.getData(lastKey);
 
             bytes32 mapOfLastkey = LSP2Utils
                 .generateBytes20MappingWithGroupingKey(
@@ -113,10 +105,7 @@ library LSP5Utils {
                     bytes20(lastKeyValue)
                 );
 
-            bytes memory mapValueOfLastkey = ERC725Utils.getDataSingle(
-                _account,
-                mapOfLastkey
-            );
+            bytes memory mapValueOfLastkey = _account.getData(mapOfLastkey);
 
             bytes memory appendix = BytesLib.slice(mapValueOfLastkey, 8, 4);
 
@@ -170,7 +159,7 @@ library LSP5Utils {
         view
         returns (uint64)
     {
-        bytes memory mapValue = ERC725Utils.getDataSingle(_account, _mapKey);
+        bytes memory mapValue = _account.getData(_mapKey);
         bytes memory val = BytesLib.slice(mapValue, 0, 8);
         return BytesLib.toUint64(val, 0);
     }

@@ -134,14 +134,16 @@ export const shouldBehaveLikeAllowedStandards = (
         let value = "0xcafecafecafecafe";
 
         let setDataPayload =
-          context.universalProfile.interface.encodeFunctionData("setData", [
-            [key],
-            [value],
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
 
         await context.keyManager.connect(context.owner).execute(setDataPayload);
 
-        let [result] = await context.universalProfile.callStatic.getData([key]);
+        const result = await context.universalProfile.callStatic[
+          "getData(bytes32)"
+        ](key);
         expect(result).toEqual(value);
       });
     });

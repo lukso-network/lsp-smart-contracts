@@ -10,7 +10,6 @@ import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import "../../../Utils/ERC725Utils.sol";
 import "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../../../LSP5ReceivedAssets/LSP5Utils.sol";
 import "../../LSP1Utils.sol";
@@ -22,13 +21,14 @@ import "../../LSP1Constants.sol";
  * @dev Function logic to add and remove the MapAndArrayKey of incoming assets and vaults
  */
 abstract contract TokenAndVaultHandling {
-    using ERC725Utils for IERC725Y;
 
     // internal functions
     function _tokenAndVaultHandling(address sender, bytes32 typeId)
         internal
         returns (bytes memory result)
     {
+        if (sender.code.length == 0) return "";
+
         address keyManager = ERC725Y(msg.sender).owner();
         if (!ERC165Checker.supportsInterface(keyManager, _INTERFACEID_LSP6))
             return "";
@@ -46,7 +46,7 @@ abstract contract TokenAndVaultHandling {
             mapPrefix,
             bytes20(sender)
         );
-        bytes memory mapValue = IERC725Y(msg.sender).getDataSingle(mapKey);
+        bytes memory mapValue = IERC725Y(msg.sender).getData(mapKey);
 
         if (!senderHook) {
             // if the map is already set, then do nothing

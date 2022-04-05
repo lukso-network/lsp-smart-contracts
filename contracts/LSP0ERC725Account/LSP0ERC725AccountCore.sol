@@ -14,7 +14,6 @@ import "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import "../Utils/ERC725Utils.sol";
 
 // constants
 import "../LSP0ERC725Account/LSP0Constants.sol";
@@ -31,8 +30,6 @@ abstract contract LSP0ERC725AccountCore is
     ERC725XCore,
     ERC725YCore
 {
-    using ERC725Utils for IERC725Y;
-
     event ValueReceived(address indexed sender, uint256 indexed value);
 
     receive() external payable {
@@ -99,15 +96,15 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
         if (data.length >= 20) {
-            address universalReceiverAddress = BytesLib.toAddress(data, 0);
+            address universalReceiverDelegate = BytesLib.toAddress(data, 0);
             if (
                 ERC165Checker.supportsInterface(
-                    universalReceiverAddress,
+                    universalReceiverDelegate,
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(
-                    universalReceiverAddress
+                    universalReceiverDelegate
                 ).universalReceiverDelegate(_msgSender(), _typeId, _data);
             }
         }

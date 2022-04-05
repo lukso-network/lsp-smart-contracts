@@ -1,24 +1,25 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+
 // constants
 import "../LSP6KeyManager/LSP6Constants.sol";
 
 // libraries
 import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import "..//Utils/ERC725Utils.sol";
 import "./ILSP6KeyManager.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;
-    using ERC725Utils for IERC725Y;
 
     function getPermissionsFor(IERC725Y _account, address _address)
         internal
         view
         returns (bytes32)
     {
-        bytes memory permissions = _account.getDataSingle(
+        bytes memory permissions = _account.getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX,
                 bytes20(_address)
@@ -34,7 +35,7 @@ library LSP6Utils {
         returns (bytes memory)
     {
         return
-            _account.getDataSingle(
+            _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
                     _LSP6_ADDRESS_ALLOWEDADDRESSES_MAP_KEY_PREFIX,
                     bytes20(_address)
@@ -48,7 +49,7 @@ library LSP6Utils {
         returns (bytes memory)
     {
         return
-            _account.getDataSingle(
+            _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
                     _LSP6_ADDRESS_ALLOWEDFUNCTIONS_MAP_KEY_PREFIX,
                     bytes20(_address)
