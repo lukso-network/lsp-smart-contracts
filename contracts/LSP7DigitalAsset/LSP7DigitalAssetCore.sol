@@ -17,7 +17,7 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // library
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "../Utils/ERC165CheckerCustom.sol";
 
 /**
  * @title LSP7DigitalAsset contract
@@ -379,8 +379,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bytes memory data
     ) internal virtual {
         if (
-            ERC165Checker.supportsERC165(from) &&
-            ERC165Checker.supportsInterface(from, _INTERFACEID_LSP1)
+            ERC165CheckerCustom.supportsERC165Interface(from, _INTERFACEID_LSP1)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
             ILSP1UniversalReceiver(from).universalReceiver(
@@ -404,8 +403,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bytes memory data
     ) internal virtual {
         if (
-            ERC165Checker.supportsERC165(to) &&
-            ERC165Checker.supportsInterface(to, _INTERFACEID_LSP1)
+            ERC165CheckerCustom.supportsERC165Interface(to, _INTERFACEID_LSP1)
         ) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
             ILSP1UniversalReceiver(to).universalReceiver(

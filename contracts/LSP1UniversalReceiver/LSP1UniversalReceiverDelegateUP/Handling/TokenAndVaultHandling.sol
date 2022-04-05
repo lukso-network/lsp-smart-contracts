@@ -9,7 +9,7 @@ import "../../../LSP6KeyManager/LSP6KeyManager.sol";
 import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "../../../Utils/ERC165CheckerCustom.sol";
 import "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../../../LSP5ReceivedAssets/LSP5Utils.sol";
 import "../../LSP1Utils.sol";
@@ -21,7 +21,6 @@ import "../../LSP1Constants.sol";
  * @dev Function logic to add and remove the MapAndArrayKey of incoming assets and vaults
  */
 abstract contract TokenAndVaultHandling {
-
     // internal functions
     function _tokenAndVaultHandling(address sender, bytes32 typeId)
         internal
@@ -30,8 +29,12 @@ abstract contract TokenAndVaultHandling {
         if (sender.code.length == 0) return "";
 
         address keyManager = ERC725Y(msg.sender).owner();
-        if (!ERC165Checker.supportsInterface(keyManager, _INTERFACEID_LSP6))
-            return "";
+        if (
+            !ERC165CheckerCustom.supportsERC165Interface(
+                keyManager,
+                _INTERFACEID_LSP6
+            )
+        ) return "";
         address accountAddress = address(LSP6KeyManager(keyManager).account());
         // check if the caller is the same account controlled by the keyManager
         if (msg.sender != accountAddress) return "";

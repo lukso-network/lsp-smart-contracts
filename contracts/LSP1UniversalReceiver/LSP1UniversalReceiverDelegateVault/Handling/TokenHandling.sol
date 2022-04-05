@@ -9,7 +9,7 @@ import "../../../LSP6KeyManager/LSP6KeyManager.sol";
 import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "../../../Utils/ERC165CheckerCustom.sol";
 import "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../../../LSP5ReceivedAssets/LSP5Utils.sol";
 import "../../LSP1Utils.sol";
@@ -21,7 +21,6 @@ import "../../LSP1Constants.sol";
  * @dev Function logic to add and remove the MapAndArrayKey of incoming assets and vaults
  */
 abstract contract TokenHandling {
-
     // internal functions
     function _tokenHandling(address sender, bytes32 typeId)
         internal
@@ -29,8 +28,12 @@ abstract contract TokenHandling {
     {
         if (sender.code.length == 0) return "";
 
-        if (!ERC165Checker.supportsInterface(msg.sender, _INTERFACEID_LSP9))
-            return "";
+        if (
+            !ERC165CheckerCustom.supportsERC165Interface(
+                msg.sender,
+                _INTERFACEID_LSP9
+            )
+        ) return "";
 
         (
             bool senderHook,

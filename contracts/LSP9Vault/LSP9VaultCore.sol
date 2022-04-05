@@ -10,8 +10,7 @@ import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // library
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-
+import "../Utils/ERC165CheckerCustom.sol";
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
 import "./LSP9Constants.sol";
@@ -22,7 +21,6 @@ import "./LSP9Constants.sol";
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
-
     /**
      * @notice Emitted when a native token is received
      * @param sender The address of the sender
@@ -41,7 +39,7 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
                 bytes20(_getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY))
             );
             require(
-                ERC165Checker.supportsInterface(
+                ERC165CheckerCustom.supportsERC165Interface(
                     msg.sender,
                     _INTERFACEID_LSP1_DELEGATE
                 ) && msg.sender == universalReceiverAddress,
@@ -79,7 +77,7 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
         if (data.length >= 20) {
             address universalReceiverDelegate = BytesLib.toAddress(data, 0);
             if (
-                ERC165Checker.supportsInterface(
+                ERC165CheckerCustom.supportsERC165Interface(
                     universalReceiverDelegate,
                     _INTERFACEID_LSP1_DELEGATE
                 )
@@ -99,8 +97,10 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
      */
     function _notifyVaultSender(address _sender) internal virtual {
         if (
-            ERC165Checker.supportsERC165(_sender) &&
-            ERC165Checker.supportsInterface(_sender, _INTERFACEID_LSP1)
+            ERC165CheckerCustom.supportsERC165Interface(
+                _sender,
+                _INTERFACEID_LSP1
+            )
         ) {
             ILSP1UniversalReceiver(_sender).universalReceiver(
                 _TYPEID_LSP9_VAULTSENDER,
@@ -114,8 +114,10 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
      */
     function _notifyVaultReceiver(address _receiver) internal virtual {
         if (
-            ERC165Checker.supportsERC165(_receiver) &&
-            ERC165Checker.supportsInterface(_receiver, _INTERFACEID_LSP1)
+            ERC165CheckerCustom.supportsERC165Interface(
+                _receiver,
+                _INTERFACEID_LSP1
+            )
         ) {
             ILSP1UniversalReceiver(_receiver).universalReceiver(
                 _TYPEID_LSP9_VAULTRECIPIENT,
