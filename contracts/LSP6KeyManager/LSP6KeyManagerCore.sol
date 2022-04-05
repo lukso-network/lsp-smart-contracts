@@ -18,9 +18,8 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // constants
+import {_INTERFACEID_ERC1271, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
-import "../LSP0ERC725Account/LSP0Constants.sol";
-import "@erc725/smart-contracts/contracts/constants.sol";
 
 /**
  * @dev revert when address `from` does not have any permissions set
