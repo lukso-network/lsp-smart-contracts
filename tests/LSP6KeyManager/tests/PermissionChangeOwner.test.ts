@@ -73,9 +73,11 @@ export const shouldBehaveLikePermissionChangeOwner = (
       let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
       let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Value"));
 
-      await context.universalProfile.connect(newOwner).setData([key], [value]);
+      await context.universalProfile
+        .connect(newOwner)
+        ["setData(bytes32,bytes)"](key, value);
 
-      const [result] = await context.universalProfile.getData([key]);
+      const result = await context.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(value);
     });
   });
@@ -104,9 +106,11 @@ export const shouldBehaveLikePermissionChangeOwner = (
       let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
       let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Value"));
 
-      await context.universalProfile.connect(newOwner).setData([key], [value]);
+      await context.universalProfile
+        .connect(newOwner)
+        ["setData(bytes32,bytes)"](key, value);
 
-      const [result] = await context.universalProfile.getData([key]);
+      const result = await context.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(value);
     });
   });

@@ -62,8 +62,12 @@ export const shouldBehaveLikeLSP3 = (
     it("should return failValue when the owner doesn't support ERC1271", async () => {
       const signer = context.accounts[1];
 
-      const targetContract = await new TargetContract__factory(context.accounts[0]).deploy();
-      await context.universalProfile.connect(context.accounts[0]).transferOwnership(targetContract.address);
+      const targetContract = await new TargetContract__factory(
+        context.accounts[0]
+      ).deploy();
+      await context.universalProfile
+        .connect(context.accounts[0])
+        .transferOwnership(targetContract.address);
 
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
@@ -74,7 +78,7 @@ export const shouldBehaveLikeLSP3 = (
         signature
       );
       expect(result).toEqual(ERC1271.FAIL_VALUE);
-    })
+    });
   });
 
   describe("when interacting with the ERC725Y storage", () => {
@@ -103,9 +107,12 @@ export const shouldBehaveLikeLSP3 = (
         "0x1183790f29be3cdfd0a102862fea1a4a30b3adab",
       ];
 
-      await context.universalProfile.setData(keys, values);
+      await context.universalProfile["setData(bytes32[],bytes[])"](
+        keys,
+        values
+      );
 
-      const result = await context.universalProfile.getData(keys);
+      const result = await context.universalProfile["getData(bytes32[])"](keys);
       expect(result).toEqual(values);
     });
 
@@ -140,9 +147,12 @@ export const shouldBehaveLikeLSP3 = (
         ethers.utils.hexZeroPad(lsp3IssuedAssetsValues.length, 32),
       ];
 
-      await context.universalProfile.setData(keys, values);
+      await context.universalProfile["setData(bytes32[],bytes[])"](
+        keys,
+        values
+      );
 
-      const result = await context.universalProfile.getData(keys);
+      const result = await context.universalProfile["getData(bytes32[])"](keys);
       expect(result).toEqual(values);
     });
 
@@ -169,9 +179,14 @@ export const shouldBehaveLikeLSP3 = (
           ethers.utils.hexZeroPad(lsp3IssuedAssetsValues.length, 32),
         ];
 
-        await context.universalProfile.setData(keys, values);
+        await context.universalProfile["setData(bytes32[],bytes[])"](
+          keys,
+          values
+        );
 
-        const result = await context.universalProfile.getData(keys);
+        const result = await context.universalProfile["getData(bytes32[])"](
+          keys
+        );
         expect(result).toEqual(values);
       });
     }
@@ -235,9 +250,9 @@ export const shouldInitializeLikeLSP3 = (
     });
 
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
-      const [result] = await context.universalProfile.getData([
-        SupportedStandards.LSP3UniversalProfile.key,
-      ]);
+      const result = await context.universalProfile["getData(bytes32)"](
+        SupportedStandards.LSP3UniversalProfile.key
+      );
 
       expect(result).toEqual(SupportedStandards.LSP3UniversalProfile.value);
     });

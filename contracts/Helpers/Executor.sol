@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "../UniversalProfile.sol";
 import "../LSP6KeyManager/LSP6KeyManager.sol";
+import {setDataMultipleSelector} from "../LSP6KeyManager/LSP6Constants.sol";
 
 contract Executor {
     uint256 internal constant _OPERATION_CALL = 0;
@@ -32,7 +33,7 @@ contract Executor {
         values[0] = "Some value";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -48,7 +49,7 @@ contract Executor {
         values[0] = abi.encodePacked("Some value");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -67,7 +68,7 @@ contract Executor {
         values[0] = _value;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -118,7 +119,7 @@ contract Executor {
         values[0] = "Some value";
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -141,7 +142,7 @@ contract Executor {
         values[0] = abi.encodePacked("Some value");
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );
@@ -167,7 +168,7 @@ contract Executor {
         values[0] = _value;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.setData.selector,
+            setDataMultipleSelector,
             keys,
             values
         );

@@ -11,7 +11,6 @@ import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // library
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import "../Utils/ERC725Utils.sol";
 
 // constants
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -23,7 +22,6 @@ import "./LSP9Constants.sol";
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
-    using ERC725Utils for IERC725Y;
 
     /**
      * @notice Emitted when a native token is received
@@ -62,31 +60,6 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
         emit ValueReceived(_msgSender(), msg.value);
     }
 
-    // ERC725Y
-
-    /**
-     * @inheritdoc IERC725Y
-     * @dev Sets array of data at multiple given `key`
-     * SHOULD only be callable by the owner of the contract set via ERC173
-     * and the UniversalReceiverDelegate
-     *
-     * Emits a {DataChanged} event.
-     */
-    function setData(bytes32[] memory _keys, bytes[] memory _values)
-        public
-        virtual
-        override
-        onlyAllowed
-    {
-        require(
-            _keys.length == _values.length,
-            "Keys length not equal to values length"
-        );
-        for (uint256 i = 0; i < _keys.length; i++) {
-            _setData(_keys[i], _values[i]);
-        }
-    }
-
     // LSP1
 
     /**
@@ -117,24 +90,6 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
             }
         }
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
-    }
-
-    // ERC173
-
-    /**
-     * @inheritdoc OwnableUnset
-     * @dev Transfer the ownership and notify the vault sender and vault receiver
-     */
-    function transferOwnership(address newOwner)
-        public
-        virtual
-        override
-        onlyOwner
-    {
-        OwnableUnset.transferOwnership(newOwner);
-
-        _notifyVaultSender(msg.sender);
-        _notifyVaultReceiver(newOwner);
     }
 
     // internal functions

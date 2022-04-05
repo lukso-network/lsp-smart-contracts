@@ -28,29 +28,39 @@ describe("Calculate LSP interfaces", () => {
     contract = await new CalculateLSPInterfaces__factory(accounts[0]).deploy();
   });
 
+  it("LSP0", async () => {
+    const result = await contract.calculateInterfaceLSP0();
+    expect(result).toEqual(INTERFACE_IDS.ERC725Account);
+  });
+
   it("LSP1", async () => {
-    const result = await contract.callStatic.calculateInterfaceLSP1();
+    const result = await contract.calculateInterfaceLSP1();
     expect(result).toEqual(INTERFACE_IDS.LSP1);
   });
 
   it("LSP1Delegate", async () => {
-    const result = await contract.callStatic.calculateInterfaceLSP1Delegate();
+    const result = await contract.calculateInterfaceLSP1Delegate();
     expect(result).toEqual(INTERFACE_IDS.LSP1Delegate);
   });
 
+  it("LSP6", async () => {
+    const result = await contract.calculateInterfaceLSP6KeyManager();
+    expect(result).toEqual(INTERFACE_IDS.LSP6);
+  });
+
   it("LSP7", async () => {
-    const result = await contract.callStatic.calculateInterfaceLSP7();
+    const result = await contract.calculateInterfaceLSP7();
     expect(result).toEqual(INTERFACE_IDS.LSP7);
   });
 
   it("LSP8", async () => {
-    const result = await contract.callStatic.calculateInterfaceLSP8();
+    const result = await contract.calculateInterfaceLSP8();
     expect(result).toEqual(INTERFACE_IDS.LSP8);
   });
 
-  it("LSP6KeyManager", async () => {
-    const result = await contract.callStatic.calculateInterfaceLSP6KeyManager();
-    expect(result).toEqual(INTERFACE_IDS.LSP6);
+  it("LSP9", async () => {
+    const result = await contract.calculateInterfaceLSP9();
+    expect(result).toEqual(INTERFACE_IDS.LSP9);
   });
 });
 

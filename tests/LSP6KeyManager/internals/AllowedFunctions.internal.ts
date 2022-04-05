@@ -63,13 +63,13 @@ export const testAllowedFunctionsInternals = (
       [targetContract.interface.getSighash("setName")],
     ]);
 
-    let resultFromAccount = await context.universalProfile.getData([
+    let resultFromAccount = await context.universalProfile["getData(bytes32)"](
       ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
-        addressCanCallOnlyOneFunction.address.substring(2),
-    ]);
+        addressCanCallOnlyOneFunction.address.substring(2)
+    );
     let decodedResultFromAccount = abiCoder.decode(
       ["bytes4[]"],
-      resultFromAccount[0]
+      resultFromAccount
     );
 
     expect(decodedResultFromAccount).toEqual([
@@ -77,7 +77,7 @@ export const testAllowedFunctionsInternals = (
     ]);
 
     // also make sure that both functions from keyManager and from erc725 account return the same thing
-    expect([bytesResult]).toEqual(resultFromAccount);
+    expect(bytesResult).toEqual(resultFromAccount);
   });
 
   it("should return an empty byte when address has no allowed functions listed", async () => {
@@ -86,10 +86,10 @@ export const testAllowedFunctionsInternals = (
     );
     expect([bytesResult]).toEqual(["0x"]);
 
-    let resultFromAccount = await context.universalProfile.getData([
+    let resultFromAccount = await context.universalProfile["getData(bytes32)"](
       ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
-        context.owner.address.substring(2),
-    ]);
-    expect(resultFromAccount).toEqual(["0x"]);
+        context.owner.address.substring(2)
+    );
+    expect(resultFromAccount).toEqual("0x");
   });
 };

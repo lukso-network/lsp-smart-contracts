@@ -47,3 +47,8 @@ bytes32 constant _ALL_DEFAULT_PERMISSIONS = 0x0000000000000000000000000000000000
 bytes32 constant _ALL_EXECUTION_PERMISSIONS = bytes32(
     uint256(_ALL_DEFAULT_PERMISSIONS) - uint256(_PERMISSION_SIGN)
 );
+
+// TODO: test if gas cost difference when storing as:
+// - bytes4 0x14a6e293
+// - keccak256("setData(bytes32[],bytes[])")
+bytes4 constant setDataMultipleSelector = 0x14a6e293;
