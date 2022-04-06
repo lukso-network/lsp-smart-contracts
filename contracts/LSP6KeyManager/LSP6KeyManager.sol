@@ -15,6 +15,6 @@ contract LSP6KeyManager is LSP6KeyManagerCore {
      * @param _account The address of the ER725Account to control
      */
     constructor(address _account) {
-        account = ERC725(_account);
+        account = _account;
     }
 }

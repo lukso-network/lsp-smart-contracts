@@ -2,8 +2,8 @@
 pragma solidity ^0.8.6;
 
 // modules
+import "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
 import "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import "@erc725/smart-contracts/contracts/ERC725.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // interfaces
@@ -18,9 +18,8 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // constants
+import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
-import "../LSP0ERC725Account/LSP0Constants.sol";
-import "@erc725/smart-contracts/contracts/constants.sol";
 
 /**
  * @dev revert when address `from` does not have any permissions set
@@ -69,7 +68,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     using ECDSA for bytes32;
     using ERC165Checker for address;
 
-    ERC725 public account;
+    address public override account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     /**
@@ -111,11 +110,14 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         returns (bytes4 magicValue)
     {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
-        return
-            (_PERMISSION_SIGN & account.getPermissionsFor(recoveredAddress)) ==
-                _PERMISSION_SIGN
-                ? _INTERFACEID_ERC1271
-                : _ERC1271_FAILVALUE;
+
+        return (
+            ERC725Y(account)
+                .getPermissionsFor(recoveredAddress)
+                .includesPermissions(_PERMISSION_SIGN)
+                ? _ERC1271_MAGICVALUE
+                : _ERC1271_FAILVALUE
+        );
     }
 
     /**
@@ -236,7 +238,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         bytes4 erc725Function = bytes4(_data[:4]);
 
         // get the permissions of the caller
-        bytes32 permissions = account.getPermissionsFor(_from);
+        bytes32 permissions = ERC725Y(account).getPermissionsFor(_from);
 
         // skip permissions check if caller has all permissions (except SIGN as not required)
         if (permissions.includesPermissions(_ALL_EXECUTION_PERMISSIONS)) {
@@ -248,7 +250,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         if (erc725Function == setDataMultipleSelector) {
             _verifyCanSetData(_from, permissions, _data);
-        } else if (erc725Function == account.execute.selector) {
+        } else if (erc725Function == IERC725X.execute.selector) {
             _verifyCanExecute(_from, permissions, _data);
 
             address to = address(bytes20(_data[48:68]));
@@ -262,7 +264,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                     _verifyAllowedFunction(_from, bytes4(_data[164:168]));
                 }
             }
-        } else if (erc725Function == account.transferOwnership.selector) {
+        } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
             if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
         } else {
@@ -464,7 +466,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _to the address to interact with
      */
     function _verifyAllowedAddress(address _from, address _to) internal view {
-        bytes memory allowedAddresses = account.getAllowedAddressesFor(_from);
+        bytes memory allowedAddresses = ERC725Y(account).getAllowedAddressesFor(
+            _from
+        );
 
         // whitelist any address if nothing in the list
         if (allowedAddresses.length == 0) return;
@@ -519,7 +523,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         internal
         view
     {
-        bytes memory allowedFunctions = account.getAllowedFunctionsFor(_from);
+        bytes memory allowedFunctions = ERC725Y(account).getAllowedFunctionsFor(
+            _from
+        );
 
         // whitelist any function if nothing in the list
         if (allowedFunctions.length == 0) return;
@@ -535,12 +541,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         revert NotAllowedFunction(_from, _functionSelector);
     }
 
-    function _validateERC725Selector(bytes4 _selector) internal view {
+    function _validateERC725Selector(bytes4 _selector) internal pure {
         // prettier-ignore
         require(
             _selector == setDataMultipleSelector ||
             _selector == IERC725X.execute.selector ||
-            _selector == account.transferOwnership.selector,
+            _selector == OwnableUnset.transferOwnership.selector,
             "_validateERC725Selector: invalid ERC725 selector"
         );
     }

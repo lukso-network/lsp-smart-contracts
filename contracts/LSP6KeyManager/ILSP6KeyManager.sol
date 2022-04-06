@@ -14,6 +14,17 @@ interface ILSP6KeyManager is
     event Executed(uint256 indexed _value, bytes _data);
 
     /**
+     * @notice returns the address of the account linked to this KeyManager
+     * @dev this can be a contract that implements
+     *  - ERC725X only
+     *  - ERC725Y only
+     *  - any ERC725 based contract (so implementing both ERC725X and ERC725Y)
+     *
+     * @return the address of the linked account
+     */
+    function account() external view returns (address);
+
+    /**
      * @notice get latest nonce for `_from` for channel ID: `_channel`
      * @dev use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)
      * @param _address caller address

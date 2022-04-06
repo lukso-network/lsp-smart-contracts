@@ -16,6 +16,6 @@ abstract contract LSP6KeyManagerInitAbstract is
     LSP6KeyManagerCore
 {
     function _initialize(address _account) internal virtual onlyInitializing {
-        account = ERC725(_account);
+        account = _account;
     }
 }
