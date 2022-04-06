@@ -24,7 +24,8 @@ describe("Testing ProxyFactory", () => {
       universalProfileBase = await new UniversalProfileInit__factory(
         accounts[0]
       ).deploy();
-      // Initialize the base contract
+
+      // Initialize the base contract with address(0)
       await universalProfileBase
         .connect(accounts[0])
         .initialize("0x0000000000000000000000000000000000000000");
@@ -32,18 +33,20 @@ describe("Testing ProxyFactory", () => {
 
     it("Deploy a proxy UniversalProfile", async () => {
       const ownerOfProxy = accounts[1].address;
+      
       let InitializeAbi = universalProfileBase.interface.encodeFunctionData(
         "initialize",
         [ownerOfProxy]
       );
+      
+      // get the address of the proxy
       const UniversalProfileAddress = await factory
-        .connect(accounts[1])
         .callStatic.createProxyWithInitialize(
           universalProfileBase.address,
           InitializeAbi
-        );
+      );
+      // deploy and initialize
       await factory
-        .connect(accounts[1])
         .createProxyWithInitialize(universalProfileBase.address, InitializeAbi);
 
       const universalProfile = universalProfileBase.attach(
