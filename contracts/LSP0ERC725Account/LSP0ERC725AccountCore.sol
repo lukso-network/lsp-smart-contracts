@@ -13,8 +13,7 @@ import "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-
+import "../Utils/ERC165CheckerCustom.sol";
 // constants
 import "../LSP0ERC725Account/LSP0Constants.sol";
 import "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -69,7 +68,10 @@ abstract contract LSP0ERC725AccountCore is
         // if OWNER is a contract
         if (_owner.code.length != 0) {
             return
-                ERC165Checker.supportsInterface(_owner, _INTERFACEID_ERC1271)
+                ERC165CheckerCustom.supportsERC165Interface(
+                    _owner,
+                    _INTERFACEID_ERC1271
+                )
                     ? IERC1271(_owner).isValidSignature(_hash, _signature)
                     : _ERC1271_FAILVALUE;
             // if OWNER is a key
@@ -98,7 +100,7 @@ abstract contract LSP0ERC725AccountCore is
         if (data.length >= 20) {
             address universalReceiverDelegate = BytesLib.toAddress(data, 0);
             if (
-                ERC165Checker.supportsInterface(
+                ERC165CheckerCustom.supportsERC165Interface(
                     universalReceiverDelegate,
                     _INTERFACEID_LSP1_DELEGATE
                 )

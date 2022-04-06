@@ -14,7 +14,7 @@ import "./LSP6Utils.sol";
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "../Utils/ERC165CheckerCustom.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
 // constants
@@ -66,7 +66,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     using LSP6Utils for *;
     using Address for address;
     using ECDSA for bytes32;
-    using ERC165Checker for address;
+    using ERC165CheckerCustom for address;
 
     address public override account;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
@@ -507,7 +507,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         );
 
         for (uint256 ii = 0; ii < allowedStandardsList.length; ii++) {
-            if (_to.supportsInterface(allowedStandardsList[ii])) return;
+            if (_to.supportsERC165Interface(allowedStandardsList[ii])) return;
         }
         revert("Not Allowed Standards");
     }
