@@ -360,12 +360,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         address _from,
         bytes32[] memory _inputKeys
     ) internal view {
-        bytes memory allowedERC725YKeysEncoded = ERC725Y(account).getData(
-            LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX,
-                bytes20(_from)
-            )
-        );
+        bytes memory allowedERC725YKeysEncoded = ERC725Y(account)
+            .getAllowedERC725YKeysFor(_from);
 
         // whitelist any ERC725Y key if nothing in the list
         if (allowedERC725YKeysEncoded.length == 0) return;
@@ -407,16 +403,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 isAllowedKey =
                     keccak256(allowedKeySlice) == keccak256(inputKeySlice);
 
-                // if the keys match, the key is allowed so stop iteration
-                if (isAllowedKey) break;
-
                 // if the keys do not match, save this key as a not allowed key
-                notAllowedKey = _inputKeys[jj];
+                if (!isAllowedKey) notAllowedKey = _inputKeys[jj];
             }
 
             // if after checking all the keys given as input we did not find any not allowed key
             // stop checking the other allowed ERC725Y keys
-            if (isAllowedKey == true) break;
+            // if (isAllowedKey == true) break;
         }
 
         // we always revert with the last not-allowed key that we found in the keys given as inputs
