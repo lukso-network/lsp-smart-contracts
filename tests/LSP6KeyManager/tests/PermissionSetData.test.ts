@@ -114,13 +114,11 @@ export const shouldBehaveLikePermissionSetData = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager.connect(cannotSetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(cannotSetData.address, "SETDATA")
-            );
-          }
+          await expect(
+            context.keyManager.connect(cannotSetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(cannotSetData.address, "SETDATA")
+          );
         });
       });
     });
@@ -334,13 +332,11 @@ export const shouldBehaveLikePermissionSetData = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager.connect(cannotSetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(cannotSetData.address, "SETDATA")
-            );
-          }
+          await expect(
+            context.keyManager.connect(cannotSetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(cannotSetData.address, "SETDATA")
+          );
         });
 
         it("(should fail): adding 10 LSP3IssuedAssets", async () => {
@@ -364,13 +360,11 @@ export const shouldBehaveLikePermissionSetData = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager.connect(cannotSetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(cannotSetData.address, "SETDATA")
-            );
-          }
+          await expect(
+            context.keyManager.connect(cannotSetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(cannotSetData.address, "SETDATA")
+          );
         });
 
         it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
@@ -404,13 +398,11 @@ export const shouldBehaveLikePermissionSetData = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager.connect(cannotSetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(cannotSetData.address, "SETDATA")
-            );
-          }
+          await expect(
+            context.keyManager.connect(cannotSetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(cannotSetData.address, "SETDATA")
+          );
         });
       });
     });

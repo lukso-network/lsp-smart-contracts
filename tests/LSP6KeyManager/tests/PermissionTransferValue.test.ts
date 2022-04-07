@@ -136,15 +136,11 @@ export const shouldBehaveLikePermissionTransferValue = (
           EMPTY_PAYLOAD,
         ]);
 
-      try {
-        await context.keyManager
-          .connect(cannotTransferValue)
-          .execute(transferPayload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAuthorisedError(cannotTransferValue.address, "TRANSFERVALUE")
-        );
-      }
+      await expect(
+        context.keyManager.connect(cannotTransferValue).execute(transferPayload)
+      ).toBeRevertedWith(
+        NotAuthorisedError(cannotTransferValue.address, "TRANSFERVALUE")
+      );
 
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address

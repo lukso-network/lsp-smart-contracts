@@ -33,63 +33,48 @@ export const shouldBehaveLikeLSP6 = (
   describe("CHANGEOWNER", () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
-
   describe("CHANGE / ADD permissions", () => {
     shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
   });
-
   describe("SETDATA", () => {
     shouldBehaveLikePermissionSetData(buildContext);
   });
-
   describe("CALL", () => {
     shouldBehaveLikePermissionCall(buildContext);
   });
-
   describe("STATICCALL", () => {
     shouldBehaveLikePermissionStaticCall(buildContext);
   });
-
   describe("DELEGATECALL", () => {
     shouldBehaveLikePermissionDelegateCall(buildContext);
   });
-
   describe("DEPLOY", () => {
     shouldBehaveLikePermissionDeploy(buildContext);
   });
-
   describe("TRANSFERVALUE", () => {
     shouldBehaveLikePermissionTransferValue(buildContext);
   });
-
   describe("SIGN (ERC1271)", () => {
     shouldBehaveLikePermissionSign(buildContext);
   });
-
   describe("ALLOWEDADDRESSES", () => {
     shouldBehaveLikeAllowedAddresses(buildContext);
   });
-
   describe("ALLOWEDFUNCTIONS", () => {
     shouldBehaveLikeAllowedFunctions(buildContext);
   });
-
   describe("ALLOWEDSTANDARDS", () => {
     shouldBehaveLikeAllowedStandards(buildContext);
   });
-
-  describe("ALLOWEDERC725YKeys", () => {
-    shouldBehaveLikeAllowedERC725YKeys(buildContext);
-  });
-
+  //   describe("ALLOWEDERC725YKeys", () => {
+  //     shouldBehaveLikeAllowedERC725YKeys(buildContext);
+  //   });
   describe("Multi Channel nonces", () => {
     shouldBehaveLikeMultiChannelNonce(buildContext);
   });
-
   describe("miscellaneous", () => {
     otherTestScenarios(buildContext);
   });
-
   describe("Security", () => {
     testSecurityScenarios(buildContext);
   });

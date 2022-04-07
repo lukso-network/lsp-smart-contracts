@@ -114,19 +114,17 @@ export const testAllowedAddressesInternals = (
         "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
       );
 
-      try {
-        await context.keyManagerHelper.verifyAllowedAddress(
+      await expect(
+        context.keyManagerHelper.verifyAllowedAddress(
           canCallOnlyTwoAddresses.address,
           disallowedAddress
-        );
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAllowedAddressError(
-            canCallOnlyTwoAddresses.address,
-            disallowedAddress
-          )
-        );
-      }
+        )
+      ).toBeRevertedWith(
+        NotAllowedAddressError(
+          canCallOnlyTwoAddresses.address,
+          disallowedAddress
+        )
+      );
     });
 
     it("should not revert when user has no address listed (= all addresses whitelisted)", async () => {

@@ -159,18 +159,16 @@ export const shouldBehaveLikeAllowedFunctions = (
               targetContractPayload,
             ]);
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(addressCanCallOnlyOneFunction)
-              .execute(executePayload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAllowedFunctionError(
-                addressCanCallOnlyOneFunction.address,
-                targetContract.interface.getSighash("setNumber")
-              )
-            );
-          }
+              .execute(executePayload)
+          ).toBeRevertedWith(
+            NotAllowedFunctionError(
+              addressCanCallOnlyOneFunction.address,
+              targetContract.interface.getSighash("setNumber")
+            )
+          );
 
           let result = await targetContract.callStatic.getNumber();
           expect(
@@ -191,18 +189,16 @@ export const shouldBehaveLikeAllowedFunctions = (
           [OPERATIONS.CALL, targetContract.address, 0, randomPayload]
         );
 
-        try {
-          await context.keyManager
+        await expect(
+          context.keyManager
             .connect(addressCanCallOnlyOneFunction)
-            .execute(payload);
-        } catch (error) {
-          expect(error.message).toMatch(
-            NotAllowedFunctionError(
-              addressCanCallOnlyOneFunction.address,
-              "0xbaadca11"
-            )
-          );
-        }
+            .execute(payload)
+        ).toBeRevertedWith(
+          NotAllowedFunctionError(
+            addressCanCallOnlyOneFunction.address,
+            "0xbaadca11"
+          )
+        );
       });
     });
   });
@@ -276,21 +272,19 @@ export const shouldBehaveLikeAllowedFunctions = (
             ethers.utils.arrayify(hash)
           );
 
-          try {
-            await context.keyManager.executeRelayCall(
+          await expect(
+            context.keyManager.executeRelayCall(
               context.keyManager.address,
               nonce,
               executeRelayCallPayload,
               signature
-            );
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAllowedFunctionError(
-                addressCanCallOnlyOneFunction.address,
-                targetContract.interface.getSighash("setNumber")
-              )
-            );
-          }
+            )
+          ).toBeRevertedWith(
+            NotAllowedFunctionError(
+              addressCanCallOnlyOneFunction.address,
+              targetContract.interface.getSighash("setNumber")
+            )
+          );
 
           let endResult = await targetContract.callStatic.getNumber();
           expect(endResult.toString()).toEqual(currentNumber.toString());

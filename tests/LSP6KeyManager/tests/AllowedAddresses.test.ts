@@ -192,18 +192,16 @@ export const shouldBehaveLikeAllowedAddresses = (
           EMPTY_PAYLOAD,
         ]);
 
-      try {
-        await context.keyManager
+      await expect(
+        context.keyManager
           .connect(canCallOnlyTwoAddresses)
-          .execute(transferPayload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAllowedAddressError(
-            canCallOnlyTwoAddresses.address,
-            notAllowedEOA.address
-          )
-        );
-      }
+          .execute(transferPayload)
+      ).toBeRevertedWith(
+        NotAllowedAddressError(
+          canCallOnlyTwoAddresses.address,
+          notAllowedEOA.address
+        )
+      );
 
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
@@ -236,18 +234,14 @@ export const shouldBehaveLikeAllowedAddresses = (
         ]
       );
 
-      try {
-        await context.keyManager
-          .connect(canCallOnlyTwoAddresses)
-          .execute(payload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAllowedAddressError(
-            canCallOnlyTwoAddresses.address,
-            notAllowedTargetContract.address
-          )
-        );
-      }
+      await expect(
+        context.keyManager.connect(canCallOnlyTwoAddresses).execute(payload)
+      ).toBeRevertedWith(
+        NotAllowedAddressError(
+          canCallOnlyTwoAddresses.address,
+          notAllowedTargetContract.address
+        )
+      );
     });
   });
 };
