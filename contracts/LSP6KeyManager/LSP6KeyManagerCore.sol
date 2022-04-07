@@ -403,13 +403,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 isAllowedKey =
                     keccak256(allowedKeySlice) == keccak256(inputKeySlice);
 
+                // if the keys match, the key is allowed so stop iteration
+                if (isAllowedKey) break;
+
                 // if the keys do not match, save this key as a not allowed key
-                if (!isAllowedKey) notAllowedKey = _inputKeys[jj];
+                notAllowedKey = _inputKeys[jj];
             }
 
             // if after checking all the keys given as input we did not find any not allowed key
             // stop checking the other allowed ERC725Y keys
-            // if (isAllowedKey == true) break;
+            if (isAllowedKey == true) break;
         }
 
         // we always revert with the last not-allowed key that we found in the keys given as inputs
