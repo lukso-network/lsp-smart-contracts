@@ -32,6 +32,14 @@ contract KeyManagerHelper is LSP6KeyManager {
         return ERC725Y(account).getAllowedFunctionsFor(_address);
     }
 
+    function getAllowedERC725YKeysFor(address _address)
+        public
+        view
+        returns (bytes memory)
+    {
+        return ERC725Y(account).getAllowedERC725YKeysFor(_address);
+    }
+
     function verifyAllowedAddress(address _sender, address _recipient)
         public
         view
@@ -44,6 +52,13 @@ contract KeyManagerHelper is LSP6KeyManager {
         view
     {
         super._verifyAllowedFunction(_sender, _function);
+    }
+
+    function verifyAllowedERC725YKeys(
+        address _from,
+        bytes32[] memory _inputKeys
+    ) public view {
+        super._verifyAllowedERC725YKeys(_from, _inputKeys);
     }
 
     function includesPermissions(
