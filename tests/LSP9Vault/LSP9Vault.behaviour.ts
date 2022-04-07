@@ -69,7 +69,9 @@ export const shouldBehaveLikeLSP9 = (
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](keys[0], values[0]);
 
-      const result = await context.lsp9Vault.callStatic["getData(bytes32)"](keys[0]);
+      const result = await context.lsp9Vault.callStatic["getData(bytes32)"](
+        keys[0]
+      );
       expect(result).toEqual(values[0]);
     });
 
@@ -104,7 +106,9 @@ export const shouldBehaveLikeLSP9 = (
           values[0]
         );
 
-      const result = await context.lsp9Vault.callStatic["getData(bytes32)"](keys[0]);
+      const result = await context.lsp9Vault.callStatic["getData(bytes32)"](
+        keys[0]
+      );
       expect(result).toEqual(values[0]);
     });
   });
@@ -118,9 +122,9 @@ export const shouldBehaveLikeLSP9 = (
       });
 
       it("should register lsp10 keys of the vault on the profile", async () => {
-        const arrayLength = await context.universalProfile.callStatic["getData(bytes32)"](
-          ERC725YKeys.LSP10["LSP10Vaults[]"]
-        );
+        const arrayLength = await context.universalProfile.callStatic[
+          "getData(bytes32)"
+        ](ERC725YKeys.LSP10["LSP10Vaults[]"]);
         expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
       });
     });
@@ -166,7 +170,9 @@ export const shouldBehaveLikeLSP9 = (
             )
           );
 
-        const res = await context.lsp9Vault.callStatic["getData(bytes32)"](keys[0]);
+        const res = await context.lsp9Vault.callStatic["getData(bytes32)"](
+          keys[0]
+        );
         expect(res).toEqual(values[0]);
       });
 
@@ -181,8 +187,8 @@ export const shouldBehaveLikeLSP9 = (
           context.universalProfile.address
         );
 
-        try {
-          await context.lsp6KeyManager
+        await expect(
+          context.lsp6KeyManager
             .connect(context.accounts.friend)
             .execute(
               callPayload(
@@ -190,15 +196,13 @@ export const shouldBehaveLikeLSP9 = (
                 context.universalProfile.address,
                 payload
               )
-            );
-        } catch (error) {
-          expect(error.message).toMatch(
-            NotAllowedAddressError(
-              context.accounts.friend.address,
-              disallowedAddress
             )
-          );
-        }
+        ).toBeRevertedWith(
+          NotAllowedAddressError(
+            context.accounts.friend.address,
+            disallowedAddress
+          )
+        );
       });
     });
   });
@@ -247,7 +251,9 @@ export const shouldInitializeLikeLSP9 = (
         [SupportedStandards.LSP9Vault.key, SupportedStandards.LSP9Vault.value]
       );
       expect(
-        await context.lsp9Vault["getData(bytes32)"](SupportedStandards.LSP9Vault.key)
+        await context.lsp9Vault["getData(bytes32)"](
+          SupportedStandards.LSP9Vault.key
+        )
       ).toEqual(SupportedStandards.LSP9Vault.value);
     });
   });
