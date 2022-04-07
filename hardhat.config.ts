@@ -62,6 +62,7 @@ const config: HardhatUserConfig = {
       "LSP0ERC725Account",
       "LSP1UniversalReceiverDelegateUP",
       "LSP1UniversalReceiverDelegateVault",
+      "LSP4DigitalAssetMetadata",
       "LSP6KeyManager",
       "LSP7DigitalAsset",
       "LSP7CappedSupply",
@@ -74,6 +75,7 @@ const config: HardhatUserConfig = {
       // ------------------
       "UniversalProfileInit",
       "LSP0ERC725Account",
+      "LSP4DigitalAssetMetadataInit",
       "LSP6KeyManagerInit",
       "LSP7DigitalAssetInit",
       "LSP7CappedSupplyInit",
@@ -84,6 +86,7 @@ const config: HardhatUserConfig = {
       "LSP9VaultInit",
       // ERC Compatible tokens
       // ------------------
+      "LSP4Compatibility",
       "LSP7CompatibilityForERC20",
       "LSP7CompatibilityForERC20Init",
       "LSP8CompatibilityForERC721",
