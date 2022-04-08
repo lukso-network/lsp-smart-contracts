@@ -20,45 +20,11 @@ import "solidity-bytes-utils/contracts/BytesLib.sol";
 // constants
 import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
-
-/**
- * @dev revert when address `from` does not have any permissions set
- * on the account linked to this Key Manager
- * @param from the address that does not have permissions
- */
-error NoPermissionsSet(address from);
-
-/**
- * @dev address `from` is not authorised to `permission`
- * @param permission permission required
- * @param from address not-authorised
- */
-error NotAuthorised(address from, string permission);
-
-/**
- * @dev address `from` is not authorised to interact with `disallowedAddress` via account
- * @param from address making the request
- * @param disallowedAddress address that `from` is not authorised to call
- */
-error NotAllowedAddress(address from, address disallowedAddress);
-
-/**
- * @dev address `from` is not authorised to run `disallowedFunction` via account
- * @param from address making the request
- * @param disallowedFunction bytes4 function selector that `from` is not authorised to run
- */
-error NotAllowedFunction(address from, bytes4 disallowedFunction);
-
-/**
- * @dev address `from` is not authorised to set the key `disallowedKey` on the account
- * @param from address making the request
- * @param disallowedKey a bytes32 key that `from` is not authorised to set on the ERC725Y storage
- */
-error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
+import "./LSP6Errors.sol";
 
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
- * @author Fabian Vogelsteller, Jean Cavallera
+ * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
@@ -371,53 +337,62 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             (bytes32[])
         );
 
-        bytes memory allowedKeySlice;
-        bytes memory inputKeySlice;
-        uint256 sliceLength;
+        // bytes memory allowedKeySlice;
+        // bytes memory inputKeySlice;
+        // uint256 sliceLength;
 
         bool isAllowedKey;
 
-        // save the not allowed key for cusom revert error
-        bytes32 notAllowedKey;
+        for (uint256 ii = 0; ii < _inputKeys.length; ii++) {
+            for (uint256 jj = 0; jj < allowedERC725YKeys.length; jj++) {
+                isAllowedKey = _inputKeys[ii] == allowedERC725YKeys[jj];
 
-        // loop through each allowed ERC725Y key retrieved from storage
-        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
-            // save the length of the slice
-            // so to know which part to compare for each key we are trying to set
-            (allowedKeySlice, sliceLength) = _extractKeySlice(
-                allowedERC725YKeys[ii]
-            );
-
-            // loop through each keys given as input
-            for (uint256 jj = 0; jj < _inputKeys.length; jj++) {
-                // skip permissions keys that have been "nulled" previously
-                if (_inputKeys[jj] == bytes32(0)) continue;
-
-                // extract the slice to compare with the allowed key
-                inputKeySlice = BytesLib.slice(
-                    bytes.concat(_inputKeys[jj]),
-                    0,
-                    sliceLength
-                );
-
-                isAllowedKey =
-                    keccak256(allowedKeySlice) == keccak256(inputKeySlice);
-
-                // if the keys match, the key is allowed so stop iteration
                 if (isAllowedKey) break;
-
-                // if the keys do not match, save this key as a not allowed key
-                notAllowedKey = _inputKeys[jj];
             }
-
-            // if after checking all the keys given as input we did not find any not allowed key
-            // stop checking the other allowed ERC725Y keys
-            if (isAllowedKey == true) break;
+            if (!isAllowedKey) revert("not allowed ERC725Y key");
         }
 
-        // we always revert with the last not-allowed key that we found in the keys given as inputs
-        if (isAllowedKey == false)
-            revert NotAllowedERC725YKey(_from, notAllowedKey);
+        // save the not allowed key for cusom revert error
+        // bytes32 notAllowedKey;
+
+        // // loop through each allowed ERC725Y key retrieved from storage
+        // for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
+        //     // save the length of the slice
+        //     // so to know which part to compare for each key we are trying to set
+        //     (allowedKeySlice, sliceLength) = _extractKeySlice(
+        //         allowedERC725YKeys[ii]
+        //     );
+
+        //     // loop through each keys given as input
+        //     for (uint256 jj = 0; jj < _inputKeys.length; jj++) {
+        //         // skip permissions keys that have been "nulled" previously
+        //         if (_inputKeys[jj] == bytes32(0)) continue;
+
+        //         // extract the slice to compare with the allowed key
+        //         inputKeySlice = BytesLib.slice(
+        //             bytes.concat(_inputKeys[jj]),
+        //             0,
+        //             sliceLength
+        //         );
+
+        //         isAllowedKey =
+        //             keccak256(allowedKeySlice) == keccak256(inputKeySlice);
+
+        //         // if the keys match, the key is allowed so stop iteration
+        //         if (isAllowedKey) break;
+
+        //         // if the keys do not match, save this key as a not allowed key
+        //         notAllowedKey = _inputKeys[jj];
+        //     }
+
+        //     // if after checking all the keys given as input we did not find any not allowed key
+        //     // stop checking the other allowed ERC725Y keys
+        //     if (isAllowedKey == true) break;
+        // }
+
+        // // we always revert with the last not-allowed key that we found in the keys given as inputs
+        // if (isAllowedKey == false)
+        //     revert NotAllowedERC725YKey(_from, notAllowedKey);
     }
 
     /**
