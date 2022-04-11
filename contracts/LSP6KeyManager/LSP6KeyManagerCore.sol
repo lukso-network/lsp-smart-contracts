@@ -337,15 +337,30 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             (bytes32[])
         );
 
-        // bytes memory allowedKeySlice;
-        // bytes memory inputKeySlice;
-        // uint256 sliceLength;
+        bytes memory allowedKeySlice;
+        bytes memory inputKeySlice;
+        uint256 sliceLength;
 
         bool isAllowedKey;
 
         for (uint256 ii = 0; ii < _inputKeys.length; ii++) {
+            // skip permissions keys that have been "nulled" previously
+            if (_inputKeys[ii] == bytes32(0)) continue;
+
             for (uint256 jj = 0; jj < allowedERC725YKeys.length; jj++) {
-                isAllowedKey = _inputKeys[ii] == allowedERC725YKeys[jj];
+                (allowedKeySlice, sliceLength) = _extractKeySlice(
+                    allowedERC725YKeys[jj]
+                );
+
+                // extract the slice to compare with the allowed key
+                inputKeySlice = BytesLib.slice(
+                    bytes.concat(_inputKeys[ii]),
+                    0,
+                    sliceLength
+                );
+
+                isAllowedKey =
+                    keccak256(allowedKeySlice) == keccak256(inputKeySlice);
 
                 if (isAllowedKey) break;
             }

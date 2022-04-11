@@ -24,7 +24,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
 ) => {
   let context: LSP6TestContext;
 
-  describe.only("keyType: Singleton", () => {
+  describe("keyType: Singleton", () => {
     let controllerCanSetOneKey: SignerWithAddress,
       controllerCanSetManyKeys: SignerWithAddress;
 
@@ -71,7 +71,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe.skip("verify allowed ERC725Y keys set", () => {
+    describe("verify allowed ERC725Y keys set", () => {
       it("`controllerCanSetOneKey` should have 1 x key in its list of allowed keys", async () => {
         const result = await context.universalProfile["getData(bytes32)"](
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
@@ -115,7 +115,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       });
     });
 
-    describe.only("when address can set only one key", () => {
+    describe("when address can set only one key", () => {
       describe("when setting one key", () => {
         it("should pass when setting the right key", async () => {
           let key = customKey1;
@@ -727,859 +727,819 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         });
       });
 
-      //   describe("when setting multiple keys", () => {
-      //     describe("when input is bigger than the number of allowed keys", () => {
-      //       describe("should fail when", () => {
-      //         it("input = all the allowed keys + 1 x not-allowed key", async () => {
-      //           let keys = [
-      //             customKey2,
-      //             customKey3,
-      //             customKey4,
-      //             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
-      //           ];
-      //           let values = [
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Some Data for customKey2")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Some Data for customKey3")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Some Data for customKey4")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Value XXXXXXXX")
-      //             ),
-      //           ];
+      describe("when setting multiple keys", () => {
+        describe("when input is bigger than the number of allowed keys", () => {
+          describe("should fail when", () => {
+            it("input = all the allowed keys + 1 x not-allowed key", async () => {
+              let keys = [
+                customKey2,
+                customKey3,
+                customKey4,
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+              ];
+              let values = [
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey2")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey3")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey4")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value XXXXXXXX")
+                ),
+              ];
 
-      //           let setDataPayload =
-      //             context.universalProfile.interface.encodeFunctionData(
-      //               "setData(bytes32[],bytes[])",
-      //               [keys, values]
-      //             );
+              let setDataPayload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "setData(bytes32[],bytes[])",
+                  [keys, values]
+                );
 
-      //           await expect(
-      //             await context.keyManager
-      //               .connect(controllerCanSetManyKeys)
-      //               .execute(setDataPayload)
-      //           ).toBeRevertedWith(
-      //             NotAllowedERC725YKeyError(
-      //               controllerCanSetManyKeys.address,
-      //               keys[3]
-      //             )
-      //           );
-      //         });
+              await expect(
+                context.keyManager
+                  .connect(controllerCanSetManyKeys)
+                  .execute(setDataPayload)
+              ).toBeRevertedWith("not allowed ERC725Y key");
+            });
 
-      //         it("input = all the allowed keys + 5 x not-allowed key", async () => {
-      //           let keys = [
-      //             customKey2,
-      //             customKey3,
-      //             customKey4,
-      //             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
-      //             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
-      //             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ZZZZZZZZZZ")),
-      //             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("AAAAAAAAAA")),
-      //             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BBBBBBBBBB")),
-      //           ];
-      //           let values = [
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Custom Value 2")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Custom Value 3")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Custom Value 4")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Value XXXXXXXX")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Value YYYYYYYY")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Value ZZZZZZZZ")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Value AAAAAAAA")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Value BBBBBBBB")
-      //             ),
-      //           ];
+            it("input = all the allowed keys + 5 x not-allowed key", async () => {
+              let keys = [
+                customKey2,
+                customKey3,
+                customKey4,
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("XXXXXXXXXX")),
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("YYYYYYYYYY")),
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ZZZZZZZZZZ")),
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("AAAAAAAAAA")),
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BBBBBBBBBB")),
+              ];
+              let values = [
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Custom Value 2")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Custom Value 3")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Custom Value 4")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value XXXXXXXX")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value YYYYYYYY")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value ZZZZZZZZ")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value AAAAAAAA")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Value BBBBBBBB")
+                ),
+              ];
 
-      //           let setDataPayload =
-      //             context.universalProfile.interface.encodeFunctionData(
-      //               "setData(bytes32[],bytes[])",
-      //               [keys, values]
-      //             );
+              let setDataPayload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "setData(bytes32[],bytes[])",
+                  [keys, values]
+                );
 
-      //           await expect(
-      //             context.keyManager
-      //               .connect(controllerCanSetManyKeys)
-      //               .execute(setDataPayload)
-      //           ).toBeRevertedWith(
-      //             NotAllowedERC725YKeyError(
-      //               controllerCanSetManyKeys.address,
-      //               keys[7]
-      //             )
-      //           );
-      //         });
-      //       });
+              await expect(
+                context.keyManager
+                  .connect(controllerCanSetManyKeys)
+                  .execute(setDataPayload)
+              ).toBeRevertedWith("not allowed ERC725Y key");
+            });
+          });
 
-      //       describe("should pass when", () => {
-      //         it("input contains all the allowed keys as DUPLICATE", async () => {
-      //           let keys = [
-      //             customKey2,
-      //             customKey2,
-      //             customKey2,
-      //             customKey3,
-      //             customKey3,
-      //             customKey3,
-      //             customKey4,
-      //             customKey4,
-      //             customKey4,
-      //           ];
-      //           let values = [
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Some Data for customKey2")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes(
-      //                 "Some Data (override 1) for customKey2"
-      //               )
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes(
-      //                 "Some Data (override 2) for customKey2"
-      //               )
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Some Data for customKey3")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes(
-      //                 "Some Data (override 1) for customKey3"
-      //               )
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes(
-      //                 "Some Data (override 2) for customKey3"
-      //               )
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes("Some Data for customKey4")
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes(
-      //                 "Some Data (override 1) for customKey4"
-      //               )
-      //             ),
-      //             ethers.utils.hexlify(
-      //               ethers.utils.toUtf8Bytes(
-      //                 "Some Data (override 2) for customKey4"
-      //               )
-      //             ),
-      //           ];
+          describe("should pass when", () => {
+            it("input contains all the allowed keys as DUPLICATE", async () => {
+              let keys = [
+                customKey2,
+                customKey2,
+                customKey2,
+                customKey3,
+                customKey3,
+                customKey3,
+                customKey4,
+                customKey4,
+                customKey4,
+              ];
+              let values = [
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey2")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 1) for customKey2"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 2) for customKey2"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey3")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 1) for customKey3"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 2) for customKey3"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey4")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 1) for customKey4"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 2) for customKey4"
+                  )
+                ),
+              ];
 
-      //           let setDataPayload =
-      //             context.universalProfile.interface.encodeFunctionData(
-      //               "setData(bytes32[],bytes[])",
-      //               [keys, values]
-      //             );
+              let setDataPayload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "setData(bytes32[],bytes[])",
+                  [keys, values]
+                );
 
-      //           await context.keyManager
-      //             .connect(controllerCanSetManyKeys)
-      //             .execute(setDataPayload);
+              await context.keyManager
+                .connect(controllerCanSetManyKeys)
+                .execute(setDataPayload);
 
-      //           let result = await context.universalProfile["getData(bytes32[])"](
-      //             keys
-      //           );
-      //           expect(result).toEqual([
-      //             // when putting duplicates in the keys given as inputs,
-      //             // the last duplicate value for a key should be the one that override
-      //             values[2],
-      //             values[2],
-      //             values[2],
-      //             values[5],
-      //             values[5],
-      //             values[5],
-      //             values[8],
-      //             values[8],
-      //             values[8],
-      //           ]);
-      //         });
-      //       });
-      //     });
-      //   });
+              let result = await context.universalProfile["getData(bytes32[])"](
+                keys
+              );
+              expect(result).toEqual([
+                // when putting duplicates in the keys given as inputs,
+                // the last duplicate value for a key should be the one that override
+                values[2],
+                values[2],
+                values[2],
+                values[5],
+                values[5],
+                values[5],
+                values[8],
+                values[8],
+                values[8],
+              ]);
+            });
+          });
+        });
+      });
     });
 
-    // describe.skip("when address can set any key", () => {
-    //   describe("when setting one key", () => {
-    //     it("should pass when setting any random key", async () => {
-    //       let key = ethers.utils.keccak256(
-    //         ethers.utils.toUtf8Bytes(getRandomString())
-    //       );
-    //       let value = ethers.utils.hexlify(
-    //         ethers.utils.toUtf8Bytes("Some data")
-    //       );
+    describe("when address can set any key", () => {
+      describe("when setting one key", () => {
+        it("should pass when setting any random key", async () => {
+          let key = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes(getRandomString())
+          );
+          let value = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("Some data")
+          );
 
-    //       let setDataPayload =
-    //         context.universalProfile.interface.encodeFunctionData(
-    //           "setData(bytes32[],bytes[])",
-    //           [[key], [value]]
-    //         );
-    //       await context.keyManager
-    //         .connect(context.owner)
-    //         .execute(setDataPayload);
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[key], [value]]
+            );
+          await context.keyManager
+            .connect(context.owner)
+            .execute(setDataPayload);
 
-    //       const result = await context.universalProfile["getData(bytes32)"](
-    //         key
-    //       );
-    //       expect(result).toEqual(value);
-    //     });
-    //   });
+          const result = await context.universalProfile["getData(bytes32)"](
+            key
+          );
+          expect(result).toEqual(value);
+        });
+      });
 
-    //   describe("when setting multiple keys", () => {
-    //     it("should pass when setting any multiple keys", async () => {
-    //       let keys = [
-    //         ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
-    //         ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
-    //         ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
-    //       ];
-    //       let values = [
-    //         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
-    //         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
-    //         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 3")),
-    //       ];
+      describe("when setting multiple keys", () => {
+        it("should pass when setting any multiple keys", async () => {
+          let keys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+          ];
+          let values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 3")),
+          ];
 
-    //       let setDataPayload =
-    //         context.universalProfile.interface.encodeFunctionData(
-    //           "setData(bytes32[],bytes[])",
-    //           [keys, values]
-    //         );
-    //       await context.keyManager
-    //         .connect(context.owner)
-    //         .execute(setDataPayload);
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [keys, values]
+            );
+          await context.keyManager
+            .connect(context.owner)
+            .execute(setDataPayload);
 
-    //       let result = await context.universalProfile["getData(bytes32[])"](
-    //         keys
-    //       );
+          let result = await context.universalProfile["getData(bytes32[])"](
+            keys
+          );
 
-    //       expect(result).toEqual(values);
-    //     });
-    //   });
-    // });
+          expect(result).toEqual(values);
+        });
+      });
+    });
   });
 
-  //   describe.skip("keyType: Mapping", () => {
-  //     let controllerCanSetMappingKeys: SignerWithAddress;
-
-  //     // all mapping keys starting with: SupportedStandards:...
-  //     const supportedStandardKey =
-  //       "0xeafec4d89fa9619884b6b8913562645500000000000000000000000000000000";
-
-  //     // SupportedStandards:LSPX
-  //     const LSPXKey =
-  //       "0xeafec4d89fa9619884b6b8913562645500000000000000000000000024ae6f23";
-
-  //     // SupportedStandards:LSPY
-  //     const LSPYKey =
-  //       "0xeafec4d89fa9619884b6b891356264550000000000000000000000005e8d18c5";
-
-  //     // SupportedStandards:LSPZ
-  //     const LSPZKey =
-  //       "0xeafec4d89fa9619884b6b8913562645500000000000000000000000025b71a36";
-
-  //     beforeAll(async () => {
-  //       context = await buildContext();
-
-  //       controllerCanSetMappingKeys = context.accounts[1];
-
-  //       const permissionKeys = [
-  //         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-  //           context.owner.address.substring(2),
-  //         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-  //           controllerCanSetMappingKeys.address.substring(2),
-  //         ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
-  //           controllerCanSetMappingKeys.address.substring(2),
-  //       ];
-
-  //       const permissionValues = [
-  //         ALL_PERMISSIONS_SET,
-  //         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-  //         abiCoder.encode(["bytes32[]"], [[supportedStandardKey]]),
-  //       ];
-
-  //       await setupKeyManager(context, permissionKeys, permissionValues);
-  //     });
-
-  //     describe("when address can set Mapping keys starting with a 'SupportedStandards:...'", () => {
-  //       describe("when setting one key", () => {
-  //         it("should pass when setting SupportedStandards:LSPX", async () => {
-  //           let mappingKey = LSPXKey;
-  //           let mappingValue = ethers.utils.hexlify(
-  //             ethers.utils.toUtf8Bytes("0x24ae6f23")
-  //           );
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[mappingKey], [mappingValue]]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetMappingKeys)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             mappingKey
-  //           );
-  //           expect(result).toEqual(mappingValue);
-  //         });
-
-  //         it("should pass when overriding SupportedStandards:LSPX", async () => {
-  //           let mappingKey = LSPXKey;
-  //           let mappingValue = ethers.utils.hexlify(
-  //             ethers.utils.toUtf8Bytes("0x24ae6f23")
-  //           );
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[mappingKey], [mappingValue]]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetMappingKeys)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             mappingKey
-  //           );
-  //           expect(result).toEqual(mappingValue);
-  //         });
-
-  //         it("should pass when setting SupportedStandards:LSPY", async () => {
-  //           let mappingKey = LSPYKey;
-  //           let mappingValue = ethers.utils.hexlify(
-  //             ethers.utils.toUtf8Bytes("0x5e8d18c5")
-  //           );
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[mappingKey], [mappingValue]]
-  //             );
-  //           await context.keyManager
-  //             .connect(controllerCanSetMappingKeys)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             mappingKey
-  //           );
-  //           expect(result).toEqual(mappingValue);
-  //         });
-
-  //         it("should pass when setting SupportedStandards:LSPZ", async () => {
-  //           let mappingKey = LSPZKey;
-  //           let mappingValue = ethers.utils.hexlify(
-  //             ethers.utils.toUtf8Bytes("0x25b71a36")
-  //           );
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[mappingKey], [mappingValue]]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetMappingKeys)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             mappingKey
-  //           );
-  //           expect(result).toEqual(mappingValue);
-  //         });
-
-  //         it("should fail when setting any other not-allowed Mapping key", async () => {
-  //           // CustomMapping:...
-  //           let notAllowedMappingKey =
-  //             "0xb8a73e856fea3d5a518029e588a713f300000000000000000000000000000000";
-  //           let notAllowedMappingValue = "0xbeefbeef";
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[notAllowedMappingKey], [notAllowedMappingValue]]
-  //             );
-
-  //           await expect(
-  //             await context.keyManager
-  //               .connect(controllerCanSetMappingKeys)
-  //               .execute(setDataPayload)
-  //           ).toBeRevertedWith(
-  //             NotAllowedERC725YKeyError(
-  //               controllerCanSetMappingKeys.address,
-  //               notAllowedMappingKey
-  //             )
-  //           );
-  //         });
-  //       });
-
-  //       describe("when setting multiple keys", () => {
-  //         it('(2 x keys) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-  //           let mappingKeys = [LSPYKey, LSPZKey];
-  //           let mappingValues = ["0x5e8d18c5", "0x5e8d18c5"];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [mappingKeys, mappingValues]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetMappingKeys)
-  //             .execute(setDataPayload);
-
-  //           let result = await context.universalProfile["getData(bytes32[])"](
-  //             mappingKeys
-  //           );
-  //           expect(result).toEqual(mappingValues);
-  //         });
-
-  //         it('(2 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-  //           let mappingKeys = [LSPYKey, LSPZKey];
-  //           let mappingValues = ["0x5e8d18c5", "0x5e8d18c5"];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [mappingKeys, mappingValues]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetMappingKeys)
-  //             .execute(setDataPayload);
-
-  //           let result = await context.universalProfile["getData(bytes32[])"](
-  //             mappingKeys
-  //           );
-  //           expect(result).toEqual(mappingValues);
-  //         });
-
-  //         it('(3 x keys) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-  //           let mappingKeys = [
-  //             "0xeafec4d89fa9619884b6b89135626455000000000000000000000000aaaaaaaa",
-  //             "0xeafec4d89fa9619884b6b89135626455000000000000000000000000bbbbbbbb",
-  //             "0xeafec4d89fa9619884b6b89135626455000000000000000000000000cccccccc",
-  //           ];
-  //           let mappingValues = ["0xaaaaaaaa", "0xbbbbbbbb", "0xcccccccc"];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [mappingKeys, mappingValues]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetMappingKeys)
-  //             .execute(setDataPayload);
-
-  //           let result = await context.universalProfile["getData(bytes32[])"](
-  //             mappingKeys
-  //           );
-  //           expect(result).toEqual(mappingValues);
-  //         });
-
-  //         it('(3 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
-  //           let mappingKeys = [
-  //             "0xeafec4d89fa9619884b6b89135626455000000000000000000000000aaaaaaaa",
-  //             "0xeafec4d89fa9619884b6b89135626455000000000000000000000000bbbbbbbb",
-  //             "0xeafec4d89fa9619884b6b89135626455000000000000000000000000cccccccc",
-  //           ];
-  //           let mappingValues = ["0xaaaaaaaa", "0xbbbbbbbb", "0xcccccccc"];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [mappingKeys, mappingValues]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetMappingKeys)
-  //             .execute(setDataPayload);
-
-  //           let result = await context.universalProfile["getData(bytes32[])"](
-  //             mappingKeys
-  //           );
-  //           expect(result).toEqual(mappingValues);
-  //         });
-
-  //         it("should fail when the list contains none of the allowed Mapping keys", async () => {
-  //           let randomMappingKeys = [
-  //             "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111",
-  //             "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222",
-  //             "0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222",
-  //           ];
-  //           let randomMappingValues = [
-  //             ethers.utils.hexlify(
-  //               ethers.utils.toUtf8Bytes("Random Mapping Value 1")
-  //             ),
-  //             ethers.utils.hexlify(
-  //               ethers.utils.toUtf8Bytes("Random Mapping Value 2")
-  //             ),
-  //             ethers.utils.hexlify(
-  //               ethers.utils.toUtf8Bytes("Random Mapping Value 3")
-  //             ),
-  //           ];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [randomMappingKeys, randomMappingValues]
-  //             );
-
-  //           await expect(
-  //             context.keyManager
-  //               .connect(controllerCanSetMappingKeys)
-  //               .execute(setDataPayload)
-  //           ).toBeRevertedWith(
-  //             NotAllowedERC725YKeyError(
-  //               controllerCanSetMappingKeys.address,
-  //               randomMappingKeys[2]
-  //             )
-  //           );
-  //         });
-
-  //         it("should fail, even if the list contains some keys starting with `SupportedStandards`", async () => {
-  //           let mappingKeys = [
-  //             LSPXKey,
-  //             "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222",
-  //             "0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222",
-  //           ];
-  //           let mappingValues = [
-  //             "0x24ae6f23",
-  //             ethers.utils.hexlify(
-  //               ethers.utils.toUtf8Bytes("Random Mapping Value 1")
-  //             ),
-  //             ethers.utils.hexlify(
-  //               ethers.utils.toUtf8Bytes("Random Mapping Value 2")
-  //             ),
-  //           ];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [mappingKeys, mappingValues]
-  //             );
-
-  //           await expect(
-  //             context.keyManager
-  //               .connect(controllerCanSetMappingKeys)
-  //               .execute(setDataPayload)
-  //           ).toBeRevertedWith(
-  //             NotAllowedERC725YKeyError(
-  //               controllerCanSetMappingKeys.address,
-  //               mappingKeys[2]
-  //             )
-  //           );
-  //         });
-  //       });
-  //     });
-
-  //     describe("when address can set any key", () => {
-  //       describe("when setting one key", () => {
-  //         it("should pass when setting any random Mapping key", async () => {
-  //           let randomMappingKey =
-  //             "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111";
-  //           let randomMappingValue = ethers.utils.hexlify(
-  //             ethers.utils.toUtf8Bytes("Random Mapping Value")
-  //           );
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[randomMappingKey], [randomMappingValue]]
-  //             );
-  //           await context.keyManager
-  //             .connect(context.owner)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             randomMappingKey
-  //           );
-  //           expect(result).toEqual(randomMappingValue);
-  //         });
-  //       });
-
-  //       describe("when setting multiple keys", () => {
-  //         it("should pass when setting any random set of Mapping keys", async () => {
-  //           let randomMappingKeys = [
-  //             "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111",
-  //             "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222",
-  //             "0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222",
-  //           ];
-  //           let randomMappingValues = [
-  //             ethers.utils.hexlify(
-  //               ethers.utils.toUtf8Bytes("Random Mapping Value 1")
-  //             ),
-  //             ethers.utils.hexlify(
-  //               ethers.utils.toUtf8Bytes("Random Mapping Value 2")
-  //             ),
-  //             ethers.utils.hexlify(
-  //               ethers.utils.toUtf8Bytes("Random Mapping Value 3")
-  //             ),
-  //           ];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [randomMappingKeys, randomMappingValues]
-  //             );
-  //           await context.keyManager
-  //             .connect(context.owner)
-  //             .execute(setDataPayload);
-
-  //           let result = await context.universalProfile["getData(bytes32[])"](
-  //             randomMappingKeys
-  //           );
-
-  //           expect(result).toEqual(randomMappingValues);
-  //         });
-  //       });
-  //     });
-  //   });
-
-  //   describe.skip("keyType: Array", () => {
-  //     let controllerCanSetArrayKeys: SignerWithAddress;
-
-  //     const allowedArrayKey =
-  //       "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000000";
-
-  //     // keccak256("MyArray[]")
-  //     const arrayKeyLength =
-  //       "0x868affce801d08a5948eebc349a5c8ff18e4c7076d14879dd5d19180dff1f547";
-
-  //     // MyArray[0]
-  //     const arrayKeyElement1 =
-  //       "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000000";
-
-  //     // MyArray[1]
-  //     const arrayKeyElement2 =
-  //       "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000001";
-
-  //     // MyArray[2]
-  //     const arrayKeyElement3 =
-  //       "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000002";
-
-  //     beforeAll(async () => {
-  //       context = await buildContext();
-  //       controllerCanSetArrayKeys = context.accounts[1];
-
-  //       const permissionKeys = [
-  //         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-  //           context.owner.address.substring(2),
-  //         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-  //           controllerCanSetArrayKeys.address.substring(2),
-  //         ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
-  //           controllerCanSetArrayKeys.address.substring(2),
-  //       ];
-
-  //       const permissionValues = [
-  //         ALL_PERMISSIONS_SET,
-  //         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-  //         abiCoder.encode(["bytes32[]"], [[allowedArrayKey]]),
-  //       ];
-
-  //       await setupKeyManager(context, permissionKeys, permissionValues);
-  //     });
-
-  //     describe("when address can set Array element in 'MyArray[]", () => {
-  //       describe("when setting one key", () => {
-  //         it("should pass when setting array key length MyArray[]", async () => {
-  //           let key = arrayKeyLength;
-  //           // eg: MyArray[].length = 10 elements
-  //           let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("0x0a"));
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[key], [value]]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetArrayKeys)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             key
-  //           );
-  //           expect(result).toEqual(value);
-  //         });
-
-  //         it("should pass when setting 1st array element MyArray[0]", async () => {
-  //           let key = arrayKeyElement1;
-  //           let value = ethers.utils.hexlify(
-  //             ethers.utils.toUtf8Bytes("0xaaaaaaaa")
-  //           );
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[key], [value]]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetArrayKeys)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             key
-  //           );
-  //           expect(result).toEqual(value);
-  //         });
-
-  //         it("should pass when setting 2nd array element MyArray[1]", async () => {
-  //           let key = arrayKeyElement2;
-  //           let value = ethers.utils.hexlify(
-  //             ethers.utils.toUtf8Bytes("0xbbbbbbbb")
-  //           );
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[key], [value]]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetArrayKeys)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             key
-  //           );
-  //           expect(result).toEqual(value);
-  //         });
-
-  //         it("should pass when setting 3rd array element MyArray[3]", async () => {
-  //           let key = arrayKeyElement3;
-  //           let value = ethers.utils.hexlify(
-  //             ethers.utils.toUtf8Bytes("0xcccccccc")
-  //           );
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[key], [value]]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetArrayKeys)
-  //             .execute(setDataPayload);
-
-  //           const result = await context.universalProfile["getData(bytes32)"](
-  //             key
-  //           );
-  //           expect(result).toEqual(value);
-  //         });
-
-  //         it("should fail when setting elements of a not-allowed Array (eg: LSP5ReceivedAssets)", async () => {
-  //           let notAllowedArrayKey = ERC725YKeys.LSP5["LSP5ReceivedAssets[]"];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [[notAllowedArrayKey], ["0x00"]]
-  //             );
-
-  //           await expect(
-  //             context.keyManager
-  //               .connect(controllerCanSetArrayKeys)
-  //               .execute(setDataPayload)
-  //           ).toBeRevertedWith(
-  //             NotAllowedERC725YKeyError(
-  //               controllerCanSetArrayKeys.address,
-  //               notAllowedArrayKey
-  //             )
-  //           );
-  //         });
-  //       });
-
-  //       describe("when setting multiple keys", () => {
-  //         it("should pass when all the keys in the list are from the allowed array MyArray[]", async () => {
-  //           let keys = [arrayKeyElement1, arrayKeyElement2];
-  //           let values = ["0xaaaaaaaa", "0xbbbbbbbb"];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [keys, values]
-  //             );
-
-  //           await context.keyManager
-  //             .connect(controllerCanSetArrayKeys)
-  //             .execute(setDataPayload);
-
-  //           let result = await context.universalProfile["getData(bytes32[])"](
-  //             keys
-  //           );
-  //           expect(result).toEqual(values);
-  //         });
-
-  //         it("should fail when the list contains elements keys of a non-allowed Array (RandomArray[])", async () => {
-  //           let randomArrayKeys = [
-  //             "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000000",
-  //             "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000001",
-  //             "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000002",
-  //           ];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [randomArrayKeys, ["0xdeadbeef", "0xdeadbeef", "0xdeadbeef"]]
-  //             );
-
-  //           await expect(
-  //             context.keyManager
-  //               .connect(controllerCanSetArrayKeys)
-  //               .execute(setDataPayload)
-  //           ).toBeRevertedWith(
-  //             NotAllowedERC725YKeyError(
-  //               controllerCanSetArrayKeys.address,
-  //               randomArrayKeys[2]
-  //             )
-  //           );
-  //         });
-
-  //         it("should fail, even if the list contains a mix of allowed + not-allowed array element keys (MyArray[] + RandomArray[])", async () => {
-  //           let keys = [
-  //             arrayKeyElement1,
-  //             arrayKeyElement2,
-  //             "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000000",
-  //             "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000001",
-  //           ];
-  //           let values = ["0xaaaaaaaa", "0xbbbbbbbb", "0xdeadbeef", "0xdeadbeef"];
-
-  //           let setDataPayload =
-  //             context.universalProfile.interface.encodeFunctionData(
-  //               "setData(bytes32[],bytes[])",
-  //               [keys, values]
-  //             );
-
-  //           await expect(
-  //             context.keyManager
-  //               .connect(controllerCanSetArrayKeys)
-  //               .execute(setDataPayload)
-  //           ).toBeRevertedWith(
-  //             NotAllowedERC725YKeyError(
-  //               controllerCanSetArrayKeys.address,
-  //               keys[3]
-  //             )
-  //           );
-  //         });
-  //       });
-  //     });
-  //   });
+  describe("keyType: Mapping", () => {
+    let controllerCanSetMappingKeys: SignerWithAddress;
+
+    // all mapping keys starting with: SupportedStandards:...
+    const supportedStandardKey =
+      "0xeafec4d89fa9619884b6b8913562645500000000000000000000000000000000";
+
+    // SupportedStandards:LSPX
+    const LSPXKey =
+      "0xeafec4d89fa9619884b6b8913562645500000000000000000000000024ae6f23";
+
+    // SupportedStandards:LSPY
+    const LSPYKey =
+      "0xeafec4d89fa9619884b6b891356264550000000000000000000000005e8d18c5";
+
+    // SupportedStandards:LSPZ
+    const LSPZKey =
+      "0xeafec4d89fa9619884b6b8913562645500000000000000000000000025b71a36";
+
+    beforeAll(async () => {
+      context = await buildContext();
+
+      controllerCanSetMappingKeys = context.accounts[1];
+
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          controllerCanSetMappingKeys.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          controllerCanSetMappingKeys.address.substring(2),
+      ];
+
+      const permissionValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        abiCoder.encode(["bytes32[]"], [[supportedStandardKey]]),
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when address can set Mapping keys starting with a 'SupportedStandards:...'", () => {
+      describe("when setting one key", () => {
+        it("should pass when setting SupportedStandards:LSPX", async () => {
+          let mappingKey = LSPXKey;
+          let mappingValue = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("0x24ae6f23")
+          );
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[mappingKey], [mappingValue]]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            mappingKey
+          );
+          expect(result).toEqual(mappingValue);
+        });
+
+        it("should pass when overriding SupportedStandards:LSPX", async () => {
+          let mappingKey = LSPXKey;
+          let mappingValue = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("0x24ae6f23")
+          );
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[mappingKey], [mappingValue]]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            mappingKey
+          );
+          expect(result).toEqual(mappingValue);
+        });
+
+        it("should pass when setting SupportedStandards:LSPY", async () => {
+          let mappingKey = LSPYKey;
+          let mappingValue = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("0x5e8d18c5")
+          );
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[mappingKey], [mappingValue]]
+            );
+          await context.keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            mappingKey
+          );
+          expect(result).toEqual(mappingValue);
+        });
+
+        it("should pass when setting SupportedStandards:LSPZ", async () => {
+          let mappingKey = LSPZKey;
+          let mappingValue = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("0x25b71a36")
+          );
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[mappingKey], [mappingValue]]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            mappingKey
+          );
+          expect(result).toEqual(mappingValue);
+        });
+
+        it("should fail when setting any other not-allowed Mapping key", async () => {
+          // CustomMapping:...
+          let notAllowedMappingKey =
+            "0xb8a73e856fea3d5a518029e588a713f300000000000000000000000000000000";
+          let notAllowedMappingValue = "0xbeefbeef";
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[notAllowedMappingKey], [notAllowedMappingValue]]
+            );
+
+          await expect(
+            context.keyManager
+              .connect(controllerCanSetMappingKeys)
+              .execute(setDataPayload)
+          ).toBeRevertedWith("not allowed ERC725Y key");
+        });
+      });
+
+      describe("when setting multiple keys", () => {
+        it('(2 x keys) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
+          let mappingKeys = [LSPYKey, LSPZKey];
+          let mappingValues = ["0x5e8d18c5", "0x5e8d18c5"];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [mappingKeys, mappingValues]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          let result = await context.universalProfile["getData(bytes32[])"](
+            mappingKeys
+          );
+          expect(result).toEqual(mappingValues);
+        });
+
+        it('(2 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
+          let mappingKeys = [LSPYKey, LSPZKey];
+          let mappingValues = ["0x5e8d18c5", "0x5e8d18c5"];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [mappingKeys, mappingValues]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          let result = await context.universalProfile["getData(bytes32[])"](
+            mappingKeys
+          );
+          expect(result).toEqual(mappingValues);
+        });
+
+        it('(3 x keys) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
+          let mappingKeys = [
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000aaaaaaaa",
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000bbbbbbbb",
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000cccccccc",
+          ];
+          let mappingValues = ["0xaaaaaaaa", "0xbbbbbbbb", "0xcccccccc"];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [mappingKeys, mappingValues]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          let result = await context.universalProfile["getData(bytes32[])"](
+            mappingKeys
+          );
+          expect(result).toEqual(mappingValues);
+        });
+
+        it('(3 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
+          let mappingKeys = [
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000aaaaaaaa",
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000bbbbbbbb",
+            "0xeafec4d89fa9619884b6b89135626455000000000000000000000000cccccccc",
+          ];
+          let mappingValues = ["0xaaaaaaaa", "0xbbbbbbbb", "0xcccccccc"];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [mappingKeys, mappingValues]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetMappingKeys)
+            .execute(setDataPayload);
+
+          let result = await context.universalProfile["getData(bytes32[])"](
+            mappingKeys
+          );
+          expect(result).toEqual(mappingValues);
+        });
+
+        it("should fail when the list contains none of the allowed Mapping keys", async () => {
+          let randomMappingKeys = [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111",
+            "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222",
+            "0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222",
+          ];
+          let randomMappingValues = [
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("Random Mapping Value 1")
+            ),
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("Random Mapping Value 2")
+            ),
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("Random Mapping Value 3")
+            ),
+          ];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [randomMappingKeys, randomMappingValues]
+            );
+
+          await expect(
+            context.keyManager
+              .connect(controllerCanSetMappingKeys)
+              .execute(setDataPayload)
+          ).toBeRevertedWith("not allowed ERC725Y key");
+        });
+
+        it("should fail, even if the list contains some keys starting with `SupportedStandards`", async () => {
+          let mappingKeys = [
+            LSPXKey,
+            "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222",
+            "0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222",
+          ];
+          let mappingValues = [
+            "0x24ae6f23",
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("Random Mapping Value 1")
+            ),
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("Random Mapping Value 2")
+            ),
+          ];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [mappingKeys, mappingValues]
+            );
+
+          await expect(
+            context.keyManager
+              .connect(controllerCanSetMappingKeys)
+              .execute(setDataPayload)
+          ).toBeRevertedWith("not allowed ERC725Y key");
+        });
+      });
+    });
+
+    describe("when address can set any key", () => {
+      describe("when setting one key", () => {
+        it("should pass when setting any random Mapping key", async () => {
+          let randomMappingKey =
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111";
+          let randomMappingValue = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("Random Mapping Value")
+          );
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[randomMappingKey], [randomMappingValue]]
+            );
+          await context.keyManager
+            .connect(context.owner)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            randomMappingKey
+          );
+          expect(result).toEqual(randomMappingValue);
+        });
+      });
+
+      describe("when setting multiple keys", () => {
+        it("should pass when setting any random set of Mapping keys", async () => {
+          let randomMappingKeys = [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000011111111",
+            "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000022222222",
+            "0xcccccccccccccccccccccccccccccccc00000000000000000000000022222222",
+          ];
+          let randomMappingValues = [
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("Random Mapping Value 1")
+            ),
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("Random Mapping Value 2")
+            ),
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("Random Mapping Value 3")
+            ),
+          ];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [randomMappingKeys, randomMappingValues]
+            );
+          await context.keyManager
+            .connect(context.owner)
+            .execute(setDataPayload);
+
+          let result = await context.universalProfile["getData(bytes32[])"](
+            randomMappingKeys
+          );
+
+          expect(result).toEqual(randomMappingValues);
+        });
+      });
+    });
+  });
+
+  describe("keyType: Array", () => {
+    let controllerCanSetArrayKeys: SignerWithAddress;
+
+    const allowedArrayKey =
+      "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000000";
+
+    // keccak256("MyArray[]")
+    const arrayKeyLength =
+      "0x868affce801d08a5948eebc349a5c8ff18e4c7076d14879dd5d19180dff1f547";
+
+    // MyArray[0]
+    const arrayKeyElement1 =
+      "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000000";
+
+    // MyArray[1]
+    const arrayKeyElement2 =
+      "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000001";
+
+    // MyArray[2]
+    const arrayKeyElement3 =
+      "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000002";
+
+    beforeAll(async () => {
+      context = await buildContext();
+      controllerCanSetArrayKeys = context.accounts[1];
+
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          controllerCanSetArrayKeys.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          controllerCanSetArrayKeys.address.substring(2),
+      ];
+
+      const permissionValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        abiCoder.encode(["bytes32[]"], [[allowedArrayKey]]),
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when address can set Array element in 'MyArray[]", () => {
+      describe("when setting one key", () => {
+        it("should pass when setting array key length MyArray[]", async () => {
+          let key = arrayKeyLength;
+          // eg: MyArray[].length = 10 elements
+          let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("0x0a"));
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[key], [value]]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetArrayKeys)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            key
+          );
+          expect(result).toEqual(value);
+        });
+
+        it("should pass when setting 1st array element MyArray[0]", async () => {
+          let key = arrayKeyElement1;
+          let value = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("0xaaaaaaaa")
+          );
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[key], [value]]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetArrayKeys)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            key
+          );
+          expect(result).toEqual(value);
+        });
+
+        it("should pass when setting 2nd array element MyArray[1]", async () => {
+          let key = arrayKeyElement2;
+          let value = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("0xbbbbbbbb")
+          );
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[key], [value]]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetArrayKeys)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            key
+          );
+          expect(result).toEqual(value);
+        });
+
+        it("should pass when setting 3rd array element MyArray[3]", async () => {
+          let key = arrayKeyElement3;
+          let value = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("0xcccccccc")
+          );
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[key], [value]]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetArrayKeys)
+            .execute(setDataPayload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            key
+          );
+          expect(result).toEqual(value);
+        });
+
+        it("should fail when setting elements of a not-allowed Array (eg: LSP5ReceivedAssets)", async () => {
+          let notAllowedArrayKey = ERC725YKeys.LSP5["LSP5ReceivedAssets[]"];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[notAllowedArrayKey], ["0x00"]]
+            );
+
+          await expect(
+            context.keyManager
+              .connect(controllerCanSetArrayKeys)
+              .execute(setDataPayload)
+          ).toBeRevertedWith("not allowed ERC725Y key");
+        });
+      });
+
+      describe("when setting multiple keys", () => {
+        it("should pass when all the keys in the list are from the allowed array MyArray[]", async () => {
+          let keys = [arrayKeyElement1, arrayKeyElement2];
+          let values = ["0xaaaaaaaa", "0xbbbbbbbb"];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [keys, values]
+            );
+
+          await context.keyManager
+            .connect(controllerCanSetArrayKeys)
+            .execute(setDataPayload);
+
+          let result = await context.universalProfile["getData(bytes32[])"](
+            keys
+          );
+          expect(result).toEqual(values);
+        });
+
+        it("should fail when the list contains elements keys of a non-allowed Array (RandomArray[])", async () => {
+          let randomArrayKeys = [
+            "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000000",
+            "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000001",
+            "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000002",
+          ];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [randomArrayKeys, ["0xdeadbeef", "0xdeadbeef", "0xdeadbeef"]]
+            );
+
+          await expect(
+            context.keyManager
+              .connect(controllerCanSetArrayKeys)
+              .execute(setDataPayload)
+          ).toBeRevertedWith("not allowed ERC725Y key");
+        });
+
+        it("should fail, even if the list contains a mix of allowed + not-allowed array element keys (MyArray[] + RandomArray[])", async () => {
+          let keys = [
+            arrayKeyElement1,
+            arrayKeyElement2,
+            "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000000",
+            "0xb722d6e40cf8e32ad09d16af664b960500000000000000000000000000000001",
+          ];
+          let values = ["0xaaaaaaaa", "0xbbbbbbbb", "0xdeadbeef", "0xdeadbeef"];
+
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [keys, values]
+            );
+
+          await expect(
+            context.keyManager
+              .connect(controllerCanSetArrayKeys)
+              .execute(setDataPayload)
+          ).toBeRevertedWith("not allowed ERC725Y key");
+        });
+      });
+    });
+  });
 };
