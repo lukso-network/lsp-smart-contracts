@@ -86,7 +86,7 @@ export const testAllowedERC725YKeysInternals = (
         ).toBeRevertedWith(
           NotAllowedERC725YKeyError(
             controllerCanSetOneKey.address,
-            inputKeys[2]
+            inputKeys[1]
           )
         );
       });
