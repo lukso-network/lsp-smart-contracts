@@ -24,7 +24,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
 ) => {
   let context: LSP6TestContext;
 
-  describe.only("keyType: Singleton", () => {
+  describe("keyType: Singleton", () => {
     let controllerCanSetOneKey: SignerWithAddress,
       controllerCanSetManyKeys: SignerWithAddress;
 
@@ -71,7 +71,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe.skip("verify allowed ERC725Y keys set", () => {
+    describe("verify allowed ERC725Y keys set", () => {
       it("`controllerCanSetOneKey` should have 1 x key in its list of allowed keys", async () => {
         const result = await context.universalProfile["getData(bytes32)"](
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
@@ -115,7 +115,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       });
     });
 
-    describe.only("when address can set only one key", () => {
+    describe("when address can set only one key", () => {
       describe("when setting one key", () => {
         it("should pass when setting the right key", async () => {
           let key = customKey1;
@@ -956,62 +956,62 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       });
     });
 
-    // describe.skip("when address can set any key", () => {
-    //   describe("when setting one key", () => {
-    //     it("should pass when setting any random key", async () => {
-    //       let key = ethers.utils.keccak256(
-    //         ethers.utils.toUtf8Bytes(getRandomString())
-    //       );
-    //       let value = ethers.utils.hexlify(
-    //         ethers.utils.toUtf8Bytes("Some data")
-    //       );
+    describe("when address can set any key", () => {
+      describe("when setting one key", () => {
+        it("should pass when setting any random key", async () => {
+          let key = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes(getRandomString())
+          );
+          let value = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("Some data")
+          );
 
-    //       let setDataPayload =
-    //         context.universalProfile.interface.encodeFunctionData(
-    //           "setData(bytes32[],bytes[])",
-    //           [[key], [value]]
-    //         );
-    //       await context.keyManager
-    //         .connect(context.owner)
-    //         .execute(setDataPayload);
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [[key], [value]]
+            );
+          await context.keyManager
+            .connect(context.owner)
+            .execute(setDataPayload);
 
-    //       const result = await context.universalProfile["getData(bytes32)"](
-    //         key
-    //       );
-    //       expect(result).toEqual(value);
-    //     });
-    //   });
+          const result = await context.universalProfile["getData(bytes32)"](
+            key
+          );
+          expect(result).toEqual(value);
+        });
+      });
 
-    //   describe("when setting multiple keys", () => {
-    //     it("should pass when setting any multiple keys", async () => {
-    //       let keys = [
-    //         ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
-    //         ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
-    //         ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
-    //       ];
-    //       let values = [
-    //         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
-    //         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
-    //         ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 3")),
-    //       ];
+      describe("when setting multiple keys", () => {
+        it("should pass when setting any multiple keys", async () => {
+          let keys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(getRandomString())),
+          ];
+          let values = [
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 1")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 2")),
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some data 3")),
+          ];
 
-    //       let setDataPayload =
-    //         context.universalProfile.interface.encodeFunctionData(
-    //           "setData(bytes32[],bytes[])",
-    //           [keys, values]
-    //         );
-    //       await context.keyManager
-    //         .connect(context.owner)
-    //         .execute(setDataPayload);
+          let setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [keys, values]
+            );
+          await context.keyManager
+            .connect(context.owner)
+            .execute(setDataPayload);
 
-    //       let result = await context.universalProfile["getData(bytes32[])"](
-    //         keys
-    //       );
+          let result = await context.universalProfile["getData(bytes32[])"](
+            keys
+          );
 
-    //       expect(result).toEqual(values);
-    //     });
-    //   });
-    // });
+          expect(result).toEqual(values);
+        });
+      });
+    });
   });
 
   describe("keyType: Mapping", () => {
