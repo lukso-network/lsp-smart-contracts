@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.5.0...v0.6.0) (2022-04-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **lsp6:** add `account()` function as part of the LSP6 interface (#131)
+
+### Features
+
+* add LSP5 and LSP10 Constants files ([dd3d1a8](https://github.com/lukso-network/lsp-smart-contracts/commit/dd3d1a8bb8b9c867c121aa3b1301adeb71029fd0))
+* add LSP5Utils lib ([e8e5c2a](https://github.com/lukso-network/lsp-smart-contracts/commit/e8e5c2a0a7af567427100bd178fe6268c28b5ce6))
+* extend jest matcher `toBeRevertedWith` as it does not work as expected with custom errors ([3a925ee](https://github.com/lukso-network/lsp-smart-contracts/commit/3a925ee7f17cb0a4e5ff75b6666684aa5bd43dd0))
+* **lsp6:** add `account()` function as part of the LSP6 interface ([#131](https://github.com/lukso-network/lsp-smart-contracts/issues/131)) ([db7b297](https://github.com/lukso-network/lsp-smart-contracts/commit/db7b297b8af86cd2dc04b3d870f204d0e6545b4e))
+* LSP7 and LSP8 use solidity custom errors ([b353655](https://github.com/lukso-network/lsp-smart-contracts/commit/b3536556eed552e1acc172d98a297b923c939eb0))
+* use custom errors for LSP7/8 CappedSupply contracts ([07ac935](https://github.com/lukso-network/lsp-smart-contracts/commit/07ac935bf336562358930f07d9f86b710cd59d73))
+* use custom version of `ERC165Checker` ([#132](https://github.com/lukso-network/lsp-smart-contracts/issues/132)) ([0e7bbec](https://github.com/lukso-network/lsp-smart-contracts/commit/0e7bbec34a75de9a9ba31db6146e162a800d3406))
+
+
+### Bug Fixes
+
+* :bug: incorrect revert error for NotAuthorised(_from, "STATICCALL") ([a2e52ed](https://github.com/lukso-network/lsp-smart-contracts/commit/a2e52ed328c6b6799ded9a1396cde11765e7d784))
+* `isValidSignature` function check ([#120](https://github.com/lukso-network/lsp-smart-contracts/issues/120)) ([2f2762d](https://github.com/lukso-network/lsp-smart-contracts/commit/2f2762da71095009949b1a045730d2ed3c8416b7))
+* add permissions check when setting keys for `AddressPermissions[]` and `AddressPermissions[index]` ([#125](https://github.com/lukso-network/lsp-smart-contracts/issues/125)) ([18a143c](https://github.com/lukso-network/lsp-smart-contracts/commit/18a143c95086598a887b3df4cc907c18241b39c1))
+* add sender code length check in UniversalReceiverDelegate ([12180a4](https://github.com/lukso-network/lsp-smart-contracts/commit/12180a4612c8e5e1e9303a6efad616f03b61bec8))
+* admin caller with `ALL_PERMISSIONS` can call any functions part of the Universal Profile's ABI ([#128](https://github.com/lukso-network/lsp-smart-contracts/issues/128)) ([ec384d3](https://github.com/lukso-network/lsp-smart-contracts/commit/ec384d3e7869334ec63e4a0c805282b90bd9794a))
+* apply checks-effects-interactions pattern ([77e2c43](https://github.com/lukso-network/lsp-smart-contracts/commit/77e2c43790cdac24bddf1540e09d83446017391f))
+* apply checks-effects-interactions pattern ([#121](https://github.com/lukso-network/lsp-smart-contracts/issues/121)) ([6e0e5b2](https://github.com/lukso-network/lsp-smart-contracts/commit/6e0e5b2a6002cd6cb7af98de8de221d6837181dd))
+* failing test ([1edef46](https://github.com/lukso-network/lsp-smart-contracts/commit/1edef460f5139ac343c6d61d2c3f43fb8137482d))
+* move AddressRegistry contract under Legacy/ folder ([3cf8102](https://github.com/lukso-network/lsp-smart-contracts/commit/3cf8102fe5137ba2111c4e2e8ed1fd7eada4c432))
+* use internal `_getData` instead `getDataSingle` ([c7f7bc2](https://github.com/lukso-network/lsp-smart-contracts/commit/c7f7bc27081ced33f2af7228d6345d8131bb00ef))
+
 ## [0.5.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.4.3...v0.5.0) (2022-02-23)
 
 
