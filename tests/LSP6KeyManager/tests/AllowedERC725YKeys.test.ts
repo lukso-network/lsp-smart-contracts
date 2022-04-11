@@ -156,7 +156,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetOneKey)
               .execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y key");
+          ).toBeRevertedWith(
+            NotAllowedERC725YKeyError(controllerCanSetOneKey.address, key)
+          );
         });
       });
 
@@ -349,7 +351,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetManyKeys)
               .execute(setDataPayload)
-          ).toBeRevertedWith("not allowed ERC725Y key");
+          ).toBeRevertedWith(
+            NotAllowedERC725YKeyError(controllerCanSetManyKeys.address, key)
+          );
         });
       });
 
@@ -687,7 +691,12 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith("not allowed ERC725Y key");
+            ).toBeRevertedWith(
+              NotAllowedERC725YKeyError(
+                controllerCanSetManyKeys.address,
+                keys[0]
+              )
+            );
           });
 
           it("1st key in input = not allowed key. Other 2 keys = allowed", async () => {
@@ -713,7 +722,12 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith("not allowed ERC725Y key");
+            ).toBeRevertedWith(
+              NotAllowedERC725YKeyError(
+                controllerCanSetManyKeys.address,
+                keys[0]
+              )
+            );
           });
 
           it("2nd key in input = not allowed key. Other 2 keys = allowed", async () => {
@@ -769,7 +783,12 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith("not allowed ERC725Y key");
+            ).toBeRevertedWith(
+              NotAllowedERC725YKeyError(
+                controllerCanSetManyKeys.address,
+                keys[2]
+              )
+            );
           });
         });
       });

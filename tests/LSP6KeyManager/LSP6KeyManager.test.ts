@@ -57,7 +57,7 @@ describe("LSP6KeyManager", () => {
       shouldBehaveLikeLSP6(buildTestContext);
     });
 
-    describe.skip("testing internal functions", () => {
+    describe("testing internal functions", () => {
       testLSP6InternalFunctions(async () => {
         const accounts = await ethers.getSigners();
         const owner = accounts[0];
