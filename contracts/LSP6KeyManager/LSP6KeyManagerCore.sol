@@ -342,49 +342,37 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         uint256 sliceLength;
 
         bool isAllowedKey;
-        uint256 notAllowedKeyIndex;
 
-        // loop through each keys given as input
-        for (uint256 ii = 0; ii < _inputKeys.length; ii++) {
-            // skip permissions keys that have been previously "nulled"
-            if (_inputKeys[ii] == bytes32(0)) continue;
+        // loop through each allowed ERC725Y key retrieved from storage
+        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
+            // save the length of the slice
+            // so to know which part to compare for each key we are trying to set
+            (allowedKeySlice, sliceLength) = _extractKeySlice(
+                allowedERC725YKeys[ii]
+            );
 
-            // loop through each allowed ERC725Y key retrieved from storage
-            for (uint256 jj = 0; jj < allowedERC725YKeys.length; jj++) {
-                // save the length of the slice
-                // so to know which part to compare for each key we are trying to set
-                (allowedKeySlice, sliceLength) = _extractKeySlice(
-                    allowedERC725YKeys[jj]
-                );
+            // loop through each keys given as input
+            for (uint256 jj = 0; jj < _inputKeys.length; jj++) {
+                // skip permissions keys that have been "nulled" previously
+                if (_inputKeys[jj] == bytes32(0)) continue;
 
+                // prettier-ignore
                 // extract the slice to compare with the allowed key
-                inputKeySlice = BytesLib.slice(
-                    bytes.concat(_inputKeys[ii]),
-                    0,
-                    sliceLength
-                );
+                inputKeySlice = BytesLib.slice(bytes.concat(_inputKeys[jj]), 0, sliceLength);
 
-                // if the keys match, the key is allowed so stop iteration
-                // if (isAllowedKey) break;
                 isAllowedKey =
                     keccak256(allowedKeySlice) == keccak256(inputKeySlice);
 
+                // if the keys match, the key is allowed so stop iteration
                 if (isAllowedKey) {
-                    break;
-                } else {
-                    // if the keys do not match, save the not allowed key
-                    // to pass as parameter for custom revert error
-                    notAllowedKeyIndex = ii;
+                    _inputKeys[jj] = bytes32(0);
                 }
             }
+        }
 
-            // always revert with the first not-allowed key found in the keys given as inputs
-            if (!isAllowedKey) {
-                revert NotAllowedERC725YKey(
-                    _from,
-                    _inputKeys[notAllowedKeyIndex]
-                );
-            }
+        for (uint256 ii = 0; ii < _inputKeys.length; ii++) {
+            if (_inputKeys[ii] != bytes32(0))
+                revert NotAllowedERC725YKey(_from, _inputKeys[ii]);
         }
     }
 
@@ -527,6 +515,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 // stop as soon as we find a non-empty byte
                 sliceLength_ = index + 1;
                 keySlice_ = BytesLib.slice(bytes.concat(_key), 0, sliceLength_);
+
+                /// TODO: return
                 break;
             }
         }
