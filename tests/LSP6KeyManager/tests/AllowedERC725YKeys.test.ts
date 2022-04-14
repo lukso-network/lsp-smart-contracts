@@ -955,15 +955,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
                   [keys, values]
                 );
 
-              let tx = await context.keyManager
+              await context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload);
-
-              let receipt = await tx.wait();
-              console.log(
-                "gas used with restricted keys: ",
-                receipt.gasUsed.toNumber()
-              );
 
               let result = await context.universalProfile["getData(bytes32[])"](
                 [customKey2, customKey3, customKey4]
@@ -1250,16 +1244,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               [mappingKeys, mappingValues]
             );
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
-
-          let receipt = await tx.wait();
-
-          console.log(
-            "gas cost set 3 x Mapping keys (with restricted Mapping key): ",
-            receipt.gasUsed.toNumber()
-          );
 
           let result = await context.universalProfile["getData(bytes32[])"](
             mappingKeys
