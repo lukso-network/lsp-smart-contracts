@@ -512,13 +512,15 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     }
 
     function _countZeroBytes(bytes32 _key) internal pure returns (uint256) {
-        // check each individual bytes of the allowed key, starting from the end (right to left)
-        for (uint256 index = 31; index >= 0; index--) {
-            // find where the first non-empty bytes starts, skipping the empty bytes
-            if (_key[index] != 0x00) {
-                return 32 - (index + 1);
-            }
+        uint256 index = 31;
+
+        // check each individual bytes of the key, starting from the end (right to left)
+        // skip the empty bytes `0x00` to find the first non-empty bytes
+        while (_key[index] == 0x00) {
+            --index;
         }
+
+        return 32 - (index + 1);
     }
 
     /**
