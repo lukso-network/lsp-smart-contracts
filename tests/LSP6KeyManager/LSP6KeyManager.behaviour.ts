@@ -82,6 +82,7 @@ export const shouldBehaveLikeLSP6 = (
   describe("ALLOWEDERC725YKeys", () => {
     shouldBehaveLikeAllowedERC725YKeys(buildContext);
   });
+
   describe("Multi Channel nonces", () => {
     shouldBehaveLikeMultiChannelNonce(buildContext);
   });
