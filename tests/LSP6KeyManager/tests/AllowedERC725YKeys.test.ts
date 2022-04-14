@@ -898,21 +898,28 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           });
 
           describe("should pass when", () => {
+            // does not work when we put duplicate keys
             it("input contains all the allowed keys as DUPLICATE", async () => {
               let keys = [
                 customKey2,
-                customKey2,
-                customKey2,
-                customKey3,
-                customKey3,
-                customKey3,
                 customKey4,
+                customKey3,
+                customKey2,
+                customKey3,
+                customKey2,
                 customKey4,
+                customKey3,
                 customKey4,
               ];
               let values = [
                 ethers.utils.hexlify(
                   ethers.utils.toUtf8Bytes("Some Data for customKey2")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey4")
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("Some Data for customKey3")
                 ),
                 ethers.utils.hexlify(
                   ethers.utils.toUtf8Bytes(
@@ -921,28 +928,22 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
                 ),
                 ethers.utils.hexlify(
                   ethers.utils.toUtf8Bytes(
-                    "Some Data (override 2) for customKey2"
-                  )
-                ),
-                ethers.utils.hexlify(
-                  ethers.utils.toUtf8Bytes("Some Data for customKey3")
-                ),
-                ethers.utils.hexlify(
-                  ethers.utils.toUtf8Bytes(
                     "Some Data (override 1) for customKey3"
                   )
                 ),
                 ethers.utils.hexlify(
                   ethers.utils.toUtf8Bytes(
-                    "Some Data (override 2) for customKey3"
+                    "Some Data (override 2) for customKey2"
                   )
-                ),
-                ethers.utils.hexlify(
-                  ethers.utils.toUtf8Bytes("Some Data for customKey4")
                 ),
                 ethers.utils.hexlify(
                   ethers.utils.toUtf8Bytes(
                     "Some Data (override 1) for customKey4"
+                  )
+                ),
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes(
+                    "Some Data (override 2) for customKey3"
                   )
                 ),
                 ethers.utils.hexlify(
@@ -958,24 +959,24 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
                   [keys, values]
                 );
 
-              await context.keyManager
+              let tx = await context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload);
 
+              let receipt = await tx.wait();
+              console.log(
+                "gas used with restricted keys: ",
+                receipt.gasUsed.toNumber()
+              );
+
               let result = await context.universalProfile["getData(bytes32[])"](
-                keys
+                [customKey2, customKey3, customKey4]
               );
               expect(result).toEqual([
                 // when putting duplicates in the keys given as inputs,
                 // the last duplicate value for a key should be the one that override
-                values[2],
-                values[2],
-                values[2],
                 values[5],
-                values[5],
-                values[5],
-                values[8],
-                values[8],
+                values[7],
                 values[8],
               ]);
             });
@@ -1253,9 +1254,16 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               [mappingKeys, mappingValues]
             );
 
-          await context.keyManager
+          let tx = await context.keyManager
             .connect(controllerCanSetMappingKeys)
             .execute(setDataPayload);
+
+          let receipt = await tx.wait();
+
+          console.log(
+            "gas cost set 3 x Mapping keys (with restricted Mapping key): ",
+            receipt.gasUsed.toNumber()
+          );
 
           let result = await context.universalProfile["getData(bytes32[])"](
             mappingKeys
