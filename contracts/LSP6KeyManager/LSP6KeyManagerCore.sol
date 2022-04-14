@@ -337,34 +337,42 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             (bytes32[])
         );
 
-        bytes memory allowedKeySlice;
-        bytes memory inputKeySlice;
-        uint256 sliceLength;
-
-        bool isAllowedKey;
+        uint256 zeroBytesCount;
 
         // loop through each allowed ERC725Y key retrieved from storage
         for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii++) {
-            // save the length of the slice
-            // so to know which part to compare for each key we are trying to set
-            (allowedKeySlice, sliceLength) = _extractKeySlice(
-                allowedERC725YKeys[ii]
-            );
+            // required to know which part of the input key to compare against the allowed key
+            zeroBytesCount = _countZeroBytes(allowedERC725YKeys[ii]);
 
             // loop through each keys given as input
             for (uint256 jj = 0; jj < _inputKeys.length; jj++) {
-                // skip permissions keys that have been "nulled" previously
+                // skip permissions keys that have been previously marked "null"
+                // (when checking permission keys or allowed ERC725Y keys from previous iterations)
                 if (_inputKeys[jj] == bytes32(0)) continue;
 
-                // prettier-ignore
-                // extract the slice to compare with the allowed key
-                inputKeySlice = BytesLib.slice(bytes.concat(_inputKeys[jj]), 0, sliceLength);
+                // the bitmask discard the last `n` bytes of the input key via ANDing &
+                // so to compare only the relevant parts of each ERC725Y keys
+                //
+                // `n = zeroBytesCount`
+                //
+                // eg:
+                //
+                // allowed key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000000000000
+                //
+                //      &                  compare this part
+                //                 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+                //   input key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000011223344
+                //
+                //                                                        discard this part
+                //                                                 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+                //        mask = 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000
+                bytes32 mask = bytes32(
+                    0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                ) << (8 * zeroBytesCount);
 
-                isAllowedKey =
-                    keccak256(allowedKeySlice) == keccak256(inputKeySlice);
-
-                // if the keys match, the key is allowed so stop iteration
-                if (isAllowedKey) {
+                if (allowedERC725YKeys[ii] == (_inputKeys[jj] & mask)) {
+                    // if the input key matches the allowed key
+                    // make it null to mark it as allowed
                     _inputKeys[jj] = bytes32(0);
                 }
             }
@@ -503,21 +511,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         );
     }
 
-    function _extractKeySlice(bytes32 _key)
-        internal
-        pure
-        returns (bytes memory keySlice_, uint256 sliceLength_)
-    {
+    function _countZeroBytes(bytes32 _key) internal pure returns (uint256) {
         // check each individual bytes of the allowed key, starting from the end (right to left)
         for (uint256 index = 31; index >= 0; index--) {
-            // find where the first non-empty bytes starts (skip empty bytes 0x00)
+            // find where the first non-empty bytes starts, skipping the empty bytes
             if (_key[index] != 0x00) {
-                // stop as soon as we find a non-empty byte
-                sliceLength_ = index + 1;
-                keySlice_ = BytesLib.slice(bytes.concat(_key), 0, sliceLength_);
-
-                /// TODO: return
-                break;
+                return 32 - (index + 1);
             }
         }
     }
