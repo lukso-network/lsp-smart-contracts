@@ -67,4 +67,12 @@ contract KeyManagerHelper is LSP6KeyManager {
     ) public pure returns (bool) {
         return _addressPermission.includesPermissions(_permissions);
     }
+
+    function countZeroBytes(bytes32 _key)
+        public
+        pure
+        returns (uint256 zeroBytesCount_)
+    {
+        return super._countZeroBytes(_key);
+    }
 }

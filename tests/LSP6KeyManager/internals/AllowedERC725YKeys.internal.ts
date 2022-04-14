@@ -3,8 +3,9 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
 import {
-  ALL_PERMISSIONS_SET,
+  SupportedStandards,
   ERC725YKeys,
+  ALL_PERMISSIONS_SET,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -90,6 +91,71 @@ export const testAllowedERC725YKeysInternals = (
           )
         );
       });
+    });
+  });
+
+  describe("_countZeroBytes(...)", () => {
+    beforeEach(async () => {
+      context = await buildContext();
+    });
+
+    describe("test against LSP2 key types", () => {
+      const SINGLETON_KEY = ERC725YKeys.LSP3["LSP3Profile"];
+
+      const ARRAY_KEY =
+        ERC725YKeys.LSP4["LSP4Creators[]"].substring(0, 34) + "00".repeat(16);
+
+      const MAPPING_KEY =
+        SupportedStandards.LSP3UniversalProfile.key.substring(0, 34) +
+        "00".repeat(16);
+
+      const BYTES20_MAPPING_KEY =
+        ERC725YKeys.LSP5["LSP5ReceivedAssetsMap"].substring(0, 18) +
+        "00".repeat(24);
+
+      it(
+        "Singleton: should return 0 for `LSP3Profile` -> " + SINGLETON_KEY,
+        async () => {
+          let result = await context.keyManagerHelper.countZeroBytes(
+            SINGLETON_KEY
+          );
+
+          expect(result.toNumber()).toEqual(0);
+        }
+      );
+
+      it(
+        "Array: should return 16 for `LSP4Creators[]` -> " + ARRAY_KEY,
+        async () => {
+          let result = await context.keyManagerHelper.countZeroBytes(ARRAY_KEY);
+
+          expect(result.toNumber()).toEqual(16);
+        }
+      );
+
+      it(
+        "Mapping: should return 16 for `SupportedStandards:...` -> " +
+          MAPPING_KEY,
+        async () => {
+          let result = await context.keyManagerHelper.countZeroBytes(
+            MAPPING_KEY
+          );
+
+          expect(result.toNumber()).toEqual(16);
+        }
+      );
+
+      it(
+        "Bytes20Mapping: should return 16 for `LSP5ReceivedAssetsMap:...` -> " +
+          BYTES20_MAPPING_KEY,
+        async () => {
+          let result = await context.keyManagerHelper.countZeroBytes(
+            BYTES20_MAPPING_KEY
+          );
+
+          expect(result.toNumber()).toEqual(24);
+        }
+      );
     });
   });
 };
