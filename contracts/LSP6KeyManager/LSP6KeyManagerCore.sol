@@ -361,11 +361,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                     //
                     // allowed key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000000000000
                     //
-                    //      &                  compare this part
+                    //                        compare this part
                     //                 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
                     //   input key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000011223344
                     //
-                    //                                                        discard this part
+                    //         &                                              discard this part
                     //                                                 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
                     //        mask = 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000
                     //
