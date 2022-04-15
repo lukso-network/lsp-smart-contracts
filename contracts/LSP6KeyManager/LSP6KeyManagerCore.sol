@@ -516,9 +516,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         // check each individual bytes of the key, starting from the end (right to left)
         // skip the empty bytes `0x00` to find the first non-empty bytes
-        while (_key[index] == 0x00) {
-            --index;
-        }
+        while (_key[index] == 0x00) index--;
 
         return 32 - (index + 1);
     }
