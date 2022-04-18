@@ -40,7 +40,9 @@ jobs:
       - name: cache dependencies + build
         uses: actions/cache@v2
         with:
-          path: node_modules
+          path: |
+            ~/node_modules
+            ~/types
           key: ${{ github.run_id }}
 
       - run: ls -lahG
@@ -55,7 +57,9 @@ jobs:
         uses: actions/cache@v2
         id: "build-cache"
         with:
-          path: node_modules
+          path: |
+            ~/node_modules
+            ~/types
           key: ${{ github.run_id }}
 
       - run: ls -lahG
@@ -69,8 +73,6 @@ jobs:
       - name: install dependencies
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm ci
-
-
 
       # - name: Use Node.js v16
       #   uses: actions/setup-node@v2
@@ -99,7 +101,9 @@ jobs:
       - name: restore cache
         uses: actions/cache@v2
         with:
-          path: node_modules
+          path: |
+            ~/node_modules
+            ~/types
           key: ${{ github.run_id }}
 
       - run: ls -lahG
