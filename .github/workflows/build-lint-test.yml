@@ -34,6 +34,17 @@ jobs:
 
       - name: Generate typechain types
         run: npm run generate-types
+    
+  test-UP:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: run Universal Profile tests
+        run: npm run test:up
 
-      - name: Run tests
-        run: npm test
+  test-LSP1:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: run LSP1 tests
+        run: npm run test:lsp1
