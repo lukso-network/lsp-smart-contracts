@@ -41,8 +41,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/node_modules
-            ~/types
+            node_modules \
+            types
           key: ${{ github.run_id }}
 
       - run: ls -lahG
@@ -58,8 +58,8 @@ jobs:
         id: "build-cache"
         with:
           path: |
-            ~/node_modules
-            ~/types
+            node_modules \
+            types
           key: ${{ github.run_id }}
 
       - run: ls -lahG
@@ -102,8 +102,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/node_modules
-            ~/types
+            node_modules \
+            types
           key: ${{ github.run_id }}
 
       - run: ls -lahG
