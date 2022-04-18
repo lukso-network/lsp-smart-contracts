@@ -39,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - uses: actions/checkout@v2
       - name: run Universal Profile tests
         run: npm run test:up
 
@@ -46,5 +47,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - uses: actions/checkout@v2
       - name: run LSP1 tests
         run: npm run test:lsp1
