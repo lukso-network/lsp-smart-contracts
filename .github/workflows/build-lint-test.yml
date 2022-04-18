@@ -40,14 +40,20 @@ jobs:
       - name: cache dependencies + build
         uses: actions/cache@v2
         with:
-          path: ./
+          path: .
           key: ${{ github.run_id }}
     
   test-UP:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - uses: actions/checkout@v2
+      # - uses: actions/checkout@v2
+
+      - name: Use Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          cache: "npm"
 
       - name: restore cache
         uses: actions/cache@v2
@@ -78,7 +84,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - uses: actions/checkout@v2
+      # - uses: actions/checkout@v2
+
+      - name: Use Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          cache: "npm"
 
       - name: restore cache
         uses: actions/cache@v2
