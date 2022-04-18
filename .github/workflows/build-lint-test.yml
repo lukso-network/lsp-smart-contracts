@@ -40,7 +40,7 @@ jobs:
       - name: cache dependencies + build
         uses: actions/cache@v2
         with:
-          path: **/node_modules
+          path: node_modules
           key: ${{ github.run_id }}
 
       - run: ls -lahG
@@ -54,7 +54,7 @@ jobs:
       - name: restore cache
         uses: actions/cache@v2
         with:
-          path: **/node_modules
+          path: node_modules
           key: ${{ github.run_id }}
 
       - run: ls -lahG
@@ -94,7 +94,7 @@ jobs:
       - name: restore cache
         uses: actions/cache@v2
         with:
-          path: **/node_modules
+          path: node_modules
           key: ${{ github.run_id }}
 
       - run: ls -lahG
