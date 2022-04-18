@@ -39,6 +39,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
@@ -54,6 +55,7 @@ jobs:
         id: "build-cache"
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
@@ -85,6 +87,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
@@ -116,6 +119,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
@@ -147,6 +151,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
@@ -178,6 +183,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
@@ -209,6 +215,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
@@ -240,6 +247,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
@@ -271,6 +279,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            artifacts
             node_modules 
             types
           key: ${{ github.run_id }}
