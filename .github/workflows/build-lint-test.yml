@@ -39,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - uses: actions/checkout@v2
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
@@ -61,6 +63,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - uses: actions/checkout@v2
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
