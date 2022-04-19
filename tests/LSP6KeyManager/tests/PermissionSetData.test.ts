@@ -575,7 +575,7 @@ export const shouldBehaveLikePermissionSetData = (
     });
   });
 
-  describe.only("when caller is another UniversalProfile (with a KeyManager attached as owner)", () => {
+  describe("when caller is another UniversalProfile (with a KeyManager attached as owner)", () => {
     // UP making the call
     let alice: SignerWithAddress;
     let aliceContext: LSP6TestContext;
@@ -614,6 +614,7 @@ export const shouldBehaveLikePermissionSetData = (
         alicePermissionKeys,
         alicePermissionValues
       );
+
       await setupKeyManager(bobContext, bobPermissionKeys, bobPermissionValues);
     });
 
@@ -622,7 +623,9 @@ export const shouldBehaveLikePermissionSetData = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         alice.address.substring(2);
 
-      const [result] = await aliceContext.universalProfile.getData([key]);
+      const result = await aliceContext.universalProfile["getData(bytes32)"](
+        key
+      );
       expect(result).toEqual(ALL_PERMISSIONS_SET);
     });
 
@@ -631,7 +634,7 @@ export const shouldBehaveLikePermissionSetData = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         bob.address.substring(2);
 
-      const [result] = await bobContext.universalProfile.getData([key]);
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(ALL_PERMISSIONS_SET);
     });
 
@@ -640,7 +643,7 @@ export const shouldBehaveLikePermissionSetData = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         aliceContext.universalProfile.address.substring(2);
 
-      const [result] = await bobContext.universalProfile.getData([key]);
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32));
     });
 
@@ -651,10 +654,10 @@ export const shouldBehaveLikePermissionSetData = (
       );
 
       let finalSetDataPayload =
-        bobContext.universalProfile.interface.encodeFunctionData("setData", [
-          [key],
-          [value],
-        ]);
+        bobContext.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
 
       let bobKeyManagerPayload =
         bobContext.keyManager.interface.encodeFunctionData("execute", [
@@ -675,7 +678,7 @@ export const shouldBehaveLikePermissionSetData = (
       let receipt = await tx.wait();
       console.log("gas used: ", receipt.gasUsed.toNumber());
 
-      const [result] = await bobContext.universalProfile.getData([key]);
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(value);
     });
   });

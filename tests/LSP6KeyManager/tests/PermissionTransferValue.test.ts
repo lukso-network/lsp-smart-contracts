@@ -312,7 +312,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     });
   });
 
-  describe.only("when caller is another UP (with a KeyManager as owner)", () => {
+  describe("when caller is another UP (with a KeyManager as owner)", () => {
     // UP making the call
     let alice: SignerWithAddress;
     let aliceContext: LSP6TestContext;
@@ -368,7 +368,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         alice.address.substring(2);
 
-      const [result] = await aliceContext.universalProfile.getData([key]);
+      // prettier-ignore
+      const result = await aliceContext.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(ALL_PERMISSIONS_SET);
     });
 
@@ -377,7 +378,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         bob.address.substring(2);
 
-      const [result] = await bobContext.universalProfile.getData([key]);
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(ALL_PERMISSIONS_SET);
     });
 
@@ -386,7 +387,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         aliceContext.universalProfile.address.substring(2);
 
-      const [result] = await bobContext.universalProfile.getData([key]);
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(
         ethers.utils.hexZeroPad(
           PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,

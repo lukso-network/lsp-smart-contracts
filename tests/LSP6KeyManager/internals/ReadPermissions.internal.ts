@@ -135,7 +135,7 @@ export const testReadingPermissionsInternals = (
     });
   });
 
-  describe("`hasPermissions(...)`", () => {
+  describe("`includesPermissions(...)`", () => {
     let addressCanSetData: SignerWithAddress;
 
     beforeAll(async () => {
