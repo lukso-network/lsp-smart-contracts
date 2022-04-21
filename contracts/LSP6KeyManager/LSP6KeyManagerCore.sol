@@ -367,12 +367,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         // TODO: to be removed, as delegatecall should be allowed in the future
         require(operationType != 4, "_verifyCanExecute: operation 4 `DELEGATECALL` not supported");
 
-        (bytes32 permissionRequired, string memory operationName) = _extractPermissionFromOperation(
-            operationType
-        );
+        bytes32 permissionRequired = _extractPermissionFromOperation(operationType);
 
-        if (!_permissions.includesPermissions(permissionRequired))
+        if (!_permissions.includesPermissions(permissionRequired)) {
+            string memory operationName = _getOperationTypeAsString(operationType);
             revert NotAuthorised(_from, operationName);
+        }
 
         if ((value > 0) && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)) {
             revert NotAuthorised(_from, "TRANSFERVALUE");
@@ -469,18 +469,30 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * being run via ERC725Account.execute(...)
      * @param _operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
      * @return permissionsRequired_ (bytes32) the permission associated with the `_operationType`
-     * @return operationName_ (string) the name of the opcode associated with `_operationType`
      */
     function _extractPermissionFromOperation(uint256 _operationType)
         internal
         pure
-        returns (bytes32 permissionsRequired_, string memory operationName_)
+        returns (bytes32 permissionsRequired_)
     {
-        require(_operationType < 5, "LSP6KeyManager: invalid operation type");
+        if (_operationType == 0) return _PERMISSION_CALL;
+        else if (_operationType == 1) return _PERMISSION_DEPLOY;
+        else if (_operationType == 2) return _PERMISSION_DEPLOY;
+        else if (_operationType == 3) return _PERMISSION_STATICCALL;
+        else revert("LSP6KeyManager: invalid operation type");
+    }
 
-        if (_operationType == 0) return (_PERMISSION_CALL, "CALL");
-        if (_operationType == 1) return (_PERMISSION_DEPLOY, "CREATE");
-        if (_operationType == 2) return (_PERMISSION_DEPLOY, "CREATE2");
-        if (_operationType == 3) return (_PERMISSION_STATICCALL, "STATICCALL");
+    /**
+     * @return operationName_ (string) the name of the opcode associated with `_operationType`
+     */
+    function _getOperationTypeAsString(uint256 _operationType)
+        internal
+        pure
+        returns (string memory operationName_)
+    {
+        if (_operationType == 0) return "CALL";
+        if (_operationType == 1) return "CREATE";
+        if (_operationType == 2) return "CREATE2";
+        if (_operationType == 3) return "STATICCALL";
     }
 }
