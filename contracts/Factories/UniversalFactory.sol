@@ -7,19 +7,18 @@ import "@openzeppelin/contracts/utils/Create2.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
-// prettier-ignore
-
 /**
- * @dev UniversalFactory contract is used to deploy create2 contracts; normal contracts and minimal proxies with
- * the ability to deploy the same contract at the same address on different chains.
- * If the contract have a constructor, the arguments will be part of the initCode
- * If the contract have an `initialize` function, then we need to make sure that the parameters of this function
- * will be part of the salt, to to ensure that the parameters of the contract should be the same on each chain.
+ * @dev UniversalFactory contract can be used to deploy create2 contracts; normal contracts and minimal
+ * proxies (EIP-1167) with the ability to deploy the same contract at the same address on different chains.
+ * If the contract has a constructor, the arguments will be part of the initCode
+ * If the contract has an `initialize` function, we need to include the parameters of this function in
+ * the salt to ensure that the parameters of the contract should be the same on each chain.
  *
  * Security measures were taken to avoid deploying proxies from the `deployCreate2(..)` function
  * to prevent the problem mentioned above.
  *
  * This contract should be deployed using Nick's Method.
+ * More information: https://weka.medium.com/how-to-send-ether-to-11-440-people-187e332566b7
  */
 contract UniversalFactory {
     using BytesLib for bytes;
@@ -37,10 +36,8 @@ contract UniversalFactory {
     modifier notMinimalProxy(bytes memory initCode) virtual {
         if (initCode.length == 55) {
             if (
-                keccak256(initCode.slice(0, 20)) ==
-                _MINIMAL_PROXY_BYTECODE_HASH_PT1 &&
-                keccak256(initCode.slice(40, 15)) ==
-                _MINIMAL_PROXY_BYTECODE_HASH_PT2
+                keccak256(initCode.slice(0, 20)) == _MINIMAL_PROXY_BYTECODE_HASH_PT1 &&
+                keccak256(initCode.slice(40, 15)) == _MINIMAL_PROXY_BYTECODE_HASH_PT2
             ) {
                 revert("Minimal Proxies deployment not allowed");
             }
@@ -58,12 +55,7 @@ contract UniversalFactory {
         bytes memory initializeABI,
         bytes32 initialSalt
     ) public view returns (address contractToCreate) {
-        bytes32 salt;
-        if (initializable) {
-            salt = keccak256(abi.encodePacked(initializable, initializeABI, initialSalt));
-        } else {
-            salt = keccak256(abi.encodePacked(initializable, initialSalt));
-        }
+        bytes32 salt = _calculateSalt(initializable, initializeABI, initialSalt);
         contractToCreate = Create2.computeAddress(salt, initCodeHash);
     }
 
@@ -77,12 +69,7 @@ contract UniversalFactory {
         bytes memory initializeABI,
         bytes32 initialSalt
     ) public view returns (address proxy) {
-        bytes32 salt;
-        if (initializable) {
-            salt = keccak256(abi.encodePacked(initializable, initializeABI, initialSalt));
-        } else {
-            salt = keccak256(abi.encodePacked(initializable, initialSalt));
-        }
+        bytes32 salt = _calculateSalt(initializable, initializeABI, initialSalt);
         proxy = Clones.predictDeterministicAddress(baseContract, salt);
     }
 
@@ -103,14 +90,13 @@ contract UniversalFactory {
         bytes memory initializeABI,
         bytes32 initialSalt
     ) public payable notMinimalProxy(initCode) returns (address contractCreated) {
+        bytes32 salt = _calculateSalt(initializable, initializeABI, initialSalt);
         if (initializable) {
-            bytes32 salt = keccak256(abi.encodePacked(true, initializeABI, initialSalt));
             contractCreated = Create2.deploy(msg.value, salt, initCode);
 
             (bool success, bytes memory returnedData) = contractCreated.call(initializeABI);
             if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
         } else {
-            bytes32 salt = keccak256(abi.encodePacked(initializable, initialSalt));
             contractCreated = Create2.deploy(msg.value, salt, initCode);
         }
     }
@@ -133,15 +119,31 @@ contract UniversalFactory {
         bytes memory initializeABI,
         bytes32 initialSalt
     ) public payable returns (address proxy) {
+        bytes32 salt = _calculateSalt(initializable, initializeABI, initialSalt);
         if (initializable) {
-            bytes32 salt = keccak256(abi.encodePacked(initializable, initializeABI, initialSalt));
             proxy = Clones.cloneDeterministic(baseContract, salt);
 
             (bool success, bytes memory returnedData) = proxy.call{value: msg.value}(initializeABI);
             if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
         } else {
-            bytes32 salt = keccak256(abi.encodePacked(initializable, initialSalt));
             proxy = Clones.cloneDeterministic(baseContract, salt);
+        }
+    }
+
+    /** internal functions */
+
+    /**
+     * @dev Calculates the salt depending on the given parameters
+     */
+    function _calculateSalt(
+        bool initializable,
+        bytes memory initializeABI,
+        bytes32 initialSalt
+    ) internal pure returns (bytes32 salt) {
+        if (initializable) {
+            salt = keccak256(abi.encodePacked(initializable, initializeABI, initialSalt));
+        } else {
+            salt = keccak256(abi.encodePacked(initializable, initialSalt));
         }
     }
 }
