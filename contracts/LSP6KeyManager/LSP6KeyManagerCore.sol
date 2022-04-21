@@ -366,9 +366,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         uint256 _operationType,
         uint256 _value
     ) internal pure {
-        // TODO: to be removed, as delegatecall should be allowed in the future
-        require(_operationType != 4, "_verifyCanExecute: operation 4 `DELEGATECALL` not supported");
-
         bytes32 permissionRequired = _extractPermissionFromOperation(_operationType);
 
         if (!_permissions.includesPermissions(permissionRequired)) {
@@ -471,6 +468,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         else if (_operationType == 1) return _PERMISSION_DEPLOY;
         else if (_operationType == 2) return _PERMISSION_DEPLOY;
         else if (_operationType == 3) return _PERMISSION_STATICCALL;
+        else if (_operationType == 4) return _PERMISSION_DELEGATECALL;
         else revert("LSP6KeyManager: invalid operation type");
     }
 
@@ -481,6 +479,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     {
         if (_operationType == 0) return _PERMISSION_SUPER_CALL;
         else if (_operationType == 3) return _PERMISSION_SUPER_STATICCALL;
+        else if (_operationType == 4) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
     /**
@@ -495,5 +494,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         if (_operationType == 1) return "CREATE";
         if (_operationType == 2) return "CREATE2";
         if (_operationType == 3) return "STATICCALL";
+        if (_operationType == 4) return "DELEGATECALL";
     }
 }
