@@ -106,7 +106,7 @@ export const testSecurityScenarios = (
 
       await expect(
         context.keyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector'");
     });
 
     it("via `executeRelayCall()`", async () => {
@@ -135,7 +135,7 @@ export const testSecurityScenarios = (
             payload,
             signature
           )
-      ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector'");
     });
   });
 

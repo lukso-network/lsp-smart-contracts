@@ -132,7 +132,7 @@ export const otherTestScenarios = (
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
         context.keyManager.connect(addressCanMakeCall).execute(INVALID_PAYLOAD)
-      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
+      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector");
     });
   });
 
@@ -151,7 +151,7 @@ export const otherTestScenarios = (
       );
 
       await expect(context.keyManager.execute(payload)).toBeRevertedWith(
-        "Wrong operation type"
+        "LSP6KeyManager: invalid operation type"
       );
     });
 
