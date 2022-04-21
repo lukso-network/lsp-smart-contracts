@@ -178,6 +178,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         bytes32 permissions = ERC725Y(account).getPermissionsFor(_from);
 
         // skip permissions check if caller has all permissions (except SIGN as not required)
+        // TODO: delete
         if (permissions.includesPermissions(_ALL_EXECUTION_PERMISSIONS)) {
             _validateERC725Selector(erc725Function);
             return;
@@ -188,7 +189,17 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         if (erc725Function == setDataMultipleSelector) {
             _verifyCanSetData(_from, permissions, _data);
         } else if (erc725Function == IERC725X.execute.selector) {
-            _verifyCanExecute(_from, permissions, _data);
+            uint256 operationType = uint256(bytes32(_data[4:36]));
+            uint256 value = uint256(bytes32(_data[68:100]));
+
+            _verifyCanExecute(_from, permissions, operationType, value);
+
+            // pass if contract creation
+            if (operationType == 1 || operationType == 2) return;
+
+            // pass if caller has SUPER permissions
+            bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
+            if (permissions.includesPermissions(superPermission)) return;
 
             address to = address(bytes20(_data[48:68]));
             _verifyAllowedAddress(_from, to);
@@ -196,10 +207,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             if (to.code.length > 0) {
                 _verifyAllowedStandard(_from, to);
 
-                if (_data.length >= 168) {
-                    // extract bytes4 function selector from payload passed to ERC725X.execute(...)
-                    _verifyAllowedFunction(_from, bytes4(_data[164:168]));
-                }
+                // extract bytes4 function selector from payload passed to ERC725X.execute(...)
+                if (_data.length >= 168) _verifyAllowedFunction(_from, bytes4(_data[164:168]));
             }
         } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
             if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
@@ -354,27 +363,27 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @dev verify if `_from` has the required permissions to make an external call
      * via the linked ERC725Account
      * @param _from the address who want to run the execute function on the ERC725Account
-     * @param _data the ABI encoded payload `account.execute(...)`
+     * @param _permissions the permissions of the caller
+     * @param _operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
+     * @param _value the value being transfered along the call of `account.execute(...)`
      */
     function _verifyCanExecute(
         address _from,
         bytes32 _permissions,
-        bytes calldata _data
+        uint256 _operationType,
+        uint256 _value
     ) internal pure {
-        uint256 operationType = uint256(bytes32(_data[4:36]));
-        uint256 value = uint256(bytes32(_data[68:100]));
-
         // TODO: to be removed, as delegatecall should be allowed in the future
-        require(operationType != 4, "_verifyCanExecute: operation 4 `DELEGATECALL` not supported");
+        require(_operationType != 4, "_verifyCanExecute: operation 4 `DELEGATECALL` not supported");
 
-        bytes32 permissionRequired = _extractPermissionFromOperation(operationType);
+        bytes32 permissionRequired = _extractPermissionFromOperation(_operationType);
 
         if (!_permissions.includesPermissions(permissionRequired)) {
-            string memory operationName = _getOperationTypeAsString(operationType);
+            string memory operationName = _getOperationTypeAsString(_operationType);
             revert NotAuthorised(_from, operationName);
         }
 
-        if ((value > 0) && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)) {
+        if ((_value > 0) && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)) {
             revert NotAuthorised(_from, "TRANSFERVALUE");
         }
     }
@@ -480,6 +489,15 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         else if (_operationType == 2) return _PERMISSION_DEPLOY;
         else if (_operationType == 3) return _PERMISSION_STATICCALL;
         else revert("LSP6KeyManager: invalid operation type");
+    }
+
+    function _extractSuperPermissionFromOperation(uint256 _operationType)
+        internal
+        pure
+        returns (bytes32 superPermission_)
+    {
+        if (_operationType == 0) return _PERMISSION_SUPER_CALL;
+        else if (_operationType == 3) return _PERMISSION_SUPER_STATICCALL;
     }
 
     /**
