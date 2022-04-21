@@ -270,6 +270,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             if (!_permissions.includesPermissions(_PERMISSION_SETDATA))
                 revert NotAuthorised(_from, "SETDATA");
 
+            // pass if caller has SUPER permissions
+            if (_permissions.includesPermissions(_PERMISSION_SUPER_SETDATA)) return;
+
             _verifyAllowedERC725YKeys(_from, inputKeys);
         }
     }
