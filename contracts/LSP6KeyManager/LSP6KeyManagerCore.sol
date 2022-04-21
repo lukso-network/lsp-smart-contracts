@@ -207,7 +207,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
         } else {
-            revert("_verifyPermissions: unknown ERC725 selector");
+            revert("_verifyPermissions: invalid ERC725 selector");
         }
     }
 
