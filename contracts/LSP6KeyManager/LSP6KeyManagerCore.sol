@@ -177,13 +177,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         // get the permissions of the caller
         bytes32 permissions = ERC725Y(account).getPermissionsFor(_from);
 
-        // skip permissions check if caller has all permissions (except SIGN as not required)
-        // TODO: delete
-        if (permissions.includesPermissions(_ALL_EXECUTION_PERMISSIONS)) {
-            _validateERC725Selector(erc725Function);
-            return;
-        }
-
         if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
 
         if (erc725Function == setDataMultipleSelector) {
@@ -451,16 +444,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             if (_functionSelector == allowedFunctionsList[ii]) return;
         }
         revert NotAllowedFunction(_from, _functionSelector);
-    }
-
-    function _validateERC725Selector(bytes4 _selector) internal pure {
-        // prettier-ignore
-        require(
-            _selector == setDataMultipleSelector ||
-            _selector == IERC725X.execute.selector ||
-            _selector == OwnableUnset.transferOwnership.selector,
-            "_validateERC725Selector: invalid ERC725 selector"
-        );
     }
 
     function _countZeroBytes(bytes32 _key) internal pure returns (uint256) {
