@@ -114,9 +114,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await context.keyManager.connect(context.owner).execute(payload);
 
-          const result = await context.universalProfile.callStatic[
-            "getData(bytes32)"
-          ](key);
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(result).toEqual(
             ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
           );
@@ -136,9 +135,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await context.keyManager.connect(context.owner).execute(payload);
 
-          const result = await context.universalProfile["getData(bytes32)"](
-            key
-          );
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(result).toEqual(value);
         });
 
@@ -153,9 +151,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await context.keyManager.connect(context.owner).execute(payload);
 
-          const result = await context.universalProfile["getData(bytes32)"](
-            key
-          );
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(result).toEqual(value);
         });
 
@@ -170,9 +167,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await context.keyManager.connect(context.owner).execute(payload);
 
-          const result = await context.universalProfile["getData(bytes32)"](
-            key
-          );
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(result).toEqual(value);
         });
 
@@ -192,9 +188,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await context.keyManager.connect(context.owner).execute(payload);
 
-          const result = await context.universalProfile["getData(bytes32)"](
-            key
-          );
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(ethers.utils.getAddress(result)).toEqual(value);
         });
       });
@@ -218,9 +213,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .connect(canOnlyAddPermissions)
             .execute(payload);
 
-          const result = await context.universalProfile.callStatic[
-            "getData(bytes32)"
-          ](key);
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(result).toEqual(value);
         });
 
@@ -263,9 +257,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .connect(canOnlyAddPermissions)
             .execute(payload);
 
-          const result = await context.universalProfile["getData(bytes32)"](
-            key
-          );
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(result).toEqual(value);
         });
 
@@ -391,9 +384,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .connect(canOnlyChangePermissions)
             .execute(payload);
 
-          const result = await context.universalProfile.callStatic[
-            "getData(bytes32)"
-          ](key);
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(result).toEqual(value);
         });
 
@@ -433,9 +425,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .connect(canOnlyChangePermissions)
             .execute(payload);
 
-          const result = await context.universalProfile["getData(bytes32)"](
-            key
-          );
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(result).toEqual(value);
         });
 
@@ -457,9 +448,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .connect(canOnlyChangePermissions)
             .execute(payload);
 
-          const result = await context.universalProfile["getData(bytes32)"](
-            key
-          );
+          // prettier-ignore
+          const result = await context.universalProfile["getData(bytes32)"](key);
           expect(ethers.utils.getAddress(result)).toEqual(value);
         });
       });
@@ -590,7 +580,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       });
 
       /**
-       *  @todo should test that an address with only the permisssion SETDATA
+       *  @todo should test that an address with only the permission SETDATA
        * cannot add or edit permissions
        */
     });
@@ -679,9 +669,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
-          const fetchedResult = await context.universalProfile[
-            "getData(bytes32[])"
-          ](keys);
+
+          // prettier-ignore
+          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
           expect(fetchedResult).toEqual(values);
         });
 
@@ -716,9 +706,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
-          const fetchedResult = await context.universalProfile[
-            "getData(bytes32[])"
-          ](keys);
+
+          // prettier-ignore
+          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
           expect(fetchedResult).toEqual(values);
         });
 
@@ -752,9 +742,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
-          const fetchedResult = await context.universalProfile[
-            "getData(bytes32[])"
-          ](keys);
+
+          // prettier-ignore
+          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
           expect(fetchedResult).toEqual(values);
         });
       });
@@ -793,9 +783,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .connect(canSetDataAndAddPermissions)
             .execute(payload);
 
-          const fetchedResult = await context.universalProfile[
-            "getData(bytes32[])"
-          ](keys);
+          // prettier-ignore
+          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
           expect(fetchedResult).toEqual(values);
         });
 
@@ -960,9 +949,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           await context.keyManager
             .connect(canSetDataAndChangePermissions)
             .execute(payload);
-          const fetchedResult = await context.universalProfile[
-            "getData(bytes32[])"
-          ](keys);
+
+          // prettier-ignore
+          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
           expect(fetchedResult).toEqual(values);
         });
 
@@ -999,9 +988,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           await context.keyManager
             .connect(canSetDataAndChangePermissions)
             .execute(payload);
-          const fetchedResult = await context.universalProfile[
-            "getData(bytes32[])"
-          ](keys);
+
+          // prettier-ignore
+          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
           expect(fetchedResult).toEqual(values);
         });
 

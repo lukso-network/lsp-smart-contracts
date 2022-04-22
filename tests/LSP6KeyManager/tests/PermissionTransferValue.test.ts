@@ -311,4 +311,136 @@ export const shouldBehaveLikePermissionTransferValue = (
       });
     });
   });
+
+  describe("when caller is another UP (with a KeyManager as owner)", () => {
+    // UP making the call
+    let alice: SignerWithAddress;
+    let aliceContext: LSP6TestContext;
+
+    // UP being called
+    let bob: SignerWithAddress;
+    let bobContext: LSP6TestContext;
+
+    beforeAll(async () => {
+      aliceContext = await buildContext();
+      alice = aliceContext.accounts[0];
+
+      bobContext = await buildContext();
+      bob = bobContext.accounts[1];
+
+      const alicePermissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          alice.address.substring(2),
+      ];
+      const alicePermissionValues = [ALL_PERMISSIONS_SET];
+
+      const bobPermissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          bob.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          aliceContext.universalProfile.address.substring(2),
+      ];
+
+      const bobPermissionValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          32
+        ),
+      ];
+
+      await setupKeyManager(
+        aliceContext,
+        alicePermissionKeys,
+        alicePermissionValues
+      );
+      await setupKeyManager(bobContext, bobPermissionKeys, bobPermissionValues);
+
+      // fund Bob's Up with some LYX to be transfered
+      await bob.sendTransaction({
+        to: bobContext.universalProfile.address,
+        value: ethers.utils.parseEther("5"),
+      });
+    });
+
+    it("Alice should have ALL PERMISSIONS in her UP", async () => {
+      let key =
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        alice.address.substring(2);
+
+      // prettier-ignore
+      const result = await aliceContext.universalProfile["getData(bytes32)"](key);
+      expect(result).toEqual(ALL_PERMISSIONS_SET);
+    });
+
+    it("Bob should have ALL PERMISSIONS in his UP", async () => {
+      let key =
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        bob.address.substring(2);
+
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
+      expect(result).toEqual(ALL_PERMISSIONS_SET);
+    });
+
+    it("Alice's UP should have permission SETDATA on Bob's UP", async () => {
+      let key =
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        aliceContext.universalProfile.address.substring(2);
+
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
+      expect(result).toEqual(
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          32
+        )
+      );
+    });
+
+    it("Alice should be able to send 5 LYX from Bob's UP to her UP", async () => {
+      let aliceUPBalanceBefore = await provider.getBalance(
+        aliceContext.universalProfile.address
+      );
+      let bobUPBalanceBefore = await provider.getBalance(
+        bobContext.universalProfile.address
+      );
+      expect(aliceUPBalanceBefore).toEqBN(0);
+      expect(bobUPBalanceBefore).toEqBN(ethers.utils.parseEther("5"));
+
+      let finalTransferLyxPayload =
+        bobContext.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          aliceContext.universalProfile.address,
+          ethers.utils.parseEther("5"),
+          "0x",
+        ]);
+
+      let bobKeyManagerPayload =
+        bobContext.keyManager.interface.encodeFunctionData("execute", [
+          finalTransferLyxPayload,
+        ]);
+
+      let aliceUniversalProfilePayload =
+        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          bobContext.keyManager.address,
+          0,
+          bobKeyManagerPayload,
+        ]);
+
+      let tx = await aliceContext.keyManager
+        .connect(alice)
+        .execute(aliceUniversalProfilePayload);
+      let receipt = await tx.wait();
+      console.log("gas used: ", receipt.gasUsed.toNumber());
+
+      let aliceUPBalanceAfter = await provider.getBalance(
+        aliceContext.universalProfile.address
+      );
+      let bobUPBalanceAfter = await provider.getBalance(
+        bobContext.universalProfile.address
+      );
+      expect(aliceUPBalanceAfter).toEqBN(ethers.utils.parseEther("5"));
+      expect(bobUPBalanceAfter).toEqBN(0);
+    });
+  });
 };

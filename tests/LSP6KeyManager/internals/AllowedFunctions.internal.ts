@@ -54,7 +54,7 @@ export const testAllowedFunctionsInternals = (
 
   it("should return the right list of allowed functions", async () => {
     let bytesResult =
-      await context.keyManagerHelper.callStatic.getAllowedFunctionsFor(
+      await context.keyManagerInternalTester.callStatic.getAllowedFunctionsFor(
         addressCanCallOnlyOneFunction.address
       );
     let decodedResult = abiCoder.decode(["bytes4[]"], bytesResult);
@@ -81,9 +81,10 @@ export const testAllowedFunctionsInternals = (
   });
 
   it("should return an empty byte when address has no allowed functions listed", async () => {
-    let bytesResult = await context.keyManagerHelper.getAllowedFunctionsFor(
-      context.owner.address
-    );
+    let bytesResult =
+      await context.keyManagerInternalTester.getAllowedFunctionsFor(
+        context.owner.address
+      );
     expect([bytesResult]).toEqual(["0x"]);
 
     let resultFromAccount = await context.universalProfile["getData(bytes32)"](
