@@ -217,13 +217,11 @@ export const shouldBehaveLikePermissionDeploy = (
         ]
       );
 
-      try {
-        await context.keyManager.connect(addressCannotDeploy).execute(payload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAuthorisedError(addressCannotDeploy.address, "CREATE")
-        );
-      }
+      await expect(
+        context.keyManager.connect(addressCannotDeploy).execute(payload)
+      ).toBeRevertedWith(
+        NotAuthorisedError(addressCannotDeploy.address, "CREATE")
+      );
     });
     it("should revert when trying to deploy a contract via CREATE2", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
@@ -240,13 +238,11 @@ export const shouldBehaveLikePermissionDeploy = (
         ]
       );
 
-      try {
-        await context.keyManager.connect(addressCannotDeploy).execute(payload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAuthorisedError(addressCannotDeploy.address, "CREATE2")
-        );
-      }
+      await expect(
+        context.keyManager.connect(addressCannotDeploy).execute(payload)
+      ).toBeRevertedWith(
+        NotAuthorisedError(addressCannotDeploy.address, "CREATE2")
+      );
     });
   });
 };

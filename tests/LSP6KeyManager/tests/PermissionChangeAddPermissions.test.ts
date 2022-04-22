@@ -230,18 +230,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager
-              .connect(canOnlyAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canOnlyAddPermissions.address,
-                "CHANGEPERMISSIONS"
-              )
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canOnlyAddPermissions.address,
+              "CHANGEPERMISSIONS"
+            )
+          );
         });
 
         it("should be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
@@ -271,18 +267,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager
-              .connect(canOnlyAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canOnlyAddPermissions.address,
-                "CHANGEPERMISSIONS"
-              )
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canOnlyAddPermissions.address,
+              "CHANGEPERMISSIONS"
+            )
+          );
         });
 
         it("should not be allowed to edit AddressPermissions[4]", async () => {
@@ -299,18 +291,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager
-              .connect(canOnlyAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canOnlyAddPermissions.address,
-                "CHANGEPERMISSIONS"
-              )
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canOnlyAddPermissions.address,
+              "CHANGEPERMISSIONS"
+            )
+          );
         });
       });
 
@@ -329,18 +317,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(canOnlyChangePermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canOnlyChangePermissions.address,
-                "ADDPERMISSIONS"
-              )
-            );
-          }
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canOnlyChangePermissions.address,
+              "ADDPERMISSIONS"
+            )
+          );
         });
 
         it("should not be allowed to set (= ADD) permissions for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
@@ -354,18 +340,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(canOnlyChangePermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canOnlyChangePermissions.address,
-                "ADDPERMISSIONS"
-              )
-            );
-          }
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canOnlyChangePermissions.address,
+              "ADDPERMISSIONS"
+            )
+          );
         });
 
         it("should be allowed to CHANGE permissions", async () => {
@@ -398,18 +382,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(canOnlyChangePermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canOnlyChangePermissions.address,
-                "ADDPERMISSIONS"
-              )
-            );
-          }
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canOnlyChangePermissions.address,
+              "ADDPERMISSIONS"
+            )
+          );
         });
 
         it("should be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
@@ -469,13 +451,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager.connect(canOnlySetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlySetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
+          );
         });
 
         it("should not be allowed to set (= ADD) permissions for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
@@ -489,13 +469,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager.connect(canOnlySetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlySetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
+          );
         });
 
         it("should not be allowed to CHANGE permission", async () => {
@@ -510,13 +488,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager.connect(canOnlySetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlySetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
+          );
         });
 
         it("should not be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
@@ -528,13 +504,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager.connect(canOnlySetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlySetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
+          );
         });
 
         it("should not be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
@@ -546,13 +520,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager.connect(canOnlySetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlySetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
+          );
         });
 
         it("should not be allowed to edit AddressPermissions[4]", async () => {
@@ -569,13 +541,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [[key], [value]]
           );
 
-          try {
-            await context.keyManager.connect(canOnlySetData).execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
-            );
-          }
+          await expect(
+            context.keyManager.connect(canOnlySetData).execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
+          );
         });
       });
 
@@ -817,18 +787,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(canSetDataAndAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canSetDataAndAddPermissions.address,
-                "CHANGEPERMISSIONS"
-              )
-            );
-          }
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canSetDataAndAddPermissions.address,
+              "CHANGEPERMISSIONS"
+            )
+          );
         });
 
         it("(should fail): 2 x keys + change 2 x existing permissions", async () => {
@@ -861,18 +829,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(canSetDataAndAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canSetDataAndAddPermissions.address,
-                "CHANGEPERMISSIONS"
-              )
-            );
-          }
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canSetDataAndAddPermissions.address,
+              "CHANGEPERMISSIONS"
+            )
+          );
         });
 
         it("(should fail): 2 x keys + (add 1 x new permission) + (change 1 x existing permission)", async () => {
@@ -904,18 +870,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(canSetDataAndAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canSetDataAndAddPermissions.address,
-                "CHANGEPERMISSIONS"
-              )
-            );
-          }
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canSetDataAndAddPermissions.address,
+              "CHANGEPERMISSIONS"
+            )
+          );
         });
       });
 
@@ -1021,18 +985,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager
-              .connect(canSetDataAndAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canSetDataAndAddPermissions.address,
-                "ADDPERMISSIONS"
-              )
-            );
-          }
+          await expect(
+            context.keyManager
+              .connect(canSetDataAndChangePermissions)
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canSetDataAndChangePermissions.address,
+              "ADDPERMISSIONS"
+            )
+          );
         });
 
         it("{should fail): 2 x keys + increment AddressPermissions[].length by +1", async () => {
@@ -1055,18 +1017,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager
-              .connect(canSetDataAndAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canSetDataAndAddPermissions.address,
-                "ADDPERMISSIONS"
-              )
-            );
-          }
+          await expect(
+            context.keyManager
+              .connect(canSetDataAndChangePermissions)
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canSetDataAndChangePermissions.address,
+              "ADDPERMISSIONS"
+            )
+          );
         });
 
         it("(should fail): 2 x keys + (add 1 x new permission) + (change 1 x existing permission)", async () => {
@@ -1098,18 +1058,16 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(canSetDataAndAddPermissions)
-              .execute(payload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAuthorisedError(
-                canSetDataAndAddPermissions.address,
-                "CHANGEPERMISSIONS"
-              )
-            );
-          }
+              .execute(payload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(
+              canSetDataAndAddPermissions.address,
+              "CHANGEPERMISSIONS"
+            )
+          );
         });
       });
     });

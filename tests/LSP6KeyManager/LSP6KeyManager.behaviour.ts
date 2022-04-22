@@ -23,6 +23,7 @@ import {
 
 import {
   testAllowedAddressesInternals,
+  testAllowedERC725YKeysInternals,
   testAllowedFunctionsInternals,
   testReadingPermissionsInternals,
 } from "./internals";
@@ -138,5 +139,6 @@ export const testLSP6InternalFunctions = (
 ) => {
   testAllowedAddressesInternals(buildContext);
   testAllowedFunctionsInternals(buildContext);
+  testAllowedERC725YKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
 };

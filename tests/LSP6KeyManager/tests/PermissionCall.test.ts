@@ -113,15 +113,11 @@ export const shouldBehaveLikePermissionCall = (
           [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
         );
 
-        try {
-          await context.keyManager
-            .connect(addressCannotMakeCall)
-            .execute(payload);
-        } catch (error) {
-          expect(error.message).toMatch(
-            NotAuthorisedError(addressCannotMakeCall.address, "CALL")
-          );
-        }
+        await expect(
+          context.keyManager.connect(addressCannotMakeCall).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(addressCannotMakeCall.address, "CALL")
+        );
       });
     });
 
@@ -306,18 +302,16 @@ export const shouldBehaveLikePermissionCall = (
           ethers.utils.arrayify(hash)
         );
 
-        try {
-          await context.keyManager.executeRelayCall(
+        await expect(
+          context.keyManager.executeRelayCall(
             context.keyManager.address,
             nonce,
             executeRelayCallPayload,
             signature
-          );
-        } catch (error) {
-          expect(error.message).toMatch(
-            NotAuthorisedError(addressCannotMakeCall.address, "CALL")
-          );
-        }
+          )
+        ).toBeRevertedWith(
+          NotAuthorisedError(addressCannotMakeCall.address, "CALL")
+        );
 
         // ensure no state change at the target contract
         const result = await targetContract.callStatic.getName();

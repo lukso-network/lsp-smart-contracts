@@ -57,8 +57,21 @@ library LSP6Utils {
             );
     }
 
+    function getAllowedERC725YKeysFor(IERC725Y _account, address _address)
+        internal
+        view
+        returns (bytes memory)
+    {
+        return
+            _account.getData(
+                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                    _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX,
+                    bytes20(_address)
+                )
+            );
+    }
+
     /**
-     * TODO; rename + move to LSP6 library
      * @dev compare the permissions `_addressPermissions` of an address
      *      to check if they includes the permissions `_permissionToCheck`
      * @param _addressPermissions the permissions of an address stored on an ERC725 account
