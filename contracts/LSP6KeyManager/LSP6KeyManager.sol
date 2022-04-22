@@ -2,7 +2,7 @@
 pragma solidity ^0.8.6;
 
 // modules
-import "./LSP6KeyManagerCore.sol";
+import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
 
 /**
  * @title Implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage

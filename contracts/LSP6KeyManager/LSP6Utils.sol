@@ -2,14 +2,14 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
+
+// libraries
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import "../LSP6KeyManager/LSP6Constants.sol";
-
-// libraries
-import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import "./ILSP6KeyManager.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;
@@ -65,12 +65,12 @@ library LSP6Utils {
      * @param _permissionsToCheck the permissions to check
      * @return true if `_addressPermissions` includes `_permissionToCheck`, false otherwise
      */
-    function includesPermissions(
-        bytes32 _addressPermissions,
-        bytes32 _permissionsToCheck
-    ) internal pure returns (bool) {
-        return
-            (_addressPermissions & _permissionsToCheck) == _permissionsToCheck;
+    function includesPermissions(bytes32 _addressPermissions, bytes32 _permissionsToCheck)
+        internal
+        pure
+        returns (bool)
+    {
+        return (_addressPermissions & _permissionsToCheck) == _permissionsToCheck;
     }
 
     function setDataViaKeyManager(
@@ -78,11 +78,7 @@ library LSP6Utils {
         bytes32[] memory keys,
         bytes[] memory values
     ) internal returns (bytes memory result) {
-        bytes memory payload = abi.encodeWithSelector(
-            hex"14a6e293",
-            keys,
-            values
-        );
+        bytes memory payload = abi.encodeWithSelector(hex"14a6e293", keys, values);
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 }

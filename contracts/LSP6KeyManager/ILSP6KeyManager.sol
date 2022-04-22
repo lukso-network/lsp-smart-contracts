@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 /**
  * @dev Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -30,10 +30,7 @@ interface ILSP6KeyManager is
      * @param _address caller address
      * @param _channel channel id
      */
-    function getNonce(address _address, uint256 _channel)
-        external
-        view
-        returns (uint256);
+    function getNonce(address _address, uint256 _channel) external view returns (uint256);
 
     /**
      * @notice execute the following payload on the ERC725Account: `_data`
@@ -41,10 +38,7 @@ interface ILSP6KeyManager is
      * @param _data the payload to execute. Obtained in web3 via encodeABI()
      * @return result_ the data being returned by the ERC725 Account
      */
-    function execute(bytes calldata _data)
-        external
-        payable
-        returns (bytes memory);
+    function execute(bytes calldata _data) external payable returns (bytes memory);
 
     /**
      * @dev allows anybody to execute given they have a signed message from an executor

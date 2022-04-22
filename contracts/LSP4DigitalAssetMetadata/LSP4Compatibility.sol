@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// modules
-import "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-
 // interfaces
-import "./ILSP4Compatibility.sol";
+import {ILSP4Compatibility} from "./ILSP4Compatibility.sol";
+
+// modules
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 
 // constants
 import "./LSP4Constants.sol";

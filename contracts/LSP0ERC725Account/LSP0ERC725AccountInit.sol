@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP0ERC725AccountInitAbstract.sol";
+import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725AccountInitAbstract.sol";
 
 /**
  * @title Deployable Proxy Implementation of ERC725Account

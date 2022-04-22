@@ -2,8 +2,9 @@
 
 pragma solidity ^0.8.0;
 
-import "./LSP8MintableCore.sol";
-import "../LSP8IdentifiableDigitalAsset.sol";
+// modules
+import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
+import {LSP8MintableCore} from "./LSP8MintableCore.sol";
 
 /**
  * @dev LSP8 extension.
