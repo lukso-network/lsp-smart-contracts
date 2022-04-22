@@ -148,7 +148,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             revert(abi.decode(result_, (string)));
         }
 
-        emit Executed(msg.value, _data);
+        emit Executed(msg.value, bytes4(_data));
         return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
@@ -203,7 +203,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             revert(abi.decode(result_, (string)));
         }
 
-        emit Executed(msg.value, _data);
+        emit Executed(msg.value, bytes4(_data));
         return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
