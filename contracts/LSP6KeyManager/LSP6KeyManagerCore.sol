@@ -179,33 +179,20 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
 
+        // prettier-ignore
         if (erc725Function == setDataMultipleSelector) {
+            
             _verifyCanSetData(_from, permissions, _data);
+
         } else if (erc725Function == IERC725X.execute.selector) {
-            uint256 operationType = uint256(bytes32(_data[4:36]));
-            uint256 value = uint256(bytes32(_data[68:100]));
+            
+            _verifyCanExecute(_from, permissions, _data);
 
-            _verifyCanExecute(_from, permissions, operationType, value);
-
-            // pass if contract creation
-            if (operationType == 1 || operationType == 2) return;
-
-            // pass if caller has SUPER permissions
-            bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
-            if (permissions.includesPermissions(superPermission)) return;
-
-            address to = address(bytes20(_data[48:68]));
-            _verifyAllowedAddress(_from, to);
-
-            if (to.code.length > 0) {
-                _verifyAllowedStandard(_from, to);
-
-                // extract bytes4 function selector from payload passed to ERC725X.execute(...)
-                if (_data.length >= 168) _verifyAllowedFunction(_from, bytes4(_data[164:168]));
-            }
         } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
+            
             if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
+                
         } else {
             revert("_verifyPermissions: invalid ERC725 selector");
         }
@@ -360,25 +347,87 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * via the linked ERC725Account
      * @param _from the address who want to run the execute function on the ERC725Account
      * @param _permissions the permissions of the caller
-     * @param _operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
-     * @param _value the value being transfered along the call of `account.execute(...)`
+     * @param _data the ERC725X.execute(...) payload
      */
     function _verifyCanExecute(
         address _from,
         bytes32 _permissions,
-        uint256 _operationType,
-        uint256 _value
-    ) internal pure {
-        bytes32 permissionRequired = _extractPermissionFromOperation(_operationType);
+        bytes calldata _data
+    ) internal view {
+        uint256 operationType = uint256(bytes32(_data[4:36]));
+        uint256 value = uint256(bytes32(_data[68:100]));
+
+        bytes32 permissionRequired = _extractPermissionFromOperation(operationType);
 
         if (!_permissions.includesPermissions(permissionRequired)) {
-            string memory operationName = _getOperationTypeAsString(_operationType);
+            string memory operationName = _getOperationTypeAsString(operationType);
             revert NotAuthorised(_from, operationName);
         }
 
-        if ((_value > 0) && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)) {
+        if ((value > 0) && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)) {
             revert NotAuthorised(_from, "TRANSFERVALUE");
         }
+
+        // pass if contract creation
+        if (operationType == 1 || operationType == 2) return;
+
+        // pass if caller has SUPER permissions
+        bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
+        if (_permissions.includesPermissions(superPermission)) return;
+
+        address to = address(bytes20(_data[48:68]));
+        _verifyAllowedAddress(_from, to);
+
+        if (to.code.length > 0) {
+            _verifyAllowedStandard(_from, to);
+
+            // extract bytes4 function selector from payload passed to ERC725X.execute(...)
+            if (_data.length >= 168) _verifyAllowedFunction(_from, bytes4(_data[164:168]));
+        }
+    }
+
+    /**
+     * @dev extract the required permission + a descriptive string, based on the `_operationType`
+     * being run via ERC725Account.execute(...)
+     * @param _operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
+     * @return permissionsRequired_ (bytes32) the permission associated with the `_operationType`
+     */
+    function _extractPermissionFromOperation(uint256 _operationType)
+        internal
+        pure
+        returns (bytes32 permissionsRequired_)
+    {
+        if (_operationType == 0) return _PERMISSION_CALL;
+        else if (_operationType == 1) return _PERMISSION_DEPLOY;
+        else if (_operationType == 2) return _PERMISSION_DEPLOY;
+        else if (_operationType == 3) return _PERMISSION_STATICCALL;
+        else if (_operationType == 4) return _PERMISSION_DELEGATECALL;
+        else revert("LSP6KeyManager: invalid operation type");
+    }
+
+    /**
+     * @return operationName_ (string) the name of the opcode associated with `_operationType`
+     */
+    function _getOperationTypeAsString(uint256 _operationType)
+        internal
+        pure
+        returns (string memory operationName_)
+    {
+        if (_operationType == 0) return "CALL";
+        if (_operationType == 1) return "CREATE";
+        if (_operationType == 2) return "CREATE2";
+        if (_operationType == 3) return "STATICCALL";
+        if (_operationType == 4) return "DELEGATECALL";
+    }
+
+    function _extractSuperPermissionFromOperation(uint256 _operationType)
+        internal
+        pure
+        returns (bytes32 superPermission_)
+    {
+        if (_operationType == 0) return _PERMISSION_SUPER_CALL;
+        else if (_operationType == 3) return _PERMISSION_SUPER_STATICCALL;
+        else if (_operationType == 4) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
     /**
@@ -454,49 +503,5 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         while (_key[index] == 0x00) index--;
 
         return 32 - (index + 1);
-    }
-
-    /**
-     * @dev extract the required permission + a descriptive string, based on the `_operationType`
-     * being run via ERC725Account.execute(...)
-     * @param _operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
-     * @return permissionsRequired_ (bytes32) the permission associated with the `_operationType`
-     */
-    function _extractPermissionFromOperation(uint256 _operationType)
-        internal
-        pure
-        returns (bytes32 permissionsRequired_)
-    {
-        if (_operationType == 0) return _PERMISSION_CALL;
-        else if (_operationType == 1) return _PERMISSION_DEPLOY;
-        else if (_operationType == 2) return _PERMISSION_DEPLOY;
-        else if (_operationType == 3) return _PERMISSION_STATICCALL;
-        else if (_operationType == 4) return _PERMISSION_DELEGATECALL;
-        else revert("LSP6KeyManager: invalid operation type");
-    }
-
-    function _extractSuperPermissionFromOperation(uint256 _operationType)
-        internal
-        pure
-        returns (bytes32 superPermission_)
-    {
-        if (_operationType == 0) return _PERMISSION_SUPER_CALL;
-        else if (_operationType == 3) return _PERMISSION_SUPER_STATICCALL;
-        else if (_operationType == 4) return _PERMISSION_SUPER_DELEGATECALL;
-    }
-
-    /**
-     * @return operationName_ (string) the name of the opcode associated with `_operationType`
-     */
-    function _getOperationTypeAsString(uint256 _operationType)
-        internal
-        pure
-        returns (string memory operationName_)
-    {
-        if (_operationType == 0) return "CALL";
-        if (_operationType == 1) return "CREATE";
-        if (_operationType == 2) return "CREATE2";
-        if (_operationType == 3) return "STATICCALL";
-        if (_operationType == 4) return "DELEGATECALL";
     }
 }
