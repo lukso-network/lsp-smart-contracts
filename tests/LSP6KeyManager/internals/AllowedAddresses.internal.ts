@@ -67,9 +67,10 @@ export const testAllowedAddressesInternals = (
 
   describe("`getAllowedAddressesFor(...)`", () => {
     it("should return the same list of allowed addresses", async () => {
-      let bytesResult = await context.keyManagerHelper.getAllowedAddressesFor(
-        canCallOnlyTwoAddresses.address
-      );
+      let bytesResult =
+        await context.keyManagerInternalTester.getAllowedAddressesFor(
+          canCallOnlyTwoAddresses.address
+        );
 
       let decodedResult = abiCoder.decode(["address[]"], bytesResult);
 
@@ -82,9 +83,10 @@ export const testAllowedAddressesInternals = (
     });
 
     it("should return no bytes when no allowed addresses are set", async () => {
-      let bytesResult = await context.keyManagerHelper.getAllowedAddressesFor(
-        context.owner.address
-      );
+      let bytesResult =
+        await context.keyManagerInternalTester.getAllowedAddressesFor(
+          context.owner.address
+        );
       expect([bytesResult]).toEqual(["0x"]);
 
       let resultFromAccount = await context.universalProfile[
@@ -99,11 +101,11 @@ export const testAllowedAddressesInternals = (
 
   describe("`verifyAllowedAddressesFor(...)`", () => {
     it("should not revert for address listed in allowed addresses list", async () => {
-      await context.keyManagerHelper.verifyAllowedAddress(
+      await context.keyManagerInternalTester.verifyAllowedAddress(
         canCallOnlyTwoAddresses.address,
         allowedEOA.address
       );
-      await context.keyManagerHelper.verifyAllowedAddress(
+      await context.keyManagerInternalTester.verifyAllowedAddress(
         canCallOnlyTwoAddresses.address,
         allowedTargetContract.address
       );
@@ -130,7 +132,7 @@ export const testAllowedAddressesInternals = (
     it("should not revert when user has no address listed (= all addresses whitelisted)", async () => {
       let randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
 
-      await context.keyManagerHelper.verifyAllowedAddress(
+      await context.keyManagerInternalTester.verifyAllowedAddress(
         context.owner.address,
         randomAddress
       );

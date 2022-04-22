@@ -50,13 +50,15 @@ export const testReadingPermissionsInternals = (
 
     it("Should return ALL_PERMISSIONS for owner", async () => {
       expect(
-        await context.keyManagerHelper.getPermissionsFor(context.owner.address)
+        await context.keyManagerInternalTester.getPermissionsFor(
+          context.owner.address
+        )
       ).toEqual(ALL_PERMISSIONS_SET); // ALL_PERMISSIONS = "0xffff..."
     });
 
     it("Should return SETDATA", async () => {
       expect(
-        await context.keyManagerHelper.getPermissionsFor(
+        await context.keyManagerInternalTester.getPermissionsFor(
           addressCanSetData.address
         )
       ).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32));
@@ -64,7 +66,7 @@ export const testReadingPermissionsInternals = (
 
     it("Should return SETDATA + CALL", async () => {
       expect(
-        await context.keyManagerHelper.getPermissionsFor(
+        await context.keyManagerInternalTester.getPermissionsFor(
           addressCanSetDataAndCall.address
         )
       ).toEqual(
@@ -112,28 +114,28 @@ export const testReadingPermissionsInternals = (
     });
 
     it("should cast permissions to 32 bytes when reading permissions stored as more than 32 empty bytes", async () => {
-      const result = await context.keyManagerHelper.getPermissionsFor(
+      const result = await context.keyManagerInternalTester.getPermissionsFor(
         moreThan32EmptyBytes.address
       );
       expect(result).toEqual(expectedEmptyPermission);
     });
 
     it("should cast permissions to 32 bytes when reading permissions stored as less than 32 empty bytes", async () => {
-      const result = await context.keyManagerHelper.getPermissionsFor(
+      const result = await context.keyManagerInternalTester.getPermissionsFor(
         lessThan32EmptyBytes.address
       );
       expect(result).toEqual(expectedEmptyPermission);
     });
 
     it("should cast permissions to 32 bytes when reading permissions stored as one empty byte", async () => {
-      const result = await context.keyManagerHelper.getPermissionsFor(
+      const result = await context.keyManagerInternalTester.getPermissionsFor(
         oneEmptyByte.address
       );
       expect(result).toEqual(expectedEmptyPermission);
     });
   });
 
-  describe("`hasPermissions(...)`", () => {
+  describe("`includesPermissions(...)`", () => {
     let addressCanSetData: SignerWithAddress;
 
     beforeAll(async () => {
@@ -157,12 +159,13 @@ export const testReadingPermissionsInternals = (
     });
 
     it("Should return true when checking if has permission SETDATA", async () => {
-      let appPermissions = await context.keyManagerHelper.getPermissionsFor(
-        addressCanSetData.address
-      );
+      let appPermissions =
+        await context.keyManagerInternalTester.getPermissionsFor(
+          addressCanSetData.address
+        );
 
       expect(
-        await context.keyManagerHelper.includesPermissions(
+        await context.keyManagerInternalTester.includesPermissions(
           appPermissions,
           ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
         )

@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
-  KeyManagerHelper,
+  KeyManagerInternalTester,
   LSP6KeyManager,
   UniversalProfile,
 } from "../../types";
@@ -16,5 +16,5 @@ export type LSP6InternalsTestContext = {
   accounts: SignerWithAddress[];
   owner: SignerWithAddress;
   universalProfile: UniversalProfile;
-  keyManagerHelper: KeyManagerHelper;
+  keyManagerInternalTester: KeyManagerInternalTester;
 };
