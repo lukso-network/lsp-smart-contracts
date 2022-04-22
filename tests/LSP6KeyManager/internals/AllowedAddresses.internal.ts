@@ -117,7 +117,7 @@ export const testAllowedAddressesInternals = (
       );
 
       await expect(
-        context.keyManagerHelper.verifyAllowedAddress(
+        context.keyManagerInternalTester.verifyAllowedAddress(
           canCallOnlyTwoAddresses.address,
           disallowedAddress
         )
