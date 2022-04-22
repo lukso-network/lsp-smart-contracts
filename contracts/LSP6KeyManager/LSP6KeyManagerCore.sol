@@ -10,12 +10,11 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "./ILSP6KeyManager.sol";
 
 // libraries
-import "./LSP6Utils.sol";
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "./LSP6Utils.sol";
 import "../Utils/ERC165CheckerCustom.sol";
-import "solidity-bytes-utils/contracts/BytesLib.sol"; // TODO: to be deleted?
 
 // constants
 import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
@@ -63,7 +62,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         override
         returns (bytes4 magicValue)
     {
-        address recoveredAddress = ECDSA.recover(_hash, _signature);
+        address recoveredAddress = _hash.recover(_signature);
 
         return (
             ERC725Y(account).getPermissionsFor(recoveredAddress).includesPermissions(
