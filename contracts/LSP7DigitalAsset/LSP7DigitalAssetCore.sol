@@ -14,6 +14,9 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
+// errors
+import "./LSP7Errors.sol";
+
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Constants.sol";
@@ -25,21 +28,6 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
  */
 abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     using Address for address;
-
-    // --- Errors
-
-    error LSP7AmountExceedsBalance(uint256 balance, address tokenOwner, uint256 amount);
-    error LSP7AmountExceedsAuthorizedAmount(
-        address tokenOwner,
-        uint256 authorizedAmount,
-        address operator,
-        uint256 amount
-    );
-    error LSP7CannotUseAddressZeroAsOperator();
-    error LSP7CannotSendWithAddressZero();
-    error LSP7InvalidTransferBatch();
-    error LSP7NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
-    error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
 
     // --- Storage
 

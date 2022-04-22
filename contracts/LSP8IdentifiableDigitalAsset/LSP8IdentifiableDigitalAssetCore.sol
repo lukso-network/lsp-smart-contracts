@@ -14,6 +14,9 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
+// errors
+import "./LSP8Errors.sol";
+
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 // import {} from "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
@@ -28,18 +31,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Address for address;
-
-    // --- Errors
-
-    error LSP8NonExistentTokenId(bytes32 tokenId);
-    error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
-    error LSP8NotTokenOperator(bytes32 tokenId, address caller);
-    error LSP8CannotUseAddressZeroAsOperator();
-    error LSP8CannotSendToAddressZero();
-    error LSP8TokenIdAlreadyMinted(bytes32 tokenId);
-    error LSP8InvalidTransferBatch();
-    error LSP8NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
-    error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
 
     // --- Storage
 
