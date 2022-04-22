@@ -15,7 +15,7 @@ import "./LSP6Utils.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "../Utils/ERC165CheckerCustom.sol";
-import "solidity-bytes-utils/contracts/BytesLib.sol";
+import "solidity-bytes-utils/contracts/BytesLib.sol"; // TODO: to be deleted?
 
 // constants
 import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
@@ -28,7 +28,6 @@ import "./LSP6Errors.sol";
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
-    using LSP2Utils for ERC725Y;
     using LSP6Utils for *;
     using Address for address;
     using ECDSA for bytes32;
@@ -456,12 +455,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _to the address of the contract to interact with
      */
     function _verifyAllowedStandard(address _from, address _to) internal view {
-        bytes memory allowedStandards = ERC725Y(account).getData(
-            LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX,
-                bytes20(_from)
-            )
-        );
+        bytes memory allowedStandards = ERC725Y(account).getAllowedStandardsFor(_from);
 
         // whitelist any standard interface (ERC165) if nothing in the list
         if (allowedStandards.length == 0) return;
