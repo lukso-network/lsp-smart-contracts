@@ -59,7 +59,7 @@ export const testAllowedERC725YKeysInternals = (
     describe("getAllowedERC725YKeysFor(...)", () => {
       it("should return the same list of allowed ERC725Y Keys", async () => {
         let bytesResult =
-          await context.keyManagerHelper.getAllowedERC725YKeysFor(
+          await context.keyManagerInternalTester.getAllowedERC725YKeysFor(
             controllerCanSetOneKey.address
           );
 
@@ -80,7 +80,7 @@ export const testAllowedERC725YKeysInternals = (
         ];
 
         await expect(
-          context.keyManagerHelper.verifyAllowedERC725YKeys(
+          context.keyManagerInternalTester.verifyAllowedERC725YKeys(
             controllerCanSetOneKey.address,
             inputKeys
           )
@@ -116,7 +116,7 @@ export const testAllowedERC725YKeysInternals = (
       it(
         "Singleton: should return 0 for `LSP3Profile` -> " + SINGLETON_KEY,
         async () => {
-          let result = await context.keyManagerHelper.countZeroBytes(
+          let result = await context.keyManagerInternalTester.countZeroBytes(
             SINGLETON_KEY
           );
 
@@ -127,7 +127,9 @@ export const testAllowedERC725YKeysInternals = (
       it(
         "Array: should return 16 for `LSP4Creators[]` -> " + ARRAY_KEY,
         async () => {
-          let result = await context.keyManagerHelper.countZeroBytes(ARRAY_KEY);
+          let result = await context.keyManagerInternalTester.countZeroBytes(
+            ARRAY_KEY
+          );
 
           expect(result.toNumber()).toEqual(16);
         }
@@ -137,7 +139,7 @@ export const testAllowedERC725YKeysInternals = (
         "Mapping: should return 16 for `SupportedStandards:...` -> " +
           MAPPING_KEY,
         async () => {
-          let result = await context.keyManagerHelper.countZeroBytes(
+          let result = await context.keyManagerInternalTester.countZeroBytes(
             MAPPING_KEY
           );
 
@@ -149,7 +151,7 @@ export const testAllowedERC725YKeysInternals = (
         "Bytes20Mapping: should return 16 for `LSP5ReceivedAssetsMap:...` -> " +
           BYTES20_MAPPING_KEY,
         async () => {
-          let result = await context.keyManagerHelper.countZeroBytes(
+          let result = await context.keyManagerInternalTester.countZeroBytes(
             BYTES20_MAPPING_KEY
           );
 
