@@ -163,11 +163,14 @@ export async function getMapAndArrayKeyValues(
   arrayKey: string,
   elementInArray: string
 ) {
-  let [mapValue, arrayLength, elementAddress] = await account.getData([
-    vaultMapKey,
-    arrayKey,
-    elementInArray,
-  ]);
+  // prettier-ignore
+  let [mapValue, arrayLength, elementAddress] = await account["getData(bytes32[])"](
+        [
+            vaultMapKey, 
+            arrayKey, 
+            elementInArray
+        ]
+    );
 
   return [mapValue, arrayLength, elementAddress];
 }

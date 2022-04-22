@@ -5,7 +5,7 @@ import {
   LSP6KeyManager__factory,
   UniversalProfileInit__factory,
   LSP6KeyManagerInit__factory,
-  KeyManagerHelper__factory,
+  KeyManagerInternalTester__factory,
 } from "../../types";
 
 import { LSP6TestContext } from "../utils/context";
@@ -65,11 +65,12 @@ describe("LSP6KeyManager", () => {
         const universalProfile = await new UniversalProfile__factory(
           owner
         ).deploy(owner.address);
-        const keyManagerHelper = await new KeyManagerHelper__factory(
-          owner
-        ).deploy(universalProfile.address);
+        const keyManagerInternalTester =
+          await new KeyManagerInternalTester__factory(owner).deploy(
+            universalProfile.address
+          );
 
-        return { owner, accounts, universalProfile, keyManagerHelper };
+        return { owner, accounts, universalProfile, keyManagerInternalTester };
       });
     });
   });

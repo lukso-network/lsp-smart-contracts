@@ -11,7 +11,7 @@ import {LSP6KeyManager} from "../../LSP6KeyManager/LSP6KeyManager.sol";
 /**
  * Helper contract to test internal functions of the KeyManager
  */
-contract KeyManagerHelper is LSP6KeyManager {
+contract KeyManagerInternalTester is LSP6KeyManager {
     using LSP6Utils for *;
 
     /* solhint-disable no-empty-blocks */

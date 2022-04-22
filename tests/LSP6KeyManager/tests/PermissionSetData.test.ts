@@ -10,6 +10,7 @@ import {
   ALL_PERMISSIONS_SET,
   PERMISSIONS,
   BasicUPSetup_Schema,
+  OPERATIONS,
 } from "../../../constants";
 
 // setup
@@ -22,6 +23,7 @@ import {
   getRandomAddresses,
   NotAuthorisedError,
 } from "../../utils/helpers";
+import { Signer } from "ethers";
 
 export const shouldBehaveLikePermissionSetData = (
   buildContext: () => Promise<LSP6TestContext>
@@ -570,6 +572,114 @@ export const shouldBehaveLikePermissionSetData = (
         ](key);
         expect(newStorage).toEqual(value);
       });
+    });
+  });
+
+  describe("when caller is another UniversalProfile (with a KeyManager attached as owner)", () => {
+    // UP making the call
+    let alice: SignerWithAddress;
+    let aliceContext: LSP6TestContext;
+
+    // UP being called
+    let bob: SignerWithAddress;
+    let bobContext: LSP6TestContext;
+
+    beforeAll(async () => {
+      aliceContext = await buildContext();
+      alice = aliceContext.accounts[0];
+
+      bobContext = await buildContext();
+      bob = bobContext.accounts[1];
+
+      const alicePermissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          alice.address.substring(2),
+      ];
+      const alicePermissionValues = [ALL_PERMISSIONS_SET];
+
+      const bobPermissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          bob.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          aliceContext.universalProfile.address.substring(2),
+      ];
+
+      const bobPermissionValues = [
+        ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+      ];
+
+      await setupKeyManager(
+        aliceContext,
+        alicePermissionKeys,
+        alicePermissionValues
+      );
+
+      await setupKeyManager(bobContext, bobPermissionKeys, bobPermissionValues);
+    });
+
+    it("Alice should have ALL PERMISSIONS in her UP", async () => {
+      let key =
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        alice.address.substring(2);
+
+      const result = await aliceContext.universalProfile["getData(bytes32)"](
+        key
+      );
+      expect(result).toEqual(ALL_PERMISSIONS_SET);
+    });
+
+    it("Bob should have ALL PERMISSIONS in his UP", async () => {
+      let key =
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        bob.address.substring(2);
+
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
+      expect(result).toEqual(ALL_PERMISSIONS_SET);
+    });
+
+    it("Alice's UP should have permission SETDATA on Bob's UP", async () => {
+      let key =
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        aliceContext.universalProfile.address.substring(2);
+
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
+      expect(result).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32));
+    });
+
+    it("Alice's UP should be able to `setData(...)` on Bob's UP", async () => {
+      let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Alice's Key"));
+      let value = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("Alice's Value")
+      );
+
+      let finalSetDataPayload =
+        bobContext.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+      let bobKeyManagerPayload =
+        bobContext.keyManager.interface.encodeFunctionData("execute", [
+          finalSetDataPayload,
+        ]);
+
+      let aliceUniversalProfilePayload =
+        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          bobContext.keyManager.address,
+          0,
+          bobKeyManagerPayload,
+        ]);
+
+      let tx = await aliceContext.keyManager
+        .connect(alice)
+        .execute(aliceUniversalProfilePayload);
+      let receipt = await tx.wait();
+      console.log("gas used: ", receipt.gasUsed.toNumber());
+
+      const result = await bobContext.universalProfile["getData(bytes32)"](key);
+      expect(result).toEqual(value);
     });
   });
 };
