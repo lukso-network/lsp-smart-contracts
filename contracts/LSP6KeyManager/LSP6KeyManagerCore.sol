@@ -246,7 +246,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 bytes12(key) == _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX ||
                 bytes12(key) == _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX
             ) {
-                require(LSP2Utils.isABIEncodedArray(inputValues[ii]), "invalid ABI encoded array");
+                require(
+                    LSP2Utils.isValidABIEncodedArray(inputValues[ii]),
+                    "invalid ABI encoded array"
+                );
             } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
                 uint256 arrayLength = uint256(bytes32(ERC725Y(account).getData(key)));
                 uint256 newLength = uint256(bytes32(inputValues[ii]));

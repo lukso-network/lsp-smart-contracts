@@ -130,21 +130,23 @@ library LSP2Utils {
         key_ = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, _url);
     }
 
-    function isABIEncodedArray(bytes memory _data) internal pure returns (bool) {
+    function isValidABIEncodedArray(bytes memory _data) internal pure returns (bool) {
         uint256 nbOfBytes = _data.length;
 
         // 1) there must be at least 32 bytes to store the offset
         if (nbOfBytes < 32) return false;
 
         // 2) there must be at least the same number of bytes specified by
-        // the offset value (otherwise, the offset ends nowhere)
+        // the offset value (otherwise, the offset points to nowhere)
         uint256 offset = uint256(bytes32(_data));
         if (nbOfBytes < offset) return false;
 
-        // 3) must have at least 32 x length bytes after offset
+        // 3) there must be at least 32 x length bytes after offset
         uint256 arrayLength = _data.toUint256(offset);
 
-        // bytes memory bytesAfterOffset = _data.slice(offset, nbOfBytes);
+        //   32 bytes word (= offset)
+        // + 32 bytes word (= array length)
+        // + remaining bytes that make each element of the array
         if (nbOfBytes < (offset + 32 + (arrayLength * 32))) return false;
 
         return true;
