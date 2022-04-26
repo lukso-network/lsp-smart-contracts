@@ -130,7 +130,7 @@ library LSP2Utils {
         key_ = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, _url);
     }
 
-    function isABIEncodedArray(bytes memory _data) public pure returns (bool) {
+    function isABIEncodedArray(bytes memory _data) internal pure returns (bool) {
         uint256 nbOfBytes = _data.length;
 
         // 1) there must be at least 32 bytes to store the offset
