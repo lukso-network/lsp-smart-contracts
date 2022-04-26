@@ -252,7 +252,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         if (isSettingERC725YKeys) {
-            // pass if caller has SUPER permissions
+            // Skip if caller has SUPER permissions
             if (_permissions.includesPermissions(_PERMISSION_SUPER_SETDATA)) return;
 
             if (!_permissions.includesPermissions(_PERMISSION_SETDATA))
@@ -366,10 +366,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             revert NotAuthorised(_from, "TRANSFERVALUE");
         }
 
-        // pass if contract creation
+        // Skip on contract creation (CREATE and CREATE2)
         if (operationType == 1 || operationType == 2) return;
 
-        // pass if caller has SUPER permissions
+        // Skip if caller has SUPER permissions
         bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
         if (_permissions.includesPermissions(superPermission)) return;
 
@@ -403,6 +403,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         else revert("LSP6KeyManager: invalid operation type");
     }
 
+    function _extractSuperPermissionFromOperation(uint256 _operationType)
+        internal
+        pure
+        returns (bytes32 superPermission_)
+    {
+        if (_operationType == 0) return _PERMISSION_SUPER_CALL;
+        else if (_operationType == 3) return _PERMISSION_SUPER_STATICCALL;
+        else if (_operationType == 4) return _PERMISSION_SUPER_DELEGATECALL;
+    }
+
     /**
      * @return operationName_ (string) the name of the opcode associated with `_operationType`
      */
@@ -416,16 +426,6 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         if (_operationType == 2) return "CREATE2";
         if (_operationType == 3) return "STATICCALL";
         if (_operationType == 4) return "DELEGATECALL";
-    }
-
-    function _extractSuperPermissionFromOperation(uint256 _operationType)
-        internal
-        pure
-        returns (bytes32 superPermission_)
-    {
-        if (_operationType == 0) return _PERMISSION_SUPER_CALL;
-        else if (_operationType == 3) return _PERMISSION_SUPER_STATICCALL;
-        else if (_operationType == 4) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
     /**
