@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+`// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 // libraries
@@ -10,7 +10,7 @@ import "solidity-bytes-utils/contracts/BytesLib.sol";
 /**
  * @dev UniversalFactory contract can be used to deploy create2 contracts; normal contracts and minimal
  * proxies (EIP-1167) with the ability to deploy the same contract at the same address on different chains.
- * If the contract has a constructor, the arguments will be part of the initCode
+ * If the contract has a constructor, the arguments will be part of the byteCode
  * If the contract has an `initialize` function, we need to include the parameters of this function in
  * the salt to ensure that the parameters of the contract should be the same on each chain.
  *
@@ -31,13 +31,13 @@ contract UniversalFactory {
         0x11a195f66c9175f46895bae2006d40848a680c7068b9fc4af248ff9a54a47e45;
 
     /**
-     * @dev Throws if the `initCode` passed to the function is the EIP-1167 Minimal Proxy bytecode
+     * @dev Throws if the `byteCode` passed to the function is the EIP-1167 Minimal Proxy bytecode
      */
-    modifier notMinimalProxy(bytes memory initCode) virtual {
-        if (initCode.length == 55) {
+    modifier notMinimalProxy(bytes memory byteCode) virtual {
+        if (byteCode.length == 55) {
             if (
-                keccak256(initCode.slice(0, 20)) == _MINIMAL_PROXY_BYTECODE_HASH_PT1 &&
-                keccak256(initCode.slice(40, 15)) == _MINIMAL_PROXY_BYTECODE_HASH_PT2
+                keccak256(byteCode.slice(0, 20)) == _MINIMAL_PROXY_BYTECODE_HASH_PT1 &&
+                keccak256(byteCode.slice(40, 15)) == _MINIMAL_PROXY_BYTECODE_HASH_PT2
             ) {
                 revert("Minimal Proxies deployment not allowed");
             }
@@ -50,13 +50,13 @@ contract UniversalFactory {
      * constructed using the parameters below. Any change in one of them will result in a new destination address.
      */
     function calculateAddress(
-        bytes32 initCodeHash,
+        bytes32 byteCodeHash,
         bool initializable,
-        bytes memory initializeABI,
-        bytes32 initialSalt
+        bytes memory initializeCalldata,
+        bytes32 salt
     ) public view returns (address contractToCreate) {
-        bytes32 salt = _calculateSalt(initializable, initializeABI, initialSalt);
-        contractToCreate = Create2.computeAddress(salt, initCodeHash);
+        bytes32 salt = _calculateSalt(initializable, initializeCalldata, salt);
+        contractToCreate = Create2.computeAddress(salt, byteCodeHash);
     }
 
     /**
@@ -66,38 +66,37 @@ contract UniversalFactory {
     function calculateProxyAddress(
         address baseContract,
         bool initializable,
-        bytes memory initializeABI,
-        bytes32 initialSalt
+        bytes memory initializeCalldata,
+        bytes32 salt
     ) public view returns (address proxy) {
-        bytes32 salt = _calculateSalt(initializable, initializeABI, initialSalt);
+        bytes32 salt = _calculateSalt(initializable, initializeCalldata, salt);
         proxy = Clones.predictDeterministicAddress(baseContract, salt);
     }
 
     /**
      * @dev Deploys a contract using `CREATE2`. The address where the contract will be deployed
      * can be known in advance via {calculateAddress}. The salt is a combination between the `initializable`,
-     * `initialSalt` and the `initializeABI` if the contract is initializable. This method allow users
+     * `salt` and the `initializeCalldata` if the contract is initializable. This method allow users
      * to have the same contracts at the same address across different chains with the same parameters.
      *
-     * Using the same `initCode` and salt multiple time will revert, since
+     * Using the same `byteCode` and salt multiple time will revert, since
      * the contract cannot be deployed twice at the same address.
      *
      * Deploying a minimal proxy from this function will revert.
      */
     function deployCreate2(
-        bytes memory initCode,
-        bool initializable,
-        bytes memory initializeABI,
-        bytes32 initialSalt
-    ) public payable notMinimalProxy(initCode) returns (address contractCreated) {
-        bytes32 salt = _calculateSalt(initializable, initializeABI, initialSalt);
+        bytes memory byteCode,
+    bytes32 salt,
+        bytes memory initializeCalldata,
+    ) public payable notMinimalProxy(byteCode) returns (address contractCreated) {
+        bytes32 salt = _calculateSalt(initializable, initializeCalldata, salt);
+            contractCreated = Create2.deploy(msg.value, salt, byteCode);
         if (initializable) {
-            contractCreated = Create2.deploy(msg.value, salt, initCode);
 
-            (bool success, bytes memory returnedData) = contractCreated.call(initializeABI);
+            (bool success, bytes memory returnedData) = contractCreated.call(initializeCalldata);
             if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
         } else {
-            contractCreated = Create2.deploy(msg.value, salt, initCode);
+            contractCreated = Create2.deploy(msg.value, salt, byteCode);
         }
     }
 
@@ -106,8 +105,8 @@ contract UniversalFactory {
      * The address where the contract will be deployed can be known in advance via {calculateProxyAddress}.
      *
      * This function uses the create2 opcode and a salt to deterministically deploy
-     * the clone. The salt is a combination between the `initializable`, `initialSalt`
-     * and the `initializeABI` if the contract is initializable. This method allow users
+     * the clone. The salt is a combination between the `initializable`, `salt`
+     * and the `initializeCalldata` if the contract is initializable. This method allow users
      * to have the same contracts at the same address across different chains with the same parameters.
      *
      * Using the same `baseContract` and salt multiple time will revert, since
@@ -116,14 +115,14 @@ contract UniversalFactory {
     function deployCreate2Proxy(
         address baseContract,
         bool initializable,
-        bytes memory initializeABI,
-        bytes32 initialSalt
+        bytes memory initializeCalldata,
+        bytes32 salt
     ) public payable returns (address proxy) {
-        bytes32 salt = _calculateSalt(initializable, initializeABI, initialSalt);
+        bytes32 salt = _calculateSalt(initializable, initializeCalldata, salt);
         if (initializable) {
             proxy = Clones.cloneDeterministic(baseContract, salt);
 
-            (bool success, bytes memory returnedData) = proxy.call{value: msg.value}(initializeABI);
+            (bool success, bytes memory returnedData) = proxy.call{value: msg.value}(initializeCalldata);
             if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
         } else {
             proxy = Clones.cloneDeterministic(baseContract, salt);
@@ -137,13 +136,13 @@ contract UniversalFactory {
      */
     function _calculateSalt(
         bool initializable,
-        bytes memory initializeABI,
-        bytes32 initialSalt
+        bytes memory initializeCalldata,
+        bytes32 salt
     ) internal pure returns (bytes32 salt) {
         if (initializable) {
-            salt = keccak256(abi.encodePacked(initializable, initializeABI, initialSalt));
+            salt = keccak256(abi.encodePacked(initializable, initializeCalldata, salt));
         } else {
-            salt = keccak256(abi.encodePacked(initializable, initialSalt));
+            salt = keccak256(abi.encodePacked(initializable, salt));
         }
     }
 }
