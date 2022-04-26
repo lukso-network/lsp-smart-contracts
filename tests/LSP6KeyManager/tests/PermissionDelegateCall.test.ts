@@ -93,22 +93,44 @@ export const shouldBehaveLikePermissionDelegateCall = (
       expect(newStorage).toEqual(value);
     });
 
-    it("should revert, if caller has permission DELEGATECALL, but not ALL PERMISSIONS", async () => {
+    it("should pass if caller has permission DELEGATECALL", async () => {
+      const key =
+        "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+      const value = "0xbbbbbbbbbbbbbbbb";
+
+      // first check that nothing is set under this key
+      // inside the storage of the calling UP
+      const currentStorage = await context.universalProfile["getData(bytes32)"](
+        key
+      );
+      expect(currentStorage).toEqual("0x");
+
+      // Doing a delegatecall to the setData function of another UP
+      // should update the ERC725Y storage of the UP making the delegatecall
+      let delegateCallPayload =
+        erc725YDelegateCallContract.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
       let executePayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATIONS.DELEGATECALL,
-          "0xcafecafecafecafecafecafecafecafecafecafe",
+          erc725YDelegateCallContract.address,
           0,
-          DUMMY_PAYLOAD,
+          delegateCallPayload,
         ]);
 
-      await expect(
-        context.keyManager
-          .connect(addressCanDelegateCall)
-          .execute(executePayload)
-      ).toBeRevertedWith(
-        "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
+      await context.keyManager
+        .connect(addressCanDelegateCall)
+        .execute(executePayload);
+
+      // verify that the setData ran in the context of the calling UP
+      // and that it updated its ERC725Y storage
+      const newStorage = await context.universalProfile["getData(bytes32)"](
+        key
       );
+      expect(newStorage).toEqual(value);
     });
   });
 };
