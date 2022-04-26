@@ -215,7 +215,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
         bool isSettingERC725YKeys = false;
 
-        // loop through the keys we are trying to set
+        // loop through the ERC725Y keys and check for permission keys
         for (uint256 ii = 0; ii < inputKeys.length; ii++) {
             bytes32 key = inputKeys[ii];
 
@@ -252,11 +252,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         if (isSettingERC725YKeys) {
-            if (!_permissions.includesPermissions(_PERMISSION_SETDATA))
-                revert NotAuthorised(_from, "SETDATA");
-
             // pass if caller has SUPER permissions
             if (_permissions.includesPermissions(_PERMISSION_SUPER_SETDATA)) return;
+
+            if (!_permissions.includesPermissions(_PERMISSION_SETDATA))
+                revert NotAuthorised(_from, "SETDATA");
 
             _verifyAllowedERC725YKeys(_from, inputKeys);
         }
