@@ -43,7 +43,7 @@ jobs:
             node_modules 
             types
           key: ${{ github.run_id }}
-    
+
   test-UP:
     runs-on: ubuntu-latest
     needs: [build]
@@ -91,7 +91,7 @@ jobs:
             node_modules 
             types
           key: ${{ github.run_id }}
-      
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
@@ -109,6 +109,38 @@ jobs:
       - name: run LSP1 tests
         run: npm run test:lsp1
 
+  test-LSP2:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: restore cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            artifacts
+            node_modules 
+            types
+          key: ${{ github.run_id }}
+
+      - name: Use Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Generate typechain types
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: npm run generate-types
+
+      - name: run LSP2 tests
+        run: npm run test:lsp2
+
   test-LSP4:
     runs-on: ubuntu-latest
     needs: [build]
@@ -123,7 +155,7 @@ jobs:
             node_modules 
             types
           key: ${{ github.run_id }}
-      
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
@@ -140,7 +172,7 @@ jobs:
 
       - name: run LSP4 tests
         run: npm run test:lsp4
-  
+
   test-LSP6:
     runs-on: ubuntu-latest
     needs: [build]
@@ -155,7 +187,7 @@ jobs:
             node_modules 
             types
           key: ${{ github.run_id }}
-      
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
@@ -187,7 +219,7 @@ jobs:
             node_modules 
             types
           key: ${{ github.run_id }}
-      
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
@@ -219,7 +251,7 @@ jobs:
             node_modules 
             types
           key: ${{ github.run_id }}
-      
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
@@ -251,7 +283,7 @@ jobs:
             node_modules 
             types
           key: ${{ github.run_id }}
-      
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
@@ -283,7 +315,7 @@ jobs:
             node_modules 
             types
           key: ${{ github.run_id }}
-      
+
       - name: Use Node.js v16
         uses: actions/setup-node@v2
         with:
