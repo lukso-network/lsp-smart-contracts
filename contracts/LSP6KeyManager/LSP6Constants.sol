@@ -4,10 +4,11 @@ pragma solidity ^0.8.0;
 // --- ERC165 interface ids
 bytes4 constant _INTERFACEID_LSP6 = 0x32e6d0ab;
 
+// 0x4b80742d00000000c6dd000054dD2f5A45C8e7C83248a5a9F3c67b001F6AcC05
+
 // --- ERC725Y Keys
 
 // PERMISSIONS KEYS
-bytes8 constant _SET_PERMISSIONS_PREFIX = 0x4b80742d00000000; // AddressPermissions:<...>
 
 // keccak256('AddressPermissions[]')
 bytes32 constant _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY = 0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3;
