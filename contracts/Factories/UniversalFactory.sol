@@ -1,4 +1,4 @@
-`// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 // libraries
@@ -88,11 +88,12 @@ contract UniversalFactory {
         bytes memory initializeCallData
     ) public payable notMinimalProxy(byteCode) returns (address contractCreated) {
         bytes32 generatedSalt = _generateSalt(initializeCallData, salt);
-        
         contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
 
         if (initializeCallData.length > 0) {
-            (bool success, bytes memory returnedData) = contractCreated.call(initializeCallData);
+            (bool success, bytes memory returnedData) = contractCreated.call{value: msg.value}(
+                initializeCallData
+            );
             if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
         }
     }
@@ -115,15 +116,21 @@ contract UniversalFactory {
         bytes memory initializeCallData
     ) public payable returns (address proxy) {
         bytes32 generatedSalt = _generateSalt(initializeCallData, salt);
-
         proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
 
         if (initializeCallData.length > 0) {
-            (bool success, bytes memory returnedData) = proxy.call{value: msg.value}(initializeCallData);
+            (bool success, bytes memory returnedData) = proxy.call{value: msg.value}(
+                initializeCallData
+            );
             if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
         } else {
             // Return value sent
-            msg.sender.call{value: msg.value}("");
+            if (msg.value > 0) {
+                (bool success, bytes memory returnedData) = payable(msg.sender).call{
+                    value: msg.value
+                }("");
+                if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
+            }
         }
     }
 
@@ -132,16 +139,16 @@ contract UniversalFactory {
     /**
      * @dev Calculates the salt including the initializeCall data, or without but hashing it with a zero bytes padding.
      */
-    function _generateSalt(
-        bytes memory initializeCallData,
-        bytes32 salt
-    ) internal pure returns (bytes32 salt) {
-        bool memory initializable = initializeCallData.length > 0;
-
+    function _generateSalt(bytes memory initializeCallData, bytes32 salt)
+        internal
+        pure
+        returns (bytes32)
+    {
+        bool initializable = initializeCallData.length > 0;
         if (initializable) {
-            salt = keccak256(abi.encodePacked(initializable, initializeCallData, salt));
+            return keccak256(abi.encodePacked(initializable, initializeCallData, salt));
         } else {
-            salt = keccak256(abi.encodePacked(initializable, salt));
+            return keccak256(abi.encodePacked(initializable, salt));
         }
     }
 }
