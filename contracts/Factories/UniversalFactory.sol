@@ -91,6 +91,7 @@ contract UniversalFactory {
         contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
 
         if (initializeCallData.length > 0) {
+            // solhint-disable avoid-low-level-calls
             (bool success, bytes memory returnedData) = contractCreated.call{value: msg.value}(
                 initializeCallData
             );
@@ -119,6 +120,7 @@ contract UniversalFactory {
         proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
 
         if (initializeCallData.length > 0) {
+            // solhint-disable avoid-low-level-calls
             (bool success, bytes memory returnedData) = proxy.call{value: msg.value}(
                 initializeCallData
             );
@@ -126,6 +128,7 @@ contract UniversalFactory {
         } else {
             // Return value sent
             if (msg.value > 0) {
+                // solhint-disable avoid-low-level-calls
                 (bool success, bytes memory returnedData) = payable(msg.sender).call{
                     value: msg.value
                 }("");

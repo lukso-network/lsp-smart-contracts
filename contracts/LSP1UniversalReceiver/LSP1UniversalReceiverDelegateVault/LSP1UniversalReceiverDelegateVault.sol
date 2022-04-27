@@ -27,7 +27,7 @@ contract LSP1UniversalReceiverDelegateVault is
      */
     function universalReceiverDelegate(
         address sender,
-        bytes32 typeId,
+        bytes32 typeId, // solhint-disable no-unused-vars
         bytes memory data
     ) public virtual override returns (bytes memory result) {
         if (
@@ -45,15 +45,7 @@ contract LSP1UniversalReceiverDelegateVault is
     /**
      * @inheritdoc ERC165
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_LSP1_DELEGATE ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == _INTERFACEID_LSP1_DELEGATE || super.supportsInterface(interfaceId);
     }
 }
