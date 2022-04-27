@@ -87,12 +87,12 @@ describe("UniversalFactory contract", () => {
       const calulcatedAddress = await context.universalFactory.calculateAddress(
         bytecodeHash,
         salt,
-        []
+        "0x"
       );
 
       const addressCreated = await context.universalFactory
         .connect(context.accounts.deployer1)
-        .callStatic.deployCreate2(UPBytecode, salt, []);
+        .callStatic.deployCreate2(UPBytecode, salt, "0x");
 
       expect(calulcatedAddress).toEqual(addressCreated);
     });
@@ -144,14 +144,14 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory.calculateAddress(
           bytecodeHash,
           salt1,
-          []
+          "0x"
         );
 
       const calulcatedAddressSalt2 =
         await context.universalFactory.calculateAddress(
           bytecodeHash,
           salt2,
-          []
+          "0x"
         );
 
       let equalAddresses = calulcatedAddressSalt1 == calulcatedAddressSalt2;
@@ -179,7 +179,7 @@ describe("UniversalFactory contract", () => {
         );
 
       const calculatedAddressInitializableTrue =
-        await context.universalFactory.calculateAddress(bytecodeHash, salt, []);
+        await context.universalFactory.calculateAddress(bytecodeHash, salt, "0x");
 
       const calculatedAddressInitializableFalse =
         await context.universalFactory.calculateAddress(
@@ -221,14 +221,14 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory.calculateAddress(
           bytecodeHash1,
           salt,
-          []
+          "0x"
         );
 
       const calulcatedAddressBytecode2 =
         await context.universalFactory.calculateAddress(
           bytecodeHash2,
           salt,
-          []
+          "0x"
         );
 
       let equalAddresses =
@@ -271,7 +271,7 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory.calculateProxyAddress(
           universalReceiverDelegate.address,
           salt,
-          []
+          "0x"
         );
 
       const addressCreated = await context.universalFactory
@@ -279,7 +279,7 @@ describe("UniversalFactory contract", () => {
         .callStatic.deployCreate2Proxy(
           universalReceiverDelegate.address,
           salt,
-          []
+          "0x"
         );
 
       expect(calculatedAddress).toEqual(addressCreated);
@@ -293,7 +293,7 @@ describe("UniversalFactory contract", () => {
         .callStatic.deployCreate2Proxy(
           universalReceiverDelegate.address,
           salt,
-          []
+          "0x"
         );
 
       let oldBalance = await provider.getBalance(
@@ -302,7 +302,7 @@ describe("UniversalFactory contract", () => {
 
       const tx = await context.universalFactory
         .connect(context.accounts.deployer1)
-        .deployCreate2Proxy(universalReceiverDelegate.address, salt, [], {
+        .deployCreate2Proxy(universalReceiverDelegate.address, salt, "0x", {
           value: ethers.utils.parseEther("1300"),
         });
 
@@ -327,14 +327,14 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory.calculateProxyAddress(
           universalProfileBaseContract.address,
           salt1,
-          []
+          "0x"
         );
 
       const calculatedAddressSalt2 =
         await context.universalFactory.calculateProxyAddress(
           universalProfileBaseContract.address,
           salt2,
-          []
+          "0x"
         );
 
       let equalAddresses = calculatedAddressSalt1 == calculatedAddressSalt2;
@@ -362,7 +362,7 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory.calculateProxyAddress(
           universalProfileBaseContract.address,
           salt,
-          []
+          "0x"
         );
 
       let equalAddresses =
@@ -450,11 +450,11 @@ describe("UniversalFactory contract", () => {
       );
 
       await expect(
-        context.universalFactory.deployCreate2(proxyBytecode, salt, [])
+        context.universalFactory.deployCreate2(proxyBytecode, salt, "0x")
       ).toBeRevertedWith("Minimal Proxies deployment not allowed");
 
       await expect(
-        context.universalFactory.deployCreate2(proxyBytecode, salt, [])
+        context.universalFactory.deployCreate2(proxyBytecode, salt, "0x")
       ).toBeRevertedWith("Minimal Proxies deployment not allowed");
     });
 
@@ -466,10 +466,10 @@ describe("UniversalFactory contract", () => {
         "000000000000000000000000" +
         ZeroAddress.substr(2);
 
-      await context.universalFactory.deployCreate2(UPBytecode, salt, []);
+      await context.universalFactory.deployCreate2(UPBytecode, salt, "0x");
 
       await expect(
-        context.universalFactory.deployCreate2(UPBytecode, salt, [])
+        context.universalFactory.deployCreate2(UPBytecode, salt, "0x")
       ).toBeRevertedWith("Create2: Failed on deploy");
     });
 
@@ -479,14 +479,14 @@ describe("UniversalFactory contract", () => {
       await context.universalFactory.deployCreate2Proxy(
         universalProfileBaseContract.address,
         salt,
-        []
+        "0x"
       );
 
       await expect(
         context.universalFactory.deployCreate2Proxy(
           universalProfileBaseContract.address,
           salt,
-          []
+          "0x"
         )
       ).toBeRevertedWith("ERC1167: create2 failed");
     });
@@ -503,9 +503,9 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory.callStatic.deployCreate2(
           UPBytecode,
           salt,
-          []
+          "0x"
         );
-      await context.universalFactory.deployCreate2(UPBytecode, salt, []);
+      await context.universalFactory.deployCreate2(UPBytecode, salt, "0x");
       const universalProfile = universalProfileConstructor.attach(
         contractCreatedAddress
       );
@@ -550,13 +550,13 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory.callStatic.deployCreate2Proxy(
           universalProfileBaseContract.address,
           salt,
-          []
+          "0x"
         );
 
       await context.universalFactory.deployCreate2Proxy(
         universalProfileBaseContract.address,
         salt,
-        []
+        "0x"
       );
 
       const universalProfile = universalProfileBaseContract.attach(
