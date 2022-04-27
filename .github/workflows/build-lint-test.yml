@@ -269,6 +269,38 @@ jobs:
       - name: run LSP9 tests
         run: npm run test:lsp9
 
+  test-UniversalFactory:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: restore cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            artifacts
+            node_modules 
+            types
+          key: ${{ github.run_id }}
+      
+      - name: Use Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Generate typechain types
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: npm run generate-types
+
+      - name: run UniversalFactory tests
+        run: npm run test:factory
+
   test-Helpers:
     runs-on: ubuntu-latest
     needs: [build]
