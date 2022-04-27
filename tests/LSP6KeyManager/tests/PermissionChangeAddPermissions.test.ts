@@ -6,6 +6,7 @@ import {
   ERC725YKeys,
   ALL_PERMISSIONS_SET,
   PERMISSIONS,
+  OPERATIONS,
 } from "../../../constants";
 
 // setup
@@ -570,8 +571,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe("when setting one permission key", () => {
-      it("should pass when setting an abi-encoded array for Allowed Addresses", async () => {
+    describe("when setting 1 x permission key for AllowedAddresses", () => {
+      it("should pass when setting a valid abi-encoded array of address[] (= 12 x leading '00')", async () => {
         let newController = new ethers.Wallet.createRandom();
 
         let key =
@@ -580,7 +581,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         let value = abiCoder.encode(
           ["address[]"],
-          [["0xcafecafecafecafecafecafecafecafecafecafe"]]
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
@@ -595,7 +601,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         expect(result).toEqual(value);
       });
 
-      it("should fail when setting an invalid abi-encoded array for Allowed Addresses", async () => {
+      it("should fail when setting an invalid abi-encoded array of address[] (random bytes)", async () => {
         let newController = new ethers.Wallet.createRandom();
 
         let key =
@@ -611,10 +617,36 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(context.owner).execute(payload)
-        ).toBeRevertedWith("invalid ABI encoded array");
+        ).toBeRevertedWith(
+          "LSP6KeyManager: invalid ABI encoded array of addresses"
+        );
       });
 
-      it("should pass when setting an abi-encoded array for Allowed Functions", async () => {
+      it("should fail when setting an invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          newController.address.substr(2);
+
+        let value =
+          "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000cafecafecafecafecafecafecafecafecafecafecafe";
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(context.owner).execute(payload)
+        ).toBeRevertedWith(
+          "LSP6KeyManager: invalid ABI encoded array of addresses"
+        );
+      });
+    });
+
+    describe("when setting 1 x permission key for AllowedFunctions", () => {
+      it("should pass when setting an abi-encoded array of bytes4[] (= 28 leading zeros)", async () => {
         let newController = new ethers.Wallet.createRandom();
 
         let key =
@@ -638,7 +670,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         expect(result).toEqual(value);
       });
 
-      it("should fail when setting an invalid abi-encoded array for Allowed Functions", async () => {
+      it("should fail when setting an invalid abi-encoded array of bytes4[] (= random bytes)", async () => {
         let newController = new ethers.Wallet.createRandom();
 
         let key =
@@ -654,10 +686,36 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(context.owner).execute(payload)
-        ).toBeRevertedWith("invalid ABI encoded array");
+        ).toBeRevertedWith(
+          "LSP6KeyManager: invalid ABI encoded array of bytes4"
+        );
       });
 
-      it("should pass when setting an abi-encoded array for Allowed Standards", async () => {
+      it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          newController.address.substr(2);
+
+        let value =
+          "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(context.owner).execute(payload)
+        ).toBeRevertedWith(
+          "LSP6KeyManager: invalid ABI encoded array of bytes4"
+        );
+      });
+    });
+
+    describe("when setting 1 x permission key for AllowedStandards", () => {
+      it("should pass when setting an abi-encoded array bytes4[] (= 28 leading zeros)", async () => {
         let newController = new ethers.Wallet.createRandom();
 
         let key =
@@ -681,7 +739,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         expect(result).toEqual(value);
       });
 
-      it("should fail when setting an invalid abi-encoded array for Allowed Standards", async () => {
+      it("should fail when setting an invalid abi-encoded array of bytes4[] (= random bytes)", async () => {
         let newController = new ethers.Wallet.createRandom();
 
         let key =
@@ -697,10 +755,36 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(context.owner).execute(payload)
-        ).toBeRevertedWith("invalid ABI encoded array");
+        ).toBeRevertedWith(
+          "LSP6KeyManager: invalid ABI encoded array of bytes4"
+        );
       });
 
-      it("should pass when setting an abi-encoded array for Allowed ERC725YKeys", async () => {
+      it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          newController.address.substr(2);
+
+        let value =
+          "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(context.owner).execute(payload)
+        ).toBeRevertedWith(
+          "LSP6KeyManager: invalid ABI encoded array of bytes4"
+        );
+      });
+    });
+
+    describe("when setting 1 x permission key for AllowedERC725YKeys", () => {
+      it("should pass when setting an abi-encoded array of bytes32[]", async () => {
         let newController = new ethers.Wallet.createRandom();
 
         let key =
@@ -729,7 +813,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         expect(result).toEqual(value);
       });
 
-      it("should fail when setting an invalid abi-encoded array for Allowed ERC725YKeys", async () => {
+      it("should fail when setting an invalid abi-encoded array of bytes32[] (random bytes)", async () => {
         let newController = new ethers.Wallet.createRandom();
 
         let key =
@@ -745,7 +829,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(context.owner).execute(payload)
-        ).toBeRevertedWith("invalid ABI encoded array");
+        ).toBeRevertedWith(
+          "LSP6KeyManager: invalid ABI encoded array of bytes32"
+        );
       });
     });
   });
