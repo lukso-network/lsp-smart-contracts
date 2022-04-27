@@ -130,7 +130,7 @@ library LSP2Utils {
         key_ = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, _url);
     }
 
-    function isValidABIEncodedArray(bytes memory _data) internal pure returns (bool) {
+    function isEncodedArray(bytes memory _data) internal pure returns (bool) {
         uint256 nbOfBytes = _data.length;
 
         // 1) there must be at least 32 bytes to store the offset
@@ -148,6 +148,48 @@ library LSP2Utils {
         // + 32 bytes word (= array length)
         // + remaining bytes that make each element of the array
         if (nbOfBytes < (offset + 32 + (arrayLength * 32))) return false;
+
+        return true;
+    }
+
+    function isEncodedArrayOfAddresses(bytes memory _data) internal pure returns (bool) {
+        if (!isEncodedArray(_data)) return false;
+
+        uint256 offset = uint256(bytes32(_data));
+        uint256 arrayLength = _data.toUint256(offset);
+
+        uint256 pointer = offset + 32;
+
+        for (uint256 ii = 0; ii < arrayLength; ii++) {
+            bytes32 key = _data.toBytes32(pointer);
+
+            // check that the leading bytes are zero bytes "00"
+            // NB: address type is padded on the left (unlike bytes20 type that is padded on the right)
+            if (bytes12(key) != bytes12(0)) return false;
+
+            // increment the pointer
+            pointer += 32;
+        }
+
+        return true;
+    }
+
+    function isBytes4EncodedArray(bytes memory _data) internal pure returns (bool) {
+        if (!isEncodedArray(_data)) return false;
+
+        uint256 offset = uint256(bytes32(_data));
+        uint256 arrayLength = _data.toUint256(offset);
+        uint256 pointer = offset + 32;
+
+        for (uint256 ii = 0; ii < arrayLength; ii++) {
+            bytes32 key = _data.toBytes32(pointer);
+
+            // check that the trailing bytes are zero bytes "00"
+            if (uint224(uint256(key)) != 0) return false;
+
+            // increment the pointer
+            pointer += 32;
+        }
 
         return true;
     }

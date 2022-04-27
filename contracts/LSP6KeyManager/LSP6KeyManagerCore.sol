@@ -233,22 +233,30 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         for (uint256 ii = 0; ii < inputKeys.length; ii++) {
             bytes32 key = inputKeys[ii];
 
-            // if the key is a permission key
+            // if the key is a permission key -> AddressPermissions:Permissions:<address>
             if (bytes12(key) == _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX) {
                 _verifyCanSetPermissions(key, _from, _permissions);
 
                 // "nullify permission keys,
                 // so that they do not get check against allowed ERC725Y keys
                 inputKeys[ii] = bytes32(0);
+            } else if (bytes12(key) == _LSP6_ADDRESS_ALLOWEDADDRESSES_MAP_KEY_PREFIX) {
+                require(
+                    inputValues[ii].isEncodedArrayOfAddresses(),
+                    "LSP6KeyManager: invalid ABI encoded array of addresses"
+                );
             } else if (
-                bytes12(key) == _LSP6_ADDRESS_ALLOWEDADDRESSES_MAP_KEY_PREFIX ||
                 bytes12(key) == _LSP6_ADDRESS_ALLOWEDFUNCTIONS_MAP_KEY_PREFIX ||
-                bytes12(key) == _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX ||
-                bytes12(key) == _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX
+                bytes12(key) == _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX
             ) {
                 require(
-                    LSP2Utils.isValidABIEncodedArray(inputValues[ii]),
-                    "invalid ABI encoded array"
+                    inputValues[ii].isBytes4EncodedArray(),
+                    "LSP6KeyManager: invalid ABI encoded array of bytes4"
+                );
+            } else if (bytes12(key) == _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX) {
+                require(
+                    inputValues[ii].isEncodedArray(),
+                    "LSP6KeyManager: invalid ABI encoded array of bytes32"
                 );
             } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
                 uint256 arrayLength = uint256(bytes32(ERC725Y(account).getData(key)));
