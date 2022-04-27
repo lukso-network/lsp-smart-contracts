@@ -126,7 +126,7 @@ describe("UniversalFactory contract", () => {
       expect(calulcatedAddress).toEqual(addressCreated);
     });
 
-    it("should calculate a different address of a a contract that will deployed with CREATE2 if the salt changed", async () => {
+    it("should calculate a different address of a contract that will deployed with CREATE2 if the salt changed", async () => {
       let salt1 = ethers.utils.solidityKeccak256(["string"], ["Salt1"]);
       let salt2 = ethers.utils.solidityKeccak256(["string"], ["Salt2"]);
 
@@ -159,7 +159,7 @@ describe("UniversalFactory contract", () => {
       expect(equalAddresses).toBeFalsy();
     });
 
-    it("should calculate a different address of a a contract that will deployed with CREATE2 if its initializable or not", async () => {
+    it("should calculate a different address of a contract that will deployed with CREATE2 if its initializable or not", async () => {
       let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
 
       let UPBytecode =
@@ -195,7 +195,7 @@ describe("UniversalFactory contract", () => {
       expect(equalAddresses).toBeFalsy();
     });
 
-    it("should calculate a different address of a a contract that will deployed with CREATE2 if the bytecode changed", async () => {
+    it("should calculate a different address of a contract that will deployed with CREATE2 if the bytecode changed", async () => {
       let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
 
       let UPBytecode1 =
@@ -314,9 +314,9 @@ describe("UniversalFactory contract", () => {
         context.accounts.deployer1.address
       );
 
-      const oldBalanceAndGas = oldBalance - gasUsed * gasPrice;
+      const oldBalanceMinusGas = oldBalance - gasUsed * gasPrice;
 
-      expect(parseInt(newBalance)).toEqual(oldBalanceAndGas);
+      expect(parseInt(newBalance)).toEqual(oldBalanceMinusGas);
     });
 
     it("should calculate a different address of a proxy if the `salt` changed", async () => {
