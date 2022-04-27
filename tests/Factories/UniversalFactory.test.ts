@@ -11,6 +11,7 @@ import {
 } from "../../types";
 
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { provider } from "../utils/helpers";
 
 import { bytecode as UniversalProfileBytecode } from "../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json";
 import { bytecode as UniversalProfileInitBytecode } from "../../artifacts/contracts/UniversalProfileInit.sol/UniversalProfileInit.json";
@@ -286,7 +287,7 @@ describe("UniversalFactory contract", () => {
 
     it("should return the value back if sent to a proxy non-initializable", async () => {
       let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
-      const provider = ethers.provider;
+
       const addressCreated = await context.universalFactory
         .connect(context.accounts.deployer1)
         .callStatic.deployCreate2Proxy(
