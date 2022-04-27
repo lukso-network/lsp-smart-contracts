@@ -69,7 +69,7 @@ export async function setupKeyManagerHelper(
 
   await _context.universalProfile
     .connect(_context.owner)
-    .transferOwnership(_context.keyManagerHelper.address);
+    .transferOwnership(_context.keyManagerInternalTester.address);
 }
 
 /**
