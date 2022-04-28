@@ -233,48 +233,18 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         for (uint256 ii = 0; ii < inputKeys.length; ii++) {
             bytes32 key = inputKeys[ii];
 
-            // if the key is a permission key -> AddressPermissions:Permissions:<address>
-            if (bytes12(key) == _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX) {
-                _verifyCanSetPermissions(key, _from, _permissions);
+            if (
+                // if the key is a permission key
+                bytes8(key) == _LSP6_ADDRESS_PERMISSIONS_PREFIX ||
+                bytes16(key) == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY_PREFIX
+            ) {
+                _verifyCanSetPermissions(key, inputValues[ii], _from, _permissions);
 
                 // "nullify permission keys,
                 // so that they do not get check against allowed ERC725Y keys
                 inputKeys[ii] = bytes32(0);
-            } else if (bytes12(key) == _LSP6_ADDRESS_ALLOWEDADDRESSES_MAP_KEY_PREFIX) {
-                require(
-                    inputValues[ii].isEncodedArrayOfAddresses(),
-                    "LSP6KeyManager: invalid ABI encoded array of addresses"
-                );
-            } else if (
-                bytes12(key) == _LSP6_ADDRESS_ALLOWEDFUNCTIONS_MAP_KEY_PREFIX ||
-                bytes12(key) == _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX
-            ) {
-                require(
-                    inputValues[ii].isBytes4EncodedArray(),
-                    "LSP6KeyManager: invalid ABI encoded array of bytes4"
-                );
-            } else if (bytes12(key) == _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX) {
-                require(
-                    inputValues[ii].isEncodedArray(),
-                    "LSP6KeyManager: invalid ABI encoded array of bytes32"
-                );
-            } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
-                uint256 arrayLength = uint256(bytes32(ERC725Y(account).getData(key)));
-                uint256 newLength = uint256(bytes32(inputValues[ii]));
-
-                if (newLength > arrayLength) {
-                    if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
-                        revert NotAuthorised(_from, "ADDPERMISSIONS");
-                } else {
-                    if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
-                        revert NotAuthorised(_from, "CHANGEPERMISSIONS");
-                }
-            } else if (bytes16(key) == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY_PREFIX) {
-                if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
-                    revert NotAuthorised(_from, "CHANGEPERMISSIONS");
-
-                // if the key is any other bytes32 key
             } else {
+                // if the key is any other bytes32 key
                 isSettingERC725YKeys = true;
             }
         }
@@ -289,21 +259,91 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
     function _verifyCanSetPermissions(
         bytes32 _key,
+        bytes memory _value,
+        address _from,
+        bytes32 _permissions
+    ) internal view {
+        // prettier-ignore
+        if (bytes12(_key) == _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX) {
+            
+            // key = AddressPermissions:Permissions:<address>
+            _verifyCanSetBytes32Permissions(_key, _from, _permissions);
+        
+        } else if (_key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
+
+            // key = AddressPermissions[]
+            _verifyCanSetPermissionsArray(_key, _value, _from, _permissions);
+        
+        } else if (bytes16(_key) == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY_PREFIX) {
+
+            // key = AddressPermissions[index]
+            if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
+                revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+
+        } else if (bytes12(_key) == _LSP6_ADDRESS_ALLOWEDADDRESSES_MAP_KEY_PREFIX) {
+
+            // AddressPermissions:AllowedAddresses:<address>
+            require(
+                _value.isEncodedArrayOfAddresses(),
+                "LSP6KeyManager: invalid ABI encoded array of addresses"
+            );
+
+        } else if (
+            bytes12(_key) == _LSP6_ADDRESS_ALLOWEDFUNCTIONS_MAP_KEY_PREFIX ||
+            bytes12(_key) == _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX
+        ) {
+
+            // AddressPermissions:AllowedFunctions:<address>
+            // AddressPermissions:AllowedStandards:<address>
+            require(
+                _value.isBytes4EncodedArray(),
+                "LSP6KeyManager: invalid ABI encoded array of bytes4"
+            );
+
+        } else if (bytes12(_key) == _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX) {
+
+            // AddressPermissions:AllowedERC725YKeys:<address>
+            require(
+                _value.isEncodedArray(),
+                "LSP6KeyManager: invalid ABI encoded array of bytes32"
+            );
+
+        }
+    }
+
+    function _verifyCanSetBytes32Permissions(
+        bytes32 _key,
         address _from,
         bytes32 _callerPermissions
     ) internal view {
-        // prettier-ignore
-        // check if some permissions are already stored under this key
         if (bytes32(ERC725Y(account).getData(_key)) == bytes32(0)) {
-            // if nothing is stored under this key,
+            // if there is nothing stored under this data key,
             // we are trying to ADD permissions for a NEW address
             if (!_callerPermissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
                 revert NotAuthorised(_from, "ADDPERMISSIONS");
         } else {
-            // if there are already a value stored under this key,
+            // if there are already some permissions stored under this data key,
             // we are trying to CHANGE the permissions of an address
             // (that has already some EXISTING permissions set)
-            if (!_callerPermissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS)) 
+            if (!_callerPermissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
+                revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+        }
+    }
+
+    function _verifyCanSetPermissionsArray(
+        bytes32 _key,
+        bytes memory _value,
+        address _from,
+        bytes32 _permissions
+    ) internal view {
+        uint256 arrayLength = uint256(bytes32(ERC725Y(account).getData(_key)));
+        uint256 newLength = uint256(bytes32(_value));
+
+        if (newLength > arrayLength) {
+            if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
+                revert NotAuthorised(_from, "ADDPERMISSIONS");
+        } else {
+            if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
                 revert NotAuthorised(_from, "CHANGEPERMISSIONS");
         }
     }

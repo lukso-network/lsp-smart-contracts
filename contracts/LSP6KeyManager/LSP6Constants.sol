@@ -16,6 +16,9 @@ bytes32 constant _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY = 0xdf30dba06db6a30e65354d9
 // AddressPermissions[index]
 bytes16 constant _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY_PREFIX = 0xdf30dba06db6a30e65354d9a64c60986;
 
+// AddressPermissions:...
+bytes8 constant _LSP6_ADDRESS_PERMISSIONS_PREFIX = 0x4b80742d00000000;
+
 // bytes4(keccak256('AddressPermissions')) + bytes4(0) + bytes2(keccak256('Permissions')) + bytes2(0)
 bytes12 constant _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX = 0x4b80742d0000000082ac0000; // AddressPermissions:Permissions:<address> --> bytes32
 
