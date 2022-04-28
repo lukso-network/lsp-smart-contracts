@@ -211,7 +211,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
 
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
 
-        if (amount > 0) {
+        if (amount != 0) {
             emit AuthorizedOperator(operator, tokenOwner, amount);
         } else {
             emit RevokedOperator(operator, tokenOwner);
@@ -411,7 +411,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
                 packedData
             );
         } else if (!force) {
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP7NotifyTokenReceiverIsEOA(to);
