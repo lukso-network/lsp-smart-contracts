@@ -11,7 +11,7 @@ interface ILSP6KeyManager is
     IERC1271
     /* is ERC165 */
 {
-    event Executed(uint256 indexed _value, bytes _data);
+    event Executed(uint256 indexed _value, bytes4 _selector);
 
     /**
      * @notice returns the address of the account linked to this KeyManager

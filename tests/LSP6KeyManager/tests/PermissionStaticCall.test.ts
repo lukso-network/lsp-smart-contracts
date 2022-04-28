@@ -144,15 +144,13 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetContractPayload,
         ]);
 
-      try {
-        await context.keyManager
+      await expect(
+        context.keyManager
           .connect(addressCanMakeStaticCall)
-          .execute(executePayload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAuthorisedError(addressCanMakeStaticCall.address, "CALL")
-        );
-      }
+          .execute(executePayload)
+      ).toBeRevertedWith(
+        NotAuthorisedError(addressCanMakeStaticCall.address, "CALL")
+      );
     });
   });
 
@@ -169,15 +167,13 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetContractPayload,
         ]);
 
-      try {
-        const result = await context.keyManager
+      await expect(
+        context.keyManager
           .connect(addressCannotMakeStaticCall)
-          .execute(executePayload);
-      } catch (error) {
-        expect(error.message).toMatch(
-          NotAuthorisedError(addressCannotMakeStaticCall.address, "STATICCALL")
-        );
-      }
+          .execute(executePayload)
+      ).toBeRevertedWith(
+        NotAuthorisedError(addressCannotMakeStaticCall.address, "STATICCALL")
+      );
     });
   });
 };

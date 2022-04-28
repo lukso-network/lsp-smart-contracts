@@ -29,6 +29,10 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return ERC725Y(account).getAllowedFunctionsFor(_address);
     }
 
+    function getAllowedERC725YKeysFor(address _address) public view returns (bytes memory) {
+        return ERC725Y(account).getAllowedERC725YKeysFor(_address);
+    }
+
     function verifyAllowedAddress(address _sender, address _recipient) public view {
         super._verifyAllowedAddress(_sender, _recipient);
     }
@@ -37,11 +41,19 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         super._verifyAllowedFunction(_sender, _function);
     }
 
+    function verifyAllowedERC725YKeys(address _from, bytes32[] memory _inputKeys) public view {
+        super._verifyAllowedERC725YKeys(_from, _inputKeys);
+    }
+
     function includesPermissions(bytes32 _addressPermission, bytes32 _permissions)
         public
         pure
         returns (bool)
     {
         return _addressPermission.includesPermissions(_permissions);
+    }
+
+    function countZeroBytes(bytes32 _key) public pure returns (uint256 zeroBytesCount_) {
+        return super._countZeroBytes(_key);
     }
 }

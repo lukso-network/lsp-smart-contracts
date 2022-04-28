@@ -90,15 +90,11 @@ export const testSecurityScenarios = (
       [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
     );
 
-    try {
-      await context.keyManager
+    await expect(
+      context.keyManager
         .connect(addressWithNoPermissions)
-        .execute(executePayload);
-    } catch (error) {
-      expect(error.message).toMatch(
-        NoPermissionsSetError(addressWithNoPermissions.address)
-      );
-    }
+        .execute(executePayload)
+    ).toBeRevertedWith(NoPermissionsSetError(addressWithNoPermissions.address));
   });
 
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
