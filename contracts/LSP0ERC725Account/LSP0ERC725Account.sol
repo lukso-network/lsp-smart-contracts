@@ -20,17 +20,20 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore, ERC725 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
             super.supportsInterface(interfaceId);
+    }
+
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(LSP0ERC725AccountCore, OwnableUnset)
+        onlyOwner
+    {
+        super.transferOwnership(_newOwner);
     }
 }

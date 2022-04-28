@@ -10,6 +10,7 @@ import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 import "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {OwnableClaim} from "../Utils/OwnableClaim.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -27,7 +28,8 @@ abstract contract LSP0ERC725AccountCore is
     IERC1271,
     ILSP1UniversalReceiver,
     ERC725XCore,
-    ERC725YCore
+    ERC725YCore,
+    OwnableClaim
 {
     event ValueReceived(address indexed sender, uint256 indexed value);
 
@@ -68,10 +70,7 @@ abstract contract LSP0ERC725AccountCore is
         // if OWNER is a contract
         if (_owner.code.length != 0) {
             return
-                ERC165CheckerCustom.supportsERC165Interface(
-                    _owner,
-                    _INTERFACEID_ERC1271
-                )
+                ERC165CheckerCustom.supportsERC165Interface(_owner, _INTERFACEID_ERC1271)
                     ? IERC1271(_owner).isValidSignature(_hash, _signature)
                     : _ERC1271_FAILVALUE;
             // if OWNER is a key
@@ -105,11 +104,14 @@ abstract contract LSP0ERC725AccountCore is
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                returnValue = ILSP1UniversalReceiverDelegate(
-                    universalReceiverDelegate
-                ).universalReceiverDelegate(_msgSender(), _typeId, _data);
+                returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
             }
         }
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
+    }
+
+    function transferOwnership(address _newOwner) public virtual override(OwnableUnset) onlyOwner {
+        pendingOwner = _newOwner;
     }
 }
