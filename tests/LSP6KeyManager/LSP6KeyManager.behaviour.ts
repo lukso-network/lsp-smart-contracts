@@ -128,7 +128,7 @@ export const shouldInitializeLikeLSP6 = (
     });
 
     it("should be linked to the right ERC725 account contract", async () => {
-      let account = await context.keyManager.account();
+      let account = await context.keyManager.target();
       expect(account).toEqual(context.universalProfile.address);
     });
   });
