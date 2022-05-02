@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/interfaces/IERC1271.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+// interfaces
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
+
+// modules
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 /**
  * @dev sample contract that implements ERC1271 (Standard Signature Validation Method for Contracts)

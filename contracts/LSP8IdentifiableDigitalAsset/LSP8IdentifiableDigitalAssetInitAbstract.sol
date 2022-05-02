@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+
 // modules
-import "./LSP8IdentifiableDigitalAssetCore.sol";
-import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {LSP8IdentifiableDigitalAssetCore} from "./LSP8IdentifiableDigitalAssetCore.sol";
+import {LSP4DigitalAssetMetadataInitAbstract} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
 
 // constants
-import "./LSP8Constants.sol";
-import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
 
 /**
  * @title LSP8IdentifiableDigitalAsset contract
@@ -24,11 +28,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         string memory symbol_,
         address newOwner_
     ) internal virtual override onlyInitializing {
-        LSP4DigitalAssetMetadataInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_
-        );
+        LSP4DigitalAssetMetadataInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 
     /**
@@ -41,8 +41,6 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         override(IERC165, ERC165Storage)
         returns (bool)
     {
-        return
-            interfaceId == _INTERFACEID_LSP8 ||
-            super.supportsInterface(interfaceId);
+        return interfaceId == _INTERFACEID_LSP8 || super.supportsInterface(interfaceId);
     }
 }

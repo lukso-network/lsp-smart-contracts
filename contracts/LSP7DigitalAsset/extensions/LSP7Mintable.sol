@@ -2,8 +2,9 @@
 
 pragma solidity ^0.8.0;
 
-import "./LSP7MintableCore.sol";
-import "../LSP7DigitalAsset.sol";
+// modules
+import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+import {LSP7MintableCore} from "./LSP7MintableCore.sol";
 
 /**
  * @title LSP7Mintable

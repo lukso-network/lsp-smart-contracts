@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../UniversalProfile.sol";
-import "../LSP6KeyManager/LSP6KeyManager.sol";
+// modules
+import {UniversalProfile} from "../UniversalProfile.sol";
+import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
+
+// constants
 import {setDataMultipleSelector} from "../LSP6KeyManager/LSP6Constants.sol";
 
 contract Executor {
@@ -32,11 +35,7 @@ contract Executor {
         keys[0] = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
         values[0] = "Some value";
 
-        bytes memory erc725Payload = abi.encodeWithSelector(
-            setDataMultipleSelector,
-            keys,
-            values
-        );
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -48,11 +47,7 @@ contract Executor {
         keys[0] = keccak256(abi.encodePacked("Some Key"));
         values[0] = abi.encodePacked("Some value");
 
-        bytes memory erc725Payload = abi.encodeWithSelector(
-            setDataMultipleSelector,
-            keys,
-            values
-        );
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -67,11 +62,7 @@ contract Executor {
         keys[0] = _key;
         values[0] = _value;
 
-        bytes memory erc725Payload = abi.encodeWithSelector(
-            setDataMultipleSelector,
-            keys,
-            values
-        );
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -90,10 +81,7 @@ contract Executor {
         return _keyManager.execute(erc725Payload);
     }
 
-    function sendOneLyxToRecipient(address _recipient)
-        public
-        returns (bytes memory)
-    {
+    function sendOneLyxToRecipient(address _recipient) public returns (bytes memory) {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
@@ -118,11 +106,7 @@ contract Executor {
         keys[0] = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
         values[0] = "Some value";
 
-        bytes memory erc725Payload = abi.encodeWithSelector(
-            setDataMultipleSelector,
-            keys,
-            values
-        );
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,
@@ -141,11 +125,7 @@ contract Executor {
         keys[0] = keccak256(abi.encodePacked("Some Key"));
         values[0] = abi.encodePacked("Some value");
 
-        bytes memory erc725Payload = abi.encodeWithSelector(
-            setDataMultipleSelector,
-            keys,
-            values
-        );
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,
@@ -167,11 +147,7 @@ contract Executor {
         keys[0] = _key;
         values[0] = _value;
 
-        bytes memory erc725Payload = abi.encodeWithSelector(
-            setDataMultipleSelector,
-            keys,
-            values
-        );
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,
@@ -204,10 +180,7 @@ contract Executor {
         return success;
     }
 
-    function sendOneLyxToRecipientRawCall(address _recipient)
-        public
-        returns (bool)
-    {
+    function sendOneLyxToRecipientRawCall(address _recipient) public returns (bool) {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(

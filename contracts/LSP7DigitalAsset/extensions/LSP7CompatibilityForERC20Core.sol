@@ -2,12 +2,13 @@
 
 pragma solidity ^0.8.0;
 
-// modules
-import "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
-import "../LSP7DigitalAssetCore.sol";
-
 // interfaces
-import "./ILSP7CompatibilityForERC20.sol";
+import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
+import {ILSP7CompatibilityForERC20} from "./ILSP7CompatibilityForERC20.sol";
+
+// modules
+import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
+import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 
 /**
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
@@ -20,11 +21,7 @@ abstract contract LSP7CompatibilityForERC20Core is
     /**
      * @inheritdoc ILSP7CompatibilityForERC20
      */
-    function approve(address operator, uint256 amount)
-        external
-        virtual
-        override
-    {
+    function approve(address operator, uint256 amount) external virtual override {
         return authorizeOperator(operator, amount);
     }
 
@@ -72,11 +69,7 @@ abstract contract LSP7CompatibilityForERC20Core is
     {
         super.authorizeOperator(operator, amount);
 
-        emit Approval(
-            _msgSender(),
-            operator,
-            amount
-        );
+        emit Approval(_msgSender(), operator, amount);
     }
 
     function _transfer(
@@ -88,11 +81,7 @@ abstract contract LSP7CompatibilityForERC20Core is
     ) internal virtual override {
         super._transfer(from, to, amount, force, data);
 
-        emit Transfer(
-            from,
-            to,
-            amount
-        );
+        emit Transfer(from, to, amount);
     }
 
     function _mint(
@@ -103,24 +92,16 @@ abstract contract LSP7CompatibilityForERC20Core is
     ) internal virtual override {
         super._mint(to, amount, force, data);
 
-        emit Transfer(
-            address(0),
-            to,
-            amount
-        );
+        emit Transfer(address(0), to, amount);
     }
 
-    function _burn(address from, uint256 amount, bytes memory data)
-        internal
-        virtual
-        override
-    {
+    function _burn(
+        address from,
+        uint256 amount,
+        bytes memory data
+    ) internal virtual override {
         super._burn(from, amount, data);
 
-        emit Transfer(
-            from,
-            address(0),
-            amount
-        );
+        emit Transfer(from, address(0), amount);
     }
 }

@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import "solidity-bytes-utils/contracts/BytesLib.sol";
-import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import "../LSP7DigitalAsset/LSP7Constants.sol";
-import "../LSP6KeyManager/LSP6Utils.sol";
-import "../Utils/UtilsLib.sol";
+// interfaces
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+
+// libraries
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
+import {UtilsLib} from "../Utils/UtilsLib.sol";
+
+// constants
+import {_TYPEID_LSP7_TOKENSSENDER} from "../LSP7DigitalAsset/LSP7Constants.sol";
 
 library LSP5Utils {
     /**
@@ -39,10 +44,7 @@ library LSP5Utils {
             uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
             uint256 newArrayLength = arrayLength + 1;
 
-            keys[1] = LSP2Utils.generateArrayKeyAtIndex(
-                _arrayKey,
-                newArrayLength - 1
-            );
+            keys[1] = LSP2Utils.generateArrayKeyAtIndex(_arrayKey, newArrayLength - 1);
 
             values[0] = UtilsLib.uint256ToBytes(newArrayLength);
             values[2] = bytes.concat(bytes8(uint64(arrayLength)), _appendix);
@@ -60,10 +62,7 @@ library LSP5Utils {
         bytes32 _mapKeyToRemove
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         uint64 index = extractIndexFromMap(_account, _mapKeyToRemove);
-        bytes32 arrayKeyToRemove = LSP2Utils.generateArrayKeyAtIndex(
-            _arrayKey,
-            index
-        );
+        bytes32 arrayKeyToRemove = LSP2Utils.generateArrayKeyAtIndex(_arrayKey, index);
 
         bytes memory rawArrayLength = _account.getData(_arrayKey);
 
@@ -92,18 +91,14 @@ library LSP5Utils {
             keys[1] = _mapKeyToRemove;
             values[1] = "";
 
-            bytes32 lastKey = LSP2Utils.generateArrayKeyAtIndex(
-                _arrayKey,
-                newLength
-            );
+            bytes32 lastKey = LSP2Utils.generateArrayKeyAtIndex(_arrayKey, newLength);
 
             bytes memory lastKeyValue = _account.getData(lastKey);
 
-            bytes32 mapOfLastkey = LSP2Utils
-                .generateBytes20MappingWithGroupingKey(
-                    mapPrefix,
-                    bytes20(lastKeyValue)
-                );
+            bytes32 mapOfLastkey = LSP2Utils.generateBytes20MappingWithGroupingKey(
+                mapPrefix,
+                bytes20(lastKeyValue)
+            );
 
             bytes memory mapValueOfLastkey = _account.getData(mapOfLastkey);
 
@@ -164,11 +159,7 @@ library LSP5Utils {
         return BytesLib.toUint64(val, 0);
     }
 
-    function extractTokenAmount(bytes32 typeId, bytes memory data)
-        internal
-        pure
-        returns (uint256)
-    {
+    function extractTokenAmount(bytes32 typeId, bytes memory data) internal pure returns (uint256) {
         if (typeId == _TYPEID_LSP7_TOKENSSENDER) {
             return uint256(bytes32(BytesLib.slice(data, 40, 32)));
         } else {

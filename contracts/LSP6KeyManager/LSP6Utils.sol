@@ -2,14 +2,14 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
+
+// libraries
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import "../LSP6KeyManager/LSP6Constants.sol";
-
-// libraries
-import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import "./ILSP6KeyManager.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;

@@ -2,11 +2,14 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+
+// libraries
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // modules
-import "./Registries/AddressRegistry.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {AddressRegistry} from "./Registries/AddressRegistry.sol";
 
 contract UniversalReceiverAddressStore is
     ERC165Storage,
@@ -27,21 +30,11 @@ contract UniversalReceiverAddressStore is
         _registerInterface(_INTERFACE_ID_LSP1DELEGATE);
     }
 
-    function addAddress(address _address)
-        public
-        override
-        onlyAccount
-        returns (bool)
-    {
+    function addAddress(address _address) public override onlyAccount returns (bool) {
         return _addressStore.add(_address);
     }
 
-    function removeAddress(address _address)
-        public
-        override
-        onlyAccount
-        returns (bool)
-    {
+    function removeAddress(address _address) public override onlyAccount returns (bool) {
         return _addressStore.remove(_address);
     }
 
@@ -60,10 +53,7 @@ contract UniversalReceiverAddressStore is
 
     /* Modifers */
     modifier onlyAccount() {
-        require(
-            msg.sender == account,
-            "Only the connected account call this function"
-        );
+        require(msg.sender == account, "Only the connected account call this function");
         _;
     }
 }

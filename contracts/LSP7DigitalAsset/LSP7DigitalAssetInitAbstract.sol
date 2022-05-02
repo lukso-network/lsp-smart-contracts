@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-// constants
-import "./LSP7Constants.sol";
-import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+// interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // modules
-import "./LSP7DigitalAssetCore.sol";
-import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {LSP4DigitalAssetMetadataInitAbstract} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
+import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
+
+// constants
+import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
 
 /**
  * @title LSP7DigitalAsset contract
@@ -26,11 +30,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bool isNFT_
     ) internal virtual onlyInitializing {
         _isNFT = isNFT_;
-        LSP4DigitalAssetMetadataInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_
-        );
+        LSP4DigitalAssetMetadataInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 
     /**
@@ -43,8 +43,6 @@ abstract contract LSP7DigitalAssetInitAbstract is
         override(IERC165, ERC165Storage)
         returns (bool)
     {
-        return
-            interfaceId == _INTERFACEID_LSP7 ||
-            super.supportsInterface(interfaceId);
+        return interfaceId == _INTERFACEID_LSP7 || super.supportsInterface(interfaceId);
     }
 }

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
+// libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import "../Utils/UtilsLib.sol";
+import {UtilsLib} from "../Utils/UtilsLib.sol";
 
 /**
  * @title ERC725 Utility library to encode key types
