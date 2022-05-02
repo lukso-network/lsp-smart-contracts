@@ -1,23 +1,25 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-// constants
-import "./LSP7Constants.sol";
-import "../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
-
 // interfaces
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import "./ILSP7DigitalAsset.sol";
+import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
+
+// libraries
+import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
 
 // modules
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
-// library
-import "../Utils/ERC165CheckerCustom.sol";
+// errors
+import "./LSP7Errors.sol";
+
+// constants
+import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Constants.sol";
 
 /**
  * @title LSP7DigitalAsset contract
@@ -26,27 +28,6 @@ import "../Utils/ERC165CheckerCustom.sol";
  */
 abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     using Address for address;
-
-    // --- Errors
-
-    error LSP7AmountExceedsBalance(
-        uint256 balance,
-        address tokenOwner,
-        uint256 amount
-    );
-    error LSP7AmountExceedsAuthorizedAmount(
-        address tokenOwner,
-        uint256 authorizedAmount,
-        address operator,
-        uint256 amount
-    );
-    error LSP7CannotUseAddressZeroAsOperator();
-    error LSP7CannotSendWithAddressZero();
-    error LSP7InvalidTransferBatch();
-    error LSP7NotifyTokenReceiverContractMissingLSP1Interface(
-        address tokenReceiver
-    );
-    error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
 
     // --- Storage
 
@@ -58,8 +39,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     mapping(address => uint256) internal _tokenOwnerBalances;
 
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
-    mapping(address => mapping(address => uint256))
-        internal _operatorAuthorizedAmount;
+    mapping(address => mapping(address => uint256)) internal _operatorAuthorizedAmount;
 
     // --- Token queries
 
@@ -82,12 +62,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function balanceOf(address tokenOwner)
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function balanceOf(address tokenOwner) public view override returns (uint256) {
         return _tokenOwnerBalances[tokenOwner];
     }
 
@@ -96,11 +71,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function authorizeOperator(address operator, uint256 amount)
-        public
-        virtual
-        override
-    {
+    function authorizeOperator(address operator, uint256 amount) public virtual override {
         _updateOperator(_msgSender(), operator, amount);
     }
 
@@ -144,12 +115,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         if (operator != from) {
             uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
             if (amount > operatorAmount) {
-                revert LSP7AmountExceedsAuthorizedAmount(
-                    from,
-                    operatorAmount,
-                    operator,
-                    amount
-                );
+                revert LSP7AmountExceedsAuthorizedAmount(from, operatorAmount, operator, amount);
             }
 
             _updateOperator(from, operator, operatorAmount - amount);
@@ -169,9 +135,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bytes[] memory data
     ) external virtual override {
         if (
-            from.length != to.length ||
-            from.length != amount.length ||
-            from.length != data.length
+            from.length != to.length || from.length != amount.length || from.length != data.length
         ) {
             revert LSP7InvalidTransferBatch();
         }
@@ -276,16 +240,9 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
 
         address operator = _msgSender();
         if (operator != from) {
-            uint256 authorizedAmount = _operatorAuthorizedAmount[from][
-                operator
-            ];
+            uint256 authorizedAmount = _operatorAuthorizedAmount[from][operator];
             if (amount > authorizedAmount) {
-                revert LSP7AmountExceedsAuthorizedAmount(
-                    from,
-                    authorizedAmount,
-                    operator,
-                    amount
-                );
+                revert LSP7AmountExceedsAuthorizedAmount(from, authorizedAmount, operator, amount);
             }
             _operatorAuthorizedAmount[from][operator] -= amount;
         }
@@ -378,14 +335,9 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         uint256 amount,
         bytes memory data
     ) internal virtual {
-        if (
-            ERC165CheckerCustom.supportsERC165Interface(from, _INTERFACEID_LSP1)
-        ) {
+        if (ERC165CheckerCustom.supportsERC165Interface(from, _INTERFACEID_LSP1)) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
-            ILSP1UniversalReceiver(from).universalReceiver(
-                _TYPEID_LSP7_TOKENSSENDER,
-                packedData
-            );
+            ILSP1UniversalReceiver(from).universalReceiver(_TYPEID_LSP7_TOKENSSENDER, packedData);
         }
     }
 
@@ -402,14 +354,9 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual {
-        if (
-            ERC165CheckerCustom.supportsERC165Interface(to, _INTERFACEID_LSP1)
-        ) {
+        if (ERC165CheckerCustom.supportsERC165Interface(to, _INTERFACEID_LSP1)) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
-            ILSP1UniversalReceiver(to).universalReceiver(
-                _TYPEID_LSP7_TOKENSRECIPIENT,
-                packedData
-            );
+            ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP7_TOKENSRECIPIENT, packedData);
         } else if (!force) {
             if (to.code.length != 0) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);

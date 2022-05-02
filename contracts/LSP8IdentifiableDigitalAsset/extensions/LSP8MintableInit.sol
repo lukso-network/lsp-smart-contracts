@@ -2,7 +2,8 @@
 
 pragma solidity ^0.8.0;
 
-import "./LSP8MintableInitAbstract.sol";
+// modules
+import {LSP8MintableInitAbstract} from "./LSP8MintableInitAbstract.sol";
 
 /**
  * @dev LSP8 extension.
@@ -18,7 +19,7 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override initializer {
+    ) public virtual initializer {
         LSP8MintableInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 }

@@ -2,11 +2,11 @@
 
 pragma solidity ^0.8.0;
 
-// modules
-import "../LSP7DigitalAssetCore.sol";
-
 // interfaces
-import "./ILSP7Mintable.sol";
+import {ILSP7Mintable} from "./ILSP7Mintable.sol";
+
+// modules
+import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 
 /**
  * @dev LSP7 extension, mintable .

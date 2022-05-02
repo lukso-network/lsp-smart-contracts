@@ -1,21 +1,23 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-// modules
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import "../../../LSP6KeyManager/LSP6KeyManager.sol";
-
 // interfaces
-import "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP7DigitalAsset} from "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
-import "../../../Utils/ERC165CheckerCustom.sol";
-import "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import "../../../LSP5ReceivedAssets/LSP5Utils.sol";
-import "../../LSP1Utils.sol";
+import {ERC165CheckerCustom} from "../../../Utils/ERC165CheckerCustom.sol";
+import {LSP1Utils} from "../../LSP1Utils.sol";
+import {LSP2Utils} from "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import {LSP5Utils} from "../../../LSP5ReceivedAssets/LSP5Utils.sol";
+
+// modules
+import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {LSP6KeyManager} from "../../../LSP6KeyManager/LSP6KeyManager.sol";
 
 // constants
-import "../../LSP1Constants.sol";
+import {_INTERFACEID_LSP6} from "../../../LSP6KeyManager/LSP6Constants.sol";
+import {_TYPEID_LSP9_VAULTSENDER} from "../../../LSP9Vault/LSP9Constants.sol";
 
 /**
  * @dev Function logic to add and remove the MapAndArrayKey of incoming assets and vaults
@@ -30,7 +32,9 @@ abstract contract TokenAndVaultHandling {
 
         address keyManager = ERC725Y(msg.sender).owner();
         if (!ERC165CheckerCustom.supportsERC165Interface(keyManager, _INTERFACEID_LSP6)) return "";
+
         address accountAddress = address(LSP6KeyManager(keyManager).target());
+        
         // check if the caller is the same account controlled by the keyManager
         if (msg.sender != accountAddress) return "";
         (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils

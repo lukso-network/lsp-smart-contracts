@@ -1,26 +1,30 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.6;
 
-// modules
-import "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-
 // interfaces
-import "./ILSP6KeyManager.sol";
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
+
+// modules
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // libraries
-import "./LSP6Utils.sol";
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import {LSP6Utils} from "./LSP6Utils.sol";
 
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "../Utils/ERC165CheckerCustom.sol";
-import "solidity-bytes-utils/contracts/BytesLib.sol";
+// errors
+import "./LSP6Errors.sol";
 
 // constants
 import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
-import "./LSP6Errors.sol";
 
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage

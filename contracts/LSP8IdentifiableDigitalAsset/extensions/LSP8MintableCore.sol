@@ -2,19 +2,16 @@
 
 pragma solidity ^0.8.0;
 
-// modules
-import "../LSP8IdentifiableDigitalAssetCore.sol";
-
 // interfaces
-import "./ILSP8Mintable.sol";
+import {ILSP8Mintable} from "./ILSP8Mintable.sol";
+
+// modules
+import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 /**
  * @dev LSP8 extension
  */
-abstract contract LSP8MintableCore is
-    ILSP8Mintable,
-    LSP8IdentifiableDigitalAssetCore
-{
+abstract contract LSP8MintableCore is ILSP8Mintable, LSP8IdentifiableDigitalAssetCore {
     /**
      * @inheritdoc ILSP8Mintable
      */
