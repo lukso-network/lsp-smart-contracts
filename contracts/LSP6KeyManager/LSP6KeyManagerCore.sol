@@ -292,13 +292,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 "LSP6KeyManager: invalid ABI encoded array of addresses"
             );
 
-            bytes memory currentAllowedAddresses = ERC725Y(target).getData(_key);
+            bytes memory storedAllowedAddresses = ERC725Y(target).getData(_key);
 
-            if (
-                currentAllowedAddresses.length == 0 ||
-                !LSP2Utils.isEncodedArrayOfAddresses(currentAllowedAddresses) ||
-                abi.decode(currentAllowedAddresses, (address[])).length == 0 // if empty array
-            ) {
+            if (storedAllowedAddresses.length == 0) {
                 if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
                     revert NotAuthorised(_from, "ADDPERMISSIONS");
             } else {
@@ -318,6 +314,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 "LSP6KeyManager: invalid ABI encoded array of bytes4"
             );
 
+            bytes memory storedAllowedBytes4 = ERC725Y(target).getData(_key);
+
+            if (storedAllowedBytes4.length == 0) {
+                if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
+                    revert NotAuthorised(_from, "ADDPERMISSIONS");
+            } else {
+                if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
+                    revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+            }
+
         } else if (bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
 
             // AddressPermissions:AllowedERC725YKeys:<address>
@@ -325,6 +331,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 LSP2Utils.isEncodedArray(_value),
                 "LSP6KeyManager: invalid ABI encoded array of bytes32"
             );
+
+            bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(_key);
+
+            if (storedAllowedERC725YKeys.length == 0) {
+                if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
+                    revert NotAuthorised(_from, "ADDPERMISSIONS");
+            } else {
+                if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
+                    revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+            }
 
         }
     }
