@@ -41,13 +41,6 @@ describe("LSP2Utils", () => {
         expect(result).toBeFalsy();
       });
 
-      it("should return false for 30 x empty zero bytes", async () => {
-        const data =
-          "0x000000000000000000000000000000000000000000000000000000000000";
-        const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeFalsy();
-      });
-
       it("should return true for 32 x empty zero bytes", async () => {
         const data =
           "0x0000000000000000000000000000000000000000000000000000000000000000";
