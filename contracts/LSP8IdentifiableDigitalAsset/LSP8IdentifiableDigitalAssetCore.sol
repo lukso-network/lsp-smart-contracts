@@ -484,7 +484,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is
                 packedData
             );
         } else if (!force) {
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP8NotifyTokenReceiverIsEOA(to);

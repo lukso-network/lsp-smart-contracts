@@ -99,7 +99,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         emit Executed(msg.value, bytes4(_data));
-        return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
+        return result_.length != 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
     /**
@@ -148,7 +148,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         emit Executed(msg.value, bytes4(_data));
-        return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
+        return result_.length != 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
     /**
@@ -193,7 +193,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             address to = address(bytes20(_data[48:68]));
             _verifyAllowedAddress(_from, to);
 
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 _verifyAllowedStandard(_from, to);
 
                 if (_data.length >= 168) {
@@ -374,7 +374,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         if (!_permissions.includesPermissions(permissionRequired))
             revert NotAuthorised(_from, operationName);
 
-        if ((value > 0) && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)) {
+        if ((value != 0) && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)) {
             revert NotAuthorised(_from, "TRANSFERVALUE");
         }
     }
