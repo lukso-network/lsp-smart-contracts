@@ -427,7 +427,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, packedData);
         } else if (!force) {
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP8NotifyTokenReceiverIsEOA(to);

@@ -13,6 +13,6 @@ import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
  */
 abstract contract LSP6KeyManagerInitAbstract is Initializable, LSP6KeyManagerCore {
     function _initialize(address _account) internal virtual onlyInitializing {
-        account = _account;
+        target = _account;
     }
 }

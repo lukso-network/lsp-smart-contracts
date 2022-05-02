@@ -22,7 +22,7 @@ interface ILSP6KeyManager is
      *
      * @return the address of the linked account
      */
-    function account() external view returns (address);
+    function target() external view returns (address);
 
     /**
      * @notice get latest nonce for `_from` for channel ID: `_channel`

@@ -32,7 +32,9 @@ abstract contract TokenAndVaultHandling {
 
         address keyManager = ERC725Y(msg.sender).owner();
         if (!ERC165CheckerCustom.supportsERC165Interface(keyManager, _INTERFACEID_LSP6)) return "";
-        address accountAddress = address(LSP6KeyManager(keyManager).account());
+
+        address accountAddress = address(LSP6KeyManager(keyManager).target());
+        
         // check if the caller is the same account controlled by the keyManager
         if (msg.sender != accountAddress) return "";
         (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils
