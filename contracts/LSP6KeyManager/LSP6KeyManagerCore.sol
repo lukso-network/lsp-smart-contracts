@@ -288,9 +288,23 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
             // AddressPermissions:AllowedAddresses:<address>
             require(
-                _value.isEncodedArrayOfAddresses(),
+                LSP2Utils.isEncodedArrayOfAddresses(_value),
                 "LSP6KeyManager: invalid ABI encoded array of addresses"
             );
+
+            bytes memory currentAllowedAddresses = ERC725Y(target).getData(_key);
+
+            if (
+                currentAllowedAddresses.length == 0 ||
+                !LSP2Utils.isEncodedArrayOfAddresses(currentAllowedAddresses) ||
+                abi.decode(currentAllowedAddresses, (address[])).length == 0 // if empty array
+            ) {
+                if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
+                    revert NotAuthorised(_from, "ADDPERMISSIONS");
+            } else {
+                if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
+                    revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+            }
 
         } else if (
             bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX ||
@@ -300,7 +314,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             // AddressPermissions:AllowedFunctions:<address>
             // AddressPermissions:AllowedStandards:<address>
             require(
-                _value.isBytes4EncodedArray(),
+                LSP2Utils.isBytes4EncodedArray(_value),
                 "LSP6KeyManager: invalid ABI encoded array of bytes4"
             );
 
@@ -308,7 +322,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
             // AddressPermissions:AllowedERC725YKeys:<address>
             require(
-                _value.isEncodedArray(),
+                LSP2Utils.isEncodedArray(_value),
                 "LSP6KeyManager: invalid ABI encoded array of bytes32"
             );
 
@@ -355,8 +369,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     function _verifyAllowedERC725YKeys(address _from, bytes32[] memory _inputKeys) internal view {
         bytes memory allowedERC725YKeysEncoded = ERC725Y(target).getAllowedERC725YKeysFor(_from);
 
-        // whitelist any ERC725Y key if nothing in the list
-        if (allowedERC725YKeysEncoded.length == 0) return;
+        // whitelist any ERC725Y key
+        if (
+            // if nothing in the list
+            allowedERC725YKeysEncoded.length == 0 ||
+            // if not correctly abi-encoded array
+            !LSP2Utils.isEncodedArray(allowedERC725YKeysEncoded)
+        ) return;
 
         bytes32[] memory allowedERC725YKeys = abi.decode(allowedERC725YKeysEncoded, (bytes32[]));
 
@@ -443,8 +462,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     function _verifyAllowedAddress(address _from, address _to) internal view {
         bytes memory allowedAddresses = ERC725Y(target).getAllowedAddressesFor(_from);
 
-        // whitelist any address if nothing in the list
-        if (allowedAddresses.length == 0) return;
+        // whitelist any address
+        if (
+            // if nothing in the list
+            allowedAddresses.length == 0 ||
+            // if not correctly abi-encoded array of address[]
+            !LSP2Utils.isEncodedArrayOfAddresses(allowedAddresses)
+        ) return;
 
         address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
 
@@ -468,8 +492,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             )
         );
 
-        // whitelist any standard interface (ERC165) if nothing in the list
-        if (allowedStandards.length == 0) return;
+        // whitelist any standard interface (ERC165)
+        if (
+            // if nothing in the list
+            allowedStandards.length == 0 ||
+            // if not correctly abi-encoded array of bytes4[]
+            !LSP2Utils.isBytes4EncodedArray(allowedStandards)
+        ) return;
 
         bytes4[] memory allowedStandardsList = abi.decode(allowedStandards, (bytes4[]));
 
@@ -489,8 +518,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     function _verifyAllowedFunction(address _from, bytes4 _functionSelector) internal view {
         bytes memory allowedFunctions = ERC725Y(target).getAllowedFunctionsFor(_from);
 
-        // whitelist any function if nothing in the list
-        if (allowedFunctions.length == 0) return;
+        // whitelist any function
+        if (
+            // if nothing in the list
+            allowedFunctions.length == 0 ||
+            // if not correctly abi-encoded array of bytes4[]
+            !LSP2Utils.isBytes4EncodedArray(allowedFunctions)
+        ) return;
 
         bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
 
