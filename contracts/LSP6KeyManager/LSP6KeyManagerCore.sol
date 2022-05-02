@@ -235,8 +235,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
 
             if (
                 // if the key is a permission key
-                bytes8(key) == _LSP6_ADDRESS_PERMISSIONS_PREFIX ||
-                bytes16(key) == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY_PREFIX
+                bytes8(key) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
+                bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
             ) {
                 _verifyCanSetPermissions(key, inputValues[ii], _from, _permissions);
 
@@ -264,23 +264,23 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         bytes32 _permissions
     ) internal view {
         // prettier-ignore
-        if (bytes12(_key) == _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX) {
+        if (bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
             
             // key = AddressPermissions:Permissions:<address>
             _verifyCanSetBytes32Permissions(_key, _from, _permissions);
         
-        } else if (_key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
+        } else if (_key == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
 
             // key = AddressPermissions[]
             _verifyCanSetPermissionsArray(_key, _value, _from, _permissions);
         
-        } else if (bytes16(_key) == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY_PREFIX) {
+        } else if (bytes16(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
 
             // key = AddressPermissions[index]
             if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
                 revert NotAuthorised(_from, "CHANGEPERMISSIONS");
 
-        } else if (bytes12(_key) == _LSP6_ADDRESS_ALLOWEDADDRESSES_MAP_KEY_PREFIX) {
+        } else if (bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
 
             // AddressPermissions:AllowedAddresses:<address>
             require(
@@ -289,8 +289,8 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             );
 
         } else if (
-            bytes12(_key) == _LSP6_ADDRESS_ALLOWEDFUNCTIONS_MAP_KEY_PREFIX ||
-            bytes12(_key) == _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX
+            bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX ||
+            bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX
         ) {
 
             // AddressPermissions:AllowedFunctions:<address>
@@ -300,7 +300,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 "LSP6KeyManager: invalid ABI encoded array of bytes4"
             );
 
-        } else if (bytes12(_key) == _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX) {
+        } else if (bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
 
             // AddressPermissions:AllowedERC725YKeys:<address>
             require(
@@ -459,7 +459,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     function _verifyAllowedStandard(address _from, address _to) internal view {
         bytes memory allowedStandards = ERC725Y(account).getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX,
+                _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX,
                 bytes20(_from)
             )
         );

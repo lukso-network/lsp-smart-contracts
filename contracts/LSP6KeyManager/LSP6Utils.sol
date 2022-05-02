@@ -21,7 +21,7 @@ library LSP6Utils {
     {
         bytes memory permissions = _account.getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX,
+                _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
                 bytes20(_address)
             )
         );
@@ -37,7 +37,7 @@ library LSP6Utils {
         return
             _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _LSP6_ADDRESS_ALLOWEDADDRESSES_MAP_KEY_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX,
                     bytes20(_address)
                 )
             );
@@ -51,7 +51,7 @@ library LSP6Utils {
         return
             _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _LSP6_ADDRESS_ALLOWEDFUNCTIONS_MAP_KEY_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX,
                     bytes20(_address)
                 )
             );
@@ -65,7 +65,7 @@ library LSP6Utils {
         return
             _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX,
                     bytes20(_address)
                 )
             );
@@ -78,12 +78,12 @@ library LSP6Utils {
      * @param _permissionsToCheck the permissions to check
      * @return true if `_addressPermissions` includes `_permissionToCheck`, false otherwise
      */
-    function includesPermissions(
-        bytes32 _addressPermissions,
-        bytes32 _permissionsToCheck
-    ) internal pure returns (bool) {
-        return
-            (_addressPermissions & _permissionsToCheck) == _permissionsToCheck;
+    function includesPermissions(bytes32 _addressPermissions, bytes32 _permissionsToCheck)
+        internal
+        pure
+        returns (bool)
+    {
+        return (_addressPermissions & _permissionsToCheck) == _permissionsToCheck;
     }
 
     function setDataViaKeyManager(
@@ -91,11 +91,7 @@ library LSP6Utils {
         bytes32[] memory keys,
         bytes[] memory values
     ) internal returns (bytes memory result) {
-        bytes memory payload = abi.encodeWithSelector(
-            hex"14a6e293",
-            keys,
-            values
-        );
+        bytes memory payload = abi.encodeWithSelector(hex"14a6e293", keys, values);
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 }
