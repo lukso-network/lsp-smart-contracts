@@ -29,21 +29,12 @@ abstract contract TokenAndVaultHandling {
         if (sender.code.length == 0) return "";
 
         address keyManager = ERC725Y(msg.sender).owner();
-        if (
-            !ERC165CheckerCustom.supportsERC165Interface(
-                keyManager,
-                _INTERFACEID_LSP6
-            )
-        ) return "";
-        address accountAddress = address(LSP6KeyManager(keyManager).account());
+        if (!ERC165CheckerCustom.supportsERC165Interface(keyManager, _INTERFACEID_LSP6)) return "";
+        address accountAddress = address(LSP6KeyManager(keyManager).target());
         // check if the caller is the same account controlled by the keyManager
         if (msg.sender != accountAddress) return "";
-        (
-            bool senderHook,
-            bytes32 arrayKey,
-            bytes12 mapPrefix,
-            bytes4 interfaceID
-        ) = LSP1Utils.getTransferDetails(typeId);
+        (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils
+            .getTransferDetails(typeId);
 
         bytes32 mapKey = LSP2Utils.generateBytes20MappingWithGroupingKey(
             mapPrefix,
@@ -66,9 +57,7 @@ abstract contract TokenAndVaultHandling {
             // if there is no map for the asset to remove, then do nothing
             if (bytes12(mapValue) == bytes12(0)) return "";
             if (typeId != _TYPEID_LSP9_VAULTSENDER) {
-                uint256 balance = ILSP7DigitalAsset(sender).balanceOf(
-                    msg.sender
-                );
+                uint256 balance = ILSP7DigitalAsset(sender).balanceOf(msg.sender);
                 // if the amount sent is not the full balance, then do nothing
                 if (balance != 0) return "";
             }
