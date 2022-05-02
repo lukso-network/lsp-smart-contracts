@@ -11,11 +11,8 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
  * @author Fabian Vogelsteller, Jean Cavallera
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-abstract contract LSP6KeyManagerInitAbstract is
-    Initializable,
-    LSP6KeyManagerCore
-{
+abstract contract LSP6KeyManagerInitAbstract is Initializable, LSP6KeyManagerCore {
     function _initialize(address _account) internal virtual onlyInitializing {
-        account = _account;
+        target = _account;
     }
 }
