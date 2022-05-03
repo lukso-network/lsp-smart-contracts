@@ -55,7 +55,10 @@ export const shouldBehaveLikePermissionDelegateCall = (
   });
 
   describe("when trying to make a DELEGATECALL via UP", () => {
-    it("should pass when the caller has ALL PERMISSIONS", async () => {
+    /**
+     * @todo these tests are temporary, as DELEGATECALL via the KeyManager will be allowed in the future
+     */
+    it("should revert even if when the caller has ALL PERMISSIONS", async () => {
       const key =
         "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       const value = "0xbbbbbbbbbbbbbbbb";
@@ -83,17 +86,21 @@ export const shouldBehaveLikePermissionDelegateCall = (
           delegateCallPayload,
         ]);
 
-      await context.keyManager.connect(context.owner).execute(executePayload);
+      await expect(
+        context.keyManager.connect(context.owner).execute(executePayload)
+      ).toBeRevertedWith(
+        "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
+      );
 
-      // verify that the setData ran in the context of the calling UP
-      // and that it updated its ERC725Y storage
+      // verify that the setData did NOT ran in the context of the calling UP
+      // and that it did NOT update its ERC725Y storage
       const newStorage = await context.universalProfile["getData(bytes32)"](
         key
       );
-      expect(newStorage).toEqual(value);
+      expect(newStorage).toEqual("0x");
     });
 
-    it("should pass if caller has permission DELEGATECALL", async () => {
+    it("should revert even if caller has permission DELEGATECALL", async () => {
       const key =
         "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       const value = "0xbbbbbbbbbbbbbbbb";
@@ -121,16 +128,20 @@ export const shouldBehaveLikePermissionDelegateCall = (
           delegateCallPayload,
         ]);
 
-      await context.keyManager
-        .connect(addressCanDelegateCall)
-        .execute(executePayload);
+      await expect(
+        context.keyManager
+          .connect(addressCanDelegateCall)
+          .execute(executePayload)
+      ).toBeRevertedWith(
+        "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
+      );
 
-      // verify that the setData ran in the context of the calling UP
-      // and that it updated its ERC725Y storage
+      // verify that the setData did NOT ran in the context of the calling UP
+      // and that it did NOT update its ERC725Y storage
       const newStorage = await context.universalProfile["getData(bytes32)"](
         key
       );
-      expect(newStorage).toEqual(value);
+      expect(newStorage).toEqual("0x");
     });
   });
 };
