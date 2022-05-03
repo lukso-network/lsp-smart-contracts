@@ -458,6 +458,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         uint256 operationType = uint256(bytes32(_data[4:36]));
         uint256 value = uint256(bytes32(_data[68:100]));
 
+        // TODO: to be removed, as delegatecall should be allowed in the future
+        require(operationType != 4, "_verifyCanExecute: operation 4 `DELEGATECALL` not supported");
+
         (bytes32 permissionRequired, string memory operationName) = _extractPermissionFromOperation(
             operationType
         );
