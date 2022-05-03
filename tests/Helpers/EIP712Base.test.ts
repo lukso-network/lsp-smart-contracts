@@ -54,21 +54,21 @@ describe("Calculate LSP interfaces", () => {
       name: "KeyManager",
       version: "LSP6",
       chainId: chainIds,
-      verifyingContract: contract.address,
+      verifyingContract: contract.address, // KeyManager address
     };
 
     // The named list of all type definitions
     const types = {
-      KeyManager: [
+      RelayCall: [
         { name: "nonce", type: "uint256" },
-        { name: "data", type: "bytes" },
+        { name: "calldata", type: "bytes" },
       ],
     };
 
     // The data to sign
     const value = {
         nonce: nonce,
-        data: data,
+        calldata: data,
     };
 
     let signature = await signer._signTypedData(domain, types, value);
