@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../ILSP7DigitalAsset.sol";
+import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
 
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC20.
@@ -59,7 +59,5 @@ interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
      * @param operator The address approved by the `tokenOwner`
      * @return The amount `operator` is approved by `tokenOwner`
      */
-    function allowance(address tokenOwner, address operator)
-        external
-        returns (uint256);
+    function allowance(address tokenOwner, address operator) external returns (uint256);
 }

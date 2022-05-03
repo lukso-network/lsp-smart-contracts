@@ -1,26 +1,30 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.6;
 
-// modules
-import "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-
 // interfaces
-import "./ILSP6KeyManager.sol";
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
+
+// modules
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // libraries
-import "./LSP6Utils.sol";
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import {LSP6Utils} from "./LSP6Utils.sol";
 
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "../Utils/ERC165CheckerCustom.sol";
-import "solidity-bytes-utils/contracts/BytesLib.sol";
+// errors
+import "./LSP6Errors.sol";
 
 // constants
 import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
-import "./LSP6Errors.sol";
 
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -34,19 +38,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     using ECDSA for bytes32;
     using ERC165CheckerCustom for address;
 
-    address public override account;
+    address public override target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return
             interfaceId == _INTERFACEID_LSP6 ||
             interfaceId == _INTERFACEID_ERC1271 ||
@@ -56,12 +54,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function getNonce(address _from, uint256 _channel)
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function getNonce(address _from, uint256 _channel) public view override returns (uint256) {
         uint128 nonceId = uint128(_nonceStore[_from][_channel]);
         return (uint256(_channel) << 128) | nonceId;
     }
@@ -78,9 +71,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         address recoveredAddress = ECDSA.recover(_hash, _signature);
 
         return (
-            ERC725Y(account)
-                .getPermissionsFor(recoveredAddress)
-                .includesPermissions(_PERMISSION_SIGN)
+            ERC725Y(target).getPermissionsFor(recoveredAddress).includesPermissions(
+                _PERMISSION_SIGN
+            )
                 ? _ERC1271_MAGICVALUE
                 : _ERC1271_FAILVALUE
         );
@@ -89,16 +82,11 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata _data)
-        external
-        payable
-        override
-        returns (bytes memory)
-    {
+    function execute(bytes calldata _data) external payable override returns (bytes memory) {
         _verifyPermissions(msg.sender, _data);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result_) = address(account).call{
+        (bool success, bytes memory result_) = address(target).call{
             value: msg.value,
             gas: gasleft()
         }(_data);
@@ -115,7 +103,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         emit Executed(msg.value, bytes4(_data));
-        return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
+        return result_.length != 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
     /**
@@ -138,14 +126,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             _data
         );
 
-        address signer = keccak256(blob).toEthSignedMessageHash().recover(
-            _signature
-        );
+        address signer = keccak256(blob).toEthSignedMessageHash().recover(_signature);
 
-        require(
-            _isValidNonce(signer, _nonce),
-            "executeRelayCall: Invalid nonce"
-        );
+        require(_isValidNonce(signer, _nonce), "executeRelayCall: Invalid nonce");
 
         // increase nonce after successful verification
         _nonceStore[signer][_nonce >> 128]++;
@@ -153,10 +136,9 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         _verifyPermissions(signer, _data);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result_) = address(account).call{
-            value: 0,
-            gas: gasleft()
-        }(_data);
+        (bool success, bytes memory result_) = address(target).call{value: 0, gas: gasleft()}(
+            _data
+        );
 
         if (!success) {
             // solhint-disable reason-string
@@ -170,7 +152,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         emit Executed(msg.value, bytes4(_data));
-        return result_.length > 0 ? abi.decode(result_, (bytes)) : result_;
+        return result_.length != 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
     /**
@@ -181,11 +163,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _from caller address
      * @param _idx (channel id + nonce within the channel)
      */
-    function _isValidNonce(address _from, uint256 _idx)
-        internal
-        view
-        returns (bool)
-    {
+    function _isValidNonce(address _from, uint256 _idx) internal view returns (bool) {
         // idx % (1 << 128) = nonce
         // (idx >> 128) = channel
         // equivalent to: return (nonce == _nonceStore[_from][channel]
@@ -193,18 +171,15 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     }
 
     /**
-     * @dev verify the permissions of the _from address that want to interact with the `account`
+     * @dev verify the permissions of the _from address that want to interact with the `target`
      * @param _from the address making the request
-     * @param _data the payload that will be run on `account`
+     * @param _data the payload that will be run on `target`
      */
-    function _verifyPermissions(address _from, bytes calldata _data)
-        internal
-        view
-    {
+    function _verifyPermissions(address _from, bytes calldata _data) internal view {
         bytes4 erc725Function = bytes4(_data[:4]);
 
         // get the permissions of the caller
-        bytes32 permissions = ERC725Y(account).getPermissionsFor(_from);
+        bytes32 permissions = ERC725Y(target).getPermissionsFor(_from);
 
         // skip permissions check if caller has all permissions (except SIGN as not required)
         if (permissions.includesPermissions(_ALL_EXECUTION_PERMISSIONS)) {
@@ -222,7 +197,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
             address to = address(bytes20(_data[48:68]));
             _verifyAllowedAddress(_from, to);
 
-            if (to.code.length > 0) {
+            if (to.code.length != 0) {
                 _verifyAllowedStandard(_from, to);
 
                 if (_data.length >= 168) {
@@ -242,7 +217,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @dev verify if `_from` has the required permissions to set some keys
      * on the linked ERC725Account
      * @param _from the address who want to set the keys
-     * @param _data the ABI encoded payload `account.setData(keys, values)`
+     * @param _data the ABI encoded payload `target.setData(keys, values)`
      * containing a list of keys-value pairs
      */
     function _verifyCanSetData(
@@ -271,7 +246,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                 inputKeys[ii] = bytes32(0);
 
             } else if (key == _LSP6_ADDRESS_PERMISSIONS_ARRAY_KEY) {
-                uint256 arrayLength = uint256(bytes32(ERC725Y(account).getData(key)));
+                uint256 arrayLength = uint256(bytes32(ERC725Y(target).getData(key)));
                 uint256 newLength = uint256(bytes32(inputValues[ii]));
 
                 if (newLength > arrayLength) {
@@ -308,7 +283,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
     ) internal view {
         // prettier-ignore
         // check if some permissions are already stored under this key
-        if (bytes32(ERC725Y(account).getData(_key)) == bytes32(0)) {
+        if (bytes32(ERC725Y(target).getData(_key)) == bytes32(0)) {
             // if nothing is stored under this key,
             // we are trying to ADD permissions for a NEW address
             if (!_callerPermissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
@@ -322,20 +297,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
     }
 
-    function _verifyAllowedERC725YKeys(
-        address _from,
-        bytes32[] memory _inputKeys
-    ) internal view {
-        bytes memory allowedERC725YKeysEncoded = ERC725Y(account)
-            .getAllowedERC725YKeysFor(_from);
+    function _verifyAllowedERC725YKeys(address _from, bytes32[] memory _inputKeys) internal view {
+        bytes memory allowedERC725YKeysEncoded = ERC725Y(target).getAllowedERC725YKeysFor(_from);
 
         // whitelist any ERC725Y key if nothing in the list
         if (allowedERC725YKeysEncoded.length == 0) return;
 
-        bytes32[] memory allowedERC725YKeys = abi.decode(
-            allowedERC725YKeysEncoded,
-            (bytes32[])
-        );
+        bytes32[] memory allowedERC725YKeys = abi.decode(allowedERC725YKeysEncoded, (bytes32[]));
 
         uint256 zeroBytesCount;
         bytes32 mask;
@@ -382,8 +350,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         }
 
         for (uint256 ii = 0; ii < _inputKeys.length; ii++) {
-            if (_inputKeys[ii] != bytes32(0))
-                revert NotAllowedERC725YKey(_from, _inputKeys[ii]);
+            if (_inputKeys[ii] != bytes32(0)) revert NotAllowedERC725YKey(_from, _inputKeys[ii]);
         }
     }
 
@@ -391,7 +358,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @dev verify if `_from` has the required permissions to make an external call
      * via the linked ERC725Account
      * @param _from the address who want to run the execute function on the ERC725Account
-     * @param _data the ABI encoded payload `account.execute(...)`
+     * @param _data the ABI encoded payload `target.execute(...)`
      */
     function _verifyCanExecute(
         address _from,
@@ -402,23 +369,16 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         uint256 value = uint256(bytes32(_data[68:100]));
 
         // TODO: to be removed, as delegatecall should be allowed in the future
-        require(
-            operationType != 4,
-            "_verifyCanExecute: operation 4 `DELEGATECALL` not supported"
-        );
+        require(operationType != 4, "_verifyCanExecute: operation 4 `DELEGATECALL` not supported");
 
-        (
-            bytes32 permissionRequired,
-            string memory operationName
-        ) = _extractPermissionFromOperation(operationType);
+        (bytes32 permissionRequired, string memory operationName) = _extractPermissionFromOperation(
+            operationType
+        );
 
         if (!_permissions.includesPermissions(permissionRequired))
             revert NotAuthorised(_from, operationName);
 
-        if (
-            (value > 0) &&
-            !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)
-        ) {
+        if ((value != 0) && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE)) {
             revert NotAuthorised(_from, "TRANSFERVALUE");
         }
     }
@@ -429,17 +389,12 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _to the address to interact with
      */
     function _verifyAllowedAddress(address _from, address _to) internal view {
-        bytes memory allowedAddresses = ERC725Y(account).getAllowedAddressesFor(
-            _from
-        );
+        bytes memory allowedAddresses = ERC725Y(target).getAllowedAddressesFor(_from);
 
         // whitelist any address if nothing in the list
         if (allowedAddresses.length == 0) return;
 
-        address[] memory allowedAddressesList = abi.decode(
-            allowedAddresses,
-            (address[])
-        );
+        address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
 
         for (uint256 ii = 0; ii < allowedAddressesList.length; ii++) {
             if (_to == allowedAddressesList[ii]) return;
@@ -454,7 +409,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _to the address of the contract to interact with
      */
     function _verifyAllowedStandard(address _from, address _to) internal view {
-        bytes memory allowedStandards = ERC725Y(account).getData(
+        bytes memory allowedStandards = ERC725Y(target).getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX,
                 bytes20(_from)
@@ -464,10 +419,7 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
         // whitelist any standard interface (ERC165) if nothing in the list
         if (allowedStandards.length == 0) return;
 
-        bytes4[] memory allowedStandardsList = abi.decode(
-            allowedStandards,
-            (bytes4[])
-        );
+        bytes4[] memory allowedStandardsList = abi.decode(allowedStandards, (bytes4[]));
 
         for (uint256 ii = 0; ii < allowedStandardsList.length; ii++) {
             if (_to.supportsERC165Interface(allowedStandardsList[ii])) return;
@@ -482,21 +434,13 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
      * @param _functionSelector the bytes4 function selector of the function to run
      * at the target contract
      */
-    function _verifyAllowedFunction(address _from, bytes4 _functionSelector)
-        internal
-        view
-    {
-        bytes memory allowedFunctions = ERC725Y(account).getAllowedFunctionsFor(
-            _from
-        );
+    function _verifyAllowedFunction(address _from, bytes4 _functionSelector) internal view {
+        bytes memory allowedFunctions = ERC725Y(target).getAllowedFunctionsFor(_from);
 
         // whitelist any function if nothing in the list
         if (allowedFunctions.length == 0) return;
 
-        bytes4[] memory allowedFunctionsList = abi.decode(
-            allowedFunctions,
-            (bytes4[])
-        );
+        bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
 
         for (uint256 ii = 0; ii < allowedFunctionsList.length; ii++) {
             if (_functionSelector == allowedFunctionsList[ii]) return;

@@ -2,16 +2,14 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {LSP8IdentifiableDigitalAssetInitAbstract} from "./LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 /**
  * @title LSP8IdentifiableDigitalAsset contract
  * @author Matthew Stevens
  * @dev Proxy Implementation of a LSP8 compliant contract.
  */
-contract LSP8IdentifiableDigitalAssetInit is
-    LSP8IdentifiableDigitalAssetInitAbstract
-{
+contract LSP8IdentifiableDigitalAssetInit is LSP8IdentifiableDigitalAssetInitAbstract {
     /**
      * @notice Sets the token-Metadata
      * @param name_ The name of the token
@@ -23,10 +21,6 @@ contract LSP8IdentifiableDigitalAssetInit is
         string memory symbol_,
         address newOwner_
     ) public virtual initializer {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_
-        );
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 }

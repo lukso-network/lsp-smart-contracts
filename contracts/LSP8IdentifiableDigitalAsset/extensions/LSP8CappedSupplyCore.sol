@@ -2,19 +2,16 @@
 
 pragma solidity ^0.8.0;
 
-// modules
-import "../LSP8IdentifiableDigitalAssetCore.sol";
-
 // interfaces
-import "./ILSP8CappedSupply.sol";
+import {ILSP8CappedSupply} from "./ILSP8CappedSupply.sol";
+
+// modules
+import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupplyCore is
-    ILSP8CappedSupply,
-    LSP8IdentifiableDigitalAssetCore
-{
+abstract contract LSP8CappedSupplyCore is ILSP8CappedSupply, LSP8IdentifiableDigitalAssetCore {
     // --- Errors
 
     error LSP8CappedSupplyRequired();

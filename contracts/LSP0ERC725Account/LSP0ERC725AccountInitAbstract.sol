@@ -2,8 +2,12 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "@erc725/smart-contracts/contracts/ERC725InitAbstract.sol";
-import "./LSP0ERC725AccountCore.sol";
+import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
+import {ERC725InitAbstract} from "@erc725/smart-contracts/contracts/ERC725InitAbstract.sol";
+
+// constants
+import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271} from "./LSP0Constants.sol";
+import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
 /**
  * @title Inheritable Proxy Implementation of ERC725Account

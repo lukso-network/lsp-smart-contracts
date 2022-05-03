@@ -2,28 +2,22 @@
 
 pragma solidity ^0.8.0;
 
-import "./LSP7MintableCore.sol";
-import "../LSP7DigitalAssetInit.sol";
+// modules
+import {LSP7DigitalAssetInit} from "../LSP7DigitalAssetInit.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7MintableCore} from "./LSP7MintableCore.sol";
 
 /**
  * @dev LSP7 extension, mintable.
  */
-abstract contract LSP7MintableInitAbstract is
-    LSP7MintableCore,
-    LSP7DigitalAssetInit
-{
+abstract contract LSP7MintableInitAbstract is LSP7MintableCore, LSP7DigitalAssetInit {
     function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         bool isNFT_
     ) internal virtual override onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            isNFT_
-        );
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, isNFT_);
     }
 
     /**
