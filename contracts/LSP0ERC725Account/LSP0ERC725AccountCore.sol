@@ -10,7 +10,7 @@ import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 import "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import "@erc725/smart-contracts/contracts/ERC725XCore.sol";
-import {OwnableClaim} from "../Utils/OwnableClaim.sol";
+import {ClaimOwnership} from "../Utils/ClaimOwnership.sol";
 
 // libraries
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -29,7 +29,7 @@ abstract contract LSP0ERC725AccountCore is
     ILSP1UniversalReceiver,
     ERC725XCore,
     ERC725YCore,
-    OwnableClaim
+    ClaimOwnership
 {
     event ValueReceived(address indexed sender, uint256 indexed value);
 
@@ -111,7 +111,12 @@ abstract contract LSP0ERC725AccountCore is
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
     }
 
-    function transferOwnership(address _newOwner) public virtual override(OwnableUnset) onlyOwner {
-        pendingOwner = _newOwner;
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(ClaimOwnership, OwnableUnset)
+        onlyOwner
+    {
+        ClaimOwnership.transferOwnership(_newOwner);
     }
 }
