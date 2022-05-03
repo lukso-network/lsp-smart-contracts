@@ -2,12 +2,12 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import {IOwnableClaim} from "./IOwnableClaim.sol";
+import {IClaimOwnership} from "./IClaimOwnership.sol";
 
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
 
-abstract contract OwnableClaim is IOwnableClaim, OwnableUnset {
+abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     address public override pendingOwner;
 
     function claimOwnership() public virtual override {
@@ -15,5 +15,9 @@ abstract contract OwnableClaim is IOwnableClaim, OwnableUnset {
 
         // TODO: the function _setOwner(...) cannot be called as it is marked as private
         // _setOwner(pendingOwner);
+    }
+
+    function transferOwnership(address _newOwner) public virtual override(OwnableUnset) onlyOwner {
+        pendingOwner = _newOwner;
     }
 }
