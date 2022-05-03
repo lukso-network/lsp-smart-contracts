@@ -209,17 +209,37 @@ export const shouldBehaveLikePermissionCall = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await context.owner.signMessage(
-          ethers.utils.arrayify(hash)
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonce,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await context.owner._signTypedData(
+          domain,
+          types,
+          value
         );
 
         await context.keyManager.executeRelayCall(
-          context.keyManager.address,
           nonce,
           executeRelayCallPayload,
           signature
@@ -251,17 +271,37 @@ export const shouldBehaveLikePermissionCall = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await addressCanMakeCall.signMessage(
-          ethers.utils.arrayify(hash)
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonce,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await addressCanMakeCall._signTypedData(
+          domain,
+          types,
+          value
         );
 
         await context.keyManager.executeRelayCall(
-          context.keyManager.address,
           nonce,
           executeRelayCallPayload,
           signature
@@ -293,18 +333,38 @@ export const shouldBehaveLikePermissionCall = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await addressCannotMakeCall.signMessage(
-          ethers.utils.arrayify(hash)
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonce,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await addressCannotMakeCall._signTypedData(
+          domain,
+          types,
+          value
         );
 
         await expect(
           context.keyManager.executeRelayCall(
-            context.keyManager.address,
             nonce,
             executeRelayCallPayload,
             signature

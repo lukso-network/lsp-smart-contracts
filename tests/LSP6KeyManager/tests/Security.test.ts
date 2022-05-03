@@ -117,24 +117,36 @@ export const testSecurityScenarios = (
           "renounceOwnership"
         );
 
-      let hash = ethers.utils.solidityKeccak256(
-        ["address", "uint256", "bytes"],
-        [context.keyManager.address, nonce, payload]
-      );
+      const HARDHAT_CHAINID = 31337;
 
-      let signature = await context.owner.signMessage(
-        ethers.utils.arrayify(hash)
-      );
+      // All properties on a domain are optional
+      const domain = {
+        name: "KeyManager",
+        version: "LSP6",
+        chainId: HARDHAT_CHAINID,
+        verifyingContract: context.keyManager.address, // KeyManager address
+      };
+
+      // The named list of all type definitions
+      const types = {
+        RelayCall: [
+          { name: "nonce", type: "uint256" },
+          { name: "calldata", type: "bytes" },
+        ],
+      };
+
+      // The data to sign
+      const value = {
+        nonce: nonce,
+        calldata: payload,
+      };
+
+      let signature = await context.owner._signTypedData(domain, types, value);
 
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonce,
-            payload,
-            signature
-          )
+          .executeRelayCall(nonce, payload, signature)
       ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
     });
   });
@@ -205,22 +217,36 @@ export const testSecurityScenarios = (
           EMPTY_PAYLOAD,
         ]);
 
-      let hash = ethers.utils.solidityKeccak256(
-        ["address", "uint256", "bytes"],
-        [context.keyManager.address, nonce, executeRelayCallPayload]
-      );
+      const HARDHAT_CHAINID = 31337;
 
-      let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+      // All properties on a domain are optional
+      const domain = {
+        name: "KeyManager",
+        version: "LSP6",
+        chainId: HARDHAT_CHAINID,
+        verifyingContract: context.keyManager.address, // KeyManager address
+      };
+
+      // The named list of all type definitions
+      const types = {
+        RelayCall: [
+          { name: "nonce", type: "uint256" },
+          { name: "calldata", type: "bytes" },
+        ],
+      };
+
+      // The data to sign
+      const value = {
+        nonce: nonce,
+        calldata: executeRelayCallPayload,
+      };
+
+      let signature = await signer._signTypedData(domain, types, value);
 
       // first call
       await context.keyManager
         .connect(relayer)
-        .executeRelayCall(
-          context.keyManager.address,
-          nonce,
-          executeRelayCallPayload,
-          signature
-        );
+        .executeRelayCall(nonce, executeRelayCallPayload, signature);
 
       // 2nd call = replay attack
       await expect(

@@ -26,6 +26,24 @@ export const shouldBehaveLikeMultiChannelNonce = (
   beforeEach(async () => {
     context = await buildContext();
 
+    const HARDHAT_CHAINID = 31337;
+
+    // All properties on a domain are optional
+    const domain = {
+      name: "KeyManager",
+      version: "LSP6",
+      chainId: HARDHAT_CHAINID,
+      verifyingContract: context.keyManager.address, // KeyManager address
+    };
+
+    // The named list of all type definitions
+    const types = {
+      RelayCall: [
+        { name: "nonce", type: "uint256" },
+        { name: "calldata", type: "bytes" },
+      ],
+    };
+
     signer = context.accounts[1];
     relayer = context.accounts[2];
 
@@ -71,6 +89,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           "setName",
           [newName]
         );
+
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
             OPERATIONS.CALL,
@@ -79,15 +98,33 @@ export const shouldBehaveLikeMultiChannelNonce = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, latestNonce, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: latestNonce,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await signer._signTypedData(domain, types, value);
 
         await context.keyManager.executeRelayCall(
-          context.keyManager.address,
           latestNonce,
           executeRelayCallPayload,
           signature
@@ -133,21 +170,35 @@ export const shouldBehaveLikeMultiChannelNonce = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonceBefore, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonceBefore,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await signer._signTypedData(domain, types, value);
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonceBefore,
-            executeRelayCallPayload,
-            signature
-          );
+          .executeRelayCall(nonceBefore, executeRelayCallPayload, signature);
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -180,21 +231,35 @@ export const shouldBehaveLikeMultiChannelNonce = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonceBefore, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonceBefore,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await signer._signTypedData(domain, types, value);
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonceBefore,
-            executeRelayCallPayload,
-            signature
-          );
+          .executeRelayCall(nonceBefore, executeRelayCallPayload, signature);
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -232,21 +297,35 @@ export const shouldBehaveLikeMultiChannelNonce = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonceBefore, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonceBefore,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await signer._signTypedData(domain, types, value);
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonceBefore,
-            executeRelayCallPayload,
-            signature
-          );
+          .executeRelayCall(nonceBefore, executeRelayCallPayload, signature);
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -279,21 +358,35 @@ export const shouldBehaveLikeMultiChannelNonce = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonceBefore, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonceBefore,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await signer._signTypedData(domain, types, value);
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonceBefore,
-            executeRelayCallPayload,
-            signature
-          );
+          .executeRelayCall(nonceBefore, executeRelayCallPayload, signature);
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -331,21 +424,35 @@ export const shouldBehaveLikeMultiChannelNonce = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonceBefore, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonceBefore,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await signer._signTypedData(domain, types, value);
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonceBefore,
-            executeRelayCallPayload,
-            signature
-          );
+          .executeRelayCall(nonceBefore, executeRelayCallPayload, signature);
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -378,21 +485,35 @@ export const shouldBehaveLikeMultiChannelNonce = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonceBefore, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonceBefore,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await signer._signTypedData(domain, types, value);
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonceBefore,
-            executeRelayCallPayload,
-            signature
-          );
+          .executeRelayCall(nonceBefore, executeRelayCallPayload, signature);
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -426,21 +547,35 @@ export const shouldBehaveLikeMultiChannelNonce = (
             targetContractPayload,
           ]);
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonceBefore, executeRelayCallPayload]
-        );
+        const HARDHAT_CHAINID = 31337;
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        // All properties on a domain are optional
+        const domain = {
+          name: "KeyManager",
+          version: "LSP6",
+          chainId: HARDHAT_CHAINID,
+          verifyingContract: context.keyManager.address, // KeyManager address
+        };
+
+        // The named list of all type definitions
+        const types = {
+          RelayCall: [
+            { name: "nonce", type: "uint256" },
+            { name: "calldata", type: "bytes" },
+          ],
+        };
+
+        // The data to sign
+        const value = {
+          nonce: nonceBefore,
+          calldata: executeRelayCallPayload,
+        };
+
+        let signature = await signer._signTypedData(domain, types, value);
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonceBefore,
-            executeRelayCallPayload,
-            signature
-          );
+          .executeRelayCall(nonceBefore, executeRelayCallPayload, signature);
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(

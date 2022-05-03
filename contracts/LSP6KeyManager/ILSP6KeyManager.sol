@@ -30,10 +30,7 @@ interface ILSP6KeyManager is
      * @param _address caller address
      * @param _channel channel id
      */
-    function getNonce(address _address, uint256 _channel)
-        external
-        view
-        returns (uint256);
+    function getNonce(address _address, uint256 _channel) external view returns (uint256);
 
     /**
      * @notice execute the following payload on the ERC725Account: `_data`
@@ -41,21 +38,16 @@ interface ILSP6KeyManager is
      * @param _data the payload to execute. Obtained in web3 via encodeABI()
      * @return result_ the data being returned by the ERC725 Account
      */
-    function execute(bytes calldata _data)
-        external
-        payable
-        returns (bytes memory);
+    function execute(bytes calldata _data) external payable returns (bytes memory);
 
     /**
      * @dev allows anybody to execute given they have a signed message from an executor
-     * @param _signedFor this KeyManager
      * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
      * @param _data obtained via encodeABI() in web3
      * @param _signature bytes32 ethereum signature
      * @return result_ the data being returned by the ERC725 Account
      */
     function executeRelayCall(
-        address _signedFor,
         uint256 _nonce,
         bytes calldata _data,
         bytes memory _signature

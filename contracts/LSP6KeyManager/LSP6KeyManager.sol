@@ -16,5 +16,9 @@ contract LSP6KeyManager is LSP6KeyManagerCore {
      */
     constructor(address _account) {
         account = _account;
+
+        // EIP-712
+        _chainId = block.chainid;
+        _domainSeparator = _calculateDomainSeparator();
     }
 }
