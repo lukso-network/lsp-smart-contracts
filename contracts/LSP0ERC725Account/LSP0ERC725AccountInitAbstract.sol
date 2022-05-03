@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 // modules
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
 import {ERC725InitAbstract} from "@erc725/smart-contracts/contracts/ERC725InitAbstract.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
 
 // constants
 import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271} from "./LSP0Constants.sol";
