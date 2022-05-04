@@ -37,7 +37,7 @@ contract LSP1UniversalReceiverDelegateUP is
     function universalReceiverDelegate(
         address sender,
         bytes32 typeId,
-        bytes memory data
+        bytes memory data // solhint-disable no-unused-vars
     ) public virtual override returns (bytes memory result) {
         if (
             typeId == _TYPEID_LSP7_TOKENSSENDER ||
