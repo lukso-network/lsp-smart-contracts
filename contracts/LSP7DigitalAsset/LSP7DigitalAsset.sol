@@ -5,8 +5,8 @@ pragma solidity ^0.8.0;
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // modules
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import {LSP4DigitalAssetMetadata} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
 import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
 
@@ -42,7 +42,7 @@ contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
         public
         view
         virtual
-        override(IERC165, ERC165Storage)
+        override(IERC165, ERC725YCore)
         returns (bool)
     {
         return interfaceId == _INTERFACEID_LSP7 || super.supportsInterface(interfaceId);
