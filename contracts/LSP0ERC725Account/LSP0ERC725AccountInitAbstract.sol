@@ -22,7 +22,13 @@ abstract contract LSP0ERC725AccountInitAbstract is ERC725InitAbstract, LSP0ERC72
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725InitAbstract, LSP0ERC725AccountCore)
+        returns (bool)
+    {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||

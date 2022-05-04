@@ -24,7 +24,13 @@ contract LSP0ERC725Account is ERC725, LSP0ERC725AccountCore {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725, LSP0ERC725AccountCore)
+        returns (bool)
+    {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
