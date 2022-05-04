@@ -18,7 +18,7 @@ import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDA
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
+abstract contract LSP9VaultInitAbstract is ERC725InitAbstract, LSP9VaultCore {
     function _initialize(address _newOwner) internal virtual override onlyInitializing {
         ERC725InitAbstract._initialize(_newOwner);
 

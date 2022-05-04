@@ -22,7 +22,7 @@ import {_TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER} from "./LSP9Const
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
+contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1UniversalReceiver {
     /**
      * @notice Emitted when a native token is received
      * @param sender The address of the sender
@@ -37,10 +37,14 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
      */
     modifier onlyAllowed() {
         if (msg.sender != owner()) {
-            address universalReceiverAddress = address(bytes20(_getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY)));
+            address universalReceiverAddress = address(
+                bytes20(_getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY))
+            );
             require(
-                ERC165CheckerCustom.supportsERC165Interface(msg.sender, _INTERFACEID_LSP1_DELEGATE) &&
-                    msg.sender == universalReceiverAddress,
+                ERC165CheckerCustom.supportsERC165Interface(
+                    msg.sender,
+                    _INTERFACEID_LSP1_DELEGATE
+                ) && msg.sender == universalReceiverAddress,
                 "Only Owner or Universal Receiver Delegate allowed"
             );
         }
@@ -74,12 +78,14 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
 
         if (data.length >= 20) {
             address universalReceiverDelegate = BytesLib.toAddress(data, 0);
-            if (ERC165CheckerCustom.supportsERC165Interface(universalReceiverDelegate, _INTERFACEID_LSP1_DELEGATE)) {
-                returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate).universalReceiverDelegate(
-                    _msgSender(),
-                    _typeId,
-                    _data
-                );
+            if (
+                ERC165CheckerCustom.supportsERC165Interface(
+                    universalReceiverDelegate,
+                    _INTERFACEID_LSP1_DELEGATE
+                )
+            ) {
+                returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
             }
         }
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
