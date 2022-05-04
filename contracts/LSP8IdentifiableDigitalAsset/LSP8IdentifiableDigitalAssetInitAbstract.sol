@@ -19,8 +19,8 @@ import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
  * @dev Proxy Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
-    LSP8IdentifiableDigitalAssetCore,
-    LSP4DigitalAssetMetadataInitAbstract
+    LSP4DigitalAssetMetadataInitAbstract,
+    LSP8IdentifiableDigitalAssetCore
 {
     function _initialize(
         string memory name_,

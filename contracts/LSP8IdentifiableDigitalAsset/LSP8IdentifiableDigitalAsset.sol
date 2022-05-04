@@ -19,8 +19,8 @@ import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
  * @dev Implementation of a LSP8 compliant contract.
  */
 contract LSP8IdentifiableDigitalAsset is
-    LSP8IdentifiableDigitalAssetCore,
-    LSP4DigitalAssetMetadata
+    LSP4DigitalAssetMetadata,
+    LSP8IdentifiableDigitalAssetCore
 {
     /**
      * @notice Sets the token-Metadata

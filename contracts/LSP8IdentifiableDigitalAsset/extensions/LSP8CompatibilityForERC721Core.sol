@@ -21,9 +21,9 @@ import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.s
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
 abstract contract LSP8CompatibilityForERC721Core is
-    ILSP8CompatibilityForERC721,
+    LSP4Compatibility,
     LSP8IdentifiableDigitalAssetCore,
-    LSP4Compatibility
+    ILSP8CompatibilityForERC721
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
