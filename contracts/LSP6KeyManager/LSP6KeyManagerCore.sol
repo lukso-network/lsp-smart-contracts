@@ -31,7 +31,7 @@ import "./LSP6Constants.sol";
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
+abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using LSP2Utils for ERC725Y;
     using LSP6Utils for *;
     using Address for address;
