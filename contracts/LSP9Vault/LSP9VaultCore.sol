@@ -15,7 +15,7 @@ import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 
 // constants
 import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import {_TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER} from "./LSP9Constants.sol";
+import {_INTERFACEID_LSP9, _TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER} from "./LSP9Constants.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -109,5 +109,21 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1UniversalReceiver {
         if (ERC165CheckerCustom.supportsERC165Interface(_receiver, _INTERFACEID_LSP1)) {
             ILSP1UniversalReceiver(_receiver).universalReceiver(_TYPEID_LSP9_VAULTRECIPIENT, "");
         }
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP9 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            super.supportsInterface(interfaceId);
     }
 }

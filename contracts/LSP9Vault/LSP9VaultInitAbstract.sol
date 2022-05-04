@@ -74,7 +74,13 @@ abstract contract LSP9VaultInitAbstract is ERC725InitAbstract, LSP9VaultCore {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725InitAbstract, LSP9VaultCore)
+        returns (bool)
+    {
         return
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||

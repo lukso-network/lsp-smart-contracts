@@ -76,7 +76,13 @@ contract LSP9Vault is ERC725, LSP9VaultCore {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725, LSP9VaultCore)
+        returns (bool)
+    {
         return
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||
