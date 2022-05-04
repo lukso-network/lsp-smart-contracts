@@ -19,8 +19,8 @@ import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
  * @dev Proxy Implementation of a LSP7 compliant contract.
  */
 abstract contract LSP7DigitalAssetInitAbstract is
-    LSP7DigitalAssetCore,
-    LSP4DigitalAssetMetadataInitAbstract
+    LSP4DigitalAssetMetadataInitAbstract,
+    LSP7DigitalAssetCore
 {
     function _initialize(
         string memory name_,

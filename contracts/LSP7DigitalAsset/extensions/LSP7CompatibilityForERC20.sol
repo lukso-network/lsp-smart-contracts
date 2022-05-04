@@ -7,7 +7,7 @@ import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 import {LSP7CompatibilityForERC20Core} from "./LSP7CompatibilityForERC20Core.sol";
 
-contract LSP7CompatibilityForERC20 is LSP7CompatibilityForERC20Core, LSP7DigitalAsset {
+contract LSP7CompatibilityForERC20 is LSP7DigitalAsset, LSP7CompatibilityForERC20Core {
     /* solhint-disable no-empty-blocks */
     /**
      * @notice Sets the name, the symbol and the owner of the token

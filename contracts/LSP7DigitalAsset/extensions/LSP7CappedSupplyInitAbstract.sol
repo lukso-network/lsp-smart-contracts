@@ -11,7 +11,7 @@ import {LSP7CappedSupplyCore} from "./LSP7CappedSupplyCore.sol";
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
-abstract contract LSP7CappedSupplyInitAbstract is LSP7CappedSupplyCore, LSP7DigitalAssetInit {
+abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInit, LSP7CappedSupplyCore {
     function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
         if (tokenSupplyCap_ == 0) {
             revert LSP7CappedSupplyRequired();
