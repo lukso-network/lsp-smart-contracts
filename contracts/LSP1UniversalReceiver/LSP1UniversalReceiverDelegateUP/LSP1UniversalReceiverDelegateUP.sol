@@ -25,8 +25,8 @@ import {_TYPEID_LSP9_VAULTSENDER, _TYPEID_LSP9_VAULTRECIPIENT} from "../../LSP9V
  *
  */
 contract LSP1UniversalReceiverDelegateUP is
-    ILSP1UniversalReceiverDelegate,
     ERC165,
+    ILSP1UniversalReceiverDelegate,
     TokenAndVaultHandling
 {
     /**
