@@ -25,10 +25,10 @@ import {_INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from 
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
 abstract contract LSP0ERC725AccountCore is
-    IERC1271,
-    ILSP1UniversalReceiver,
     ERC725XCore,
-    ERC725YCore
+    ERC725YCore,
+    IERC1271,
+    ILSP1UniversalReceiver
 {
     event ValueReceived(address indexed sender, uint256 indexed value);
 

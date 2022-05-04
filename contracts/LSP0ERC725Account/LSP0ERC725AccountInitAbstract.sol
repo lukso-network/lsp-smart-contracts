@@ -14,7 +14,7 @@ import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
-abstract contract LSP0ERC725AccountInitAbstract is LSP0ERC725AccountCore, ERC725InitAbstract {
+abstract contract LSP0ERC725AccountInitAbstract is ERC725InitAbstract, LSP0ERC725AccountCore {
     function _initialize(address _newOwner) internal virtual override onlyInitializing {
         ERC725InitAbstract._initialize(_newOwner);
     }

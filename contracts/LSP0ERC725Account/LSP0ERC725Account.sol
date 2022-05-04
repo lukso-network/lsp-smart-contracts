@@ -14,7 +14,7 @@ import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
-contract LSP0ERC725Account is LSP0ERC725AccountCore, ERC725 {
+contract LSP0ERC725Account is ERC725, LSP0ERC725AccountCore {
     /**
      * @notice Sets the owner of the contract
      * @param _newOwner the owner of the contract
