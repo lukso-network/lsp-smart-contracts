@@ -20,7 +20,6 @@ import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
  */
 abstract contract LSP7DigitalAssetInitAbstract is
     LSP7DigitalAssetCore,
-    Initializable,
     LSP4DigitalAssetMetadataInitAbstract
 {
     function _initialize(

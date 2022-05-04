@@ -20,7 +20,6 @@ import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
  */
 abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     LSP8IdentifiableDigitalAssetCore,
-    Initializable,
     LSP4DigitalAssetMetadataInitAbstract
 {
     function _initialize(

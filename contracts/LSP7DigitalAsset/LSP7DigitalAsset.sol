@@ -18,7 +18,7 @@ import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
  * @author Matthew Stevens
  * @dev Implementation of a LSP7 compliant contract.
  */
-contract LSP7DigitalAsset is LSP7DigitalAssetCore, LSP4DigitalAssetMetadata {
+contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
     /**
      * @notice Sets the token-Metadata
      * @param name_ The name of the token

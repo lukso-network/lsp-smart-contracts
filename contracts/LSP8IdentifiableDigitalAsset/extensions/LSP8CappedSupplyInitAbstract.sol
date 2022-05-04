@@ -12,7 +12,6 @@ import {LSP8CappedSupplyCore} from "./LSP8CappedSupplyCore.sol";
  * @dev LSP8 extension, adds token supply cap.
  */
 abstract contract LSP8CappedSupplyInitAbstract is
-    Initializable,
     LSP8CappedSupplyCore,
     LSP8IdentifiableDigitalAssetInit
 {
