@@ -9,7 +9,7 @@
 
 The reference implementation for universal profiles smart contracts.
 
-For more information see [Documentation](https://docs.lukso.tech/standards/Universal-Profiles)
+For more information see [Documentation](https://docs.lukso.tech/standards/smart-contracts/introduction) on *[docs.lukso.tech](https://docs.lukso.tech/standards/introduction).*
 
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
