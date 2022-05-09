@@ -1615,9 +1615,6 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     });
 
     describe("when caller has CHANGEPERMISSION", () => {
-      /**
-       * @todo write tests CHANGE PERMISSIONs
-       */
       it("should fail when beneficiary had no values set under AddressPermissions:AllowedStandards:...", async () => {
         let newController = new ethers.Wallet.createRandom();
 
@@ -1906,6 +1903,41 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             "LSP6KeyManager: invalid ABI encoded array of bytes32"
           );
         });
+      });
+    });
+
+    describe("when caller has CHANGEPERMISSIONS", () => {
+      it("should fail when beneficiary had no values set under AddressPermissions:AllowedERC725YKeys:...", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["bytes32[]"],
+          [
+            [
+              ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes("My Custom Key 1")
+              ),
+              ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes("My Custom Key 2")
+              ),
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyChangePermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyChangePermissions.address, "ADDPERMISSIONS")
+        );
       });
     });
   });
