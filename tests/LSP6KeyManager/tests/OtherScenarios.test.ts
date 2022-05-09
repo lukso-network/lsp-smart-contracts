@@ -151,7 +151,7 @@ export const otherTestScenarios = (
       );
 
       await expect(context.keyManager.execute(payload)).toBeRevertedWith(
-        "Wrong operation type"
+        "LSP6KeyManager: invalid operation type"
       );
     });
 
