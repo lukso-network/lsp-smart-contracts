@@ -74,7 +74,7 @@ const config: HardhatUserConfig = {
       // Proxy version
       // ------------------
       "UniversalProfileInit",
-      "LSP0ERC725Account",
+      "LSP0ERC725AccountInit",
       "LSP4DigitalAssetMetadataInit",
       "LSP6KeyManagerInit",
       "LSP7DigitalAssetInit",
