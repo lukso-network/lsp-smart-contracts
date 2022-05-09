@@ -27,11 +27,11 @@ export const shouldBehaveLikePermissionTransferValue = (
 ) => {
   let context: LSP6TestContext;
 
-  describe("when caller is an EOA", () => {
+  describe("when sender = EOA", () => {
     let canTransferValue: SignerWithAddress,
       cannotTransferValue: SignerWithAddress;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       context = await buildContext();
 
       canTransferValue = context.accounts[1];
@@ -63,98 +63,218 @@ export const shouldBehaveLikePermissionTransferValue = (
       });
     });
 
-    it("address with ALL PERMISSIONS should be allowed to transfer value", async () => {
-      let initialBalanceUP = await provider.getBalance(
-        context.universalProfile.address
-      );
-      let recipient = context.accounts[3].address;
-      let initialBalanceRecipient = await provider.getBalance(recipient);
+    describe("when recipient = EOA", () => {
+      let recipient;
 
-      let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          recipient,
-          ethers.utils.parseEther("3"),
-          EMPTY_PAYLOAD,
-        ]);
+      beforeEach(async () => {
+        recipient = context.accounts[3].address;
+      });
 
-      await context.keyManager.connect(context.owner).execute(transferPayload);
+      describe("when transferring value without bytes `_data`", () => {
+        const data = "0x";
 
-      let newBalanceUP = await provider.getBalance(
-        context.universalProfile.address
-      );
-      expect(parseInt(newBalanceUP)).toBeLessThan(parseInt(initialBalanceUP));
+        it("address with ALL PERMISSIONS should be allowed to transfer value", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
 
-      let newBalanceRecipient = await provider.getBalance(recipient);
-      expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-        parseInt(initialBalanceRecipient)
-      );
+          let initialBalanceRecipient = await provider.getBalance(recipient);
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              ethers.utils.parseEther("3"),
+              data,
+            ]);
+
+          await context.keyManager
+            .connect(context.owner)
+            .execute(transferPayload);
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(parseInt(newBalanceUP)).toBeLessThan(
+            parseInt(initialBalanceUP)
+          );
+
+          let newBalanceRecipient = await provider.getBalance(recipient);
+          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
+            parseInt(initialBalanceRecipient)
+          );
+        });
+
+        it("address with permission TRANSFER VALUE should be allowed to transfer value", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let initialBalanceRecipient = await provider.getBalance(recipient);
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              ethers.utils.parseEther("3"),
+              data,
+            ]);
+
+          await context.keyManager
+            .connect(canTransferValue)
+            .execute(transferPayload);
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(parseInt(newBalanceUP)).toBeLessThan(
+            parseInt(initialBalanceUP)
+          );
+
+          let newBalanceRecipient = await provider.getBalance(recipient);
+          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
+            parseInt(initialBalanceRecipient)
+          );
+        });
+
+        it("address with no permission TRANSFERVALUE should revert", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let initialBalanceRecipient = await provider.getBalance(recipient);
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              ethers.utils.parseEther("3"),
+              data,
+            ]);
+
+          await expect(
+            context.keyManager
+              .connect(cannotTransferValue)
+              .execute(transferPayload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(cannotTransferValue.address, "TRANSFERVALUE")
+          );
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let newBalanceRecipient = await provider.getBalance(recipient);
+
+          expect(parseInt(newBalanceUP)).toBe(parseInt(initialBalanceUP));
+          expect(parseInt(initialBalanceRecipient)).toBe(
+            parseInt(newBalanceRecipient)
+          );
+        });
+      });
+
+      describe("when transferring value with bytes `_data`", () => {
+        const data = "0xaabbccdd";
+
+        it("address with ALL PERMISSIONS should be allowed to transfer value", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+
+          let initialBalanceRecipient = await provider.getBalance(recipient);
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              ethers.utils.parseEther("3"),
+              data,
+            ]);
+
+          await context.keyManager
+            .connect(context.owner)
+            .execute(transferPayload);
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(parseInt(newBalanceUP)).toBeLessThan(
+            parseInt(initialBalanceUP)
+          );
+
+          let newBalanceRecipient = await provider.getBalance(recipient);
+          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
+            parseInt(initialBalanceRecipient)
+          );
+        });
+
+        it("address with permission TRANSFER VALUE should be allowed to transfer value", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let initialBalanceRecipient = await provider.getBalance(recipient);
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              ethers.utils.parseEther("3"),
+              data,
+            ]);
+
+          await context.keyManager
+            .connect(canTransferValue)
+            .execute(transferPayload);
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(parseInt(newBalanceUP)).toBeLessThan(
+            parseInt(initialBalanceUP)
+          );
+
+          let newBalanceRecipient = await provider.getBalance(recipient);
+          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
+            parseInt(initialBalanceRecipient)
+          );
+        });
+
+        it("address with no permission TRANSFERVALUE should revert", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let initialBalanceRecipient = await provider.getBalance(recipient);
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              ethers.utils.parseEther("3"),
+              data,
+            ]);
+
+          await expect(
+            context.keyManager
+              .connect(cannotTransferValue)
+              .execute(transferPayload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(cannotTransferValue.address, "TRANSFERVALUE")
+          );
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let newBalanceRecipient = await provider.getBalance(recipient);
+
+          expect(parseInt(newBalanceUP)).toBe(parseInt(initialBalanceUP));
+          expect(parseInt(initialBalanceRecipient)).toBe(
+            parseInt(newBalanceRecipient)
+          );
+        });
+      });
     });
 
-    it("address with permission TRANSFER VALUE should be allowed to transfer value", async () => {
-      let initialBalanceUP = await provider.getBalance(
-        context.universalProfile.address
-      );
-      let recipient = context.accounts[3].address;
-      let initialBalanceRecipient = await provider.getBalance(recipient);
-
-      let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          recipient,
-          ethers.utils.parseEther("3"),
-          EMPTY_PAYLOAD,
-        ]);
-
-      await context.keyManager
-        .connect(canTransferValue)
-        .execute(transferPayload);
-
-      let newBalanceUP = await provider.getBalance(
-        context.universalProfile.address
-      );
-      expect(parseInt(newBalanceUP)).toBeLessThan(parseInt(initialBalanceUP));
-
-      let newBalanceRecipient = await provider.getBalance(recipient);
-      expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-        parseInt(initialBalanceRecipient)
-      );
-    });
-
-    it("address with no permission TRANSFERVALUE should revert", async () => {
-      let initialBalanceUP = await provider.getBalance(
-        context.universalProfile.address
-      );
-      let recipient = context.accounts[3].address;
-      let initialBalanceRecipient = await provider.getBalance(recipient);
-
-      let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
-          recipient,
-          ethers.utils.parseEther("3"),
-          EMPTY_PAYLOAD,
-        ]);
-
-      await expect(
-        context.keyManager.connect(cannotTransferValue).execute(transferPayload)
-      ).toBeRevertedWith(
-        NotAuthorisedError(cannotTransferValue.address, "TRANSFERVALUE")
-      );
-
-      let newBalanceUP = await provider.getBalance(
-        context.universalProfile.address
-      );
-      let newBalanceRecipient = await provider.getBalance(recipient);
-
-      expect(parseInt(newBalanceUP)).toBe(parseInt(initialBalanceUP));
-      expect(parseInt(initialBalanceRecipient)).toBe(
-        parseInt(newBalanceRecipient)
-      );
-    });
+    // when recipient is a contract
   });
 
-  describe("when caller is a contract", () => {
+  describe("when sender = contract", () => {
     let contractCanTransferValue: Executor;
 
     const hardcodedRecipient: string =
