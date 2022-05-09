@@ -7,7 +7,7 @@
 
 # lsp-smart-contracts
 
-The reference implementation for universal profiles smart contracts.
+The smart contracts reference implementation of the [LUKSO Standard Proposals (LSPs)](https://github.com/lukso-network/LIPs/tree/main/LSPs).
 
 For more information see [Documentation](https://docs.lukso.tech/standards/smart-contracts/introduction) on *[docs.lukso.tech](https://docs.lukso.tech/standards/introduction).*
 
