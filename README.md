@@ -20,7 +20,7 @@ For more information see [Documentation](https://docs.lukso.tech/standards/smart
 
 #### npm
 
-Universal Profile smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
+LSP smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
 
 ```bash
 npm install @lukso/lsp-smart-contracts
@@ -43,18 +43,18 @@ $ npm install
 You can use the contracts JSON ABI by importing them as follow:
 
 ```javascript
-import UniversalProfile from "@lukso/lsp-smart-contracts/artifacts/UniversalProfile.json";
+import LSP0ERC725Account from "@lukso/lsp-smart-contracts/artifacts/LSP0ERC725Account.json";
 
-const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
+const myContract = new this.web3.eth.Contract(LSP0ERC725Account.abi, "", defaultOptions);
 ```
 
 #### in Solidity
 
 ```sol
-import "@lukso/lsp-smart-contracts/contracts/UniversalProfile.sol";
+import "@lukso/lsp-smart-contracts/contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 
-contract MyUP is UniversalProfile {
-  constructor(address _newOwner) UniversalProfile(_newOwner) {
+contract MyAccount is LSP0ERC725Account {
+  constructor(address _newOwner) LSP0ERC725Account(_newOwner) {
     
   }
 }
