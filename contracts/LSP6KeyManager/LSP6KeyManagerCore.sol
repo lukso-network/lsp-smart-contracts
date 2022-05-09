@@ -8,6 +8,7 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {IClaimOwnership} from "../Utils/IClaimOwnership.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
@@ -205,7 +206,10 @@ abstract contract LSP6KeyManagerCore is ILSP6KeyManager, ERC165 {
                     _verifyAllowedFunction(_from, bytes4(_data[164:168]));
                 }
             }
-        } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
+        } else if (
+            erc725Function == OwnableUnset.transferOwnership.selector ||
+            erc725Function == IClaimOwnership.claimOwnership.selector
+        ) {
             if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
         } else {
