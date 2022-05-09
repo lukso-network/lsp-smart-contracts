@@ -136,8 +136,114 @@ describe("Ownable claim", () => {
     });
 
     describe("when caller is the pending owner", () => {
-      it.skip("should transfer ownership", async () => {
-        // @todo
+      it("should change the contract owner to the pendingOwner", async () => {
+        let newOwner = accounts[1];
+        await erc725Account.connect(owner).transferOwnership(newOwner.address);
+
+        let pendingOwner = await erc725Account.pendingOwner();
+
+        await erc725Account.connect(newOwner).claimOwnership();
+
+        let currentOwner = await erc725Account.owner();
+        expect(currentOwner).toEqual(pendingOwner);
+      });
+
+      it("should have cleared the pendingOwner after transferring ownership", async () => {
+        let newOwner = accounts[1];
+        await erc725Account.connect(owner).transferOwnership(newOwner.address);
+
+        await erc725Account.connect(newOwner).claimOwnership();
+
+        let newPendingOwner = await erc725Account.pendingOwner();
+        expect(newPendingOwner).toEqual(ethers.constants.AddressZero);
+      });
+    });
+
+    describe("after pendingOwner has claimed ownership", () => {
+      let previousOwner: SignerWithAddress, newOwner: SignerWithAddress;
+
+      beforeEach(async () => {
+        previousOwner = owner;
+        newOwner = accounts[1];
+
+        await erc725Account.connect(owner).transferOwnership(newOwner.address);
+        await erc725Account.connect(newOwner).claimOwnership();
+      });
+      describe("previous owner should not be allowed anymore to call onlyOwner functions", () => {
+        it("should revert when calling `setData(...)`", async () => {
+          const key =
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+          const value = "0xabcd";
+
+          // prettier-ignore
+          await expect(
+            erc725Account.connect(previousOwner)["setData(bytes32,bytes)"](key, value)
+          ).toBeRevertedWith("Ownable: caller is not the owner")
+        });
+
+        it("should revert when calling `execute(...)`", async () => {
+          const recipient = accounts[3];
+          const amount = ethers.utils.parseEther("3");
+
+          await expect(
+            erc725Account
+              .connect(previousOwner)
+              .execute(OPERATIONS.CALL, recipient.address, amount, "0x")
+          ).toBeRevertedWith("Ownable: caller is not the owner");
+        });
+
+        it("should revert when calling `renounceOwnership(...)`", async () => {
+          await expect(
+            erc725Account.connect(previousOwner).renounceOwnership()
+          ).toBeRevertedWith("Ownable: caller is not the owner");
+        });
+      });
+
+      describe("new owner should be allowed to call onlyOwner functions", () => {
+        it("setData(...)", async () => {
+          const key =
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+          const value = "0xabcd";
+
+          // prettier-ignore
+          await erc725Account.connect(newOwner)["setData(bytes32,bytes)"](key, value);
+
+          const result = await erc725Account["getData(bytes32)"](key);
+          expect(result).toEqual(value);
+        });
+
+        it("execute(...) - LYX transfer", async () => {
+          const recipient = accounts[3];
+          const amount = ethers.utils.parseEther("3");
+
+          const recipientBalanceBefore = await provider.getBalance(
+            recipient.address
+          );
+          const accountBalanceBefore = await provider.getBalance(
+            erc725Account.address
+          );
+
+          await erc725Account
+            .connect(newOwner)
+            .execute(OPERATIONS.CALL, recipient.address, amount, "0x");
+
+          const recipientBalanceAfter = await provider.getBalance(
+            recipient.address
+          );
+          const accountBalanceAfter = await provider.getBalance(
+            erc725Account.address
+          );
+
+          // recipient balance should have gone up
+          expect(parseInt(recipientBalanceAfter)).toBeGreaterThan(
+            parseInt(recipientBalanceBefore)
+          );
+
+          // account balance should have gone down
+          expect(parseInt(accountBalanceAfter)).toBeLessThan(
+            parseInt(accountBalanceBefore)
+          );
+        });
       });
     });
   });
