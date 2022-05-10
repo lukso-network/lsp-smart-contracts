@@ -6,7 +6,7 @@ import { LSP0ERC725Account, LSP0ERC725Account__factory } from "../types";
 import { provider } from "./utils/helpers";
 import { OPERATIONS } from "../constants";
 
-describe("Ownable claim", () => {
+describe("ClaimOwnership", () => {
   let accounts: SignerWithAddress[];
 
   let owner: SignerWithAddress;
@@ -123,16 +123,14 @@ describe("Ownable claim", () => {
   });
 
   describe("when calling claimOwnership(...)", () => {
-    describe("when caller is not the pending owner", () => {
-      it("should revert", async () => {
-        let newOwner = accounts[1];
+    it("should revert when caller is not the pending owner", async () => {
+      let newOwner = accounts[1];
 
-        await erc725Account.connect(owner).transferOwnership(newOwner.address);
+      await erc725Account.connect(owner).transferOwnership(newOwner.address);
 
-        await expect(
-          erc725Account.connect(accounts[2]).claimOwnership()
-        ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
-      });
+      await expect(
+        erc725Account.connect(accounts[2]).claimOwnership()
+      ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
     });
 
     describe("when caller is the pending owner", () => {
