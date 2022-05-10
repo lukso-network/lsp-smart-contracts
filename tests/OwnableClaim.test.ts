@@ -10,12 +10,16 @@ describe("ClaimOwnership", () => {
   let accounts: SignerWithAddress[];
 
   let owner: SignerWithAddress;
+  let newOwner: SignerWithAddress;
 
   let erc725Account: LSP0ERC725Account;
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
+
     owner = accounts[0];
+    newOwner = accounts[1];
+
     erc725Account = await new LSP0ERC725Account__factory(owner).deploy(
       owner.address
     );
@@ -27,18 +31,17 @@ describe("ClaimOwnership", () => {
     });
   });
   describe("when owner call transferOwnership(...)", () => {
-    it("should have set the pendingOwner", async () => {
+    beforeEach(async () => {
       let newOwner = accounts[1];
-
       await erc725Account.connect(owner).transferOwnership(newOwner.address);
-
+    });
+    it("should have set the pendingOwner", async () => {
       let pendingOwner = await erc725Account.pendingOwner();
-
       expect(pendingOwner).toEqual(newOwner.address);
     });
 
     it("owner should remain the current owner", async () => {
-      let newOwner = accounts[1];
+      let newOwner = ethers.Wallet.createRandom();
 
       const ownerBefore = await erc725Account.owner();
 
@@ -50,11 +53,7 @@ describe("ClaimOwnership", () => {
     });
 
     it("should override the pendingOwner when transferOwnership(...) is called twice", async () => {
-      let newOwner = accounts[1];
-
-      await erc725Account.connect(owner).transferOwnership(newOwner.address);
-
-      let overridenNewOwner = accounts[2];
+      let overridenNewOwner = ethers.Wallet.createRandom();
 
       await erc725Account
         .connect(owner)
@@ -134,22 +133,22 @@ describe("ClaimOwnership", () => {
     });
 
     describe("when caller is the pending owner", () => {
-      it("should change the contract owner to the pendingOwner", async () => {
-        let newOwner = accounts[1];
-        await erc725Account.connect(owner).transferOwnership(newOwner.address);
+      let newOwner: SignerWithAddress;
 
+      beforeEach(async () => {
+        newOwner = accounts[1];
+        await erc725Account.connect(owner).transferOwnership(newOwner.address);
+      });
+      it("should change the contract owner to the pendingOwner", async () => {
         let pendingOwner = await erc725Account.pendingOwner();
 
         await erc725Account.connect(newOwner).claimOwnership();
 
-        let currentOwner = await erc725Account.owner();
-        expect(currentOwner).toEqual(pendingOwner);
+        let updatedOwner = await erc725Account.owner();
+        expect(updatedOwner).toEqual(pendingOwner);
       });
 
       it("should have cleared the pendingOwner after transferring ownership", async () => {
-        let newOwner = accounts[1];
-        await erc725Account.connect(owner).transferOwnership(newOwner.address);
-
         await erc725Account.connect(newOwner).claimOwnership();
 
         let newPendingOwner = await erc725Account.pendingOwner();
