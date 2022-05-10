@@ -13,7 +13,7 @@ import "./LSP4Constants.sol";
  * @author Matthew Stevens
  * @dev Inheritable Proxy Implementation of a LSP8 compliant contract.
  */
-abstract contract LSP4DigitalAssetMetadataInitAbstract is Initializable, ERC725YInitAbstract {
+abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
     function _initialize(
         string memory name_,
         string memory symbol_,

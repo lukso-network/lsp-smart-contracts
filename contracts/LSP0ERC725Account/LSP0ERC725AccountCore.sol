@@ -16,8 +16,8 @@ import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 
 // constants
-import {_INTERFACEID_ERC1271, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
-import {_INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
+import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
 /**
  * @title Core Implementation of ERC725Account
@@ -25,10 +25,10 @@ import {_INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from 
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
 abstract contract LSP0ERC725AccountCore is
-    IERC1271,
-    ILSP1UniversalReceiver,
     ERC725XCore,
-    ERC725YCore
+    ERC725YCore,
+    IERC1271,
+    ILSP1UniversalReceiver
 {
     event ValueReceived(address indexed sender, uint256 indexed value);
 
@@ -108,5 +108,22 @@ abstract contract LSP0ERC725AccountCore is
             }
         }
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP0 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            super.supportsInterface(interfaceId);
     }
 }

@@ -11,7 +11,7 @@ import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetC
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupplyCore is ILSP8CappedSupply, LSP8IdentifiableDigitalAssetCore {
+abstract contract LSP8CappedSupplyCore is LSP8IdentifiableDigitalAssetCore, ILSP8CappedSupply {
     // --- Errors
 
     error LSP8CappedSupplyRequired();

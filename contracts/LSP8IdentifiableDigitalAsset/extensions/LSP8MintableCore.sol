@@ -11,7 +11,7 @@ import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetC
 /**
  * @dev LSP8 extension
  */
-abstract contract LSP8MintableCore is ILSP8Mintable, LSP8IdentifiableDigitalAssetCore {
+abstract contract LSP8MintableCore is LSP8IdentifiableDigitalAssetCore, ILSP8Mintable {
     /**
      * @inheritdoc ILSP8Mintable
      */

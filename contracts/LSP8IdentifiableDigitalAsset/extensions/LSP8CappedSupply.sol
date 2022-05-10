@@ -10,7 +10,7 @@ import {LSP8CappedSupplyCore} from "./LSP8CappedSupplyCore.sol";
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupply is LSP8CappedSupplyCore, LSP8IdentifiableDigitalAsset {
+abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset, LSP8CappedSupplyCore {
     /**
      * @notice Sets the token max supply
      * @param tokenSupplyCap_ The Token max supply

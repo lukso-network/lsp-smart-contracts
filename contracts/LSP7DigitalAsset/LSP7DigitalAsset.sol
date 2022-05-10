@@ -5,8 +5,8 @@ pragma solidity ^0.8.0;
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // modules
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import {LSP4DigitalAssetMetadata} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
 import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
 
@@ -18,7 +18,7 @@ import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
  * @author Matthew Stevens
  * @dev Implementation of a LSP7 compliant contract.
  */
-contract LSP7DigitalAsset is LSP7DigitalAssetCore, LSP4DigitalAssetMetadata {
+contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
     /**
      * @notice Sets the token-Metadata
      * @param name_ The name of the token
@@ -42,7 +42,7 @@ contract LSP7DigitalAsset is LSP7DigitalAssetCore, LSP4DigitalAssetMetadata {
         public
         view
         virtual
-        override(IERC165, ERC165Storage)
+        override(IERC165, ERC725YCore)
         returns (bool)
     {
         return interfaceId == _INTERFACEID_LSP7 || super.supportsInterface(interfaceId);

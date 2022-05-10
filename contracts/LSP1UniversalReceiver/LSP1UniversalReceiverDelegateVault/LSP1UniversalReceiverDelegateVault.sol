@@ -21,8 +21,8 @@ import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "../../LSP
  * @dev Delegate contract of the initial universal receiver
  */
 contract LSP1UniversalReceiverDelegateVault is
-    ILSP1UniversalReceiverDelegate,
     ERC165,
+    ILSP1UniversalReceiverDelegate,
     TokenHandling
 {
     /**
@@ -33,7 +33,7 @@ contract LSP1UniversalReceiverDelegateVault is
     function universalReceiverDelegate(
         address sender,
         bytes32 typeId,
-        bytes memory data
+        bytes memory data // solhint-disable no-unused-vars
     ) public virtual override returns (bytes memory result) {
         if (
             typeId == _TYPEID_LSP7_TOKENSSENDER ||

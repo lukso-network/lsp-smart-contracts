@@ -10,8 +10,8 @@ import {LSP8MintableCore} from "./LSP8MintableCore.sol";
  * @dev LSP8 extension.
  */
 abstract contract LSP8MintableInitAbstract is
-    LSP8MintableCore,
-    LSP8IdentifiableDigitalAssetInitAbstract
+    LSP8IdentifiableDigitalAssetInitAbstract,
+    LSP8MintableCore
 {
     function _initialize(
         string memory name_,
