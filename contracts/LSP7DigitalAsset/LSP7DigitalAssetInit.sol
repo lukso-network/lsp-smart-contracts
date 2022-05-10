@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP7DigitalAssetInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "./LSP7DigitalAssetInitAbstract.sol";
 
 /**
  * @title LSP7DigitalAsset contract
@@ -23,11 +23,6 @@ contract LSP7DigitalAssetInit is LSP7DigitalAssetInitAbstract {
         address newOwner_,
         bool isNFT_
     ) public virtual initializer {
-        LSP7DigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            isNFT_
-        );
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, isNFT_);
     }
 }

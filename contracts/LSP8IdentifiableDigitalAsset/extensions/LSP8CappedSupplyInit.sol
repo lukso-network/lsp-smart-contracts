@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP8CappedSupplyInitAbstract.sol";
+import {LSP8CappedSupplyInitAbstract} from "./LSP8CappedSupplyInitAbstract.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.

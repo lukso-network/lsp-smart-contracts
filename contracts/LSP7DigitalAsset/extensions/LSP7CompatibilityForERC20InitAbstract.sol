@@ -3,24 +3,20 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../LSP7DigitalAssetInitAbstract.sol";
-import "./LSP7CompatibilityForERC20Core.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
+import {LSP7CompatibilityForERC20Core} from "./LSP7CompatibilityForERC20Core.sol";
 
 contract LSP7CompatibilityForERC20InitAbstract is
-    LSP7CompatibilityForERC20Core,
-    LSP7DigitalAssetInitAbstract
+    LSP7DigitalAssetInitAbstract,
+    LSP7CompatibilityForERC20Core
 {
     function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
     ) internal virtual override onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            false
-        );
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, false);
     }
 
     // --- Overrides
@@ -37,11 +33,7 @@ contract LSP7CompatibilityForERC20InitAbstract is
         address from,
         uint256 amount,
         bytes memory data
-    )
-        internal
-        virtual
-        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core)
-    {
+    ) internal virtual override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core) {
         super._burn(from, amount, data);
     }
 
@@ -50,11 +42,7 @@ contract LSP7CompatibilityForERC20InitAbstract is
         uint256 amount,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core)
-    {
+    ) internal virtual override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core) {
         super._mint(to, amount, force, data);
     }
 
@@ -64,11 +52,7 @@ contract LSP7CompatibilityForERC20InitAbstract is
         uint256 amount,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-        override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core)
-    {
+    ) internal virtual override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core) {
         super._transfer(from, to, amount, force, data);
     }
 }

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // constants
 import "./LSP4Constants.sol";
@@ -25,10 +25,7 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
         address newOwner_
     ) ERC725Y(newOwner_) {
         // set key SupportedStandards:LSP4DigitalAsset
-        _setData(
-            _LSP4_SUPPORTED_STANDARDS_KEY,
-            _LSP4_SUPPORTED_STANDARDS_VALUE
-        );
+        _setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 
         _setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
         _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));

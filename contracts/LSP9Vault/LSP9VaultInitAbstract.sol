@@ -1,29 +1,29 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+
 // modules
-import "@erc725/smart-contracts/contracts/ERC725InitAbstract.sol";
-import "./LSP9VaultCore.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {ERC725InitAbstract} from "@erc725/smart-contracts/contracts/ERC725InitAbstract.sol";
+import {LSP9VaultCore} from "./LSP9VaultCore.sol";
+
+// constants
+import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE} from "../LSP9Vault/LSP9Constants.sol";
 
 /**
  * @title Inheritable Proxy Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
-    function _initialize(address _newOwner)
-        internal
-        virtual
-        override
-        onlyInitializing
-    {
+abstract contract LSP9VaultInitAbstract is ERC725InitAbstract, LSP9VaultCore {
+    function _initialize(address _newOwner) internal virtual override onlyInitializing {
         ERC725InitAbstract._initialize(_newOwner);
 
         // set key SupportedStandards:LSP9Vault
-        _setData(
-            _LSP9_SUPPORTED_STANDARDS_KEY,
-            _LSP9_SUPPORTED_STANDARDS_VALUE
-        );
+        _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
         _notifyVaultReceiver(_newOwner);
     }
@@ -32,12 +32,7 @@ abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
      * @inheritdoc OwnableUnset
      * @dev Transfer the ownership and notify the vault sender and vault receiver
      */
-    function transferOwnership(address newOwner)
-        public
-        virtual
-        override
-        onlyOwner
-    {
+    function transferOwnership(address newOwner) public virtual override onlyOwner {
         OwnableUnset.transferOwnership(newOwner);
 
         _notifyVaultSender(msg.sender);
@@ -52,12 +47,7 @@ abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32 _key, bytes memory _value)
-        public
-        virtual
-        override
-        onlyAllowed
-    {
+    function setData(bytes32 _key, bytes memory _value) public virtual override onlyAllowed {
         _setData(_key, _value);
     }
 
@@ -75,10 +65,7 @@ abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
         override
         onlyAllowed
     {
-        require(
-            _keys.length == _values.length,
-            "Keys length not equal to values length"
-        );
+        require(_keys.length == _values.length, "Keys length not equal to values length");
         for (uint256 i = 0; i < _keys.length; i++) {
             _setData(_keys[i], _values[i]);
         }
@@ -91,7 +78,7 @@ abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
         public
         view
         virtual
-        override
+        override(ERC725InitAbstract, LSP9VaultCore)
         returns (bool)
     {
         return

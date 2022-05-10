@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../ILSP8IdentifiableDigitalAsset.sol";
+import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
 
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
@@ -16,11 +16,7 @@ interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
      * @param to The receiving address
      * @param tokenId The tokenId to transfer
      */
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
     /**
      * @notice To provide compatibility with indexing ERC721 events.
@@ -29,11 +25,7 @@ interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
      * @param approved The address set as operator
      * @param tokenId The approved tokenId
      */
-    event Approval(
-        address indexed owner,
-        address indexed approved,
-        uint256 indexed tokenId
-    );
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 
     /**
      * @dev Compatible with ERC721 transferFrom.

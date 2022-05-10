@@ -6,6 +6,8 @@ import {
   ERC725YKeys,
   ALL_PERMISSIONS_SET,
   PERMISSIONS,
+  OPERATIONS,
+  INTERFACE_IDS,
 } from "../../../constants";
 
 // setup
@@ -13,7 +15,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { NotAuthorisedError } from "../../utils/helpers";
+import { abiCoder, NotAuthorisedError } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -553,6 +555,1390 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
        *  @todo should test that an address with only the permission SETDATA
        * cannot add or edit permissions
        */
+    });
+  });
+
+  describe("setting Allowed Addresses", () => {
+    let canOnlyAddPermissions: SignerWithAddress,
+      canOnlyChangePermissions: SignerWithAddress;
+
+    let beneficiary: SignerWithAddress,
+      invalidBeneficiary: SignerWithAddress,
+      zero32Bytes: SignerWithAddress,
+      zero40Bytes: SignerWithAddress;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      canOnlyAddPermissions = context.accounts[1];
+      canOnlyChangePermissions = context.accounts[2];
+
+      beneficiary = context.accounts[3];
+      invalidBeneficiary = context.accounts[4];
+      zero32Bytes = context.accounts[5];
+      zero40Bytes = context.accounts[6];
+
+      let permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyAddPermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyChangePermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          beneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          invalidBeneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          zero32Bytes.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          zero40Bytes.address.substring(2),
+      ];
+
+      let permissionValues = [
+        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        ),
+        "0x11223344",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when caller has permission ADDPERMISSIONS", () => {
+      it("should fail when trying to edit existing allowed addresses for an address", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          beneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xca11ca11ca11ca11ca11ca11ca11ca11ca11ca11",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary address had an invalid abi-encoded array of address[] initially", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          invalidBeneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed addresses", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          zero32Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed addresses", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          zero40Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should pass when beneficiary had no values set under AddressPermissions:AllowedAddresses:... + setting a valid abi-encoded array of address[] (= with 12 x leading '00')", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyAddPermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      describe("when setting an invalid abi-encoded array of address[] for a new beneficiary", () => {
+        it("should revert with error when value = random bytes", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+            newController.address.substr(2);
+
+          let value = "0xbadbadbadbad";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of addresses"
+          );
+        });
+
+        it("should revert with error when value = invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+            newController.address.substr(2);
+
+          let value =
+            "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000cafecafecafecafecafecafecafecafecafecafecafe";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of addresses"
+          );
+        });
+      });
+    });
+
+    describe("when caller has permission CHANGEPERMISSIONS", () => {
+      it("should fail when beneficiary had no values set under AddressPermissions:AllowedAddresses:...", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyChangePermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyChangePermissions.address, "ADDPERMISSIONS")
+        );
+      });
+
+      it("should pass when trying to edit existing allowed addresses for an address", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          beneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xca11ca11ca11ca11ca11ca11ca11ca11ca11ca11",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had an invalid abi-encoded array of address[] initially", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          invalidBeneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had 32 x 0 bytes set initially as allowed addresses", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          zero32Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had 40 x 0 bytes set initially as allowed addresses", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          zero40Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["address[]"],
+          [
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      describe("when changing the list of allowed address of existing address to an invalid value", () => {
+        it("should revert with error when value = random bytes", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+            beneficiary.address.substring(2);
+
+          let value = "0xbadbadbadbad";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of addresses"
+          );
+        });
+
+        it("should revert with error when value = invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+            beneficiary.address.substring(2);
+
+          let value =
+            "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000cafecafecafecafecafecafecafecafecafecafecafe";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of addresses"
+          );
+        });
+      });
+    });
+  });
+
+  describe("setting Allowed Functions", () => {
+    let canOnlyAddPermissions: SignerWithAddress,
+      canOnlyChangePermissions: SignerWithAddress;
+
+    let beneficiary: SignerWithAddress,
+      invalidBeneficiary: SignerWithAddress,
+      zero32Bytes: SignerWithAddress,
+      zero40Bytes: SignerWithAddress;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      canOnlyAddPermissions = context.accounts[1];
+      canOnlyChangePermissions = context.accounts[2];
+
+      beneficiary = context.accounts[3];
+      invalidBeneficiary = context.accounts[4];
+      zero32Bytes = context.accounts[5];
+      zero40Bytes = context.accounts[6];
+
+      let permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyAddPermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyChangePermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          beneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          invalidBeneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          zero32Bytes.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          zero40Bytes.address.substring(2),
+      ];
+
+      let permissionValues = [
+        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        abiCoder.encode(["bytes4[]"], [["0xcafecafe", "0xbeefbeef"]]),
+        "0x11223344",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when caller has permission ADDPERMISSIONS", () => {
+      it("should fail when trying to edit existing allowed functions for an address", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          beneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xca11ca11"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary address had an invalid abi-encoded array of bytes4[] initially", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          invalidBeneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xca11ca11"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed functions", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          zero32Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xca11ca11"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed functions", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          zero40Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xca11ca11"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should pass when beneficiary had no values set under AddressPermissions:AllowedFunctions:... + setting a valid abi-encoded array of bytes4[] (= 28 leading zeros)", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xbeefbeef"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyAddPermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      describe("when setting an invalid abi-encoded array of bytes4[] selector for a new beneficiary", () => {
+        it("should fail when setting an invalid abi-encoded array of bytes4[] (= random bytes)", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+            newController.address.substr(2);
+
+          let value = "0xbadbadbadbad";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes4"
+          );
+        });
+
+        it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+            newController.address.substr(2);
+
+          let value =
+            "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes4"
+          );
+        });
+      });
+    });
+
+    describe("when caller has CHANGEPERMISSIONS", () => {
+      it("should fail when beneficiary had no values set under AddressPermissions:AllowedFunctions:...", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xbeefbeef"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyChangePermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyChangePermissions.address, "ADDPERMISSIONS")
+        );
+      });
+
+      it("should pass when trying to edit existing allowed bytes4 selectors for an address", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          beneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xca11ca11"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had an invalid abi-encoded array of bytes4[] initially", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          invalidBeneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xbeefbeef"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had 32 x 0 bytes set initially as allowed functions", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          zero32Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xbeefbeef"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had 40 x 0 bytes set initially as allowed functions", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+          zero40Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [["0xcafecafe", "0xbeefbeef"]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      describe("when changing the list of allowed bytes4 function selectors to an invalid value", () => {
+        it("should revert with error when value = random bytes", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+            beneficiary.address.substring(2);
+
+          let value = "0xbadbadbadbad";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes4"
+          );
+        });
+
+        it("should revert with error when value = invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
+            beneficiary.address.substring(2);
+
+          let value =
+            "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes4"
+          );
+        });
+      });
+    });
+  });
+
+  describe("setting Allowed Standards", () => {
+    let canOnlyAddPermissions: SignerWithAddress,
+      canOnlyChangePermissions: SignerWithAddress;
+
+    let beneficiary: SignerWithAddress,
+      invalidBeneficiary: SignerWithAddress,
+      zero32Bytes: SignerWithAddress,
+      zero40Bytes: SignerWithAddress;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      canOnlyAddPermissions = context.accounts[1];
+      canOnlyChangePermissions = context.accounts[2];
+
+      beneficiary = context.accounts[3];
+      invalidBeneficiary = context.accounts[4];
+      zero32Bytes = context.accounts[5];
+      zero40Bytes = context.accounts[6];
+
+      let permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyAddPermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyChangePermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          beneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          invalidBeneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          zero32Bytes.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          zero40Bytes.address.substring(2),
+      ];
+
+      let permissionValues = [
+        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        abiCoder.encode(
+          ["bytes4[]"],
+          [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
+        ),
+        "0x11223344",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when caller has ADDPERMISSIONS", () => {
+      it("should fail when trying to edit existing allowed standards for an address", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          beneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [
+            [
+              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.ERC20,
+              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.ERC721,
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary address had an invalid abi-encoded array of bytes4[] initially", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          invalidBeneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [
+            [
+              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.ERC20,
+              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.ERC721,
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed functions", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          zero32Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [
+            [
+              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.ERC20,
+              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.ERC721,
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed functions", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          zero40Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [
+            [
+              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.ERC20,
+              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.ERC721,
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
+        );
+      });
+
+      it("should pass when beneficiary had no values set under AddressPermissions:AllowedStandards:... + setting a valid abi-encoded array of bytes4[] (= 28 leading zeros)", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [
+            [
+              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.ERC20,
+              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.ERC721,
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyAddPermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      describe("when setting an invalid abi-encoded array of bytes4[] interface IDs for a new beneficiary", () => {
+        it("should fail when setting an invalid abi-encoded array of bytes4[] (= random bytes)", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+            newController.address.substr(2);
+
+          let value = "0xbadbadbadbad";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes4"
+          );
+        });
+
+        it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+            newController.address.substr(2);
+
+          let value =
+            "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes4"
+          );
+        });
+      });
+    });
+
+    describe("when caller has CHANGEPERMISSION", () => {
+      it("should fail when beneficiary had no values set under AddressPermissions:AllowedStandards:...", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [[INTERFACE_IDS.ERC725Account, INTERFACE_IDS.LSP1]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyChangePermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyChangePermissions.address, "ADDPERMISSIONS")
+        );
+      });
+
+      it("should pass when trying to edit existing allowed standards for an address", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          beneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [
+            [
+              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.ERC20,
+              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.ERC721,
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had an invalid abi-encoded array of bytes4[] interface IDs initially", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          invalidBeneficiary.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had 32 x 0 bytes set initially as allowed standards", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          zero32Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      it("should pass when address had 40 x 0 bytes set initially as allowed standards", async () => {
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          zero40Bytes.address.substring(2);
+
+        let value = abiCoder.encode(
+          ["bytes4[]"],
+          [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      describe("when changing the list of allowed bytes4 interface IDs to an invalid value", () => {
+        it("should revert with error when value = random bytes", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+            beneficiary.address.substring(2);
+
+          let value = "0xbadbadbadbad";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes4"
+          );
+        });
+
+        it("should revert with error when value = invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+            beneficiary.address.substring(2);
+
+          let value =
+            "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager
+              .connect(canOnlyChangePermissions)
+              .execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes4"
+          );
+        });
+      });
+    });
+  });
+
+  describe("setting Allowed ERC725YKeys", () => {
+    let canOnlyAddPermissions: SignerWithAddress,
+      canOnlyChangePermissions: SignerWithAddress;
+
+    let beneficiary: SignerWithAddress,
+      invalidBeneficiary: SignerWithAddress,
+      zero32Bytes: SignerWithAddress,
+      zero40Bytes: SignerWithAddress;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      canOnlyAddPermissions = context.accounts[1];
+      canOnlyChangePermissions = context.accounts[2];
+
+      beneficiary = context.accounts[3];
+      invalidBeneficiary = context.accounts[4];
+      zero32Bytes = context.accounts[5];
+      zero40Bytes = context.accounts[6];
+
+      let permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyAddPermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyChangePermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          beneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          invalidBeneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          zero32Bytes.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          zero40Bytes.address.substring(2),
+      ];
+
+      let permissionValues = [
+        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        abiCoder.encode(
+          ["bytes32[]"],
+          [
+            [
+              ERC725YKeys.LSP3["LSP3Profile"],
+              // prettier-ignore
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
+            ],
+          ]
+        ),
+        "0x11223344",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when caller has ADDPERMISSIONS", () => {
+      /**
+       * @todo write remaining tests for NotAuthorised + CHANGE PERMISSIONs
+       */
+
+      it("should pass when beneficiary had no values set under AddressPermissions:AllowedERC725YKeys:... + setting a valid abi-encoded array of bytes32[]", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["bytes32[]"],
+          [
+            [
+              // prettier-ignore
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 1")),
+              // prettier-ignore
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 2")),
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+        await context.keyManager
+          .connect(canOnlyAddPermissions)
+          .execute(payload);
+
+        // prettier-ignore
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+
+      describe("when setting an invalid abi-encoded array of bytes32[] ERC725Y data keys for a new beneficiary", () => {
+        it("should fail when setting an invalid abi-encoded array of bytes32[] (random bytes)", async () => {
+          let newController = new ethers.Wallet.createRandom();
+
+          let key =
+            ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+            newController.address.substr(2);
+
+          let value = "0xbadbadbadbad";
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await expect(
+            context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+          ).toBeRevertedWith(
+            "LSP6KeyManager: invalid ABI encoded array of bytes32"
+          );
+        });
+      });
+    });
+
+    describe("when caller has CHANGEPERMISSIONS", () => {
+      it("should fail when beneficiary had no values set under AddressPermissions:AllowedERC725YKeys:...", async () => {
+        let newController = new ethers.Wallet.createRandom();
+
+        let key =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          newController.address.substr(2);
+
+        let value = abiCoder.encode(
+          ["bytes32[]"],
+          [
+            [
+              ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes("My Custom Key 1")
+              ),
+              ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes("My Custom Key 2")
+              ),
+            ],
+          ]
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[key], [value]]
+        );
+
+        await expect(
+          context.keyManager.connect(canOnlyChangePermissions).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(canOnlyChangePermissions.address, "ADDPERMISSIONS")
+        );
+      });
     });
   });
 

@@ -29,7 +29,8 @@ export const shouldBehaveLikeAllowedAddresses = (
 ) => {
   let context: LSP6TestContext;
 
-  let canCallOnlyTwoAddresses: SignerWithAddress;
+  let canCallOnlyTwoAddresses: SignerWithAddress,
+    invalidAbiEncodedAddresses: SignerWithAddress;
 
   let allowedEOA: SignerWithAddress,
     notAllowedEOA: SignerWithAddress,
@@ -40,8 +41,10 @@ export const shouldBehaveLikeAllowedAddresses = (
     context = await buildContext();
 
     canCallOnlyTwoAddresses = context.accounts[1];
-    allowedEOA = context.accounts[2];
-    notAllowedEOA = context.accounts[3];
+    invalidAbiEncodedAddresses = context.accounts[2];
+
+    allowedEOA = context.accounts[3];
+    notAllowedEOA = context.accounts[4];
 
     allowedTargetContract = await new TargetContract__factory(
       context.accounts[0]
@@ -58,6 +61,10 @@ export const shouldBehaveLikeAllowedAddresses = (
         canCallOnlyTwoAddresses.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
         canCallOnlyTwoAddresses.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        invalidAbiEncodedAddresses.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+        invalidAbiEncodedAddresses.address.substring(2),
     ];
 
     let permissionsValues = [
@@ -67,6 +74,8 @@ export const shouldBehaveLikeAllowedAddresses = (
         ["address[]"],
         [[allowedEOA.address, allowedTargetContract.address]]
       ),
+      ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+      "0xbadbadbadbad",
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -242,6 +251,47 @@ export const shouldBehaveLikeAllowedAddresses = (
           notAllowedTargetContract.address
         )
       );
+    });
+  });
+
+  describe("when caller has an invalid abi-encoded array set for ALLOWED ADDRESSES", () => {
+    describe("it should be allowed to interact with any address", () => {
+      const randomAddresses = getRandomAddresses(5);
+
+      randomAddresses.forEach((recipient) => {
+        it(`sending 1 LYX to EOA ${recipient}`, async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let initialBalanceEOA = await provider.getBalance(recipient);
+
+          let amount = ethers.utils.parseEther("1");
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              amount,
+              EMPTY_PAYLOAD,
+            ]);
+
+          await context.keyManager
+            .connect(invalidAbiEncodedAddresses)
+            .execute(transferPayload);
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(parseInt(newBalanceUP)).toBeLessThan(
+            parseInt(initialBalanceUP)
+          );
+
+          let newBalanceEOA = await provider.getBalance(recipient);
+          expect(parseInt(newBalanceEOA)).toBeGreaterThan(
+            parseInt(initialBalanceEOA)
+          );
+        });
+      });
     });
   });
 };

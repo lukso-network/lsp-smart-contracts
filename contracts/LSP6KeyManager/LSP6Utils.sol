@@ -2,14 +2,14 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
+
+// libraries
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import "../LSP6KeyManager/LSP6Constants.sol";
-
-// libraries
-import "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import "./ILSP6KeyManager.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;
@@ -17,7 +17,7 @@ library LSP6Utils {
     function getPermissionsFor(IERC725Y _account, address _address) internal view returns (bytes32) {
         bytes memory permissions = _account.getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
-                _LSP6_ADDRESS_PERMISSIONS_MAP_KEY_PREFIX,
+                _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
                 bytes20(_address)
             )
         );
@@ -33,7 +33,7 @@ library LSP6Utils {
         return
             _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _LSP6_ADDRESS_ALLOWEDADDRESSES_MAP_KEY_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX,
                     bytes20(_address)
                 )
             );
@@ -47,7 +47,7 @@ library LSP6Utils {
         return
             _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _LSP6_ADDRESS_ALLOWEDFUNCTIONS_MAP_KEY_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX,
                     bytes20(_address)
                 )
             );
@@ -75,7 +75,7 @@ library LSP6Utils {
         return
             _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _LSP6_ADDRESS_ALLOWEDERC725YKEYS_MAP_KEY_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX,
                     bytes20(_address)
                 )
             );

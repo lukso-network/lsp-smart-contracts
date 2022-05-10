@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP0ERC725Account/LSP0ERC725Account.sol";
+import {LSP0ERC725Account} from "./LSP0ERC725Account/LSP0ERC725Account.sol";
 
 /**
  * @title implementation of a LUKSO's Universal Profile based on LSP3
