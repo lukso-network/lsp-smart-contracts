@@ -34,8 +34,6 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     permissionsKeys = [
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         canChangeOwner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         cannotChangeOwner.address.substring(2),

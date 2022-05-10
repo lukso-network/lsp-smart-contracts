@@ -51,7 +51,17 @@ export async function setupKeyManager(
 ) {
   await _context.universalProfile
     .connect(_context.owner)
-    ["setData(bytes32[],bytes[])"](_permissionsKeys, _permissionsValues);
+    ["setData(bytes32[],bytes[])"](
+      [
+        // required to set owner permission so that it can claimOwnership(...) via the KeyManager
+        // otherwise, the KeyManager will flag the calling owner as not having the permission CHANGEOWNER
+        // when trying to setup the KeyManager
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          _context.owner.address.substring(2),
+        ..._permissionsKeys,
+      ],
+      [ALL_PERMISSIONS_SET, ..._permissionsValues]
+    );
 
   await _context.universalProfile
     .connect(_context.owner)
