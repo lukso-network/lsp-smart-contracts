@@ -110,16 +110,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @inheritdoc ILSP6KeyManager
      */
     function executeRelayCall(
-        address _signedFor,
+        bytes memory _signature,
         uint256 _nonce,
-        bytes calldata _calldata,
-        bytes memory _signature
+        bytes calldata _calldata
     ) external payable override returns (bytes memory) {
-        require(
-            _signedFor == address(this),
-            "executeRelayCall: Message not signed for this keyManager"
-        );
-
         bytes memory blob = abi.encodePacked(
             address(this), // needs to be signed for this keyManager
             _nonce,

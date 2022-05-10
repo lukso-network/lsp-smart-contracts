@@ -42,16 +42,14 @@ interface ILSP6KeyManager is
 
     /**
      * @dev allows anybody to execute given they have a signed message from an executor
-     * @param _signedFor this KeyManager
+     * @param _signature bytes32 ethereum signature
      * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
      * @param _calldata obtained via encodeABI() in web3
-     * @param _signature bytes32 ethereum signature
      * @return result_ the data being returned by the ERC725 Account
      */
     function executeRelayCall(
-        address _signedFor,
+        bytes memory _signature,
         uint256 _nonce,
-        bytes calldata _calldata,
-        bytes memory _signature
+        bytes calldata _calldata
     ) external payable returns (bytes memory);
 }
