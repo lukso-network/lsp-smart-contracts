@@ -1,7 +1,13 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { Executor, Executor__factory } from "../../../types";
+import {
+  Executor,
+  Executor__factory,
+  LSP7Mintable,
+  LSP7Mintable__factory,
+  UniversalProfile__factory,
+} from "../../../types";
 
 // constants
 import {
@@ -18,8 +24,9 @@ import { setupKeyManager } from "../../utils/fixtures";
 // helpers
 import {
   provider,
-  EMPTY_PAYLOAD,
   NotAuthorisedError,
+  abiCoder,
+  NotAllowedAddressError,
 } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionTransferValue = (
@@ -27,7 +34,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 ) => {
   let context: LSP6TestContext;
 
-  describe("when sender = EOA", () => {
+  describe("when caller = EOA", () => {
     let canTransferValue: SignerWithAddress,
       cannotTransferValue: SignerWithAddress;
 
@@ -274,7 +281,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     // when recipient is a contract
   });
 
-  describe("when sender = contract", () => {
+  describe("when caller = contract", () => {
     let contractCanTransferValue: Executor;
 
     const hardcodedRecipient: string =
@@ -557,6 +564,193 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
       expect(aliceUPBalanceAfter).toEqBN(ethers.utils.parseEther("5"));
       expect(bobUPBalanceAfter).toEqBN(0);
+    });
+  });
+
+  describe("when caller has SUPER_TRANSFERVALUE + CALL", () => {
+    let caller: SignerWithAddress;
+    let lsp7Token: LSP7Mintable;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      caller = context.accounts[1];
+
+      lsp7Token = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+        "LSP7 Token",
+        "LSP7",
+        context.accounts[0].address,
+        false
+      );
+
+      await lsp7Token
+        .connect(context.accounts[0])
+        .mint(context.universalProfile.address, 100, false, "0x");
+
+      const permissionsKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          caller.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          caller.address.substring(2),
+      ];
+
+      const permissionsValues = [
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SUPER_TRANSFERVALUE + PERMISSIONS.CALL,
+          32
+        ),
+        // restriction = only a specific address (e.g: an LSP7 contract)
+        abiCoder.encode(["address[]"], [[lsp7Token.address]]),
+      ];
+
+      await setupKeyManager(context, permissionsKeys, permissionsValues);
+
+      await context.owner.sendTransaction({
+        to: context.universalProfile.address,
+        value: ethers.utils.parseEther("10"),
+      });
+    });
+
+    describe("should be allowed to send LYX to any EOA", () => {
+      const recipients: SignerWithAddress[] = [
+        ethers.Wallet.createRandom().address,
+        ethers.Wallet.createRandom().address,
+        ethers.Wallet.createRandom().address,
+        ethers.Wallet.createRandom().address,
+        ethers.Wallet.createRandom().address,
+      ];
+
+      it.each(recipients)("should send LYX to EOA -> %s", async (recipient) => {
+        let initialBalanceUP = await provider.getBalance(
+          context.universalProfile.address
+        );
+
+        let initialBalanceRecipient = await provider.getBalance(recipient);
+
+        let transferPayload =
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            recipient,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
+
+        await context.keyManager.connect(caller).execute(transferPayload);
+
+        let newBalanceUP = await provider.getBalance(
+          context.universalProfile.address
+        );
+        expect(parseInt(newBalanceUP)).toBeLessThan(parseInt(initialBalanceUP));
+
+        let newBalanceRecipient = await provider.getBalance(recipient);
+        expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
+          parseInt(initialBalanceRecipient)
+        );
+      });
+    });
+
+    describe("should be allowed to send LYX to any other UP contract", () => {
+      for (let ii = 0; ii < 5; ii++) {
+        it(`should send LYX to UP ${ii}`, async () => {
+          let recipient = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(context.accounts[0].address);
+
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+
+          let initialBalanceRecipient = await provider.getBalance(
+            recipient.address
+          );
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]);
+
+          await context.keyManager.connect(caller).execute(transferPayload);
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(parseInt(newBalanceUP)).toBeLessThan(
+            parseInt(initialBalanceUP)
+          );
+
+          let newBalanceRecipient = await provider.getBalance(
+            recipient.address
+          );
+          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
+            parseInt(initialBalanceRecipient)
+          );
+        });
+      }
+    });
+
+    /**
+     * @todo test that it can only interact with a specific contract only with some bytes calldata
+     * tests should be the transfer(...) function.
+     *
+     *
+     */
+    //
+    // test 1: deploy a new LSP7 contract, and test not allowed to interact with this specific address
+    // test 2: allowed to interact with the only allowed LSP7 contract.
+
+    it.skip("should not be allowed to interact with any LSP7 contract", async () => {
+      let newLSP7Token = await new LSP7Mintable__factory(
+        context.accounts[0]
+      ).deploy("New LSP7 Token", "LSP7TKN", context.accounts[0].address, false);
+
+      let lsp7TransferPayload = newLSP7Token.interface.encodeFunctionData(
+        "transfer",
+        [
+          context.universalProfile.address,
+          context.accounts[5].address,
+          10,
+          true, // sending to an EOA
+          "0x",
+        ]
+      );
+
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          newLSP7Token.address,
+          0,
+          lsp7TransferPayload,
+        ]);
+
+      await expect(
+        context.keyManager.connect(caller).execute(executePayload)
+      ).toBeRevertedWith(
+        NotAllowedAddressError(caller.address, newLSP7Token.address)
+      );
+    });
+
+    it.skip("should be allowed to interact with the LSP7 contract in the allowed address", async () => {
+      let lsp7TransferPayload = lsp7Token.interface.encodeFunctionData(
+        "transfer",
+        [
+          context.universalProfile.address,
+          context.accounts[5].address,
+          10,
+          true, // sending to an EOA
+          "0x",
+        ]
+      );
+
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          lsp7Token.address,
+          0,
+          lsp7TransferPayload,
+        ]);
     });
   });
 };
