@@ -11,7 +11,7 @@ import {LSP7MintableCore} from "./LSP7MintableCore.sol";
  * @author Jean Cavallera, Yamen Merhi
  * @dev LSP7 extension, mintable.
  */
-contract LSP7Mintable is LSP7MintableCore, LSP7DigitalAsset {
+contract LSP7Mintable is LSP7DigitalAsset, LSP7MintableCore {
     // solhint-disable no-empty-blocks
 
     /**

@@ -20,8 +20,8 @@ import {_INTERFACEID_ERC721, _INTERFACEID_ERC721METADATA} from "./LSP8Compatibil
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
 contract LSP8CompatibilityForERC721 is
-    LSP8CompatibilityForERC721Core,
-    LSP8IdentifiableDigitalAsset
+    LSP8IdentifiableDigitalAsset,
+    LSP8CompatibilityForERC721Core
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 

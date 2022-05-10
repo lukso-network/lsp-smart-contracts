@@ -10,7 +10,7 @@ import {LSP7MintableCore} from "./LSP7MintableCore.sol";
 /**
  * @dev LSP7 extension, mintable.
  */
-abstract contract LSP7MintableInitAbstract is LSP7MintableCore, LSP7DigitalAssetInit {
+abstract contract LSP7MintableInitAbstract is LSP7DigitalAssetInit, LSP7MintableCore {
     function _initialize(
         string memory name_,
         string memory symbol_,

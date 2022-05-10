@@ -9,7 +9,7 @@ import {LSP8MintableCore} from "./LSP8MintableCore.sol";
 /**
  * @dev LSP8 extension.
  */
-contract LSP8Mintable is LSP8MintableCore, LSP8IdentifiableDigitalAsset {
+contract LSP8Mintable is LSP8IdentifiableDigitalAsset, LSP8MintableCore {
     // solhint-disable no-empty-blocks
     /**
      * @notice Sets the token-Metadata and register LSP8InterfaceId
