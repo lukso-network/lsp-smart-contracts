@@ -56,6 +56,11 @@ export async function setupKeyManager(
   await _context.universalProfile
     .connect(_context.owner)
     .transferOwnership(_context.keyManager.address);
+
+  let payload =
+    _context.universalProfile.interface.getSighash("claimOwnership");
+
+  await _context.keyManager.connect(_context.owner).execute(payload);
 }
 
 export async function setupKeyManagerHelper(
@@ -70,6 +75,13 @@ export async function setupKeyManagerHelper(
   await _context.universalProfile
     .connect(_context.owner)
     .transferOwnership(_context.keyManagerInternalTester.address);
+
+  let payload =
+    _context.universalProfile.interface.getSighash("claimOwnership");
+
+  await _context.keyManagerInternalTester
+    .connect(_context.owner)
+    .execute(payload);
 }
 
 /**
