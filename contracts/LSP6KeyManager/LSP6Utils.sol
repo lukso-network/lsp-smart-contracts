@@ -14,7 +14,11 @@ import "../LSP6KeyManager/LSP6Constants.sol";
 library LSP6Utils {
     using LSP2Utils for bytes12;
 
-    function getPermissionsFor(IERC725Y _account, address _address) internal view returns (bytes32) {
+    function getPermissionsFor(IERC725Y _account, address _address)
+        internal
+        view
+        returns (bytes32)
+    {
         bytes memory permissions = _account.getData(
             LSP2Utils.generateBytes20MappingWithGroupingKey(
                 _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
@@ -61,7 +65,7 @@ library LSP6Utils {
         return
             _account.getData(
                 LSP2Utils.generateBytes20MappingWithGroupingKey(
-                    _LSP6_ADDRESS_ALLOWEDSTANDARDS_MAP_KEY_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX,
                     bytes20(_address)
                 )
             );
