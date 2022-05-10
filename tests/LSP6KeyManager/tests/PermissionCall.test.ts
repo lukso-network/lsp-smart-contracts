@@ -209,9 +209,16 @@ export const shouldBehaveLikePermissionCall = (
             targetContractPayload,
           ]);
 
+        const HARDHAT_CHAINID = 31337;
+
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
+          ["uint256", "address", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            executeRelayCallPayload,
+          ]
         );
 
         let signature = await context.owner.signMessage(
@@ -219,10 +226,9 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         await context.keyManager.executeRelayCall(
-          context.keyManager.address,
+          signature,
           nonce,
-          executeRelayCallPayload,
-          signature
+          executeRelayCallPayload
         );
 
         const result = await targetContract.callStatic.getName();
@@ -251,9 +257,16 @@ export const shouldBehaveLikePermissionCall = (
             targetContractPayload,
           ]);
 
+        const HARDHAT_CHAINID = 31337;
+
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
+          ["uint256", "address", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            executeRelayCallPayload,
+          ]
         );
 
         let signature = await addressCanMakeCall.signMessage(
@@ -261,10 +274,9 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         await context.keyManager.executeRelayCall(
-          context.keyManager.address,
+          signature,
           nonce,
-          executeRelayCallPayload,
-          signature
+          executeRelayCallPayload
         );
 
         const result = await targetContract.callStatic.getName();
@@ -293,9 +305,16 @@ export const shouldBehaveLikePermissionCall = (
             targetContractPayload,
           ]);
 
+        const HARDHAT_CHAINID = 31337;
+
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
+          ["uint256", "address", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            executeRelayCallPayload,
+          ]
         );
 
         let signature = await addressCannotMakeCall.signMessage(
@@ -304,10 +323,9 @@ export const shouldBehaveLikePermissionCall = (
 
         await expect(
           context.keyManager.executeRelayCall(
-            context.keyManager.address,
+            signature,
             nonce,
-            executeRelayCallPayload,
-            signature
+            executeRelayCallPayload
           )
         ).toBeRevertedWith(
           NotAuthorisedError(addressCannotMakeCall.address, "CALL")
