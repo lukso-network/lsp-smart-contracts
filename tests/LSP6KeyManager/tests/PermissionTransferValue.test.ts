@@ -36,13 +36,15 @@ export const shouldBehaveLikePermissionTransferValue = (
 
   describe("when caller = EOA", () => {
     let canTransferValue: SignerWithAddress,
+      canTransferValueAndCall: SignerWithAddress,
       cannotTransferValue: SignerWithAddress;
 
     beforeEach(async () => {
       context = await buildContext();
 
       canTransferValue = context.accounts[1];
-      cannotTransferValue = context.accounts[2];
+      canTransferValueAndCall = context.accounts[2];
+      cannotTransferValue = context.accounts[3];
 
       const permissionsKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -50,13 +52,16 @@ export const shouldBehaveLikePermissionTransferValue = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           canTransferValue.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canTransferValueAndCall.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           cannotTransferValue.address.substring(2),
       ];
 
       const permissionsValues = [
         ALL_PERMISSIONS_SET,
+        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
         ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          PERMISSIONS.TRANSFERVALUE + PERMISSIONS.CALL,
           32
         ),
         ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
@@ -80,7 +85,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       describe("when transferring value without bytes `_data`", () => {
         const data = "0x";
 
-        it("address with ALL PERMISSIONS should be allowed to transfer value", async () => {
+        it("should pass when caller has ALL PERMISSIONS", async () => {
           let initialBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
@@ -112,7 +117,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
         });
 
-        it("address with permission TRANSFER VALUE should be allowed to transfer value", async () => {
+        it("should pass when caller has permission TRANSFERVALUE only", async () => {
           let initialBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
@@ -143,7 +148,38 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
         });
 
-        it("address with no permission TRANSFERVALUE should revert", async () => {
+        it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let initialBalanceRecipient = await provider.getBalance(recipient);
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              ethers.utils.parseEther("3"),
+              data,
+            ]);
+
+          await context.keyManager
+            .connect(canTransferValueAndCall)
+            .execute(transferPayload);
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(parseInt(newBalanceUP)).toBeLessThan(
+            parseInt(initialBalanceUP)
+          );
+
+          let newBalanceRecipient = await provider.getBalance(recipient);
+          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
+            parseInt(initialBalanceRecipient)
+          );
+        });
+
+        it("should fail when caller does not have permission TRANSFERVALUE", async () => {
           let initialBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
@@ -180,7 +216,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       describe("when transferring value with bytes `_data`", () => {
         const data = "0xaabbccdd";
 
-        it("address with ALL PERMISSIONS should be allowed to transfer value", async () => {
+        it("should pass when caller has ALL PERMISSIONS", async () => {
           let initialBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
@@ -212,10 +248,11 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
         });
 
-        it("address with permission TRANSFER VALUE should be allowed to transfer value", async () => {
+        it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
           let initialBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
+
           let initialBalanceRecipient = await provider.getBalance(recipient);
 
           let transferPayload =
@@ -227,7 +264,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             ]);
 
           await context.keyManager
-            .connect(canTransferValue)
+            .connect(canTransferValueAndCall)
             .execute(transferPayload);
 
           let newBalanceUP = await provider.getBalance(
@@ -243,7 +280,40 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
         });
 
-        it("address with no permission TRANSFERVALUE should revert", async () => {
+        it("should fail when caller has permission TRANSFERVALUE only", async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let initialBalanceRecipient = await provider.getBalance(recipient);
+
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATIONS.CALL,
+              recipient,
+              ethers.utils.parseEther("3"),
+              data,
+            ]);
+
+          await expect(
+            context.keyManager
+              .connect(canTransferValue)
+              .execute(transferPayload)
+          ).toBeRevertedWith(
+            NotAuthorisedError(canTransferValue.address, "CALL")
+          );
+
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let newBalanceRecipient = await provider.getBalance(recipient);
+
+          expect(parseInt(newBalanceUP)).toBe(parseInt(initialBalanceUP));
+          expect(parseInt(initialBalanceRecipient)).toBe(
+            parseInt(newBalanceRecipient)
+          );
+        });
+
+        it("should fail when caller does not have permission TRANSFERVALUE", async () => {
           let initialBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
@@ -310,10 +380,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       const permissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-          32
-        ),
+        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -466,10 +533,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       const bobPermissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-          32
-        ),
+        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
       ];
 
       await setupKeyManager(
@@ -505,17 +569,14 @@ export const shouldBehaveLikePermissionTransferValue = (
       expect(result).toEqual(ALL_PERMISSIONS_SET);
     });
 
-    it("Alice's UP should have permission SETDATA on Bob's UP", async () => {
+    it("Alice's UP should have permission TRANSFERVALUE on Bob's UP", async () => {
       let key =
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         aliceContext.universalProfile.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(
-        ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
-          32
-        )
+        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32)
       );
     });
 
