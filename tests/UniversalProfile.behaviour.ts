@@ -251,6 +251,13 @@ export const shouldInitializeLikeLSP3 = (
       expect(result).toBeTruthy();
     });
 
+    it("should support ClaimOwnership interface", async () => {
+      const result = await context.universalProfile.supportsInterface(
+        INTERFACE_IDS.ClaimOwnership
+      );
+      expect(result).toBeTruthy();
+    });
+
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
       const result = await context.universalProfile["getData(bytes32)"](
         SupportedStandards.LSP3UniversalProfile.key

@@ -20,6 +20,7 @@ import {ClaimOwnership} from "../Utils/ClaimOwnership.sol";
 // constants
 import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
 
 /**
  * @title Core Implementation of ERC725Account
@@ -136,6 +137,7 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
             super.supportsInterface(interfaceId);
     }
 }
