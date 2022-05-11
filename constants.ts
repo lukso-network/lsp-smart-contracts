@@ -17,7 +17,7 @@ export const enum INTERFACE_IDS {
   ERC1155 = "0xd9b67a26",
   ERC725X = "0x44c028fe",
   ERC725Y = "0x714df77c",
-  ERC725Account = "0x481e0fe8",
+  ERC725Account = "0xe563d658",
   LSP1 = "0x6bb56a14",
   LSP1Delegate = "0xc2d7bcc1",
   LSP6 = "0xbbf5cd19",
