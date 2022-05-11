@@ -45,12 +45,12 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         super._verifyAllowedERC725YKeys(_from, _inputKeys);
     }
 
-    function includesPermissions(bytes32 _addressPermission, bytes32 _permissions)
+    function hasPermission(bytes32 _addressPermission, bytes32 _permissions)
         public
         pure
         returns (bool)
     {
-        return _addressPermission.includesPermissions(_permissions);
+        return _addressPermission.hasPermission(_permissions);
     }
 
     function countZeroBytes(bytes32 _key) public pure returns (uint256 zeroBytesCount_) {

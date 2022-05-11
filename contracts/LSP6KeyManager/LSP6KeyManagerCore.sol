@@ -71,9 +71,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         address recoveredAddress = _hash.recover(_signature);
 
         return (
-            ERC725Y(target).getPermissionsFor(recoveredAddress).includesPermissions(
-                _PERMISSION_SIGN
-            )
+            ERC725Y(target).getPermissionsFor(recoveredAddress).hasPermission(_PERMISSION_SIGN)
                 ? _ERC1271_MAGICVALUE
                 : _ERC1271_FAILVALUE
         );
@@ -86,10 +84,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(msg.sender, _data);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result_) = address(target).call{
-            value: msg.value,
-            gas: gasleft()
-        }(_data);
+        (bool success, bytes memory result_) = target.call{value: msg.value, gas: gasleft()}(_data);
 
         if (!success) {
             // solhint-disable reason-string
@@ -193,9 +188,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             _verifyCanExecute(_from, permissions, _data);
 
         } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
-            
-            if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
-                revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
+
+            _requirePermissions(_from, permissions, _PERMISSION_CHANGEOWNER);
                 
         } else {
             revert("_verifyPermissions: invalid ERC725 selector");
@@ -243,10 +237,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         if (isSettingERC725YKeys) {
             // Skip if caller has SUPER permissions
-            if (_permissions.includesPermissions(_PERMISSION_SUPER_SETDATA)) return;
+            if (_permissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
-            if (!_permissions.includesPermissions(_PERMISSION_SETDATA))
-                revert NotAuthorised(_from, "SETDATA");
+            _requirePermissions(_from, _permissions, _PERMISSION_SETDATA);
 
             _verifyAllowedERC725YKeys(_from, inputKeys);
         }
@@ -272,8 +265,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else if (bytes16(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
 
             // key = AddressPermissions[index]
-            if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
-                revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+            _requirePermissions(_from, _permissions, _PERMISSION_CHANGEPERMISSIONS);
 
         } else if (bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
 
@@ -286,11 +278,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bytes memory storedAllowedAddresses = ERC725Y(target).getData(_key);
 
             if (storedAllowedAddresses.length == 0) {
-                if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
-                    revert NotAuthorised(_from, "ADDPERMISSIONS");
+
+                _requirePermissions(_from, _permissions, _PERMISSION_ADDPERMISSIONS);
+
             } else {
-                if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
-                    revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+
+                _requirePermissions(_from, _permissions, _PERMISSION_CHANGEPERMISSIONS);
+
             }
 
         } else if (
@@ -308,11 +302,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bytes memory storedAllowedBytes4 = ERC725Y(target).getData(_key);
 
             if (storedAllowedBytes4.length == 0) {
-                if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
-                    revert NotAuthorised(_from, "ADDPERMISSIONS");
+
+                _requirePermissions(_from, _permissions, _PERMISSION_ADDPERMISSIONS);
+
             } else {
-                if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
-                    revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+
+                _requirePermissions(_from, _permissions, _PERMISSION_CHANGEPERMISSIONS);
+
             }
 
         } else if (bytes12(_key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
@@ -326,11 +322,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(_key);
 
             if (storedAllowedERC725YKeys.length == 0) {
-                if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
-                    revert NotAuthorised(_from, "ADDPERMISSIONS");
+
+                _requirePermissions(_from, _permissions, _PERMISSION_ADDPERMISSIONS);
+
             } else {
-                if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
-                    revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+
+                _requirePermissions(_from, _permissions, _PERMISSION_CHANGEPERMISSIONS);
+
             }
 
         }
@@ -344,14 +342,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (bytes32(ERC725Y(target).getData(_key)) == bytes32(0)) {
             // if there is nothing stored under this data key,
             // we are trying to ADD permissions for a NEW address
-            if (!_callerPermissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
-                revert NotAuthorised(_from, "ADDPERMISSIONS");
+            _requirePermissions(_from, _callerPermissions, _PERMISSION_ADDPERMISSIONS);
         } else {
             // if there are already some permissions stored under this data key,
             // we are trying to CHANGE the permissions of an address
             // (that has already some EXISTING permissions set)
-            if (!_callerPermissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
-                revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+            _requirePermissions(_from, _callerPermissions, _PERMISSION_CHANGEPERMISSIONS);
         }
     }
 
@@ -365,11 +361,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 newLength = uint256(bytes32(_value));
 
         if (newLength > arrayLength) {
-            if (!_permissions.includesPermissions(_PERMISSION_ADDPERMISSIONS))
-                revert NotAuthorised(_from, "ADDPERMISSIONS");
+            _requirePermissions(_from, _permissions, _PERMISSION_ADDPERMISSIONS);
         } else {
-            if (!_permissions.includesPermissions(_PERMISSION_CHANGEPERMISSIONS))
-                revert NotAuthorised(_from, "CHANGEPERMISSIONS");
+            _requirePermissions(_from, _permissions, _PERMISSION_CHANGEPERMISSIONS);
         }
     }
 
@@ -448,21 +442,18 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes calldata _data
     ) internal view {
         uint256 value = uint256(bytes32(_data[68:100]));
-
-        bool superTransferValue = _permissions.includesPermissions(_PERMISSION_SUPER_TRANSFERVALUE);
-
-        if (value > 0) {
-            if (!superTransferValue && !_permissions.includesPermissions(_PERMISSION_TRANSFERVALUE))
-                revert NotAuthorised(_from, "TRANSFERVALUE");
-        }
-
         uint256 operationType = uint256(bytes32(_data[4:36]));
 
-        bytes32 permissionRequired = _extractPermissionFromOperation(operationType);
+        if (_data.length > 164) {
+            // prettier-ignore
+            _requirePermissions(_from, _permissions, _extractPermissionFromOperation(operationType));
+        }
 
-        if (!_permissions.includesPermissions(permissionRequired)) {
-            string memory operationName = _getOperationTypeAsString(operationType);
-            revert NotAuthorised(_from, operationName);
+        bool superTransferValue = _permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
+
+        if (value > 0) {
+            // prettier-ignore
+            superTransferValue == true || _requirePermissions(_from, _permissions, _PERMISSION_TRANSFERVALUE);
         }
 
         // Skip on contract creation (CREATE and CREATE2)
@@ -470,11 +461,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         // Skip if caller has SUPER permissions
         bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
-        if (_permissions.includesPermissions(superPermission)) return;
+        if (_permissions.hasPermission(superPermission)) return;
 
         address to = address(bytes20(_data[48:68]));
 
-        if (superTransferValue) return;
+        if (superTransferValue == true) return;
 
         _verifyAllowedAddress(_from, to);
 
@@ -513,21 +504,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (_operationType == 0) return _PERMISSION_SUPER_CALL;
         else if (_operationType == 3) return _PERMISSION_SUPER_STATICCALL;
         else if (_operationType == 4) return _PERMISSION_SUPER_DELEGATECALL;
-    }
-
-    /**
-     * @return operationName_ (string) the name of the opcode associated with `_operationType`
-     */
-    function _getOperationTypeAsString(uint256 _operationType)
-        internal
-        pure
-        returns (string memory operationName_)
-    {
-        if (_operationType == 0) return "CALL";
-        if (_operationType == 1) return "CREATE";
-        if (_operationType == 2) return "CREATE2";
-        if (_operationType == 3) return "STATICCALL";
-        if (_operationType == 4) return "DELEGATECALL";
     }
 
     /**
@@ -613,5 +589,29 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         while (_key[index] == 0x00) index--;
 
         return 32 - (index + 1);
+    }
+
+    function _requirePermissions(
+        address _from,
+        bytes32 _addressPermissions,
+        bytes32 _permissionRequired
+    ) internal pure returns (bool) {
+        if (!_addressPermissions.hasPermission(_permissionRequired)) {
+            string memory permissionErrorString = _getPermissionErrorString(_permissionRequired);
+            revert NotAuthorised(_from, permissionErrorString);
+        }
+    }
+
+    function _getPermissionErrorString(bytes32 _permission) internal pure returns (string memory) {
+        if (_permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
+        if (_permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
+        if (_permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
+        if (_permission == _PERMISSION_SETDATA) return "SETDATA";
+        if (_permission == _PERMISSION_CALL) return "CALL";
+        if (_permission == _PERMISSION_STATICCALL) return "STATICCALL";
+        if (_permission == _PERMISSION_DELEGATECALL) return "DELEGATECALL";
+        if (_permission == _PERMISSION_DEPLOY) return "DEPLOY";
+        if (_permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
+        if (_permission == _PERMISSION_SIGN) return "SIGN";
     }
 }
