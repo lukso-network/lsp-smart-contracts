@@ -40,7 +40,6 @@ export const shouldBehaveLikePermissionChangeOwner = (
     ];
 
     permissionsValues = [
-      ALL_PERMISSIONS_SET,
       ethers.utils.hexZeroPad(PERMISSIONS.CHANGEOWNER, 32),
       ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
     ];

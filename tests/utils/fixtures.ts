@@ -80,7 +80,14 @@ export async function setupKeyManagerHelper(
 ) {
   await _context.universalProfile
     .connect(_context.owner)
-    ["setData(bytes32[],bytes[])"](_permissionsKeys, _permissionsValues);
+    ["setData(bytes32[],bytes[])"](
+      [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          _context.owner.address.substring(2),
+        ..._permissionsKeys,
+      ],
+      [ALL_PERMISSIONS_SET, ..._permissionsValues]
+    );
 
   await _context.universalProfile
     .connect(_context.owner)
@@ -139,6 +146,7 @@ export async function setupProfileWithKeyManagerWithURD(
 
   const claimOwnershipPayload =
     universalProfile.interface.getSighash("claimOwnership");
+
   await lsp6KeyManager.connect(EOA).execute(claimOwnershipPayload);
 
   await EOA.sendTransaction({
