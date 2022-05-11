@@ -226,9 +226,16 @@ export const shouldBehaveLikeAllowedFunctions = (
               targetContractPayload,
             ]);
 
+          const HARDHAT_CHAINID = 31337;
+
           let hash = ethers.utils.solidityKeccak256(
-            ["address", "uint256", "bytes"],
-            [context.keyManager.address, nonce, executeRelayCallPayload]
+            ["uint256", "address", "uint256", "bytes"],
+            [
+              HARDHAT_CHAINID,
+              context.keyManager.address,
+              nonce,
+              executeRelayCallPayload,
+            ]
           );
 
           let signature = await addressCanCallOnlyOneFunction.signMessage(
@@ -236,10 +243,9 @@ export const shouldBehaveLikeAllowedFunctions = (
           );
 
           await context.keyManager.executeRelayCall(
-            context.keyManager.address,
+            signature,
             nonce,
-            executeRelayCallPayload,
-            signature
+            executeRelayCallPayload
           );
           let endResult = await targetContract.callStatic.getName();
           expect(endResult).toEqual(newName);
@@ -263,9 +269,16 @@ export const shouldBehaveLikeAllowedFunctions = (
               targetContractPayload,
             ]);
 
+          const HARDHAT_CHAINID = 31337;
+
           let hash = ethers.utils.solidityKeccak256(
-            ["address", "uint256", "bytes"],
-            [context.keyManager.address, nonce, executeRelayCallPayload]
+            ["uint256", "address", "uint256", "bytes"],
+            [
+              HARDHAT_CHAINID,
+              context.keyManager.address,
+              nonce,
+              executeRelayCallPayload,
+            ]
           );
 
           let signature = await addressCanCallOnlyOneFunction.signMessage(
@@ -274,10 +287,9 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           await expect(
             context.keyManager.executeRelayCall(
-              context.keyManager.address,
+              signature,
               nonce,
-              executeRelayCallPayload,
-              signature
+              executeRelayCallPayload
             )
           ).toBeRevertedWith(
             NotAllowedFunctionError(
