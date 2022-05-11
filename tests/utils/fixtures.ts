@@ -120,7 +120,7 @@ export async function setupProfileWithKeyManagerWithURD(
         ERC725YKeys.LSP6["AddressPermissions[]"].substring(0, 34) +
           "00000000000000000000000000000001",
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          EOA.address.substr(2),
+          EOA.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           lsp1universalReceiverDelegateUP.address.substr(2),
         ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
@@ -136,6 +136,11 @@ export async function setupProfileWithKeyManagerWithURD(
     );
 
   await universalProfile.connect(EOA).transferOwnership(lsp6KeyManager.address);
+
+  const claimOwnershipPayload =
+    universalProfile.interface.getSighash("claimOwnership");
+  await lsp6KeyManager.connect(EOA).execute(claimOwnershipPayload);
+
   await EOA.sendTransaction({
     to: universalProfile.address,
     value: ethers.utils.parseEther("10"),
