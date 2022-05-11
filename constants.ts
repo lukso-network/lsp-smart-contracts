@@ -24,6 +24,7 @@ export const enum INTERFACE_IDS {
   LSP7 = "0xe33f65c3",
   LSP8 = "0x49399145",
   LSP9 = "0x5e38b596",
+  ClaimOwnership = "0xad7dd9b0",
 }
 
 // ERC1271

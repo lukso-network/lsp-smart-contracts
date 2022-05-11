@@ -18,7 +18,7 @@ import {ILSP1UniversalReceiverDelegate as ILSP1Delegate} from "../LSP1UniversalR
 import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
 import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 import {ILSP8IdentifiableDigitalAsset as ILSP8} from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
-import {IClaimOwnership} from "../Utils/IClaimOwnership.sol";
+import {IClaimOwnership, _INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
 
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
@@ -111,6 +111,17 @@ contract CalculateLSPInterfaces {
         require(
             interfaceId == _INTERFACEID_LSP9,
             "hardcoded _INTERFACEID_LSP9 does not match XOR of the functions"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceClaimOwnership() public pure returns (bytes4) {
+        bytes4 interfaceId = type(IClaimOwnership).interfaceId;
+
+        require(
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP,
+            "hardcoded _INTERFACEID_CLAIM_OWNERSHIP does not match XOR of the functions"
         );
 
         return interfaceId;
