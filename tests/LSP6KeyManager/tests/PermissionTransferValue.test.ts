@@ -762,7 +762,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     // test 1: deploy a new LSP7 contract, and test not allowed to interact with this specific address
     // test 2: allowed to interact with the only allowed LSP7 contract.
 
-    it.skip("should not be allowed to interact with any LSP7 contract", async () => {
+    it("should not be allowed to interact with any LSP7 contract", async () => {
       let newLSP7Token = await new LSP7Mintable__factory(
         context.accounts[0]
       ).deploy("New LSP7 Token", "LSP7TKN", context.accounts[0].address, false);
@@ -793,13 +793,22 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
     });
 
-    it.skip("should be allowed to interact with the LSP7 contract in the allowed address", async () => {
+    it("should be allowed to interact with the LSP7 contract in the allowed address", async () => {
+      let recipient = context.accounts[5].address;
+      let tokenAmount = ethers.BigNumber.from(10);
+
+      let lsp7SenderBalanceBefore = await lsp7Token.balanceOf(
+        context.universalProfile.address
+      );
+
+      let lsp7RecipientBalanceBefore = await lsp7Token.balanceOf(recipient);
+
       let lsp7TransferPayload = lsp7Token.interface.encodeFunctionData(
         "transfer",
         [
           context.universalProfile.address,
-          context.accounts[5].address,
-          10,
+          recipient,
+          tokenAmount,
           true, // sending to an EOA
           "0x",
         ]
@@ -812,6 +821,22 @@ export const shouldBehaveLikePermissionTransferValue = (
           0,
           lsp7TransferPayload,
         ]);
+
+      await context.keyManager.connect(caller).execute(executePayload);
+
+      let lsp7SenderBalanceAfter = await lsp7Token.balanceOf(
+        context.universalProfile.address
+      );
+
+      let lsp7RecipientBalanceAfter = await lsp7Token.balanceOf(recipient);
+
+      expect(lsp7SenderBalanceAfter).toEqual(
+        lsp7SenderBalanceBefore.sub(tokenAmount)
+      );
+
+      expect(lsp7RecipientBalanceAfter).toEqual(
+        lsp7RecipientBalanceBefore.add(tokenAmount)
+      );
     });
   });
 };

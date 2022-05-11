@@ -461,12 +461,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         // Skip if caller has SUPER permissions
         bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
-        if (_permissions.hasPermission(superPermission)) return;
+
+        if (_permissions.hasPermission(superPermission) && _data.length >= 164) return;
+
+        if (superTransferValue == true && _data.length == 164) return;
 
         address to = address(bytes20(_data[48:68]));
-
-        if (superTransferValue == true) return;
-
         _verifyAllowedAddress(_from, to);
 
         if (to.code.length > 0) {
