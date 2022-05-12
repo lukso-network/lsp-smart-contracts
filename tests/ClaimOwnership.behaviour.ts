@@ -1,53 +1,57 @@
 import { ethers } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { LSP0ERC725Account, LSP0ERC725Account__factory } from "../types";
+import { LSP0ERC725Account } from "../types";
 
 import { provider } from "./utils/helpers";
 import { OPERATIONS } from "../constants";
 
-describe("ClaimOwnership", () => {
-  let accounts: SignerWithAddress[];
+export type ClaimOwnershipTestContext = {
+  accounts: SignerWithAddress[];
+  contract: LSP0ERC725Account /* | LSP9Vault */;
+  deployParams: { owner: SignerWithAddress };
+};
 
-  let owner: SignerWithAddress;
+export const shouldBehaveLikeClaimOwnership = (
+  buildContext: () => Promise<ClaimOwnershipTestContext>
+) => {
+  let context: ClaimOwnershipTestContext;
   let newOwner: SignerWithAddress;
 
-  let erc725Account: LSP0ERC725Account;
-
   beforeEach(async () => {
-    accounts = await ethers.getSigners();
+    context = await buildContext();
 
-    owner = accounts[0];
-    newOwner = accounts[1];
+    newOwner = context.accounts[1];
 
-    erc725Account = await new LSP0ERC725Account__factory(owner).deploy(
-      owner.address
-    );
-
-    // fund the erc725Account
-    await owner.sendTransaction({
-      to: erc725Account.address,
+    // fund the account
+    await context.deployParams.owner.sendTransaction({
+      to: context.contract.address,
       value: ethers.utils.parseEther("10"),
     });
   });
+
   describe("when owner call transferOwnership(...)", () => {
     beforeEach(async () => {
-      let newOwner = accounts[1];
-      await erc725Account.connect(owner).transferOwnership(newOwner.address);
+      await context.contract
+        .connect(context.deployParams.owner)
+        .transferOwnership(newOwner.address);
     });
+
     it("should have set the pendingOwner", async () => {
-      let pendingOwner = await erc725Account.pendingOwner();
+      let pendingOwner = await context.contract.pendingOwner();
       expect(pendingOwner).toEqual(newOwner.address);
     });
 
     it("owner should remain the current owner", async () => {
       let newOwner = ethers.Wallet.createRandom();
 
-      const ownerBefore = await erc725Account.owner();
+      const ownerBefore = await context.contract.owner();
 
-      await erc725Account.connect(owner).transferOwnership(newOwner.address);
+      await context.contract
+        .connect(context.deployParams.owner)
+        .transferOwnership(newOwner.address);
 
-      const ownerAfter = await erc725Account.owner();
+      const ownerAfter = await context.contract.owner();
 
       expect(ownerBefore).toEqual(ownerAfter);
     });
@@ -55,11 +59,11 @@ describe("ClaimOwnership", () => {
     it("should override the pendingOwner when transferOwnership(...) is called twice", async () => {
       let overridenNewOwner = ethers.Wallet.createRandom();
 
-      await erc725Account
-        .connect(owner)
+      await context.contract
+        .connect(context.deployParams.owner)
         .transferOwnership(overridenNewOwner.address);
 
-      const pendingOwner = await erc725Account.pendingOwner();
+      const pendingOwner = await context.contract.pendingOwner();
       expect(pendingOwner).toEqual(overridenNewOwner.address);
     });
 
@@ -70,32 +74,32 @@ describe("ClaimOwnership", () => {
         const value = "0xabcd";
 
         // prettier-ignore
-        await erc725Account.connect(owner)["setData(bytes32,bytes)"](key, value);
+        await context.contract.connect(context.deployParams.owner)["setData(bytes32,bytes)"](key, value);
 
-        const result = await erc725Account["getData(bytes32)"](key);
+        const result = await context.contract["getData(bytes32)"](key);
         expect(result).toEqual(value);
       });
 
       it("execute(...) - LYX transfer", async () => {
-        const recipient = accounts[3];
+        const recipient = context.accounts[3];
         const amount = ethers.utils.parseEther("3");
 
         const recipientBalanceBefore = await provider.getBalance(
           recipient.address
         );
         const accountBalanceBefore = await provider.getBalance(
-          erc725Account.address
+          context.contract.address
         );
 
-        await erc725Account
-          .connect(owner)
+        await context.contract
+          .connect(context.deployParams.owner)
           .execute(OPERATIONS.CALL, recipient.address, amount, "0x");
 
         const recipientBalanceAfter = await provider.getBalance(
           recipient.address
         );
         const accountBalanceAfter = await provider.getBalance(
-          erc725Account.address
+          context.contract.address
         );
 
         // recipient balance should have gone up
@@ -113,22 +117,26 @@ describe("ClaimOwnership", () => {
 
   describe("when non-owner call transferOwnership(...)", () => {
     it("should revert", async () => {
-      let newOwner = accounts[2];
+      let newOwner = context.accounts[2];
 
       await expect(
-        erc725Account.connect(accounts[1]).transferOwnership(newOwner.address)
+        context.contract
+          .connect(context.accounts[1])
+          .transferOwnership(newOwner.address)
       ).toBeRevertedWith("Ownable: caller is not the owner");
     });
   });
 
   describe("when calling claimOwnership(...)", () => {
     it("should revert when caller is not the pending owner", async () => {
-      let newOwner = accounts[1];
+      let newOwner = context.accounts[1];
 
-      await erc725Account.connect(owner).transferOwnership(newOwner.address);
+      await context.contract
+        .connect(context.deployParams.owner)
+        .transferOwnership(newOwner.address);
 
       await expect(
-        erc725Account.connect(accounts[2]).claimOwnership()
+        context.contract.connect(context.accounts[2]).claimOwnership()
       ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
     });
 
@@ -136,22 +144,24 @@ describe("ClaimOwnership", () => {
       let newOwner: SignerWithAddress;
 
       beforeEach(async () => {
-        newOwner = accounts[1];
-        await erc725Account.connect(owner).transferOwnership(newOwner.address);
+        newOwner = context.accounts[1];
+        await context.contract
+          .connect(context.deployParams.owner)
+          .transferOwnership(newOwner.address);
       });
       it("should change the contract owner to the pendingOwner", async () => {
-        let pendingOwner = await erc725Account.pendingOwner();
+        let pendingOwner = await context.contract.pendingOwner();
 
-        await erc725Account.connect(newOwner).claimOwnership();
+        await context.contract.connect(newOwner).claimOwnership();
 
-        let updatedOwner = await erc725Account.owner();
+        let updatedOwner = await context.contract.owner();
         expect(updatedOwner).toEqual(pendingOwner);
       });
 
       it("should have cleared the pendingOwner after transferring ownership", async () => {
-        await erc725Account.connect(newOwner).claimOwnership();
+        await context.contract.connect(newOwner).claimOwnership();
 
-        let newPendingOwner = await erc725Account.pendingOwner();
+        let newPendingOwner = await context.contract.pendingOwner();
         expect(newPendingOwner).toEqual(ethers.constants.AddressZero);
       });
     });
@@ -160,11 +170,13 @@ describe("ClaimOwnership", () => {
       let previousOwner: SignerWithAddress, newOwner: SignerWithAddress;
 
       beforeEach(async () => {
-        previousOwner = owner;
-        newOwner = accounts[1];
+        previousOwner = context.deployParams.owner;
+        newOwner = context.accounts[1];
 
-        await erc725Account.connect(owner).transferOwnership(newOwner.address);
-        await erc725Account.connect(newOwner).claimOwnership();
+        await context.contract
+          .connect(context.deployParams.owner)
+          .transferOwnership(newOwner.address);
+        await context.contract.connect(newOwner).claimOwnership();
       });
       describe("previous owner should not be allowed anymore to call onlyOwner functions", () => {
         it("should revert when calling `setData(...)`", async () => {
@@ -174,16 +186,16 @@ describe("ClaimOwnership", () => {
 
           // prettier-ignore
           await expect(
-            erc725Account.connect(previousOwner)["setData(bytes32,bytes)"](key, value)
-          ).toBeRevertedWith("Ownable: caller is not the owner")
+                context.contract.connect(previousOwner)["setData(bytes32,bytes)"](key, value)
+              ).toBeRevertedWith("Ownable: caller is not the owner")
         });
 
         it("should revert when calling `execute(...)`", async () => {
-          const recipient = accounts[3];
+          const recipient = context.accounts[3];
           const amount = ethers.utils.parseEther("3");
 
           await expect(
-            erc725Account
+            context.contract
               .connect(previousOwner)
               .execute(OPERATIONS.CALL, recipient.address, amount, "0x")
           ).toBeRevertedWith("Ownable: caller is not the owner");
@@ -191,7 +203,7 @@ describe("ClaimOwnership", () => {
 
         it("should revert when calling `renounceOwnership(...)`", async () => {
           await expect(
-            erc725Account.connect(previousOwner).renounceOwnership()
+            context.contract.connect(previousOwner).renounceOwnership()
           ).toBeRevertedWith("Ownable: caller is not the owner");
         });
       });
@@ -203,24 +215,24 @@ describe("ClaimOwnership", () => {
           const value = "0xabcd";
 
           // prettier-ignore
-          await erc725Account.connect(newOwner)["setData(bytes32,bytes)"](key, value);
+          await context.contract.connect(newOwner)["setData(bytes32,bytes)"](key, value);
 
-          const result = await erc725Account["getData(bytes32)"](key);
+          const result = await context.contract["getData(bytes32)"](key);
           expect(result).toEqual(value);
         });
 
         it("execute(...) - LYX transfer", async () => {
-          const recipient = accounts[3];
+          const recipient = context.accounts[3];
           const amount = ethers.utils.parseEther("3");
 
           const recipientBalanceBefore = await provider.getBalance(
             recipient.address
           );
           const accountBalanceBefore = await provider.getBalance(
-            erc725Account.address
+            context.contract.address
           );
 
-          await erc725Account
+          await context.contract
             .connect(newOwner)
             .execute(OPERATIONS.CALL, recipient.address, amount, "0x");
 
@@ -228,7 +240,7 @@ describe("ClaimOwnership", () => {
             recipient.address
           );
           const accountBalanceAfter = await provider.getBalance(
-            erc725Account.address
+            context.contract.address
           );
 
           // recipient balance should have gone up
@@ -244,4 +256,4 @@ describe("ClaimOwnership", () => {
       });
     });
   });
-});
+};
