@@ -444,9 +444,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 value = uint256(bytes32(_data[68:100]));
         uint256 operationType = uint256(bytes32(_data[4:36]));
 
+        bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
+        bool superOperation = _permissions.hasPermission(superPermission);
+
         if (_data.length > 164) {
             // prettier-ignore
-            _requirePermissions(_from, _permissions, _extractPermissionFromOperation(operationType));
+            superOperation == true || _requirePermissions(_from, _permissions, _extractPermissionFromOperation(operationType));
         }
 
         bool superTransferValue = _permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
@@ -459,11 +462,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // Skip on contract creation (CREATE and CREATE2)
         if (operationType == 1 || operationType == 2) return;
 
-        // Skip if caller has SUPER permissions
-        bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
-
-        if (_permissions.hasPermission(superPermission) && _data.length >= 164) return;
-
+        // Skip if caller has SUPER permissions for sending some calldata
+        if (superOperation == true && _data.length > 164) return;
+        // Skip if caller has SUPER permission for doing plain Value TRANSFER (without data)
         if (superTransferValue == true && _data.length == 164) return;
 
         address to = address(bytes20(_data[48:68]));
