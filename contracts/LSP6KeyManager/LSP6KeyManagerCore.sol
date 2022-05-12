@@ -443,8 +443,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         uint256 value = uint256(bytes32(_calldata[68:100]));
 
-        bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
-        bool superOperation = _permissions.hasPermission(superPermission);
+        bool isContractCreation = operationType == 1 || operationType == 2;
+
+        // SUPER operation only applies to contract call, not contract creation
+        bool superOperation = !isContractCreation
+            ? false
+            : _permissions.hasPermission(_extractSuperPermissionFromOperation(operationType));
 
         if (_calldata.length > 164) {
             // prettier-ignore
@@ -458,8 +462,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             superTransferValue == true || _requirePermissions(_from, _permissions, _PERMISSION_TRANSFERVALUE);
         }
 
-        // Skip on contract creation (CREATE and CREATE2)
-        if (operationType == 1 || operationType == 2) return;
+        // Skip on contract creation (CREATE or CREATE2)
+        if (isContractCreation) return;
 
         // Skip if caller has SUPER permissions for sending some calldata
         if (superOperation == true && _calldata.length > 164) return;
@@ -601,7 +605,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
     }
 
-    function _getPermissionErrorString(bytes32 _permission) internal pure returns (string memory) {
+    function _getPermissionErrorString(bytes32 _permission)
+        internal
+        pure
+        returns (string memory errorMessage)
+    {
         if (_permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
         if (_permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
         if (_permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
@@ -609,6 +617,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (_permission == _PERMISSION_CALL) return "CALL";
         if (_permission == _PERMISSION_STATICCALL) return "STATICCALL";
         if (_permission == _PERMISSION_DELEGATECALL) return "DELEGATECALL";
+        // TODO: add support to display CREATE or CREATE2 in the revert error
         if (_permission == _PERMISSION_DEPLOY) return "DEPLOY";
         if (_permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
         if (_permission == _PERMISSION_SIGN) return "SIGN";

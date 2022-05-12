@@ -220,7 +220,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.keyManager.connect(addressCannotDeploy).execute(payload)
       ).toBeRevertedWith(
-        NotAuthorisedError(addressCannotDeploy.address, "CREATE")
+        NotAuthorisedError(addressCannotDeploy.address, "DEPLOY")
       );
     });
     it("should revert when trying to deploy a contract via CREATE2", async () => {
@@ -241,7 +241,7 @@ export const shouldBehaveLikePermissionDeploy = (
       await expect(
         context.keyManager.connect(addressCannotDeploy).execute(payload)
       ).toBeRevertedWith(
-        NotAuthorisedError(addressCannotDeploy.address, "CREATE2")
+        NotAuthorisedError(addressCannotDeploy.address, "DEPLOY")
       );
     });
   });
