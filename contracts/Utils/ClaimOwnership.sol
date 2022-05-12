@@ -13,7 +13,6 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     function claimOwnership() public virtual override {
         require(msg.sender == pendingOwner, "OwnableClaim: caller is not the pendingOwner");
 
-        // TODO: the function _setOwner(...) cannot be called as it is marked as private
         _setOwner(pendingOwner);
         pendingOwner = address(0);
     }
