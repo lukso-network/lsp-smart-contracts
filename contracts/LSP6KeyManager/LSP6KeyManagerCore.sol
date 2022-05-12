@@ -439,6 +439,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes calldata _calldata
     ) internal view {
         uint256 operationType = uint256(bytes32(_calldata[4:36]));
+        require(operationType < 5, "LSP6KeyManager: invalid operation type");
+
         uint256 value = uint256(bytes32(_calldata[68:100]));
 
         bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
@@ -491,7 +493,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         else if (_operationType == 2) return _PERMISSION_DEPLOY;
         else if (_operationType == 3) return _PERMISSION_STATICCALL;
         else if (_operationType == 4) return _PERMISSION_DELEGATECALL;
-        else revert("LSP6KeyManager: invalid operation type");
     }
 
     function _extractSuperPermissionFromOperation(uint256 _operationType)
