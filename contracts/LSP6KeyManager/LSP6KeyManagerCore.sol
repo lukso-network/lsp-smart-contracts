@@ -446,7 +446,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bool isContractCreation = operationType == 1 || operationType == 2;
 
         // SUPER operation only applies to contract call, not contract creation
-        bool superOperation = !isContractCreation
+        bool superOperation = isContractCreation
             ? false
             : _permissions.hasPermission(_extractSuperPermissionFromOperation(operationType));
 
