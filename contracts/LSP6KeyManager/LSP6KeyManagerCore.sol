@@ -80,11 +80,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata _data) external payable override returns (bytes memory) {
-        _verifyPermissions(msg.sender, _data);
+    function execute(bytes calldata _calldata) external payable override returns (bytes memory) {
+        _verifyPermissions(msg.sender, _calldata);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result_) = target.call{value: msg.value, gas: gasleft()}(_data);
+        (bool success, bytes memory result_) = target.call{value: msg.value, gas: gasleft()}(
+            _calldata
+        );
 
         if (!success) {
             // solhint-disable reason-string
@@ -97,7 +99,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             revert(abi.decode(result_, (string)));
         }
 
-        emit Executed(msg.value, bytes4(_data));
+        emit Executed(msg.value, bytes4(_calldata));
         return result_.length != 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
@@ -105,20 +107,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @inheritdoc ILSP6KeyManager
      */
     function executeRelayCall(
-        address _signedFor,
+        bytes memory _signature,
         uint256 _nonce,
-        bytes calldata _data,
-        bytes memory _signature
+        bytes calldata _calldata
     ) external payable override returns (bytes memory) {
-        require(
-            _signedFor == address(this),
-            "executeRelayCall: Message not signed for this keyManager"
-        );
-
         bytes memory blob = abi.encodePacked(
+            block.chainid,
             address(this), // needs to be signed for this keyManager
             _nonce,
-            _data
+            _calldata
         );
 
         address signer = keccak256(blob).toEthSignedMessageHash().recover(_signature);
@@ -128,11 +125,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // increase nonce after successful verification
         _nonceStore[signer][_nonce >> 128]++;
 
-        _verifyPermissions(signer, _data);
+        _verifyPermissions(signer, _calldata);
 
         // solhint-disable avoid-low-level-calls
         (bool success, bytes memory result_) = address(target).call{value: 0, gas: gasleft()}(
-            _data
+            _calldata
         );
 
         if (!success) {
@@ -146,7 +143,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             revert(abi.decode(result_, (string)));
         }
 
-        emit Executed(msg.value, bytes4(_data));
+        emit Executed(msg.value, bytes4(_calldata));
         return result_.length != 0 ? abi.decode(result_, (bytes)) : result_;
     }
 
@@ -168,10 +165,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @dev verify the permissions of the _from address that want to interact with the `target`
      * @param _from the address making the request
-     * @param _data the payload that will be run on `target`
+     * @param _calldata the payload that will be run on `target`
      */
-    function _verifyPermissions(address _from, bytes calldata _data) internal view {
-        bytes4 erc725Function = bytes4(_data[:4]);
+    function _verifyPermissions(address _from, bytes calldata _calldata) internal view {
+        bytes4 erc725Function = bytes4(_calldata[:4]);
 
         // get the permissions of the caller
         bytes32 permissions = ERC725Y(target).getPermissionsFor(_from);
@@ -181,11 +178,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // prettier-ignore
         if (erc725Function == setDataMultipleSelector) {
             
-            _verifyCanSetData(_from, permissions, _data);
+            _verifyCanSetData(_from, permissions, _calldata);
 
         } else if (erc725Function == IERC725X.execute.selector) {
             
-            _verifyCanExecute(_from, permissions, _data);
+            _verifyCanExecute(_from, permissions, _calldata);
 
         } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
 
@@ -200,16 +197,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev verify if `_from` has the required permissions to set some keys
      * on the linked ERC725Account
      * @param _from the address who want to set the keys
-     * @param _data the ABI encoded payload `target.setData(keys, values)`
+     * @param _calldata the ABI encoded payload `target.setData(keys, values)`
      * containing a list of keys-value pairs
      */
     function _verifyCanSetData(
         address _from,
         bytes32 _permissions,
-        bytes calldata _data
+        bytes calldata _calldata
     ) internal view {
         (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
-            _data[4:],
+            _calldata[4:],
             (bytes32[], bytes[])
         );
 
@@ -434,20 +431,20 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * via the linked ERC725Account
      * @param _from the address who want to run the execute function on the ERC725Account
      * @param _permissions the permissions of the caller
-     * @param _data the ABI encoded payload `target.execute(...)`
+     * @param _calldata the ABI encoded payload `target.execute(...)`
      */
     function _verifyCanExecute(
         address _from,
         bytes32 _permissions,
-        bytes calldata _data
+        bytes calldata _calldata
     ) internal view {
-        uint256 value = uint256(bytes32(_data[68:100]));
-        uint256 operationType = uint256(bytes32(_data[4:36]));
+        uint256 operationType = uint256(bytes32(_calldata[4:36]));
+        uint256 value = uint256(bytes32(_calldata[68:100]));
 
         bytes32 superPermission = _extractSuperPermissionFromOperation(operationType);
         bool superOperation = _permissions.hasPermission(superPermission);
 
-        if (_data.length > 164) {
+        if (_calldata.length > 164) {
             // prettier-ignore
             superOperation == true || _requirePermissions(_from, _permissions, _extractPermissionFromOperation(operationType));
         }
@@ -463,18 +460,18 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (operationType == 1 || operationType == 2) return;
 
         // Skip if caller has SUPER permissions for sending some calldata
-        if (superOperation == true && _data.length > 164) return;
+        if (superOperation == true && _calldata.length > 164) return;
         // Skip if caller has SUPER permission for doing plain Value TRANSFER (without data)
-        if (superTransferValue == true && _data.length == 164) return;
+        if (superTransferValue == true && _calldata.length == 164) return;
 
-        address to = address(bytes20(_data[48:68]));
+        address to = address(bytes20(_calldata[48:68]));
         _verifyAllowedAddress(_from, to);
 
         if (to.code.length > 0) {
             _verifyAllowedStandard(_from, to);
 
             // extract bytes4 function selector from payload passed to ERC725X.execute(...)
-            if (_data.length >= 168) _verifyAllowedFunction(_from, bytes4(_data[164:168]));
+            if (_calldata.length >= 168) _verifyAllowedFunction(_from, bytes4(_calldata[164:168]));
         }
     }
 
