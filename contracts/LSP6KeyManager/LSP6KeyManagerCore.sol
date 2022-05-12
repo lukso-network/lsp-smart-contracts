@@ -131,9 +131,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(signer, _calldata);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result_) = address(target).call{value: 0, gas: gasleft()}(
-            _calldata
-        );
+        (bool success, bytes memory result_) = address(target).call{
+            value: msg.value,
+            gas: gasleft()
+        }(_calldata);
 
         if (!success) {
             // solhint-disable reason-string
