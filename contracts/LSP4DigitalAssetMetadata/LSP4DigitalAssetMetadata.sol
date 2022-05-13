@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {ERC725Y, ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // constants
 import "./LSP4Constants.sol";
@@ -25,9 +25,16 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
         address newOwner_
     ) ERC725Y(newOwner_) {
         // set key SupportedStandards:LSP4DigitalAsset
-        _setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 
-        _setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
-        _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        ERC725YCore._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
+
+        ERC725YCore._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        ERC725YCore._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+    }
+
+    function _setData(bytes32 key, bytes memory value) internal virtual override {
+        require(key != _LSP4_TOKEN_NAME_KEY, "LSP4: cannot edit Token Name after deployment");
+        require(key != _LSP4_TOKEN_SYMBOL_KEY, "LSP4: cannot edit Token Symbol after deployment");
+        super._setData(key, value);
     }
 }
