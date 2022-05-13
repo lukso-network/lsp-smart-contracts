@@ -14,10 +14,13 @@ import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {ClaimOwnership} from "../Utils/ClaimOwnership.sol";
 
 // constants
 import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
 
 /**
  * @title Core Implementation of ERC725Account
@@ -27,6 +30,7 @@ import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_
 abstract contract LSP0ERC725AccountCore is
     ERC725XCore,
     ERC725YCore,
+    ClaimOwnership,
     IERC1271,
     ILSP1UniversalReceiver
 {
@@ -110,6 +114,15 @@ abstract contract LSP0ERC725AccountCore is
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
     }
 
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(ClaimOwnership, OwnableUnset)
+        onlyOwner
+    {
+        ClaimOwnership.transferOwnership(_newOwner);
+    }
+
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -124,6 +137,7 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
             super.supportsInterface(interfaceId);
     }
 }

@@ -59,12 +59,14 @@ export const shouldBehaveLikeLSP3 = (
       expect(result).toEqual(ERC1271.FAIL_VALUE);
     });
 
+    /** @todo update this test for claimOwnership(...) */
     it("should return failValue when the owner doesn't support ERC1271", async () => {
       const signer = context.accounts[1];
 
       const targetContract = await new TargetContract__factory(
         context.accounts[0]
       ).deploy();
+
       await context.universalProfile
         .connect(context.accounts[0])
         .transferOwnership(targetContract.address);
@@ -245,6 +247,13 @@ export const shouldInitializeLikeLSP3 = (
     it("should support LSP1 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.LSP1
+      );
+      expect(result).toBeTruthy();
+    });
+
+    it("should support ClaimOwnership interface", async () => {
+      const result = await context.universalProfile.supportsInterface(
+        INTERFACE_IDS.ClaimOwnership
       );
       expect(result).toBeTruthy();
     });

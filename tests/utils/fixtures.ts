@@ -51,11 +51,26 @@ export async function setupKeyManager(
 ) {
   await _context.universalProfile
     .connect(_context.owner)
-    ["setData(bytes32[],bytes[])"](_permissionsKeys, _permissionsValues);
+    ["setData(bytes32[],bytes[])"](
+      [
+        // required to set owner permission so that it can claimOwnership(...) via the KeyManager
+        // otherwise, the KeyManager will flag the calling owner as not having the permission CHANGEOWNER
+        // when trying to setup the KeyManager
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          _context.owner.address.substring(2),
+        ..._permissionsKeys,
+      ],
+      [ALL_PERMISSIONS_SET, ..._permissionsValues]
+    );
 
   await _context.universalProfile
     .connect(_context.owner)
     .transferOwnership(_context.keyManager.address);
+
+  let payload =
+    _context.universalProfile.interface.getSighash("claimOwnership");
+
+  await _context.keyManager.connect(_context.owner).execute(payload);
 }
 
 export async function setupKeyManagerHelper(
@@ -65,11 +80,25 @@ export async function setupKeyManagerHelper(
 ) {
   await _context.universalProfile
     .connect(_context.owner)
-    ["setData(bytes32[],bytes[])"](_permissionsKeys, _permissionsValues);
+    ["setData(bytes32[],bytes[])"](
+      [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          _context.owner.address.substring(2),
+        ..._permissionsKeys,
+      ],
+      [ALL_PERMISSIONS_SET, ..._permissionsValues]
+    );
 
   await _context.universalProfile
     .connect(_context.owner)
     .transferOwnership(_context.keyManagerInternalTester.address);
+
+  let payload =
+    _context.universalProfile.interface.getSighash("claimOwnership");
+
+  await _context.keyManagerInternalTester
+    .connect(_context.owner)
+    .execute(payload);
 }
 
 /**
@@ -98,7 +127,7 @@ export async function setupProfileWithKeyManagerWithURD(
         ERC725YKeys.LSP6["AddressPermissions[]"].substring(0, 34) +
           "00000000000000000000000000000001",
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          EOA.address.substr(2),
+          EOA.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           lsp1universalReceiverDelegateUP.address.substr(2),
         ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
@@ -114,6 +143,12 @@ export async function setupProfileWithKeyManagerWithURD(
     );
 
   await universalProfile.connect(EOA).transferOwnership(lsp6KeyManager.address);
+
+  const claimOwnershipPayload =
+    universalProfile.interface.getSighash("claimOwnership");
+
+  await lsp6KeyManager.connect(EOA).execute(claimOwnershipPayload);
+
   await EOA.sendTransaction({
     to: universalProfile.address,
     value: ethers.utils.parseEther("10"),
