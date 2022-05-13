@@ -1028,4 +1028,173 @@ export const shouldBehaveLikePermissionTransferValue = (
       });
     });
   });
+
+  describe("when caller has SUPER_TRANSFERVALUE + SUPER_CALL", () => {
+    let caller: SignerWithAddress;
+    let allowedAddress: SignerWithAddress;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      caller = context.accounts[1];
+      allowedAddress = context.accounts[2];
+
+      const permissionsKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          caller.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          caller.address.substring(2),
+      ];
+
+      const permissionsValues = [
+        ethers.utils.hexZeroPad(
+          PERMISSIONS.SUPER_TRANSFERVALUE + PERMISSIONS.SUPER_CALL,
+          32
+        ),
+        // restriction = only a specific address
+        abiCoder.encode(["address[]"], [[allowedAddress.address]]),
+      ];
+
+      await setupKeyManager(context, permissionsKeys, permissionsValues);
+
+      await context.owner.sendTransaction({
+        to: context.universalProfile.address,
+        value: ethers.utils.parseEther("10"),
+      });
+    });
+
+    describe("should be allowed to send LYX to any address", () => {
+      const recipients: SignerWithAddress[] = [
+        ethers.Wallet.createRandom().address,
+        ethers.Wallet.createRandom().address,
+        ethers.Wallet.createRandom().address,
+        ethers.Wallet.createRandom().address,
+        ethers.Wallet.createRandom().address,
+      ];
+
+      it.each(recipients)("should send LYX to EOA -> %s", async (recipient) => {
+        let initialBalanceUP = await provider.getBalance(
+          context.universalProfile.address
+        );
+
+        let initialBalanceRecipient = await provider.getBalance(recipient);
+
+        let transferPayload =
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            recipient,
+            ethers.utils.parseEther("1"),
+            "0x",
+          ]);
+
+        await context.keyManager.connect(caller).execute(transferPayload);
+
+        let newBalanceUP = await provider.getBalance(
+          context.universalProfile.address
+        );
+        expect(parseInt(newBalanceUP)).toBeLessThan(parseInt(initialBalanceUP));
+
+        let newBalanceRecipient = await provider.getBalance(recipient);
+        expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
+          parseInt(initialBalanceRecipient)
+        );
+      });
+    });
+
+    describe("should be allowed to interact with any contract", () => {
+      describe("eg: any TargetContract", () => {
+        for (let ii = 1; ii <= 5; ii++) {
+          it(`TargetContract nb ${ii}`, async () => {
+            let targetContract = await new TargetContract__factory(
+              context.accounts[0]
+            ).deploy();
+
+            let newValue = 12345;
+
+            let payload = targetContract.interface.encodeFunctionData(
+              "setNumber",
+              [newValue]
+            );
+
+            let executePayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATIONS.CALL,
+                targetContract.address,
+                0,
+                payload,
+              ]);
+
+            await context.keyManager.connect(caller).execute(executePayload);
+
+            const result = await targetContract.getNumber();
+            expect(result.toNumber()).toEqual(newValue);
+          });
+        }
+      });
+
+      describe("eg: any LSP7 Token owned by the UP", () => {
+        for (let ii = 1; ii <= 5; ii++) {
+          it(`LSP7DigitalAsset nb ${ii}`, async () => {
+            let lsp7Token = await new LSP7Mintable__factory(
+              context.accounts[0]
+            ).deploy("LSP7 Token", "LSP7", context.accounts[0].address, false);
+
+            // give some tokens to the UP
+            await lsp7Token.mint(
+              context.universalProfile.address,
+              100,
+              false,
+              "0x"
+            );
+
+            const tokenRecipient = context.accounts[5].address;
+            const tokenAmount = 10;
+
+            const senderTokenBalanceBefore = await lsp7Token.balanceOf(
+              context.universalProfile.address
+            );
+            const recipientTokenBalanceBefore = await lsp7Token.balanceOf(
+              tokenRecipient
+            );
+            expect(senderTokenBalanceBefore.toNumber()).toEqual(100);
+            expect(recipientTokenBalanceBefore.toNumber()).toEqual(0);
+
+            let tokenTransferPayload = lsp7Token.interface.encodeFunctionData(
+              "transfer",
+              [
+                context.universalProfile.address,
+                tokenRecipient,
+                tokenAmount,
+                true,
+                "0x",
+              ]
+            );
+
+            let executePayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATIONS.CALL,
+                lsp7Token.address,
+                0,
+                tokenTransferPayload,
+              ]);
+
+            await context.keyManager.connect(caller).execute(executePayload);
+
+            const senderTokenBalanceAfter = await lsp7Token.balanceOf(
+              context.universalProfile.address
+            );
+            const recipientTokenBalanceAfter = await lsp7Token.balanceOf(
+              tokenRecipient
+            );
+            expect(senderTokenBalanceAfter.toNumber()).toEqual(
+              senderTokenBalanceBefore.toNumber() - tokenAmount
+            );
+            expect(recipientTokenBalanceAfter.toNumber()).toEqual(
+              recipientTokenBalanceBefore.toNumber() + tokenAmount
+            );
+          });
+        }
+      });
+    });
+  });
 };
