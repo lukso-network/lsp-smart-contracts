@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 // modules
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {ERC725YInitAbstract, ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YInitAbstract.sol";
-import {LSP4DigitalAssetMetadataCore} from "./LSP4DigitalAssetMetadataCore.sol";
 
 // constants
 import "./LSP4Constants.sol";
@@ -14,10 +13,7 @@ import "./LSP4Constants.sol";
  * @author Matthew Stevens
  * @dev Inheritable Proxy Implementation of a LSP8 compliant contract.
  */
-abstract contract LSP4DigitalAssetMetadataInitAbstract is
-    LSP4DigitalAssetMetadataCore,
-    ERC725YInitAbstract
-{
+abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
     function _initialize(
         string memory name_,
         string memory symbol_,
@@ -26,17 +22,15 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is
         ERC725YInitAbstract._initialize(newOwner_);
 
         // set SupportedStandards:LSP4DigitalAsset
-        ERC725YCore._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
+        super._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 
-        ERC725YCore._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
-        ERC725YCore._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        super._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        super._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
     }
 
-    function _setData(bytes32 key, bytes memory value)
-        internal
-        virtual
-        override(ERC725YCore, LSP4DigitalAssetMetadataCore)
-    {
-        LSP4DigitalAssetMetadataCore._setData(key, value);
+    function _setData(bytes32 key, bytes memory value) internal virtual override {
+        require(key != _LSP4_TOKEN_NAME_KEY, "LSP4: cannot edit Token Name after deployment");
+        require(key != _LSP4_TOKEN_SYMBOL_KEY, "LSP4: cannot edit Token Symbol after deployment");
+        super._setData(key, value);
     }
 }
