@@ -444,38 +444,46 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 value = uint256(bytes32(_calldata[68:100]));
 
         bool isContractCreation = operationType == 1 || operationType == 2;
+        bool isCallDataPresent = _calldata.length > 164;
 
         // SUPER operation only applies to contract call, not contract creation
-        bool superOperation = isContractCreation
+        bool hasSuperOperation = isContractCreation
             ? false
             : _permissions.hasPermission(_extractSuperPermissionFromOperation(operationType));
 
-        if (_calldata.length > 164) {
+        if (isCallDataPresent) {
             // prettier-ignore
-            superOperation == true || _requirePermissions(_from, _permissions, _extractPermissionFromOperation(operationType));
+            hasSuperOperation || _requirePermissions(_from, _permissions, _extractPermissionFromOperation(operationType));
         }
 
-        bool superTransferValue = _permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
+        bool hasSuperTransferValue = _permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
 
         if (value > 0) {
             // prettier-ignore
-            superTransferValue == true || _requirePermissions(_from, _permissions, _PERMISSION_TRANSFERVALUE);
+            hasSuperTransferValue || _requirePermissions(_from, _permissions, _PERMISSION_TRANSFERVALUE);
         }
 
         // Skip on contract creation (CREATE or CREATE2)
         if (isContractCreation) return;
 
-        // Skip if caller has SUPER permissions for sending some calldata
-        if (superOperation == true && _calldata.length > 164) return;
-        // Skip if caller has SUPER permission for doing plain Value TRANSFER (without data)
-        if (superTransferValue == true && _calldata.length == 164) return;
+        // Skip if caller has SUPER permissions for operations
+        if (hasSuperOperation && isCallDataPresent && value == 0) return;
 
+        // Skip if caller has SUPER permission for value transfers
+        if (hasSuperTransferValue && !isCallDataPresent && value > 0) return;
+
+        // Skip if both SUPER permissions are present
+        if (hasSuperOperation && hasSuperTransferValue) return;
+
+        // CHECK for ALLOWED ADDRESSES
         address to = address(bytes20(_calldata[48:68]));
         _verifyAllowedAddress(_from, to);
 
         if (to.code.length > 0) {
+            // CHECK for ALLOWED STANDARDS
             _verifyAllowedStandard(_from, to);
 
+            // CHECK for ALLOWED FUNCTIONS
             // extract bytes4 function selector from payload passed to ERC725X.execute(...)
             if (_calldata.length >= 168) _verifyAllowedFunction(_from, bytes4(_calldata[164:168]));
         }
