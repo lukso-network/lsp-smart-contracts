@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // modules
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import {ERC725YInitAbstract} from "@erc725/smart-contracts/contracts/ERC725YInitAbstract.sol";
+import {ERC725YInitAbstract, ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YInitAbstract.sol";
 
 // constants
 import "./LSP4Constants.sol";
@@ -22,9 +22,15 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
         ERC725YInitAbstract._initialize(newOwner_);
 
         // set SupportedStandards:LSP4DigitalAsset
-        _setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
+        super._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 
-        _setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
-        _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        super._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        super._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+    }
+
+    function _setData(bytes32 key, bytes memory value) internal virtual override {
+        require(key != _LSP4_TOKEN_NAME_KEY, "LSP4: cannot edit Token Name after deployment");
+        require(key != _LSP4_TOKEN_SYMBOL_KEY, "LSP4: cannot edit Token Symbol after deployment");
+        super._setData(key, value);
     }
 }
