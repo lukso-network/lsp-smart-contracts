@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 // modules
 import {ERC725Y, ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {LSP4DigitalAssetMetadataCore} from "./LSP4DigitalAssetMetadataCore.sol";
 
 // constants
 import "./LSP4Constants.sol";
@@ -12,7 +13,7 @@ import "./LSP4Constants.sol";
  * @author Matthew Stevens
  * @dev Implementation of a LSP8 compliant contract.
  */
-abstract contract LSP4DigitalAssetMetadata is ERC725Y {
+abstract contract LSP4DigitalAssetMetadata is LSP4DigitalAssetMetadataCore, ERC725Y {
     /**
      * @notice Sets the name, symbol of the token and the owner, and sets the SupportedStandards:LSP4DigitalAsset key
      * @param name_ The name of the token
@@ -25,16 +26,17 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
         address newOwner_
     ) ERC725Y(newOwner_) {
         // set key SupportedStandards:LSP4DigitalAsset
-
         ERC725YCore._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 
         ERC725YCore._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
         ERC725YCore._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
     }
 
-    function _setData(bytes32 key, bytes memory value) internal virtual override {
-        require(key != _LSP4_TOKEN_NAME_KEY, "LSP4: cannot edit Token Name after deployment");
-        require(key != _LSP4_TOKEN_SYMBOL_KEY, "LSP4: cannot edit Token Symbol after deployment");
-        super._setData(key, value);
+    function _setData(bytes32 key, bytes memory value)
+        internal
+        virtual
+        override(ERC725YCore, LSP4DigitalAssetMetadataCore)
+    {
+        LSP4DigitalAssetMetadataCore._setData(key, value);
     }
 }
