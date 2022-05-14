@@ -212,19 +212,19 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         bool isSettingERC725YKeys = false;
 
-        // loop through the ERC725Y keys and check for permission keys
+        // loop through each ERC725Y data keys
         for (uint256 ii = 0; ii < inputKeys.length; ii++) {
             bytes32 key = inputKeys[ii];
 
             if (
-                // if the key is a permission key
+                // CHECK for permission keys
                 bytes8(key) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
                 bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
             ) {
                 _verifyCanSetPermissions(key, inputValues[ii], _from, _permissions);
 
-                // "nullify permission keys,
-                // so that they do not get check against allowed ERC725Y keys
+                // "nullify" permission keys
+                // to not check them against allowed ERC725Y keys
                 inputKeys[ii] = bytes32(0);
             } else {
                 // if the key is any other bytes32 key
@@ -387,12 +387,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             // loop through each keys given as input
             for (uint256 jj = 0; jj < _inputKeys.length; jj++) {
-                // skip permissions keys that have been previously marked "null"
-                // (when checking permission keys or allowed ERC725Y keys from previous iterations)
+                // skip permissions keys that have been previously "nulled"
                 if (_inputKeys[jj] == bytes32(0)) continue;
 
                 assembly {
-                    // the bitmask discard the last `n` bytes of the input key via ANDing &
+                    // use a bitmask to discard the last `n` bytes of the input key
                     // so to compare only the relevant parts of each ERC725Y keys
                     //
                     // `n = zeroBytesCount`
@@ -595,7 +594,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _countZeroBytes(bytes32 _key) internal pure returns (uint256) {
         uint256 index = 31;
 
-        // check each individual bytes of the key, starting from the end (right to left)
+        // CHECK each bytes of the key, starting from the end (right to left)
         // skip the empty bytes `0x00` to find the first non-empty bytes
         while (_key[index] == 0x00) index--;
 
