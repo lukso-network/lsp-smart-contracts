@@ -7,6 +7,8 @@ import {
   LSP7Mintable,
   LSP7Mintable__factory,
   TargetContract__factory,
+  TargetPayableContract,
+  TargetPayableContract__factory,
   UniversalProfile__factory,
 } from "../../../types";
 
@@ -632,6 +634,7 @@ export const shouldBehaveLikePermissionTransferValue = (
   describe("when caller has SUPER_TRANSFERVALUE + CALL", () => {
     let caller: SignerWithAddress;
     let lsp7Token: LSP7Mintable;
+    let targetContract: TargetPayableContract;
 
     beforeEach(async () => {
       context = await buildContext();
@@ -644,6 +647,10 @@ export const shouldBehaveLikePermissionTransferValue = (
         context.accounts[0].address,
         false
       );
+
+      targetContract = await new TargetPayableContract__factory(
+        context.accounts[0]
+      ).deploy();
 
       await lsp7Token
         .connect(context.accounts[0])
@@ -662,7 +669,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           32
         ),
         // restriction = only a specific address (e.g: an LSP7 contract)
-        abiCoder.encode(["address[]"], [[lsp7Token.address]]),
+        abiCoder.encode(
+          ["address[]"],
+          [[lsp7Token.address, targetContract.address]]
+        ),
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -753,7 +763,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       }
     });
 
-    it("should not be allowed to interact with any LSP7 contract", async () => {
+    it("should not be allowed to interact with a disallowed LSP7 contract", async () => {
       let newLSP7Token = await new LSP7Mintable__factory(
         context.accounts[0]
       ).deploy("New LSP7 Token", "LSP7TKN", context.accounts[0].address, false);
@@ -773,7 +783,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATIONS.CALL,
           newLSP7Token.address,
-          0,
+          5,
           lsp7TransferPayload,
         ]);
 
@@ -784,7 +794,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
     });
 
-    it("should be allowed to interact with the LSP7 contract in the allowed address", async () => {
+    it("should be allowed to interact with an allowed LSP7 contract", async () => {
       let recipient = context.accounts[5].address;
       let tokenAmount = ethers.BigNumber.from(10);
 
@@ -828,6 +838,65 @@ export const shouldBehaveLikePermissionTransferValue = (
       expect(lsp7RecipientBalanceAfter).toEqual(
         lsp7RecipientBalanceBefore.add(tokenAmount)
       );
+    });
+
+    it("should be allowed to interact with an allowed contract", async () => {
+      let newValue = 35;
+
+      let targetPayload = targetContract.interface.encodeFunctionData(
+        "updateState",
+        [newValue]
+      );
+
+      let payload = context.universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+      );
+
+      await context.keyManager.connect(caller).execute(payload);
+
+      const result = await targetContract.value();
+      expect(result.toNumber()).toEqual(newValue);
+    });
+
+    it("should be allowed to interact with an allowed contract + send some LYX while calling the function", async () => {
+      const newValue = 358;
+      const lyxAmount = ethers.utils.parseEther("3");
+
+      // LYX (native tokens) balances
+      let upLyxBalanceBefore = await provider.getBalance(
+        context.universalProfile.address
+      );
+      let targetContractLyxBalanceBefore = await provider.getBalance(
+        targetContract.address
+      );
+      expect(targetContractLyxBalanceBefore.toNumber()).toEqual(0);
+
+      let targetContractPayload = targetContract.interface.encodeFunctionData(
+        "updateState",
+        [newValue]
+      );
+
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATIONS.CALL,
+          targetContract.address,
+          lyxAmount,
+          targetContractPayload,
+        ]);
+
+      await context.keyManager.connect(caller).execute(executePayload);
+
+      // LYX (native tokens) balances
+      let upLyxBalanceAfter = await provider.getBalance(
+        context.universalProfile.address
+      );
+      expect(upLyxBalanceAfter).toEqual(upLyxBalanceBefore.sub(lyxAmount));
+
+      let targetContractLyxBalanceAfter = await provider.getBalance(
+        targetContract.address
+      );
+      expect(targetContractLyxBalanceAfter).toEqual(lyxAmount);
     });
   });
 
@@ -1026,6 +1095,53 @@ export const shouldBehaveLikePermissionTransferValue = (
           });
         }
       });
+    });
+
+    describe("should not be allowed to interact with any contract if sending LYX along the call", () => {
+      const lyxAmount = ethers.utils.parseEther("1");
+
+      for (let ii = 1; ii <= 5; ii++) {
+        it(`Target Payable Contract nb ${ii}`, async () => {
+          let targetContract = await new TargetPayableContract__factory(
+            context.accounts[0]
+          ).deploy();
+
+          let upLyxBalanceBefore = await provider.getBalance(
+            context.universalProfile.address
+          );
+          let targetContractLyxBalanceBefore = await provider.getBalance(
+            targetContract.address
+          );
+          expect(targetContractLyxBalanceBefore.toNumber()).toEqual(0);
+
+          let targetPayload = targetContract.interface.encodeFunctionData(
+            "updateState",
+            [35]
+          );
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATIONS.CALL, targetContract.address, lyxAmount, targetPayload]
+          );
+
+          await expect(
+            context.keyManager.connect(caller).execute(payload)
+          ).toBeRevertedWith(
+            NotAllowedAddressError(caller.address, targetContract.address)
+          );
+
+          // LYX (native tokens) balances
+          let upLyxBalanceAfter = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(upLyxBalanceAfter).toEqual(upLyxBalanceBefore);
+
+          let targetContractLyxBalanceAfter = await provider.getBalance(
+            targetContract.address
+          );
+          expect(targetContractLyxBalanceAfter.toNumber()).toEqual(0);
+        });
+      }
     });
   });
 
