@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 // modules
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
 import {ERC725InitAbstract} from "@erc725/smart-contracts/contracts/ERC725InitAbstract.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
 
 // constants
 import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271} from "./LSP0Constants.sol";
@@ -34,5 +35,14 @@ abstract contract LSP0ERC725AccountInitAbstract is ERC725InitAbstract, LSP0ERC72
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
             super.supportsInterface(interfaceId);
+    }
+
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(LSP0ERC725AccountCore, OwnableUnset)
+        onlyOwner
+    {
+        super.transferOwnership(_newOwner);
     }
 }

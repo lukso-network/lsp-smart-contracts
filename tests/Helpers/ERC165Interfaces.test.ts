@@ -62,6 +62,11 @@ describe("Calculate LSP interfaces", () => {
     const result = await contract.calculateInterfaceLSP9();
     expect(result).toEqual(INTERFACE_IDS.LSP9);
   });
+
+  it("IClaimOwnership", async () => {
+    const result = await contract.calculateInterfaceClaimOwnership();
+    expect(result).toEqual(INTERFACE_IDS.ClaimOwnership);
+  });
 });
 
 describe("Calculate ERC interfaces", () => {

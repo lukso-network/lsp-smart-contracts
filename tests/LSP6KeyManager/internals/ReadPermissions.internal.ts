@@ -88,13 +88,11 @@ export const testReadingPermissionsInternals = (
     beforeEach(async () => {
       context = await buildContext();
 
-      moreThan32EmptyBytes = context.accounts[0];
-      lessThan32EmptyBytes = context.accounts[1];
-      oneEmptyByte = context.accounts[2];
+      moreThan32EmptyBytes = context.accounts[1];
+      lessThan32EmptyBytes = context.accounts[2];
+      oneEmptyByte = context.accounts[3];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           moreThan32EmptyBytes.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -104,7 +102,6 @@ export const testReadingPermissionsInternals = (
       ];
 
       const permissionValues = [
-        ALL_PERMISSIONS_SET,
         "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         "0x000000000000000000000000000000",
         "0x00",

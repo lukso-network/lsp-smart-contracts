@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+import {LSP7DigitalAsset, LSP4DigitalAssetMetadata, ERC725YCore} from "../LSP7DigitalAsset.sol";
 import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 import {LSP7CompatibilityForERC20Core} from "./LSP7CompatibilityForERC20Core.sol";
 
@@ -56,5 +56,13 @@ contract LSP7CompatibilityForERC20 is LSP7DigitalAsset, LSP7CompatibilityForERC2
         bytes memory data
     ) internal virtual override(LSP7DigitalAssetCore, LSP7CompatibilityForERC20Core) {
         super._transfer(from, to, amount, force, data);
+    }
+
+    function _setData(bytes32 key, bytes memory value)
+        internal
+        virtual
+        override(LSP4DigitalAssetMetadata, ERC725YCore)
+    {
+        super._setData(key, value);
     }
 }
