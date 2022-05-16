@@ -19,11 +19,11 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
+  abiCoder,
   generateKeysAndValues,
   getRandomAddresses,
   NotAuthorisedError,
 } from "../../utils/helpers";
-import { Signer } from "ethers";
 
 export const shouldBehaveLikePermissionSetData = (
   buildContext: () => Promise<LSP6TestContext>
@@ -672,6 +672,117 @@ export const shouldBehaveLikePermissionSetData = (
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).toEqual(value);
+    });
+  });
+
+  describe("when caller has SUPER_SETDATA + some allowed ERC725YKeys", () => {
+    let caller: SignerWithAddress;
+
+    const allowedERC725YKeys = [
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My 1st allowed key")),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My 2nd allowed key")),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My 3rd allowed key")),
+    ];
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      caller = context.accounts[1];
+
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          caller.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          caller.address.substring(2),
+      ];
+
+      const permissionValues = [
+        ethers.utils.hexZeroPad(PERMISSIONS.SUPER_SETDATA, 32),
+        abiCoder.encode(["bytes32[]"], [allowedERC725YKeys]),
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when trying to set a disallowed key", () => {
+      for (let ii = 1; ii <= 5; ii++) {
+        let key = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes(`dissallowed key ${ii}`)
+        );
+        let value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes(`some value ${ii}`)
+        );
+
+        it(`should be allowed to set a disallowed key: ${key}`, async () => {
+          const payload = context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [[key], [value]]
+          );
+
+          await context.keyManager.connect(caller).execute(payload);
+
+          const result = await context.universalProfile["getData(bytes32)"](
+            key
+          );
+          expect(result).toEqual(value);
+        });
+      }
+    });
+
+    describe("when trying to set an allowed key", () => {
+      it("should be allowed to set the 1st allowed key", async () => {
+        let value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value 1")
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[allowedERC725YKeys[0]], [value]]
+        );
+
+        await context.keyManager.connect(caller).execute(payload);
+
+        const result = await context.universalProfile["getData(bytes32)"](
+          allowedERC725YKeys[0]
+        );
+        expect(result).toEqual(value);
+      });
+
+      it("should be allowed to set the 2nd allowed key", async () => {
+        let value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value 2")
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[allowedERC725YKeys[1]], [value]]
+        );
+
+        await context.keyManager.connect(caller).execute(payload);
+
+        const result = await context.universalProfile["getData(bytes32)"](
+          allowedERC725YKeys[1]
+        );
+        expect(result).toEqual(value);
+      });
+
+      it("should be allowed to set the 3rd allowed key", async () => {
+        let value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value 3")
+        );
+
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [[allowedERC725YKeys[2]], [value]]
+        );
+
+        await context.keyManager.connect(caller).execute(payload);
+
+        const result = await context.universalProfile["getData(bytes32)"](
+          allowedERC725YKeys[2]
+        );
+        expect(result).toEqual(value);
+      });
     });
   });
 };
