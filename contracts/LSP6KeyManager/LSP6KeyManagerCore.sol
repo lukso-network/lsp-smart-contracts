@@ -8,6 +8,7 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {IClaimOwnership} from "../Utils/IClaimOwnership.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
@@ -124,7 +125,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(signer, _calldata);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result) = target.call{value: 0, gas: gasleft()}(_calldata);
+        (bool success, bytes memory result) = target.call{value: msg.value, gas: gasleft()}(
+            _calldata
+        );
 
         if (!success) {
             ErrorHandlerLib.revertWithParsedError(result);
@@ -185,7 +188,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     _verifyAllowedFunction(_from, bytes4(_calldata[164:168]));
                 }
             }
-        } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
+        } else if (
+            erc725Function == OwnableUnset.transferOwnership.selector ||
+            erc725Function == IClaimOwnership.claimOwnership.selector
+        ) {
             if (!permissions.includesPermissions(_PERMISSION_CHANGEOWNER))
                 revert NotAuthorised(_from, "TRANSFEROWNERSHIP");
         } else {

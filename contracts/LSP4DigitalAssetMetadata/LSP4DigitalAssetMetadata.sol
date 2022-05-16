@@ -25,9 +25,15 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
         address newOwner_
     ) ERC725Y(newOwner_) {
         // set key SupportedStandards:LSP4DigitalAsset
-        _setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
+        super._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 
-        _setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
-        _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        super._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        super._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+    }
+
+    function _setData(bytes32 key, bytes memory value) internal virtual override {
+        require(key != _LSP4_TOKEN_NAME_KEY, "LSP4: cannot edit Token Name after deployment");
+        require(key != _LSP4_TOKEN_SYMBOL_KEY, "LSP4: cannot edit Token Symbol after deployment");
+        super._setData(key, value);
     }
 }

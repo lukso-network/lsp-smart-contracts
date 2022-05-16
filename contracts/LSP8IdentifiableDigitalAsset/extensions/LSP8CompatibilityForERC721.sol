@@ -9,7 +9,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // modules
-import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
+import {LSP8IdentifiableDigitalAsset, LSP4DigitalAssetMetadata, ERC725YCore} from "../LSP8IdentifiableDigitalAsset.sol";
 import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 import {LSP8CompatibilityForERC721Core} from "./LSP8CompatibilityForERC721Core.sol";
 
@@ -88,5 +88,13 @@ contract LSP8CompatibilityForERC721 is
             interfaceId == _INTERFACEID_ERC721 ||
             interfaceId == _INTERFACEID_ERC721METADATA ||
             super.supportsInterface(interfaceId);
+    }
+
+    function _setData(bytes32 key, bytes memory value)
+        internal
+        virtual
+        override(LSP4DigitalAssetMetadata, ERC725YCore)
+    {
+        super._setData(key, value);
     }
 }

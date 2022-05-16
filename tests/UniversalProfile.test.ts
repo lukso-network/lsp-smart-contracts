@@ -13,6 +13,11 @@ import {
 } from "./LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour";
 
 import {
+  ClaimOwnershipTestContext,
+  shouldBehaveLikeClaimOwnership,
+} from "./ClaimOwnership.behaviour";
+
+import {
   LSP3TestContext,
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
@@ -46,6 +51,19 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
+    const buildClaimOwnershipTestContext =
+      async (): Promise<ClaimOwnershipTestContext> => {
+        const accounts = await ethers.getSigners();
+        const deployParams = {
+          owner: accounts[0],
+        };
+        const contract = await new UniversalProfile__factory(
+          accounts[0]
+        ).deploy(deployParams.owner.address);
+
+        return { accounts, contract, deployParams };
+      };
+
     describe("when deploying the contract", () => {
       let context: LSP3TestContext;
 
@@ -67,6 +85,7 @@ describe("UniversalProfile", () => {
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP3(buildLSP3TestContext);
       shouldBehaveLikeLSP1(buildLSP1TestContext);
+      shouldBehaveLikeClaimOwnership(buildClaimOwnershipTestContext);
     });
   });
 
