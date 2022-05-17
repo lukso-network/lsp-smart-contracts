@@ -2,16 +2,16 @@
 pragma solidity ^0.8.0;
 
 // libraries
-import "@erc725/smart-contracts/contracts/utils/ErrorHandlerLib.sol";
-import "@openzeppelin/contracts/utils/Create2.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
-import "solidity-bytes-utils/contracts/BytesLib.sol";
+import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
+import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
+import {ErrorHandlerLib} from "@erc725/smart-contracts/contracts/utils/ErrorHandlerLib.sol";
 
 /**
- * @dev UniversalFactory contract can be used to deploy create2 contracts; normal contracts and minimal
+ * @dev UniversalFactory contract can be used to deploy CREATE2 contracts; normal contracts and minimal
  * proxies (EIP-1167) with the ability to deploy the same contract at the same address on different chains.
  * If the contract has a constructor, the arguments will be part of the byteCode
- * If the contract has an `initialize` function, we need to include the parameters of this function in
+ * If the contract has an `initialize` function, the parameters of this function will be included in
  * the salt to ensure that the parameters of the contract should be the same on each chain.
  *
  * Security measures were taken to avoid deploying proxies from the `deployCreate2(..)` function
@@ -73,8 +73,8 @@ contract UniversalFactory {
 
     /**
      * @dev Deploys a contract using `CREATE2`. The address where the contract will be deployed
-     * can be known in advance via {calculateAddress}. The salt is a combination between the `initializable`,
-     * `salt` and the `initializeCallData` if the contract is initializable. This method allow users
+     * can be known in advance via {calculateAddress}. The salt is a combination between an initializable
+     * boolean, `salt` and the `initializeCallData` if the contract is initializable. This method allow users
      * to have the same contracts at the same address across different chains with the same parameters.
      *
      * Using the same `byteCode` and salt multiple time will revert, since
@@ -101,8 +101,8 @@ contract UniversalFactory {
      * @dev Deploys and returns the address of a clone that mimics the behaviour of `baseContract`.
      * The address where the contract will be deployed can be known in advance via {calculateProxyAddress}.
      *
-     * This function uses the create2 opcode and a salt to deterministically deploy
-     * the clone. The salt is a combination between the `initializable`, `salt`
+     * This function uses the CREATE2 opcode and a salt to deterministically deploy
+     * the clone. The salt is a combination between an initializable boolean, `salt`
      * and the `initializeCallData` if the contract is initializable. This method allow users
      * to have the same contracts at the same address across different chains with the same parameters.
      *
@@ -138,7 +138,7 @@ contract UniversalFactory {
     /** internal functions */
 
     /**
-     * @dev Calculates the salt including the initializeCall data, or without but hashing it with a zero bytes padding.
+     * @dev Calculates the salt including the initializeCallData, or without but hashing it with a zero bytes padding.
      */
     function _generateSalt(bytes memory initializeCallData, bytes32 salt)
         internal
