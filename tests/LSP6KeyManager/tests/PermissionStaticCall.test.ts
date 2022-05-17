@@ -446,7 +446,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe("it should bypass allowed addresses check + allow to interact any contract", () => {
+    describe("it should bypass allowed addresses check + allow to interact with any contract", () => {
       for (let ii = 1; ii <= 5; ii++) {
         it(`e.g: Target Contract nb ${ii}`, async () => {
           let targetContract = await new TargetContract__factory(
