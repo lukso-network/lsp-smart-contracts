@@ -1,14 +1,14 @@
 import { ethers } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { LSP0ERC725Account } from "../types";
+import { LSP0ERC725Account, LSP9Vault } from "../types";
 
 import { provider } from "./utils/helpers";
 import { OPERATIONS } from "../constants";
 
 export type ClaimOwnershipTestContext = {
   accounts: SignerWithAddress[];
-  contract: LSP0ERC725Account /* | LSP9Vault */;
+  contract: LSP0ERC725Account | LSP9Vault;
   deployParams: { owner: SignerWithAddress };
 };
 
