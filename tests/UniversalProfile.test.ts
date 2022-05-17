@@ -98,10 +98,12 @@ describe("UniversalProfile", () => {
       const universalProfileInit = await new UniversalProfileInit__factory(
         accounts[0]
       ).deploy();
+
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
         accounts[0]
       );
+
       const universalProfile = universalProfileInit.attach(
         universalProfileProxy
       );
@@ -136,6 +138,27 @@ describe("UniversalProfile", () => {
 
       return { accounts, lsp1Implementation, lsp1Checker };
     };
+
+    const buildClaimOwnershipTestContext =
+      async (): Promise<ClaimOwnershipTestContext> => {
+        const accounts = await ethers.getSigners();
+        const deployParams = { owner: accounts[0] };
+
+        const universalProfileInit = await new UniversalProfileInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const universalProfileProxy = await deployProxy(
+          universalProfileInit.address,
+          accounts[0]
+        );
+
+        const universalProfile = universalProfileInit.attach(
+          universalProfileProxy
+        );
+
+        return { accounts, contract: universalProfile, deployParams };
+      };
 
     describe("when deploying the contract as proxy", () => {
       let context: LSP3TestContext;
@@ -180,6 +203,18 @@ describe("UniversalProfile", () => {
 
         let lsp1Context = await buildLSP1TestContext();
         return lsp1Context;
+      });
+
+      shouldBehaveLikeClaimOwnership(async () => {
+        let claimOwnershipContext = await buildClaimOwnershipTestContext();
+
+        await initializeProxy({
+          accounts: claimOwnershipContext.accounts,
+          universalProfile: claimOwnershipContext.contract,
+          deployParams: claimOwnershipContext.deployParams,
+        });
+
+        return claimOwnershipContext;
       });
     });
   });
