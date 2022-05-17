@@ -34,8 +34,8 @@ contract LSP9Vault is ERC725, LSP9VaultCore {
      * @inheritdoc OwnableUnset
      * @dev Transfer the ownership and notify the vault sender and vault receiver
      */
-    function transferOwnership(address newOwner) public virtual override onlyOwner {
-        OwnableUnset.transferOwnership(newOwner);
+    function transferOwnership(address newOwner) public virtual override(LSP9VaultCore, OwnableUnset) onlyOwner {
+        super.transferOwnership(newOwner);
 
         _notifyVaultSender(msg.sender);
         _notifyVaultReceiver(newOwner);

@@ -32,7 +32,7 @@ abstract contract LSP9VaultInitAbstract is ERC725InitAbstract, LSP9VaultCore {
      * @inheritdoc OwnableUnset
      * @dev Transfer the ownership and notify the vault sender and vault receiver
      */
-    function transferOwnership(address newOwner) public virtual override onlyOwner {
+    function transferOwnership(address newOwner) public virtual override(LSP9VaultCore, OwnableUnset) onlyOwner {
         OwnableUnset.transferOwnership(newOwner);
 
         _notifyVaultSender(msg.sender);
