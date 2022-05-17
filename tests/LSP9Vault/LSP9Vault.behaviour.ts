@@ -259,12 +259,12 @@ export const shouldInitializeLikeLSP9 = (
       expect(result).toBeTruthy();
     });
 
-    // it("should support ClaimOwnership interface", async () => {
-    //   const result = await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ClaimOwnership)
-    //   expect(
-
-    //   ).toBe;
-    // });
+    it("should support ClaimOwnership interface", async () => {
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.ClaimOwnership
+      );
+      expect(result).toBeTruthy();
+    });
 
     it("should have set expected entries with ERC725Y.setData", async () => {
       await expect(context.initializeTransaction).toHaveEmittedWith(
