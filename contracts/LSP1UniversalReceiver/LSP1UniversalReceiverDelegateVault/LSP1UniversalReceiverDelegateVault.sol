@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-// modules
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "./Handling/TokenHandling.sol";
-
 // interfaces
-import "../ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiverDelegate} from "../ILSP1UniversalReceiverDelegate.sol";
+
+// modules
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {TokenHandling} from "./Handling/TokenHandling.sol";
+
+// constants
+import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
+import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "../../LSP7DigitalAsset/LSP7Constants.sol";
+import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 
 /**
  * @title Core Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using
@@ -16,8 +21,8 @@ import "../ILSP1UniversalReceiverDelegate.sol";
  * @dev Delegate contract of the initial universal receiver
  */
 contract LSP1UniversalReceiverDelegateVault is
-    ILSP1UniversalReceiverDelegate,
     ERC165,
+    ILSP1UniversalReceiverDelegate,
     TokenHandling
 {
     /**
@@ -27,8 +32,8 @@ contract LSP1UniversalReceiverDelegateVault is
      */
     function universalReceiverDelegate(
         address sender,
-        bytes32 typeId, // solhint-disable no-unused-vars
-        bytes memory data
+        bytes32 typeId,
+        bytes memory data // solhint-disable no-unused-vars
     ) public virtual override returns (bytes memory result) {
         if (
             typeId == _TYPEID_LSP7_TOKENSSENDER ||

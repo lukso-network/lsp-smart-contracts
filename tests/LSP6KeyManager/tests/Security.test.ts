@@ -106,7 +106,7 @@ export const testSecurityScenarios = (
 
       await expect(
         context.keyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
 
     it("via `executeRelayCall()`", async () => {
@@ -135,7 +135,7 @@ export const testSecurityScenarios = (
             payload,
             signature
           )
-      ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
     });
   });
 
@@ -205,9 +205,16 @@ export const testSecurityScenarios = (
           EMPTY_PAYLOAD,
         ]);
 
+      const HARDHAT_CHAINID = 31337;
+
       let hash = ethers.utils.solidityKeccak256(
-        ["address", "uint256", "bytes"],
-        [context.keyManager.address, nonce, executeRelayCallPayload]
+        ["uint256", "address", "uint256", "bytes"],
+        [
+          HARDHAT_CHAINID,
+          context.keyManager.address,
+          nonce,
+          executeRelayCallPayload,
+        ]
       );
 
       let signature = await signer.signMessage(ethers.utils.arrayify(hash));
@@ -215,12 +222,7 @@ export const testSecurityScenarios = (
       // first call
       await context.keyManager
         .connect(relayer)
-        .executeRelayCall(
-          context.keyManager.address,
-          nonce,
-          executeRelayCallPayload,
-          signature
-        );
+        .executeRelayCall(signature, nonce, executeRelayCallPayload);
 
       // 2nd call = replay attack
       await expect(

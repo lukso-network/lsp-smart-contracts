@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../ILSP7DigitalAsset.sol";
+import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
 
 /**
  * @dev LSP7 extension, Mintable version.

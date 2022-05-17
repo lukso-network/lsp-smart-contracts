@@ -1,26 +1,28 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// modules
-import "@erc725/smart-contracts/contracts/ERC725X.sol";
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
-
 // interfaces
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
-// library
-import "../Utils/ERC165CheckerCustom.sol";
+// libraries
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
+import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
+
+// modules
+import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+
 // constants
-import "../LSP1UniversalReceiver/LSP1Constants.sol";
-import "./LSP9Constants.sol";
+import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP9, _TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER} from "./LSP9Constants.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
+contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1UniversalReceiver {
     /**
      * @notice Emitted when a native token is received
      * @param sender The address of the sender
@@ -82,9 +84,8 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                returnValue = ILSP1UniversalReceiverDelegate(
-                    universalReceiverDelegate
-                ).universalReceiverDelegate(_msgSender(), _typeId, _data);
+                returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
             }
         }
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
@@ -96,16 +97,8 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
      * @dev Calls the universalReceiver function of the sender if supports LSP1 InterfaceId
      */
     function _notifyVaultSender(address _sender) internal virtual {
-        if (
-            ERC165CheckerCustom.supportsERC165Interface(
-                _sender,
-                _INTERFACEID_LSP1
-            )
-        ) {
-            ILSP1UniversalReceiver(_sender).universalReceiver(
-                _TYPEID_LSP9_VAULTSENDER,
-                ""
-            );
+        if (ERC165CheckerCustom.supportsERC165Interface(_sender, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(_sender).universalReceiver(_TYPEID_LSP9_VAULTSENDER, "");
         }
     }
 
@@ -113,16 +106,24 @@ contract LSP9VaultCore is ILSP1UniversalReceiver, ERC725XCore, ERC725YCore {
      * @dev Calls the universalReceiver function of the recipient if supports LSP1 InterfaceId
      */
     function _notifyVaultReceiver(address _receiver) internal virtual {
-        if (
-            ERC165CheckerCustom.supportsERC165Interface(
-                _receiver,
-                _INTERFACEID_LSP1
-            )
-        ) {
-            ILSP1UniversalReceiver(_receiver).universalReceiver(
-                _TYPEID_LSP9_VAULTRECIPIENT,
-                ""
-            );
+        if (ERC165CheckerCustom.supportsERC165Interface(_receiver, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(_receiver).universalReceiver(_TYPEID_LSP9_VAULTRECIPIENT, "");
         }
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP9 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            super.supportsInterface(interfaceId);
     }
 }

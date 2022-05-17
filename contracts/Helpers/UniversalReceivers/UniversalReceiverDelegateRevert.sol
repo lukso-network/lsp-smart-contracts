@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-import "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
-import "../../LSP1UniversalReceiver/LSP1Constants.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+// interfaces
+import {ILSP1UniversalReceiverDelegate} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
-contract UniversalReceiverDelegateRevert is
-    ILSP1UniversalReceiverDelegate,
-    ERC165Storage
-{
+// modules
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+
+// constants
+import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+
+contract UniversalReceiverDelegateRevert is ILSP1UniversalReceiverDelegate, ERC165Storage {
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
     }

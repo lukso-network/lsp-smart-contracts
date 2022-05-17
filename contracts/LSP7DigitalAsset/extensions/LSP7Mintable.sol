@@ -2,15 +2,16 @@
 
 pragma solidity ^0.8.0;
 
-import "./LSP7MintableCore.sol";
-import "../LSP7DigitalAsset.sol";
+// modules
+import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+import {LSP7MintableCore} from "./LSP7MintableCore.sol";
 
 /**
  * @title LSP7Mintable
  * @author Jean Cavallera, Yamen Merhi
  * @dev LSP7 extension, mintable.
  */
-contract LSP7Mintable is LSP7MintableCore, LSP7DigitalAsset {
+contract LSP7Mintable is LSP7DigitalAsset, LSP7MintableCore {
     // solhint-disable no-empty-blocks
 
     /**

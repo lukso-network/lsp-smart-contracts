@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./UniversalProfileInitAbstract.sol";
+import {UniversalProfileInitAbstract} from "./UniversalProfileInitAbstract.sol";
 
 /**
  * @title Deployable Proxy implementation of a LUKSO's Universal Profile based on LSP3

@@ -14,7 +14,11 @@ import {
 } from "../../types";
 
 // helpers
-import { INTERFACE_IDS, SupportedStandards } from "../../constants";
+import {
+  ERC725YKeys,
+  INTERFACE_IDS,
+  SupportedStandards,
+} from "../../constants";
 
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
@@ -65,6 +69,30 @@ export const shouldBehaveLikeLSP7 = (
 
   beforeEach(async () => {
     context = await buildContext();
+  });
+
+  describe("when setting data on ERC725Y storage", () => {
+    it("should revert when trying to edit Token Name", async () => {
+      const key = ERC725YKeys.LSP4["LSP4TokenName"];
+      const value = "Overriden Token Name";
+
+      await expect(
+        context.lsp7
+          .connect(context.deployParams.newOwner)
+          ["setData(bytes32,bytes)"](key, value)
+      ).toBeRevertedWith("LSP4: cannot edit Token Name after deployment");
+    });
+
+    it("should revert when trying to edit Token Symbol", async () => {
+      const key = ERC725YKeys.LSP4["LSP4TokenSymbol"];
+      const value = "BAD";
+
+      await expect(
+        context.lsp7
+          .connect(context.deployParams.newOwner)
+          ["setData(bytes32,bytes)"](key, value)
+      ).toBeRevertedWith("LSP4: cannot edit Token Symbol after deployment");
+    });
   });
 
   describe("when minting tokens", () => {
@@ -1157,11 +1185,12 @@ export const shouldInitializeLikeLSP7 = (
         ]
       );
       expect(
-        await context.lsp7["getData(bytes32)"](SupportedStandards.LSP4DigitalAsset.key)
+        await context.lsp7["getData(bytes32)"](
+          SupportedStandards.LSP4DigitalAsset.key
+        )
       ).toEqual(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey =
-        "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
+      const nameKey = ERC725YKeys.LSP4["LSP4TokenName"];
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
@@ -1171,11 +1200,10 @@ export const shouldInitializeLikeLSP7 = (
         [nameKey, expectedNameValue]
       );
       expect(await context.lsp7["getData(bytes32)"](nameKey)).toEqual(
-        expectedNameValue,
+        expectedNameValue
       );
 
-      const symbolKey =
-        "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
+      const symbolKey = ERC725YKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );
@@ -1185,7 +1213,7 @@ export const shouldInitializeLikeLSP7 = (
         [symbolKey, expectedSymbolValue]
       );
       expect(await context.lsp7["getData(bytes32)"](symbolKey)).toEqual(
-        expectedSymbolValue,
+        expectedSymbolValue
       );
     });
   });

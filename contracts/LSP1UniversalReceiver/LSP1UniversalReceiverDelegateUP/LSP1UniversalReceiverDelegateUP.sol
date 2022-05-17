@@ -1,11 +1,18 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-import "./Handling/TokenAndVaultHandling.sol";
+// interfaces
+import {ILSP1UniversalReceiverDelegate} from "../ILSP1UniversalReceiverDelegate.sol";
 
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+// modules
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {TokenAndVaultHandling} from "./Handling/TokenAndVaultHandling.sol";
 
-import "../ILSP1UniversalReceiverDelegate.sol";
+// constants
+import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
+import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "../../LSP7DigitalAsset/LSP7Constants.sol";
+import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import {_TYPEID_LSP9_VAULTSENDER, _TYPEID_LSP9_VAULTRECIPIENT} from "../../LSP9Vault/LSP9Constants.sol";
 
 /**
  * @title Core Implementation of contract writing the received Vaults and LSP7, LSP8 assets into your ERC725Account using
@@ -18,8 +25,8 @@ import "../ILSP1UniversalReceiverDelegate.sol";
  *
  */
 contract LSP1UniversalReceiverDelegateUP is
-    ILSP1UniversalReceiverDelegate,
     ERC165,
+    ILSP1UniversalReceiverDelegate,
     TokenAndVaultHandling
 {
     /**
@@ -29,8 +36,8 @@ contract LSP1UniversalReceiverDelegateUP is
      */
     function universalReceiverDelegate(
         address sender,
-        bytes32 typeId, // solhint-disable no-unused-vars
-        bytes memory data
+        bytes32 typeId,
+        bytes memory data // solhint-disable no-unused-vars
     ) public virtual override returns (bytes memory result) {
         if (
             typeId == _TYPEID_LSP7_TOKENSSENDER ||
