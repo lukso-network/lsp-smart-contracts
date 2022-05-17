@@ -225,24 +225,46 @@ export const shouldInitializeLikeLSP9 = (
 
   describe("when the contract was initialized", () => {
     it("should have registered the ERC165 interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC165));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.ERC165
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have registered the ERC725X interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC725X));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.ERC725X
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have registered the ERC725Y interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC725Y));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.ERC725Y
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have registered the LSP9 interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.LSP9));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.LSP9
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have registered the LSP1 interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.LSP1));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.LSP1
+      );
+      expect(result).toBeTruthy();
     });
+
+    // it("should support ClaimOwnership interface", async () => {
+    //   const result = await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ClaimOwnership)
+    //   expect(
+
+    //   ).toBe;
+    // });
 
     it("should have set expected entries with ERC725Y.setData", async () => {
       await expect(context.initializeTransaction).toHaveEmittedWith(
