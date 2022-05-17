@@ -92,9 +92,7 @@ contract UniversalFactory {
 
         if (initializeCallData.length > 0) {
             // solhint-disable avoid-low-level-calls
-            (bool success, bytes memory returnedData) = contractCreated.call{value: msg.value}(
-                initializeCallData
-            );
+            (bool success, bytes memory returnedData) = contractCreated.call(initializeCallData);
             if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
         }
     }
