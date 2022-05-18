@@ -29,17 +29,6 @@ abstract contract LSP9VaultInitAbstract is ERC725InitAbstract, LSP9VaultCore {
     }
 
     /**
-     * @inheritdoc OwnableUnset
-     * @dev Transfer the ownership and notify the vault sender and vault receiver
-     */
-    function transferOwnership(address newOwner) public virtual override(LSP9VaultCore, OwnableUnset) onlyOwner {
-        OwnableUnset.transferOwnership(newOwner);
-
-        _notifyVaultSender(msg.sender);
-        _notifyVaultReceiver(newOwner);
-    }
-
-    /**
      * @inheritdoc IERC725Y
      * @dev Sets data as bytes in the vault storage for a single key.
      * SHOULD only be callable by the owner of the contract set via ERC173
@@ -85,5 +74,23 @@ abstract contract LSP9VaultInitAbstract is ERC725InitAbstract, LSP9VaultCore {
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||
             super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @inheritdoc OwnableUnset
+     */
+    function transferOwnership(address newOwner) public virtual override(LSP9VaultCore, OwnableUnset) onlyOwner {
+        super.transferOwnership(newOwner);
+    }
+
+    /**
+     * @dev Transfer the ownership and notify the vault sender and vault receiver
+     */
+    function claimOwnership() public virtual override {
+        address previousOwner = owner();
+        super.claimOwnership();
+
+        _notifyVaultSender(previousOwner);
+        _notifyVaultReceiver(msg.sender);
     }
 }
