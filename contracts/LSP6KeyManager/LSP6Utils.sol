@@ -57,6 +57,20 @@ library LSP6Utils {
             );
     }
 
+    function getAllowedStandardsFor(IERC725Y _account, address _address)
+        internal
+        view
+        returns (bytes memory)
+    {
+        return
+            _account.getData(
+                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX,
+                    bytes20(_address)
+                )
+            );
+    }
+
     function getAllowedERC725YKeysFor(IERC725Y _account, address _address)
         internal
         view
@@ -74,16 +88,16 @@ library LSP6Utils {
     /**
      * @dev compare the permissions `_addressPermissions` of an address
      *      to check if they includes the permissions `_permissionToCheck`
-     * @param _addressPermissions the permissions of an address stored on an ERC725 account
-     * @param _permissionsToCheck the permissions to check
+     * @param _addressPermission the permissions of an address stored on an ERC725 account
+     * @param _permissionToCheck the permissions to check
      * @return true if `_addressPermissions` includes `_permissionToCheck`, false otherwise
      */
-    function includesPermissions(bytes32 _addressPermissions, bytes32 _permissionsToCheck)
+    function hasPermission(bytes32 _addressPermission, bytes32 _permissionToCheck)
         internal
         pure
         returns (bool)
     {
-        return (_addressPermissions & _permissionsToCheck) == _permissionsToCheck;
+        return (_addressPermission & _permissionToCheck) == _permissionToCheck;
     }
 
     function setDataViaKeyManager(
