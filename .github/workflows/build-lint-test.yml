@@ -45,10 +45,9 @@ jobs:
           key: ${{ github.run_id }}
 
   test-contracts:
-    LSP-matrix:
-      strategy:
-        matrix:
-          lsp: ["up", "lsp1", "lsp2"]
+    strategy:
+      matrix:
+        lsp: ["up", "lsp1", "lsp2"]
 
     runs-on: ubuntu-latest
     needs: [build]
