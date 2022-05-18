@@ -7,11 +7,12 @@ import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.so
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
-import {LSP9VaultCore} from "./LSP9VaultCore.sol";
+import {LSP9VaultCore, ClaimOwnership} from "./LSP9VaultCore.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE} from "../LSP9Vault/LSP9Constants.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
 
 /**
  * @title Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -75,6 +76,7 @@ contract LSP9Vault is ERC725, LSP9VaultCore {
         return
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
             super.supportsInterface(interfaceId);
     }
 
@@ -82,7 +84,7 @@ contract LSP9Vault is ERC725, LSP9VaultCore {
      * @inheritdoc OwnableUnset
      */
     function transferOwnership(address newOwner) public virtual override(LSP9VaultCore, OwnableUnset) onlyOwner {
-        super.transferOwnership(newOwner);
+        ClaimOwnership._transferOwnership(newOwner);
     }
 
     /**

@@ -138,6 +138,6 @@ abstract contract LSP0ERC725AccountCore is
         override(ClaimOwnership, OwnableUnset)
         onlyOwner
     {
-        ClaimOwnership.transferOwnership(_newOwner);
+        ClaimOwnership._transferOwnership(_newOwner);
     }
 }
