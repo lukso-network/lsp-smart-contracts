@@ -114,15 +114,6 @@ abstract contract LSP0ERC725AccountCore is
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
     }
 
-    function transferOwnership(address _newOwner)
-        public
-        virtual
-        override(ClaimOwnership, OwnableUnset)
-        onlyOwner
-    {
-        ClaimOwnership.transferOwnership(_newOwner);
-    }
-
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -139,5 +130,14 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
             super.supportsInterface(interfaceId);
+    }
+
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(ClaimOwnership, OwnableUnset)
+        onlyOwner
+    {
+        ClaimOwnership._transferOwnership(_newOwner);
     }
 }

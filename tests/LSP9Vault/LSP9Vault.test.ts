@@ -1,3 +1,10 @@
+import { ethers } from "hardhat";
+
+import {
+  ClaimOwnershipTestContext,
+  shouldBehaveLikeClaimOwnership,
+} from "../ClaimOwnership.behaviour";
+
 import {
   LSP9Vault__factory,
   LSP9VaultInit__factory,
@@ -43,6 +50,26 @@ describe("LSP9Vault", () => {
       };
     };
 
+    const buildClaimOwnershipTestContext =
+      async (): Promise<ClaimOwnershipTestContext> => {
+        const accounts = await ethers.getSigners();
+        const deployParams = { owner: accounts[0] };
+
+        const lsp9Vault = await new LSP9Vault__factory(accounts[0]).deploy(
+          deployParams.owner.address
+        );
+
+        const onlyOwnerRevertString =
+          "Only Owner or Universal Receiver Delegate allowed";
+
+        return {
+          accounts,
+          contract: lsp9Vault,
+          deployParams,
+          onlyOwnerRevertString,
+        };
+      };
+
     describe("when deploying the contract", () => {
       let context: LSP9TestContext;
 
@@ -65,6 +92,7 @@ describe("LSP9Vault", () => {
 
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP9(buildTestContext);
+      shouldBehaveLikeClaimOwnership(buildClaimOwnershipTestContext);
     });
   });
 
@@ -144,6 +172,22 @@ describe("LSP9Vault", () => {
           return context;
         })
       );
+
+      shouldBehaveLikeClaimOwnership(async () => {
+        let context = await buildTestContext();
+        let accounts = await ethers.getSigners();
+        await initializeProxy(context);
+
+        const onlyOwnerRevertString =
+          "Only Owner or Universal Receiver Delegate allowed";
+
+        return {
+          accounts: accounts,
+          contract: context.lsp9Vault,
+          deployParams: { owner: context.accounts.owner },
+          onlyOwnerRevertString,
+        };
+      });
     });
   });
 });

@@ -12,8 +12,11 @@ import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
 // modules
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {ClaimOwnership} from "../Utils/ClaimOwnership.sol";
 
 // constants
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
 import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9, _TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER} from "./LSP9Constants.sol";
 
@@ -22,7 +25,7 @@ import {_INTERFACEID_LSP9, _TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1UniversalReceiver {
+contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1UniversalReceiver {
     /**
      * @notice Emitted when a native token is received
      * @param sender The address of the sender
@@ -124,6 +127,16 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ILSP1UniversalReceiver {
         return
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
             super.supportsInterface(interfaceId);
+    }
+
+    function transferOwnership(address newOwner)
+        public
+        virtual
+        override(ClaimOwnership, OwnableUnset)
+        onlyOwner
+    {
+        ClaimOwnership._transferOwnership(newOwner);
     }
 }
