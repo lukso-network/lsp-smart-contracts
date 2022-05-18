@@ -23,7 +23,7 @@ export const enum INTERFACE_IDS {
   LSP6 = "0xc403d48f",
   LSP7 = "0xe33f65c3",
   LSP8 = "0x49399145",
-  LSP9 = "0x5e38b596",
+  LSP9 = "0xf3456c26",
   ClaimOwnership = "0xad7dd9b0",
 }
 
