@@ -26,6 +26,7 @@ import {
   INTERFACE_IDS,
   SupportedStandards,
   PERMISSIONS,
+  OPERATIONS,
 } from "../../constants";
 
 export type LSP9TestAccounts = {
@@ -118,6 +119,21 @@ export const shouldBehaveLikeLSP9 = (
         await context.lsp9Vault
           .connect(context.accounts.owner)
           .transferOwnership(context.universalProfile.address);
+
+        let claimOwnershipSelector =
+          context.universalProfile.interface.getSighash("claimOwnership");
+
+        let executePayload =
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            context.lsp9Vault.address,
+            0,
+            claimOwnershipSelector,
+          ]);
+
+        await context.lsp6KeyManager
+          .connect(context.accounts.owner)
+          .execute(executePayload);
       });
 
       it("should register lsp10 keys of the vault on the profile", async () => {
