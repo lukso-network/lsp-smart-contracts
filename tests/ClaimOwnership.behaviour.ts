@@ -10,6 +10,7 @@ export type ClaimOwnershipTestContext = {
   accounts: SignerWithAddress[];
   contract: LSP0ERC725Account | LSP9Vault;
   deployParams: { owner: SignerWithAddress };
+  onlyOwnerRevertString: string;
 };
 
 export const shouldBehaveLikeClaimOwnership = (
@@ -178,6 +179,7 @@ export const shouldBehaveLikeClaimOwnership = (
           .transferOwnership(newOwner.address);
         await context.contract.connect(newOwner).claimOwnership();
       });
+
       describe("previous owner should not be allowed anymore to call onlyOwner functions", () => {
         it("should revert when calling `setData(...)`", async () => {
           const key =
@@ -187,7 +189,7 @@ export const shouldBehaveLikeClaimOwnership = (
           // prettier-ignore
           await expect(
                 context.contract.connect(previousOwner)["setData(bytes32,bytes)"](key, value)
-              ).toBeRevertedWith("Ownable: caller is not the owner")
+              ).toBeRevertedWith(context.onlyOwnerRevertString)
         });
 
         it("should revert when calling `execute(...)`", async () => {

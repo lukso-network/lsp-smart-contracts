@@ -59,7 +59,15 @@ describe("LSP9Vault", () => {
           deployParams.owner.address
         );
 
-        return { accounts, contract: lsp9Vault, deployParams };
+        const onlyOwnerRevertString =
+          "Only Owner or Universal Receiver Delegate allowed";
+
+        return {
+          accounts,
+          contract: lsp9Vault,
+          deployParams,
+          onlyOwnerRevertString,
+        };
       };
 
     describe("when deploying the contract", () => {
@@ -170,10 +178,14 @@ describe("LSP9Vault", () => {
         let accounts = await ethers.getSigners();
         await initializeProxy(context);
 
+        const onlyOwnerRevertString =
+          "Only Owner or Universal Receiver Delegate allowed";
+
         return {
           accounts: accounts,
           contract: context.lsp9Vault,
           deployParams: { owner: context.accounts.owner },
+          onlyOwnerRevertString,
         };
       });
     });

@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
 import {
   ILSP1UniversalReceiver,
+  LSP0ERC725Account,
   UniversalProfileInit__factory,
   UniversalProfile__factory,
   UniversalReceiverTester__factory,
@@ -61,7 +62,9 @@ describe("UniversalProfile", () => {
           accounts[0]
         ).deploy(deployParams.owner.address);
 
-        return { accounts, contract, deployParams };
+        const onlyOwnerRevertString = "Ownable: caller is not the owner";
+
+        return { accounts, contract, deployParams, onlyOwnerRevertString };
       };
 
     describe("when deploying the contract", () => {
@@ -157,7 +160,14 @@ describe("UniversalProfile", () => {
           universalProfileProxy
         );
 
-        return { accounts, contract: universalProfile, deployParams };
+        const onlyOwnerRevertString = "Ownable: caller is not the owner";
+
+        return {
+          accounts,
+          contract: universalProfile,
+          deployParams,
+          onlyOwnerRevertString,
+        };
       };
 
     describe("when deploying the contract as proxy", () => {
@@ -210,7 +220,7 @@ describe("UniversalProfile", () => {
 
         await initializeProxy({
           accounts: claimOwnershipContext.accounts,
-          universalProfile: claimOwnershipContext.contract,
+          universalProfile: claimOwnershipContext.contract as LSP0ERC725Account,
           deployParams: claimOwnershipContext.deployParams,
         });
 
