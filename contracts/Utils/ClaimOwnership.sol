@@ -17,7 +17,7 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
         pendingOwner = address(0);
     }
 
-    function transferOwnership(address _newOwner) public virtual override(OwnableUnset) onlyOwner {
+    function transferOwnership(address _newOwner) public virtual override onlyOwner {
         pendingOwner = _newOwner;
     }
 }
