@@ -44,7 +44,7 @@ jobs:
             types
           key: ${{ github.run_id }}
 
-  test-contracts:
+  test-suites:
     strategy:
       matrix:
         lsp:
