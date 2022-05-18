@@ -16,6 +16,7 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {ErrorHandlerLib} from "@erc725/smart-contracts/contracts/utils/ErrorHandlerLib.sol";
 import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
@@ -85,23 +86,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(msg.sender, _calldata);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result_) = target.call{value: msg.value, gas: gasleft()}(
+        (bool success, bytes memory result) = target.call{value: msg.value, gas: gasleft()}(
             _calldata
         );
 
         if (!success) {
-            // solhint-disable reason-string
-            if (result_.length < 68) revert();
-
-            // solhint-disable no-inline-assembly
-            assembly {
-                result_ := add(result_, 0x04)
-            }
-            revert(abi.decode(result_, (string)));
+            ErrorHandlerLib.revertWithParsedError(result);
         }
 
         emit Executed(msg.value, bytes4(_calldata));
-        return result_.length != 0 ? abi.decode(result_, (bytes)) : result_;
+        return result.length != 0 ? abi.decode(result, (bytes)) : result;
     }
 
     /**
@@ -129,24 +123,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(signer, _calldata);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result_) = address(target).call{
-            value: msg.value,
-            gas: gasleft()
-        }(_calldata);
+        (bool success, bytes memory result) = target.call{value: msg.value, gas: gasleft()}(
+            _calldata
+        );
 
         if (!success) {
-            // solhint-disable reason-string
-            if (result_.length < 68) revert();
-
-            // solhint-disable no-inline-assembly
-            assembly {
-                result_ := add(result_, 0x04)
-            }
-            revert(abi.decode(result_, (string)));
+            ErrorHandlerLib.revertWithParsedError(result);
         }
 
         emit Executed(msg.value, bytes4(_calldata));
-        return result_.length != 0 ? abi.decode(result_, (bytes)) : result_;
+        return result.length != 0 ? abi.decode(result, (bytes)) : result;
     }
 
     /**
