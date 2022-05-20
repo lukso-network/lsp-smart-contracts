@@ -26,7 +26,7 @@
     "test:lsp7": "NODE_NO_WARNINGS=1 jest LSP7",
     "test:lsp8": "NODE_NO_WARNINGS=1 jest LSP8",
     "test:lsp9": "NODE_NO_WARNINGS=1 jest LSP9",
-    "test:UniversalFactory": "NODE_NO_WARNINGS=1 jest UniversalFactory",
+    "test:universalfactory": "NODE_NO_WARNINGS=1 jest UniversalFactory",
     "build": "npx hardhat compile",
     "package": "npx hardhat prepare-package",
     "release": "run-s clean build package && npx standard-version",
