@@ -2,13 +2,14 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
+import {LSP0ERC725AccountCore, ClaimOwnership} from "./LSP0ERC725AccountCore.sol";
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
 
 // constants
 import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271} from "./LSP0Constants.sol";
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
 
 /**
  * @title Implementation of ERC725Account
@@ -36,6 +37,7 @@ contract LSP0ERC725Account is ERC725, LSP0ERC725AccountCore {
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
             super.supportsInterface(interfaceId);
     }
 
@@ -45,6 +47,6 @@ contract LSP0ERC725Account is ERC725, LSP0ERC725AccountCore {
         override(LSP0ERC725AccountCore, OwnableUnset)
         onlyOwner
     {
-        super.transferOwnership(_newOwner);
+        ClaimOwnership._transferOwnership(_newOwner);
     }
 }

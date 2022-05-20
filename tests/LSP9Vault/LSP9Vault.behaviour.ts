@@ -1,6 +1,5 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import type { BytesLike } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 // types
@@ -27,6 +26,7 @@ import {
   INTERFACE_IDS,
   SupportedStandards,
   PERMISSIONS,
+  OPERATIONS,
 } from "../../constants";
 
 export type LSP9TestAccounts = {
@@ -119,6 +119,21 @@ export const shouldBehaveLikeLSP9 = (
         await context.lsp9Vault
           .connect(context.accounts.owner)
           .transferOwnership(context.universalProfile.address);
+
+        let claimOwnershipSelector =
+          context.universalProfile.interface.getSighash("claimOwnership");
+
+        let executePayload =
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATIONS.CALL,
+            context.lsp9Vault.address,
+            0,
+            claimOwnershipSelector,
+          ]);
+
+        await context.lsp6KeyManager
+          .connect(context.accounts.owner)
+          .execute(executePayload);
       });
 
       it("should register lsp10 keys of the vault on the profile", async () => {
@@ -225,23 +240,45 @@ export const shouldInitializeLikeLSP9 = (
 
   describe("when the contract was initialized", () => {
     it("should have registered the ERC165 interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC165));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.ERC165
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have registered the ERC725X interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC725X));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.ERC725X
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have registered the ERC725Y interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.ERC725Y));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.ERC725Y
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have registered the LSP9 interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.LSP9));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.LSP9
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have registered the LSP1 interface", async () => {
-      expect(await context.lsp9Vault.supportsInterface(INTERFACE_IDS.LSP1));
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.LSP1
+      );
+      expect(result).toBeTruthy();
+    });
+
+    it("should support ClaimOwnership interface", async () => {
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.ClaimOwnership
+      );
+      expect(result).toBeTruthy();
     });
 
     it("should have set expected entries with ERC725Y.setData", async () => {

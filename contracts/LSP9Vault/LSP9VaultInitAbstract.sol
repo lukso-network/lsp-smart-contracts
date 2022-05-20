@@ -7,11 +7,12 @@ import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.so
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
 import {ERC725InitAbstract} from "@erc725/smart-contracts/contracts/ERC725InitAbstract.sol";
-import {LSP9VaultCore} from "./LSP9VaultCore.sol";
+import {LSP9VaultCore, ClaimOwnership} from "./LSP9VaultCore.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE} from "../LSP9Vault/LSP9Constants.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
 
 /**
  * @title Inheritable Proxy Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -26,17 +27,6 @@ abstract contract LSP9VaultInitAbstract is ERC725InitAbstract, LSP9VaultCore {
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
         _notifyVaultReceiver(_newOwner);
-    }
-
-    /**
-     * @inheritdoc OwnableUnset
-     * @dev Transfer the ownership and notify the vault sender and vault receiver
-     */
-    function transferOwnership(address newOwner) public virtual override onlyOwner {
-        OwnableUnset.transferOwnership(newOwner);
-
-        _notifyVaultSender(msg.sender);
-        _notifyVaultReceiver(newOwner);
     }
 
     /**
@@ -84,6 +74,25 @@ abstract contract LSP9VaultInitAbstract is ERC725InitAbstract, LSP9VaultCore {
         return
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
             super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @inheritdoc OwnableUnset
+     */
+    function transferOwnership(address newOwner) public virtual override(LSP9VaultCore, OwnableUnset) onlyOwner {
+        ClaimOwnership._transferOwnership(newOwner);
+    }
+
+    /**
+     * @dev Transfer the ownership and notify the vault sender and vault receiver
+     */
+    function claimOwnership() public virtual override {
+        address previousOwner = owner();
+        super.claimOwnership();
+
+        _notifyVaultSender(previousOwner);
+        _notifyVaultReceiver(msg.sender);
     }
 }

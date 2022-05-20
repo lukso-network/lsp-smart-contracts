@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
 import {
   ILSP1UniversalReceiver,
+  LSP0ERC725Account,
   UniversalProfileInit__factory,
   UniversalProfile__factory,
   UniversalReceiverTester__factory,
@@ -61,7 +62,9 @@ describe("UniversalProfile", () => {
           accounts[0]
         ).deploy(deployParams.owner.address);
 
-        return { accounts, contract, deployParams };
+        const onlyOwnerRevertString = "Ownable: caller is not the owner";
+
+        return { accounts, contract, deployParams, onlyOwnerRevertString };
       };
 
     describe("when deploying the contract", () => {
@@ -98,10 +101,12 @@ describe("UniversalProfile", () => {
       const universalProfileInit = await new UniversalProfileInit__factory(
         accounts[0]
       ).deploy();
+
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
         accounts[0]
       );
+
       const universalProfile = universalProfileInit.attach(
         universalProfileProxy
       );
@@ -136,6 +141,34 @@ describe("UniversalProfile", () => {
 
       return { accounts, lsp1Implementation, lsp1Checker };
     };
+
+    const buildClaimOwnershipTestContext =
+      async (): Promise<ClaimOwnershipTestContext> => {
+        const accounts = await ethers.getSigners();
+        const deployParams = { owner: accounts[0] };
+
+        const universalProfileInit = await new UniversalProfileInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const universalProfileProxy = await deployProxy(
+          universalProfileInit.address,
+          accounts[0]
+        );
+
+        const universalProfile = universalProfileInit.attach(
+          universalProfileProxy
+        );
+
+        const onlyOwnerRevertString = "Ownable: caller is not the owner";
+
+        return {
+          accounts,
+          contract: universalProfile,
+          deployParams,
+          onlyOwnerRevertString,
+        };
+      };
 
     describe("when deploying the contract as proxy", () => {
       let context: LSP3TestContext;
@@ -180,6 +213,18 @@ describe("UniversalProfile", () => {
 
         let lsp1Context = await buildLSP1TestContext();
         return lsp1Context;
+      });
+
+      shouldBehaveLikeClaimOwnership(async () => {
+        let claimOwnershipContext = await buildClaimOwnershipTestContext();
+
+        await initializeProxy({
+          accounts: claimOwnershipContext.accounts,
+          universalProfile: claimOwnershipContext.contract as LSP0ERC725Account,
+          deployParams: claimOwnershipContext.deployParams,
+        });
+
+        return claimOwnershipContext;
       });
     });
   });

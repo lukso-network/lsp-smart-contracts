@@ -106,7 +106,8 @@ contract CalculateLSPInterfaces {
         bytes4 interfaceId = 
             type(IERC725X).interfaceId ^
             type(IERC725Y).interfaceId ^
-            type(ILSP1).interfaceId;
+            type(ILSP1).interfaceId ^
+            type(IClaimOwnership).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_LSP9,

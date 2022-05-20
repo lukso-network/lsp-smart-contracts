@@ -162,7 +162,7 @@ export const testReadingPermissionsInternals = (
         );
 
       expect(
-        await context.keyManagerInternalTester.includesPermissions(
+        await context.keyManagerInternalTester.hasPermission(
           appPermissions,
           ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
         )
