@@ -4,6 +4,8 @@ pragma solidity ^0.8.0;
 // ERC interfaces
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
@@ -41,6 +43,8 @@ contract CalculateLSPInterfaces {
             type(IERC725X).interfaceId ^
             type(IERC1271).interfaceId ^
             type(ILSP1).interfaceId ^
+            OwnableUnset.owner.selector ^
+            OwnableUnset.transferOwnership.selector ^
             type(IClaimOwnership).interfaceId;
 
         require(
@@ -107,6 +111,8 @@ contract CalculateLSPInterfaces {
             type(IERC725X).interfaceId ^
             type(IERC725Y).interfaceId ^
             type(ILSP1).interfaceId ^
+            OwnableUnset.owner.selector ^
+            OwnableUnset.transferOwnership.selector ^
             type(IClaimOwnership).interfaceId;
 
         require(
