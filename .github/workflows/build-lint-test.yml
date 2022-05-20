@@ -57,6 +57,7 @@ jobs:
             "lsp7",
             "lsp8",
             "lsp9",
+            "universalfactory",
             "helpers",
           ]
 
