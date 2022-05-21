@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
@@ -63,6 +64,84 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         emit ValueReceived(_msgSender(), msg.value);
     }
 
+    // ERC165
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP9 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
+            super.supportsInterface(interfaceId);
+    }
+
+    // ERC173 - Modified ClaimOwnership
+
+    /**
+     * @dev Sets the pending owner
+     */
+    function transferOwnership(address newOwner)
+        public
+        virtual
+        override(ClaimOwnership, OwnableUnset)
+        onlyOwner
+    {
+        ClaimOwnership._transferOwnership(newOwner);
+    }
+
+    /**
+     * @dev Transfer the ownership and notify the vault sender and vault receiver
+     */
+    function claimOwnership() public virtual override {
+        address previousOwner = owner();
+        super.claimOwnership();
+
+        _notifyVaultSender(previousOwner);
+        _notifyVaultReceiver(msg.sender);
+    }
+
+    // ERC725
+
+    /**
+     * @inheritdoc IERC725Y
+     * @dev Sets data as bytes in the vault storage for a single key.
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     * and the UniversalReceiverDelegate
+     *
+     * Emits a {DataChanged} event.
+     */
+    function setData(bytes32 _key, bytes memory _value) public virtual override onlyAllowed {
+        _setData(_key, _value);
+    }
+
+    /**
+     * @inheritdoc IERC725Y
+     * @dev Sets array of data at multiple given `key`
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     * and the UniversalReceiverDelegate
+     *
+     * Emits a {DataChanged} event.
+     */
+    function setData(bytes32[] memory _keys, bytes[] memory _values)
+        public
+        virtual
+        override
+        onlyAllowed
+    {
+        require(_keys.length == _values.length, "Keys length not equal to values length");
+        for (uint256 i = 0; i < _keys.length; i++) {
+            _setData(_keys[i], _values[i]);
+        }
+    }
+
     // LSP1
 
     /**
@@ -112,31 +191,5 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         if (ERC165CheckerCustom.supportsERC165Interface(_receiver, _INTERFACEID_LSP1)) {
             ILSP1UniversalReceiver(_receiver).universalReceiver(_TYPEID_LSP9_VAULTRECIPIENT, "");
         }
-    }
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore)
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_LSP9 ||
-            interfaceId == _INTERFACEID_LSP1 ||
-            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
-            super.supportsInterface(interfaceId);
-    }
-
-    function transferOwnership(address newOwner)
-        public
-        virtual
-        override(ClaimOwnership, OwnableUnset)
-        onlyOwner
-    {
-        ClaimOwnership._transferOwnership(newOwner);
     }
 }
