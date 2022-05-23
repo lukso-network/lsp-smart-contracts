@@ -34,8 +34,16 @@ abstract contract LSP0ERC725AccountCore is
     IERC1271,
     ILSP1UniversalReceiver
 {
+    /**
+     * @notice Emitted when receiving native tokens
+     * @param sender The address of the sender
+     * @param value The amount of value sent
+     */
     event ValueReceived(address indexed sender, uint256 indexed value);
 
+    /**
+     * @dev Emits an event when receiving native tokens
+     */
     receive() external payable {
         emit ValueReceived(_msgSender(), msg.value);
     }
@@ -54,6 +62,42 @@ abstract contract LSP0ERC725AccountCore is
     //            default { return (0, returndatasize()) }
     //        }
     //    }
+
+    // ERC165
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP0 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
+            super.supportsInterface(interfaceId);
+    }
+
+    // ERC173 - Modified ClaimOwnership
+
+    /**
+     * @dev Sets the pending owner
+     */
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(ClaimOwnership, OwnableUnset)
+        onlyOwner
+    {
+        ClaimOwnership._transferOwnership(_newOwner);
+    }
+
+    // ERC1271
 
     /**
      * @notice Checks if an owner signed `_data`.
@@ -85,6 +129,8 @@ abstract contract LSP0ERC725AccountCore is
         }
     }
 
+    // LSP1
+
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
      * @dev Forwards the call to the UniversalReceiverDelegate if set.
@@ -112,32 +158,5 @@ abstract contract LSP0ERC725AccountCore is
             }
         }
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
-    }
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore)
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_ERC1271 ||
-            interfaceId == _INTERFACEID_LSP0 ||
-            interfaceId == _INTERFACEID_LSP1 ||
-            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
-            super.supportsInterface(interfaceId);
-    }
-
-    function transferOwnership(address _newOwner)
-        public
-        virtual
-        override(ClaimOwnership, OwnableUnset)
-        onlyOwner
-    {
-        ClaimOwnership._transferOwnership(_newOwner);
     }
 }
