@@ -35,14 +35,15 @@ abstract contract LSP0ERC725AccountCore is
     ILSP1UniversalReceiver
 {
     /**
-     * @notice Emitted when a native token is received
+     * @notice Emitted when receiving native tokens
+
      * @param sender The address of the sender
      * @param value The amount of value sent
      */
     event ValueReceived(address indexed sender, uint256 indexed value);
 
     /**
-     * @dev Emits an event when a native token is received
+     * @dev Emits an event when receiving native tokens
      */
     receive() external payable {
         emit ValueReceived(_msgSender(), msg.value);
