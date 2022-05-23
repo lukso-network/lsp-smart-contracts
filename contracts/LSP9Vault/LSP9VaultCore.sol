@@ -28,7 +28,7 @@ import {_INTERFACEID_LSP9, _TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER
  */
 contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1UniversalReceiver {
     /**
-     * @notice Emitted when a native token is received
+     * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
      * @param value The amount of value sent
      */
@@ -58,7 +58,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     // public functions
 
     /**
-     * @dev Emits an event when a native token is received
+     * @dev Emits an event when receiving native tokens
      */
     receive() external payable {
         emit ValueReceived(_msgSender(), msg.value);
