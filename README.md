@@ -89,7 +89,7 @@ const {
     ERC725YKeys,
     BasicUPSetup_Schema,
     PERMISSIONS,
-    ALL_PERMISSIONS_SET,
+    ALL_PERMISSIONS,
     EventSignatures,
 } = require("@lukso/lsp-smart-contracts/constants.js");
 ```

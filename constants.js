@@ -150,7 +150,7 @@ const BasicUPSetup_Schema = [
 // ----------
 
 // binary = .... 1111 1111 1111 (only 1s)
-const ALL_PERMISSIONS_SET = '0x00000000000000000000000000000000000000000000000000000000000003ff';
+const ALL_PERMISSIONS = '0x00000000000000000000000000000000000000000000000000000000000003ff';
 
 // prettier-ignore
 const PERMISSIONS = {
@@ -347,7 +347,7 @@ module.exports = {
 	SupportedStandards,
 	ERC725YKeys,
 	BasicUPSetup_Schema,
-	ALL_PERMISSIONS_SET,
+	ALL_PERMISSIONS,
 	PERMISSIONS,
 	EventSignatures,
 };
