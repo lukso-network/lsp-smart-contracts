@@ -30,7 +30,7 @@ const INTERFACE_IDS = {
 // ERC1271
 // ----------
 
-const ERC1271 = {
+const ERC1271_VALUES = {
 	MAGIC_VALUE: '0x1626ba7e',
 	FAIL_VALUE: '0xffffffff',
 };

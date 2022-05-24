@@ -57,7 +57,7 @@ export const shouldBehaveLikePermissionSign = (
       messageHash,
       signature
     );
-    expect(result).toEqual(ERC1271.MAGIC_VALUE);
+    expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
   });
 
   it("can verify signature from signer on KeyManager", async () => {
@@ -68,7 +68,7 @@ export const shouldBehaveLikePermissionSign = (
       messageHash,
       signature
     );
-    expect(result).toEqual(ERC1271.MAGIC_VALUE);
+    expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
   });
 
   it("should fail when verifying signature from address with no SIGN permission", async () => {
@@ -79,7 +79,7 @@ export const shouldBehaveLikePermissionSign = (
       messageHash,
       signature
     );
-    expect(result).toEqual(ERC1271.FAIL_VALUE);
+    expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
   });
 
   it("should fail when verifying signature from address with no permissions set", async () => {
@@ -90,6 +90,6 @@ export const shouldBehaveLikePermissionSign = (
       messageHash,
       signature
     );
-    expect(result).toEqual(ERC1271.FAIL_VALUE);
+    expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
   });
 };

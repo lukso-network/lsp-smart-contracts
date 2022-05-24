@@ -42,7 +42,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271.MAGIC_VALUE);
+      expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
     });
 
     it("should fail when verifying signature from non-owner", async () => {
@@ -56,7 +56,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271.FAIL_VALUE);
+      expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
     });
 
     /** @todo update this test for claimOwnership(...) */
@@ -79,7 +79,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271.FAIL_VALUE);
+      expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
     });
   });
 
