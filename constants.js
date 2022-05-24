@@ -342,7 +342,7 @@ const EventSignatures = {
 
 module.exports = {
 	INTERFACE_IDS,
-	ERC1271,
+	ERC1271_VALUES,
 	OPERATION_TYPES,
 	SupportedStandards,
 	ERC725YKeys,
