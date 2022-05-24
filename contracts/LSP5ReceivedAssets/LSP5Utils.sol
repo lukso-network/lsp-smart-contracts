@@ -39,7 +39,7 @@ library LSP5Utils {
             keys[1] = LSP2Utils.generateArrayKeyAtIndex(_arrayKey, 0);
 
             values[0] = UtilsLib.uint256ToBytes(1);
-            values[2] = bytes.concat(bytes8(0), _appendix);
+            values[2] = bytes.concat(_appendix, bytes8(0));
         } else if (rawArrayLength.length == 32) {
             uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
             uint256 newArrayLength = arrayLength + 1;
@@ -47,7 +47,7 @@ library LSP5Utils {
             keys[1] = LSP2Utils.generateArrayKeyAtIndex(_arrayKey, newArrayLength - 1);
 
             values[0] = UtilsLib.uint256ToBytes(newArrayLength);
-            values[2] = bytes.concat(bytes8(uint64(arrayLength)), _appendix);
+            values[2] = bytes.concat(_appendix, bytes8(uint64(arrayLength)));
         }
     }
 
@@ -102,7 +102,7 @@ library LSP5Utils {
 
             bytes memory mapValueOfLastkey = _account.getData(mapOfLastkey);
 
-            bytes memory appendix = BytesLib.slice(mapValueOfLastkey, 8, 4);
+            bytes memory appendix = BytesLib.slice(mapValueOfLastkey, 0, 4);
 
             keys[2] = arrayKeyToRemove;
             values[2] = lastKeyValue;
@@ -111,7 +111,7 @@ library LSP5Utils {
             values[3] = "";
 
             keys[4] = mapOfLastkey;
-            values[4] = bytes.concat(bytes8(index), appendix);
+            values[4] = bytes.concat(appendix, bytes8(index));
         }
     }
 
@@ -155,7 +155,7 @@ library LSP5Utils {
         returns (uint64)
     {
         bytes memory mapValue = _account.getData(_mapKey);
-        bytes memory val = BytesLib.slice(mapValue, 0, 8);
+        bytes memory val = BytesLib.slice(mapValue, 4, 8);
         return BytesLib.toUint64(val, 0);
     }
 
