@@ -2,12 +2,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import {
-  ERC725YKeys,
-  ALL_PERMISSIONS_SET,
-  PERMISSIONS,
-  OPERATIONS,
-} from "../../../constants";
+import { ERC725YKeys, PERMISSIONS, OPERATION_TYPES } from "../../../constants";
 
 import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../types";
 
@@ -39,10 +34,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         cannotChangeOwner.address.substring(2),
     ];
 
-    permissionsValues = [
-      ethers.utils.hexZeroPad(PERMISSIONS.CHANGEOWNER, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-    ];
+    permissionsValues = [PERMISSIONS.CHANGEOWNER, PERMISSIONS.SETDATA];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
 
@@ -179,7 +171,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "execute",
-            [OPERATIONS.CALL, recipient.address, amount, "0x"]
+            [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
@@ -388,7 +380,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, recipient.address, amount, "0x"]
+          [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 
         await expect(
@@ -427,7 +419,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, recipient.address, amount, "0x"]
+          [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 
         await newKeyManager.connect(context.owner).execute(payload);

@@ -12,7 +12,7 @@ import {
 import {
   ALL_PERMISSIONS_SET,
   ERC725YKeys,
-  OPERATIONS,
+  OPERATION_TYPES,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -67,7 +67,11 @@ export const testSecurityScenarios = (
 
     const permissionValues = [
       ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+      ethers.utils.hexZeroPad(
+        parseInt(Number(PERMISSIONS.CALL)) +
+          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
+        32
+      ),
     ];
 
     await setupKeyManager(context, permissionKeys, permissionValues);
@@ -87,7 +91,7 @@ export const testSecurityScenarios = (
 
     let executePayload = context.universalProfile.interface.encodeFunctionData(
       "execute",
-      [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload]
     );
 
     await expect(
@@ -146,7 +150,7 @@ export const testSecurityScenarios = (
       // in the fallback function of the target (= recipient) contract
       let transferPayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           maliciousContract.address,
           ONE_ETH,
           EMPTY_PAYLOAD,
@@ -199,7 +203,7 @@ export const testSecurityScenarios = (
 
       let executeRelayCallPayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           signer.address,
           ONE_ETH,
           EMPTY_PAYLOAD,

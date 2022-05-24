@@ -10,7 +10,7 @@ import {
   ALL_PERMISSIONS_SET,
   PERMISSIONS,
   BasicUPSetup_Schema,
-  OPERATIONS,
+  OPERATION_TYPES,
 } from "../../../constants";
 
 // setup
@@ -50,8 +50,12 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionsValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+        ethers.utils.hexZeroPad(
+          parseInt(Number(PERMISSIONS.SETDATA)) +
+            parseInt(Number(PERMISSIONS.CALL)),
+          32
+        ),
+        PERMISSIONS.CALL,
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -438,10 +442,7 @@ export const shouldBehaveLikePermissionSetData = (
           contractCanSetData.address.substring(2),
       ];
 
-      const permissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-      ];
+      const permissionValues = [ALL_PERMISSIONS_SET, PERMISSIONS.SETDATA];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
@@ -596,10 +597,7 @@ export const shouldBehaveLikePermissionSetData = (
           aliceContext.universalProfile.address.substring(2),
       ];
 
-      const bobPermissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-      ];
+      const bobPermissionValues = [ALL_PERMISSIONS_SET, PERMISSIONS.SETDATA];
 
       await setupKeyManager(
         aliceContext,
@@ -636,7 +634,7 @@ export const shouldBehaveLikePermissionSetData = (
         aliceContext.universalProfile.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32));
+      expect(result).toEqual(PERMISSIONS.SETDATA);
     });
 
     it("Alice's UP should be able to `setData(...)` on Bob's UP", async () => {
@@ -658,7 +656,7 @@ export const shouldBehaveLikePermissionSetData = (
 
       let aliceUniversalProfilePayload =
         aliceContext.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           bobContext.keyManager.address,
           0,
           bobKeyManagerPayload,
@@ -697,7 +695,7 @@ export const shouldBehaveLikePermissionSetData = (
       ];
 
       const permissionValues = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SUPER_SETDATA, 32),
+        PERMISSIONS.SUPER_SETDATA,
         abiCoder.encode(["bytes32[]"], [allowedERC725YKeys]),
       ];
 

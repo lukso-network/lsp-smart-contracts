@@ -11,7 +11,7 @@ import {
   ERC725YKeys,
   ALL_PERMISSIONS_SET,
   PERMISSIONS,
-  OPERATIONS,
+  OPERATION_TYPES,
 } from "../../../constants";
 
 // setup
@@ -52,8 +52,8 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
     const permissionsValues = [
       ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.DELEGATECALL, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      PERMISSIONS.DELEGATECALL,
+      PERMISSIONS.CALL,
     ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
@@ -82,7 +82,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       let executePayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.DELEGATECALL,
+          OPERATION_TYPES.DELEGATECALL,
           erc725YDelegateCallContract.address,
           0,
           delegateCallPayload,
@@ -120,7 +120,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       let executePayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.DELEGATECALL,
+          OPERATION_TYPES.DELEGATECALL,
           erc725YDelegateCallContract.address,
           0,
           delegateCallPayload,
@@ -160,7 +160,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       let executePayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.DELEGATECALL,
+          OPERATION_TYPES.DELEGATECALL,
           erc725YDelegateCallContract.address,
           0,
           delegateCallPayload,
@@ -206,7 +206,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       ];
 
       const permissionValues = [
-        ethers.utils.hexZeroPad(PERMISSIONS.SUPER_DELEGATECALL, 32),
+        PERMISSIONS.SUPER_DELEGATECALL,
         abiCoder.encode(
           ["address[]"],
           [
@@ -265,7 +265,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
             let executePayload =
               context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATIONS.DELEGATECALL,
+                OPERATION_TYPES.DELEGATECALL,
                 randomContracts[ii].address,
                 0,
                 delegateCallPayload,
@@ -301,7 +301,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         let executePayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.DELEGATECALL,
+            OPERATION_TYPES.DELEGATECALL,
             allowedDelegateCallContracts[0].address,
             0,
             delegateCallPayload,
@@ -332,7 +332,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         let executePayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.DELEGATECALL,
+            OPERATION_TYPES.DELEGATECALL,
             allowedDelegateCallContracts[1].address,
             0,
             delegateCallPayload,

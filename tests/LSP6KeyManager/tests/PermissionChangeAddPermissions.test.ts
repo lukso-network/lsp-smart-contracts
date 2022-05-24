@@ -6,7 +6,6 @@ import {
   ERC725YKeys,
   ALL_PERMISSIONS_SET,
   PERMISSIONS,
-  OPERATIONS,
   INTERFACE_IDS,
 } from "../../../constants";
 
@@ -59,11 +58,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
       let permissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.CHANGEPERMISSIONS,
+        PERMISSIONS.SETDATA,
         // placeholder permission
-        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
+        PERMISSIONS.TRANSFERVALUE,
         // 0x0000... = similar to empty, or 'no permissions set'
         "0x0000000000000000000000000000000000000000000000000000000000000000",
       ];
@@ -111,16 +110,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
-            [[key], [ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)]]
+            [[key], [PERMISSIONS.SETDATA]]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
 
           // prettier-ignore
           const result = await context.universalProfile["getData(bytes32)"](key);
-          expect(result).toEqual(
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
-          );
+          expect(result).toEqual(PERMISSIONS.SETDATA);
         });
 
         it("should be allowed to CHANGE permissions", async () => {
@@ -128,7 +125,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
 
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -204,7 +201,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             newController.address.substring(2);
 
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -225,7 +222,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
 
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -312,7 +309,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             newController.address.substr(2);
 
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -335,7 +332,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let key =
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressWithZeroHexPermissions.address.substring(2);
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -359,7 +356,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
 
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -446,7 +443,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             newController.address.substr(2);
 
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -464,7 +461,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let key =
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressWithZeroHexPermissions.address.substring(2);
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -483,7 +480,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
 
-          let value = ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32);
+          let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32[],bytes[])",
@@ -594,8 +591,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.CHANGEPERMISSIONS,
         abiCoder.encode(
           ["address[]"],
           [
@@ -1028,8 +1025,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.CHANGEPERMISSIONS,
         abiCoder.encode(["bytes4[]"], [["0xcafecafe", "0xbeefbeef"]]),
         "0x11223344",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -1404,8 +1401,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.CHANGEPERMISSIONS,
         abiCoder.encode(
           ["bytes4[]"],
           [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
@@ -1825,8 +1822,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        ethers.utils.hexZeroPad(PERMISSIONS.ADDPERMISSIONS, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CHANGEPERMISSIONS, 32),
+        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.CHANGEPERMISSIONS,
         abiCoder.encode(
           ["bytes32[]"],
           [
@@ -1977,17 +1974,19 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       const permissionValues = [
         ALL_PERMISSIONS_SET,
         ethers.utils.hexZeroPad(
-          PERMISSIONS.SETDATA + PERMISSIONS.ADDPERMISSIONS,
+          parseInt(Number(PERMISSIONS.SETDATA)) +
+            parseInt(Number(PERMISSIONS.ADDPERMISSIONS)),
           32
         ),
         ethers.utils.hexZeroPad(
-          PERMISSIONS.SETDATA + PERMISSIONS.CHANGEPERMISSIONS,
+          parseInt(Number(PERMISSIONS.SETDATA)) +
+            parseInt(Number(PERMISSIONS.CHANGEPERMISSIONS)),
           32
         ),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        PERMISSIONS.SETDATA,
         // placeholder permission
-        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
+        PERMISSIONS.TRANSFERVALUE,
+        PERMISSIONS.TRANSFERVALUE,
         // AddressPermissions[].length
         ethers.utils.hexZeroPad(6, 32),
       ];
@@ -2015,8 +2014,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+            PERMISSIONS.SETDATA,
+            PERMISSIONS.SETDATA,
           ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -2047,11 +2046,13 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
           ];
@@ -2085,9 +2086,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+            PERMISSIONS.SIGN,
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
           ];
@@ -2125,8 +2127,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+            PERMISSIONS.SETDATA,
+            PERMISSIONS.SETDATA,
             ethers.utils.hexZeroPad(8, 32),
           ];
 
@@ -2163,8 +2165,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+            PERMISSIONS.SETDATA,
+            PERMISSIONS.SETDATA,
             ethers.utils.hexZeroPad(5, 32),
           ];
 
@@ -2201,11 +2203,13 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
           ];
@@ -2244,9 +2248,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+            PERMISSIONS.SIGN,
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
           ];
@@ -2321,11 +2326,13 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
           ];
@@ -2362,8 +2369,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-            ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+            PERMISSIONS.SETDATA,
+            PERMISSIONS.SETDATA,
           ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -2432,9 +2439,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+            PERMISSIONS.SIGN,
             ethers.utils.hexZeroPad(
-              PERMISSIONS.SETDATA + PERMISSIONS.TRANSFERVALUE,
+              parseInt(Number(PERMISSIONS.SETDATA)) +
+                parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
               32
             ),
           ];

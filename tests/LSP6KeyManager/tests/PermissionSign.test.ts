@@ -42,8 +42,8 @@ export const shouldBehaveLikePermissionSign = (
 
     const permissionsValues = [
       ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      PERMISSIONS.SIGN,
+      PERMISSIONS.CALL,
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);

@@ -9,7 +9,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 import {
   ALL_PERMISSIONS_SET,
   ERC725YKeys,
-  OPERATIONS,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -45,10 +44,7 @@ export const otherTestScenarios = (
         addressCanMakeCall.address.substring(2),
     ];
 
-    const permissionsValues = [
-      ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-    ];
+    const permissionsValues = [ALL_PERMISSIONS_SET, PERMISSIONS.CALL];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
   });
