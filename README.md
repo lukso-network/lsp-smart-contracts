@@ -76,9 +76,9 @@ You can find more infos on how to deploy the contracts via hardhat in the [DEPLO
 
 ### Available Constants
 
-> See [*docs.lukso.tech > Standard Detection*](https://docs.lukso.tech/standards/standard-detection) for the difference between Interface Standard and Metadata Standard. 
+> See [*docs.lukso.tech > Standard Detection*](https://docs.lukso.tech/standards/standard-detection) for the difference between Interface and Metadata Standard. 
 
-Each [LSP] define a set of constants values, such as [ERC165 interface IDs](https://docs.lukso.tech/standards/smart-contracts/interface-ids/) (for Interface Standards) or ERC725Y data keys (for Metadata Standards). These values are part of the npm package and can be imported as shown below.
+Each [LSP] define a set of constants values, such as [ERC165 interface IDs](https://docs.lukso.tech/standards/smart-contracts/interface-ids/) (for Interface Standards) or ERC725Y data keys (for Metadata Standards). These values can be imported directly from the npm package.
 
 
 ```js
@@ -104,7 +104,7 @@ const LSP6_PERMISSION_CALL = PERMISSIONS.CALL;
 ```
 
 
-Below is a list of available constants defined in `constants.js`
+Below is a list of available constants values defined in `constants.js`
 
 | Name | Description |
 |:-----|:------------|
