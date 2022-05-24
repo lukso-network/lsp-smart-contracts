@@ -9,7 +9,7 @@ import { getRandomAddresses } from "./utils/helpers";
 
 // constants
 import {
-  ERC1271,
+  ERC1271_VALUES,
   ERC725YKeys,
   INTERFACE_IDS,
   SupportedStandards,
