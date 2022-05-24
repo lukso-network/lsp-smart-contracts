@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { LSP0ERC725Account, LSP9Vault } from "../types";
 
 import { provider } from "./utils/helpers";
-import { OPERATIONS } from "../constants";
+import { OPERATION_TYPES } from "../constants";
 
 export type ClaimOwnershipTestContext = {
   accounts: SignerWithAddress[];
@@ -94,7 +94,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
         await context.contract
           .connect(context.deployParams.owner)
-          .execute(OPERATIONS.CALL, recipient.address, amount, "0x");
+          .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x");
 
         const recipientBalanceAfter = await provider.getBalance(
           recipient.address
@@ -199,7 +199,7 @@ export const shouldBehaveLikeClaimOwnership = (
           await expect(
             context.contract
               .connect(previousOwner)
-              .execute(OPERATIONS.CALL, recipient.address, amount, "0x")
+              .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
           ).toBeRevertedWith("Ownable: caller is not the owner");
         });
 
@@ -236,7 +236,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
           await context.contract
             .connect(newOwner)
-            .execute(OPERATIONS.CALL, recipient.address, amount, "0x");
+            .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x");
 
           const recipientBalanceAfter = await provider.getBalance(
             recipient.address

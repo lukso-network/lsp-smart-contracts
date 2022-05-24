@@ -18,7 +18,7 @@ import {
 import { ARRAY_LENGTH, TOKEN_ID } from "../utils/helpers";
 
 // constants
-import { ERC725YKeys, INTERFACE_IDS, OPERATIONS } from "../../constants";
+import { ERC725YKeys, INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
 
 // fixtures
 import {
@@ -1325,7 +1325,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           let executePayload =
             context.universalProfile1.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               lsp9VaultA.address,
               0,
               lsp9VaultA.interface.getSighash("claimOwnership"),
@@ -1357,7 +1357,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           let executePayload =
             context.universalProfile1.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               lsp9VaultB.address,
               0,
               lsp9VaultB.interface.getSighash("claimOwnership"),
@@ -1389,7 +1389,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           let executePayload =
             context.universalProfile1.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               lsp9VaultC.address,
               0,
               lsp9VaultC.interface.getSighash("claimOwnership"),
@@ -1430,7 +1430,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           let executePayload =
             context.universalProfile2.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               lsp9VaultA.address,
               0,
               lsp9VaultA.interface.getSighash("claimOwnership"),
@@ -1481,7 +1481,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           let executePayload =
             context.universalProfile2.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               lsp9VaultB.address,
               0,
               lsp9VaultB.interface.getSighash("claimOwnership"),
@@ -1534,7 +1534,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           let executePayload =
             context.universalProfile2.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               lsp9VaultC.address,
               0,
               lsp9VaultC.interface.getSighash("claimOwnership"),
@@ -1587,7 +1587,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           let executePayload =
             context.universalProfile1.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               lsp9VaultB.address,
               0,
               lsp9VaultB.interface.getSighash("claimOwnership"),
