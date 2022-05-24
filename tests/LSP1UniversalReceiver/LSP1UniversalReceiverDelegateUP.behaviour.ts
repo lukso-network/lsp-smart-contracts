@@ -74,7 +74,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     it("should support LSP1Delegate interface", async () => {
       const result =
         await context.lsp1universalReceiverDelegateUP.supportsInterface(
-          INTERFACE_IDS.LSP1Delegate
+          INTERFACE_IDS.LSP1UniversalReceiverDelegate
         );
       expect(result).toBeTruthy();
     });
@@ -119,7 +119,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenA
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp7TokenA.address);
         });
@@ -147,7 +147,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -175,7 +175,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -203,7 +203,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenC
             );
           expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
           expect(elementAddress).toEqual(lsp7TokenC.address);
         });
@@ -263,7 +263,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -305,7 +305,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -384,9 +384,9 @@ export const shouldBehaveLikeLSP1Delegate = (
         expect(indexInMapTokenA).toEqual(0);
         expect(indexInMapTokenB).toEqual(1);
         expect(indexInMapTokenC).toEqual(2);
-        expect(interfaceIdTokenA).toEqual(INTERFACE_IDS.LSP7);
-        expect(interfaceIdTokenB).toEqual(INTERFACE_IDS.LSP7);
-        expect(interfaceIdTokenC).toEqual(INTERFACE_IDS.LSP7);
+        expect(interfaceIdTokenA).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
+        expect(interfaceIdTokenB).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
+        expect(interfaceIdTokenC).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
         expect(elementAddressTokenA).toEqual(lsp7TokenA.address);
         expect(elementAddressTokenB).toEqual(lsp7TokenB.address);
         expect(elementAddressTokenC).toEqual(lsp7TokenC.address);
@@ -416,7 +416,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenC
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp7TokenC.address);
         });
@@ -443,7 +443,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenA
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp7TokenA.address);
         });
@@ -473,7 +473,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -485,7 +485,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -515,7 +515,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -527,7 +527,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -572,7 +572,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -617,7 +617,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenC
             );
           expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
           expect(elementAddress).toEqual(lsp7TokenC.address);
         });
@@ -647,7 +647,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp7TokenB
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp7TokenB.address);
         });
@@ -758,7 +758,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenA
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp8TokenA.address);
         });
@@ -786,7 +788,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -814,7 +818,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -842,7 +848,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenC
             );
           expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
           expect(elementAddress).toEqual(lsp8TokenC.address);
         });
@@ -900,7 +908,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -941,7 +951,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -1028,9 +1040,15 @@ export const shouldBehaveLikeLSP1Delegate = (
         expect(indexInMapTokenA).toEqual(0);
         expect(indexInMapTokenB).toEqual(1);
         expect(indexInMapTokenC).toEqual(2);
-        expect(interfaceIdTokenA).toEqual(INTERFACE_IDS.LSP8);
-        expect(interfaceIdTokenB).toEqual(INTERFACE_IDS.LSP8);
-        expect(interfaceIdTokenC).toEqual(INTERFACE_IDS.LSP8);
+        expect(interfaceIdTokenA).toEqual(
+          INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+        );
+        expect(interfaceIdTokenB).toEqual(
+          INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+        );
+        expect(interfaceIdTokenC).toEqual(
+          INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+        );
         expect(elementAddressTokenA).toEqual(lsp8TokenA.address);
         expect(elementAddressTokenB).toEqual(lsp8TokenB.address);
         expect(elementAddressTokenC).toEqual(lsp8TokenC.address);
@@ -1060,7 +1078,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenC
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp8TokenC.address);
         });
@@ -1087,7 +1107,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenA
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp8TokenA.address);
         });
@@ -1117,7 +1139,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -1129,7 +1153,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -1159,7 +1185,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -1171,7 +1199,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -1216,7 +1246,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -1261,7 +1293,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenC
             );
           expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
           expect(elementAddress).toEqual(lsp8TokenC.address);
         });
@@ -1291,7 +1325,9 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp8TokenB
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP8);
+          expect(interfaceId).toEqual(
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+          );
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp8TokenB.address);
         });
@@ -1343,7 +1379,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultA
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp9VaultA.address);
         });
@@ -1375,7 +1411,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp9VaultB.address);
         });
@@ -1407,7 +1443,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultC
             );
           expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
           expect(elementAddress).toEqual(lsp9VaultC.address);
         });
@@ -1448,7 +1484,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultC
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp9VaultC.address);
         });
@@ -1460,7 +1496,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultA
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp9VaultA.address);
         });
@@ -1513,7 +1549,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultB
             );
           expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
           expect(elementAddress).toEqual(lsp9VaultB.address);
         });
@@ -1566,7 +1602,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultC
             );
           expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
           expect(elementAddress).toEqual(lsp9VaultC.address);
         });
@@ -1604,7 +1640,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultB
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp9VaultB.address);
         });
@@ -1635,7 +1671,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               lsp9VaultC
             );
           expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9);
+          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
           expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
           expect(elementAddress).toEqual(lsp9VaultC.address);
         });
@@ -1669,7 +1705,7 @@ export const shouldInitializeLikeLSP1Delegate = (
     it("should have registered the LSP1Delegate interface", async () => {
       expect(
         await context.lsp1universalReceiverDelegateUP.supportsInterface(
-          INTERFACE_IDS.LSP1Delegate
+          INTERFACE_IDS.LSP1UniversalReceiverDelegate
         )
       );
     });

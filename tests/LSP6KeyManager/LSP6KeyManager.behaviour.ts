@@ -122,7 +122,7 @@ export const shouldInitializeLikeLSP6 = (
 
     it("should support LSP6 interface", async () => {
       const result = await context.keyManager.supportsInterface(
-        INTERFACE_IDS.LSP6
+        INTERFACE_IDS.LSP6KeyManager
       );
       expect(result).toBeTruthy();
     });

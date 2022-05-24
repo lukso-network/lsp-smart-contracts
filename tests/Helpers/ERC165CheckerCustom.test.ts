@@ -14,7 +14,6 @@ import {
 // utils
 import { INTERFACE_IDS } from "../../constants";
 
-
 describe("Test Custom implementation of ERC165Checker", () => {
   let accounts: SignerWithAddress[];
   let contract: ERC165CheckerCustomTest;
@@ -26,7 +25,9 @@ describe("Test Custom implementation of ERC165Checker", () => {
     accounts = await ethers.getSigners();
     contract = await new ERC165CheckerCustomTest__factory(accounts[0]).deploy();
     targetContract = await new TargetContract__factory(accounts[0]).deploy();
-    contractWithFallback = await new TokenReceiverWithoutLSP1__factory(accounts[0]).deploy();
+    contractWithFallback = await new TokenReceiverWithoutLSP1__factory(
+      accounts[0]
+    ).deploy();
     erc725 = await new ERC725__factory(accounts[0]).deploy(accounts[0].address);
   });
 
@@ -37,7 +38,7 @@ describe("Test Custom implementation of ERC165Checker", () => {
     );
     const result2 = await contract.supportsERC165Interface(
       accounts[1].address,
-      INTERFACE_IDS.LSP8
+      INTERFACE_IDS.LSP8IdentifiableDigitalAsset
     );
     expect(result1).toBeFalsy();
     expect(result2).toBeFalsy();
@@ -74,7 +75,7 @@ describe("Test Custom implementation of ERC165Checker", () => {
 
     const LSP1result = await contract.supportsERC165Interface(
       erc725.address,
-      INTERFACE_IDS.LSP1
+      INTERFACE_IDS.LSP1UniversalReceiver
     );
     expect(LSP1result).toBeFalsy();
   });

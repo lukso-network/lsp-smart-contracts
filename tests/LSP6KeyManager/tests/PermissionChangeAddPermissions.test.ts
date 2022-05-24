@@ -1405,7 +1405,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         PERMISSIONS.CHANGEPERMISSIONS,
         abiCoder.encode(
           ["bytes4[]"],
-          [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
+          [[INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20]]
         ),
         "0x11223344",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -1425,9 +1425,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           ["bytes4[]"],
           [
             [
-              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.LSP7DigitalAsset,
               INTERFACE_IDS.ERC20,
-              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
               INTERFACE_IDS.ERC721,
             ],
           ]
@@ -1454,9 +1454,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           ["bytes4[]"],
           [
             [
-              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.LSP7DigitalAsset,
               INTERFACE_IDS.ERC20,
-              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
               INTERFACE_IDS.ERC721,
             ],
           ]
@@ -1483,9 +1483,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           ["bytes4[]"],
           [
             [
-              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.LSP7DigitalAsset,
               INTERFACE_IDS.ERC20,
-              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
               INTERFACE_IDS.ERC721,
             ],
           ]
@@ -1512,9 +1512,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           ["bytes4[]"],
           [
             [
-              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.LSP7DigitalAsset,
               INTERFACE_IDS.ERC20,
-              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
               INTERFACE_IDS.ERC721,
             ],
           ]
@@ -1543,9 +1543,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           ["bytes4[]"],
           [
             [
-              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.LSP7DigitalAsset,
               INTERFACE_IDS.ERC20,
-              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
               INTERFACE_IDS.ERC721,
             ],
           ]
@@ -1621,7 +1621,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         let value = abiCoder.encode(
           ["bytes4[]"],
-          [[INTERFACE_IDS.ERC725Account, INTERFACE_IDS.LSP1]]
+          [
+            [
+              INTERFACE_IDS.LSP0ERC725Account,
+              INTERFACE_IDS.LSP1UniversalReceiver,
+            ],
+          ]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1645,9 +1650,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           ["bytes4[]"],
           [
             [
-              INTERFACE_IDS.LSP7,
+              INTERFACE_IDS.LSP7DigitalAsset,
               INTERFACE_IDS.ERC20,
-              INTERFACE_IDS.LSP8, // try to allow interacting with NFTs
+              INTERFACE_IDS.LSP8IdentifiableDigitalAsset, // try to allow interacting with NFTs
               INTERFACE_IDS.ERC721,
             ],
           ]
@@ -1674,7 +1679,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         let value = abiCoder.encode(
           ["bytes4[]"],
-          [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
+          [[INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20]]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1698,7 +1703,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         let value = abiCoder.encode(
           ["bytes4[]"],
-          [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
+          [[INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20]]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
@@ -1722,7 +1727,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         let value = abiCoder.encode(
           ["bytes4[]"],
-          [[INTERFACE_IDS.LSP7, INTERFACE_IDS.ERC20]]
+          [[INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20]]
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(

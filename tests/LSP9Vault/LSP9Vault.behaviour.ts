@@ -262,14 +262,14 @@ export const shouldInitializeLikeLSP9 = (
 
     it("should have registered the LSP9 interface", async () => {
       const result = await context.lsp9Vault.supportsInterface(
-        INTERFACE_IDS.LSP9
+        INTERFACE_IDS.LSP9Vault
       );
       expect(result).toBeTruthy();
     });
 
     it("should have registered the LSP1 interface", async () => {
       const result = await context.lsp9Vault.supportsInterface(
-        INTERFACE_IDS.LSP1
+        INTERFACE_IDS.LSP1UniversalReceiver
       );
       expect(result).toBeTruthy();
     });

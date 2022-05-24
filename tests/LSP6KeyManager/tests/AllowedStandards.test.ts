@@ -83,7 +83,7 @@ export const shouldBehaveLikeAllowedStandards = (
         32
       ),
       abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
-      abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.LSP7]]), // callerTwo
+      abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.LSP7DigitalAsset]]), // callerTwo
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);

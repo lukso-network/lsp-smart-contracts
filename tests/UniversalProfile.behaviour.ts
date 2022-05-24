@@ -239,14 +239,14 @@ export const shouldInitializeLikeLSP3 = (
 
     it("should support LSP0 (ERC725Account) interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.ERC725Account
+        INTERFACE_IDS.LSP0ERC725Account
       );
       expect(result).toBeTruthy();
     });
 
     it("should support LSP1 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.LSP1
+        INTERFACE_IDS.LSP1UniversalReceiver
       );
       expect(result).toBeTruthy();
     });
