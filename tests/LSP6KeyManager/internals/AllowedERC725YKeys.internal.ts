@@ -49,7 +49,7 @@ export const testAllowedERC725YKeysInternals = (
 
       const permissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        PERMISSIONS.SETDATA,
         encodedAllowedERC725YKeys,
       ];
 

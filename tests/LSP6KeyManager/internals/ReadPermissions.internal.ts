@@ -41,8 +41,12 @@ export const testReadingPermissionsInternals = (
 
       const permissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32),
+        PERMISSIONS.SETDATA,
+        ethers.utils.hexZeroPad(
+          parseInt(Number(PERMISSIONS.SETDATA)) +
+            parseInt(Number(PERMISSIONS.CALL)),
+          32
+        ),
       ];
 
       await setupKeyManagerHelper(context, permissionKeys, permissionValues);
@@ -61,7 +65,7 @@ export const testReadingPermissionsInternals = (
         await context.keyManagerInternalTester.getPermissionsFor(
           addressCanSetData.address
         )
-      ).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32));
+      ).toEqual(PERMISSIONS.SETDATA);
     });
 
     it("Should return SETDATA + CALL", async () => {
@@ -70,7 +74,11 @@ export const testReadingPermissionsInternals = (
           addressCanSetDataAndCall.address
         )
       ).toEqual(
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
+        ethers.utils.hexZeroPad(
+          parseInt(Number(PERMISSIONS.SETDATA)) +
+            parseInt(Number(PERMISSIONS.CALL)),
+          32
+        )
       );
     });
   });
@@ -147,10 +155,7 @@ export const testReadingPermissionsInternals = (
           addressCanSetData.address.substring(2),
       ];
 
-      const permissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-      ];
+      const permissionValues = [ALL_PERMISSIONS_SET, PERMISSIONS.SETDATA];
 
       await setupKeyManagerHelper(context, permissionKeys, permissionValues);
     });
@@ -164,7 +169,7 @@ export const testReadingPermissionsInternals = (
       expect(
         await context.keyManagerInternalTester.hasPermission(
           appPermissions,
-          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
+          PERMISSIONS.SETDATA
         )
       ).toBeTruthy();
     });
@@ -202,10 +207,10 @@ export const testReadingPermissionsInternals = (
 
       let permissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+        PERMISSIONS.CALL,
+        PERMISSIONS.SETDATA,
+        PERMISSIONS.TRANSFERVALUE,
+        PERMISSIONS.SIGN,
       ];
 
       // set AddressPermissions array keys

@@ -57,7 +57,8 @@ export const testAllowedAddressesInternals = (
       let permissionsValues = [
         ALL_PERMISSIONS_SET,
         ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          parseInt(Number(PERMISSIONS.CALL)) +
+            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
           32
         ),
         abiCoder.encode(
@@ -205,7 +206,8 @@ export const testAllowedAddressesInternals = (
       for (let ii = 0; ii < Object.values(controller).length; ii++) {
         permissionValues.push(
           ethers.utils.hexZeroPad(
-            PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+            parseInt(Number(PERMISSIONS.CALL)) +
+              parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
             32
           )
         );
@@ -367,23 +369,28 @@ export const testAllowedAddressesInternals = (
       let permissionValues = [
         ALL_PERMISSIONS_SET,
         ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          parseInt(Number(PERMISSIONS.CALL)) +
+            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
           32
         ),
         ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          parseInt(Number(PERMISSIONS.CALL)) +
+            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
           32
         ),
         ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          parseInt(Number(PERMISSIONS.CALL)) +
+            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
           32
         ),
         ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          parseInt(Number(PERMISSIONS.CALL)) +
+            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
           32
         ),
         ethers.utils.hexZeroPad(
-          PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+          parseInt(Number(PERMISSIONS.CALL)) +
+            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
           32
         ),
       ];

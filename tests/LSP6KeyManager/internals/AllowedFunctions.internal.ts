@@ -41,8 +41,8 @@ export const testAllowedFunctionsInternals = (
     ];
 
     let permissionsValues = [
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      PERMISSIONS.CALL,
+      PERMISSIONS.CALL,
       abiCoder.encode(
         ["bytes4[]"],
         [[targetContract.interface.getSighash("setName")]]
