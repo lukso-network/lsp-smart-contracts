@@ -5,7 +5,7 @@
   </a>
 </p>
 
-# lsp-smart-contracts
+# LSP Smart Contracts
 
 The smart contracts reference implementation of the [LUKSO Standard Proposals (LSPs)](https://github.com/lukso-network/LIPs/tree/main/LSPs).
 
