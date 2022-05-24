@@ -62,8 +62,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
 
       const permissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        PERMISSIONS.SETDATA,
+        PERMISSIONS.SETDATA,
         abiCoder.encode(["bytes32[]"], [[customKey1]]),
         abiCoder.encode(["bytes32[]"], [[customKey2, customKey3, customKey4]]),
       ];
@@ -1068,7 +1068,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
 
       const permissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        PERMISSIONS.SETDATA,
         abiCoder.encode(["bytes32[]"], [[supportedStandardKey]]),
       ];
 
@@ -1450,7 +1450,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
 
       const permissionValues = [
         ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        PERMISSIONS.SETDATA,
         abiCoder.encode(["bytes32[]"], [[allowedArrayKey]]),
       ];
 

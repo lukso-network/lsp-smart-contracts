@@ -7,7 +7,7 @@ import { TargetContract, TargetContract__factory } from "../../../types";
 import {
   ALL_PERMISSIONS_SET,
   ERC725YKeys,
-  OPERATIONS,
+  OPERATION_TYPES,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -69,12 +69,20 @@ export const shouldBehaveLikeAllowedAddresses = (
 
     let permissionsValues = [
       ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+      ethers.utils.hexZeroPad(
+        parseInt(Number(PERMISSIONS.CALL)) +
+          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
+        32
+      ),
       abiCoder.encode(
         ["address[]"],
         [[allowedEOA.address, allowedTargetContract.address]]
       ),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+      ethers.utils.hexZeroPad(
+        parseInt(Number(PERMISSIONS.CALL)) +
+          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
+        32
+      ),
       "0xbadbadbadbad",
     ];
 
@@ -101,7 +109,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
           let transferPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               recipient,
               amount,
               EMPTY_PAYLOAD,
@@ -138,7 +146,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       let transferPayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           allowedEOA.address,
           amount,
           EMPTY_PAYLOAD,
@@ -170,7 +178,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute",
         [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           allowedTargetContract.address,
           0,
           targetContractPayload,
@@ -195,7 +203,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       let transferPayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           notAllowedEOA.address,
           ethers.utils.parseEther("1"),
           EMPTY_PAYLOAD,
@@ -236,7 +244,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute",
         [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           notAllowedTargetContract.address,
           0,
           targetContractPayload,
@@ -269,7 +277,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
           let transferPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               recipient,
               amount,
               EMPTY_PAYLOAD,

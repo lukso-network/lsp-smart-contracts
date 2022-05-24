@@ -16,7 +16,7 @@ import {
   ERC1271,
   ERC725YKeys,
   INTERFACE_IDS,
-  OPERATIONS,
+  OPERATION_TYPES,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -72,8 +72,16 @@ export const shouldBehaveLikeAllowedStandards = (
 
     let permissionsValues = [
       ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+      ethers.utils.hexZeroPad(
+        parseInt(Number(PERMISSIONS.CALL)) +
+          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
+        32
+      ),
+      ethers.utils.hexZeroPad(
+        parseInt(Number(PERMISSIONS.CALL)) +
+          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
+        32
+      ),
       abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
       abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.LSP7]]), // callerTwo
     ];
@@ -96,7 +104,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
       let upPayload = context.universalProfile.interface.encodeFunctionData(
         "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+        [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
       );
 
       await context.keyManager.connect(context.owner).execute(upPayload);
@@ -119,7 +127,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let upPayload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+          [OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload]
         );
 
         let data = await context.keyManager
@@ -165,7 +173,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let upPayload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+          [OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload]
         );
 
         let data = await context.keyManager
@@ -184,7 +192,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let transferLyxPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             otherUniversalProfile.address,
             ethers.utils.parseEther("1"),
             "0x",
@@ -212,7 +220,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let upPayload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
         await expect(
@@ -241,7 +249,7 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let upPayload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, signatureValidatorContract.address, 0, payload]
+          [OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload]
         );
 
         await expect(
@@ -256,7 +264,7 @@ export const shouldBehaveLikeAllowedStandards = (
       it("should fail when trying to transfer LYX", async () => {
         let transferLyxPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             otherUniversalProfile.address,
             ethers.utils.parseEther("1"),
             "0x",
