@@ -5,7 +5,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   SupportedStandards,
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -48,7 +48,7 @@ export const testAllowedERC725YKeysInternals = (
       ];
 
       const permissionValues = [
-        ALL_PERMISSIONS_SET,
+        ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         encodedAllowedERC725YKeys,
       ];

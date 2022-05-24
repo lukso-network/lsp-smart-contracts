@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
   INTERFACE_IDS,
 } from "../../../constants";
@@ -57,7 +57,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        ALL_PERMISSIONS_SET,
+        ALL_PERMISSIONS,
         PERMISSIONS.ADDPERMISSIONS,
         PERMISSIONS.CHANGEPERMISSIONS,
         PERMISSIONS.SETDATA,
@@ -1977,7 +1977,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       const permissionValues = [
-        ALL_PERMISSIONS_SET,
+        ALL_PERMISSIONS,
         ethers.utils.hexZeroPad(
           parseInt(Number(PERMISSIONS.SETDATA)) +
             parseInt(Number(PERMISSIONS.ADDPERMISSIONS)),

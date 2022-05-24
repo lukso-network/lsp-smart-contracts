@@ -6,7 +6,7 @@ import { TargetContract, TargetContract__factory } from "../../../types";
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
 } from "../../../constants";
@@ -48,7 +48,7 @@ export const shouldBehaveLikePermissionCall = (
     ];
 
     const permissionsValues = [
-      ALL_PERMISSIONS_SET,
+      ALL_PERMISSIONS,
       PERMISSIONS.CALL,
       PERMISSIONS.SETDATA,
     ];

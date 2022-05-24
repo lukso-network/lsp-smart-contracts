@@ -6,7 +6,7 @@ import {
   UniversalProfile,
 } from "../../types";
 import {
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   ERC725YKeys,
   OPERATION_TYPES,
   PERMISSIONS,
@@ -69,7 +69,7 @@ describe("Key Manager gas cost interactions", () => {
         ];
 
         const permissionValues = [
-          ALL_PERMISSIONS_SET,
+          ALL_PERMISSIONS,
           ethers.utils.hexZeroPad(
             parseInt(Number(PERMISSIONS.CALL)) +
               parseInt(Number(PERMISSIONS.TRANSFERVALUE)),

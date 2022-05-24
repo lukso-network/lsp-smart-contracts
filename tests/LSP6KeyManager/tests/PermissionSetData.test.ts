@@ -7,7 +7,7 @@ import { Executor, Executor__factory } from "../../../types";
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
   BasicUPSetup_Schema,
   OPERATION_TYPES,
@@ -49,7 +49,7 @@ export const shouldBehaveLikePermissionSetData = (
       ];
 
       const permissionsValues = [
-        ALL_PERMISSIONS_SET,
+        ALL_PERMISSIONS,
         ethers.utils.hexZeroPad(
           parseInt(Number(PERMISSIONS.SETDATA)) +
             parseInt(Number(PERMISSIONS.CALL)),
@@ -442,7 +442,7 @@ export const shouldBehaveLikePermissionSetData = (
           contractCanSetData.address.substring(2),
       ];
 
-      const permissionValues = [ALL_PERMISSIONS_SET, PERMISSIONS.SETDATA];
+      const permissionValues = [ALL_PERMISSIONS, PERMISSIONS.SETDATA];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
@@ -588,7 +588,7 @@ export const shouldBehaveLikePermissionSetData = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substring(2),
       ];
-      const alicePermissionValues = [ALL_PERMISSIONS_SET];
+      const alicePermissionValues = [ALL_PERMISSIONS];
 
       const bobPermissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -597,7 +597,7 @@ export const shouldBehaveLikePermissionSetData = (
           aliceContext.universalProfile.address.substring(2),
       ];
 
-      const bobPermissionValues = [ALL_PERMISSIONS_SET, PERMISSIONS.SETDATA];
+      const bobPermissionValues = [ALL_PERMISSIONS, PERMISSIONS.SETDATA];
 
       await setupKeyManager(
         aliceContext,
@@ -616,7 +616,7 @@ export const shouldBehaveLikePermissionSetData = (
       const result = await aliceContext.universalProfile["getData(bytes32)"](
         key
       );
-      expect(result).toEqual(ALL_PERMISSIONS_SET);
+      expect(result).toEqual(ALL_PERMISSIONS);
     });
 
     it("Bob should have ALL PERMISSIONS in his UP", async () => {
@@ -625,7 +625,7 @@ export const shouldBehaveLikePermissionSetData = (
         bob.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(ALL_PERMISSIONS_SET);
+      expect(result).toEqual(ALL_PERMISSIONS);
     });
 
     it("Alice's UP should have permission SETDATA on Bob's UP", async () => {

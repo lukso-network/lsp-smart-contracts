@@ -6,11 +6,7 @@ import { TargetContract__factory, TargetContract } from "../../../types";
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-import {
-  ALL_PERMISSIONS_SET,
-  ERC725YKeys,
-  PERMISSIONS,
-} from "../../../constants";
+import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
 
 export const otherTestScenarios = (
   buildContext: () => Promise<LSP6TestContext>
@@ -44,7 +40,7 @@ export const otherTestScenarios = (
         addressCanMakeCall.address.substring(2),
     ];
 
-    const permissionsValues = [ALL_PERMISSIONS_SET, PERMISSIONS.CALL];
+    const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.CALL];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
   });

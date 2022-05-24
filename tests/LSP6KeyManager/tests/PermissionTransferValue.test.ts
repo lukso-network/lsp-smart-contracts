@@ -15,7 +15,7 @@ import {
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
 } from "../../../constants";
@@ -61,7 +61,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       const permissionsValues = [
-        ALL_PERMISSIONS_SET,
+        ALL_PERMISSIONS,
         PERMISSIONS.TRANSFERVALUE,
         ethers.utils.hexZeroPad(
           parseInt(Number(PERMISSIONS.TRANSFERVALUE)) +
@@ -382,7 +382,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           contractCanTransferValue.address.substring(2),
       ];
 
-      const permissionValues = [ALL_PERMISSIONS_SET, PERMISSIONS.TRANSFERVALUE];
+      const permissionValues = [ALL_PERMISSIONS, PERMISSIONS.TRANSFERVALUE];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
 
@@ -523,7 +523,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substring(2),
       ];
-      const alicePermissionValues = [ALL_PERMISSIONS_SET];
+      const alicePermissionValues = [ALL_PERMISSIONS];
 
       const bobPermissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -532,10 +532,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           aliceContext.universalProfile.address.substring(2),
       ];
 
-      const bobPermissionValues = [
-        ALL_PERMISSIONS_SET,
-        PERMISSIONS.TRANSFERVALUE,
-      ];
+      const bobPermissionValues = [ALL_PERMISSIONS, PERMISSIONS.TRANSFERVALUE];
 
       await setupKeyManager(
         aliceContext,
@@ -558,7 +555,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       // prettier-ignore
       const result = await aliceContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(ALL_PERMISSIONS_SET);
+      expect(result).toEqual(ALL_PERMISSIONS);
     });
 
     it("Bob should have ALL PERMISSIONS in his UP", async () => {
@@ -567,7 +564,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         bob.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(ALL_PERMISSIONS_SET);
+      expect(result).toEqual(ALL_PERMISSIONS);
     });
 
     it("Alice's UP should have permission TRANSFERVALUE on Bob's UP", async () => {

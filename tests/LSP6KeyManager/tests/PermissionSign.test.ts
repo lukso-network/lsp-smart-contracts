@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
   ERC1271,
 } from "../../../constants";
@@ -41,7 +41,7 @@ export const shouldBehaveLikePermissionSign = (
     ];
 
     const permissionsValues = [
-      ALL_PERMISSIONS_SET,
+      ALL_PERMISSIONS,
       PERMISSIONS.SIGN,
       PERMISSIONS.CALL,
     ];

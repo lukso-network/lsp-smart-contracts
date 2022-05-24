@@ -10,7 +10,7 @@ import {
 
 // constants
 import {
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   ERC725YKeys,
   OPERATION_TYPES,
   PERMISSIONS,
@@ -66,7 +66,7 @@ export const testSecurityScenarios = (
     ];
 
     const permissionValues = [
-      ALL_PERMISSIONS_SET,
+      ALL_PERMISSIONS,
       ethers.utils.hexZeroPad(
         parseInt(Number(PERMISSIONS.CALL)) +
           parseInt(Number(PERMISSIONS.TRANSFERVALUE)),

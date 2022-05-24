@@ -12,7 +12,7 @@ import {
 
 // constants
 import {
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   ERC1271,
   ERC725YKeys,
   INTERFACE_IDS,
@@ -71,7 +71,7 @@ export const shouldBehaveLikeAllowedStandards = (
     ];
 
     let permissionsValues = [
-      ALL_PERMISSIONS_SET,
+      ALL_PERMISSIONS,
       ethers.utils.hexZeroPad(
         parseInt(Number(PERMISSIONS.CALL)) +
           parseInt(Number(PERMISSIONS.TRANSFERVALUE)),

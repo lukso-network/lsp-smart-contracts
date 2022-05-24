@@ -5,7 +5,7 @@ import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
 import {
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   ERC725YKeys,
   OPERATION_TYPES,
   PERMISSIONS,
@@ -40,7 +40,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         signer.address.substring(2),
     ];
 
-    const permissionsValues = [ALL_PERMISSIONS_SET, PERMISSIONS.CALL];
+    const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.CALL];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });

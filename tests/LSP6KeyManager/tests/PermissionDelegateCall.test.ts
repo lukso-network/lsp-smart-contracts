@@ -9,7 +9,7 @@ import {
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
 } from "../../../constants";
@@ -51,7 +51,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
     ];
 
     const permissionsValues = [
-      ALL_PERMISSIONS_SET,
+      ALL_PERMISSIONS,
       PERMISSIONS.DELEGATECALL,
       PERMISSIONS.CALL,
     ];
