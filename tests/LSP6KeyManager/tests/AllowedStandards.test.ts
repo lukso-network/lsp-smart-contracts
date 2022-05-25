@@ -13,7 +13,7 @@ import {
 // constants
 import {
   ALL_PERMISSIONS,
-  ERC1271,
+  ERC1271_VALUES,
   ERC725YKeys,
   INTERFACE_IDS,
   OPERATION_TYPES,

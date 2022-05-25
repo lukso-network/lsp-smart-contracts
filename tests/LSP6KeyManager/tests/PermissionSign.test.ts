@@ -6,7 +6,7 @@ import {
   ERC725YKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-  ERC1271,
+  ERC1271_VALUES,
 } from "../../../constants";
 
 // setup
