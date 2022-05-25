@@ -25,6 +25,14 @@ import {LSP6Utils} from "./LSP6Utils.sol";
 import "./LSP6Errors.sol";
 
 // constants
+// prettier-ignore
+import {
+    OPERATION_CALL,
+    OPERATION_CREATE,
+    OPERATION_CREATE2,
+    OPERATION_STATICCALL,
+    OPERATION_DELEGATECALL
+} from "@erc725/smart-contracts/contracts/constants.sol";
 import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
 
@@ -433,7 +441,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         uint256 value = uint256(bytes32(_calldata[68:100]));
 
-        bool isContractCreation = operationType == 1 || operationType == 2;
+        // prettier-ignore
+        bool isContractCreation = operationType == OPERATION_CREATE || operationType == OPERATION_CREATE2;
         bool isCallDataPresent = _calldata.length > 164;
 
         // SUPER operation only applies to contract call, not contract creation
@@ -490,11 +499,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         pure
         returns (bytes32 permissionsRequired_)
     {
-        if (_operationType == 0) return _PERMISSION_CALL;
-        else if (_operationType == 1) return _PERMISSION_DEPLOY;
-        else if (_operationType == 2) return _PERMISSION_DEPLOY;
-        else if (_operationType == 3) return _PERMISSION_STATICCALL;
-        else if (_operationType == 4) return _PERMISSION_DELEGATECALL;
+        if (_operationType == OPERATION_CALL) return _PERMISSION_CALL;
+        else if (_operationType == OPERATION_CREATE) return _PERMISSION_DEPLOY;
+        else if (_operationType == OPERATION_CREATE2) return _PERMISSION_DEPLOY;
+        else if (_operationType == OPERATION_STATICCALL) return _PERMISSION_STATICCALL;
+        else if (_operationType == OPERATION_DELEGATECALL) return _PERMISSION_DELEGATECALL;
     }
 
     function _extractSuperPermissionFromOperation(uint256 _operationType)
@@ -502,9 +511,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         pure
         returns (bytes32 superPermission_)
     {
-        if (_operationType == 0) return _PERMISSION_SUPER_CALL;
-        else if (_operationType == 3) return _PERMISSION_SUPER_STATICCALL;
-        else if (_operationType == 4) return _PERMISSION_SUPER_DELEGATECALL;
+        if (_operationType == OPERATION_CALL) return _PERMISSION_SUPER_CALL;
+        else if (_operationType == OPERATION_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
+        else if (_operationType == OPERATION_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
     /**
