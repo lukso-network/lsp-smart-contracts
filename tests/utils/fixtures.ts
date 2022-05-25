@@ -171,8 +171,8 @@ export function callPayload(from: any, to: string, abi: string) {
 export async function getLSP5MapAndArrayKeysValue(account, token) {
   let mapKey = ERC725YKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substr(2);
   const mapValue = await account["getData(bytes32)"](mapKey);
-  const indexInHex = mapValue.substr(0, 18);
-  const interfaceId = "0x" + mapValue.substr(18);
+  const indexInHex = "0x" + mapValue.substr(10, 16);
+  const interfaceId =  mapValue.substr(0,10);
   const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
   const rawIndexInArray = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(indexInNumber),
@@ -199,8 +199,8 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
 export async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
   let mapKey = ERC725YKeys.LSP10.LSP10VaultsMap + lsp9Vault.address.substr(2);
   const mapValue = await account["getData(bytes32)"](mapKey);
-  const indexInHex = mapValue.substr(0, 18);
-  const interfaceId = "0x" + mapValue.substr(18);
+  const indexInHex = "0x" + mapValue.substr(10, 16);
+  const interfaceId = mapValue.substr(0,10);
   const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
   const rawIndexInArray = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(indexInNumber),
