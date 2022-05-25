@@ -3,7 +3,6 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {LSP7DigitalAssetInit} from "../LSP7DigitalAssetInit.sol";
 import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 import {LSP7CappedSupplyCore} from "./LSP7CappedSupplyCore.sol";
