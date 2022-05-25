@@ -25,9 +25,8 @@ contract LSP9Vault is LSP9VaultCore {
      * @param _newOwner the owner of the contract
      */
     constructor(address _newOwner) {
-        if (_newOwner != owner()) {
-            OwnableUnset.initOwner(_newOwner);
-        }
+        OwnableUnset._setOwner(_newOwner);
+
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 

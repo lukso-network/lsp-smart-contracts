@@ -21,9 +21,8 @@ import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
  */
 abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
     function _initialize(address _newOwner) internal virtual onlyInitializing {
-        if (_newOwner != owner()) {
-            OwnableUnset.initOwner(_newOwner);
-        }
+        OwnableUnset._setOwner(_newOwner);
+
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 

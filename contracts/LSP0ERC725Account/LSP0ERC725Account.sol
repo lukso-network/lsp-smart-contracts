@@ -16,8 +16,6 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore {
      * @param _newOwner the owner of the contract
      */
     constructor(address _newOwner) {
-        if (_newOwner != owner()) {
-            OwnableUnset.initOwner(_newOwner);
-        }
+        OwnableUnset._setOwner(_newOwner);
     }
 }
