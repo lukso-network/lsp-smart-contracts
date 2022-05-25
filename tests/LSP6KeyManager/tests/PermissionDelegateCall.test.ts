@@ -238,9 +238,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
         ];
       });
 
-      describe("it should bypass allowed addresses check", () => {
+      describe("it should revert since DELEGATECALL is disallowed", () => {
         for (let ii = 0; ii < 5; ii++) {
-          it(`should allow delegate call to contract nb ${ii}`, async () => {
+          it(`delegate call to contract nb ${ii}`, async () => {
             const key =
               "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
             const value = "0xbbbbbbbbbbbbbbbb";
@@ -265,19 +265,24 @@ export const shouldBehaveLikePermissionDelegateCall = (
                 delegateCallPayload,
               ]);
 
-            await context.keyManager.connect(caller).execute(executePayload);
+            await expect(
+              context.keyManager.connect(caller).execute(executePayload)
+            ).toBeRevertedWith(
+              "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+            );
 
+            // storage should remain unchanged and not set
             const newStorage = await context.universalProfile[
               "getData(bytes32)"
             ](key);
-            expect(newStorage).toEqual(value);
+            expect(newStorage).toEqual("0x");
           });
         }
       });
     });
 
     describe("when calling an allowed contract", () => {
-      it("should allow to interact with the 1st allowed contract", async () => {
+      it("should revert with DELEGATECALL disallowed when trying to interact with the 1st allowed contract", async () => {
         const key =
           "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         const value = "0xbbbbbbbbbbbbbbbb";
@@ -301,14 +306,18 @@ export const shouldBehaveLikePermissionDelegateCall = (
             delegateCallPayload,
           ]);
 
-        await context.keyManager.connect(caller).execute(executePayload);
+        await expect(
+          context.keyManager.connect(caller).execute(executePayload)
+        ).toBeRevertedWith(
+          "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+        );
 
         // prettier-ignore
         const newStorage = await context.universalProfile["getData(bytes32)"](key);
-        expect(newStorage).toEqual(value);
+        expect(newStorage).toEqual("0x");
       });
 
-      it("should allow to interact with the 2nd allowed contract", async () => {
+      it("should revert with DELEGATECALL disallowed when trying to interact with the 2nd allowed contract", async () => {
         const key =
           "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         const value = "0xbbbbbbbbbbbbbbbb";
@@ -332,11 +341,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
             delegateCallPayload,
           ]);
 
-        await context.keyManager.connect(caller).execute(executePayload);
+        await expect(
+          context.keyManager.connect(caller).execute(executePayload)
+        ).toBeRevertedWith(
+          "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+        );
 
         // prettier-ignore
         const newStorage = await context.universalProfile["getData(bytes32)"](key);
-        expect(newStorage).toEqual(value);
+        expect(newStorage).toEqual("0x");
       });
     });
   });
