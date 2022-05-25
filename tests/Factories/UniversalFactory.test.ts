@@ -636,7 +636,7 @@ describe("UniversalFactory contract", () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
 
         let PayableFalseCalldata =
-          payableContract.interface.encodeFunctionData("PayableFalse");
+          payableContract.interface.encodeFunctionData("payableFalse");
 
         await expect(
           context.universalFactory
@@ -656,7 +656,7 @@ describe("UniversalFactory contract", () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
 
         let PayableTrueCalldata =
-          payableContract.interface.encodeFunctionData("PayableTrue");
+          payableContract.interface.encodeFunctionData("payableTrue");
 
         const contractCreated = await context.universalFactory
           .connect(context.accounts.deployer1)
