@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import {IClaimOwnership} from "./IClaimOwnership.sol";
 
 // modules
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     address public override pendingOwner;

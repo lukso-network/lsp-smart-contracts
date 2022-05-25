@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // modules
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
 import {LSP9VaultCore, ClaimOwnership} from "./LSP9VaultCore.sol";
 

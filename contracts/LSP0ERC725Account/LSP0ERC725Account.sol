@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // modules
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 /**
  * @title Implementation of ERC725Account
