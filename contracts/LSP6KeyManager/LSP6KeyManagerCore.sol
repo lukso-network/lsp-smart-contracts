@@ -389,6 +389,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 // skip permissions keys that have been previously "nulled"
                 if (_inputKeys[jj] == bytes32(0)) continue;
 
+                // solhint-disable no-inline-assembly
                 assembly {
                     // use a bitmask to discard the last `n` bytes of the input key
                     // so to compare only the relevant parts of each ERC725Y keys

@@ -5,9 +5,12 @@ pragma solidity ^0.8.0;
  * @dev sample contract used for testing
  */
 contract PayableContract {
+    // solhint-disable no-empty-blocks
     constructor() payable {}
 
-    function PayableTrue() public payable {}
+    // solhint-disable no-empty-blocks
+    function payableTrue() public payable {}
 
-    function PayableFalse() public {}
+    // solhint-disable no-empty-blocks
+    function payableFalse() public {}
 }
