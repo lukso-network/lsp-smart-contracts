@@ -59,8 +59,8 @@ export const shouldBehaveLikePermissionDelegateCall = (
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
 
-  describe("when trying to make a DELEGATECALL via UP", () => {
-    it("should pass when the caller has ALL PERMISSIONS", async () => {
+  describe("when trying to make a DELEGATECALL via UP, DELEGATECALL is disallowed", () => {
+    it("should revert even if caller has ALL PERMISSIONS", async () => {
       const key =
         "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       const value = "0xbbbbbbbbbbbbbbbb";
@@ -88,17 +88,14 @@ export const shouldBehaveLikePermissionDelegateCall = (
           delegateCallPayload,
         ]);
 
-      await context.keyManager.connect(context.owner).execute(executePayload);
-
-      // verify that the setData ran in the context of the calling UP
-      // and that it updated its ERC725Y storage
-      const newStorage = await context.universalProfile["getData(bytes32)"](
-        key
+      await expect(
+        context.keyManager.connect(context.owner).execute(executePayload)
+      ).toBeRevertedWith(
+        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
-      expect(newStorage).toEqual(value);
     });
 
-    it("should pass if caller has permission DELEGATECALL", async () => {
+    it("should revert even if caller has permission DELEGATECALL", async () => {
       const key =
         "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       const value = "0xbbbbbbbbbbbbbbbb";
@@ -126,19 +123,16 @@ export const shouldBehaveLikePermissionDelegateCall = (
           delegateCallPayload,
         ]);
 
-      await context.keyManager
-        .connect(addressCanDelegateCall)
-        .execute(executePayload);
-
-      // verify that the setData ran in the context of the calling UP
-      // and that it updated its ERC725Y storage
-      const newStorage = await context.universalProfile["getData(bytes32)"](
-        key
+      await expect(
+        context.keyManager
+          .connect(addressCanDelegateCall)
+          .execute(executePayload)
+      ).toBeRevertedWith(
+        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
-      expect(newStorage).toEqual(value);
     });
 
-    it("should fail when caller does not have permission DELEGATECALL", async () => {
+    it("should revert with operation disallowed, even if caller does not have permission DELEGATECALL", async () => {
       const key =
         "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       const value = "0xbbbbbbbbbbbbbbbb";
@@ -171,7 +165,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
           .connect(addressCannotDelegateCall)
           .execute(executePayload)
       ).toBeRevertedWith(
-        NotAuthorisedError(addressCannotDelegateCall.address, "DELEGATECALL")
+        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
     });
   });
