@@ -9,7 +9,7 @@ import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1Univ
 // libraries
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
+import {ERC165Checker} from "../Utils/ERC165Checker.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
@@ -117,7 +117,7 @@ abstract contract LSP0ERC725AccountCore is
         // if OWNER is a contract
         if (_owner.code.length != 0) {
             return
-                ERC165CheckerCustom.supportsERC165Interface(_owner, _INTERFACEID_ERC1271)
+                ERC165Checker.supportsERC165Interface(_owner, _INTERFACEID_ERC1271)
                     ? IERC1271(_owner).isValidSignature(_hash, _signature)
                     : _ERC1271_FAILVALUE;
             // if OWNER is a key
@@ -148,7 +148,7 @@ abstract contract LSP0ERC725AccountCore is
         if (data.length >= 20) {
             address universalReceiverDelegate = BytesLib.toAddress(data, 0);
             if (
-                ERC165CheckerCustom.supportsERC165Interface(
+                ERC165Checker.supportsERC165Interface(
                     universalReceiverDelegate,
                     _INTERFACEID_LSP1_DELEGATE
                 )

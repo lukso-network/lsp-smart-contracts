@@ -6,7 +6,7 @@ import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.so
 import {ILSP7DigitalAsset} from "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
-import {ERC165CheckerCustom} from "../../../Utils/ERC165CheckerCustom.sol";
+import {ERC165Checker} from "../../../Utils/ERC165Checker.sol";
 import {LSP1Utils} from "../../LSP1Utils.sol";
 import {LSP2Utils} from "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP5Utils} from "../../../LSP5ReceivedAssets/LSP5Utils.sol";
@@ -27,7 +27,7 @@ abstract contract TokenHandling {
     function _tokenHandling(address sender, bytes32 typeId) internal returns (bytes memory result) {
         if (sender.code.length == 0) return "";
 
-        if (!ERC165CheckerCustom.supportsERC165Interface(msg.sender, _INTERFACEID_LSP9)) return "";
+        if (!ERC165Checker.supportsERC165Interface(msg.sender, _INTERFACEID_LSP9)) return "";
 
         (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils
             .getTransferDetails(typeId);
