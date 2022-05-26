@@ -6,7 +6,7 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // libraries
-import {ERC165Checker} from "../Utils/ERC165Checker.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // libraries
-import {ERC165Checker} from "../Utils/ERC165Checker.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 /**
  * @dev Contract used to test the custom implementation of ERC165Checker

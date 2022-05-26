@@ -6,7 +6,7 @@ import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.so
 import {ILSP7DigitalAsset} from "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
-import {ERC165Checker} from "../../../Utils/ERC165Checker.sol";
+import {ERC165Checker} from "../../../Custom/ERC165Checker.sol";
 import {LSP1Utils} from "../../LSP1Utils.sol";
 import {LSP2Utils} from "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP5Utils} from "../../../LSP5ReceivedAssets/LSP5Utils.sol";

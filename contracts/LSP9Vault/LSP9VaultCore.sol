@@ -8,7 +8,7 @@ import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1Univ
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {ERC165Checker} from "../Utils/ERC165Checker.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
