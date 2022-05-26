@@ -5,8 +5,8 @@ pragma solidity ^0.8.0;
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // modules
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
-import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {Initializable} from "@erc725/smart-contracts/contracts/custom/Initializable.sol";
 import {LSP9VaultCore, ClaimOwnership} from "./LSP9VaultCore.sol";
 
 // constants
@@ -21,9 +21,8 @@ import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
  */
 abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
     function _initialize(address _newOwner) internal virtual onlyInitializing {
-        if (_newOwner != owner()) {
-            OwnableUnset.initOwner(_newOwner);
-        }
+        OwnableUnset._setOwner(_newOwner);
+
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 

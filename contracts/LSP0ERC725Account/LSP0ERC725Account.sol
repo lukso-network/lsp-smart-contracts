@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // modules
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 /**
  * @title Implementation of ERC725Account
@@ -16,8 +16,6 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore {
      * @param _newOwner the owner of the contract
      */
     constructor(address _newOwner) {
-        if (_newOwner != owner()) {
-            OwnableUnset.initOwner(_newOwner);
-        }
+        OwnableUnset._setOwner(_newOwner);
     }
 }

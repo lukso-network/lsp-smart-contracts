@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 // modules
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
-import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {Initializable} from "@erc725/smart-contracts/contracts/custom/Initializable.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 /**
  * @title Inheritable Proxy Implementation of ERC725Account
@@ -13,8 +13,6 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset
  */
 abstract contract LSP0ERC725AccountInitAbstract is Initializable, LSP0ERC725AccountCore {
     function _initialize(address _newOwner) internal virtual onlyInitializing {
-        if (_newOwner != owner()) {
-            OwnableUnset.initOwner(_newOwner);
-        }
+        OwnableUnset._setOwner(_newOwner);
     }
 }

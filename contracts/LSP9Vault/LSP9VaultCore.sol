@@ -13,7 +13,7 @@ import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
 // modules
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {ClaimOwnership} from "../Utils/ClaimOwnership.sol";
 
 // constants

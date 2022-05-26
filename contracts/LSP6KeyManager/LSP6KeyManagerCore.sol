@@ -7,7 +7,7 @@ import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.so
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // modules
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {IClaimOwnership} from "../Utils/IClaimOwnership.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
