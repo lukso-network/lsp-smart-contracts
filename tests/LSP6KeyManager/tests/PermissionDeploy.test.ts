@@ -7,9 +7,9 @@ import { TargetContract__factory } from "../../../types";
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
-  OPERATIONS,
+  OPERATION_TYPES,
   EventSignatures,
 } from "../../../constants";
 
@@ -44,9 +44,9 @@ export const shouldBehaveLikePermissionDeploy = (
     ];
 
     const permissionsValues = [
-      ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.DEPLOY, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      ALL_PERMISSIONS,
+      PERMISSIONS.DEPLOY,
+      PERMISSIONS.CALL,
     ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
@@ -59,7 +59,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute",
         [
-          OPERATIONS.CREATE, // operation type
+          OPERATION_TYPES.CREATE, // operation type
           ethers.constants.AddressZero, // recipient
           0, // value
           contractBytecodeToDeploy, // data
@@ -80,7 +80,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
       // operation type
       expect(receipt.logs[0].topics[1]).toEqual(
-        ethers.utils.hexZeroPad(OPERATIONS.CREATE, 32)
+        ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE, 32)
       );
 
       // address of contract created
@@ -100,7 +100,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute",
         [
-          OPERATIONS.CREATE2,
+          OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
           0,
           contractBytecodeToDeploy + salt.substring(2),
@@ -121,7 +121,7 @@ export const shouldBehaveLikePermissionDeploy = (
         EventSignatures.ERC725X["ContractCreated"]
       );
       expect(receipt.logs[0].topics[1]).toEqual(
-        ethers.utils.hexZeroPad(OPERATIONS.CREATE2, 32)
+        ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE2, 32)
       );
       expect(receipt.logs[0].topics[2]).toEqual(
         ethers.utils.hexZeroPad(preComputedAddress, 32)
@@ -137,7 +137,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute",
         [
-          OPERATIONS.CREATE,
+          OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
           0,
           contractBytecodeToDeploy,
@@ -155,7 +155,7 @@ export const shouldBehaveLikePermissionDeploy = (
         EventSignatures.ERC725X["ContractCreated"]
       );
       expect(receipt.logs[0].topics[1]).toEqual(
-        ethers.utils.hexZeroPad(OPERATIONS.CREATE, 32)
+        ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE, 32)
       );
       expect(receipt.logs[0].topics[2]).toEqual(
         ethers.utils.hexZeroPad(expectedContractAddress, 32)
@@ -171,7 +171,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute",
         [
-          OPERATIONS.CREATE2,
+          OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
           0,
           contractBytecodeToDeploy + salt.substring(2),
@@ -194,7 +194,7 @@ export const shouldBehaveLikePermissionDeploy = (
         EventSignatures.ERC725X["ContractCreated"]
       );
       expect(receipt.logs[0].topics[1]).toEqual(
-        ethers.utils.hexZeroPad(OPERATIONS.CREATE2, 32)
+        ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE2, 32)
       );
       expect(receipt.logs[0].topics[2]).toEqual(
         ethers.utils.hexZeroPad(preComputedAddress, 32)
@@ -210,7 +210,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute",
         [
-          OPERATIONS.CREATE,
+          OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
           0,
           contractBytecodeToDeploy,
@@ -231,7 +231,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let payload = context.universalProfile.interface.encodeFunctionData(
         "execute",
         [
-          OPERATIONS.CREATE2,
+          OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
           0,
           contractBytecodeToDeploy + salt.substring(2),

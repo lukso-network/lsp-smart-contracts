@@ -73,3 +73,23 @@ $ npm test
 ### Deployment via hardhat
 
 You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./DEPLOYMENT.md) page.
+
+### Available Constants
+
+You can access interface IDs and other constants, using the `constants.js` file from the [lsp-smart-contracts package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
+You can find all accessible constants in the [`constants.js` file](https://github.com/lukso-network/lsp-smart-contracts/blob/main/constants.js).
+
+
+```js
+const {
+    INTERFACE_IDS,
+    ERC1271,
+    OPERATIONS,
+    SupportedStandards,
+    ERC725YKeys,
+    BasicUPSetup_Schema,
+    PERMISSIONS,
+    ALL_PERMISSIONS,
+    EventSignatures,
+} = require("@lukso/lsp-smart-contracts/constants.js");
+```

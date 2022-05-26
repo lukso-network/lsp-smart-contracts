@@ -6,9 +6,9 @@ import {
   UniversalProfile,
 } from "../../types";
 import {
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   ERC725YKeys,
-  OPERATIONS,
+  OPERATION_TYPES,
   PERMISSIONS,
   INTERFACE_IDS,
 } from "../../constants";
@@ -69,13 +69,15 @@ describe("Key Manager gas cost interactions", () => {
         ];
 
         const permissionValues = [
-          ALL_PERMISSIONS_SET,
+          ALL_PERMISSIONS,
           ethers.utils.hexZeroPad(
-            PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+            parseInt(Number(PERMISSIONS.CALL)) +
+              parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
             32
           ),
           ethers.utils.hexZeroPad(
-            PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE,
+            parseInt(Number(PERMISSIONS.CALL)) +
+              parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
             32
           ),
           abiCoder.encode(["address[]"], [[contractImplementsERC1271.address]]),
@@ -99,7 +101,7 @@ describe("Key Manager gas cost interactions", () => {
 
           let transferLyxPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               contractImplementsERC1271.address,
               ethers.utils.parseEther("1"),
               "0x",
@@ -132,7 +134,7 @@ describe("Key Manager gas cost interactions", () => {
 
         let transferLyxPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             contractImplementsERC1271.address,
             ethers.utils.parseEther("1"),
             "0x",
@@ -164,7 +166,7 @@ describe("Key Manager gas cost interactions", () => {
 
         let transferLyxPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             contractImplementsERC1271.address,
             ethers.utils.parseEther("1"),
             "0x",

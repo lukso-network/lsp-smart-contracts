@@ -26,7 +26,7 @@ import {
   INTERFACE_IDS,
   SupportedStandards,
   PERMISSIONS,
-  OPERATIONS,
+  OPERATION_TYPES,
 } from "../../constants";
 
 export type LSP9TestAccounts = {
@@ -125,7 +125,7 @@ export const shouldBehaveLikeLSP9 = (
 
         let executePayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             context.lsp9Vault.address,
             0,
             claimOwnershipSelector,
@@ -147,7 +147,7 @@ export const shouldBehaveLikeLSP9 = (
     describe("when restricitng address to only talk to the vault", () => {
       beforeAll(async () => {
         let abiCoder = await ethers.utils.defaultAbiCoder;
-        let friendPermissions = ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32);
+        let friendPermissions = PERMISSIONS.CALL;
         const payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32[],bytes[])",
           [
@@ -262,14 +262,14 @@ export const shouldInitializeLikeLSP9 = (
 
     it("should have registered the LSP9 interface", async () => {
       const result = await context.lsp9Vault.supportsInterface(
-        INTERFACE_IDS.LSP9
+        INTERFACE_IDS.LSP9Vault
       );
       expect(result).toBeTruthy();
     });
 
     it("should have registered the LSP1 interface", async () => {
       const result = await context.lsp9Vault.supportsInterface(
-        INTERFACE_IDS.LSP1
+        INTERFACE_IDS.LSP1UniversalReceiver
       );
       expect(result).toBeTruthy();
     });

@@ -30,37 +30,37 @@ describe("Calculate LSP interfaces", () => {
 
   it("LSP0", async () => {
     const result = await contract.calculateInterfaceLSP0();
-    expect(result).toEqual(INTERFACE_IDS.ERC725Account);
+    expect(result).toEqual(INTERFACE_IDS.LSP0ERC725Account);
   });
 
   it("LSP1", async () => {
     const result = await contract.calculateInterfaceLSP1();
-    expect(result).toEqual(INTERFACE_IDS.LSP1);
+    expect(result).toEqual(INTERFACE_IDS.LSP1UniversalReceiver);
   });
 
   it("LSP1Delegate", async () => {
     const result = await contract.calculateInterfaceLSP1Delegate();
-    expect(result).toEqual(INTERFACE_IDS.LSP1Delegate);
+    expect(result).toEqual(INTERFACE_IDS.LSP1UniversalReceiverDelegate);
   });
 
   it("LSP6", async () => {
     const result = await contract.calculateInterfaceLSP6KeyManager();
-    expect(result).toEqual(INTERFACE_IDS.LSP6);
+    expect(result).toEqual(INTERFACE_IDS.LSP6KeyManager);
   });
 
   it("LSP7", async () => {
     const result = await contract.calculateInterfaceLSP7();
-    expect(result).toEqual(INTERFACE_IDS.LSP7);
+    expect(result).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
   });
 
   it("LSP8", async () => {
     const result = await contract.calculateInterfaceLSP8();
-    expect(result).toEqual(INTERFACE_IDS.LSP8);
+    expect(result).toEqual(INTERFACE_IDS.LSP8IdentifiableDigitalAsset);
   });
 
   it("LSP9", async () => {
     const result = await contract.calculateInterfaceLSP9();
-    expect(result).toEqual(INTERFACE_IDS.LSP9);
+    expect(result).toEqual(INTERFACE_IDS.LSP9Vault);
   });
 
   it("IClaimOwnership", async () => {

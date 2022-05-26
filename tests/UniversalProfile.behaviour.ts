@@ -9,7 +9,7 @@ import { getRandomAddresses } from "./utils/helpers";
 
 // constants
 import {
-  ERC1271,
+  ERC1271_VALUES,
   ERC725YKeys,
   INTERFACE_IDS,
   SupportedStandards,
@@ -42,7 +42,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271.MAGIC_VALUE);
+      expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
     });
 
     it("should fail when verifying signature from non-owner", async () => {
@@ -56,7 +56,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271.FAIL_VALUE);
+      expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
     });
 
     /** @todo update this test for claimOwnership(...) */
@@ -79,7 +79,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271.FAIL_VALUE);
+      expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
     });
   });
 
@@ -239,14 +239,14 @@ export const shouldInitializeLikeLSP3 = (
 
     it("should support LSP0 (ERC725Account) interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.ERC725Account
+        INTERFACE_IDS.LSP0ERC725Account
       );
       expect(result).toBeTruthy();
     });
 
     it("should support LSP1 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.LSP1
+        INTERFACE_IDS.LSP1UniversalReceiver
       );
       expect(result).toBeTruthy();
     });

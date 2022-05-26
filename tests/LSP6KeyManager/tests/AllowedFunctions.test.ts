@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
-import { ERC725YKeys, OPERATIONS, PERMISSIONS } from "../../../constants";
+import { ERC725YKeys, OPERATION_TYPES, PERMISSIONS } from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
@@ -43,8 +43,8 @@ export const shouldBehaveLikeAllowedFunctions = (
     ];
 
     let permissionsValues = [
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      PERMISSIONS.CALL,
+      PERMISSIONS.CALL,
       abiCoder.encode(
         ["bytes4[]"],
         [[targetContract.interface.getSighash("setName")]]
@@ -65,7 +65,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             targetContract.interface.encodeFunctionData("setName", [newName]);
           let executePayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
@@ -90,7 +90,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
           let executePayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
@@ -123,7 +123,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
@@ -153,7 +153,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
           let executePayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
@@ -186,7 +186,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, randomPayload]
+          [OPERATION_TYPES.CALL, targetContract.address, 0, randomPayload]
         );
 
         await expect(
@@ -220,7 +220,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
@@ -263,7 +263,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,

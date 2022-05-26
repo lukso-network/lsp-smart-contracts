@@ -7,7 +7,7 @@ import {
   LSP1UniversalReceiverDelegateUP__factory,
 } from "../../types";
 
-import { PERMISSIONS, ERC725YKeys, ALL_PERMISSIONS_SET } from "../../constants";
+import { PERMISSIONS, ERC725YKeys, ALL_PERMISSIONS } from "../../constants";
 
 // helpers
 import { ARRAY_LENGTH } from "../utils/helpers";
@@ -60,7 +60,7 @@ export async function setupKeyManager(
           _context.owner.address.substring(2),
         ..._permissionsKeys,
       ],
-      [ALL_PERMISSIONS_SET, ..._permissionsValues]
+      [ALL_PERMISSIONS, ..._permissionsValues]
     );
 
   await _context.universalProfile
@@ -86,7 +86,7 @@ export async function setupKeyManagerHelper(
           _context.owner.address.substring(2),
         ..._permissionsKeys,
       ],
-      [ALL_PERMISSIONS_SET, ..._permissionsValues]
+      [ALL_PERMISSIONS, ..._permissionsValues]
     );
 
   await _context.universalProfile
@@ -136,7 +136,7 @@ export async function setupProfileWithKeyManagerWithURD(
         ARRAY_LENGTH.TWO,
         EOA.address,
         lsp1universalReceiverDelegateUP.address,
-        ALL_PERMISSIONS_SET,
+        ALL_PERMISSIONS,
         ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
         lsp1universalReceiverDelegateUP.address,
       ]

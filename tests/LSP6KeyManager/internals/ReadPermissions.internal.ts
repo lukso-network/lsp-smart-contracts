@@ -2,11 +2,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import {
-  ALL_PERMISSIONS_SET,
-  ERC725YKeys,
-  PERMISSIONS,
-} from "../../../constants";
+import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
 
 // setup
 import { LSP6InternalsTestContext } from "../../utils/context";
@@ -40,9 +36,13 @@ export const testReadingPermissionsInternals = (
       ];
 
       const permissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32),
+        ALL_PERMISSIONS,
+        PERMISSIONS.SETDATA,
+        ethers.utils.hexZeroPad(
+          parseInt(Number(PERMISSIONS.SETDATA)) +
+            parseInt(Number(PERMISSIONS.CALL)),
+          32
+        ),
       ];
 
       await setupKeyManagerHelper(context, permissionKeys, permissionValues);
@@ -53,7 +53,7 @@ export const testReadingPermissionsInternals = (
         await context.keyManagerInternalTester.getPermissionsFor(
           context.owner.address
         )
-      ).toEqual(ALL_PERMISSIONS_SET); // ALL_PERMISSIONS = "0xffff..."
+      ).toEqual(ALL_PERMISSIONS); // ALL_PERMISSIONS = "0xffff..."
     });
 
     it("Should return SETDATA", async () => {
@@ -61,7 +61,7 @@ export const testReadingPermissionsInternals = (
         await context.keyManagerInternalTester.getPermissionsFor(
           addressCanSetData.address
         )
-      ).toEqual(ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32));
+      ).toEqual(PERMISSIONS.SETDATA);
     });
 
     it("Should return SETDATA + CALL", async () => {
@@ -70,7 +70,11 @@ export const testReadingPermissionsInternals = (
           addressCanSetDataAndCall.address
         )
       ).toEqual(
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA + PERMISSIONS.CALL, 32)
+        ethers.utils.hexZeroPad(
+          parseInt(Number(PERMISSIONS.SETDATA)) +
+            parseInt(Number(PERMISSIONS.CALL)),
+          32
+        )
       );
     });
   });
@@ -147,10 +151,7 @@ export const testReadingPermissionsInternals = (
           addressCanSetData.address.substring(2),
       ];
 
-      const permissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-      ];
+      const permissionValues = [ALL_PERMISSIONS, PERMISSIONS.SETDATA];
 
       await setupKeyManagerHelper(context, permissionKeys, permissionValues);
     });
@@ -164,7 +165,7 @@ export const testReadingPermissionsInternals = (
       expect(
         await context.keyManagerInternalTester.hasPermission(
           appPermissions,
-          ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32)
+          PERMISSIONS.SETDATA
         )
       ).toBeTruthy();
     });
@@ -201,11 +202,11 @@ export const testReadingPermissionsInternals = (
       ];
 
       let permissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.TRANSFERVALUE, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
+        ALL_PERMISSIONS,
+        PERMISSIONS.CALL,
+        PERMISSIONS.SETDATA,
+        PERMISSIONS.TRANSFERVALUE,
+        PERMISSIONS.SIGN,
       ];
 
       // set AddressPermissions array keys

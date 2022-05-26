@@ -5,9 +5,9 @@ import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
 import {
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   ERC725YKeys,
-  OPERATIONS,
+  OPERATION_TYPES,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -40,10 +40,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         signer.address.substring(2),
     ];
 
-    const permissionsValues = [
-      ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-    ];
+    const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.CALL];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
@@ -73,7 +70,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         );
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -133,7 +130,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         );
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -182,7 +179,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         );
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -236,7 +233,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         );
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -285,7 +282,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         );
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -339,7 +336,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         );
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -388,7 +385,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         );
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -438,7 +435,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
         );
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,

@@ -2,11 +2,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import {
-  ALL_PERMISSIONS_SET,
-  ERC725YKeys,
-  PERMISSIONS,
-} from "../../../constants";
+import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
@@ -61,9 +57,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       ];
 
       const permissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ALL_PERMISSIONS,
+        PERMISSIONS.SETDATA,
+        PERMISSIONS.SETDATA,
         abiCoder.encode(["bytes32[]"], [[customKey1]]),
         abiCoder.encode(["bytes32[]"], [[customKey2, customKey3, customKey4]]),
       ];
@@ -1067,8 +1063,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       ];
 
       const permissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ALL_PERMISSIONS,
+        PERMISSIONS.SETDATA,
         abiCoder.encode(["bytes32[]"], [[supportedStandardKey]]),
       ];
 
@@ -1449,8 +1445,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       ];
 
       const permissionValues = [
-        ALL_PERMISSIONS_SET,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ALL_PERMISSIONS,
+        PERMISSIONS.SETDATA,
         abiCoder.encode(["bytes32[]"], [[allowedArrayKey]]),
       ];
 
