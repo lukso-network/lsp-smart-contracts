@@ -3,6 +3,10 @@
 
 pragma solidity ^0.8.0;
 
+// This contract is a modified version of OpenZeppelin implementation, where we modify the visibility of
+// `supportsERC165Interface`, which check the given interfaceId, to internal and to be used in contract implementations,
+// instead of `supportsInterface`, as the latter check for 3 interfaceIds; InterfaceId of ERC165, 0xffffffff and the given interfaceId.
+
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
