@@ -77,10 +77,6 @@ const ERC725YKeys = {
 	LSP3: {
 		// keccak256('LSP3Profile')
 		LSP3Profile: '0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5',
-		// LSP3IssuedAssetsMap:<address>
-		LSP3IssuedAssetsMap: '0x83f5e77bfb14241600000000',
-		// keccak256('LSP3IssuedAssets[]')
-		'LSP3IssuedAssets[]': '0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0',
 	},
 	LSP4: {
 		// keccak256('LSP4TokenName')
@@ -120,6 +116,12 @@ const ERC725YKeys = {
 		// keccak256('LSP10Vaults[]')
 		'LSP10Vaults[]': '0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06',
 	},
+	LSP12: {
+		// LSP12IssuedAssetsMap:<address>
+		LSP12IssuedAssetsMap: '0x74ac2555c10b9349e78f0000',
+		// keccak256('LSP12IssuedAssets[]')
+		'LSP12IssuedAssets[]': '0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd',
+	},
 };
 
 const BasicUPSetup_Schema = [
@@ -138,8 +140,8 @@ const BasicUPSetup_Schema = [
 		valueType: 'address',
 	},
 	{
-		name: 'LSP3IssuedAssets[]',
-		key: ERC725YKeys.LSP3['LSP3IssuedAssets[]'],
+		name: 'LSP12IssuedAssets[]',
+		key: ERC725YKeys.LSP12['LSP12IssuedAssets[]'],
 		keyType: 'Array',
 		valueContent: 'Number',
 		valueType: 'uint256',
