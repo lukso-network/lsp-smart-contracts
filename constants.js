@@ -90,7 +90,7 @@ const ERC725YKeys = {
 	},
 	LSP5: {
 		// LSP5ReceivedAssetsMap:<address>
-		LSP5ReceivedAssetsMap: '0x812c4334633eb81600000000',
+		LSP5ReceivedAssetsMap: '0x812c4334633eb816c80d0000',
 		// keccak256('LSP5ReceivedAssets[]')
 		'LSP5ReceivedAssets[]':
 			'0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
@@ -100,19 +100,19 @@ const ERC725YKeys = {
 		'AddressPermissions[]':
 			'0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3',
 		// AddressPermissions:Permissions:<address>
-		'AddressPermissions:Permissions': '0x4b80742d0000000082ac0000',
+		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
 		// AddressPermissions:AllowedAddresses:<address>
-		'AddressPermissions:AllowedAddresses': '0x4b80742d00000000c6dd0000',
+		'AddressPermissions:AllowedAddresses': '0x4b80742de2bfc6dd6b3c0000',
 		// AddressPermissions:AllowedFunctions:<address>
-		'AddressPermissions:AllowedFunctions': '0x4b80742d000000008efe0000',
+		'AddressPermissions:AllowedFunctions': '0x4b80742de2bf8efea1e80000',
 		// AddressPermissions:AllowedStandards:<address>
-		'AddressPermissions:AllowedStandards': '0x4b80742d000000003efa0000',
+		'AddressPermissions:AllowedStandards': '0x4b80742de2bf3efa94a30000',
 		// AddressPermissions:AllowedERC725YKeys:<address>
-		'AddressPermissions:AllowedERC725YKeys': '0x4b80742d0000000090b80000',
+		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
 	},
 	LSP10: {
 		// keccak256('LSP10VaultsMap')
-		LSP10VaultsMap: '0x192448c3c0f88c7f00000000',
+		LSP10VaultsMap: '0x192448c3c0f88c7f238c0000',
 		// keccak256('LSP10Vaults[]')
 		'LSP10Vaults[]': '0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06',
 	},
