@@ -786,8 +786,7 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
         context.lsp8CompatibilityForERC721,
         "DataChanged",
         [
-          SupportedStandards.LSP4DigitalAsset.key,
-          SupportedStandards.LSP4DigitalAsset.value,
+          SupportedStandards.LSP4DigitalAsset.key
         ]
       );
       expect(
@@ -804,7 +803,7 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8CompatibilityForERC721,
         "DataChanged",
-        [nameKey, expectedNameValue]
+        [nameKey]
       );
       expect(
         await context.lsp8CompatibilityForERC721["getData(bytes32)"](nameKey)
@@ -818,7 +817,7 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8CompatibilityForERC721,
         "DataChanged",
-        [symbolKey, expectedSymbolValue]
+        [symbolKey]
       );
       expect(
         await context.lsp8CompatibilityForERC721["getData(bytes32)"](symbolKey)
