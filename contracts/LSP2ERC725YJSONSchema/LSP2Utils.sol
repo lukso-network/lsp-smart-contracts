@@ -61,24 +61,33 @@ library LSP2Utils {
         bytes32 lastWordHash = keccak256(bytes(_lastWord));
 
         bytes memory temporaryBytes = abi.encodePacked(
-            bytes16(firstWordHash),
-            bytes12(0),
-            bytes4(lastWordHash)
+            bytes10(firstWordHash),
+            bytes2(0),
+            bytes20(lastWordHash)
         );
 
         return generateBytes32Key(temporaryBytes);
     }
 
-    function generateBytes20MappingKey(string memory _firstWord, address _address)
+    function generateMappingKey(string memory _firstWord, address _address)
         internal
         pure
         returns (bytes32)
     {
         bytes32 firstWordHash = keccak256(bytes(_firstWord));
 
-        bytes memory temporaryBytes = abi.encodePacked(bytes8(firstWordHash), bytes4(0), _address);
+        bytes memory temporaryBytes = abi.encodePacked(bytes10(firstWordHash), bytes2(0), _address);
 
         return generateBytes32Key(temporaryBytes);
+    }
+
+    function generateMappingKey(bytes12 _keyPrefix, bytes20 _bytes20)
+        internal
+        pure
+        returns (bytes32)
+    {
+        bytes memory generatedKey = bytes.concat(_keyPrefix, _bytes20);
+        return generateBytes32Key(generatedKey);
     }
 
     function generateBytes20MappingWithGroupingKey(
@@ -90,9 +99,8 @@ library LSP2Utils {
         bytes32 secondWordHash = keccak256(bytes(_secondWord));
 
         bytes memory temporaryBytes = abi.encodePacked(
-            bytes4(firstWordHash),
-            bytes4(0),
-            bytes2(secondWordHash),
+            bytes6(firstWordHash),
+            bytes4(secondWordHash),
             bytes2(0),
             _address
         );
