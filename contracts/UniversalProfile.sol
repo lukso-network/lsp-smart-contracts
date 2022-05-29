@@ -16,7 +16,7 @@ contract UniversalProfile is LSP0ERC725Account {
      */
     constructor(address _newOwner) LSP0ERC725Account(_newOwner) {
         // set key SupportedStandards:LSP3UniversalProfile
-        bytes32 key = 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6;
+        bytes32 key = 0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38;
         bytes memory value = hex"abe425d6";
         _setData(key, value);
     }

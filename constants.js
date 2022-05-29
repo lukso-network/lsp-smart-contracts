@@ -51,15 +51,15 @@ const OPERATION_TYPES = {
 
 const SupportedStandards = {
 	LSP3UniversalProfile: {
-		key: '0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6',
+		key: '0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38',
 		value: '0xabe425d6',
 	},
 	LSP4DigitalAsset: {
-		key: '0xeafec4d89fa9619884b6b89135626455000000000000000000000000a4d96624',
+		key: '0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c',
 		value: '0xa4d96624',
 	},
 	LSP9Vault: {
-		key: '0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1',
+		key: '0xeafec4d89fa9619884b600007c0334a14085fefa8b51ae5a40895018882bdb90',
 		value: '0x7c0334a1',
 	},
 };
