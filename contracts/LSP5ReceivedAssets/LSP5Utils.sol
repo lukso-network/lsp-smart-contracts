@@ -95,10 +95,7 @@ library LSP5Utils {
 
             bytes memory lastKeyValue = _account.getData(lastKey);
 
-            bytes32 mapOfLastkey = LSP2Utils.generateBytes20MappingWithGroupingKey(
-                mapPrefix,
-                bytes20(lastKeyValue)
-            );
+            bytes32 mapOfLastkey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(lastKeyValue));
 
             bytes memory mapValueOfLastkey = _account.getData(mapOfLastkey);
 

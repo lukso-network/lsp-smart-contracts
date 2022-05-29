@@ -34,16 +34,13 @@ abstract contract TokenAndVaultHandling {
         if (!ERC165CheckerCustom.supportsERC165Interface(keyManager, _INTERFACEID_LSP6)) return "";
 
         address accountAddress = address(LSP6KeyManager(keyManager).target());
-        
+
         // check if the caller is the same account controlled by the keyManager
         if (msg.sender != accountAddress) return "";
         (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils
             .getTransferDetails(typeId);
 
-        bytes32 mapKey = LSP2Utils.generateBytes20MappingWithGroupingKey(
-            mapPrefix,
-            bytes20(sender)
-        );
+        bytes32 mapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(sender));
         bytes memory mapValue = IERC725Y(msg.sender).getData(mapKey);
 
         if (!senderHook) {
