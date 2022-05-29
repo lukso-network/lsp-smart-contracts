@@ -235,11 +235,11 @@ const EventSignatures = {
 		 * event UniversalReceiver(
 		 *    address indexed from,
 		 *    bytes32 indexed typeId,
-		 *    bytes32 indexed returnedValue,
+		 *    bytes indexed returnedValue,
 		 *    bytes receivedData
 		 * );
 		 *
-		 * signature = keccak256('UniversalReceiver(address,bytes32,bytes32,bytes)')
+		 * signature = keccak256('UniversalReceiver(address,bytes32,bytes,bytes)')
 		 */
 		UniversalReceiver: '0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3',
 	},
