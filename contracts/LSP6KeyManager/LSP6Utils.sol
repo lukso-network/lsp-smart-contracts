@@ -20,7 +20,7 @@ library LSP6Utils {
         returns (bytes32)
     {
         bytes memory permissions = _account.getData(
-            LSP2Utils.generateBytes20MappingWithGroupingKey(
+            LSP2Utils.generateMappingWithGroupingKey(
                 _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
                 bytes20(_address)
             )
@@ -36,7 +36,7 @@ library LSP6Utils {
     {
         return
             _account.getData(
-                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                LSP2Utils.generateMappingWithGroupingKey(
                     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX,
                     bytes20(_address)
                 )
@@ -50,7 +50,7 @@ library LSP6Utils {
     {
         return
             _account.getData(
-                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                LSP2Utils.generateMappingWithGroupingKey(
                     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX,
                     bytes20(_address)
                 )
@@ -64,7 +64,7 @@ library LSP6Utils {
     {
         return
             _account.getData(
-                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                LSP2Utils.generateMappingWithGroupingKey(
                     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX,
                     bytes20(_address)
                 )
@@ -78,7 +78,7 @@ library LSP6Utils {
     {
         return
             _account.getData(
-                LSP2Utils.generateBytes20MappingWithGroupingKey(
+                LSP2Utils.generateMappingWithGroupingKey(
                     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX,
                     bytes20(_address)
                 )

@@ -90,7 +90,7 @@ library LSP2Utils {
         return generateBytes32Key(generatedKey);
     }
 
-    function generateBytes20MappingWithGroupingKey(
+    function generateMappingWithGroupingKey(
         string memory _firstWord,
         string memory _secondWord,
         address _address
@@ -108,7 +108,7 @@ library LSP2Utils {
         return generateBytes32Key(temporaryBytes);
     }
 
-    function generateBytes20MappingWithGroupingKey(bytes12 _keyPrefix, bytes20 _bytes20)
+    function generateMappingWithGroupingKey(bytes12 _keyPrefix, bytes20 _bytes20)
         internal
         pure
         returns (bytes32)
