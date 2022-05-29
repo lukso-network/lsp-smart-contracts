@@ -212,14 +212,11 @@ const EventSignatures = {
 	},
 	ERC725Y: {
 		/**
-		 * event DataChanged(
-		 *      bytes32 indexed key,
-		 *      bytes value
-		 * );
+		 * event DataChanged(bytes32 indexed key);
 		 *
-		 * signature = keccak256('DataChanged(bytes32,bytes)')
+		 * signature = keccak256('DataChanged(bytes32)')
 		 */
-		DataChanged: '0xece574603820d07bc9b91f2a932baadf4628aabcb8afba49776529c14a6104b2',
+		DataChanged: '0xcdf4e344c0d23d4cdd0474039d176c55b19d531070dbe17856bfb993a5b5720b',
 	},
 	// ERC725Account
 	LSP0: {
