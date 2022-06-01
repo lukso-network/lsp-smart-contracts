@@ -22,7 +22,11 @@ All the deployment scripts for `base` contracts initialize the contract after de
 
 &nbsp;
 
-2. run the command using one of the available `--tags`
+2. Visit [LUKSO l14 Fauset](http://faucet.l14.lukso.network/), for fauset.
+
+3. In other to verify you recieved some fauset [L14 Public Testnet Config](https://docs.lukso.tech/networks/l14-testnet) 
+
+4. run the command using one of the available `--tags`
 
 ```
 npx hardhat deploy --network luksoL14 --tags <options> --reset
