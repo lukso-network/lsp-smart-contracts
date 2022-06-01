@@ -7,7 +7,6 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
@@ -157,7 +156,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
         if (data.length >= 20) {
-            address universalReceiverDelegate = BytesLib.toAddress(data, 0);
+            address universalReceiverDelegate = address(bytes20(data));
+
             if (
                 ERC165Checker.supportsERC165Interface(
                     universalReceiverDelegate,
