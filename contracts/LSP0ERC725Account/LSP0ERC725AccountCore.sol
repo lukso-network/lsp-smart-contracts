@@ -9,18 +9,18 @@ import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1Univ
 // libraries
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {ClaimOwnership} from "../Utils/ClaimOwnership.sol";
+import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
 
 // constants
 import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
 
 /**
  * @title Core Implementation of ERC725Account
@@ -117,7 +117,7 @@ abstract contract LSP0ERC725AccountCore is
         // if OWNER is a contract
         if (_owner.code.length != 0) {
             return
-                ERC165CheckerCustom.supportsERC165Interface(_owner, _INTERFACEID_ERC1271)
+                ERC165Checker.supportsERC165Interface(_owner, _INTERFACEID_ERC1271)
                     ? IERC1271(_owner).isValidSignature(_hash, _signature)
                     : _ERC1271_FAILVALUE;
             // if OWNER is a key
@@ -148,7 +148,7 @@ abstract contract LSP0ERC725AccountCore is
         if (data.length >= 20) {
             address universalReceiverDelegate = BytesLib.toAddress(data, 0);
             if (
-                ERC165CheckerCustom.supportsERC165Interface(
+                ERC165Checker.supportsERC165Interface(
                     universalReceiverDelegate,
                     _INTERFACEID_LSP1_DELEGATE
                 )

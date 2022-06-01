@@ -6,7 +6,7 @@ import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.so
 import {ILSP7DigitalAsset} from "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // libraries
-import {ERC165CheckerCustom} from "../../../Utils/ERC165CheckerCustom.sol";
+import {ERC165Checker} from "../../../Custom/ERC165Checker.sol";
 import {LSP1Utils} from "../../LSP1Utils.sol";
 import {LSP2Utils} from "../../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP5Utils} from "../../../LSP5ReceivedAssets/LSP5Utils.sol";
@@ -31,10 +31,10 @@ abstract contract TokenAndVaultHandling {
         if (sender.code.length == 0) return "";
 
         address keyManager = ERC725Y(msg.sender).owner();
-        if (!ERC165CheckerCustom.supportsERC165Interface(keyManager, _INTERFACEID_LSP6)) return "";
+        if (!ERC165Checker.supportsERC165Interface(keyManager, _INTERFACEID_LSP6)) return "";
 
         address accountAddress = address(LSP6KeyManager(keyManager).target());
-        
+
         // check if the caller is the same account controlled by the keyManager
         if (msg.sender != accountAddress) return "";
         (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils

@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// This contract is a modified version of the OwnableUnset implementation, where we transfer Ownership as a 2 step
+// process, this allows to prevent for mistakes during ownership transfer,and so prevent control of a contract from
+// potentially being lost forever.
+
 // interfaces
 import {IClaimOwnership} from "./IClaimOwnership.sol";
 

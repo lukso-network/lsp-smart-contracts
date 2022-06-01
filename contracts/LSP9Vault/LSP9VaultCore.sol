@@ -8,16 +8,16 @@ import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1Univ
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {ClaimOwnership} from "../Utils/ClaimOwnership.sol";
+import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
 
 // constants
-import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Utils/IClaimOwnership.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
 import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9, _TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER} from "./LSP9Constants.sol";
 
@@ -45,10 +45,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
                 bytes20(_getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY))
             );
             require(
-                ERC165CheckerCustom.supportsERC165Interface(
-                    msg.sender,
-                    _INTERFACEID_LSP1_DELEGATE
-                ) && msg.sender == universalReceiverAddress,
+                ERC165Checker.supportsERC165Interface(msg.sender, _INTERFACEID_LSP1_DELEGATE) &&
+                    msg.sender == universalReceiverAddress,
                 "Only Owner or Universal Receiver Delegate allowed"
             );
         }
@@ -161,7 +159,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         if (data.length >= 20) {
             address universalReceiverDelegate = BytesLib.toAddress(data, 0);
             if (
-                ERC165CheckerCustom.supportsERC165Interface(
+                ERC165Checker.supportsERC165Interface(
                     universalReceiverDelegate,
                     _INTERFACEID_LSP1_DELEGATE
                 )
@@ -179,7 +177,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
      * @dev Calls the universalReceiver function of the sender if supports LSP1 InterfaceId
      */
     function _notifyVaultSender(address _sender) internal virtual {
-        if (ERC165CheckerCustom.supportsERC165Interface(_sender, _INTERFACEID_LSP1)) {
+        if (ERC165Checker.supportsERC165Interface(_sender, _INTERFACEID_LSP1)) {
             ILSP1UniversalReceiver(_sender).universalReceiver(_TYPEID_LSP9_VAULTSENDER, "");
         }
     }
@@ -188,7 +186,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
      * @dev Calls the universalReceiver function of the recipient if supports LSP1 InterfaceId
      */
     function _notifyVaultReceiver(address _receiver) internal virtual {
-        if (ERC165CheckerCustom.supportsERC165Interface(_receiver, _INTERFACEID_LSP1)) {
+        if (ERC165Checker.supportsERC165Interface(_receiver, _INTERFACEID_LSP1)) {
             ILSP1UniversalReceiver(_receiver).universalReceiver(_TYPEID_LSP9_VAULTRECIPIENT, "");
         }
     }

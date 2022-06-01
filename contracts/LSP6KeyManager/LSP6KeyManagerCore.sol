@@ -8,7 +8,7 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {IClaimOwnership} from "../Utils/IClaimOwnership.sol";
+import {IClaimOwnership} from "../Custom/IClaimOwnership.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
@@ -17,7 +17,7 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ErrorHandlerLib} from "@erc725/smart-contracts/contracts/utils/ErrorHandlerLib.sol";
-import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
 
@@ -46,7 +46,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using LSP6Utils for *;
     using Address for address;
     using ECDSA for bytes32;
-    using ERC165CheckerCustom for address;
+    using ERC165Checker for address;
 
     address public override target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;

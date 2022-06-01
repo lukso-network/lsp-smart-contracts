@@ -6,7 +6,7 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // libraries
-import {ERC165CheckerCustom} from "../Utils/ERC165CheckerCustom.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -335,7 +335,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         uint256 amount,
         bytes memory data
     ) internal virtual {
-        if (ERC165CheckerCustom.supportsERC165Interface(from, _INTERFACEID_LSP1)) {
+        if (ERC165Checker.supportsERC165Interface(from, _INTERFACEID_LSP1)) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
             ILSP1UniversalReceiver(from).universalReceiver(_TYPEID_LSP7_TOKENSSENDER, packedData);
         }
@@ -354,7 +354,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual {
-        if (ERC165CheckerCustom.supportsERC165Interface(to, _INTERFACEID_LSP1)) {
+        if (ERC165Checker.supportsERC165Interface(to, _INTERFACEID_LSP1)) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
             ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP7_TOKENSRECIPIENT, packedData);
         } else if (!force) {
