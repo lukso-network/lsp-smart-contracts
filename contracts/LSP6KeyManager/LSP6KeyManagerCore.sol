@@ -217,7 +217,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             if (
                 // CHECK for permission keys
-                bytes8(key) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
+                bytes6(key) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
                 bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
             ) {
                 _verifyCanSetPermissions(key, inputValues[ii], _from, _permissions);

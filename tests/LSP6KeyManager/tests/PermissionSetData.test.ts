@@ -158,10 +158,10 @@ export const shouldBehaveLikePermissionSetData = (
           );
         });
 
-        it("(should pass): adding 10 LSP3IssuedAssets", async () => {
-          let lsp3IssuedAssets = getRandomAddresses(10);
+        it("(should pass): adding 10 LSP12IssuedAssets", async () => {
+          let lsp12IssuedAssets = getRandomAddresses(10);
 
-          const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
+          const data = { "LSP12IssuedAssets[]": lsp12IssuedAssets };
 
           const encodedData = encodeData(data, BasicUPSetup_Schema);
           const flattenedEncodedData = flattenEncodedData(encodedData);
@@ -186,14 +186,14 @@ export const shouldBehaveLikePermissionSetData = (
           expect(fetchedResult).toEqual(values);
         });
 
-        it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+        it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
               hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
               url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
             },
-            "LSP3IssuedAssets[]": [
+            "LSP12IssuedAssets[]": [
               "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
               "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
             ],
@@ -254,10 +254,10 @@ export const shouldBehaveLikePermissionSetData = (
           );
         });
 
-        it("(should pass): adding 10 LSP3IssuedAssets", async () => {
-          let lsp3IssuedAssets = getRandomAddresses(10);
+        it("(should pass): adding 10 LSP12IssuedAssets", async () => {
+          let lsp12IssuedAssets = getRandomAddresses(10);
 
-          const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
+          const data = { "LSP12IssuedAssets[]": lsp12IssuedAssets };
 
           const encodedData = encodeData(data, BasicUPSetup_Schema);
           const flattenedEncodedData = flattenEncodedData(encodedData);
@@ -282,14 +282,14 @@ export const shouldBehaveLikePermissionSetData = (
           expect(fetchedResult).toEqual(values);
         });
 
-        it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+        it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
               hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
               url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
             },
-            "LSP3IssuedAssets[]": [
+            "LSP12IssuedAssets[]": [
               "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
               "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
             ],
@@ -345,10 +345,10 @@ export const shouldBehaveLikePermissionSetData = (
           );
         });
 
-        it("(should fail): adding 10 LSP3IssuedAssets", async () => {
-          let lsp3IssuedAssets = getRandomAddresses(10);
+        it("(should fail): adding 10 LSP12IssuedAssets", async () => {
+          let lsp12IssuedAssets = getRandomAddresses(10);
 
-          const data = { "LSP3IssuedAssets[]": lsp3IssuedAssets };
+          const data = { "LSP12IssuedAssets[]": lsp12IssuedAssets };
 
           const encodedData = encodeData(data, BasicUPSetup_Schema);
           const flattenedEncodedData = flattenEncodedData(encodedData);
@@ -373,14 +373,14 @@ export const shouldBehaveLikePermissionSetData = (
           );
         });
 
-        it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP3IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+        it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
               hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
               url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
             },
-            "LSP3IssuedAssets[]": [
+            "LSP12IssuedAssets[]": [
               "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
               "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
             ],

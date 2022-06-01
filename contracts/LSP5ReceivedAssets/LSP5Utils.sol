@@ -95,10 +95,7 @@ library LSP5Utils {
 
             bytes memory lastKeyValue = _account.getData(lastKey);
 
-            bytes32 mapOfLastkey = LSP2Utils.generateBytes20MappingWithGroupingKey(
-                mapPrefix,
-                bytes20(lastKeyValue)
-            );
+            bytes32 mapOfLastkey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(lastKeyValue));
 
             bytes memory mapValueOfLastkey = _account.getData(mapOfLastkey);
 
@@ -157,13 +154,5 @@ library LSP5Utils {
         bytes memory mapValue = _account.getData(_mapKey);
         bytes memory val = BytesLib.slice(mapValue, 4, 8);
         return BytesLib.toUint64(val, 0);
-    }
-
-    function extractTokenAmount(bytes32 typeId, bytes memory data) internal pure returns (uint256) {
-        if (typeId == _TYPEID_LSP7_TOKENSSENDER) {
-            return uint256(bytes32(BytesLib.slice(data, 40, 32)));
-        } else {
-            return 1;
-        }
     }
 }

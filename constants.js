@@ -51,15 +51,15 @@ const OPERATION_TYPES = {
 
 const SupportedStandards = {
 	LSP3UniversalProfile: {
-		key: '0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6',
+		key: '0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38',
 		value: '0xabe425d6',
 	},
 	LSP4DigitalAsset: {
-		key: '0xeafec4d89fa9619884b6b89135626455000000000000000000000000a4d96624',
+		key: '0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c',
 		value: '0xa4d96624',
 	},
 	LSP9Vault: {
-		key: '0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1',
+		key: '0xeafec4d89fa9619884b600007c0334a14085fefa8b51ae5a40895018882bdb90',
 		value: '0x7c0334a1',
 	},
 };
@@ -77,10 +77,6 @@ const ERC725YKeys = {
 	LSP3: {
 		// keccak256('LSP3Profile')
 		LSP3Profile: '0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5',
-		// LSP3IssuedAssetsMap:<address>
-		LSP3IssuedAssetsMap: '0x83f5e77bfb14241600000000',
-		// keccak256('LSP3IssuedAssets[]')
-		'LSP3IssuedAssets[]': '0x3a47ab5bd3a594c3a8995f8fa58d0876c96819ca4516bd76100c92462f2f9dc0',
 	},
 	LSP4: {
 		// keccak256('LSP4TokenName')
@@ -94,7 +90,7 @@ const ERC725YKeys = {
 	},
 	LSP5: {
 		// LSP5ReceivedAssetsMap:<address>
-		LSP5ReceivedAssetsMap: '0x812c4334633eb81600000000',
+		LSP5ReceivedAssetsMap: '0x812c4334633eb816c80d0000',
 		// keccak256('LSP5ReceivedAssets[]')
 		'LSP5ReceivedAssets[]':
 			'0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
@@ -104,21 +100,27 @@ const ERC725YKeys = {
 		'AddressPermissions[]':
 			'0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3',
 		// AddressPermissions:Permissions:<address>
-		'AddressPermissions:Permissions': '0x4b80742d0000000082ac0000',
+		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
 		// AddressPermissions:AllowedAddresses:<address>
-		'AddressPermissions:AllowedAddresses': '0x4b80742d00000000c6dd0000',
+		'AddressPermissions:AllowedAddresses': '0x4b80742de2bfc6dd6b3c0000',
 		// AddressPermissions:AllowedFunctions:<address>
-		'AddressPermissions:AllowedFunctions': '0x4b80742d000000008efe0000',
+		'AddressPermissions:AllowedFunctions': '0x4b80742de2bf8efea1e80000',
 		// AddressPermissions:AllowedStandards:<address>
-		'AddressPermissions:AllowedStandards': '0x4b80742d000000003efa0000',
+		'AddressPermissions:AllowedStandards': '0x4b80742de2bf3efa94a30000',
 		// AddressPermissions:AllowedERC725YKeys:<address>
-		'AddressPermissions:AllowedERC725YKeys': '0x4b80742d0000000090b80000',
+		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
 	},
 	LSP10: {
 		// keccak256('LSP10VaultsMap')
-		LSP10VaultsMap: '0x192448c3c0f88c7f00000000',
+		LSP10VaultsMap: '0x192448c3c0f88c7f238c0000',
 		// keccak256('LSP10Vaults[]')
 		'LSP10Vaults[]': '0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06',
+	},
+	LSP12: {
+		// LSP12IssuedAssetsMap:<address>
+		LSP12IssuedAssetsMap: '0x74ac2555c10b9349e78f0000',
+		// keccak256('LSP12IssuedAssets[]')
+		'LSP12IssuedAssets[]': '0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd',
 	},
 };
 
@@ -138,8 +140,8 @@ const BasicUPSetup_Schema = [
 		valueType: 'address',
 	},
 	{
-		name: 'LSP3IssuedAssets[]',
-		key: ERC725YKeys.LSP3['LSP3IssuedAssets[]'],
+		name: 'LSP12IssuedAssets[]',
+		key: ERC725YKeys.LSP12['LSP12IssuedAssets[]'],
 		keyType: 'Array',
 		valueContent: 'Number',
 		valueType: 'uint256',
@@ -210,14 +212,11 @@ const EventSignatures = {
 	},
 	ERC725Y: {
 		/**
-		 * event DataChanged(
-		 *      bytes32 indexed key,
-		 *      bytes value
-		 * );
+		 * event DataChanged(bytes32 indexed key);
 		 *
-		 * signature = keccak256('DataChanged(bytes32,bytes)')
+		 * signature = keccak256('DataChanged(bytes32)')
 		 */
-		DataChanged: '0xece574603820d07bc9b91f2a932baadf4628aabcb8afba49776529c14a6104b2',
+		DataChanged: '0xcdf4e344c0d23d4cdd0474039d176c55b19d531070dbe17856bfb993a5b5720b',
 	},
 	// ERC725Account
 	LSP0: {
@@ -236,11 +235,11 @@ const EventSignatures = {
 		 * event UniversalReceiver(
 		 *    address indexed from,
 		 *    bytes32 indexed typeId,
-		 *    bytes32 indexed returnedValue,
+		 *    bytes indexed returnedValue,
 		 *    bytes receivedData
 		 * );
 		 *
-		 * signature = keccak256('UniversalReceiver(address,bytes32,bytes32,bytes)')
+		 * signature = keccak256('UniversalReceiver(address,bytes32,bytes,bytes)')
 		 */
 		UniversalReceiver: '0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3',
 	},

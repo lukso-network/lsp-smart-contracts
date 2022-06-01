@@ -40,10 +40,7 @@ abstract contract TokenAndVaultHandling {
         (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils
             .getTransferDetails(typeId);
 
-        bytes32 mapKey = LSP2Utils.generateBytes20MappingWithGroupingKey(
-            mapPrefix,
-            bytes20(sender)
-        );
+        bytes32 mapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(sender));
         bytes memory mapValue = IERC725Y(msg.sender).getData(mapKey);
 
         if (!senderHook) {
