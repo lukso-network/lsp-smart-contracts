@@ -8,7 +8,6 @@ import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1Univ
 
 // libraries
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
@@ -146,7 +145,8 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
         if (data.length >= 20) {
-            address universalReceiverDelegate = BytesLib.toAddress(data, 0);
+            address universalReceiverDelegate = address(bytes20(data));
+
             if (
                 ERC165Checker.supportsERC165Interface(
                     universalReceiverDelegate,
