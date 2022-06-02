@@ -6,7 +6,7 @@ import {UniversalProfile} from "../UniversalProfile.sol";
 import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // constants
-import {setDataMultipleSelector} from "../LSP6KeyManager/LSP6Constants.sol";
+import {setDataSingleSelector} from "../LSP6KeyManager/LSP6Constants.sol";
 
 contract Executor {
     uint256 internal constant _OPERATION_CALL = 0;
@@ -28,26 +28,20 @@ contract Executor {
     // -----------
 
     function setHardcodedKey() public returns (bytes memory) {
-        bytes32[] memory keys = new bytes32[](1);
-        bytes[] memory values = new bytes[](1);
-
         // prettier-ignore
-        keys[0] = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
-        values[0] = "Some value";
+        bytes32 key = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
+        bytes memory value = "Some value";
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
 
         return _keyManager.execute(erc725Payload);
     }
 
     function setComputedKey() public returns (bytes memory) {
-        bytes32[] memory keys = new bytes32[](1);
-        bytes[] memory values = new bytes[](1);
+        bytes32 key = keccak256(abi.encodePacked("Some Key"));
+        bytes memory value = abi.encodePacked("Some value");
 
-        keys[0] = keccak256(abi.encodePacked("Some Key"));
-        values[0] = abi.encodePacked("Some value");
-
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -56,13 +50,7 @@ contract Executor {
         public
         returns (bytes memory)
     {
-        bytes32[] memory keys = new bytes32[](1);
-        bytes[] memory values = new bytes[](1);
-
-        keys[0] = _key;
-        values[0] = _value;
-
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, _key, _value);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -99,14 +87,11 @@ contract Executor {
     // ----------------------
 
     function setHardcodedKeyRawCall() public returns (bool) {
-        bytes32[] memory keys = new bytes32[](1);
-        bytes[] memory values = new bytes[](1);
-
         // prettier-ignore
-        keys[0] = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
-        values[0] = "Some value";
+        bytes32 key = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
+        bytes memory value = "Some value";
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,
@@ -119,13 +104,10 @@ contract Executor {
     }
 
     function setComputedKeyRawCall() public returns (bool) {
-        bytes32[] memory keys = new bytes32[](1);
-        bytes[] memory values = new bytes[](1);
+        bytes32 key = keccak256(abi.encodePacked("Some Key"));
+        bytes memory value = abi.encodePacked("Some value");
 
-        keys[0] = keccak256(abi.encodePacked("Some Key"));
-        values[0] = abi.encodePacked("Some value");
-
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,
@@ -141,13 +123,7 @@ contract Executor {
         public
         returns (bool)
     {
-        bytes32[] memory keys = new bytes32[](1);
-        bytes[] memory values = new bytes[](1);
-
-        keys[0] = _key;
-        values[0] = _value;
-
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataMultipleSelector, keys, values);
+        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, _key, _value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,
