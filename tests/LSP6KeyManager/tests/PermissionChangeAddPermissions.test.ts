@@ -101,7 +101,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
     describe("when setting one permission key", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
-        it("should be allowed to ADD permissions", async () => {
+        it("should be allowed to ADD a permission", async () => {
           let newController = new ethers.Wallet.createRandom();
 
           let key =
@@ -109,8 +109,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             newController.address.substr(2);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [PERMISSIONS.SETDATA]]
+            "setData(bytes32,bytes)",
+            [key, PERMISSIONS.SETDATA]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
@@ -120,7 +120,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           expect(result).toEqual(PERMISSIONS.SETDATA);
         });
 
-        it("should be allowed to CHANGE permissions", async () => {
+        it("should be allowed to CHANGE a permission", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
@@ -128,8 +128,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
@@ -144,8 +144,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = ethers.utils.hexZeroPad(8, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
@@ -160,8 +160,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = ethers.utils.hexZeroPad(4, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
@@ -171,7 +171,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           expect(result).toEqual(value);
         });
 
-        it("should be allowed to edit AddressPermissions[4]", async () => {
+        it("should be allowed to edit key at index -> AddressPermissions[4]", async () => {
           let randomWallet = new ethers.Wallet.createRandom();
 
           let key =
@@ -181,8 +181,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = randomWallet.address;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
@@ -194,7 +194,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       });
 
       describe("when caller is an address with permission ADDPERMISSIONS", () => {
-        it("should be allowed to add permissions", async () => {
+        it("should be allowed to add a permission", async () => {
           let newController = new ethers.Wallet.createRandom();
 
           let key =
@@ -204,8 +204,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager
@@ -217,7 +217,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           expect(result).toEqual(value);
         });
 
-        it("should not be allowed to CHANGE permission", async () => {
+        it("should not be allowed to CHANGE a permission", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
@@ -225,8 +225,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -244,8 +244,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = ethers.utils.hexZeroPad(8, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager
@@ -262,8 +262,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = ethers.utils.hexZeroPad(4, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -276,7 +276,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
         });
 
-        it("should not be allowed to edit AddressPermissions[4]", async () => {
+        it("should not be allowed to edit key at index -> AddressPermissions[4]", async () => {
           let randomWallet = new ethers.Wallet.createRandom();
 
           let key =
@@ -286,8 +286,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = randomWallet.address;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -302,7 +302,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       });
 
       describe("when caller is an address with permission CHANGEPERMISSION", () => {
-        it("should not be allowed to ADD permissions", async () => {
+        it("should not be allowed to ADD a permission", async () => {
           let newController = new ethers.Wallet.createRandom();
 
           let key =
@@ -312,8 +312,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -328,15 +328,15 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
         });
 
-        it("should not be allowed to set (= ADD) permissions for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
+        it("should not be allowed to set (= ADD) a permission for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressWithZeroHexPermissions.address.substring(2);
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -351,7 +351,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
         });
 
-        it("should be allowed to CHANGE permissions", async () => {
+        it("should be allowed to CHANGE a permission", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
@@ -359,8 +359,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager
@@ -377,8 +377,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = ethers.utils.hexZeroPad(8, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -398,8 +398,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = ethers.utils.hexZeroPad(4, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager
@@ -411,7 +411,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           expect(result).toEqual(value);
         });
 
-        it("should be allowed to edit AddressPermissions[4]", async () => {
+        it("should be allowed to edit key at index -> AddressPermissions[4]", async () => {
           let randomWallet = new ethers.Wallet.createRandom();
 
           let key =
@@ -421,8 +421,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = randomWallet.address;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager
@@ -436,7 +436,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       });
 
       describe("when caller is an address with permission SETDATA", () => {
-        it("should not be allowed to ADD permissions", async () => {
+        it("should not be allowed to ADD a permission", async () => {
           let newController = new ethers.Wallet.createRandom();
 
           let key =
@@ -446,8 +446,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -457,15 +457,15 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
         });
 
-        it("should not be allowed to set (= ADD) permissions for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
+        it("should not be allowed to set (= ADD) a permission for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressWithZeroHexPermissions.address.substring(2);
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -475,7 +475,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
         });
 
-        it("should not be allowed to CHANGE permission", async () => {
+        it("should not be allowed to CHANGE a permission", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             addressToEditPermissions.address.substring(2);
@@ -483,8 +483,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = PERMISSIONS.SETDATA;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -499,8 +499,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = ethers.utils.hexZeroPad(8, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -515,8 +515,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = ethers.utils.hexZeroPad(4, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -526,7 +526,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
         });
 
-        it("should not be allowed to edit AddressPermissions[4]", async () => {
+        it("should not be allowed to edit key at index -> AddressPermissions[4]", async () => {
           let randomWallet = new ethers.Wallet.createRandom();
 
           let key =
@@ -536,8 +536,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = randomWallet.address;
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -627,8 +627,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -654,8 +654,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -681,8 +681,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -708,8 +708,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -737,8 +737,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -761,8 +761,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -783,8 +783,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000cafecafecafecafecafecafecafecafecafecafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -815,8 +815,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -842,8 +842,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -871,8 +871,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -900,8 +900,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -929,8 +929,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -951,8 +951,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -973,8 +973,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000cafecafecafecafecafecafecafecafecafecafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1048,8 +1048,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1070,8 +1070,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1092,8 +1092,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1114,8 +1114,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1138,8 +1138,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1162,8 +1162,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1184,8 +1184,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1211,8 +1211,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1233,8 +1233,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1257,8 +1257,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1281,8 +1281,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1305,8 +1305,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1327,8 +1327,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1349,8 +1349,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1434,8 +1434,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1463,8 +1463,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1492,8 +1492,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1521,8 +1521,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1552,8 +1552,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1576,8 +1576,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1598,8 +1598,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1630,8 +1630,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -1659,8 +1659,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1683,8 +1683,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1707,8 +1707,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1731,8 +1731,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await context.keyManager
@@ -1753,8 +1753,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1775,8 +1775,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000cafecafecafe";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1872,8 +1872,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
         await context.keyManager
           .connect(canOnlyAddPermissions)
@@ -1895,8 +1895,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let value = "0xbadbadbadbad";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -1931,8 +1931,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
