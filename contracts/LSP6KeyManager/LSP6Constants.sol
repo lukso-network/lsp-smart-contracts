@@ -65,6 +65,6 @@ bytes32 constant _PERMISSION_SUPER_DELEGATECALL = 0x0000000000000000000000000000
 // - keccak256("setData(bytes32[],bytes[])")
 
 // - keccak256("setData(bytes32,bytes)")
-bytes4 constant setDataSingle = 0x7f23690c;
+bytes4 constant setDataSingleSelector = 0x7f23690c;
 // - keccak256("setData(bytes32[],bytes[])")
 bytes4 constant setDataMultipleSelector = 0x14a6e293;
