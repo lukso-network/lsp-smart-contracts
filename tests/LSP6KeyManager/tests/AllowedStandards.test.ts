@@ -143,8 +143,8 @@ export const shouldBehaveLikeAllowedStandards = (
 
         let setDataPayload =
           context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
         await context.keyManager.connect(context.owner).execute(setDataPayload);
