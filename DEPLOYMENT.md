@@ -22,6 +22,8 @@ All the deployment scripts for `base` contracts initialize the contract after de
 
 &nbsp;
 
+Skip the next two steps (2 & 3) if you already have some LYX test token.
+
 2. Visit [LUKSO l14 Fauset](http://faucet.l14.lukso.network/), for fauset.
 
 3. In other to verify you recieved some fauset [L14 Public Testnet Config](https://docs.lukso.tech/networks/l14-testnet) 
