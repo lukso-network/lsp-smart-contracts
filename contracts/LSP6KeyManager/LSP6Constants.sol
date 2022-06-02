@@ -63,4 +63,8 @@ bytes32 constant _PERMISSION_SUPER_DELEGATECALL = 0x0000000000000000000000000000
 // TODO: test if gas cost difference when storing as:
 // - bytes4 0x14a6e293
 // - keccak256("setData(bytes32[],bytes[])")
+
+// - keccak256("setData(bytes32,bytes)")
+bytes4 constant setDataSingle = 0x7f23690c;
+// - keccak256("setData(bytes32[],bytes[])")
 bytes4 constant setDataMultipleSelector = 0x14a6e293;
