@@ -4,7 +4,6 @@ pragma solidity ^0.8.6;
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // modules
