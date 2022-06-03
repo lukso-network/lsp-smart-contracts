@@ -4,8 +4,6 @@ pragma solidity ^0.8.0;
 // --- ERC165 interface ids
 bytes4 constant _INTERFACEID_LSP6 = 0xc403d48f;
 
-// 0x4b80742d00000000c6dd000054dD2f5A45C8e7C83248a5a9F3c67b001F6AcC05
-
 // --- ERC725Y Keys
 
 // PERMISSIONS KEYS
@@ -60,11 +58,8 @@ bytes32 constant _PERMISSION_SUPER_CALL         = 0x0000000000000000000000000000
 bytes32 constant _PERMISSION_SUPER_STATICCALL   = 0x0000000000000000000000000000000000000000000000000000000000002000;
 bytes32 constant _PERMISSION_SUPER_DELEGATECALL = 0x0000000000000000000000000000000000000000000000000000000000004000;
 
-// TODO: test if gas cost difference when storing as:
-// - bytes4 0x14a6e293
-// - keccak256("setData(bytes32[],bytes[])")
 
-// - keccak256("setData(bytes32,bytes)")
-bytes4 constant setDataSingleSelector = 0x7f23690c;
-// - keccak256("setData(bytes32[],bytes[])")
-bytes4 constant setDataMultipleSelector = 0x14a6e293;
+/// @dev see IERC725Y interface
+///      https://github.com/ERC725Alliance/ERC725/blob/main/implementations/contracts/interfaces/IERC725Y.sol
+bytes4 constant setDataSingleSelector = bytes4(keccak256("setData(bytes32,bytes)"));
+bytes4 constant setDataMultipleSelector = bytes4(keccak256("setData(bytes32[],bytes[])"));
