@@ -65,7 +65,9 @@ library LSP5Utils {
         uint64 index = extractIndexFromMap(mapValue);
         bytes32 arrayKeyToRemove = LSP2Utils.generateArrayKeyAtIndex(_arrayKey, index);
 
-        uint256 arrayLength = uint256(bytes32(_account.getData(_arrayKey)));
+        bytes memory rawArrayLength = _account.getData(_arrayKey);
+
+        uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
 
         uint256 newLength = arrayLength - 1;
 
