@@ -177,21 +177,21 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(_calldata[4:], (bytes32, bytes));
 
-        if (
-            // CHECK for permission keys
-            bytes6(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
-            bytes16(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
-        ) {
+            if (
+                // CHECK for permission keys
+                bytes6(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
+                bytes16(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
+            ) {
 
-            _verifyCanSetPermissions(inputKey, inputValue, _from, permissions);
+                _verifyCanSetPermissions(inputKey, inputValue, _from, permissions);
 
-        } else {
+            } else {
 
-            bytes32[] memory inputKeys = new bytes32[](1);
-            inputKeys[0] = inputKey;
+                bytes32[] memory inputKeys = new bytes32[](1);
+                inputKeys[0] = inputKey;
 
-            _verifyCanSetData(_from, permissions, inputKeys);
-        }
+                _verifyCanSetData(_from, permissions, inputKeys);
+            }
 
         } else if (erc725Function == setDataMultipleSelector) {
 
