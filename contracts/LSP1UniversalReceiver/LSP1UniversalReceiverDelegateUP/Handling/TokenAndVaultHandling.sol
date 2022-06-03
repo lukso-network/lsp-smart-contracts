@@ -68,6 +68,7 @@ abstract contract TokenAndVaultHandling {
                 arrayKey,
                 mapPrefix,
                 mapKey,
+                mapValue,
                 keyManager
             );
         }

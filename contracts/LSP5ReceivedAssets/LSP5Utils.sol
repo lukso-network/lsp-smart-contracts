@@ -59,14 +59,14 @@ library LSP5Utils {
         IERC725Y _account,
         bytes32 _arrayKey,
         bytes12 mapPrefix,
-        bytes32 _mapKeyToRemove
+        bytes32 _mapKeyToRemove,
+        bytes memory mapValue
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
-        uint64 index = extractIndexFromMap(_account, _mapKeyToRemove);
+        uint64 index = extractIndexFromMap(mapValue);
         bytes32 arrayKeyToRemove = LSP2Utils.generateArrayKeyAtIndex(_arrayKey, index);
 
-        bytes memory rawArrayLength = _account.getData(_arrayKey);
+        uint256 arrayLength = uint256(bytes32(_account.getData(_arrayKey)));
 
-        uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
         uint256 newLength = arrayLength - 1;
 
         if (index == (arrayLength - 1)) {
@@ -135,23 +135,20 @@ library LSP5Utils {
         bytes32 _arrayKey,
         bytes12 mapPrefix,
         bytes32 _mapKeyToRemove,
+        bytes memory mapValue,
         address keyManager
     ) internal returns (bytes memory result) {
         (bytes32[] memory _keys, bytes[] memory _values) = removeMapAndArrayKey(
             _account,
             _arrayKey,
             mapPrefix,
-            _mapKeyToRemove
+            _mapKeyToRemove,
+            mapValue
         );
         result = LSP6Utils.setDataViaKeyManager(keyManager, _keys, _values);
     }
 
-    function extractIndexFromMap(IERC725Y _account, bytes32 _mapKey)
-        internal
-        view
-        returns (uint64)
-    {
-        bytes memory mapValue = _account.getData(_mapKey);
+    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint64) {
         bytes memory val = BytesLib.slice(mapValue, 4, 8);
         return BytesLib.toUint64(val, 0);
     }

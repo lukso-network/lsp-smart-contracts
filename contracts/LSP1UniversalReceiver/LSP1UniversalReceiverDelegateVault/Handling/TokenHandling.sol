@@ -58,7 +58,8 @@ abstract contract TokenHandling {
                 IERC725Y(msg.sender),
                 arrayKey,
                 mapPrefix,
-                mapKey
+                mapKey,
+                mapValue
             );
             IERC725Y(msg.sender).setData(keys, values);
         }
