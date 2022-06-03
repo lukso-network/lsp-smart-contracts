@@ -2,26 +2,23 @@
 
 pragma solidity ^0.8.0;
 
-import "./LSP8MintableCore.sol";
-import "../LSP8IdentifiableDigitalAssetInit.sol";
+// modules
+import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {LSP8MintableCore} from "./LSP8MintableCore.sol";
 
 /**
  * @dev LSP8 extension.
  */
 abstract contract LSP8MintableInitAbstract is
-    LSP8MintableCore,
-    LSP8IdentifiableDigitalAssetInit
+    LSP8IdentifiableDigitalAssetInitAbstract,
+    LSP8MintableCore
 {
     function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
     ) internal virtual override onlyInitializing {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_
-        );
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 
     /**

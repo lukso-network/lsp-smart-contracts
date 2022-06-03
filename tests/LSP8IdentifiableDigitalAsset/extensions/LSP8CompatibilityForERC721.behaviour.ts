@@ -79,9 +79,9 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       expect(nameAsString).toEqual(context.deployParams.name);
 
       // using getData -> returns(bytes)
-      const nameAsBytes = await context.lsp8CompatibilityForERC721["getData(bytes32)"](
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")),
-      );
+      const nameAsBytes = await context.lsp8CompatibilityForERC721[
+        "getData(bytes32)"
+      ](ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")));
       expect(ethers.utils.toUtf8String(nameAsBytes)).toEqual(
         context.deployParams.name
       );
@@ -95,9 +95,9 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       expect(symbolAsString).toEqual(context.deployParams.symbol);
 
       // using getData -> returns(bytes)
-      const symbolAsBytes = await context.lsp8CompatibilityForERC721["getData(bytes32)"](
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")),
-      );
+      const symbolAsBytes = await context.lsp8CompatibilityForERC721[
+        "getData(bytes32)"
+      ](ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")));
       expect(ethers.utils.toUtf8String(symbolAsBytes)).toEqual(
         context.deployParams.symbol
       );
@@ -118,10 +118,9 @@ export const shouldBehaveLikeLSP8CompatibilityForERC721 = (
       );
 
       // using getData -> returns(bytes)
-      const lsp4MetadataValueAsBytes =
-        await context.lsp8CompatibilityForERC721["getData(bytes32)"](
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4Metadata")),
-        );
+      const lsp4MetadataValueAsBytes = await context.lsp8CompatibilityForERC721[
+        "getData(bytes32)"
+      ](ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4Metadata")));
       expect(lsp4MetadataValueAsBytes).toEqual(
         context.deployParams.lsp4MetadataValue
       );
@@ -767,7 +766,7 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
     it("should have registered its ERC165 interface", async () => {
       expect(
         await context.lsp8CompatibilityForERC721.supportsInterface(
-          INTERFACE_IDS.LSP8
+          INTERFACE_IDS.LSP8IdentifiableDigitalAsset
         )
       );
       expect(
@@ -787,13 +786,12 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
         context.lsp8CompatibilityForERC721,
         "DataChanged",
         [
-          SupportedStandards.LSP4DigitalAsset.key,
-          SupportedStandards.LSP4DigitalAsset.value,
+          SupportedStandards.LSP4DigitalAsset.key
         ]
       );
       expect(
         await context.lsp8CompatibilityForERC721["getData(bytes32)"](
-          SupportedStandards.LSP4DigitalAsset.key,
+          SupportedStandards.LSP4DigitalAsset.key
         )
       ).toEqual(SupportedStandards.LSP4DigitalAsset.value);
 
@@ -805,7 +803,7 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8CompatibilityForERC721,
         "DataChanged",
-        [nameKey, expectedNameValue]
+        [nameKey]
       );
       expect(
         await context.lsp8CompatibilityForERC721["getData(bytes32)"](nameKey)
@@ -819,7 +817,7 @@ export const shouldInitializeLikeLSP8CompatibilityForERC721 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8CompatibilityForERC721,
         "DataChanged",
-        [symbolKey, expectedSymbolValue]
+        [symbolKey]
       );
       expect(
         await context.lsp8CompatibilityForERC721["getData(bytes32)"](symbolKey)

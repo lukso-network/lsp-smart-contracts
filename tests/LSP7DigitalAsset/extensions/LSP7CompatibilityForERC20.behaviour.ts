@@ -535,7 +535,7 @@ export const shouldInitializeLikeLSP7CompatibilityForERC20 = (
     it("should have registered its ERC165 interface", async () => {
       expect(
         await context.lsp7CompatibilityForERC20.supportsInterface(
-          INTERFACE_IDS.LSP7
+          INTERFACE_IDS.LSP7DigitalAsset
         )
       );
     });
@@ -545,13 +545,12 @@ export const shouldInitializeLikeLSP7CompatibilityForERC20 = (
         context.lsp7CompatibilityForERC20,
         "DataChanged",
         [
-          SupportedStandards.LSP4DigitalAsset.key,
-          SupportedStandards.LSP4DigitalAsset.value,
+          SupportedStandards.LSP4DigitalAsset.key
         ]
       );
       expect(
         await context.lsp7CompatibilityForERC20["getData(bytes32)"](
-          SupportedStandards.LSP4DigitalAsset.key,
+          SupportedStandards.LSP4DigitalAsset.key
         )
       ).toEqual(SupportedStandards.LSP4DigitalAsset.value);
 
@@ -563,7 +562,7 @@ export const shouldInitializeLikeLSP7CompatibilityForERC20 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp7CompatibilityForERC20,
         "DataChanged",
-        [nameKey, expectedNameValue]
+        [nameKey]
       );
       expect(
         await context.lsp7CompatibilityForERC20["getData(bytes32)"](nameKey)
@@ -577,7 +576,7 @@ export const shouldInitializeLikeLSP7CompatibilityForERC20 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp7CompatibilityForERC20,
         "DataChanged",
-        [symbolKey, expectedSymbolValue]
+        [symbolKey]
       );
       expect(
         await context.lsp7CompatibilityForERC20["getData(bytes32)"](symbolKey)

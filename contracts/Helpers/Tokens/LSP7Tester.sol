@@ -2,7 +2,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
+// modules
+import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 
 contract LSP7Tester is LSP7DigitalAsset {
     /* solhint-disable no-empty-blocks */

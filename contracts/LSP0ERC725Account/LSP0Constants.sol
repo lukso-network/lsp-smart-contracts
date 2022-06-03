@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP0 = 0x481e0fe8;
+bytes4 constant _INTERFACEID_LSP0 = 0x9a3bfe88;
 bytes4 constant _INTERFACEID_ERC1271 = 0x1626ba7e;
 
 // ERC1271 - Standard Signature Validation

@@ -3,7 +3,8 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../LSP7DigitalAsset/extensions/LSP7CappedSupplyInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol";
+import {LSP7CappedSupplyInitAbstract} from "../../LSP7DigitalAsset/extensions/LSP7CappedSupplyInitAbstract.sol";
 
 contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInitAbstract {
     function initialize(

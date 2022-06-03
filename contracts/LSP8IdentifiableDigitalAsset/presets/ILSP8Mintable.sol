@@ -3,15 +3,15 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "../ILSP7DigitalAsset.sol";
+import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
 
 /**
- * @dev LSP7 extension, Mintable version.
+ * @dev LSP8 extension, mintable.
  */
-interface ILSP7Mintable is ILSP7DigitalAsset {
+interface ILSP8Mintable is ILSP8IdentifiableDigitalAsset {
     /**
      * @param to The address to mint tokens
-     * @param amount The amount to mint
+     * @param tokenId The tokenId to mint
      * @param force When set to TRUE, to may be any address but
      * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
@@ -25,7 +25,7 @@ interface ILSP7Mintable is ILSP7DigitalAsset {
      */
     function mint(
         address to,
-        uint256 amount,
+        bytes32 tokenId,
         bool force,
         bytes memory data
     ) external;

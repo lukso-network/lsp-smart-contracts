@@ -2,6 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 
 import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-web3";
+import "@nomiclabs/hardhat-etherscan";
 
 import "@typechain/hardhat";
 import "hardhat-packager";
@@ -22,7 +23,7 @@ const config: HardhatUserConfig = {
       saveDeployments: false,
     },
     // public L14 test network
-    L14: {
+    luksoL14: {
       live: true,
       url: "https://rpc.l14.lukso.network",
       chainId: 22,
@@ -37,6 +38,21 @@ const config: HardhatUserConfig = {
   },
   namedAccounts: {
     owner: 0,
+  },
+  etherscan: {
+    // no API is required to verify contracts
+    // via the Blockscout instance of the L14 network
+    apiKey: "no-api-key-needed",
+    customChains: [
+      {
+        network: "luksoL14",
+        chainId: 22,
+        urls: {
+          apiURL: "https://blockscout.com/lukso/l14/api",
+          browserURL: "https://blockscout.com/lukso/l14",
+        },
+      },
+    ],
   },
   solidity: {
     version: "0.8.7",
@@ -74,7 +90,7 @@ const config: HardhatUserConfig = {
       // Proxy version
       // ------------------
       "UniversalProfileInit",
-      "LSP0ERC725Account",
+      "LSP0ERC725AccountInit",
       "LSP4DigitalAssetMetadataInit",
       "LSP6KeyManagerInit",
       "LSP7DigitalAssetInit",
@@ -97,6 +113,7 @@ const config: HardhatUserConfig = {
       // Tools
       // ------------------
       "Create2Factory",
+      "UniversalFactory"
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.

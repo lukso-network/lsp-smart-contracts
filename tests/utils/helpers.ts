@@ -3,6 +3,8 @@ import { ethers } from "hardhat";
 export const abiCoder = ethers.utils.defaultAbiCoder;
 export const provider = ethers.provider;
 
+export const ZeroAddress = "0x0000000000000000000000000000000000000000";
+export const AddressOffset = "000000000000000000000000";
 export const EMPTY_PAYLOAD = "0x";
 export const DUMMY_PAYLOAD = "0xaabbccdd123456780000000000";
 export const ONE_ETH = ethers.utils.parseEther("1");
@@ -163,11 +165,14 @@ export async function getMapAndArrayKeyValues(
   arrayKey: string,
   elementInArray: string
 ) {
-  let [mapValue, arrayLength, elementAddress] = await account.getData([
-    vaultMapKey,
-    arrayKey,
-    elementInArray,
-  ]);
+  // prettier-ignore
+  let [mapValue, arrayLength, elementAddress] = await account["getData(bytes32[])"](
+        [
+            vaultMapKey, 
+            arrayKey, 
+            elementInArray
+        ]
+    );
 
   return [mapValue, arrayLength, elementAddress];
 }

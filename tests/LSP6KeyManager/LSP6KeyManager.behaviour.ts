@@ -23,6 +23,7 @@ import {
 
 import {
   testAllowedAddressesInternals,
+  testAllowedERC725YKeysInternals,
   testAllowedFunctionsInternals,
   testReadingPermissionsInternals,
 } from "./internals";
@@ -121,13 +122,13 @@ export const shouldInitializeLikeLSP6 = (
 
     it("should support LSP6 interface", async () => {
       const result = await context.keyManager.supportsInterface(
-        INTERFACE_IDS.LSP6
+        INTERFACE_IDS.LSP6KeyManager
       );
       expect(result).toBeTruthy();
     });
 
     it("should be linked to the right ERC725 account contract", async () => {
-      let account = await context.keyManager.account();
+      let account = await context.keyManager.target();
       expect(account).toEqual(context.universalProfile.address);
     });
   });
@@ -138,5 +139,6 @@ export const testLSP6InternalFunctions = (
 ) => {
   testAllowedAddressesInternals(buildContext);
   testAllowedFunctionsInternals(buildContext);
+  testAllowedERC725YKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
 };

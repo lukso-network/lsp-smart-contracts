@@ -12,7 +12,7 @@ All the deployment scripts for `base` contracts initialize the contract after de
 
 ```ts
     // public L14 test network
-    L14: {
+    luksoL14: {
       live: true,
       url: "https://rpc.l14.lukso.network",
       chainId: 22,
@@ -25,7 +25,7 @@ All the deployment scripts for `base` contracts initialize the contract after de
 2. run the command using one of the available `--tags`
 
 ```
-npx hardhat deploy --network L14 --tags <options> --reset
+npx hardhat deploy --network luksoL14 --tags <options> --reset
 ```
 
 Available `--tags <options>` are:
@@ -52,12 +52,12 @@ Available `--tags <options>` are:
 
 ```
 // Deploy the 3 contracts
-npx hardhat deploy --network L14 --tags standard --reset
+npx hardhat deploy --network luksoL14 --tags standard --reset
 
 
 // Deploy the 3 contracts as base contracts (to be used behind proxies)
-npx hardhat deploy --network L14 --tags base --reset
+npx hardhat deploy --network luksoL14 --tags base --reset
 
 // Deploy a specific contract
-npx hardhat deploy --network L14 --tags UniversalProfile --reset
+npx hardhat deploy --network luksoL14 --tags UniversalProfile --reset
 ```

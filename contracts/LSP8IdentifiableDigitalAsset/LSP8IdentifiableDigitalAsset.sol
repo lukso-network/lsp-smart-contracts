@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+
 // modules
-import "./LSP8IdentifiableDigitalAssetCore.sol";
-import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {LSP8IdentifiableDigitalAssetCore} from "./LSP8IdentifiableDigitalAssetCore.sol";
+import {LSP4DigitalAssetMetadata} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
 
 // constants
-import "./LSP8Constants.sol";
-import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
 
 /**
  * @title LSP8IdentifiableDigitalAsset contract
@@ -16,8 +18,8 @@ import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
  * @dev Implementation of a LSP8 compliant contract.
  */
 contract LSP8IdentifiableDigitalAsset is
-    LSP8IdentifiableDigitalAssetCore,
-    LSP4DigitalAssetMetadata
+    LSP4DigitalAssetMetadata,
+    LSP8IdentifiableDigitalAssetCore
 {
     /**
      * @notice Sets the token-Metadata
@@ -38,11 +40,9 @@ contract LSP8IdentifiableDigitalAsset is
         public
         view
         virtual
-        override(IERC165, ERC165Storage)
+        override(IERC165, ERC725YCore)
         returns (bool)
     {
-        return
-            interfaceId == _INTERFACEID_LSP8 ||
-            super.supportsInterface(interfaceId);
+        return interfaceId == _INTERFACEID_LSP8 || super.supportsInterface(interfaceId);
     }
 }

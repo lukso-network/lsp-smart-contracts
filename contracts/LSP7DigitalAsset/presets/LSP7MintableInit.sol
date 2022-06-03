@@ -2,7 +2,8 @@
 
 pragma solidity ^0.8.0;
 
-import "./LSP7MintableInitAbstract.sol";
+// modules
+import {LSP7MintableInitAbstract} from "./LSP7MintableInitAbstract.sol";
 
 /**
  * @dev LSP7 extension, mintable.

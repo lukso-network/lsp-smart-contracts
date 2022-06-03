@@ -2,7 +2,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol";
+// modules
+import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol";
 
 contract LSP7InitTester is LSP7DigitalAssetInitAbstract {
     function initialize(

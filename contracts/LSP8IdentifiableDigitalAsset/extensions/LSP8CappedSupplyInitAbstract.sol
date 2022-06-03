@@ -3,22 +3,18 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP8CappedSupplyCore.sol";
-import "../LSP8IdentifiableDigitalAssetInit.sol";
+import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
+import {LSP8IdentifiableDigitalAssetInit} from "../LSP8IdentifiableDigitalAssetInit.sol";
+import {LSP8CappedSupplyCore} from "./LSP8CappedSupplyCore.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
 abstract contract LSP8CappedSupplyInitAbstract is
-    Initializable,
-    LSP8CappedSupplyCore,
-    LSP8IdentifiableDigitalAssetInit
+    LSP8IdentifiableDigitalAssetInit,
+    LSP8CappedSupplyCore
 {
-    function _initialize(uint256 tokenSupplyCap_)
-        internal
-        virtual
-        onlyInitializing
-    {
+    function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
         if (tokenSupplyCap_ == 0) {
             revert LSP8CappedSupplyRequired();
         }
@@ -44,11 +40,7 @@ abstract contract LSP8CappedSupplyInitAbstract is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    )
-        internal
-        virtual
-        override(LSP8IdentifiableDigitalAssetCore, LSP8CappedSupplyCore)
-    {
+    ) internal virtual override(LSP8IdentifiableDigitalAssetCore, LSP8CappedSupplyCore) {
         super._mint(to, tokenId, force, data);
     }
 }

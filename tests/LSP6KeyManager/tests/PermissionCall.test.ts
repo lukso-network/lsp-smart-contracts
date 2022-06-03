@@ -6,9 +6,9 @@ import { TargetContract, TargetContract__factory } from "../../../types";
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
-  OPERATIONS,
+  OPERATION_TYPES,
 } from "../../../constants";
 
 // setup
@@ -48,9 +48,9 @@ export const shouldBehaveLikePermissionCall = (
     ];
 
     const permissionsValues = [
-      ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+      ALL_PERMISSIONS,
+      PERMISSIONS.CALL,
+      PERMISSIONS.SETDATA,
     ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
@@ -68,7 +68,7 @@ export const shouldBehaveLikePermissionCall = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
         await context.keyManager.connect(context.owner).execute(payload);
@@ -89,7 +89,7 @@ export const shouldBehaveLikePermissionCall = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
         await context.keyManager.connect(addressCanMakeCall).execute(payload);
@@ -110,18 +110,14 @@ export const shouldBehaveLikePermissionCall = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
+          [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
-        try {
-          await context.keyManager
-            .connect(addressCannotMakeCall)
-            .execute(payload);
-        } catch (error) {
-          expect(error.message).toMatch(
-            NotAuthorisedError(addressCannotMakeCall.address, "CALL")
-          );
-        }
+        await expect(
+          context.keyManager.connect(addressCannotMakeCall).execute(payload)
+        ).toBeRevertedWith(
+          NotAuthorisedError(addressCannotMakeCall.address, "CALL")
+        );
       });
     });
 
@@ -134,7 +130,7 @@ export const shouldBehaveLikePermissionCall = (
 
         let executePayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -156,7 +152,7 @@ export const shouldBehaveLikePermissionCall = (
 
         let executePayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
@@ -178,7 +174,12 @@ export const shouldBehaveLikePermissionCall = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+          [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
         );
 
         await expect(context.keyManager.execute(payload)).toBeRevertedWith(
@@ -207,15 +208,22 @@ export const shouldBehaveLikePermissionCall = (
 
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
           ]);
 
+        const HARDHAT_CHAINID = 31337;
+
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
+          ["uint256", "address", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            executeRelayCallPayload,
+          ]
         );
 
         let signature = await context.owner.signMessage(
@@ -223,10 +231,9 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         await context.keyManager.executeRelayCall(
-          context.keyManager.address,
+          signature,
           nonce,
-          executeRelayCallPayload,
-          signature
+          executeRelayCallPayload
         );
 
         const result = await targetContract.callStatic.getName();
@@ -249,15 +256,22 @@ export const shouldBehaveLikePermissionCall = (
 
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
           ]);
 
+        const HARDHAT_CHAINID = 31337;
+
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
+          ["uint256", "address", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            executeRelayCallPayload,
+          ]
         );
 
         let signature = await addressCanMakeCall.signMessage(
@@ -265,10 +279,9 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         await context.keyManager.executeRelayCall(
-          context.keyManager.address,
+          signature,
           nonce,
-          executeRelayCallPayload,
-          signature
+          executeRelayCallPayload
         );
 
         const result = await targetContract.callStatic.getName();
@@ -291,33 +304,37 @@ export const shouldBehaveLikePermissionCall = (
 
         let executeRelayCallPayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATIONS.CALL,
+            OPERATION_TYPES.CALL,
             targetContract.address,
             0,
             targetContractPayload,
           ]);
 
+        const HARDHAT_CHAINID = 31337;
+
         let hash = ethers.utils.solidityKeccak256(
-          ["address", "uint256", "bytes"],
-          [context.keyManager.address, nonce, executeRelayCallPayload]
+          ["uint256", "address", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            executeRelayCallPayload,
+          ]
         );
 
         let signature = await addressCannotMakeCall.signMessage(
           ethers.utils.arrayify(hash)
         );
 
-        try {
-          await context.keyManager.executeRelayCall(
-            context.keyManager.address,
+        await expect(
+          context.keyManager.executeRelayCall(
+            signature,
             nonce,
-            executeRelayCallPayload,
-            signature
-          );
-        } catch (error) {
-          expect(error.message).toMatch(
-            NotAuthorisedError(addressCannotMakeCall.address, "CALL")
-          );
-        }
+            executeRelayCallPayload
+          )
+        ).toBeRevertedWith(
+          NotAuthorisedError(addressCannotMakeCall.address, "CALL")
+        );
 
         // ensure no state change at the target contract
         const result = await targetContract.callStatic.getName();

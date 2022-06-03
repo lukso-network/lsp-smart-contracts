@@ -10,9 +10,9 @@ import {
 
 // constants
 import {
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   ERC725YKeys,
-  OPERATIONS,
+  OPERATION_TYPES,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -66,8 +66,12 @@ export const testSecurityScenarios = (
     ];
 
     const permissionValues = [
-      ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL + PERMISSIONS.TRANSFERVALUE, 32),
+      ALL_PERMISSIONS,
+      ethers.utils.hexZeroPad(
+        parseInt(Number(PERMISSIONS.CALL)) +
+          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
+        32
+      ),
     ];
 
     await setupKeyManager(context, permissionKeys, permissionValues);
@@ -87,18 +91,14 @@ export const testSecurityScenarios = (
 
     let executePayload = context.universalProfile.interface.encodeFunctionData(
       "execute",
-      [OPERATIONS.CALL, targetContract.address, 0, targetContractPayload]
+      [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload]
     );
 
-    try {
-      await context.keyManager
+    await expect(
+      context.keyManager
         .connect(addressWithNoPermissions)
-        .execute(executePayload);
-    } catch (error) {
-      expect(error.message).toMatch(
-        NoPermissionsSetError(addressWithNoPermissions.address)
-      );
-    }
+        .execute(executePayload)
+    ).toBeRevertedWith(NoPermissionsSetError(addressWithNoPermissions.address));
   });
 
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
@@ -110,7 +110,7 @@ export const testSecurityScenarios = (
 
       await expect(
         context.keyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector'");
     });
 
     it("via `executeRelayCall()`", async () => {
@@ -139,7 +139,7 @@ export const testSecurityScenarios = (
             payload,
             signature
           )
-      ).toBeRevertedWith("_validateERC725Selector: invalid ERC725 selector");
+      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector'");
     });
   });
 
@@ -150,7 +150,7 @@ export const testSecurityScenarios = (
       // in the fallback function of the target (= recipient) contract
       let transferPayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           maliciousContract.address,
           ONE_ETH,
           EMPTY_PAYLOAD,
@@ -203,15 +203,22 @@ export const testSecurityScenarios = (
 
       let executeRelayCallPayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATIONS.CALL,
+          OPERATION_TYPES.CALL,
           signer.address,
           ONE_ETH,
           EMPTY_PAYLOAD,
         ]);
 
+      const HARDHAT_CHAINID = 31337;
+
       let hash = ethers.utils.solidityKeccak256(
-        ["address", "uint256", "bytes"],
-        [context.keyManager.address, nonce, executeRelayCallPayload]
+        ["uint256", "address", "uint256", "bytes"],
+        [
+          HARDHAT_CHAINID,
+          context.keyManager.address,
+          nonce,
+          executeRelayCallPayload,
+        ]
       );
 
       let signature = await signer.signMessage(ethers.utils.arrayify(hash));
@@ -219,12 +226,7 @@ export const testSecurityScenarios = (
       // first call
       await context.keyManager
         .connect(relayer)
-        .executeRelayCall(
-          context.keyManager.address,
-          nonce,
-          executeRelayCallPayload,
-          signature
-        );
+        .executeRelayCall(signature, nonce, executeRelayCallPayload);
 
       // 2nd call = replay attack
       await expect(

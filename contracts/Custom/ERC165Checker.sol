@@ -3,7 +3,13 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+// This contract is a modified version of OpenZeppelin implementation, where we modify the visibility of
+// `supportsERC165Interface`, which check the given interfaceId, to internal and to be used in contract implementations,
+// instead of `supportsInterface` to save gas, as the latter check for 3 interfaceIds; InterfaceId of ERC165, 0xffffffff
+// and the given interfaceId.
+
+// interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /**
  * @dev Library used to query support of an interface declared via {IERC165}.
@@ -12,7 +18,7 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
  * `revert` if an interface is not supported. It is up to the caller to decide
  * what to do in these cases.
  */
-library ERC165CheckerCustom {
+library ERC165Checker {
     // As per the EIP-165 spec, no interface should ever match 0xffffffff
     bytes4 private constant _INTERFACE_ID_INVALID = 0xffffffff;
 
@@ -33,15 +39,9 @@ library ERC165CheckerCustom {
      *
      * See {IERC165-supportsInterface}.
      */
-    function supportsInterface(address account, bytes4 interfaceId)
-        internal
-        view
-        returns (bool)
-    {
+    function supportsInterface(address account, bytes4 interfaceId) internal view returns (bool) {
         // query support of both ERC165 as per the spec and support of _interfaceId
-        return
-            supportsERC165(account) &&
-            supportsERC165Interface(account, interfaceId);
+        return supportsERC165(account) && supportsERC165Interface(account, interfaceId);
     }
 
     /**
@@ -54,10 +54,11 @@ library ERC165CheckerCustom {
      *
      * _Available since v3.4._
      */
-    function getSupportedInterfaces(
-        address account,
-        bytes4[] memory interfaceIds
-    ) internal view returns (bool[] memory) {
+    function getSupportedInterfaces(address account, bytes4[] memory interfaceIds)
+        internal
+        view
+        returns (bool[] memory)
+    {
         // an array of booleans corresponding to interfaceIds and whether they're supported or not
         bool[] memory interfaceIdsSupported = new bool[](interfaceIds.length);
 
@@ -65,10 +66,7 @@ library ERC165CheckerCustom {
         if (supportsERC165(account)) {
             // query support of each interface in interfaceIds
             for (uint256 i = 0; i < interfaceIds.length; i++) {
-                interfaceIdsSupported[i] = supportsERC165Interface(
-                    account,
-                    interfaceIds[i]
-                );
+                interfaceIdsSupported[i] = supportsERC165Interface(account, interfaceIds[i]);
             }
         }
 
@@ -84,10 +82,11 @@ library ERC165CheckerCustom {
      *
      * See {IERC165-supportsInterface}.
      */
-    function supportsAllInterfaces(
-        address account,
-        bytes4[] memory interfaceIds
-    ) internal view returns (bool) {
+    function supportsAllInterfaces(address account, bytes4[] memory interfaceIds)
+        internal
+        view
+        returns (bool)
+    {
         // query support of ERC165 itself
         if (!supportsERC165(account)) {
             return false;
@@ -124,9 +123,7 @@ library ERC165CheckerCustom {
             IERC165.supportsInterface.selector,
             interfaceId
         );
-        (bool success, bytes memory result) = account.staticcall{gas: 30000}(
-            encodedParams
-        );
+        (bool success, bytes memory result) = account.staticcall{gas: 30000}(encodedParams);
         if (result.length < 32) return false;
         return success && abi.decode(result, (bool));
     }

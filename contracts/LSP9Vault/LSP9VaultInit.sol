@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP9VaultInitAbstract.sol";
+import {LSP9VaultInitAbstract} from "./LSP9VaultInitAbstract.sol";
 
 /**
  * @title Deployable Proxy Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver

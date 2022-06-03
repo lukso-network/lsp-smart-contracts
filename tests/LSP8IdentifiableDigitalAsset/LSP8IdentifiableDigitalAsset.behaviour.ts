@@ -17,7 +17,11 @@ import {
 import { tokenIdAsBytes32 } from "../utils/tokens";
 
 // constants
-import { INTERFACE_IDS, SupportedStandards } from "../../constants";
+import {
+  ERC725YKeys,
+  INTERFACE_IDS,
+  SupportedStandards,
+} from "../../constants";
 
 export type LSP8TestAccounts = {
   owner: SignerWithAddress;
@@ -55,6 +59,30 @@ export const shouldBehaveLikeLSP8 = (
 
   beforeEach(async () => {
     context = await buildContext();
+  });
+
+  describe("when setting data on ERC725Y storage", () => {
+    it("should revert when trying to edit Token Name", async () => {
+      const key = ERC725YKeys.LSP4["LSP4TokenName"];
+      const value = "Overriden Token Name";
+
+      await expect(
+        context.lsp8
+          .connect(context.deployParams.newOwner)
+          ["setData(bytes32,bytes)"](key, value)
+      ).toBeRevertedWith("LSP4: cannot edit Token Name after deployment");
+    });
+
+    it("should revert when trying to edit Token Symbol", async () => {
+      const key = ERC725YKeys.LSP4["LSP4TokenSymbol"];
+      const value = "BAD";
+
+      await expect(
+        context.lsp8
+          .connect(context.deployParams.newOwner)
+          ["setData(bytes32,bytes)"](key, value)
+      ).toBeRevertedWith("LSP4: cannot edit Token Symbol after deployment");
+    });
   });
 
   describe("when minting tokens", () => {
@@ -1320,7 +1348,11 @@ export const shouldInitializeLikeLSP8 = (
     });
 
     it("should have registered the LSP8 interface", async () => {
-      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.LSP8));
+      expect(
+        await context.lsp8.supportsInterface(
+          INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+        )
+      );
     });
 
     it("should have set expected entries with ERC725Y.setData", async () => {
@@ -1328,40 +1360,39 @@ export const shouldInitializeLikeLSP8 = (
         context.lsp8,
         "DataChanged",
         [
-          SupportedStandards.LSP4DigitalAsset.key,
-          SupportedStandards.LSP4DigitalAsset.value,
+          SupportedStandards.LSP4DigitalAsset.key
         ]
       );
       expect(
-        await context.lsp8["getData(bytes32)"](SupportedStandards.LSP4DigitalAsset.key)
+        await context.lsp8["getData(bytes32)"](
+          SupportedStandards.LSP4DigitalAsset.key
+        )
       ).toEqual(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey =
-        "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
+      const nameKey = ERC725YKeys.LSP4["LSP4TokenName"];
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8,
         "DataChanged",
-        [nameKey, expectedNameValue]
+        [nameKey]
       );
       expect(await context.lsp8["getData(bytes32)"](nameKey)).toEqual(
-        expectedNameValue,
+        expectedNameValue
       );
 
-      const symbolKey =
-        "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
+      const symbolKey = ERC725YKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8,
         "DataChanged",
-        [symbolKey, expectedSymbolValue]
+        [symbolKey]
       );
       expect(await context.lsp8["getData(bytes32)"](symbolKey)).toEqual(
-        expectedSymbolValue,
+        expectedSymbolValue
       );
     });
   });

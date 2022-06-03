@@ -6,12 +6,7 @@ import { TargetContract__factory, TargetContract } from "../../../types";
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-import {
-  ALL_PERMISSIONS_SET,
-  ERC725YKeys,
-  OPERATIONS,
-  PERMISSIONS,
-} from "../../../constants";
+import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
 
 export const otherTestScenarios = (
   buildContext: () => Promise<LSP6TestContext>
@@ -42,85 +37,12 @@ export const otherTestScenarios = (
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        superAdmin.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        superAdminNoSign.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        superAdminCustomPermissions.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanMakeCall.address.substring(2),
     ];
 
-    const permissionsValues = [
-      ALL_PERMISSIONS_SET,
-      ALL_PERMISSIONS_SET,
-      "0x00000000000000000000000000000000000000000000000000000000000001ff",
-      "0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff",
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-    ];
+    const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.CALL];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
-  });
-
-  describe("admin permissions", () => {
-    it("should bypass permissions check when caller has ALL PERMISSIONS", async () => {
-      const newName = "Updated name";
-
-      const targetPayload = targetContract.interface.encodeFunctionData(
-        "setName",
-        [newName]
-      );
-
-      const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
-      );
-
-      await context.keyManager.connect(superAdmin).execute(payload);
-
-      const result = await targetContract.getName();
-      expect(result).toEqual(newName);
-    });
-
-    it("should bypass permissions check when caller has ALL PERMISSIONS except SIGN", async () => {
-      const newName = "Updated name";
-
-      const targetPayload = targetContract.interface.encodeFunctionData(
-        "setName",
-        [newName]
-      );
-
-      const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
-      );
-
-      await context.keyManager.connect(superAdminNoSign).execute(payload);
-
-      const result = await targetContract.getName();
-      expect(result).toEqual(newName);
-    });
-
-    it("should bypass permissions check when caller has ALL PERMISSIONS + some additional custom permissions", async () => {
-      const newName = "Updated name";
-
-      const targetPayload = targetContract.interface.encodeFunctionData(
-        "setName",
-        [newName]
-      );
-
-      const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATIONS.CALL, targetContract.address, 0, targetPayload]
-      );
-
-      await context.keyManager
-        .connect(superAdminCustomPermissions)
-        .execute(payload);
-
-      const result = await targetContract.getName();
-      expect(result).toEqual(newName);
-    });
   });
 
   describe("payload", () => {
@@ -132,7 +54,7 @@ export const otherTestScenarios = (
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
         context.keyManager.connect(addressCanMakeCall).execute(INVALID_PAYLOAD)
-      ).toBeRevertedWith("_verifyPermissions: unknown ERC725 selector");
+      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector");
     });
   });
 
@@ -150,9 +72,9 @@ export const otherTestScenarios = (
         [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
       );
 
-      await expect(context.keyManager.execute(payload)).toBeRevertedWith(
-        "Wrong operation type"
-      );
+      await expect(
+        context.keyManager.connect(context.owner).execute(payload)
+      ).toBeRevertedWith("LSP6KeyManager: invalid operation type");
     });
 
     it("Should revert because of wrong operation type when caller has not ALL PERMISSIONS", async () => {

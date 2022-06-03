@@ -3,8 +3,8 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "../../LSP7DigitalAsset/extensions/LSP7CompatibilityForERC20.sol";
-import "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
+import {LSP7CompatibilityForERC20} from "../../LSP7DigitalAsset/extensions/LSP7CompatibilityForERC20.sol";
+import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 
 contract LSP7CompatibilityForERC20Tester is LSP7CompatibilityForERC20 {
     /* solhint-disable no-empty-blocks */

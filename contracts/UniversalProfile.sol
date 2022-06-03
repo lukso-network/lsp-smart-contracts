@@ -2,7 +2,14 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP0ERC725Account/LSP0ERC725Account.sol";
+import {LSP0ERC725Account} from "./LSP0ERC725Account/LSP0ERC725Account.sol";
+
+// constants
+// prettier-ignore
+import {
+    _LSP3_SUPPORTED_STANDARDS_KEY, 
+    _LSP3_SUPPORTED_STANDARDS_VALUE
+} from "./LSP3UniversalProfile/LSP3Constants.sol";
 
 /**
  * @title implementation of a LUKSO's Universal Profile based on LSP3
@@ -16,8 +23,6 @@ contract UniversalProfile is LSP0ERC725Account {
      */
     constructor(address _newOwner) LSP0ERC725Account(_newOwner) {
         // set key SupportedStandards:LSP3UniversalProfile
-        bytes32 key = 0xeafec4d89fa9619884b6b89135626455000000000000000000000000abe425d6;
-        bytes memory value = hex"abe425d6";
-        _setData(key, value);
+        _setData(_LSP3_SUPPORTED_STANDARDS_KEY, _LSP3_SUPPORTED_STANDARDS_VALUE);
     }
 }

@@ -3,8 +3,8 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
  * @dev Required interface of a LSP8 compliant contract.
@@ -116,10 +116,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function isOperatorFor(address operator, address tokenOwner)
-        external
-        view
-        returns (uint256);
+    function isOperatorFor(address operator, address tokenOwner) external view returns (uint256);
 
     // --- Transfer functionality
 
