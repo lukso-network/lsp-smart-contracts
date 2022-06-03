@@ -182,9 +182,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bytes6(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
             bytes16(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
         ) {
+
             _verifyCanSetPermissions(inputKey, inputValue, _from, permissions);
+
         } else {
-            _verifyCanSetData(_from, permissions, inputKey);
+
+            bytes32[] memory inputKeys = new bytes32[](1);
+            inputKeys[0] = inputKey;
+
+            _verifyCanSetData(_from, permissions, inputKeys);
         }
 
         } else if (erc725Function == setDataMultipleSelector) {
@@ -213,7 +219,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     isSettingERC725YKeys = true;
                 }
 
-                if (isSettingERC725YKeys) _verifyCanSetData(_from, permissions, key);            
+            }
+
+            if (isSettingERC725YKeys) {
+                _verifyCanSetData(_from, permissions, inputKeys);
             }
 
         } else if (erc725Function == IERC725X.execute.selector) {
@@ -237,20 +246,20 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * on the linked ERC725Account
      * @param _from the address who want to set the keys
      * @param _permissions the permissions
-     * @param _key the data key
+     * @param _inputKeys the data keys being set
      * containing a list of keys-value pairs
      */
     function _verifyCanSetData(
         address _from,
         bytes32 _permissions,
-        bytes32 _key
+        bytes32[] memory _inputKeys
     ) internal view {
         // Skip if caller has SUPER permissions
         if (_permissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
         _requirePermissions(_from, _permissions, _PERMISSION_SETDATA);
 
-        // _verifyAllowedERC725YKeys(_from, inputKeys);
+        _verifyAllowedERC725YKeys(_from, _inputKeys);
     }
 
     function _verifyCanSetPermissions(
