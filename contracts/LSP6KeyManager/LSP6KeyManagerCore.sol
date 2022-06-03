@@ -172,9 +172,57 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (permissions == bytes32(0)) revert NoPermissionsSet(_from);
 
         // prettier-ignore
-        if (erc725Function == setDataMultipleSelector) {
+        if (erc725Function == setDataSingleSelector) {
+
+            (bytes32 inputKey, bytes memory inputValue) = abi.decode(_calldata[4:], (bytes32, bytes));
+
+            if (
+                // CHECK for permission keys
+                bytes6(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
+                bytes16(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
+            ) {
+
+                _verifyCanSetPermissions(inputKey, inputValue, _from, permissions);
+
+            } else {
+
+                bytes32[] memory inputKeys = new bytes32[](1);
+                inputKeys[0] = inputKey;
+
+                _verifyCanSetData(_from, permissions, inputKeys);
+            }
+
+        } else if (erc725Function == setDataMultipleSelector) {
+
+            (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(_calldata[4:], (bytes32[], bytes[]));
+
+            bool isSettingERC725YKeys = false;
             
-            _verifyCanSetData(_from, permissions, _calldata);
+            // loop through each ERC725Y data keys
+            for (uint256 ii = 0; ii < inputKeys.length; ii++) {
+                bytes32 key = inputKeys[ii];
+                bytes memory value = inputValues[ii];
+
+                if (
+                    // CHECK for permission keys
+                    bytes6(key) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
+                    bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
+                ) {
+                    _verifyCanSetPermissions(key, value, _from, permissions);
+
+                    // "nullify" permission keys
+                    // to not check them against allowed ERC725Y keys
+                    inputKeys[ii] = bytes32(0);
+                } else {
+                    // if the key is any other bytes32 key
+                    isSettingERC725YKeys = true;
+                }
+
+            }
+
+            if (isSettingERC725YKeys) {
+                _verifyCanSetData(_from, permissions, inputKeys);
+            }
 
         } else if (erc725Function == IERC725X.execute.selector) {
             
@@ -196,49 +244,21 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev verify if `_from` has the required permissions to set some keys
      * on the linked ERC725Account
      * @param _from the address who want to set the keys
-     * @param _calldata the ABI encoded payload `target.setData(keys, values)`
+     * @param _permissions the permissions
+     * @param _inputKeys the data keys being set
      * containing a list of keys-value pairs
      */
     function _verifyCanSetData(
         address _from,
         bytes32 _permissions,
-        bytes calldata _calldata
+        bytes32[] memory _inputKeys
     ) internal view {
-        (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
-            _calldata[4:],
-            (bytes32[], bytes[])
-        );
+        // Skip if caller has SUPER permissions
+        if (_permissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
-        bool isSettingERC725YKeys = false;
+        _requirePermissions(_from, _permissions, _PERMISSION_SETDATA);
 
-        // loop through each ERC725Y data keys
-        for (uint256 ii = 0; ii < inputKeys.length; ii++) {
-            bytes32 key = inputKeys[ii];
-
-            if (
-                // CHECK for permission keys
-                bytes6(key) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
-                bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
-            ) {
-                _verifyCanSetPermissions(key, inputValues[ii], _from, _permissions);
-
-                // "nullify" permission keys
-                // to not check them against allowed ERC725Y keys
-                inputKeys[ii] = bytes32(0);
-            } else {
-                // if the key is any other bytes32 key
-                isSettingERC725YKeys = true;
-            }
-        }
-
-        if (isSettingERC725YKeys) {
-            // Skip if caller has SUPER permissions
-            if (_permissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
-
-            _requirePermissions(_from, _permissions, _PERMISSION_SETDATA);
-
-            _verifyAllowedERC725YKeys(_from, inputKeys);
-        }
+        _verifyAllowedERC725YKeys(_from, _inputKeys);
     }
 
     function _verifyCanSetPermissions(

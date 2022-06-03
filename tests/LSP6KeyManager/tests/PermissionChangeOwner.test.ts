@@ -146,8 +146,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
           const value = "0xabcd";
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
@@ -365,8 +365,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
         const value = "0xabcd";
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await expect(
@@ -396,8 +396,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
         const value = "0xabcd";
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
         await newKeyManager.connect(context.owner).execute(payload);

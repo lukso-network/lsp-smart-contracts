@@ -72,8 +72,8 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
@@ -94,8 +94,8 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager.connect(canSetData).execute(payload);
@@ -116,8 +116,8 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await expect(
@@ -645,8 +645,8 @@ export const shouldBehaveLikePermissionSetData = (
 
       let finalSetDataPayload =
         bobContext.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[key], [value]]
+          "setData(bytes32,bytes)",
+          [key, value]
         );
 
       let bobKeyManagerPayload =
@@ -713,8 +713,8 @@ export const shouldBehaveLikePermissionSetData = (
 
         it(`should be allowed to set a disallowed key: ${key}`, async () => {
           const payload = context.universalProfile.interface.encodeFunctionData(
-            "setData(bytes32[],bytes[])",
-            [[key], [value]]
+            "setData(bytes32,bytes)",
+            [key, value]
           );
 
           await context.keyManager.connect(caller).execute(payload);
@@ -734,8 +734,8 @@ export const shouldBehaveLikePermissionSetData = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[allowedERC725YKeys[0]], [value]]
+          "setData(bytes32,bytes)",
+          [allowedERC725YKeys[0], value]
         );
 
         await context.keyManager.connect(caller).execute(payload);
@@ -752,8 +752,8 @@ export const shouldBehaveLikePermissionSetData = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[allowedERC725YKeys[1]], [value]]
+          "setData(bytes32,bytes)",
+          [allowedERC725YKeys[1], value]
         );
 
         await context.keyManager.connect(caller).execute(payload);
@@ -770,8 +770,8 @@ export const shouldBehaveLikePermissionSetData = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32[],bytes[])",
-          [[allowedERC725YKeys[2]], [value]]
+          "setData(bytes32,bytes)",
+          [allowedERC725YKeys[2], value]
         );
 
         await context.keyManager.connect(caller).execute(payload);
