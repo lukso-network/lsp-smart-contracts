@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 // interfaces
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP7DigitalAsset} from "../../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
+import {ILSP6KeyManager} from "../../../LSP6KeyManager/ILSP6KeyManager.sol";
 
 // libraries
 import {ERC165Checker} from "../../../Custom/ERC165Checker.sol";
@@ -33,10 +34,10 @@ abstract contract TokenAndVaultHandling {
         address keyManager = ERC725Y(msg.sender).owner();
         if (!ERC165Checker.supportsERC165Interface(keyManager, _INTERFACEID_LSP6)) return "";
 
-        address accountAddress = address(LSP6KeyManager(keyManager).target());
+        address target = ILSP6KeyManager(keyManager).target();
 
         // check if the caller is the same account controlled by the keyManager
-        if (msg.sender != accountAddress) return "";
+        if (msg.sender != target) return "";
         (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils
             .getTransferDetails(typeId);
 
