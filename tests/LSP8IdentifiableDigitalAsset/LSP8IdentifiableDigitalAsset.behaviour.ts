@@ -1360,8 +1360,7 @@ export const shouldInitializeLikeLSP8 = (
         context.lsp8,
         "DataChanged",
         [
-          SupportedStandards.LSP4DigitalAsset.key,
-          SupportedStandards.LSP4DigitalAsset.value,
+          SupportedStandards.LSP4DigitalAsset.key
         ]
       );
       expect(
@@ -1377,7 +1376,7 @@ export const shouldInitializeLikeLSP8 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8,
         "DataChanged",
-        [nameKey, expectedNameValue]
+        [nameKey]
       );
       expect(await context.lsp8["getData(bytes32)"](nameKey)).toEqual(
         expectedNameValue
@@ -1390,7 +1389,7 @@ export const shouldInitializeLikeLSP8 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8,
         "DataChanged",
-        [symbolKey, expectedSymbolValue]
+        [symbolKey]
       );
       expect(await context.lsp8["getData(bytes32)"](symbolKey)).toEqual(
         expectedSymbolValue

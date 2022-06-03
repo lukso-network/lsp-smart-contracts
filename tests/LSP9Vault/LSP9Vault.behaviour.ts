@@ -285,7 +285,7 @@ export const shouldInitializeLikeLSP9 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp9Vault,
         "DataChanged",
-        [SupportedStandards.LSP9Vault.key, SupportedStandards.LSP9Vault.value]
+        [SupportedStandards.LSP9Vault.key]
       );
       expect(
         await context.lsp9Vault["getData(bytes32)"](
