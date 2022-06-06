@@ -30,6 +30,6 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
     function _setData(bytes32 key, bytes memory value) internal virtual override {
         require(key != _LSP4_TOKEN_NAME_KEY, "LSP4: cannot edit Token Name after deployment");
         require(key != _LSP4_TOKEN_SYMBOL_KEY, "LSP4: cannot edit Token Symbol after deployment");
-        _setData(key, value);
+        super._setData(key, value);
     }
 }
