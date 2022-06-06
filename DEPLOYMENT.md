@@ -1,7 +1,8 @@
 
 # Deployment
 
-You can find a deployment utility with hardhat to easily deploy the smart contracts locally or on our L14 test network.
+You can find a deployment utility with hardhat to easily deploy the smart contracts locally or on our L14 test network,
+if you don't have some LYX test token visit [LUKSO l14 Fauset](http://faucet.l14.lukso.network/), for fauset.
 
 All the deployment scripts for `base` contracts initialize the contract after deployment to the zero address for security.
 
@@ -21,12 +22,6 @@ All the deployment scripts for `base` contracts initialize the contract after de
 ```
 
 &nbsp;
-
-Skip the next two steps (2 & 3) if you already have some LYX test token.
-
-2. Visit [LUKSO l14 Fauset](http://faucet.l14.lukso.network/), for fauset.
-
-3. In other to verify you recieved some fauset [L14 Public Testnet Config](https://docs.lukso.tech/networks/l14-testnet) 
 
 4. run the command using one of the available `--tags`
 
