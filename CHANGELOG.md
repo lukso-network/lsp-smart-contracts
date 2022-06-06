@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.6.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.4.3...v0.6.0) (2022-06-03)
+## [0.6.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.5.0...v0.6.0) (2022-06-03)
 
 
 ### ⚠ BREAKING CHANGES
@@ -26,12 +26,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* add check for multiple `ERC725Y` keys ([5ee41c7](https://github.com/lukso-network/lsp-smart-contracts/commit/5ee41c7bd22ea30c013ad7a18ff974ddaa4b5657))
-* add check for partial keys + test for Mapping keys ([57923ca](https://github.com/lukso-network/lsp-smart-contracts/commit/57923ca13e67ee5256a5337e2c4610964452c440))
 * add ClaimOwnership in LSP9 Vault ([#164](https://github.com/lukso-network/lsp-smart-contracts/issues/164)) ([edb9e1d](https://github.com/lukso-network/lsp-smart-contracts/commit/edb9e1dbf5829925c25e35cb2e35ad471e677f8b))
 * add claimOwnership(...) path in KeyManager ([dde4221](https://github.com/lukso-network/lsp-smart-contracts/commit/dde4221cb6cd88af55d23a942cc2a32936919d01))
 * add constant Solidity file for LSP3 ([ea20351](https://github.com/lukso-network/lsp-smart-contracts/commit/ea203519375beabf5d6993829939c769cf2d7be8))
-* add custom error log for AllowedERC725YKey ([dcefa95](https://github.com/lukso-network/lsp-smart-contracts/commit/dcefa95364012b905c5377ac94ed3b3eb18bbbc2))
 * add interface + abstract contract OwnableClaim ([4416e81](https://github.com/lukso-network/lsp-smart-contracts/commit/4416e818e0a95db2fb883051ce2365035fcccd2c))
 * add interface ID check for ClaimOwnership ([dd2b219](https://github.com/lukso-network/lsp-smart-contracts/commit/dd2b219a547a9ba2deb4af3b60b55cc5d6e5fbdf))
 * add LSP5 and LSP10 Constants files ([dd3d1a8](https://github.com/lukso-network/lsp-smart-contracts/commit/dd3d1a8bb8b9c867c121aa3b1301adeb71029fd0))
@@ -39,20 +36,14 @@ All notable changes to this project will be documented in this file. See [standa
 * add SUPER permissions in constants.ts ([d363124](https://github.com/lukso-network/lsp-smart-contracts/commit/d363124b3fe02e645b5900f5277fac8196cbab21))
 * add SUPER permissions in permissions constants ([ae3a2e5](https://github.com/lukso-network/lsp-smart-contracts/commit/ae3a2e523e07af5ee5f030160b27bd46f6e46988))
 * add support for SUPER OPERATION (CALL, STATICCALL, ...) to skip allowed checks ([90b94a2](https://github.com/lukso-network/lsp-smart-contracts/commit/90b94a27edcdef9d821cbbbf83a3cae3ef1e8949))
-* allow delegatecall via KeyManager ([c73ecf1](https://github.com/lukso-network/lsp-smart-contracts/commit/c73ecf18ab9b72089c5c4f0fcb3bcf5294376a9e))
-* allow whitelisting any ERC725Y key if nothing set ([41dd20f](https://github.com/lukso-network/lsp-smart-contracts/commit/41dd20fbd6228b3c2b23f9b2ddb8748d8f85567f))
-* create LSP7CompatabilityForERC20InitAbstract ([516d195](https://github.com/lukso-network/lsp-smart-contracts/commit/516d1955a0d1aa68e1d3dde7818ffbf7d16432e5))
-* create LSP8CompatabilityForERC721InitAbstract ([1ded846](https://github.com/lukso-network/lsp-smart-contracts/commit/1ded8466049442c164c3ae0fc09411a6f046dd33))
 * extend jest matcher `toBeRevertedWith` as it does not work as expected with custom errors ([3a925ee](https://github.com/lukso-network/lsp-smart-contracts/commit/3a925ee7f17cb0a4e5ff75b6666684aa5bd43dd0))
-* first draft implementation of `AllowedERC725YKeys`, with only one key check ([ac567c3](https://github.com/lukso-network/lsp-smart-contracts/commit/ac567c3b52d3774780968ca9f7b54b958c4ca338))
 * introduce `ErroHandlerLib` in execution in LSP6 ([724d411](https://github.com/lukso-network/lsp-smart-contracts/commit/724d41112d9f092936904b03deaaca52fe6bc502))
 * **lsp6:** add `account()` function as part of the LSP6 interface ([#131](https://github.com/lukso-network/lsp-smart-contracts/issues/131)) ([db7b297](https://github.com/lukso-network/lsp-smart-contracts/commit/db7b297b8af86cd2dc04b3d870f204d0e6545b4e))
 * LSP7 and LSP8 use solidity custom errors ([b353655](https://github.com/lukso-network/lsp-smart-contracts/commit/b3536556eed552e1acc172d98a297b923c939eb0))
-* LSP7CompatibilityForERC20 proxy and constructor version ([131eed0](https://github.com/lukso-network/lsp-smart-contracts/commit/131eed0b5e832d7d159de09eccfaee75bf9b81a0))
-* LSP8CompatibilityForERC721 proxy and constructor version ([ffccc4b](https://github.com/lukso-network/lsp-smart-contracts/commit/ffccc4b6ad6b4d986808183436973174786c6efc))
 * UniversalFactory ([#139](https://github.com/lukso-network/lsp-smart-contracts/issues/139)) ([3164d9a](https://github.com/lukso-network/lsp-smart-contracts/commit/3164d9a704da3c5d99c47a7b46a19741f8e696d8))
 * use custom errors for LSP7/8 CappedSupply contracts ([07ac935](https://github.com/lukso-network/lsp-smart-contracts/commit/07ac935bf336562358930f07d9f86b710cd59d73))
 * use custom version of `ERC165Checker` ([#132](https://github.com/lukso-network/lsp-smart-contracts/issues/132)) ([0e7bbec](https://github.com/lukso-network/lsp-smart-contracts/commit/0e7bbec34a75de9a9ba31db6146e162a800d3406))
+* update interfaceID for LSP6 ([499ee6a](https://github.com/lukso-network/lsp-smart-contracts/commit/499ee6a73eef210e022c81a0590df8666502c815))
 
 
 ### Bug Fixes
@@ -72,7 +63,6 @@ All notable changes to this project will be documented in this file. See [standa
 * failing test ([1edef46](https://github.com/lukso-network/lsp-smart-contracts/commit/1edef460f5139ac343c6d61d2c3f43fb8137482d))
 * fix OwnableUnset folder location in import statements ([c6702a0](https://github.com/lukso-network/lsp-smart-contracts/commit/c6702a09279e001d32e1cf63f661511cde1e85bc))
 * flip `index` and `interfaceID` in LSP5 & LSP10 ([a926fa7](https://github.com/lukso-network/lsp-smart-contracts/commit/a926fa74590e1256aaaff59667eaad3f5d6ce645))
-* ILSP8CompatabilityForERC721 isApprovedForAll params match IERC721 ([fed55a9](https://github.com/lukso-network/lsp-smart-contracts/commit/fed55a9b25afda10ccfbfc559f3d359ad372572e))
 * inherit LSP0 contracts from most base to most derive ([bac9f5d](https://github.com/lukso-network/lsp-smart-contracts/commit/bac9f5dbe261de81242a6783ab0119e07557951f))
 * inherit LSP1 contracts from most base to most derive ([1911886](https://github.com/lukso-network/lsp-smart-contracts/commit/1911886d03dbc42683369559aac064319b0ead3e))
 * inherit LSP6 contracts from most base to most derive ([22762e0](https://github.com/lukso-network/lsp-smart-contracts/commit/22762e0874361f4c7bb863b3b4d2209716e2ae30))
@@ -80,7 +70,6 @@ All notable changes to this project will be documented in this file. See [standa
 * inherit LSP8 contracts from most base to most derive ([5f05302](https://github.com/lukso-network/lsp-smart-contracts/commit/5f053025f2c1bfb5ce858c0d4bf0d289a5542259))
 * inherit LSP9 contracts from most base to most derive ([b34a049](https://github.com/lukso-network/lsp-smart-contracts/commit/b34a049edf43cfe9f90159082a725c346224a04b))
 * **lsp6:** fix bugs for `AllowedERC725YKeys` when input is multiple keys that include allowed + not allowed keys ([#134](https://github.com/lukso-network/lsp-smart-contracts/issues/134)) ([8f95a79](https://github.com/lukso-network/lsp-smart-contracts/commit/8f95a7959df4047c2421b4fdb34a523fa2f62ae5))
-* LSP8 InitAbstract contract inheritance order ([e9e61c1](https://github.com/lukso-network/lsp-smart-contracts/commit/e9e61c1ce5047daef6dae906ecc43d8b0d397fb9))
 * move AddressRegistry contract under Legacy/ folder ([3cf8102](https://github.com/lukso-network/lsp-smart-contracts/commit/3cf8102fe5137ba2111c4e2e8ed1fd7eada4c432))
 * override `supportsInterface` in LSP0 ([6415e5f](https://github.com/lukso-network/lsp-smart-contracts/commit/6415e5f25bf2b64d2a30ae08c27ff514211f6f0f))
 * override `supportsInterface` in LSP7 ([3840e6b](https://github.com/lukso-network/lsp-smart-contracts/commit/3840e6ba0983b88530ebef6872a441fb7d07e266))
@@ -91,10 +80,9 @@ All notable changes to this project will be documented in this file. See [standa
 * reference to Allowed Standards Map key ([e8993e6](https://github.com/lukso-network/lsp-smart-contracts/commit/e8993e6b7bbcbe26d9284f2e4c47305843ebc68b))
 * replace `initOwner` with `_setOwner` function ([5183765](https://github.com/lukso-network/lsp-smart-contracts/commit/5183765f53b1c7432ae7f6dc7bec4cbb276dd86d))
 * resolve merge conflicts in LSP6Core ([2519ee1](https://github.com/lukso-network/lsp-smart-contracts/commit/2519ee1d0ce70911d98afd21c43a475a32cb6218))
-* security check in UniversalReceiverDelegateUP contract ([#109](https://github.com/lukso-network/lsp-smart-contracts/issues/109)) ([faac8df](https://github.com/lukso-network/lsp-smart-contracts/commit/faac8df65e12b4257e77358ed65290b02cbfc08a))
 * send the `msg.value` instead of 0 in `executeRelayCall(.)` ([d64855c](https://github.com/lukso-network/lsp-smart-contracts/commit/d64855cb0f22ea199390fb9ced17017dcb8e535c))
 * **tests:** delegatecall tests to a function that does not use onlyOwner ([5a33d4b](https://github.com/lukso-network/lsp-smart-contracts/commit/5a33d4bf0a89a86dd0386c80cedeea3c063dcb8d))
-* update interfaceID for LSP6 ([499ee6a](https://github.com/lukso-network/lsp-smart-contracts/commit/499ee6a73eef210e022c81a0590df8666502c815))
+
 * use internal `_getData` instead `getDataSingle` ([c7f7bc2](https://github.com/lukso-network/lsp-smart-contracts/commit/c7f7bc27081ced33f2af7228d6345d8131bb00ef))
 * validate values for abi-encoded arrays in KeyManager ([#152](https://github.com/lukso-network/lsp-smart-contracts/issues/152)) ([200ff28](https://github.com/lukso-network/lsp-smart-contracts/commit/200ff2857c8e48a45c7761cf8a490fe094eaf8da))
 
