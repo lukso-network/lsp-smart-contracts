@@ -2,23 +2,24 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@openzeppelin/contracts/interfaces/IERC1271.sol";
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
-
-// modules
-
-import "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
+import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
-import "../Utils/UtilsLib.sol";
-import "../Utils/ERC725Utils.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+
+// modules
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
 
 // constants
-import "../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../LSP0ERC725Account/LSP0Constants.sol";
+import {_INTERFACEID_LSP0, _INTERFACEID_ERC1271, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
+import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
 
 /**
  * @title Core Implementation of ERC725Account
@@ -26,15 +27,22 @@ import "../LSP0ERC725Account/LSP0Constants.sol";
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
 abstract contract LSP0ERC725AccountCore is
-    IERC1271,
-    ILSP1UniversalReceiver,
     ERC725XCore,
-    ERC725YCore
+    ERC725YCore,
+    ClaimOwnership,
+    IERC1271,
+    ILSP1UniversalReceiver
 {
-    using ERC725Utils for IERC725Y;
-
+    /**
+     * @notice Emitted when receiving native tokens
+     * @param sender The address of the sender
+     * @param value The amount of value sent
+     */
     event ValueReceived(address indexed sender, uint256 indexed value);
 
+    /**
+     * @dev Emits an event when receiving native tokens
+     */
     receive() external payable {
         emit ValueReceived(_msgSender(), msg.value);
     }
@@ -54,6 +62,42 @@ abstract contract LSP0ERC725AccountCore is
     //        }
     //    }
 
+    // ERC165
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP0 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
+            super.supportsInterface(interfaceId);
+    }
+
+    // ERC173 - Modified ClaimOwnership
+
+    /**
+     * @dev Sets the pending owner
+     */
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(ClaimOwnership, OwnableUnset)
+        onlyOwner
+    {
+        ClaimOwnership._transferOwnership(_newOwner);
+    }
+
+    // ERC1271
+
     /**
      * @notice Checks if an owner signed `_data`.
      * ERC1271 interface.
@@ -68,52 +112,51 @@ abstract contract LSP0ERC725AccountCore is
         returns (bytes4 magicValue)
     {
         // prettier-ignore
+        address _owner = owner();
         // if OWNER is a contract
-        if (UtilsLib.isContract(owner())) {
-            return 
-                supportsInterface(_INTERFACE_ID_ERC1271)
-                    ? IERC1271(owner()).isValidSignature(_hash, _signature)
-                    : _ERC1271FAILVALUE;
-        // if OWNER is a key
+        if (_owner.code.length != 0) {
+            return
+                ERC165Checker.supportsERC165Interface(_owner, _INTERFACEID_ERC1271)
+                    ? IERC1271(_owner).isValidSignature(_hash, _signature)
+                    : _ERC1271_FAILVALUE;
+            // if OWNER is a key
         } else {
-            return 
-                owner() == ECDSA.recover(_hash, _signature)
-                    ? _INTERFACE_ID_ERC1271
-                    : _ERC1271FAILVALUE;
+            return
+                _owner == ECDSA.recover(_hash, _signature)
+                    ? _INTERFACEID_ERC1271
+                    : _ERC1271_FAILVALUE;
         }
     }
 
+    // LSP1
+
+    /**
+     * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
+     * @dev Forwards the call to the UniversalReceiverDelegate if set.
+     * @param _typeId The type of call received.
+     * @param _data The data received.
+     */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
         external
         virtual
         override
         returns (bytes memory returnValue)
     {
-        bytes memory receiverData = IERC725Y(this).getDataSingle(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-        );
-        returnValue = "";
+        bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
-        // call external contract
-        if (receiverData.length == 20) {
-            address universalReceiverAddress = BytesLib.toAddress(
-                receiverData,
-                0
-            );
+        if (data.length >= 20) {
+            address universalReceiverDelegate = address(bytes20(data));
 
             if (
-                ERC165(universalReceiverAddress).supportsInterface(
+                ERC165Checker.supportsERC165Interface(
+                    universalReceiverDelegate,
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                returnValue = ILSP1UniversalReceiverDelegate(
-                    universalReceiverAddress
-                ).universalReceiverDelegate(_msgSender(), _typeId, _data);
+                returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
             }
         }
-
         emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
-
-        return returnValue;
     }
 }

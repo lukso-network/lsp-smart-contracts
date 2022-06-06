@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./UniversalProfileInitAbstract.sol";
+import {UniversalProfileInitAbstract} from "./UniversalProfileInitAbstract.sol";
 
 /**
  * @title Deployable Proxy implementation of a LUKSO's Universal Profile based on LSP3
@@ -11,9 +11,10 @@ import "./UniversalProfileInitAbstract.sol";
  */
 contract UniversalProfileInit is UniversalProfileInitAbstract {
     /**
-     * @inheritdoc UniversalProfileInitAbstract
+     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
+     * @param _newOwner the owner of the contract
      */
-    function initialize(address _newOwner) public virtual override initializer {
-        UniversalProfileInitAbstract.initialize(_newOwner);
+    function initialize(address _newOwner) public virtual initializer {
+        UniversalProfileInitAbstract._initialize(_newOwner);
     }
 }

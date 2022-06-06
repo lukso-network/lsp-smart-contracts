@@ -3,8 +3,8 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
  * @dev Required interface of a LSP8 compliant contract.
@@ -90,10 +90,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param tokenOwner The address to query owned tokens
      * @return List of owned tokens by `tokenOwner` address
      */
-    function tokenIdsOf(address tokenOwner)
-        external
-        view
-        returns (bytes32[] memory);
+    function tokenIdsOf(address tokenOwner) external view returns (bytes32[] memory);
 
     // --- Operator functionality
 
@@ -108,7 +105,6 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      * - caller must be current `tokenOwner` of `tokenId`.
-     * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      *
      * Emits an {AuthorizedOperator} event.
@@ -126,7 +122,6 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      * - caller must be current `tokenOwner` of `tokenId`.
-     * - `operator` cannot be calling address.
      * - `operator` cannot be the zero address.
      *
      * Emits a {RevokedOperator} event.
@@ -145,10 +140,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      */
-    function isOperatorFor(address operator, bytes32 tokenId)
-        external
-        view
-        returns (bool);
+    function isOperatorFor(address operator, bytes32 tokenId) external view returns (bool);
 
     /**
      * @param tokenId The tokenId to query
@@ -159,10 +151,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `tokenId` must exist.
      */
-    function getOperatorsOf(bytes32 tokenId)
-        external
-        view
-        returns (address[] memory);
+    function getOperatorsOf(bytes32 tokenId) external view returns (address[] memory);
 
     // --- Transfer functionality
 

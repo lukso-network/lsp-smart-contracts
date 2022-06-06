@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+
 // modules
-import "./LSP8IdentifiableDigitalAssetCore.sol";
-import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {LSP8IdentifiableDigitalAssetCore} from "./LSP8IdentifiableDigitalAssetCore.sol";
+import {LSP4DigitalAssetMetadataInitAbstract} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInitAbstract.sol";
 
 // constants
-import "./LSP8Constants.sol";
-import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
 
 /**
  * @title LSP8IdentifiableDigitalAsset contract
@@ -15,27 +18,27 @@ import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
  * @dev Proxy Implementation of a LSP8 compliant contract.
  */
 abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
-    LSP8IdentifiableDigitalAssetCore,
-    Initializable,
-    LSP4DigitalAssetMetadataInitAbstract
+    LSP4DigitalAssetMetadataInitAbstract,
+    LSP8IdentifiableDigitalAssetCore
 {
-    /**
-     * @notice Sets the token-Metadata and register LSP8InterfaceId
-     * @param name_ The name of the token
-     * @param symbol_ The symbol of the token
-     * @param newOwner_ The owner of the the token-Metadata
-     */
-    function initialize(
+    function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual override onlyInitializing {
-        LSP4DigitalAssetMetadataInitAbstract.initialize(
-            name_,
-            symbol_,
-            newOwner_
-        );
+    ) internal virtual override onlyInitializing {
+        LSP4DigitalAssetMetadataInitAbstract._initialize(name_, symbol_, newOwner_);
+    }
 
-        _registerInterface(_INTERFACEID_LSP8);
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC725YCore)
+        returns (bool)
+    {
+        return interfaceId == _INTERFACEID_LSP8 || super.supportsInterface(interfaceId);
     }
 }

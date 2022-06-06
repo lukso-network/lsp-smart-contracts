@@ -1,23 +1,25 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-// constants
-import "./LSP7Constants.sol";
-import "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
+// interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // modules
-import "./LSP7DigitalAssetCore.sol";
-import "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {LSP4DigitalAssetMetadata} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol";
+import {LSP7DigitalAssetCore} from "./LSP7DigitalAssetCore.sol";
+
+// constants
+import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
 
 /**
  * @title LSP7DigitalAsset contract
  * @author Matthew Stevens
  * @dev Implementation of a LSP7 compliant contract.
  */
-contract LSP7DigitalAsset is LSP7DigitalAssetCore, LSP4DigitalAssetMetadata {
+contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
     /**
-     * @notice Sets the token-Metadata and register LSP7InterfaceId
+     * @notice Sets the token-Metadata
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
      * @param newOwner_ The owner of the the token-Metadata
@@ -30,6 +32,18 @@ contract LSP7DigitalAsset is LSP7DigitalAssetCore, LSP4DigitalAssetMetadata {
         bool isNFT_
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {
         _isNFT = isNFT_;
-        _registerInterface(_INTERFACEID_LSP7);
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC725YCore)
+        returns (bool)
+    {
+        return interfaceId == _INTERFACEID_LSP7 || super.supportsInterface(interfaceId);
     }
 }

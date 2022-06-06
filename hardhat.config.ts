@@ -2,12 +2,18 @@ import { HardhatUserConfig } from "hardhat/config";
 
 import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-web3";
+import "@nomiclabs/hardhat-etherscan";
 
 import "@typechain/hardhat";
-import "@primitivefi/hardhat-dodoc";
 import "hardhat-packager";
+import "hardhat-contract-sizer";
 
 import "hardhat-deploy";
+
+/**
+ * @dev uncomment to generate contract docs in Markdown
+ */
+// import "@primitivefi/hardhat-dodoc";
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -17,7 +23,7 @@ const config: HardhatUserConfig = {
       saveDeployments: false,
     },
     // public L14 test network
-    L14: {
+    luksoL14: {
       live: true,
       url: "https://rpc.l14.lukso.network",
       chainId: 22,
@@ -32,6 +38,21 @@ const config: HardhatUserConfig = {
   },
   namedAccounts: {
     owner: 0,
+  },
+  etherscan: {
+    // no API is required to verify contracts
+    // via the Blockscout instance of the L14 network
+    apiKey: "no-api-key-needed",
+    customChains: [
+      {
+        network: "luksoL14",
+        chainId: 22,
+        urls: {
+          apiURL: "https://blockscout.com/lukso/l14/api",
+          browserURL: "https://blockscout.com/lukso/l14",
+        },
+      },
+    ],
   },
   solidity: {
     version: "0.8.7",
@@ -54,34 +75,45 @@ const config: HardhatUserConfig = {
       // Standard version
       // ------------------
       "UniversalProfile",
-      "LSP6KeyManager",
+      "LSP0ERC725Account",
       "LSP1UniversalReceiverDelegateUP",
       "LSP1UniversalReceiverDelegateVault",
-      "LSP7Mintable",
-      "LSP8Mintable",
+      "LSP4DigitalAssetMetadata",
+      "LSP6KeyManager",
       "LSP7DigitalAsset",
       "LSP7CappedSupply",
+      "LSP7Mintable",
       "LSP8IdentifiableDigitalAsset",
       "LSP8CappedSupply",
+      "LSP8Mintable",
+      "LSP9Vault",
       // Proxy version
       // ------------------
       "UniversalProfileInit",
+      "LSP0ERC725AccountInit",
+      "LSP4DigitalAssetMetadataInit",
       "LSP6KeyManagerInit",
-      "LSP1UniversalReceiverDelegateUPInit",
-      "LSP1UniversalReceiverDelegateVaultInit",
-      "LSP7MintableInit",
-      "LSP8MintableInit",
       "LSP7DigitalAssetInit",
       "LSP7CappedSupplyInit",
+      "LSP7MintableInit",
       "LSP8IdentifiableDigitalAssetInit",
       "LSP8CappedSupplyInit",
+      "LSP8MintableInit",
+      "LSP9VaultInit",
       // ERC Compatible tokens
       // ------------------
+      "LSP4Compatibility",
       "LSP7CompatibilityForERC20",
+      "LSP7CompatibilityForERC20Init",
       "LSP8CompatibilityForERC721",
+      "LSP8CompatibilityForERC721Init",
+      // Legacy L14
+      // ------------------
+      "UniversalReceiverAddressStore",
       // Tools
       // ------------------
       "Create2Factory",
+      "UniversalFactory"
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.

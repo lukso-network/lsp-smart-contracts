@@ -4,7 +4,7 @@ name: Upload iOS Github artifacts CD
 
 on:
   repository_dispatch:
-      types: [trigger-release]
+    types: [trigger-release]
 
 jobs:
   upload-ios-artifacts:
@@ -14,11 +14,11 @@ jobs:
 
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
-        with: 
+        with:
           workflow: build-artifacts.yml
           workflow_conclusion: success
           name: UPContractsAbi.swift
-          path: ios 
+          path: ios
           branch: main
           event: push
 
@@ -26,11 +26,13 @@ jobs:
         run: |
           git clone https://.:${{ secrets.IOSSDK_GITHUB_REPO_KEY }}@github.com/lukso-network/universalprofile-ios-sdk.git
           cd universalprofile-ios-sdk
+          git checkout main
           git config --global user.email "release@lukso.network"
           git config --global user.name "LUKSO Bot"
           git push origin --delete abi-update-release
           git checkout -b abi-update-release
           cp ../ios/UPContractsAbi.swift universalprofile-ios-sdk/UPContractsAbi.swift
           git add .
-          git commit -m "Automatic publish new contracts abis from lukso-network/lsp-smart-contracts"
+          current_version=$(git describe --tags --abbrev=0)
+          git commit -m "Automatic publish of new contracts ABIs ($current_version) from lukso-network/lsp-smart-contracts"
           git push --set-upstream origin abi-update-release

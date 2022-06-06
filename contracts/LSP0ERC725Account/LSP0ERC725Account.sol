@@ -2,22 +2,20 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP0ERC725AccountCore.sol";
-import "@erc725/smart-contracts/contracts/ERC725.sol";
+import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 /**
  * @title Implementation of ERC725Account
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
-contract LSP0ERC725Account is LSP0ERC725AccountCore, ERC725 {
+contract LSP0ERC725Account is LSP0ERC725AccountCore {
     /**
-     * @notice Sets the owner of the contract and register ERC725Account, ERC1271 and LSP1UniversalReceiver interfacesId
+     * @notice Sets the owner of the contract
      * @param _newOwner the owner of the contract
      */
-    constructor(address _newOwner) ERC725(_newOwner) {
-        _registerInterface(_INTERFACE_ID_ERC725ACCOUNT);
-        _registerInterface(_INTERFACE_ID_ERC1271);
-        _registerInterface(_INTERFACEID_LSP1);
+    constructor(address _newOwner) {
+        OwnableUnset._setOwner(_newOwner);
     }
 }

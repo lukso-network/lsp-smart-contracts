@@ -5,11 +5,11 @@
   </a>
 </p>
 
-# lsp-smart-contracts
+# LSP Smart Contracts
 
-The reference implementation for universal profiles smart contracts.
+The smart contracts reference implementation of the [LUKSO Standard Proposals (LSPs)](https://github.com/lukso-network/LIPs/tree/main/LSPs).
 
-For more information see [Documentation](https://docs.lukso.tech/standards/Universal-Profiles)
+For more information see [Documentation](https://docs.lukso.tech/standards/smart-contracts/introduction) on *[docs.lukso.tech](https://docs.lukso.tech/standards/introduction).*
 
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
@@ -20,7 +20,7 @@ For more information see [Documentation](https://docs.lukso.tech/standards/Unive
 
 #### npm
 
-Universal Profile smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
+LSP smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
 
 ```bash
 npm install @lukso/lsp-smart-contracts
@@ -43,18 +43,18 @@ $ npm install
 You can use the contracts JSON ABI by importing them as follow:
 
 ```javascript
-import UniversalProfile from "@lukso/lsp-smart-contracts/artifacts/UniversalProfile.json";
+import LSP0ERC725Account from "@lukso/lsp-smart-contracts/artifacts/LSP0ERC725Account.json";
 
-const myContract = new this.web3.eth.Contract(UniversalProfile.abi, "", defaultOptions);
+const myContract = new this.web3.eth.Contract(LSP0ERC725Account.abi, "", defaultOptions);
 ```
 
 #### in Solidity
 
 ```sol
-import "@lukso/lsp-smart-contracts/contracts/UniversalProfile.sol";
+import "@lukso/lsp-smart-contracts/contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 
-contract MyUP is UniversalProfile {
-  constructor(address _newOwner) UniversalProfile(_newOwner) {
+contract MyAccount is LSP0ERC725Account {
+  constructor(address _newOwner) LSP0ERC725Account(_newOwner) {
     
   }
 }
@@ -73,3 +73,23 @@ $ npm test
 ### Deployment via hardhat
 
 You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./DEPLOYMENT.md) page.
+
+### Available Constants
+
+You can access interface IDs and other constants, using the `constants.js` file from the [lsp-smart-contracts package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
+You can find all accessible constants in the [`constants.js` file](https://github.com/lukso-network/lsp-smart-contracts/blob/main/constants.js).
+
+
+```js
+const {
+    INTERFACE_IDS,
+    ERC1271,
+    OPERATIONS,
+    SupportedStandards,
+    ERC725YKeys,
+    BasicUPSetup_Schema,
+    PERMISSIONS,
+    ALL_PERMISSIONS,
+    EventSignatures,
+} = require("@lukso/lsp-smart-contracts/constants.js");
+```

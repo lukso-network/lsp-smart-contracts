@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP0ERC725AccountInitAbstract.sol";
+import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725AccountInitAbstract.sol";
 
 /**
  * @title Deployable Proxy Implementation of ERC725Account
@@ -11,10 +11,10 @@ import "./LSP0ERC725AccountInitAbstract.sol";
  */
 contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
     /**
-     * @inheritdoc LSP0ERC725AccountInitAbstract
+     * @notice Sets the owner of the contract
+     * @param _newOwner the owner of the contract
      */
-
-    function initialize(address _newOwner) public virtual override initializer {
-        LSP0ERC725AccountInitAbstract.initialize(_newOwner);
+    function initialize(address _newOwner) public virtual initializer {
+        LSP0ERC725AccountInitAbstract._initialize(_newOwner);
     }
 }

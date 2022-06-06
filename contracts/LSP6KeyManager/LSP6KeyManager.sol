@@ -2,11 +2,11 @@
 pragma solidity ^0.8.6;
 
 // modules
-import "./LSP6KeyManagerCore.sol";
+import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
 
 /**
  * @title Implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
- * @author Fabian Vogelsteller, Jean Cavallera
+ * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 contract LSP6KeyManager is LSP6KeyManagerCore {
@@ -15,7 +15,6 @@ contract LSP6KeyManager is LSP6KeyManagerCore {
      * @param _account The address of the ER725Account to control
      */
     constructor(address _account) {
-        account = ERC725(_account);
-        _registerInterface(_INTERFACEID_LSP6);
+        target = _account;
     }
 }

@@ -1,60 +1,30 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+// interfaces
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+
 // modules
-import "@erc725/smart-contracts/contracts/ERC725InitAbstract.sol";
-import "./LSP9VaultCore.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {Initializable} from "@erc725/smart-contracts/contracts/custom/Initializable.sol";
+import {LSP9VaultCore, ClaimOwnership} from "./LSP9VaultCore.sol";
+
+// constants
+import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE} from "../LSP9Vault/LSP9Constants.sol";
 
 /**
  * @title Inheritable Proxy Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-abstract contract LSP9VaultInitAbstract is LSP9VaultCore, ERC725InitAbstract {
-    /**
-     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key and register
-     * LSP1UniversalReceiver and LSP9Vault InterfaceId
-     * @param _newOwner the owner of the contract
-     */
-    function initialize(address _newOwner)
-        public
-        virtual
-        override
-        onlyInitializing
-    {
-        ERC725InitAbstract.initialize(_newOwner);
+abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
+    function _initialize(address _newOwner) internal virtual onlyInitializing {
+        OwnableUnset._setOwner(_newOwner);
 
-        // set SupportedStandards:LSP9Vault
-        bytes32 key = 0xeafec4d89fa9619884b6b891356264550000000000000000000000007c0334a1;
-        bytes memory value = hex"7c0334a1";
-        _setData(key, value);
+        // set key SupportedStandards:LSP9Vault
+        _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
         _notifyVaultReceiver(_newOwner);
-
-        _registerInterface(_INTERFACEID_LSP1);
-        _registerInterface(_INTERFACEID_LSP9);
-    }
-
-    /**
-     * @inheritdoc OwnableUnset
-     */
-    function transferOwnership(address newOwner)
-        public
-        override(OwnableUnset, LSP9VaultCore)
-        onlyOwner
-    {
-        LSP9VaultCore.transferOwnership(newOwner);
-    }
-
-    /**
-     * @inheritdoc LSP9VaultCore
-     */
-    function setData(bytes32[] memory _keys, bytes[] memory _values)
-        public
-        virtual
-        override(ERC725YCore, LSP9VaultCore)
-        onlyAllowed
-    {
-        LSP9VaultCore.setData(_keys, _values);
     }
 }
