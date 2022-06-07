@@ -166,10 +166,10 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(msg.sender, _typeId, _data);
+                    .universalReceiverDelegate(msg.sender, msg.value, _typeId, _data);
             }
         }
-        emit UniversalReceiver(msg.sender, _typeId, returnValue, _data);
+        emit UniversalReceiver(msg.sender, msg.value, _typeId, returnValue, _data);
     }
 
     // internal functions

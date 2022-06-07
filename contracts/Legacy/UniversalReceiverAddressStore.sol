@@ -40,6 +40,7 @@ contract UniversalReceiverAddressStore is
 
     function universalReceiverDelegate(
         address sender,
+        uint256 value,
         bytes32 typeId,
         bytes memory
     ) external override onlyAccount returns (bytes memory) {

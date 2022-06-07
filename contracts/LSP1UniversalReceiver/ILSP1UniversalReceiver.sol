@@ -9,12 +9,14 @@ interface ILSP1UniversalReceiver {
     /**
      * @notice Emitted when the universalReceiver function is succesfully executed
      * @param from The address calling the universalReceiver function
+     * @param value The amount sent to the universalReceiver function
      * @param typeId The hash of a specific standard or a hook
      * @param returnedValue The return value of universalReceiver function
      * @param receivedData The arbitrary data passed to universalReceiver function
      */
     event UniversalReceiver(
         address indexed from,
+        uint256 value,
         bytes32 indexed typeId,
         bytes indexed returnedValue,
         bytes receivedData
