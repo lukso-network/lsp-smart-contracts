@@ -177,116 +177,116 @@ const PERMISSIONS = {
 
 const Errors = {
 	LSP6: {
-		"0xf292052a": {
-			"error": "NoPermissionsSet(address)",
-			"message": "LSP6: No permissions are set for this address."
-		  },
-		  "0x3bdad6e6": {
-			"error": "NotAuthorised(address,string)",
-			"message": "LSP6: Not authorized (missing permission)."
-		  },
-		  "0x2879b128": {
-			"error": "NotAllowedAddress(address,address)",
-			"message": "LSP6: not allowed to interact with address."
-		  },
-		  "0x84135110": {
-			"error": "NotAllowedFunction(address,bytes4)",
-			"message": "LSP6: not allowed to run the function."
-		  },
-		  "0x3003e7ae": {
-			"error": "NotAllowedERC725YKey(address,bytes32)",
-			"message": "LSP6: not allowed to set the ERC725Y data key."
-		  }
+		'0xf292052a': {
+			error: 'NoPermissionsSet(address)',
+			message: 'LSP6: No permissions are set for this address.',
+		},
+		'0x3bdad6e6': {
+			error: 'NotAuthorised(address,string)',
+			message: 'LSP6: Not authorized (missing permission).',
+		},
+		'0x2879b128': {
+			error: 'NotAllowedAddress(address,address)',
+			message: 'LSP6: not allowed to interact with address.',
+		},
+		'0x84135110': {
+			error: 'NotAllowedFunction(address,bytes4)',
+			message: 'LSP6: not allowed to run the function.',
+		},
+		'0x3003e7ae': {
+			error: 'NotAllowedERC725YKey(address,bytes32)',
+			message: 'LSP6: not allowed to set the ERC725Y data key.',
+		},
 	},
 	LSP7: {
-		"0xc5e194ab": {
-			"error": "LSP7AmountExceedsBalance(address,address,uint256)",
-			"message": "LSP7: token amount exceeds sender's balance."
+		'0xc5e194ab': {
+			error: 'LSP7AmountExceedsBalance(address,address,uint256)',
+			message: "LSP7: token amount exceeds sender's balance.",
 		},
-		"0xf3a6b691": {
-			"error": "LSP7AmountExceedsAuthorizedAmount(address,uint256,address,uint256)",
-			"message": "LSP7: token amount exceeds operator's allowance."
+		'0xf3a6b691': {
+			error: 'LSP7AmountExceedsAuthorizedAmount(address,uint256,address,uint256)',
+			message: "LSP7: token amount exceeds operator's allowance.",
 		},
-		"0x6355e766": {
-			"error": "LSP7CannotUseAddressZeroAsOperator()",
-			"message": "LSP7: cannot authorize address(0) as operator for LSP7 token."
+		'0x6355e766': {
+			error: 'LSP7CannotUseAddressZeroAsOperator()',
+			message: 'LSP7: cannot authorize address(0) as operator for LSP7 token.',
 		},
-		"0xd2d5ec30": {
-			"error": "LSP7CannotSendWithAddressZero()",
-			"message": "LSP7: cannot send token with address(0)."
+		'0xd2d5ec30': {
+			error: 'LSP7CannotSendWithAddressZero()',
+			message: 'LSP7: cannot send token with address(0).',
 		},
-		"0x263eee8d": {
-			"error": "LSP7InvalidTransferBatch()",
-			"message": "LSP7: invalid transfer batch."
+		'0x263eee8d': {
+			error: 'LSP7InvalidTransferBatch()',
+			message: 'LSP7: invalid transfer batch.',
 		},
-		"0xa608fbb6": {
-			"error": "LSP7NotifyTokenReceiverContractMissingLSP1Interface(address)",
-			"message": "LSP7: token recipient does not implement LSP1 standard."
+		'0xa608fbb6': {
+			error: 'LSP7NotifyTokenReceiverContractMissingLSP1Interface(address)',
+			message: 'LSP7: token recipient does not implement LSP1 standard.',
 		},
-		"0x26c247f4": {
-			"error": "LSP7NotifyTokenReceiverIsEOA(address)",
-			"message": "LSP7: token recipient is an Externally Owned Account."
+		'0x26c247f4': {
+			error: 'LSP7NotifyTokenReceiverIsEOA(address)',
+			message: 'LSP7: token recipient is an Externally Owned Account.',
 		},
 	},
 	LSP7CappedSupply: {
-		"0xacf1d8c5": {
-			"error": "LSP7CappedSupplyRequired()",
-			"message": "LSP7CappedSupply: cap supply number required"
+		'0xacf1d8c5': {
+			error: 'LSP7CappedSupplyRequired()',
+			message: 'LSP7CappedSupply: cap supply number required',
 		},
-		"0xeacbf0d1": {
-			"error": "LSP7CappedSupplyCannotMintOverCap()",
-			"message": "LSP7CappedSupply: cannot mint over the max cap supply"
+		'0xeacbf0d1': {
+			error: 'LSP7CappedSupplyCannotMintOverCap()',
+			message: 'LSP7CappedSupply: cannot mint over the max cap supply',
 		},
 	},
 	LSP8: {
-		"0xae8f9a36": {
-			"error": "LSP8NonExistentTokenId(bytes32)",
-			"message": "LSP8: token id does not exist."
+		'0xae8f9a36': {
+			error: 'LSP8NonExistentTokenId(bytes32)',
+			message: 'LSP8: token id does not exist.',
 		},
-		"0x5b271ea2": {
-			"error": "LSP8NotTokenOwner(address,bytes32,address)",
-			"message": "LSP8: tokenOwner given as parameter does not own this token id."
+		'0x5b271ea2': {
+			error: 'LSP8NotTokenOwner(address,bytes32,address)',
+			message: 'LSP8: tokenOwner given as parameter does not own this token id.',
 		},
-		"0x1294d2a9": {
-			"error": "LSP8NotTokenOperator(bytes32,address)",
-			"message": "LSP8: caller is not an operator for this token id."
+		'0x1294d2a9': {
+			error: 'LSP8NotTokenOperator(bytes32,address)',
+			message: 'LSP8: caller is not an operator for this token id.',
 		},
-		"0x9577b8b3": {
-			"error": "LSP8CannotUseAddressZeroAsOperator()",
-			"message": "LSP8: cannot use address(0) as an operator for token id."
+		'0x9577b8b3': {
+			error: 'LSP8CannotUseAddressZeroAsOperator()',
+			message: 'LSP8: cannot use address(0) as an operator for token id.',
 		},
-		"0x24ecef4d": {
-			"error": "LSP8CannotSendToAddressZero()",
-			"message": "LSP8: cannot send to address(0)."
+		'0x24ecef4d': {
+			error: 'LSP8CannotSendToAddressZero()',
+			message: 'LSP8: cannot send to address(0).',
 		},
-		"0x34c7b511": {
-			"error": "LSP8TokenIdAlreadyMinted(bytes32)",
-			"message": "LSP8: tokenId already exist (= already minted)."
+		'0x34c7b511': {
+			error: 'LSP8TokenIdAlreadyMinted(bytes32)',
+			message: 'LSP8: tokenId already exist (= already minted).',
 		},
-		"0x93a83119": {
-			"error": "LSP8InvalidTransferBatch()",
-			"message": "LSP8: invalid transfer batch."
+		'0x93a83119': {
+			error: 'LSP8InvalidTransferBatch()',
+			message: 'LSP8: invalid transfer batch.',
 		},
-		"0x4349776d": {
-			"error": "LSP8NotifyTokenReceiverContractMissingLSP1Interface(address)",
-			"message": "LSP8: token recipient does not implement LSP1 standard."
+		'0x4349776d': {
+			error: 'LSP8NotifyTokenReceiverContractMissingLSP1Interface(address)',
+			message: 'LSP8: token recipient does not implement LSP1 standard.',
 		},
-		"0x03173137": {
-			"error": "LSP8NotifyTokenReceiverIsEOA(address)",
-			"message": "LSP8: token recipient is an Externally Owned Account."
+		'0x03173137': {
+			error: 'LSP8NotifyTokenReceiverIsEOA(address)',
+			message: 'LSP8: token recipient is an Externally Owned Account.',
 		},
 	},
 	LSP8CappedSupply: {
-		"0x38d9fc30": {
-			"error": "LSP8CappedSupplyRequired()",
-			"message": "LSP8CappedSupply: cap supply number required"
+		'0x38d9fc30': {
+			error: 'LSP8CappedSupplyRequired()',
+			message: 'LSP8CappedSupply: cap supply number required',
 		},
-		"0xe8ba2291": {
-			"error": "LSP8CappedSupplyCannotMintOverCap()",
-			"message": "LSP8CappedSupply: cannot mint over the max cap supply"
+		'0xe8ba2291': {
+			error: 'LSP8CappedSupplyCannotMintOverCap()',
+			message: 'LSP8CappedSupply: cannot mint over the max cap supply',
 		},
-	}
-}
+	},
+};
 
 // ----------
 
@@ -463,5 +463,6 @@ module.exports = {
 	BasicUPSetup_Schema,
 	ALL_PERMISSIONS,
 	PERMISSIONS,
+	Errors,
 	EventSignatures,
 };
