@@ -86,19 +86,28 @@ const ERC725YKeys = {
 		// keccak256('LSP4Metadata')
 		LSP4Metadata: '0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e',
 		// keccak256('"LSP4Creators[]')
-		'LSP4Creators[]': '0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7',
+		'LSP4Creators[]': {
+			// use this key to get the number of elements in the array
+			length: '0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7',
+			// use this key + bytes16(index) to access an index in the array
+			index: '0x114bd03b3a46d48759680d81ebb2b414',
+		},
 	},
 	LSP5: {
 		// LSP5ReceivedAssetsMap:<address>
 		LSP5ReceivedAssetsMap: '0x812c4334633eb816c80d0000',
 		// keccak256('LSP5ReceivedAssets[]')
-		'LSP5ReceivedAssets[]':
-			'0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
+		'LSP5ReceivedAssets[]': {
+			length: '0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
+			index: '0x6460ee3c0aac563ccbf76d6e1d07bada',
+		},
 	},
 	LSP6: {
 		// keccak256('AddressPermissions[]')
-		'AddressPermissions[]':
-			'0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3',
+		'AddressPermissions[]': {
+			length: '0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3',
+			index: '0xdf30dba06db6a30e65354d9a64c60986',
+		},
 		// AddressPermissions:Permissions:<address>
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
 		// AddressPermissions:AllowedAddresses:<address>
@@ -114,13 +123,19 @@ const ERC725YKeys = {
 		// keccak256('LSP10VaultsMap')
 		LSP10VaultsMap: '0x192448c3c0f88c7f238c0000',
 		// keccak256('LSP10Vaults[]')
-		'LSP10Vaults[]': '0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06',
+		'LSP10Vaults[]': {
+			length: '0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06',
+			index: '0x55482936e01da86729a45d2b87a6b1d3',
+		},
 	},
 	LSP12: {
 		// LSP12IssuedAssetsMap:<address>
 		LSP12IssuedAssetsMap: '0x74ac2555c10b9349e78f0000',
 		// keccak256('LSP12IssuedAssets[]')
-		'LSP12IssuedAssets[]': '0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd',
+		'LSP12IssuedAssets[]': {
+			length: '0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd',
+			index: '0x7c8c3416d6cda87cd42c71ea1843df28',
+		},
 	},
 };
 
