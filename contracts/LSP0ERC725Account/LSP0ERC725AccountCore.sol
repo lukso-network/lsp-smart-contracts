@@ -44,7 +44,7 @@ abstract contract LSP0ERC725AccountCore is
      * @dev Emits an event when receiving native tokens
      */
     receive() external payable {
-        emit ValueReceived(_msgSender(), msg.value);
+        emit ValueReceived(msg.sender, msg.value);
     }
 
     //    TODO to be discussed
@@ -154,9 +154,9 @@ abstract contract LSP0ERC725AccountCore is
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
+                    .universalReceiverDelegate(msg.sender, _typeId, _data);
             }
         }
-        emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
+        emit UniversalReceiver(msg.sender, _typeId, returnValue, _data);
     }
 }

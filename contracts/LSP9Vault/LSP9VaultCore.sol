@@ -58,7 +58,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
      * @dev Emits an event when receiving native tokens
      */
     receive() external payable {
-        emit ValueReceived(_msgSender(), msg.value);
+        emit ValueReceived(msg.sender, msg.value);
     }
 
     // ERC165
@@ -165,10 +165,10 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
+                    .universalReceiverDelegate(msg.sender, _typeId, _data);
             }
         }
-        emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
+        emit UniversalReceiver(msg.sender, _typeId, returnValue, _data);
     }
 
     // internal functions
