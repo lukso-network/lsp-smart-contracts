@@ -231,11 +231,11 @@ const Errors = {
 	LSP7CappedSupply: {
 		"0xacf1d8c5": {
 			"error": "LSP7CappedSupplyRequired()",
-			"message": ""
+			"message": "LSP7CappedSupply: cap supply number required"
 		},
 		"0xeacbf0d1": {
 			"error": "LSP7CappedSupplyCannotMintOverCap()",
-			"message": ""
+			"message": "LSP7CappedSupply: cannot mint over the max cap supply"
 		},
 	},
 	LSP8: {
@@ -279,11 +279,11 @@ const Errors = {
 	LSP8CappedSupply: {
 		"0x38d9fc30": {
 			"error": "LSP8CappedSupplyRequired()",
-			"message": ""
+			"message": "LSP8CappedSupply: cap supply number required"
 		},
 		"0xe8ba2291": {
 			"error": "LSP8CappedSupplyCannotMintOverCap()",
-			"message": ""
+			"message": "LSP8CappedSupply: cannot mint over the max cap supply"
 		},
 	}
 }
