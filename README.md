@@ -76,8 +76,7 @@ You can find more infos on how to deploy the contracts via hardhat in the [DEPLO
 
 ### Available Constants
 
-You can access interface IDs and other constants, using the `constants.js` file from the [lsp-smart-contracts package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
-You can find all accessible constants in the [`constants.js` file](https://github.com/lukso-network/lsp-smart-contracts/blob/main/constants.js).
+You can access interface IDs and other constants, using the [`constants.js` file](https://github.com/lukso-network/lsp-smart-contracts/blob/main/constants.js) file from the [lsp-smart-contracts package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
 
 
 ```js
@@ -92,4 +91,13 @@ const {
     ALL_PERMISSIONS,
     EventSignatures,
 } = require("@lukso/lsp-smart-contracts/constants.js");
+```
+
+It also includes constant values [Array data keys](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md#Array) to retrieve both the array length and for index access.
+
+```js
+'LSP5ReceivedAssets[]': {
+    length: '0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
+    index: '0x6460ee3c0aac563ccbf76d6e1d07bada',
+},
 ```
