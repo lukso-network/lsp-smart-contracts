@@ -18,7 +18,7 @@ contract UniversalReceiverAddressStore is
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    bytes4 internal constant _INTERFACE_ID_LSP1DELEGATE = 0xc2d7bcc1;
+    bytes4 internal constant _INTERFACE_ID_LSP1DELEGATE = 0xa245bbda;
 
     bytes32 internal constant _TOKENS_RECIPIENT_INTERFACE_HASH =
         0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b; // keccak256("ERC777TokensRecipient")
