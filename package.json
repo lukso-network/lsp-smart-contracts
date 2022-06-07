@@ -56,7 +56,7 @@
   },
   "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
   "dependencies": {
-    "@erc725/smart-contracts": "^3.1.0",
+    "@erc725/smart-contracts": "^3.1.1",
     "@openzeppelin/contracts": "^4.6.0",
     "solidity-bytes-utils": "0.8.0"
   },
