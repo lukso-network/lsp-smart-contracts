@@ -138,6 +138,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
         external
+        payable
         virtual
         override
         returns (bytes memory returnValue)

@@ -33,5 +33,6 @@ interface ILSP1UniversalReceiver {
      */
     function universalReceiver(bytes32 typeId, bytes calldata data)
         external
+        payable
         returns (bytes memory);
 }

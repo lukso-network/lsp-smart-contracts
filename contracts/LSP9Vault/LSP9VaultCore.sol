@@ -149,6 +149,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
      */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
         external
+        payable
         virtual
         override
         returns (bytes memory returnValue)
