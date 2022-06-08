@@ -7,16 +7,17 @@ import {ILSP1UniversalReceiver} from "../../LSP1UniversalReceiver/ILSP1Universal
 contract UniversalReceiverTester {
     function callImplementationAndReturn(address target, bytes32 typeId)
         external
+        payable
         returns (bytes memory)
     {
         return ILSP1UniversalReceiver(target).universalReceiver(typeId, "");
     }
 
-    function checkImplementation(address _target, bytes32 _typeId) external {
+    function checkImplementation(address _target, bytes32 _typeId) external payable {
         ILSP1UniversalReceiver(_target).universalReceiver(_typeId, "");
     }
 
-    function checkImplementationLowLevelCall(address _target, bytes32 _typeId) external {
+    function checkImplementationLowLevelCall(address _target, bytes32 _typeId) external payable {
         // solhint-disable avoid-low-level-calls
         (bool success, ) = _target.call(
             abi.encodeWithSelector(ILSP1UniversalReceiver.universalReceiver.selector, _typeId, "")
