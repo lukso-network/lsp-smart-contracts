@@ -5,7 +5,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ILSP1UniversalReceiver, UniversalReceiverTester } from "../types";
 
 // helpers
-import { LSP1_HOOK_PLACEHOLDER } from "../utils/helpers";
+import { abiCoder, LSP1_HOOK_PLACEHOLDER } from "../utils/helpers";
 
 // constants
 import { EventSignatures } from "../../constants";
@@ -30,11 +30,14 @@ export const shouldBehaveLikeLSP1 = (
   describe("when calling the `universalReceiver(...)` function", () => {
     describe("from an EOA", () => {
       it("should emit a UniversalReceiver(...) event with correct topics", async () => {
+        let valueSent = 0;
         let caller = context.accounts[2];
 
         let tx = await context.lsp1Implementation
           .connect(caller)
-          .universalReceiver(LSP1_HOOK_PLACEHOLDER, "0x");
+          .universalReceiver(LSP1_HOOK_PLACEHOLDER, "0x", {
+            value: valueSent,
+          });
 
         let receipt = await tx.wait();
 
@@ -56,16 +59,19 @@ export const shouldBehaveLikeLSP1 = (
         // typeId
         expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
 
-        // receivedData
-        expect(receipt.logs[0].data).toEqual(
-          "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000"
+        // value + receivedData (anything parameter not index)
+        const dataField = abiCoder.encode(
+          ["uint256", "bytes"],
+          [valueSent, "0x"]
         );
+        expect(receipt.logs[0].data).toEqual(dataField);
       });
     });
 
     describe("from a Contract", () => {
       describe("via a contract call - `contract.universalReceiver(...)`", () => {
         it("should emit an UniversalReceiver(...) event", async () => {
+          let valueSent = 0;
           let tx = await context.lsp1Checker.checkImplementation(
             context.lsp1Implementation.address,
             LSP1_HOOK_PLACEHOLDER
@@ -90,15 +96,19 @@ export const shouldBehaveLikeLSP1 = (
           );
           // typeId
           expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
-          // receivedData
-          expect(receipt.logs[0].data).toEqual(
-            "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000"
+
+          // value + receivedData (anything parameter not index)
+          const dataField = abiCoder.encode(
+            ["uint256", "bytes"],
+            [valueSent, "0x"]
           );
+          expect(receipt.logs[0].data).toEqual(dataField);
         });
       });
 
       describe("via a low-level call - `address(contract).call(...)`", () => {
         it("should emit an UniversalReceiver(...) event", async () => {
+          let valueSent = 0;
           let tx = await context.lsp1Checker.checkImplementationLowLevelCall(
             context.lsp1Implementation.address,
             LSP1_HOOK_PLACEHOLDER
@@ -123,10 +133,13 @@ export const shouldBehaveLikeLSP1 = (
           );
           // typeId
           expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
-          // receivedData
-          expect(receipt.logs[0].data).toEqual(
-            "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000"
+
+          // value + receivedData (anything parameter not index)
+          const dataField = abiCoder.encode(
+            ["uint256", "bytes"],
+            [valueSent, "0x"]
           );
+          expect(receipt.logs[0].data).toEqual(dataField);
         });
       });
 
