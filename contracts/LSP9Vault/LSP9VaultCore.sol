@@ -58,7 +58,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
      * @dev Emits an event when receiving native tokens
      */
     fallback() external payable {
-        emit ValueReceived(msg.sender, msg.value);
+        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     // ERC165
