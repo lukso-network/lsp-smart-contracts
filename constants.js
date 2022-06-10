@@ -156,7 +156,7 @@ const BasicUPSetup_Schema = [
 	},
 	{
 		name: 'LSP12IssuedAssets[]',
-		key: ERC725YKeys.LSP12['LSP12IssuedAssets[]'],
+		key: ERC725YKeys.LSP12['LSP12IssuedAssets[]'].length,
 		keyType: 'Array',
 		valueContent: 'Number',
 		valueType: 'uint256',
