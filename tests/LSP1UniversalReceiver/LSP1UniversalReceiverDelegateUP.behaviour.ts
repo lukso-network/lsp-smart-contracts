@@ -230,8 +230,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenC.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000002",
             ]);
 
@@ -273,8 +273,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenA.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -330,8 +330,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000000",
             ]);
 
@@ -426,8 +426,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenA.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000002",
             ]);
 
@@ -555,8 +555,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -600,8 +600,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -707,11 +707,11 @@ export const shouldBehaveLikeLSP1Delegate = (
       it("should remove all lsp5 keys on both UP", async () => {
         const arrayLengthUP1 = await context.universalProfile1[
           "getData(bytes32)"
-        ](ERC725YKeys.LSP5["LSP5ReceivedAssets[]"]);
+        ](ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length);
 
         const arrayLengthUP2 = await context.universalProfile2[
           "getData(bytes32)"
-        ](ERC725YKeys.LSP5["LSP5ReceivedAssets[]"]);
+        ](ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length);
 
         expect(arrayLengthUP1).toEqual(ARRAY_LENGTH.ZERO);
         expect(arrayLengthUP2).toEqual(ARRAY_LENGTH.ZERO);
@@ -876,8 +876,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenC.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000002",
             ]);
 
@@ -920,8 +920,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenA.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -977,8 +977,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000000",
             ]);
 
@@ -1090,8 +1090,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenA.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000002",
             ]);
 
@@ -1229,8 +1229,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -1276,8 +1276,8 @@ export const shouldBehaveLikeLSP1Delegate = (
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"],
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].substr(0, 34) +
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -1532,8 +1532,8 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP10.LSP10VaultsMap + lsp9VaultB.address.substr(2),
-              ERC725YKeys.LSP10["LSP10Vaults[]"],
-              ERC725YKeys.LSP10["LSP10Vaults[]"].substr(0, 34) +
+              ERC725YKeys.LSP10["LSP10Vaults[]"].length,
+              ERC725YKeys.LSP10["LSP10Vaults[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -1585,8 +1585,8 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1["getData(bytes32[])"]([
               ERC725YKeys.LSP10.LSP10VaultsMap + lsp9VaultB.address.substr(2),
-              ERC725YKeys.LSP10["LSP10Vaults[]"],
-              ERC725YKeys.LSP10["LSP10Vaults[]"].substr(0, 34) +
+              ERC725YKeys.LSP10["LSP10Vaults[]"].length,
+              ERC725YKeys.LSP10["LSP10Vaults[]"].index +
                 "00000000000000000000000000000000",
             ]);
 
