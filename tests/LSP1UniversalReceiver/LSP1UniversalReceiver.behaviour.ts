@@ -152,7 +152,7 @@ export const shouldBehaveLikeLSP1 = (
   });
 
   describe("when calling the `universalReceiver(...)` function while sending native tokens", () => {
-    const valueSent = ethers.utils.parseEther("5");
+    const valueSent = ethers.utils.parseEther("3");
 
     describe("from an EOA", () => {
       it("should emit a UniversalReceiver(...) event with correct topics", async () => {
@@ -195,9 +195,9 @@ export const shouldBehaveLikeLSP1 = (
 
     describe("from a Contract", () => {
       beforeEach(async () => {
-        context.accounts[0].sendTransaction({
+        await context.accounts[0].sendTransaction({
           to: context.lsp1Checker.address,
-          value: ethers.utils.parseEther("20"),
+          value: ethers.utils.parseEther("5"),
         });
       });
 
@@ -205,7 +205,8 @@ export const shouldBehaveLikeLSP1 = (
         it("should emit an UniversalReceiver(...) event", async () => {
           let tx = await context.lsp1Checker.checkImplementation(
             context.lsp1Implementation.address,
-            LSP1_HOOK_PLACEHOLDER
+            LSP1_HOOK_PLACEHOLDER,
+            { value: valueSent }
           );
 
           let receipt = await tx.wait();
@@ -241,7 +242,8 @@ export const shouldBehaveLikeLSP1 = (
         it("should emit an UniversalReceiver(...) event", async () => {
           let tx = await context.lsp1Checker.checkImplementationLowLevelCall(
             context.lsp1Implementation.address,
-            LSP1_HOOK_PLACEHOLDER
+            LSP1_HOOK_PLACEHOLDER,
+            { value: valueSent }
           );
 
           let receipt = await tx.wait();
