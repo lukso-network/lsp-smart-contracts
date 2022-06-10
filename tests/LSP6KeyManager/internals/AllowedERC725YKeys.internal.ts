@@ -103,7 +103,7 @@ export const testAllowedERC725YKeysInternals = (
       const SINGLETON_KEY = ERC725YKeys.LSP3["LSP3Profile"];
 
       const ARRAY_KEY =
-        ERC725YKeys.LSP4["LSP4Creators[]"].substring(0, 34) + "00".repeat(16);
+        ERC725YKeys.LSP4["LSP4Creators[]"].index + "00".repeat(16);
 
       const MAPPING_KEY =
         SupportedStandards.LSP3UniversalProfile.key.substring(0, 34) +

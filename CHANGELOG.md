@@ -2,12 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.0...v0.6.1) (2022-06-10)
+
+### BREAKING CHANGES
+
+* the LSP2 array data keys defined in `constants.js` are now splitted in two: `.length` and `.index` ([#192](https://github.com/lukso-network/lsp-smart-contracts/pull/192))
+
+### Features
+
+* update `receive()` function to `fallback() payable`, to allow sending random bytes payload to the fallback function. ([#194](https://github.com/lukso-network/lsp-smart-contracts/pull/194))
+
+* update universalReceiver to latest spec ([#193](https://github.com/lukso-network/lsp-smart-contracts/issues/193)) ([5b2bc60](https://github.com/lukso-network/lsp-smart-contracts/commit/5b2bc601acbf467b132fc38093fdad9a54fdef1c))
+
+* add error signatures in `constants.js`([#191](https://github.com/lukso-network/lsp-smart-contracts/pull/191))
+* add LSP1 Type IDs in `constants.js` ([#196](https://github.com/lukso-network/lsp-smart-contracts/pull/196))
+
+
 ## [0.6.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.5.0...v0.6.0) (2022-06-03)
 
 
 ### ⚠ BREAKING CHANGES
 
-* edit LSP2 keys according to new spec (#177)
 * disable delegatecall
 * remove DELEGATECALL from ALL_PERMISSIONS
 * change name of interface IDs to match with docs

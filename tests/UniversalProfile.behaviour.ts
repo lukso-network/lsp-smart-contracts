@@ -11,6 +11,7 @@ import { getRandomAddresses } from "./utils/helpers";
 import {
   ERC1271_VALUES,
   ERC725YKeys,
+  EventSignatures,
   INTERFACE_IDS,
   SupportedStandards,
 } from "../constants";
@@ -85,9 +86,9 @@ export const shouldBehaveLikeLSP3 = (
 
   describe("when interacting with the ERC725Y storage", () => {
     let lsp12IssuedAssetsKeys = [
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].substring(0, 34) +
+      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000000",
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].substring(0, 34) +
+      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000001",
     ];
     let lsp12IssuedAssetsValues = [
@@ -98,7 +99,7 @@ export const shouldBehaveLikeLSP3 = (
     it("should set the 3 x keys for a basic UP setup => `LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`", async () => {
       let keys = [
         ERC725YKeys.LSP3.LSP3Profile,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"],
+        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length,
         ...lsp12IssuedAssetsKeys,
         ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
       ];
@@ -130,7 +131,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].substring(0, 34) +
+          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -141,7 +142,7 @@ export const shouldBehaveLikeLSP3 = (
 
       let keys = [
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"], // update array length
+        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
       ];
 
       let values = [
@@ -163,7 +164,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length + 1);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].substring(0, 34) +
+          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -173,7 +174,7 @@ export const shouldBehaveLikeLSP3 = (
 
         let keys = [
           ...lsp12IssuedAssetsKeys,
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"], // update array length
+          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
         ];
 
         let values = [
@@ -192,6 +193,50 @@ export const shouldBehaveLikeLSP3 = (
         expect(result).toEqual(values);
       });
     }
+  });
+
+  describe("when sending native tokens to the contract", () => {
+    it("should emit the right ValueReceived event", async () => {
+      let tx = await context.accounts[0].sendTransaction({
+        to: context.universalProfile.address,
+        value: ethers.utils.parseEther("5"),
+      });
+
+      let receipt = await tx.wait();
+
+      expect(receipt.logs[0].topics[0]).toEqual(
+        EventSignatures.LSP0.ValueReceived
+      );
+    });
+
+    it("should allow to send a random payload as well, and emit the ValueReceived event", async () => {
+      let tx = await context.accounts[0].sendTransaction({
+        to: context.universalProfile.address,
+        value: ethers.utils.parseEther("5"),
+        data: "0xaabbccdd",
+      });
+
+      let receipt = await tx.wait();
+
+      expect(receipt.logs[0].topics[0]).toEqual(
+        EventSignatures.LSP0.ValueReceived
+      );
+    });
+  });
+
+  describe("when sending a random payload, without any value", () => {
+    it("should execute the fallback function, but not emit the ValueReceived event", async () => {
+      let tx = await context.accounts[0].sendTransaction({
+        to: context.universalProfile.address,
+        value: 0,
+        data: "0xaabbccdd",
+      });
+
+      let receipt = await tx.wait();
+
+      // check that no event was emitted
+      expect(receipt.logs.length).toEqual(0);
+    });
   });
 };
 

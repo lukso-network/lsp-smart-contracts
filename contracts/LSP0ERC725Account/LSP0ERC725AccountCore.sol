@@ -43,8 +43,8 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Emits an event when receiving native tokens
      */
-    receive() external payable {
-        emit ValueReceived(_msgSender(), msg.value);
+    fallback() external payable {
+        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     //    TODO to be discussed
@@ -138,6 +138,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
         external
+        payable
         virtual
         override
         returns (bytes memory returnValue)
@@ -154,9 +155,9 @@ abstract contract LSP0ERC725AccountCore is
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
+                    .universalReceiverDelegate(msg.sender, msg.value, _typeId, _data);
             }
         }
-        emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
+        emit UniversalReceiver(msg.sender, msg.value, _typeId, returnValue, _data);
     }
 }

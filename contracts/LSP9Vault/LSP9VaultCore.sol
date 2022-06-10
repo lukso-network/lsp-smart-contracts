@@ -57,8 +57,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     /**
      * @dev Emits an event when receiving native tokens
      */
-    receive() external payable {
-        emit ValueReceived(_msgSender(), msg.value);
+    fallback() external payable {
+        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     // ERC165
@@ -149,6 +149,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
      */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
         external
+        payable
         virtual
         override
         returns (bytes memory returnValue)
@@ -165,10 +166,10 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(_msgSender(), _typeId, _data);
+                    .universalReceiverDelegate(msg.sender, msg.value, _typeId, _data);
             }
         }
-        emit UniversalReceiver(_msgSender(), _typeId, returnValue, _data);
+        emit UniversalReceiver(msg.sender, msg.value, _typeId, returnValue, _data);
     }
 
     // internal functions
