@@ -20,6 +20,7 @@ contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
 
     function universalReceiver(bytes32 typeId, bytes memory data)
         external
+        payable
         override
         returns (bytes memory returnValue)
     {

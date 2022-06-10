@@ -138,6 +138,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function universalReceiver(bytes32 _typeId, bytes calldata _data)
         external
+        payable
         virtual
         override
         returns (bytes memory returnValue)
@@ -154,9 +155,9 @@ abstract contract LSP0ERC725AccountCore is
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(msg.sender, _typeId, _data);
+                    .universalReceiverDelegate(msg.sender, msg.value, _typeId, _data);
             }
         }
-        emit UniversalReceiver(msg.sender, _typeId, returnValue, _data);
+        emit UniversalReceiver(msg.sender, msg.value, _typeId, returnValue, _data);
     }
 }

@@ -19,7 +19,7 @@ const INTERFACE_IDS = {
 	ERC725Y: '0x714df77c',
 	LSP0ERC725Account: '0x9a3bfe88',
 	LSP1UniversalReceiver: '0x6bb56a14',
-	LSP1UniversalReceiverDelegate: '0xc2d7bcc1',
+	LSP1UniversalReceiverDelegate: '0xa245bbda',
 	LSP6KeyManager: '0xc403d48f',
 	LSP7DigitalAsset: '0xe33f65c3',
 	LSP8IdentifiableDigitalAsset: '0x49399145',
@@ -349,14 +349,15 @@ const EventSignatures = {
 		/**
 		 * event UniversalReceiver(
 		 *    address indexed from,
+		 * 	  uint256 value,
 		 *    bytes32 indexed typeId,
 		 *    bytes indexed returnedValue,
 		 *    bytes receivedData
 		 * );
 		 *
-		 * signature = keccak256('UniversalReceiver(address,bytes32,bytes,bytes)')
+		 * signature = keccak256('UniversalReceiver(address,uint256,bytes32,bytes,bytes)')
 		 */
-		UniversalReceiver: '0x8187df79ab47ad16102e7bc8760349a115b3ba9869b8cedd78996f930ac9cac3',
+		UniversalReceiver: '0x9c3ba68eb5742b8e3961aea0afc7371a71bf433c8a67a831803b64c064a178c2',
 	},
 	LSP6: {
 		/**

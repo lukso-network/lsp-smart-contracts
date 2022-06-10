@@ -18,6 +18,7 @@ contract UniversalReceiverDelegateRevert is ILSP1UniversalReceiverDelegate, ERC1
     /* solhint-disable no-unused-vars */
     function universalReceiverDelegate(
         address sender,
+        uint256 value,
         bytes32 typeId,
         bytes memory data
     ) external pure override returns (bytes memory) {
