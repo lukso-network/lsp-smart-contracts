@@ -22,10 +22,10 @@ jobs:
         uses: EndBug/version-check@v1
         id: check
 
-      - name: Use Node.js '16.x'
+      - name: Use Node.js '16.15.0'
         uses: actions/setup-node@v2
         with:
-          node-version: "16.x"
+          node-version: "16.15.0"
           cache: "npm"
 
       - run: npm ci
