@@ -89,6 +89,7 @@ const {
     BasicUPSetup_Schema,
     PERMISSIONS,
     ALL_PERMISSIONS,
+    Errors,
     EventSignatures,
 } = require("@lukso/lsp-smart-contracts/constants.js");
 ```
