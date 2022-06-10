@@ -52,7 +52,7 @@ abstract contract TokenHandling {
             );
 
             IERC725Y(msg.sender).setData(keys, values);
-        } else if (!isReceiving) {
+        } else {
             // if there is no map value for the asset to remove, then do nothing
             if (bytes12(mapValue) == bytes12(0)) return "";
 

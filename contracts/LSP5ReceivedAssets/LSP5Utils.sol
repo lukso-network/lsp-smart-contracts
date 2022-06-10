@@ -15,7 +15,7 @@ import {_TYPEID_LSP7_TOKENSSENDER} from "../LSP7DigitalAsset/LSP7Constants.sol";
 
 library LSP5Utils {
     /**
-     * @dev Generating the data Keys/values to be set on the account after receiving assets/vaults
+     * @dev Generating the data keys/values to be set on the account after receiving assets/vaults
      *
      * @param account The account where the Keys should be added
      * @param arrayLengthKey The arrayLengthKey containing the number of the received assets/vaults
@@ -39,10 +39,10 @@ library LSP5Utils {
         keys = new bytes32[](3);
         values = new bytes[](3);
 
-        bytes memory rawArrayLength = account.getData(arrayLengthKey);
+        bytes memory encodedArrayLength = account.getData(arrayLengthKey);
 
         // If it's the first asset to receive
-        if (rawArrayLength.length == 0) {
+        if (encodedArrayLength.length == 0) {
             keys[0] = arrayLengthKey;
             values[0] = UtilsLib.uint256ToBytes(1);
 
@@ -53,8 +53,8 @@ library LSP5Utils {
             values[2] = bytes.concat(interfaceID, bytes8(0));
 
             // If the storage is already initiated
-        } else if (rawArrayLength.length == 32) {
-            uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
+        } else if (encodedArrayLength.length == 32) {
+            uint256 arrayLength = abi.decode(encodedArrayLength, (uint256));
             uint256 newArrayLength = arrayLength + 1;
 
             keys[0] = arrayLengthKey;
@@ -71,7 +71,7 @@ library LSP5Utils {
     }
 
     /**
-     * @dev Generating the data Keys/values to be removed/changed on the account after sending assets/vaults
+     * @dev Generating the data keys/values to be removed/changed on the account after sending assets/vaults
      *
      * @param account The account where the Keys should be added
      * @param arrayLengthKey The arrayLengthKey containing the number of the received assets/vaults
@@ -87,8 +87,8 @@ library LSP5Utils {
         bytes memory mapValue
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         // Updating the number of the received assets/vaults
-        bytes memory rawArrayLength = account.getData(arrayLengthKey);
-        uint256 arrayLength = abi.decode(rawArrayLength, (uint256));
+        bytes memory encodedArrayLength = account.getData(arrayLengthKey);
+        uint256 arrayLength = abi.decode(encodedArrayLength, (uint256));
         uint256 newLength = arrayLength - 1;
 
         uint64 index = extractIndexFromMap(mapValue);

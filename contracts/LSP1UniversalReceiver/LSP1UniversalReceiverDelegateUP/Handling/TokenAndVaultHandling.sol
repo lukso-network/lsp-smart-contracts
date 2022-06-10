@@ -61,7 +61,7 @@ abstract contract TokenAndVaultHandling {
                 interfaceID,
                 keyManager
             );
-        } else if (!isReceiving) {
+        } else {
             // if there is no map value for the asset to remove, then do nothing
             if (bytes12(mapValue) == bytes12(0)) return "";
 
