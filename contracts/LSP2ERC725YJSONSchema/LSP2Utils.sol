@@ -40,7 +40,7 @@ library LSP2Utils {
         return keccak256(keyName);
     }
 
-    function generateArrayKeyAtIndex(bytes32 _arrayKey, uint256 _index)
+    function generateArrayElementKeyAtIndex(bytes32 _arrayKey, uint256 _index)
         internal
         pure
         returns (bytes32)
