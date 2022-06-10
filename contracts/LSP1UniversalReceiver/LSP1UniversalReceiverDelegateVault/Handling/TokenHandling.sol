@@ -23,44 +23,51 @@ import "../../../LSP9Vault/LSP9Constants.sol";
  * @dev Function logic to add and remove the MapAndArrayKey of incoming assets and vaults
  */
 abstract contract TokenHandling {
-    // internal functions
-    function _tokenHandling(address sender, bytes32 typeId) internal returns (bytes memory result) {
-        if (sender.code.length == 0) return "";
+    function _tokenHandling(address caller, bytes32 typeId) internal returns (bytes memory result) {
+        // avoid EOAs spamming the storage
+        if (caller.code.length == 0) return "";
 
         if (!ERC165Checker.supportsERC165Interface(msg.sender, _INTERFACEID_LSP9)) return "";
 
-        (bool senderHook, bytes32 arrayKey, bytes12 mapPrefix, bytes4 interfaceID) = LSP1Utils
-            .getTransferDetails(typeId);
+        (
+            bool isReceiving,
+            bytes32 arrayLengthKey,
+            bytes12 mapPrefix,
+            bytes4 interfaceID
+        ) = LSP1Utils.getTransferDetails(typeId);
 
-        bytes32 mapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(sender));
+        bytes32 mapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(caller));
         bytes memory mapValue = IERC725Y(msg.sender).getData(mapKey);
 
-        if (!senderHook) {
-            // if the map is already set, then do nothing
+        if (isReceiving) {
+            // if the map value is already set, then do nothing
             if (bytes12(mapValue) != bytes12(0)) return "";
 
             (bytes32[] memory keys, bytes[] memory values) = LSP5Utils.addMapAndArrayKey(
                 IERC725Y(msg.sender),
-                arrayKey,
+                arrayLengthKey,
                 mapKey,
-                sender,
+                caller,
                 interfaceID
             );
+
             IERC725Y(msg.sender).setData(keys, values);
-        } else if (senderHook) {
-            // if there is no map for the asset to remove, then do nothing
+        } else {
+            // if there is no map value for the asset to remove, then do nothing
             if (bytes12(mapValue) == bytes12(0)) return "";
-            uint256 balance = ILSP7DigitalAsset(sender).balanceOf(msg.sender);
-            // if the amount sent is not the full balance, then do nothing
+
+            // if the amount sent is not the full balance, then do not remove the keys
+            uint256 balance = ILSP7DigitalAsset(caller).balanceOf(msg.sender);
             if (balance != 0) return "";
 
             (bytes32[] memory keys, bytes[] memory values) = LSP5Utils.removeMapAndArrayKey(
                 IERC725Y(msg.sender),
-                arrayKey,
+                arrayLengthKey,
                 mapPrefix,
                 mapKey,
                 mapValue
             );
+
             IERC725Y(msg.sender).setData(keys, values);
         }
     }
