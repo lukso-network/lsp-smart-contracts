@@ -211,16 +211,16 @@ export const testReadingPermissionsInternals = (
 
       // set AddressPermissions array keys
       permissionArrayKeys = [
-        ERC725YKeys.LSP6["AddressPermissions[]"],
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000000",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000001",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000002",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000003",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000004",
       ];
 
@@ -242,7 +242,7 @@ export const testReadingPermissionsInternals = (
 
     it("Value should be 5 for key 'AddressPermissions[]'", async () => {
       let result = await context.universalProfile["getData(bytes32)"](
-        ERC725YKeys.LSP6["AddressPermissions[]"]
+        ERC725YKeys.LSP6["AddressPermissions[]"].length
       );
       expect(result).toEqual("0x05");
     });

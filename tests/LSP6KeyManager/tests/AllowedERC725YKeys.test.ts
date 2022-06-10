@@ -1544,7 +1544,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         });
 
         it("should fail when setting elements of a not-allowed Array (eg: LSP5ReceivedAssets)", async () => {
-          let notAllowedArrayKey = ERC725YKeys.LSP5["LSP5ReceivedAssets[]"];
+          let notAllowedArrayKey =
+            ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length;
 
           let setDataPayload =
             context.universalProfile.interface.encodeFunctionData(

@@ -68,18 +68,18 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       permissionArrayKeys = [
-        ERC725YKeys.LSP6["AddressPermissions[]"],
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000000",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000001",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000002",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000003",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000004",
-        ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000005",
       ];
 
@@ -140,7 +140,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
 
         it("should be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"].length;
           let value = ethers.utils.hexZeroPad(8, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -156,7 +156,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
 
         it("should be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"].length;
           let value = ethers.utils.hexZeroPad(4, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -175,7 +175,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let randomWallet = new ethers.Wallet.createRandom();
 
           let key =
-            ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+            ERC725YKeys.LSP6["AddressPermissions[]"].index +
             "00000000000000000000000000000004";
 
           let value = randomWallet.address;
@@ -240,7 +240,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
 
         it("should be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"].length;
           let value = ethers.utils.hexZeroPad(8, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -258,7 +258,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
 
         it("should not be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"].length;
           let value = ethers.utils.hexZeroPad(4, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -280,7 +280,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let randomWallet = new ethers.Wallet.createRandom();
 
           let key =
-            ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+            ERC725YKeys.LSP6["AddressPermissions[]"].index +
             "00000000000000000000000000000004";
 
           let value = randomWallet.address;
@@ -373,7 +373,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
 
         it("should not be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"].length;
           let value = ethers.utils.hexZeroPad(8, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -394,7 +394,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
 
         it("should be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"].length;
           let value = ethers.utils.hexZeroPad(4, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -415,7 +415,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let randomWallet = new ethers.Wallet.createRandom();
 
           let key =
-            ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+            ERC725YKeys.LSP6["AddressPermissions[]"].index +
             "00000000000000000000000000000004";
 
           let value = randomWallet.address;
@@ -495,7 +495,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
 
         it("should not be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"].length;
           let value = ethers.utils.hexZeroPad(8, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -511,7 +511,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
 
         it("should not be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
-          let key = ERC725YKeys.LSP6["AddressPermissions[]"];
+          let key = ERC725YKeys.LSP6["AddressPermissions[]"].length;
           let value = ethers.utils.hexZeroPad(4, 32);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -530,7 +530,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           let randomWallet = new ethers.Wallet.createRandom();
 
           let key =
-            ERC725YKeys.LSP6["AddressPermissions[]"].slice(0, 34) +
+            ERC725YKeys.LSP6["AddressPermissions[]"].index +
             "00000000000000000000000000000004";
 
           let value = randomWallet.address;
@@ -1973,7 +1973,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           addressesToEditPermissions[0].address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           addressesToEditPermissions[1].address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions[]"],
+        ERC725YKeys.LSP6["AddressPermissions[]"].length,
       ];
 
       const permissionValues = [
@@ -2126,7 +2126,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               newControllerKeyOne.address.substr(2),
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
               newControllerKeyTwo.address.substr(2),
-            ERC725YKeys.LSP6["AddressPermissions[]"],
+            ERC725YKeys.LSP6["AddressPermissions[]"].length,
           ];
 
           let values = [
@@ -2164,7 +2164,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               newControllerKeyOne.address.substr(2),
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
               newControllerKeyTwo.address.substr(2),
-            ERC725YKeys.LSP6["AddressPermissions[]"],
+            ERC725YKeys.LSP6["AddressPermissions[]"].length,
           ];
 
           let values = [
@@ -2290,7 +2290,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               addressesToEditPermissions[0].address.substring(2),
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
               addressesToEditPermissions[1].address.substring(2),
-            ERC725YKeys.LSP6["AddressPermissions[]"],
+            ERC725YKeys.LSP6["AddressPermissions[]"].length,
           ];
 
           let values = [
@@ -2401,7 +2401,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ethers.utils.keccak256(
               ethers.utils.toUtf8Bytes("My SecondKey Key")
             ),
-            ERC725YKeys.LSP6["AddressPermissions[]"],
+            ERC725YKeys.LSP6["AddressPermissions[]"].length,
           ];
 
           let values = [

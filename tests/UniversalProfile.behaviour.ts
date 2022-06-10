@@ -86,9 +86,9 @@ export const shouldBehaveLikeLSP3 = (
 
   describe("when interacting with the ERC725Y storage", () => {
     let lsp12IssuedAssetsKeys = [
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].substring(0, 34) +
+      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000000",
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].substring(0, 34) +
+      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000001",
     ];
     let lsp12IssuedAssetsValues = [
@@ -99,7 +99,7 @@ export const shouldBehaveLikeLSP3 = (
     it("should set the 3 x keys for a basic UP setup => `LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`", async () => {
       let keys = [
         ERC725YKeys.LSP3.LSP3Profile,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"],
+        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length,
         ...lsp12IssuedAssetsKeys,
         ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
       ];
@@ -131,7 +131,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].substring(0, 34) +
+          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -142,7 +142,7 @@ export const shouldBehaveLikeLSP3 = (
 
       let keys = [
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"], // update array length
+        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
       ];
 
       let values = [
@@ -164,7 +164,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length + 1);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].substring(0, 34) +
+          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -174,7 +174,7 @@ export const shouldBehaveLikeLSP3 = (
 
         let keys = [
           ...lsp12IssuedAssetsKeys,
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"], // update array length
+          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
         ];
 
         let values = [
