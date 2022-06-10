@@ -173,6 +173,21 @@ const PERMISSIONS = {
     SUPER_DELEGATECALL:   "0x0000000000000000000000000000000000000000000000000000000000004000", // 0100 .... .... ....
 }
 
+const LSP1_TYPE_IDS = {
+	// keccak256('LSP7TokensSender')
+	LSP7_TOKENSENDER: "0x40b8bec57d7b5ff0dbd9e9acd0a47dfeb0101e1a203766f5ccab00445fbf39e9",
+	// keccak256('LSP7TokensRecipient')
+	LSP7_TOKENRECIPIENT: "0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f",
+	// keccak256('LSP8TokensSender')
+	LSP8_TOKENSENDER: "0x3724c94f0815e936299cca424da4140752198e0beb7931a6e0925d11bc97544c",
+	// keccak256('LSP8TokensRecipient')
+	LSP8_TOKENRECIPIENT: "0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01",
+	// keccak256("LSP9VaultSender")
+	LSP9_VAULTSENDER: "0x3ca9f769340018257ac15b3a00e502e8fb730d66086f774210f84d0205af31e7",
+	// keccak256("LSP9VaultRecipient")
+	LSP9_VAULTRECIPIENT: "0x09aaf55960715d8d86b57af40be36b0bfd469c9a3643445d8c65d39e27b4c56f"
+}
+
 // ----------
 
 const Errors = {
@@ -464,6 +479,7 @@ module.exports = {
 	BasicUPSetup_Schema,
 	ALL_PERMISSIONS,
 	PERMISSIONS,
+	LSP1_TYPE_IDS,
 	Errors,
 	EventSignatures,
 };

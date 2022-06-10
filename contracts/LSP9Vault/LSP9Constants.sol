@@ -12,7 +12,7 @@ bytes32 constant _LSP9_SUPPORTED_STANDARDS_KEY = 0xeafec4d89fa9619884b600007c033
 // bytes4(keccak256('LSP9Vault'))
 bytes constant _LSP9_SUPPORTED_STANDARDS_VALUE = hex"7c0334a1";
 
-// --- Token Hooks
+// --- Vault Hooks
 
 // keccak256("LSP9VaultSender")
 bytes32 constant _TYPEID_LSP9_VAULTSENDER = 0x3ca9f769340018257ac15b3a00e502e8fb730d66086f774210f84d0205af31e7;
