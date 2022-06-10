@@ -139,7 +139,7 @@ export const shouldBehaveLikeLSP9 = (
       it("should register lsp10 keys of the vault on the profile", async () => {
         const arrayLength = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](ERC725YKeys.LSP10["LSP10Vaults[]"]);
+        ](ERC725YKeys.LSP10["LSP10Vaults[]"].length);
         expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
       });
     });
