@@ -14,12 +14,8 @@ import "../LSP6KeyManager/LSP6Constants.sol";
 library LSP6Utils {
     using LSP2Utils for bytes12;
 
-    function getPermissionsFor(IERC725Y _account, address _address)
-        internal
-        view
-        returns (bytes32)
-    {
-        bytes memory permissions = _account.getData(
+    function getPermissionsFor(IERC725Y account, address _address) internal view returns (bytes32) {
+        bytes memory permissions = account.getData(
             LSP2Utils.generateMappingWithGroupingKey(
                 _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
                 bytes20(_address)
@@ -92,12 +88,12 @@ library LSP6Utils {
      * @param _permissionToCheck the permissions to check
      * @return true if `_addressPermissions` includes `_permissionToCheck`, false otherwise
      */
-    function hasPermission(bytes32 _addressPermission, bytes32 _permissionToCheck)
+    function hasPermission(bytes32 addressPermission, bytes32 permissionToCheck)
         internal
         pure
         returns (bool)
     {
-        return (_addressPermission & _permissionToCheck) == _permissionToCheck;
+        return (addressPermission & permissionToCheck) == permissionToCheck;
     }
 
     function setDataViaKeyManager(
