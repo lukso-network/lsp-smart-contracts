@@ -406,31 +406,20 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             // loop through each keys given as input
             for (uint256 jj = 0; jj < inputKeys.length; jj++) {
-                // skip permissions keys that have been previously "nulled"
+                // skip permissions keys that have been previously checked and "nulled"
                 if (inputKeys[jj] == bytes32(0)) continue;
 
-                // solhint-disable no-inline-assembly
-                assembly {
-                    // use a bitmask to discard the last `n` bytes of the input key
-                    // so to compare only the relevant parts of each ERC725Y keys
-                    //
-                    // `n = zeroBytesCount`
-                    //
-                    // eg:
-                    //
-                    // allowed key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000000000000
-                    //
-                    //                        compare this part
-                    //                 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-                    //   input key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000011223344
-                    //
-                    //         &                                              discard this part
-                    //                                                 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-                    //        mask = 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000
-                    //
-                    // prettier-ignore
-                    mask := shl(mul(8, zeroBytesCount), 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
-                }
+                // use a bitmask to discard the last `n` bytes of the input key (where `n` = `zeroBytesCount`)
+                // and compare only the relevant parts of each ERC725Y keys
+                //
+                // for an allowed key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000000000000
+                //               
+                //                        |------compare this part-------|------discard this part--------|
+                //                        v                              v                               v
+                //               mask = 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000
+                //        & input key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000011223344
+                //                        
+                mask = bytes32(type(uint256).max) << (8 * zeroBytesCount);
 
                 if (allowedERC725YKeys[ii] == (inputKeys[jj] & mask)) {
                     // if the input key matches the allowed key
