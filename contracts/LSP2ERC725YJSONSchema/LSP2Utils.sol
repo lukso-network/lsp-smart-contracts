@@ -16,19 +16,19 @@ library LSP2Utils {
 
     /* solhint-disable no-inline-assembly */
 
-    function generateBytes32Key(bytes memory _rawKey) internal pure returns (bytes32 key) {
+    function generateBytes32Key(bytes memory rawKey) internal pure returns (bytes32 key) {
         // solhint-disable-next-line
         assembly {
-            key := mload(add(_rawKey, 32))
+            key := mload(add(rawKey, 32))
         }
     }
 
-    function generateSingletonKey(string memory _keyName) internal pure returns (bytes32) {
-        return keccak256(bytes(_keyName));
+    function generateSingletonKey(string memory keyName) internal pure returns (bytes32) {
+        return keccak256(bytes(keyName));
     }
 
-    function generateArrayKey(string memory _keyName) internal pure returns (bytes32) {
-        bytes memory keyName = bytes(_keyName);
+    function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
+        bytes memory keyName = bytes(keyName);
 
         // prettier-ignore
         require(
@@ -40,25 +40,25 @@ library LSP2Utils {
         return keccak256(keyName);
     }
 
-    function generateArrayElementKeyAtIndex(bytes32 _arrayKey, uint256 _index)
+    function generateArrayElementKeyAtIndex(bytes32 arrayKey, uint256 index)
         internal
         pure
         returns (bytes32)
     {
         bytes memory elementInArray = UtilsLib.concatTwoBytes16(
-            bytes16(_arrayKey),
-            bytes16(uint128(_index))
+            bytes16(arrayKey),
+            bytes16(uint128(index))
         );
         return generateBytes32Key(elementInArray);
     }
 
-    function generateMappingKey(string memory _firstWord, string memory _lastWord)
+    function generateMappingKey(string memory firstWord, string memory lastWord)
         internal
         pure
         returns (bytes32)
     {
-        bytes32 firstWordHash = keccak256(bytes(_firstWord));
-        bytes32 lastWordHash = keccak256(bytes(_lastWord));
+        bytes32 firstWordHash = keccak256(bytes(firstWord));
+        bytes32 lastWordHash = keccak256(bytes(lastWord));
 
         bytes memory temporaryBytes = abi.encodePacked(
             bytes10(firstWordHash),
@@ -69,34 +69,34 @@ library LSP2Utils {
         return generateBytes32Key(temporaryBytes);
     }
 
-    function generateMappingKey(string memory _firstWord, address _address)
+    function generateMappingKey(string memory firstWord, address _address)
         internal
         pure
         returns (bytes32)
     {
-        bytes32 firstWordHash = keccak256(bytes(_firstWord));
+        bytes32 firstWordHash = keccak256(bytes(firstWord));
 
         bytes memory temporaryBytes = abi.encodePacked(bytes10(firstWordHash), bytes2(0), _address);
 
         return generateBytes32Key(temporaryBytes);
     }
 
-    function generateMappingKey(bytes12 _keyPrefix, bytes20 _bytes20)
+    function generateMappingKey(bytes12 keyPrefix, bytes20 bytes20Value)
         internal
         pure
         returns (bytes32)
     {
-        bytes memory generatedKey = bytes.concat(_keyPrefix, _bytes20);
+        bytes memory generatedKey = bytes.concat(keyPrefix, bytes20Value);
         return generateBytes32Key(generatedKey);
     }
 
     function generateMappingWithGroupingKey(
-        string memory _firstWord,
-        string memory _secondWord,
+        string memory firstWord,
+        string memory secondWord,
         address _address
     ) internal pure returns (bytes32) {
-        bytes32 firstWordHash = keccak256(bytes(_firstWord));
-        bytes32 secondWordHash = keccak256(bytes(_secondWord));
+        bytes32 firstWordHash = keccak256(bytes(firstWord));
+        bytes32 secondWordHash = keccak256(bytes(secondWord));
 
         bytes memory temporaryBytes = abi.encodePacked(
             bytes6(firstWordHash),
@@ -108,50 +108,50 @@ library LSP2Utils {
         return generateBytes32Key(temporaryBytes);
     }
 
-    function generateMappingWithGroupingKey(bytes12 _keyPrefix, bytes20 _bytes20)
+    function generateMappingWithGroupingKey(bytes12 keyPrefix, bytes20 bytes20Value)
         internal
         pure
         returns (bytes32)
     {
-        bytes memory generatedKey = bytes.concat(_keyPrefix, _bytes20);
+        bytes memory generatedKey = bytes.concat(keyPrefix, bytes20Value);
         return generateBytes32Key(generatedKey);
     }
 
     function generateJSONURLValue(
-        string memory _hashFunction,
-        string memory _json,
-        string memory _url
-    ) internal pure returns (bytes memory key_) {
-        bytes32 hashFunctionDigest = keccak256(bytes(_hashFunction));
-        bytes32 jsonDigest = keccak256(bytes(_json));
+        string memory hashFunction,
+        string memory json,
+        string memory url
+    ) internal pure returns (bytes memory key) {
+        bytes32 hashFunctionDigest = keccak256(bytes(hashFunction));
+        bytes32 jsonDigest = keccak256(bytes(json));
 
-        key_ = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, _url);
+        key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
     function generateASSETURLValue(
-        string memory _hashFunction,
-        string memory _assetBytes,
-        string memory _url
-    ) internal pure returns (bytes memory key_) {
-        bytes32 hashFunctionDigest = keccak256(bytes(_hashFunction));
-        bytes32 jsonDigest = keccak256(bytes(_assetBytes));
+        string memory hashFunction,
+        string memory assetBytes,
+        string memory url
+    ) internal pure returns (bytes memory key) {
+        bytes32 hashFunctionDigest = keccak256(bytes(hashFunction));
+        bytes32 jsonDigest = keccak256(bytes(assetBytes));
 
-        key_ = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, _url);
+        key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
-    function isEncodedArray(bytes memory _data) internal pure returns (bool) {
-        uint256 nbOfBytes = _data.length;
+    function isEncodedArray(bytes memory data) internal pure returns (bool) {
+        uint256 nbOfBytes = data.length;
 
         // 1) there must be at least 32 bytes to store the offset
         if (nbOfBytes < 32) return false;
 
         // 2) there must be at least the same number of bytes specified by
         // the offset value (otherwise, the offset points to nowhere)
-        uint256 offset = uint256(bytes32(_data));
+        uint256 offset = uint256(bytes32(data));
         if (nbOfBytes < offset) return false;
 
         // 3) there must be at least 32 x length bytes after offset
-        uint256 arrayLength = _data.toUint256(offset);
+        uint256 arrayLength = data.toUint256(offset);
 
         //   32 bytes word (= offset)
         // + 32 bytes word (= array length)
@@ -161,11 +161,11 @@ library LSP2Utils {
         return true;
     }
 
-    function isEncodedArrayOfAddresses(bytes memory _data) internal pure returns (bool) {
-        if (!isEncodedArray(_data)) return false;
+    function isEncodedArrayOfAddresses(bytes memory data) internal pure returns (bool) {
+        if (!isEncodedArray(data)) return false;
 
-        uint256 offset = uint256(bytes32(_data));
-        uint256 arrayLength = _data.toUint256(offset);
+        uint256 offset = uint256(bytes32(data));
+        uint256 arrayLength = data.toUint256(offset);
 
         uint256 pointer = offset + 32;
 
@@ -183,15 +183,15 @@ library LSP2Utils {
         return true;
     }
 
-    function isBytes4EncodedArray(bytes memory _data) internal pure returns (bool) {
-        if (!isEncodedArray(_data)) return false;
+    function isBytes4EncodedArray(bytes memory data) internal pure returns (bool) {
+        if (!isEncodedArray(data)) return false;
 
-        uint256 offset = uint256(bytes32(_data));
-        uint256 arrayLength = _data.toUint256(offset);
+        uint256 offset = uint256(bytes32(data));
+        uint256 arrayLength = data.toUint256(offset);
         uint256 pointer = offset + 32;
 
         for (uint256 ii = 0; ii < arrayLength; ii++) {
-            bytes32 key = _data.toBytes32(pointer);
+            bytes32 key = data.toBytes32(pointer);
 
             // check that the trailing bytes are zero bytes "00"
             if (uint224(uint256(key)) != 0) return false;
