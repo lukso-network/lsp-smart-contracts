@@ -28,16 +28,16 @@ library LSP2Utils {
     }
 
     function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
-        bytes memory keyName = bytes(keyName);
+        bytes memory dataKey = bytes(keyName);
 
         // prettier-ignore
         require(
-            keyName[keyName.length - 2] == 0x5b && // "[" in utf8 encoded
-                keyName[keyName.length - 1] == 0x5d, // "]" in utf8
+            dataKey[dataKey.length - 2] == 0x5b && // "[" in utf8 encoded
+                dataKey[dataKey.length - 1] == 0x5d, // "]" in utf8
             "Missing empty square brackets \"[]\" at the end of the key name"
         );
 
-        return keccak256(keyName);
+        return keccak256(dataKey);
     }
 
     function generateArrayElementKeyAtIndex(bytes32 arrayKey, uint256 index)
@@ -170,7 +170,7 @@ library LSP2Utils {
         uint256 pointer = offset + 32;
 
         for (uint256 ii = 0; ii < arrayLength; ii++) {
-            bytes32 key = _data.toBytes32(pointer);
+            bytes32 key = data.toBytes32(pointer);
 
             // check that the leading bytes are zero bytes "00"
             // NB: address type is padded on the left (unlike bytes20 type that is padded on the right)

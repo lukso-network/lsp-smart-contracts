@@ -82,11 +82,11 @@ library LSP6Utils {
     }
 
     /**
-     * @dev compare the permissions `_addressPermissions` of an address
-     *      to check if they includes the permissions `_permissionToCheck`
-     * @param _addressPermission the permissions of an address stored on an ERC725 account
-     * @param _permissionToCheck the permissions to check
-     * @return true if `_addressPermissions` includes `_permissionToCheck`, false otherwise
+     * @dev compare the permissions `addressPermissions` of an address
+     *      to check if they includes the permissions `permissionToCheck`
+     * @param addressPermission the permissions of an address stored on an ERC725 account
+     * @param permissionToCheck the permissions to check
+     * @return true if `addressPermissions` includes `permissionToCheck`, false otherwise
      */
     function hasPermission(bytes32 addressPermission, bytes32 permissionToCheck)
         internal
