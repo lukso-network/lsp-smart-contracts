@@ -3,6 +3,7 @@ pragma solidity ^0.8.6;
 
 // modules
 import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
+import {InvalidLSP6Target} from "./LSP6Errors.sol";
 
 /**
  * @title Implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -15,6 +16,7 @@ contract LSP6KeyManager is LSP6KeyManagerCore {
      * @param _account The address of the ER725Account to control
      */
     constructor(address _account) {
+        if (_account == address(0)) revert InvalidLSP6Target();
         target = _account;
     }
 }
