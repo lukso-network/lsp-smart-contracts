@@ -14,13 +14,6 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     address public override pendingOwner;
 
-    function claimOwnership() public virtual override {
-        require(msg.sender == pendingOwner, "OwnableClaim: caller is not the pendingOwner");
-
-        _setOwner(pendingOwner);
-        pendingOwner = address(0);
-    }
-
     function transferOwnership(address _newOwner) public virtual override onlyOwner {
         _transferOwnership(_newOwner);
     }

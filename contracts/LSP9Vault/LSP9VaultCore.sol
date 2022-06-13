@@ -97,9 +97,12 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     /**
      * @dev Transfer the ownership and notify the vault sender and vault receiver
      */
-    function claimOwnership() public virtual override {
+    function claimOwnership() external virtual override {
         address previousOwner = owner();
-        super.claimOwnership();
+
+        require(msg.sender == pendingOwner, "OwnableClaim: caller is not the pendingOwner");
+        _setOwner(pendingOwner);
+        pendingOwner = address(0);
 
         _notifyVaultSender(previousOwner);
         _notifyVaultReceiver(msg.sender);

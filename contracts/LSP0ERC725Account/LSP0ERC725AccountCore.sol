@@ -160,4 +160,10 @@ abstract contract LSP0ERC725AccountCore is
         }
         emit UniversalReceiver(msg.sender, msg.value, _typeId, returnValue, _data);
     }
+
+    function claimOwnership() external virtual override {
+        require(msg.sender == pendingOwner, "OwnableClaim: caller is not the pendingOwner");
+        _setOwner(pendingOwner);
+        pendingOwner = address(0);
+    }
 }
