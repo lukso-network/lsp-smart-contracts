@@ -49,7 +49,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using ERC165Checker for address;
 
     address public override target;
-    mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
+    mapping(address => mapping(uint256 => uint256)) internal nonceStore;
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -65,7 +65,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @inheritdoc ILSP6KeyManager
      */
     function getNonce(address from, uint256 channelId) external view override returns (uint256) {
-        uint128 nonceId = uint128(_nonceStore[from][channelId]);
+        uint128 nonceId = uint128(nonceStore[from][channelId]);
         return (uint256(channelId) << 128) | nonceId;
     }
 
@@ -126,7 +126,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         require(_isValidNonce(signer, nonce), "executeRelayCall: Invalid nonce");
 
         // increase nonce after successful verification
-        _nonceStore[signer][nonce >> 128]++;
+        nonceStore[signer][nonce >> 128]++;
 
         _verifyPermissions(signer, payload);
 
@@ -154,8 +154,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _isValidNonce(address from, uint256 idx) internal view returns (bool) {
         // idx % (1 << 128) = nonce
         // (idx >> 128) = channel
-        // equivalent to: return (nonce == _nonceStore[_from][channel]
-        return (idx % (1 << 128)) == (_nonceStore[from][idx >> 128]);
+        // equivalent to: return (nonce == nonceStore[_from][channel]
+        return (idx % (1 << 128)) == (nonceStore[from][idx >> 128]);
     }
 
     /**
