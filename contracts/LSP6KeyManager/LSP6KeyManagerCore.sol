@@ -186,10 +186,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             } else {
 
-                bytes32[] memory inputKeys = new bytes32[](1);
-                inputKeys[0] = inputKey;
+                bytes32[] memory wrappedInputKey = new bytes32[](1);
+                wrappedInputKey[0] = inputKey;
 
-                _verifyCanSetData(from, permissions, inputKeys);
+                _verifyCanSetData(from, permissions, wrappedInputKey);
             }
 
         } else if (erc725Function == setDataMultipleSelector) {
