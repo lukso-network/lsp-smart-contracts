@@ -16,13 +16,6 @@ library LSP2Utils {
 
     /* solhint-disable no-inline-assembly */
 
-    function generateBytes32Key(bytes memory rawKey) internal pure returns (bytes32 key) {
-        // solhint-disable-next-line
-        assembly {
-            key := mload(add(rawKey, 32))
-        }
-    }
-
     function generateSingletonKey(string memory keyName) internal pure returns (bytes32) {
         return keccak256(bytes(keyName));
     }
@@ -49,7 +42,7 @@ library LSP2Utils {
             bytes16(arrayKey),
             bytes16(uint128(index))
         );
-        return generateBytes32Key(elementInArray);
+        return bytes32(elementInArray);
     }
 
     function generateMappingKey(string memory firstWord, string memory lastWord)
@@ -60,25 +53,25 @@ library LSP2Utils {
         bytes32 firstWordHash = keccak256(bytes(firstWord));
         bytes32 lastWordHash = keccak256(bytes(lastWord));
 
-        bytes memory temporaryBytes = abi.encodePacked(
+        bytes memory temporaryBytes = bytes.concat(
             bytes10(firstWordHash),
             bytes2(0),
             bytes20(lastWordHash)
         );
 
-        return generateBytes32Key(temporaryBytes);
+        return bytes32(temporaryBytes);
     }
 
-    function generateMappingKey(string memory firstWord, address _address)
+    function generateMappingKey(string memory firstWord, address addr)
         internal
         pure
         returns (bytes32)
     {
         bytes32 firstWordHash = keccak256(bytes(firstWord));
 
-        bytes memory temporaryBytes = abi.encodePacked(bytes10(firstWordHash), bytes2(0), _address);
+        bytes memory temporaryBytes = bytes.concat(bytes10(firstWordHash), bytes2(0), bytes20(addr));
 
-        return generateBytes32Key(temporaryBytes);
+        return bytes32(temporaryBytes);
     }
 
     function generateMappingKey(bytes12 keyPrefix, bytes20 bytes20Value)
@@ -87,25 +80,25 @@ library LSP2Utils {
         returns (bytes32)
     {
         bytes memory generatedKey = bytes.concat(keyPrefix, bytes20Value);
-        return generateBytes32Key(generatedKey);
+        return bytes32(generatedKey);
     }
 
     function generateMappingWithGroupingKey(
         string memory firstWord,
         string memory secondWord,
-        address _address
+        address addr
     ) internal pure returns (bytes32) {
         bytes32 firstWordHash = keccak256(bytes(firstWord));
         bytes32 secondWordHash = keccak256(bytes(secondWord));
 
-        bytes memory temporaryBytes = abi.encodePacked(
+        bytes memory temporaryBytes = bytes.concat(
             bytes6(firstWordHash),
             bytes4(secondWordHash),
             bytes2(0),
-            _address
+            bytes20(addr)
         );
 
-        return generateBytes32Key(temporaryBytes);
+        return bytes32(temporaryBytes);
     }
 
     function generateMappingWithGroupingKey(bytes12 keyPrefix, bytes20 bytes20Value)
@@ -114,7 +107,7 @@ library LSP2Utils {
         returns (bytes32)
     {
         bytes memory generatedKey = bytes.concat(keyPrefix, bytes20Value);
-        return generateBytes32Key(generatedKey);
+        return bytes32(generatedKey);
     }
 
     function generateJSONURLValue(
