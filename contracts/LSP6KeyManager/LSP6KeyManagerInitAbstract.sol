@@ -13,8 +13,8 @@ import {InvalidLSP6Target} from "./LSP6Errors.sol";
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 abstract contract LSP6KeyManagerInitAbstract is Initializable, LSP6KeyManagerCore {
-    function _initialize(address _account) internal virtual onlyInitializing {
-        if (_account == address(0)) revert InvalidLSP6Target();
-        target = _account;
+    function _initialize(address target_) internal virtual onlyInitializing {
+        if (target_ == address(0)) revert InvalidLSP6Target();
+        target = target_;
     }
 }

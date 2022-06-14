@@ -13,10 +13,10 @@ import {InvalidLSP6Target} from "./LSP6Errors.sol";
 contract LSP6KeyManager is LSP6KeyManagerCore {
     /**
      * @notice Initiate the account with the address of the ERC725Account contract and sets LSP6KeyManager InterfaceId
-     * @param _account The address of the ER725Account to control
+     * @param target_ The address of the ER725Account to control
      */
-    constructor(address _account) {
-        if (_account == address(0)) revert InvalidLSP6Target();
-        target = _account;
+    constructor(address target_) {
+        if (target_ == address(0)) revert InvalidLSP6Target();
+        target = target_;
     }
 }
