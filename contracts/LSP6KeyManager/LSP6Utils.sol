@@ -14,90 +14,86 @@ import "../LSP6KeyManager/LSP6Constants.sol";
 library LSP6Utils {
     using LSP2Utils for bytes12;
 
-    function getPermissionsFor(IERC725Y _account, address _address)
-        internal
-        view
-        returns (bytes32)
-    {
-        bytes memory permissions = _account.getData(
+    function getPermissionsFor(IERC725Y target, address caller) internal view returns (bytes32) {
+        bytes memory permissions = target.getData(
             LSP2Utils.generateMappingWithGroupingKey(
                 _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
-                bytes20(_address)
+                bytes20(caller)
             )
         );
 
         return bytes32(permissions);
     }
 
-    function getAllowedAddressesFor(IERC725Y _account, address _address)
+    function getAllowedAddressesFor(IERC725Y target, address caller)
         internal
         view
         returns (bytes memory)
     {
         return
-            _account.getData(
+            target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
                     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX,
-                    bytes20(_address)
+                    bytes20(caller)
                 )
             );
     }
 
-    function getAllowedFunctionsFor(IERC725Y _account, address _address)
+    function getAllowedFunctionsFor(IERC725Y target, address caller)
         internal
         view
         returns (bytes memory)
     {
         return
-            _account.getData(
+            target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
                     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX,
-                    bytes20(_address)
+                    bytes20(caller)
                 )
             );
     }
 
-    function getAllowedStandardsFor(IERC725Y _account, address _address)
+    function getAllowedStandardsFor(IERC725Y target, address caller)
         internal
         view
         returns (bytes memory)
     {
         return
-            _account.getData(
+            target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
                     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX,
-                    bytes20(_address)
+                    bytes20(caller)
                 )
             );
     }
 
-    function getAllowedERC725YKeysFor(IERC725Y _account, address _address)
+    function getAllowedERC725YKeysFor(IERC725Y target, address caller)
         internal
         view
         returns (bytes memory)
     {
         return
-            _account.getData(
+            target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
                     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX,
-                    bytes20(_address)
+                    bytes20(caller)
                 )
             );
     }
 
     /**
-     * @dev compare the permissions `_addressPermissions` of an address
-     *      to check if they includes the permissions `_permissionToCheck`
-     * @param _addressPermission the permissions of an address stored on an ERC725 account
-     * @param _permissionToCheck the permissions to check
-     * @return true if `_addressPermissions` includes `_permissionToCheck`, false otherwise
+     * @dev compare the permissions `addressPermissions` of an address
+     *      to check if they includes the permissions `permissionToCheck`
+     * @param addressPermission the permissions of an address stored on an ERC725 account
+     * @param permissionToCheck the permissions to check
+     * @return true if `addressPermissions` includes `permissionToCheck`, false otherwise
      */
-    function hasPermission(bytes32 _addressPermission, bytes32 _permissionToCheck)
+    function hasPermission(bytes32 addressPermission, bytes32 permissionToCheck)
         internal
         pure
         returns (bool)
     {
-        return (_addressPermission & _permissionToCheck) == _permissionToCheck;
+        return (addressPermission & permissionToCheck) == permissionToCheck;
     }
 
     function setDataViaKeyManager(

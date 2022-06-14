@@ -16,11 +16,7 @@ library UtilsLib {
         pure
         returns (bytes memory result)
     {
-        result = new bytes(32);
-        assembly {
-            mstore(add(result, 32), b1)
-            mstore(add(result, 48), b2)
-        }
+        result = bytes.concat(b1, b2);
     }
 
     /**
@@ -31,10 +27,7 @@ library UtilsLib {
         pure
         returns (bytes memory bytes_)
     {
-        bytes_ = new bytes(32);
-        assembly {
-            mstore(add(bytes_, 32), num)
-        }
+        bytes_ = bytes.concat(bytes32(num));
     }
 
     /**
@@ -45,15 +38,6 @@ library UtilsLib {
         pure
         returns (bytes memory bytes_)
     {
-        assembly {
-            let m := mload(0x40)
-            addr := and(addr, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
-            mstore(
-                add(m, 20),
-                xor(0x140000000000000000000000000000000000000000, addr)
-            )
-            mstore(0x40, add(m, 52))
-            bytes_ := m
-        }
+        bytes_ = bytes.concat(bytes20(addr));
     }
 }

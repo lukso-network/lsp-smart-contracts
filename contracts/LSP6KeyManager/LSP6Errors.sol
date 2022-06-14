@@ -35,3 +35,9 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
  * @param disallowedKey a bytes32 key that `from` is not authorised to set on the ERC725Y storage
  */
 error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
+
+/**
+ * @dev the address provided as a target linked to this KeyManager is invalid
+ *      e.g. address(0)
+ */
+error InvalidLSP6Target();

@@ -116,9 +116,10 @@ export const testAllowedERC725YKeysInternals = (
       it(
         "Singleton: should return 0 for `LSP3Profile` -> " + SINGLETON_KEY,
         async () => {
-          let result = await context.keyManagerInternalTester.countZeroBytes(
-            SINGLETON_KEY
-          );
+          let result =
+            await context.keyManagerInternalTester.countTrailingZeroBytes(
+              SINGLETON_KEY
+            );
 
           expect(result.toNumber()).toEqual(0);
         }
@@ -127,9 +128,10 @@ export const testAllowedERC725YKeysInternals = (
       it(
         "Array: should return 16 for `LSP4Creators[]` -> " + ARRAY_KEY,
         async () => {
-          let result = await context.keyManagerInternalTester.countZeroBytes(
-            ARRAY_KEY
-          );
+          let result =
+            await context.keyManagerInternalTester.countTrailingZeroBytes(
+              ARRAY_KEY
+            );
 
           expect(result.toNumber()).toEqual(16);
         }
@@ -139,9 +141,10 @@ export const testAllowedERC725YKeysInternals = (
         "Mapping: should return 16 for `SupportedStandards:...` -> " +
           MAPPING_KEY,
         async () => {
-          let result = await context.keyManagerInternalTester.countZeroBytes(
-            MAPPING_KEY
-          );
+          let result =
+            await context.keyManagerInternalTester.countTrailingZeroBytes(
+              MAPPING_KEY
+            );
 
           expect(result.toNumber()).toEqual(16);
         }
@@ -151,9 +154,10 @@ export const testAllowedERC725YKeysInternals = (
         "Bytes20Mapping: should return 16 for `LSP5ReceivedAssetsMap:...` -> " +
           BYTES20_MAPPING_KEY,
         async () => {
-          let result = await context.keyManagerInternalTester.countZeroBytes(
-            BYTES20_MAPPING_KEY
-          );
+          let result =
+            await context.keyManagerInternalTester.countTrailingZeroBytes(
+              BYTES20_MAPPING_KEY
+            );
 
           expect(result.toNumber()).toEqual(24);
         }

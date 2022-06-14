@@ -12,9 +12,9 @@ import {LSP6KeyManagerInitAbstract} from "./LSP6KeyManagerInitAbstract.sol";
 contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract {
     /**
      * @notice Initiate the account with the address of the ERC725Account contract and sets LSP6KeyManager InterfaceId
-     * @param _account The address of the ER725Account to control
+     * @param target_ The address of the ER725Account to control
      */
-    function initialize(address _account) public virtual initializer {
-        LSP6KeyManagerInitAbstract._initialize(_account);
+    function initialize(address target_) external virtual initializer {
+        LSP6KeyManagerInitAbstract._initialize(target_);
     }
 }

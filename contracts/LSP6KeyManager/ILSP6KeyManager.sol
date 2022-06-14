@@ -11,7 +11,7 @@ interface ILSP6KeyManager is
     IERC1271
     /* is ERC165 */
 {
-    event Executed(uint256 indexed _value, bytes4 _selector);
+    event Executed(uint256 indexed value, bytes4 selector);
 
     /**
      * @notice returns the address of the account linked to this KeyManager
@@ -25,31 +25,31 @@ interface ILSP6KeyManager is
     function target() external view returns (address);
 
     /**
-     * @notice get latest nonce for `_from` for channel ID: `_channel`
+     * @notice get latest nonce for `from` for channel ID: `channelId`
      * @dev use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)
-     * @param _address caller address
-     * @param _channel channel id
+     * @param from caller address
+     * @param channelId channel id
      */
-    function getNonce(address _address, uint256 _channel) external view returns (uint256);
+    function getNonce(address from, uint256 channelId) external view returns (uint256);
 
     /**
      * @notice execute the following payload on the ERC725Account: `_calldata`
      * @dev the ERC725Account will return some data on successful call, or revert on failure
-     * @param _calldata the payload to execute. Obtained in web3 via encodeABI()
-     * @return result_ the data being returned by the ERC725 Account
+     * @param payload the payload to execute. Obtained in web3 via encodeABI()
+     * @return the data being returned by the ERC725 Account
      */
-    function execute(bytes calldata _calldata) external payable returns (bytes memory);
+    function execute(bytes calldata payload) external payable returns (bytes memory);
 
     /**
      * @dev allows anybody to execute given they have a signed message from an executor
-     * @param _signature bytes32 ethereum signature
-     * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
-     * @param _calldata obtained via encodeABI() in web3
-     * @return result_ the data being returned by the ERC725 Account
+     * @param signature bytes32 ethereum signature
+     * @param nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
+     * @param payload obtained via encodeABI() in web3
+     * @return the data being returned by the ERC725 Account
      */
     function executeRelayCall(
-        bytes memory _signature,
-        uint256 _nonce,
-        bytes calldata _calldata
+        bytes memory signature,
+        uint256 nonce,
+        bytes calldata payload
     ) external payable returns (bytes memory);
 }
