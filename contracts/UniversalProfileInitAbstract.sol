@@ -17,8 +17,8 @@ import {
  * @dev Implementation of the ERC725Account + LSP1 universalReceiver
  */
 abstract contract UniversalProfileInitAbstract is LSP0ERC725AccountInitAbstract {
-    function _initialize(address _newOwner) internal virtual override onlyInitializing {
-        LSP0ERC725AccountInitAbstract._initialize(_newOwner);
+    function _initialize(address newOwner) internal virtual override onlyInitializing {
+        LSP0ERC725AccountInitAbstract._initialize(newOwner);
 
         // set key SupportedStandards:LSP3UniversalProfile
         _setData(_LSP3_SUPPORTED_STANDARDS_KEY, _LSP3_SUPPORTED_STANDARDS_VALUE);

@@ -12,7 +12,7 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
  * @dev Bundles ERC725X and ERC725Y, ERC1271 and LSP1UniversalReceiver and allows receiving native tokens
  */
 abstract contract LSP0ERC725AccountInitAbstract is Initializable, LSP0ERC725AccountCore {
-    function _initialize(address _newOwner) internal virtual onlyInitializing {
-        OwnableUnset._setOwner(_newOwner);
+    function _initialize(address newOwner) internal virtual onlyInitializing {
+        OwnableUnset._setOwner(newOwner);
     }
 }
