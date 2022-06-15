@@ -1,7 +1,8 @@
 
 # Deployment
 
-You can find a deployment utility with hardhat to easily deploy the smart contracts locally or on our L14 test network.
+You can find a deployment utility with hardhat to easily deploy the smart contracts locally or on our L14 test network,
+if you don't have some LYX test token visit [LUKSO l14 Faucet](http://faucet.l14.lukso.network/), for faucet.
 
 All the deployment scripts for `base` contracts initialize the contract after deployment to the zero address for security.
 
