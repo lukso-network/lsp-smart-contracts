@@ -170,6 +170,22 @@ describe("UniversalProfile", () => {
         };
       };
 
+    describe("when deploying the base implementation contract", () => {
+      it("should lock the contract and prevent calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const universalProfileInit = await new UniversalProfileInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          universalProfileInit.initialize(randomCaller.address)
+        ).toBeRevertedWith("Initializable: contract is already initialized");
+      });
+    });
+
     describe("when deploying the contract as proxy", () => {
       let context: LSP3TestContext;
 
