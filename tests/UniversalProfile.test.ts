@@ -171,7 +171,19 @@ describe("UniversalProfile", () => {
       };
 
     describe("when deploying the base implementation contract", () => {
-      it("should lock the contract and prevent calling the initialize(...) function on the implementation", async () => {
+      it("should have locked (= initialized) the implementation contract", async () => {
+        const accounts = await ethers.getSigners();
+
+        const universalProfileInit = await new UniversalProfileInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const isInitialized =
+          await universalProfileInit.callStatic.initialized();
+
+        expect(isInitialized).toBeTruthy();
+      });
+      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
         const universalProfileInit = await new UniversalProfileInit__factory(
