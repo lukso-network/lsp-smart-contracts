@@ -13,7 +13,7 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 contract LSP0ERC725Account is LSP0ERC725AccountCore {
     /**
      * @notice Sets the owner of the contract
-     * @param _newOwner the owner of the contract
+     * @param newOwner the owner of the contract
      */
     constructor(address newOwner) {
         OwnableUnset._setOwner(newOwner);
