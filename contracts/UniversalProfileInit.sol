@@ -11,6 +11,11 @@ import {UniversalProfileInitAbstract} from "./UniversalProfileInitAbstract.sol";
  */
 contract UniversalProfileInit is UniversalProfileInitAbstract {
     /**
+     * @dev initialize the base (= implementation) contract
+     */
+    constructor() initializer {}
+
+    /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
      * @param newOwner the owner of the contract
      */
