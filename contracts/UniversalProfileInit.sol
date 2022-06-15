@@ -13,7 +13,7 @@ contract UniversalProfileInit is UniversalProfileInitAbstract {
     /**
      * @dev initialize the base (= implementation) contract
      */
-    constructor() initializer {}
+    constructor() initializer {} // solhint-disable no-empty-blocks
 
     /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key

@@ -13,7 +13,7 @@ contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
     /**
      * @dev initialize the base (= implementation) contract
      */
-    constructor() initializer {}
+    constructor() initializer {} // solhint-disable no-empty-blocks
 
     /**
      * @notice Sets the owner of the contract
