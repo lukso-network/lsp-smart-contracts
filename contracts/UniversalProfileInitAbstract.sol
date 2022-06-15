@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725Account/LSP0ERC725AccountInitAbstract.sol";
 
 // constants
