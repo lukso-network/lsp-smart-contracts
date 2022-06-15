@@ -8,6 +8,11 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ErrorHandlerLib} from "@erc725/smart-contracts/contracts/utils/ErrorHandlerLib.sol";
 
 /**
+ * @todo refactor the Universal Factory contract to test for Base contracts
+ * that lock the base/implementation contract on deployment
+ */
+
+/**
  * @dev UniversalFactory contract can be used to deploy CREATE2 contracts; normal contracts and minimal
  * proxies (EIP-1167) with the ability to deploy the same contract at the same address on different chains.
  * If the contract has a constructor, the arguments will be part of the byteCode
