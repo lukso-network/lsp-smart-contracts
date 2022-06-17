@@ -3,17 +3,9 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol";
+import {LSP7DigitalAssetInit} from "../../LSP7DigitalAsset/LSP7DigitalAssetInit.sol";
 
-contract LSP7InitTester is LSP7DigitalAssetInitAbstract {
-    function initialize(
-        string memory name,
-        string memory symbol,
-        address newOwner
-    ) public initializer {
-        LSP7DigitalAssetInitAbstract._initialize(name, symbol, newOwner, false);
-    }
-
+contract LSP7InitTester is LSP7DigitalAssetInit {
     function mint(
         address to,
         uint256 amount,
