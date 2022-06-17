@@ -14,6 +14,8 @@ import {LSP7DigitalAssetInitAbstract} from "./LSP7DigitalAssetInitAbstract.sol";
  * For a generic mechanism, see {LSP7Mintable}.
  */
 contract LSP7DigitalAssetInit is LSP7DigitalAssetInitAbstract {
+    constructor() initializer {} // solhint-disable no-empty-blocks
+
     /**
      * @notice Sets the token-Metadata
      * @param name_ The name of the token
