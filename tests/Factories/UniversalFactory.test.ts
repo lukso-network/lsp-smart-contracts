@@ -15,7 +15,8 @@ import {
 } from "../../types";
 
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { provider, ZeroAddress, AddressOffset } from "../utils/helpers";
+/** @todo uncomment when resolving UniversalFactory tests */
+// import { provider, ZeroAddress, AddressOffset } from "../utils/helpers";
 
 import { bytecode as UniversalProfileBytecode } from "../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json";
 import { bytecode as UniversalProfileInitBytecode } from "../../artifacts/contracts/UniversalProfileInit.sol/UniversalProfileInit.json";
