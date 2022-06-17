@@ -9,8 +9,6 @@ import {LSP7MintableInitAbstract} from "./LSP7MintableInitAbstract.sol";
  * @dev LSP7 extension, mintable.
  */
 contract LSP7MintableInit is LSP7MintableInitAbstract {
-    constructor() initializer {} // solhint-disable no-empty-blocks
-
     /**
      * @notice Sets the token-Metadata and register LSP7InterfaceId
      * @param name_ The name of the token
