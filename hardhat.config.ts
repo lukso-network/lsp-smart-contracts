@@ -29,19 +29,19 @@ const config: HardhatUserConfig = {
       chainId: 22,
       //   accounts: [privateKey1, privateKey2, ...]
     },
-
-    // ephemeral network
-    // l15: {
-    //   url: "http://35.198.139.247:8565", // bootnode
-    //   chainId: null
-    // }
+    luksoL16: {
+      live: true,
+      url: "https://rpc.l16.lukso.network",
+      chainId: 2828,
+      //   accounts: [privateKey1, privateKey2, ...]
+    },
   },
   namedAccounts: {
     owner: 0,
   },
   etherscan: {
     // no API is required to verify contracts
-    // via the Blockscout instance of the L14 network
+    // via the Blockscout instance of L14 or L16 network
     apiKey: "no-api-key-needed",
     customChains: [
       {
@@ -50,6 +50,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://blockscout.com/lukso/l14/api",
           browserURL: "https://blockscout.com/lukso/l14",
+        },
+      },
+      {
+        network: "luksoL16",
+        chainId: 2828,
+        urls: {
+          apiURL: "https://explorer.execution.l16.lukso.network/api",
+          browserURL: "https://explorer.execution.l16.lukso.network/",
         },
       },
     ],
@@ -113,7 +121,7 @@ const config: HardhatUserConfig = {
       // Tools
       // ------------------
       "Create2Factory",
-      "UniversalFactory"
+      "UniversalFactory",
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
