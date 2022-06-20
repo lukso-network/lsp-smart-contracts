@@ -29,7 +29,7 @@ const config: HardhatUserConfig = {
       chainId: 22,
       //   accounts: [privateKey1, privateKey2, ...]
     },
-    lukoL16: {
+    luksoL16: {
       live: true,
       url: "https://rpc.l16.lukso.network",
       chainId: 2828,
