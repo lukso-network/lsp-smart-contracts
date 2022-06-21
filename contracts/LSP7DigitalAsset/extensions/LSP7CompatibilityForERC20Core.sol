@@ -18,11 +18,14 @@ abstract contract LSP7CompatibilityForERC20Core is
     LSP7DigitalAssetCore,
     ILSP7CompatibilityForERC20
 {
+    // --- Overrides
+
     /**
      * @inheritdoc ILSP7CompatibilityForERC20
      */
-    function approve(address operator, uint256 amount) external virtual override {
-        return authorizeOperator(operator, amount);
+    function approve(address operator, uint256 amount) external virtual override returns (bool) {
+        authorizeOperator(operator, amount);
+        return true;
     }
 
     /**
@@ -43,8 +46,9 @@ abstract contract LSP7CompatibilityForERC20Core is
      * @dev Compatible with ERC20 transfer.
      * Using force=true so that EOA and any contract may receive the tokens.
      */
-    function transfer(address to, uint256 amount) external virtual override {
-        return transfer(_msgSender(), to, amount, true, "");
+    function transfer(address to, uint256 amount) external virtual override returns (bool) {
+        transfer(_msgSender(), to, amount, true, "");
+        return true;
     }
 
     /**
@@ -56,11 +60,10 @@ abstract contract LSP7CompatibilityForERC20Core is
         address from,
         address to,
         uint256 amount
-    ) external virtual override {
-        return transfer(from, to, amount, true, "");
+    ) external virtual override(ILSP7CompatibilityForERC20) returns (bool) {
+        transfer(from, to, amount, true, "");
+        return true;
     }
-
-    // --- Overrides
 
     function authorizeOperator(address operator, uint256 amount)
         public
@@ -71,6 +74,8 @@ abstract contract LSP7CompatibilityForERC20Core is
 
         emit Approval(_msgSender(), operator, amount);
     }
+
+    // --- Internals
 
     function _transfer(
         address from,

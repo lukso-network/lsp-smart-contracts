@@ -7,6 +7,11 @@ import {LSP7CompatibilityForERC20InitAbstract} from "./LSP7CompatibilityForERC20
 
 contract LSP7CompatibilityForERC20Init is LSP7CompatibilityForERC20InitAbstract {
     /**
+     * @dev initialize the base (= implementation) contract
+     */
+    constructor() initializer {}
+
+    /**
      * @notice Sets the name, the symbol and the owner of the token
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token

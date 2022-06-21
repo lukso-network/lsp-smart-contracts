@@ -124,7 +124,11 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceClaimOwnership() public pure returns (bytes4) {
-        bytes4 interfaceId = type(IClaimOwnership).interfaceId;
+        // prettier-ignore
+        bytes4 interfaceId = 
+            OwnableUnset.owner.selector ^
+            OwnableUnset.transferOwnership.selector ^
+            type(IClaimOwnership).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_CLAIM_OWNERSHIP,
