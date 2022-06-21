@@ -158,7 +158,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
         if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(data));
+            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             if (
                 ERC165Checker.supportsERC165Interface(
