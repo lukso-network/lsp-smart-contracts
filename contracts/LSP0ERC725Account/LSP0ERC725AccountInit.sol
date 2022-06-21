@@ -11,10 +11,15 @@ import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725AccountInitAbstract.sol
  */
 contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
     /**
-     * @notice Sets the owner of the contract
-     * @param _newOwner the owner of the contract
+     * @dev initialize the base (= implementation) contract
      */
-    function initialize(address _newOwner) public virtual initializer {
-        LSP0ERC725AccountInitAbstract._initialize(_newOwner);
+    constructor() initializer {} // solhint-disable no-empty-blocks
+
+    /**
+     * @notice Sets the owner of the contract
+     * @param newOwner the owner of the contract
+     */
+    function initialize(address newOwner) public virtual initializer {
+        LSP0ERC725AccountInitAbstract._initialize(newOwner);
     }
 }
