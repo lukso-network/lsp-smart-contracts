@@ -112,6 +112,39 @@ describe("LSP7CompatibilityForERC20", () => {
       );
     };
 
+    describe("when deploying the base implementation contract", () => {
+      it("should have locked (= initialized) the implementation contract", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp7CompatibilityForERC20TesterInit =
+          await new LSP7CompatibilityForERC20InitTester__factory(
+            accounts[0]
+          ).deploy();
+
+        const isInitialized =
+          await lsp7CompatibilityForERC20TesterInit.callStatic.initialized();
+
+        expect(isInitialized).toBeTruthy();
+      });
+
+      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp7CompatibilityForERC20TesterInit =
+          await new LSP7CompatibilityForERC20InitTester__factory(
+            accounts[0]
+          ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp7CompatibilityForERC20TesterInit[
+            "initialize(string,string,address)"
+          ]("XXXXXXXXXXX", "XXX", randomCaller.address)
+        ).toBeRevertedWith("Initializable: contract is already initialized");
+      });
+    });
+
     describe("when deploying the contract as proxy", () => {
       let context: LSP7CompatibilityForERC20TestContext;
 
