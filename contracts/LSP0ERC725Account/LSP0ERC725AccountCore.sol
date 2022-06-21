@@ -143,10 +143,10 @@ abstract contract LSP0ERC725AccountCore is
         override
         returns (bytes memory returnValue)
     {
-        bytes memory storedValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
-        if (storedValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(storedValue));
+        if (lsp1DelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             if (
                 ERC165Checker.supportsERC165Interface(
