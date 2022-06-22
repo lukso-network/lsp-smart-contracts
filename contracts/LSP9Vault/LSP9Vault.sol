@@ -21,14 +21,14 @@ import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDA
 contract LSP9Vault is LSP9VaultCore {
     /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
-     * @param _newOwner the owner of the contract
+     * @param newOwner the owner of the contract
      */
-    constructor(address _newOwner) {
-        OwnableUnset._setOwner(_newOwner);
+    constructor(address newOwner) {
+        OwnableUnset._setOwner(newOwner);
 
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
-        _notifyVaultReceiver(_newOwner);
+        _notifyVaultReceiver(newOwner);
     }
 }
