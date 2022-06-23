@@ -12,16 +12,19 @@ import {
   PayableContract__factory,
   FallbackContract,
   FallbackContract__factory,
+  FactoryTester,
+  FactoryTester__factory,
 } from "../../types";
 
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-/** @todo uncomment when resolving UniversalFactory tests */
-// import { provider, ZeroAddress, AddressOffset } from "../utils/helpers";
+
+import { provider, ZeroAddress, AddressOffset } from "../utils/helpers";
 
 import { bytecode as UniversalProfileBytecode } from "../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json";
 import { bytecode as UniversalProfileInitBytecode } from "../../artifacts/contracts/UniversalProfileInit.sol/UniversalProfileInit.json";
 import { bytecode as PayableContractBytecode } from "../../artifacts/contracts/Helpers/PayableContract.sol/PayableContract.json";
 import { bytecode as FallbackContractBytecode } from "../../artifacts/contracts/Helpers/FallbackContract.sol/FallbackContract.json";
+import { bytecode as FactoryTesterBytecode } from "../../artifacts/contracts/Helpers/FactoryTester.sol/FactoryTester.json";
 
 type UniversalFactoryTestAccounts = {
   random: SignerWithAddress;
@@ -42,11 +45,7 @@ type UniversalFactoryTestContext = {
   universalFactory: UniversalFactory;
 };
 
-/**
- * @todo refactor the Universal Factory contract to test for Base contracts
- * that lock the base/implementation contract on deployment
- */
-describe.skip("UniversalFactory contract", () => {
+describe("UniversalFactory contract", () => {
   const buildTestContext = async (): Promise<UniversalFactoryTestContext> => {
     const accounts = await getNamedAccounts();
 
@@ -64,6 +63,7 @@ describe.skip("UniversalFactory contract", () => {
     let universalReceiverDelegate: LSP1UniversalReceiverDelegateUP;
     let payableContract: PayableContract;
     let fallbackContract: FallbackContract;
+    let factoryTester: FactoryTester;
 
     beforeAll(async () => {
       context = await buildTestContext();
@@ -76,8 +76,6 @@ describe.skip("UniversalFactory contract", () => {
         context.accounts.random
       ).deploy();
 
-      await universalProfileBaseContract.initialize(ZeroAddress);
-
       universalReceiverDelegate =
         await new LSP1UniversalReceiverDelegateUP__factory(
           context.accounts.random
@@ -88,6 +86,10 @@ describe.skip("UniversalFactory contract", () => {
       ).deploy();
 
       fallbackContract = await new FallbackContract__factory(
+        context.accounts.random
+      ).deploy();
+
+      factoryTester = await new FactoryTester__factory(
         context.accounts.random
       ).deploy();
     });
@@ -122,17 +124,14 @@ describe.skip("UniversalFactory contract", () => {
       it("should calculate the address of an initializable contract correctly", async () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
 
-        let UPBytecode = UniversalProfileInitBytecode;
-
-        let initializeCallData =
-          universalProfileBaseContract.interface.encodeFunctionData(
-            "initialize",
-            [ZeroAddress]
-          );
+        let initializeCallData = factoryTester.interface.encodeFunctionData(
+          "initialize",
+          [ZeroAddress]
+        );
 
         let bytecodeHash = ethers.utils.solidityKeccak256(
           ["bytes"],
-          [UPBytecode]
+          [FactoryTesterBytecode]
         );
 
         const calulcatedAddress =
@@ -144,7 +143,11 @@ describe.skip("UniversalFactory contract", () => {
 
         const contractCreated = await context.universalFactory
           .connect(context.accounts.deployer1)
-          .callStatic.deployCreate2(UPBytecode, salt, initializeCallData);
+          .callStatic.deployCreate2(
+            FactoryTesterBytecode,
+            salt,
+            initializeCallData
+          );
 
         expect(calulcatedAddress).toEqual(contractCreated);
       });
@@ -389,31 +392,29 @@ describe.skip("UniversalFactory contract", () => {
 
       it("should deploy an initializable CREATE2 contract and get the owner successfully", async () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
-        const UPInitBytecode = UniversalProfileInitBytecode;
 
-        let initializeCallData =
-          universalProfileBaseContract.interface.encodeFunctionData(
-            "initialize",
-            [context.accounts.deployer1.address]
-          );
+        let initializeCallData = factoryTester.interface.encodeFunctionData(
+          "initialize",
+          [context.accounts.deployer1.address]
+        );
 
         const contractCreatedAddress =
           await context.universalFactory.callStatic.deployCreate2(
-            UPInitBytecode,
+            FactoryTesterBytecode,
             salt,
             initializeCallData
           );
 
         await context.universalFactory.deployCreate2(
-          UPInitBytecode,
+          FactoryTesterBytecode,
           salt,
           initializeCallData
         );
 
-        const universalProfile = universalProfileBaseContract.attach(
+        const factoryTesterContract = factoryTester.attach(
           contractCreatedAddress
         );
-        const owner = await universalProfile.callStatic.owner();
+        const owner = await factoryTesterContract.callStatic.owner();
         expect(owner).toEqual(context.accounts.deployer1.address);
       });
     });
