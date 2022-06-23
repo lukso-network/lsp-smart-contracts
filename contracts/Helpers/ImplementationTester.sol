@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract FactoryTester is Initializable {
+contract ImplementationTester is Initializable {
     address private _owner;
 
     function initialize(address newOwner) public virtual initializer {
