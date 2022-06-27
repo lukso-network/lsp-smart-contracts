@@ -17,13 +17,6 @@ const deployBaseLSP7Mintable: DeployFunction = async ({
 
   const LSP7MintableInit = await ethers.getContractFactory("LSP7MintableInit");
   const lsp7MintableInit = await LSP7MintableInit.attach(deployResult.address);
-
-  await lsp7MintableInit.initialize(
-    "LSP7 Mintable Init",
-    "LSP7MI",
-    ethers.constants.AddressZero,
-    false
-  );
 };
 
 export default deployBaseLSP7Mintable;
