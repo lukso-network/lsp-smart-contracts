@@ -4,14 +4,14 @@ pragma solidity ^0.8.0;
 
 // modules
 import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
-import {LSP8IdentifiableDigitalAssetInit} from "../LSP8IdentifiableDigitalAssetInit.sol";
+import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 import {LSP8CappedSupplyCore} from "./LSP8CappedSupplyCore.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
 abstract contract LSP8CappedSupplyInitAbstract is
-    LSP8IdentifiableDigitalAssetInit,
+    LSP8IdentifiableDigitalAssetInitAbstract,
     LSP8CappedSupplyCore
 {
     function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
