@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {LSP7CompatibilityForERC20} from "../extensions/LSP7CompatibilityForERC20.sol";
+import {LSP7CompatibleERC20} from "../extensions/LSP7CompatibleERC20.sol";
 
-contract LSP7CompatibilityForERC20Mintable is LSP7CompatibilityForERC20 {
+contract LSP7CompatibleERC20Mintable is LSP7CompatibleERC20 {
     /* solhint-disable no-empty-blocks */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP7CompatibilityForERC20(name_, symbol_, newOwner_) {}
+    ) LSP7CompatibleERC20(name_, symbol_, newOwner_) {}
 
     function mint(
         address to,

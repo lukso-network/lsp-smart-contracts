@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP7CompatibilityForERC20MintableInitAbstract} from "./LSP7CompatibilityForERC20MintableInitAbstract.sol";
+import {LSP7CompatibleERC20MintableInitAbstract} from "./LSP7CompatibleERC20MintableInitAbstract.sol";
 
-contract LSP7CompatibilityForERC20MintableInit is LSP7CompatibilityForERC20MintableInitAbstract {
+contract LSP7CompatibleERC20MintableInit is LSP7CompatibleERC20MintableInitAbstract {
     /**
      * @notice Sets the name, the symbol and the owner of the token
      * @param name_ The name of the token
@@ -16,6 +16,6 @@ contract LSP7CompatibilityForERC20MintableInit is LSP7CompatibilityForERC20Minta
         string memory symbol_,
         address newOwner_
     ) public virtual initializer {
-        LSP7CompatibilityForERC20MintableInitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP7CompatibleERC20MintableInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 }
