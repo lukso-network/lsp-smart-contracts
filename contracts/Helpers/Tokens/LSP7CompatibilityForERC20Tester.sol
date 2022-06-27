@@ -3,16 +3,16 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP7CompatibilityForERC20} from "../../LSP7DigitalAsset/extensions/LSP7CompatibilityForERC20.sol";
+import {LSP7CompatibleERC20} from "../../LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol";
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 
-contract LSP7CompatibilityForERC20Tester is LSP7CompatibilityForERC20 {
+contract LSP7CompatibilityForERC20Tester is LSP7CompatibleERC20 {
     /* solhint-disable no-empty-blocks */
     constructor(
         string memory name,
         string memory symbol,
         address newOwner
-    ) LSP7CompatibilityForERC20(name, symbol, newOwner) {}
+    ) LSP7CompatibleERC20(name, symbol, newOwner) {}
 
     function mint(
         address to,
