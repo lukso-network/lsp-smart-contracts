@@ -24,7 +24,7 @@ const INTERFACE_IDS = {
 	LSP7DigitalAsset: '0xe33f65c3',
 	LSP8IdentifiableDigitalAsset: '0x49399145',
 	LSP9Vault: '0x8c1d44f6',
-	ClaimOwnership: '0xad7dd9b0',
+	ClaimOwnership: '0xd225f160',
 };
 
 // ERC1271

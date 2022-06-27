@@ -19,12 +19,12 @@ import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDA
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
-    function _initialize(address _newOwner) internal virtual onlyInitializing {
-        OwnableUnset._setOwner(_newOwner);
+    function _initialize(address newOwner) internal virtual onlyInitializing {
+        OwnableUnset._setOwner(newOwner);
 
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
-        _notifyVaultReceiver(_newOwner);
+        _notifyVaultReceiver(newOwner);
     }
 }
