@@ -111,8 +111,10 @@ const config: HardhatUserConfig = {
       // ERC Compatible tokens
       // ------------------
       "LSP4Compatibility",
-      "LSP7CompatibilityForERC20",
-      "LSP7CompatibilityForERC20Init",
+      "LSP7CompatibleERC20",
+      "LSP7CompatibleERC20Init",
+      "LSP7CompatibleERC20Mintable",
+      "LSP7CompatibleERC20MintableInit",
       "LSP8CompatibilityForERC721",
       "LSP8CompatibilityForERC721Init",
       // Legacy L14
