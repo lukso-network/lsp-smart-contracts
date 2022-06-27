@@ -97,7 +97,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     /**
      * @dev Transfer the ownership and notify the vault sender and vault receiver
      */
-    function claimOwnership() external virtual override {
+    function claimOwnership() public virtual override {
         address previousOwner = owner();
 
         _claimOwnership();
@@ -149,7 +149,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
      * @param data The data received.
      */
     function universalReceiver(bytes32 typeId, bytes calldata data)
-        external
+        public
         payable
         virtual
         override

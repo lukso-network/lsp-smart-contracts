@@ -64,7 +64,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function getNonce(address from, uint256 channelId) external view override returns (uint256) {
+    function getNonce(address from, uint256 channelId) public view override returns (uint256) {
         uint128 nonceId = uint128(_nonceStore[from][channelId]);
         return (uint256(channelId) << 128) | nonceId;
     }
@@ -90,7 +90,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata payload) external payable override returns (bytes memory) {
+    function execute(bytes calldata payload) public payable override returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
 
         // solhint-disable avoid-low-level-calls
@@ -113,7 +113,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory signature,
         uint256 nonce,
         bytes calldata payload
-    ) external payable override returns (bytes memory) {
+    ) public payable override returns (bytes memory) {
         bytes memory blob = abi.encodePacked(
             block.chainid,
             address(this), // needs to be signed for this keyManager

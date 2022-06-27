@@ -135,7 +135,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         uint256[] memory amount,
         bool force,
         bytes[] memory data
-    ) external virtual override {
+    ) public virtual override {
         if (
             from.length != to.length || from.length != amount.length || from.length != data.length
         ) {
