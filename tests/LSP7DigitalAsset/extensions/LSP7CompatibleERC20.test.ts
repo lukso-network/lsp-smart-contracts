@@ -1,23 +1,23 @@
 import { ethers } from "hardhat";
 
 import {
-  LSP7CompatibilityForERC20Tester__factory,
-  LSP7CompatibilityForERC20InitTester__factory,
+  LSP7CompatibleERC20Tester__factory,
+  LSP7CompatibleERC20InitTester__factory,
 } from "../../../types";
 
 import {
   getNamedAccounts,
-  LSP7CompatibilityForERC20TestContext,
-  shouldInitializeLikeLSP7CompatibilityForERC20,
-  shouldBehaveLikeLSP7CompatibilityForERC20,
-} from "./LSP7CompatibilityForERC20.behaviour";
+  LSP7CompatibleERC20TestContext,
+  shouldInitializeLikeLSP7CompatibleERC20,
+  shouldBehaveLikeLSP7CompatibleERC20,
+} from "./LSP7CompatibleERC20.behaviour";
 
 import { deployProxy } from "../../utils/fixtures";
 
-describe("LSP7CompatibilityForERC20", () => {
+describe("LSP7CompatibleERC20", () => {
   describe("when using LSP7 contract with constructor", () => {
     const buildTestContext =
-      async (): Promise<LSP7CompatibilityForERC20TestContext> => {
+      async (): Promise<LSP7CompatibleERC20TestContext> => {
         const accounts = await getNamedAccounts();
         const initialSupply = ethers.BigNumber.from("3");
         const deployParams = {
@@ -26,10 +26,8 @@ describe("LSP7CompatibilityForERC20", () => {
           newOwner: accounts.owner.address,
         };
 
-        const lsp7CompatibilityForERC20 =
-          await new LSP7CompatibilityForERC20Tester__factory(
-            accounts.owner
-          ).deploy(
+        const lsp7CompatibleERC20 =
+          await new LSP7CompatibleERC20Tester__factory(accounts.owner).deploy(
             deployParams.name,
             deployParams.symbol,
             deployParams.newOwner
@@ -37,40 +35,40 @@ describe("LSP7CompatibilityForERC20", () => {
 
         return {
           accounts,
-          lsp7CompatibilityForERC20,
+          lsp7CompatibleERC20,
           deployParams,
           initialSupply,
         };
       };
 
     describe("when deploying the contract", () => {
-      let context: LSP7CompatibilityForERC20TestContext;
+      let context: LSP7CompatibleERC20TestContext;
 
       beforeEach(async () => {
         context = await buildTestContext();
       });
 
       describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP7CompatibilityForERC20(async () => {
-          const { lsp7CompatibilityForERC20, deployParams } = context;
+        shouldInitializeLikeLSP7CompatibleERC20(async () => {
+          const { lsp7CompatibleERC20, deployParams } = context;
           return {
-            lsp7CompatibilityForERC20,
+            lsp7CompatibleERC20,
             deployParams,
             initializeTransaction:
-              context.lsp7CompatibilityForERC20.deployTransaction,
+              context.lsp7CompatibleERC20.deployTransaction,
           };
         });
       });
     });
 
     describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP7CompatibilityForERC20(buildTestContext);
+      shouldBehaveLikeLSP7CompatibleERC20(buildTestContext);
     });
   });
 
   describe("when using LSP7 contract with proxy", () => {
     const buildTestContext =
-      async (): Promise<LSP7CompatibilityForERC20TestContext> => {
+      async (): Promise<LSP7CompatibleERC20TestContext> => {
         const accounts = await getNamedAccounts();
         const initialSupply = ethers.BigNumber.from("3");
         const deployParams = {
@@ -80,32 +78,27 @@ describe("LSP7CompatibilityForERC20", () => {
         };
 
         const lsp7CompatibilityForERC20TesterInit =
-          await new LSP7CompatibilityForERC20InitTester__factory(
+          await new LSP7CompatibleERC20InitTester__factory(
             accounts.owner
           ).deploy();
         const lsp7CompatibilityForERC20Proxy = await deployProxy(
           lsp7CompatibilityForERC20TesterInit.address,
           accounts.owner
         );
-        const lsp7CompatibilityForERC20 =
-          lsp7CompatibilityForERC20TesterInit.attach(
-            lsp7CompatibilityForERC20Proxy
-          );
+        const lsp7CompatibleERC20 = lsp7CompatibilityForERC20TesterInit.attach(
+          lsp7CompatibilityForERC20Proxy
+        );
 
         return {
           accounts,
-          lsp7CompatibilityForERC20,
+          lsp7CompatibleERC20,
           deployParams,
           initialSupply,
         };
       };
 
-    const initializeProxy = async (
-      context: LSP7CompatibilityForERC20TestContext
-    ) => {
-      return context.lsp7CompatibilityForERC20[
-        "initialize(string,string,address)"
-      ](
+    const initializeProxy = async (context: LSP7CompatibleERC20TestContext) => {
+      return context.lsp7CompatibleERC20["initialize(string,string,address)"](
         context.deployParams.name,
         context.deployParams.symbol,
         context.deployParams.newOwner
@@ -117,7 +110,7 @@ describe("LSP7CompatibilityForERC20", () => {
         const accounts = await ethers.getSigners();
 
         const lsp7CompatibilityForERC20TesterInit =
-          await new LSP7CompatibilityForERC20InitTester__factory(
+          await new LSP7CompatibleERC20InitTester__factory(
             accounts[0]
           ).deploy();
 
@@ -131,7 +124,7 @@ describe("LSP7CompatibilityForERC20", () => {
         const accounts = await ethers.getSigners();
 
         const lsp7CompatibilityForERC20TesterInit =
-          await new LSP7CompatibilityForERC20InitTester__factory(
+          await new LSP7CompatibleERC20InitTester__factory(
             accounts[0]
           ).deploy();
 
@@ -146,19 +139,19 @@ describe("LSP7CompatibilityForERC20", () => {
     });
 
     describe("when deploying the contract as proxy", () => {
-      let context: LSP7CompatibilityForERC20TestContext;
+      let context: LSP7CompatibleERC20TestContext;
 
       beforeEach(async () => {
         context = await buildTestContext();
       });
 
       describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP7CompatibilityForERC20(async () => {
-          const { lsp7CompatibilityForERC20, deployParams } = context;
+        shouldInitializeLikeLSP7CompatibleERC20(async () => {
+          const { lsp7CompatibleERC20, deployParams } = context;
           const initializeTransaction = await initializeProxy(context);
 
           return {
-            lsp7CompatibilityForERC20,
+            lsp7CompatibleERC20,
             deployParams,
             initializeTransaction,
           };
@@ -177,7 +170,7 @@ describe("LSP7CompatibilityForERC20", () => {
     });
 
     describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP7CompatibilityForERC20(() =>
+      shouldBehaveLikeLSP7CompatibleERC20(() =>
         buildTestContext().then(async (context) => {
           await initializeProxy(context);
 
