@@ -18,7 +18,7 @@ import {
 
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { provider, ZeroAddress, AddressOffset } from "../utils/helpers";
+import { provider, AddressOffset } from "../utils/helpers";
 
 import { bytecode as UniversalProfileBytecode } from "../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json";
 import { bytecode as UniversalProfileInitBytecode } from "../../artifacts/contracts/UniversalProfileInit.sol/UniversalProfileInit.json";
@@ -70,7 +70,7 @@ describe("UniversalFactory contract", () => {
 
       universalProfileConstructor = await new UniversalProfile__factory(
         context.accounts.random
-      ).deploy(ZeroAddress);
+      ).deploy(ethers.constants.AddressZero);
 
       universalProfileBaseContract = await new UniversalProfileInit__factory(
         context.accounts.random
@@ -128,7 +128,7 @@ describe("UniversalFactory contract", () => {
 
         let initializeCallData =
           implementationTester.interface.encodeFunctionData("initialize", [
-            ZeroAddress,
+            ethers.constants.AddressZero,
           ]);
 
         let bytecodeHash = ethers.utils.solidityKeccak256(
@@ -744,7 +744,7 @@ describe("UniversalFactory contract", () => {
         );
 
         const owner = await universalProfile.callStatic.owner();
-        expect(owner).toEqual(ZeroAddress);
+        expect(owner).toEqual(ethers.constants.AddressZero);
       });
 
       it("should deploy an initializable CREATE2 proxy contract and get the owner successfully", async () => {
