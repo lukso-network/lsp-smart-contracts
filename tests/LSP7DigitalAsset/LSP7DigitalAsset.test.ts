@@ -90,12 +90,46 @@ describe("LSP7", () => {
     };
 
     const initializeProxy = async (context: LSP7TestContext) => {
-      return context.lsp7["initialize(string,string,address)"](
+      return context.lsp7["initialize(string,string,address,bool)"](
         context.deployParams.name,
         context.deployParams.symbol,
-        context.deployParams.newOwner
+        context.deployParams.newOwner,
+        false
       );
     };
+
+    describe("when deploying the base implementation contract", () => {
+      it("should have locked (= initialized) the implementation contract", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp7TesterInit = await new LSP7InitTester__factory(
+          accounts[0]
+        ).deploy();
+
+        const isInitialized = await lsp7TesterInit.callStatic.initialized();
+
+        expect(isInitialized).toBeTruthy();
+      });
+
+      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp7TesterInit = await new LSP7InitTester__factory(
+          accounts[0]
+        ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp7TesterInit["initialize(string,string,address,bool)"](
+            "XXXXXXXXXXX",
+            "XXX",
+            randomCaller.address,
+            false
+          )
+        ).toBeRevertedWith("Initializable: contract is already initialized");
+      });
+    });
 
     describe("when deploying the contract as proxy", () => {
       let context: LSP7TestContext;

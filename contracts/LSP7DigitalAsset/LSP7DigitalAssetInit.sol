@@ -8,8 +8,14 @@ import {LSP7DigitalAssetInitAbstract} from "./LSP7DigitalAssetInitAbstract.sol";
  * @title LSP7DigitalAsset contract
  * @author Matthew Stevens
  * @dev Proxy Implementation of a LSP7 compliant contract.
+ *
+ * This implementation is agnostic to the way tokens are created.
+ * A supply mechanism has to be added in a derived contract using {_mint}
+ * For a generic mechanism, see {LSP7Mintable}.
  */
 contract LSP7DigitalAssetInit is LSP7DigitalAssetInitAbstract {
+    constructor() initializer {} // solhint-disable no-empty-blocks
+
     /**
      * @notice Sets the token-Metadata
      * @param name_ The name of the token

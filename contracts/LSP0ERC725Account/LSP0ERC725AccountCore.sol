@@ -43,7 +43,7 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Emits an event when receiving native tokens
      */
-    fallback() external payable {
+    fallback() external payable virtual {
         if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
     }
 
@@ -102,10 +102,10 @@ abstract contract LSP0ERC725AccountCore is
      * @notice Checks if an owner signed `_data`.
      * ERC1271 interface.
      *
-     * @param _hash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
-     * @param _signature owner's signature(s) of the data
+     * @param dataHash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
+     * @param signature owner's signature(s) of the data
      */
-    function isValidSignature(bytes32 _hash, bytes memory _signature)
+    function isValidSignature(bytes32 dataHash, bytes memory signature)
         public
         view
         override
@@ -117,12 +117,12 @@ abstract contract LSP0ERC725AccountCore is
         if (_owner.code.length != 0) {
             return
                 ERC165Checker.supportsERC165Interface(_owner, _INTERFACEID_ERC1271)
-                    ? IERC1271(_owner).isValidSignature(_hash, _signature)
+                    ? IERC1271(_owner).isValidSignature(dataHash, signature)
                     : _ERC1271_FAILVALUE;
             // if OWNER is a key
         } else {
             return
-                _owner == ECDSA.recover(_hash, _signature)
+                _owner == ECDSA.recover(dataHash, signature)
                     ? _INTERFACEID_ERC1271
                     : _ERC1271_FAILVALUE;
         }
@@ -133,20 +133,20 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
      * @dev Forwards the call to the UniversalReceiverDelegate if set.
-     * @param _typeId The type of call received.
-     * @param _data The data received.
+     * @param typeId The type of call received.
+     * @param data The data received.
      */
-    function universalReceiver(bytes32 _typeId, bytes calldata _data)
+    function universalReceiver(bytes32 typeId, bytes calldata data)
         external
         payable
         virtual
         override
         returns (bytes memory returnValue)
     {
-        bytes memory data = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
-        if (data.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(data));
+        if (lsp1DelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             if (
                 ERC165Checker.supportsERC165Interface(
@@ -155,9 +155,9 @@ abstract contract LSP0ERC725AccountCore is
                 )
             ) {
                 returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, _typeId, _data);
+                    .universalReceiverDelegate(msg.sender, msg.value, typeId, data);
             }
         }
-        emit UniversalReceiver(msg.sender, msg.value, _typeId, returnValue, _data);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, returnValue, data);
     }
 }

@@ -19,9 +19,9 @@ import {
 contract UniversalProfile is LSP0ERC725Account {
     /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key
-     * @param _newOwner the owner of the contract
+     * @param newOwner the owner of the contract
      */
-    constructor(address _newOwner) LSP0ERC725Account(_newOwner) {
+    constructor(address newOwner) LSP0ERC725Account(newOwner) {
         // set key SupportedStandards:LSP3UniversalProfile
         _setData(_LSP3_SUPPORTED_STANDARDS_KEY, _LSP3_SUPPORTED_STANDARDS_VALUE);
     }

@@ -16,6 +16,10 @@ import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
  * @title LSP7DigitalAsset contract
  * @author Matthew Stevens
  * @dev Implementation of a LSP7 compliant contract.
+ *
+ * This implementation is agnostic to the way tokens are created.
+ * A supply mechanism has to be added in a derived contract using {_mint}
+ * For a generic mechanism, see {LSP7Mintable}.
  */
 contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
     /**
