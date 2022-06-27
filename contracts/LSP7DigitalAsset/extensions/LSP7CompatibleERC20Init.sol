@@ -3,9 +3,9 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP7CompatibilityForERC20InitAbstract} from "./LSP7CompatibilityForERC20InitAbstract.sol";
+import {LSP7CompatibleERC20InitAbstract} from "./LSP7CompatibleERC20InitAbstract.sol";
 
-contract LSP7CompatibilityForERC20Init is LSP7CompatibilityForERC20InitAbstract {
+contract LSP7CompatibleERC20Init is LSP7CompatibleERC20InitAbstract {
     /**
      * @dev initialize the base (= implementation) contract
      */
@@ -22,6 +22,6 @@ contract LSP7CompatibilityForERC20Init is LSP7CompatibilityForERC20InitAbstract 
         string memory symbol_,
         address newOwner_
     ) public virtual initializer {
-        LSP7CompatibilityForERC20InitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP7CompatibleERC20InitAbstract._initialize(name_, symbol_, newOwner_);
     }
 }
