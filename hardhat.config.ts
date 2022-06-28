@@ -115,6 +115,8 @@ const config: HardhatUserConfig = {
       "LSP7CompatibilityForERC20Init",
       "LSP8CompatibleERC721",
       "LSP8CompatibleERC721Init",
+      "LSP8CompatibleERC721Mintable",
+      "LSP8CompatibleERC721MintableInit",
       // Legacy L14
       // ------------------
       "UniversalReceiverAddressStore",
