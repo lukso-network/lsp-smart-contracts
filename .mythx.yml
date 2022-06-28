@@ -40,7 +40,7 @@ analyze:
     - contracts/LSP7DigitalAsset/extensions/LSP7MintableInit.sol
     - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInit.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol
-    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibilityForERC721Init.sol
+    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721Init.sol
     - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8MintableInit.sol
     - contracts/LSP9Vault/LSP9VaultInit.sol
     # Legacy L14
