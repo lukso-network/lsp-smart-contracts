@@ -2,19 +2,20 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
 
-const deployUniversalReceiverDelegateUP: DeployFunction = async ({
+const deployLSP7Mintable: DeployFunction = async ({
   deployments,
   getNamedAccounts,
 }: HardhatRuntimeEnvironment) => {
   const { deploy } = deployments;
   const { owner } = await getNamedAccounts();
 
-  await deploy("LSP1UniversalReceiverDelegateUP", {
+  const deployResult = await deploy("LSP7Mintable", {
     from: owner,
-    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei
+    args: ["LSP7 Mintable", "LSP7M", owner, false],
+    gasPrice: ethers.BigNumber.from(20_000_000_000), // in wei,
     log: true,
   });
 };
 
-export default deployUniversalReceiverDelegateUP;
-deployUniversalReceiverDelegateUP.tags = ["LSP1UniversalReceiverDelegateUP"];
+export default deployLSP7Mintable;
+deployLSP7Mintable.tags = ["LSP7Mintable", "standard"];

@@ -14,7 +14,7 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     address public override pendingOwner;
 
-    function claimOwnership() external virtual override {
+    function claimOwnership() public virtual override {
         _claimOwnership();
     }
 

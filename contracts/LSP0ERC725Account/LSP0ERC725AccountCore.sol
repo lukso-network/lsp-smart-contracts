@@ -137,7 +137,7 @@ abstract contract LSP0ERC725AccountCore is
      * @param data The data received.
      */
     function universalReceiver(bytes32 typeId, bytes calldata data)
-        external
+        public
         payable
         virtual
         override

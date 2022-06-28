@@ -18,8 +18,6 @@ const deployBaseKeyManager: DeployFunction = async ({
 
   const KeyManagerInit = await ethers.getContractFactory("LSP6KeyManagerInit");
   const keyManagerInit = await KeyManagerInit.attach(deployResult.address);
-
-  await keyManagerInit.initialize(ethers.constants.AddressZero);
 };
 
 export default deployBaseKeyManager;
