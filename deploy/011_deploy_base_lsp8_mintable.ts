@@ -17,12 +17,6 @@ const deployBaseLSP8Mintable: DeployFunction = async ({
 
   const LSP8MintableInit = await ethers.getContractFactory("LSP8MintableInit");
   const lsp8MintableInit = await LSP8MintableInit.attach(deployResult.address);
-
-  await lsp8MintableInit.initialize(
-    "LSP8 Mintable Init",
-    "LSP8MI",
-    ethers.constants.AddressZero
-  );
 };
 
 export default deployBaseLSP8Mintable;
