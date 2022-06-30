@@ -13,6 +13,13 @@ import {UtilsLib} from "../Utils/UtilsLib.sol";
 // constants
 import {_TYPEID_LSP7_TOKENSSENDER} from "../LSP7DigitalAsset/LSP7Constants.sol";
 
+/**
+ * @title LSP5Utils
+ * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
+ * @dev LSP5Utils is a library of functions that are used to register and manage assets received by an ERC725Y smart contract
+ *      based on the LSP5 - Received Assets standard
+ *      https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-5-ReceivedAssets.md
+ */
 library LSP5Utils {
     /**
      * @dev Generating the data keys/values to be set on the account after receiving assets/vaults
