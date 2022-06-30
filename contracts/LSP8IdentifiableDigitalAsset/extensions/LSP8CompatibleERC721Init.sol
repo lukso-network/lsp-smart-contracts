@@ -3,12 +3,12 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP8CompatibilityForERC721InitAbstract} from "./LSP8CompatibilityForERC721InitAbstract.sol";
+import {LSP8CompatibleERC721InitAbstract} from "./LSP8CompatibleERC721InitAbstract.sol";
 
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
-contract LSP8CompatibilityForERC721Init is LSP8CompatibilityForERC721InitAbstract {
+contract LSP8CompatibleERC721Init is LSP8CompatibleERC721InitAbstract {
     /**
      * @notice Sets the name, the symbol and the owner of the token
      * @param name_ The name of the token
@@ -20,6 +20,6 @@ contract LSP8CompatibilityForERC721Init is LSP8CompatibilityForERC721InitAbstrac
         string memory symbol_,
         address newOwner_
     ) public virtual initializer {
-        LSP8CompatibilityForERC721InitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP8CompatibleERC721InitAbstract._initialize(name_, symbol_, newOwner_);
     }
 }
