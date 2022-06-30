@@ -25,7 +25,11 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, provider } from "../../utils/helpers";
+import {
+  abiCoder,
+  provider,
+  NotAllowedStandardError,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedStandards = (
   buildContext: () => Promise<LSP6TestContext>
@@ -227,7 +231,12 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithERC1271)
             .execute(upPayload)
-        ).toBeRevertedWith("Not Allowed Standards");
+        ).toBeRevertedWith(
+          NotAllowedStandardError(
+            addressCanInteractOnlyWithERC1271.address,
+            targetContract.address
+          )
+        );
       });
     });
   });
@@ -256,7 +265,12 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(upPayload)
-        ).toBeRevertedWith("Not Allowed Standards");
+        ).toBeRevertedWith(
+          NotAllowedStandardError(
+            addressCanInteractOnlyWithLSP7.address,
+            signatureValidatorContract.address
+          )
+        );
       });
     });
 
@@ -274,7 +288,12 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(transferLyxPayload)
-        ).toBeRevertedWith("Not Allowed Standard");
+        ).toBeRevertedWith(
+          NotAllowedStandardError(
+            addressCanInteractOnlyWithLSP7.address,
+            otherUniversalProfile.address
+          )
+        );
       });
     });
   });

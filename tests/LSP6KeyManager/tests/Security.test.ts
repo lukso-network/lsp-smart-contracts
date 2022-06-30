@@ -25,6 +25,7 @@ import {
   provider,
   EMPTY_PAYLOAD,
   NoPermissionsSetError,
+  InvalidERC725FunctionError,
   ONE_ETH,
 } from "../../utils/helpers";
 
@@ -104,22 +105,18 @@ export const testSecurityScenarios = (
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
     it("via `execute(...)`", async () => {
       let payload =
-        context.universalProfile.interface.encodeFunctionData(
-          "renounceOwnership"
-        );
+        context.universalProfile.interface.getSighash("renounceOwnership");
 
       await expect(
         context.keyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector'");
+      ).toBeRevertedWith(InvalidERC725FunctionError(payload));
     });
 
     it("via `executeRelayCall()`", async () => {
       let nonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       let payload =
-        context.universalProfile.interface.encodeFunctionData(
-          "renounceOwnership"
-        );
+        context.universalProfile.interface.getSighash("renounceOwnership");
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
@@ -139,7 +136,7 @@ export const testSecurityScenarios = (
             payload,
             signature
           )
-      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector'");
+      ).toBeRevertedWith(InvalidERC725FunctionError(payload));
     });
   });
 

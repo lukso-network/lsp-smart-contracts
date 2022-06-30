@@ -72,8 +72,9 @@ export function getRandomString() {
   return randoms.join("");
 }
 
-// LSP6 - KeyManager
+// Custom Errors
 
+// LSP6 - KeyManager
 const customRevertErrorMessage =
   "VM Exception while processing transaction: reverted with custom error";
 
@@ -89,12 +90,20 @@ export const NotAllowedAddressError = (_from, _to) => {
   return `${customRevertErrorMessage} 'NotAllowedAddress("${_from}", "${_to}")'`;
 };
 
+export const NotAllowedStandardError = (_from, _to) => {
+  return `${customRevertErrorMessage} 'NotAllowedStandard("${_from}", "${_to}")'`;
+};
+
 export const NotAllowedFunctionError = (_from, _functionSelector) => {
   return `${customRevertErrorMessage} 'NotAllowedFunction("${_from}", "${_functionSelector}")'`;
 };
 
 export const NotAllowedERC725YKeyError = (_from, _erc725YKey) => {
   return `${customRevertErrorMessage} 'NotAllowedERC725YKey("${_from}", "${_erc725YKey}")'`;
+};
+
+export const InvalidERC725FunctionError = (_invalidFunction) => {
+  return `${customRevertErrorMessage} 'InvalidERC725Function("${_invalidFunction}")'`;
 };
 
 export async function getMapAndArrayKeyValues(

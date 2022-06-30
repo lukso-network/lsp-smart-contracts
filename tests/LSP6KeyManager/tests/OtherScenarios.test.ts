@@ -3,10 +3,15 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract__factory, TargetContract } from "../../../types";
 
+// constants
+import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
+
+// setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
+// helpers
+import { InvalidERC725FunctionError } from "../../utils/helpers";
 
 export const otherTestScenarios = (
   buildContext: () => Promise<LSP6TestContext>
@@ -54,7 +59,9 @@ export const otherTestScenarios = (
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
         context.keyManager.connect(addressCanMakeCall).execute(INVALID_PAYLOAD)
-      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector");
+      ).toBeRevertedWith(
+        InvalidERC725FunctionError(INVALID_PAYLOAD.slice(0, 10))
+      );
     });
   });
 
