@@ -9,7 +9,10 @@ import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../types";
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
+
+// helpers
 import { NotAuthorisedError, provider } from "../../utils/helpers";
+import { CallerNotPendingOwnerError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: () => Promise<LSP6TestContext>
@@ -286,7 +289,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await expect(
         notPendingKeyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
+      ).toBeRevertedWith(
+        CallerNotPendingOwnerError(notPendingKeyManager.address)
+      );
     });
   });
 

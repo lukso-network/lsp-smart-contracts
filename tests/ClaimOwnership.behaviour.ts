@@ -3,8 +3,12 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { LSP0ERC725Account, LSP9Vault } from "../types";
 
-import { provider } from "./utils/helpers";
+// constants
 import { OPERATION_TYPES } from "../constants";
+
+// helpers
+import { provider } from "./utils/helpers";
+import { CallerNotPendingOwnerError } from "./utils/errors";
 
 export type ClaimOwnershipTestContext = {
   accounts: SignerWithAddress[];
@@ -138,7 +142,9 @@ export const shouldBehaveLikeClaimOwnership = (
 
       await expect(
         context.contract.connect(context.accounts[2]).claimOwnership()
-      ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
+      ).toBeRevertedWith(
+        CallerNotPendingOwnerError(context.accounts[2].address)
+      );
     });
 
     describe("when caller is the pending owner", () => {
