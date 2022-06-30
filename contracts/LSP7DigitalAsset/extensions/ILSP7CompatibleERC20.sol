@@ -6,9 +6,9 @@ pragma solidity ^0.8.0;
 import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
 
 /**
- * @dev LSP8 extension, for compatibility for clients / tools that expect ERC20.
+ * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
-interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
+interface ILSP7CompatibleERC20 is ILSP7DigitalAsset {
     /**
      * @notice To provide compatibility with indexing ERC20 events.
      * @dev Emitted when `amount` tokens is transferred from `from` to `to`.
