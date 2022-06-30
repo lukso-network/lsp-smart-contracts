@@ -236,7 +236,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             _requirePermissions(from, permissions, _PERMISSION_CHANGEOWNER);
     
         } else {
-            revert("_verifyPermissions: invalid ERC725 selector");
+            revert InvalidERC725Function(erc725Function);
         }
     }
 
@@ -578,7 +578,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         for (uint256 ii = 0; ii < allowedStandardsList.length; ii++) {
             if (to.supportsERC165Interface(allowedStandardsList[ii])) return;
         }
-        revert("Not Allowed Standards");
+        revert NotAllowedStandard(from, to);
     }
 
     /**

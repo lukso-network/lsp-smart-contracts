@@ -23,6 +23,15 @@ error NotAuthorised(address from, string permission);
 error NotAllowedAddress(address from, address disallowedAddress);
 
 /**
+ * @dev reverts when address `from` is restricted to interact only with smart contracts implementing specific standard interface(s)
+ *      and try to call an address `addressNotImplementingAllowedStandard` that does not implement one of this restricted standard interfaces.
+ * @param from address making the request
+ * @param addressNotImplementingAllowedStandard the address of the smart contract that `from` is trying to interact with,
+ *                                              and that does not implement an allowed interface.
+ */
+error NotAllowedStandard(address from, address addressNotImplementingAllowedStandard);
+
+/**
  * @dev reverts when address `from` is not authorised to run `disallowedFunction` via the linked account
  * @param from address making the request
  * @param disallowedFunction bytes4 function selector that `from` is not authorised to run
@@ -35,6 +44,12 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
  * @param disallowedKey a bytes32 key that `from` is not authorised to set on the ERC725Y storage
  */
 error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
+
+/**
+ * @dev reverts when trying to run an invalid function on the linked target account via the Key Manager.
+ * @param invalidFunction the bytes4 selector of the invalid function
+ */
+error InvalidERC725Function(bytes4 invalidFunction);
 
 /**
  * @dev reverts when the address provided as a target (= account) linked to this KeyManager is invalid
