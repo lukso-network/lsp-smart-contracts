@@ -123,7 +123,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         address signer = keccak256(blob).toEthSignedMessageHash().recover(signature);
 
-        require(_isValidNonce(signer, nonce), "executeRelayCall: Invalid nonce");
+        if (!_isValidNonce(signer, nonce)) {
+            revert InvalidRelayNonce(signer, nonce, signature);
+        }
 
         // increase nonce after successful verification
         _nonceStore[signer][nonce >> 128]++;

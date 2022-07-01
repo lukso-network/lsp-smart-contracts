@@ -56,3 +56,11 @@ error InvalidERC725Function(bytes4 invalidFunction);
  *      e.g. address(0)
  */
 error InvalidLSP6Target();
+
+/**
+ * @dev reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.
+ * @param signer the address of the signer
+ * @param invalidNonce the nonce retrieved for the `signer` address
+ * @param signature the signature used to retrieve the `signer` address
+ */
+error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
