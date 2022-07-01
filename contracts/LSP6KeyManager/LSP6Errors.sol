@@ -46,12 +46,6 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
 error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
 
 /**
- * @dev reverts when trying to run an invalid function on the linked target account via the Key Manager.
- * @param invalidFunction the bytes4 selector of the invalid function
- */
-error InvalidERC725Function(bytes4 invalidFunction);
-
-/**
  * @dev reverts when the address provided as a target (= account) linked to this KeyManager is invalid
  *      e.g. address(0)
  */
@@ -64,3 +58,9 @@ error InvalidLSP6Target();
  * @param signature the signature used to retrieve the `signer` address
  */
 error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
+
+/**
+ * @dev reverts when trying to run an invalid function on the linked target account via the Key Manager.
+ * @param invalidFunction the bytes4 selector of the invalid function
+ */
+error InvalidERC725Function(bytes4 invalidFunction);
