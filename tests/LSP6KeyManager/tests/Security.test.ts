@@ -24,6 +24,7 @@ import { setupKeyManager } from "../../utils/fixtures";
 import {
   provider,
   EMPTY_PAYLOAD,
+  customRevertErrorMessage,
   NoPermissionsSetError,
   InvalidERC725FunctionError,
   ONE_ETH,
@@ -229,13 +230,10 @@ export const testSecurityScenarios = (
       await expect(
         context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonce,
-            executeRelayCallPayload,
-            signature
-          )
-      ).toBeRevertedWith("executeRelayCall: Invalid nonce");
+          .executeRelayCall(signature, nonce, executeRelayCallPayload)
+      ).toBeRevertedWith(
+        `${customRevertErrorMessage} 'InvalidRelayNonce("${signer}", "${nonce}", "${signature}")'`
+      );
     });
   });
 };
