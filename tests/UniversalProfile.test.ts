@@ -23,17 +23,23 @@ import {
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
 } from "./UniversalProfile.behaviour";
+import { provider } from "./utils/helpers";
 
 describe("UniversalProfile", () => {
   describe("when using UniversalProfile contract with constructor", () => {
-    const buildLSP3TestContext = async (): Promise<LSP3TestContext> => {
+    const buildLSP3TestContext = async (
+      initialFunding?: number
+    ): Promise<LSP3TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
+        initialFunding,
       };
       const universalProfile = await new UniversalProfile__factory(
         accounts[0]
-      ).deploy(deployParams.owner.address);
+      ).deploy(deployParams.owner.address, {
+        value: initialFunding,
+      });
 
       return { accounts, universalProfile, deployParams };
     };
@@ -67,6 +73,27 @@ describe("UniversalProfile", () => {
         return { accounts, contract, deployParams, onlyOwnerRevertString };
       };
 
+    [
+      { initialFunding: undefined },
+      { initialFunding: 0 },
+      { initialFunding: 5 },
+    ].forEach((testCase) => {
+      describe("when deploying the contract with or without value", () => {
+        let context: LSP3TestContext;
+
+        beforeEach(async () => {
+          context = await buildLSP3TestContext(testCase.initialFunding);
+        });
+
+        it(`is deployed with the correct ${testCase.initialFunding} funding amount`, async () => {
+          const balance = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(balance.toNumber()).toEqual(testCase.initialFunding || 0);
+        });
+      });
+    });
+
     describe("when deploying the contract", () => {
       let context: LSP3TestContext;
 
@@ -76,11 +103,7 @@ describe("UniversalProfile", () => {
 
       describe("when initializing the contract", () => {
         shouldInitializeLikeLSP3(async () => {
-          const { universalProfile, deployParams } = context;
-          return {
-            universalProfile,
-            deployParams,
-          };
+          return context;
         });
       });
     });

@@ -15,7 +15,7 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore {
      * @notice Sets the owner of the contract
      * @param newOwner the owner of the contract
      */
-    constructor(address newOwner) {
+    constructor(address newOwner) payable {
         OwnableUnset._setOwner(newOwner);
     }
 }
