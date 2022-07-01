@@ -15,6 +15,7 @@ import {
 
 // helpers
 import { tokenIdAsBytes32 } from "../utils/tokens";
+import { customRevertErrorMessage } from "../utils/helpers";
 
 // constants
 import {
@@ -70,7 +71,9 @@ export const shouldBehaveLikeLSP8 = (
         context.lsp8
           .connect(context.deployParams.newOwner)
           ["setData(bytes32,bytes)"](key, value)
-      ).toBeRevertedWith("LSP4: cannot edit Token Name after deployment");
+      ).toBeRevertedWith(
+        `${customRevertErrorMessage} 'LSP4TokenNameNotEditable()'`
+      );
     });
 
     it("should revert when trying to edit Token Symbol", async () => {
@@ -81,7 +84,9 @@ export const shouldBehaveLikeLSP8 = (
         context.lsp8
           .connect(context.deployParams.newOwner)
           ["setData(bytes32,bytes)"](key, value)
-      ).toBeRevertedWith("LSP4: cannot edit Token Symbol after deployment");
+      ).toBeRevertedWith(
+        `${customRevertErrorMessage} 'LSP4TokenSymbolNotEditable()'`
+      );
     });
   });
 
@@ -1359,9 +1364,7 @@ export const shouldInitializeLikeLSP8 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp8,
         "DataChanged",
-        [
-          SupportedStandards.LSP4DigitalAsset.key
-        ]
+        [SupportedStandards.LSP4DigitalAsset.key]
       );
       expect(
         await context.lsp8["getData(bytes32)"](

@@ -75,7 +75,7 @@ export function getRandomString() {
 // Custom Errors
 
 // LSP6 - KeyManager
-const customRevertErrorMessage =
+export const customRevertErrorMessage =
   "VM Exception while processing transaction: reverted with custom error";
 
 export const NoPermissionsSetError = (_from) => {
