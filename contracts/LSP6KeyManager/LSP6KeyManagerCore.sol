@@ -23,6 +23,7 @@ import {LSP6Utils} from "./LSP6Utils.sol";
 
 // errors
 import "./LSP6Errors.sol";
+import {InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 
 // constants
 // prettier-ignore
@@ -288,10 +289,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
 
             // AddressPermissions:AllowedAddresses:<address>
-            require(
-                LSP2Utils.isEncodedArrayOfAddresses(value),
-                "LSP6KeyManager: invalid ABI encoded array of addresses"
-            );
+            if (!LSP2Utils.isEncodedArrayOfAddresses(value)) {
+                revert InvalidABIEncodedArray(value, "address[]");
+            }
+            // "LSP6KeyManager: invalid ABI encoded array of addresses"
 
             bytes memory storedAllowedAddresses = ERC725Y(target).getData(key);
 
@@ -312,10 +313,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             // AddressPermissions:AllowedFunctions:<address>
             // AddressPermissions:AllowedStandards:<address>
-            require(
-                LSP2Utils.isBytes4EncodedArray(value),
-                "LSP6KeyManager: invalid ABI encoded array of bytes4"
-            );
+            if (!LSP2Utils.isBytes4EncodedArray(value)) {
+                revert InvalidABIEncodedArray(value, "bytes4[]");
+            }
+            // "LSP6KeyManager: invalid ABI encoded array of bytes4"
 
             bytes memory storedAllowedBytes4 = ERC725Y(target).getData(key);
 
@@ -332,10 +333,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
 
             // AddressPermissions:AllowedERC725YKeys:<address>
-            require(
-                LSP2Utils.isEncodedArray(value),
-                "LSP6KeyManager: invalid ABI encoded array of bytes32"
-            );
+            if (!LSP2Utils.isEncodedArray(value)) {
+                revert InvalidABIEncodedArray(value, "bytes32[]");
+            }
+            // "LSP6KeyManager: invalid ABI encoded array of bytes32"
 
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(key);
 

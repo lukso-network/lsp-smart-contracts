@@ -106,6 +106,10 @@ export const InvalidERC725FunctionError = (_invalidFunction) => {
   return `${customRevertErrorMessage} 'InvalidERC725Function("${_invalidFunction}")'`;
 };
 
+export const InvalidABIEncodedArrayError = (_value, _valueType) => {
+  return `${customRevertErrorMessage} 'InvalidABIEncodedArray("${_value}", "${_valueType}")'`;
+};
+
 export async function getMapAndArrayKeyValues(
   account,
   vaultMapKey: string,
