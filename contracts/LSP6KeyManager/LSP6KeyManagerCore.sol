@@ -16,7 +16,6 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ErrorHandlerLib} from "@erc725/smart-contracts/contracts/utils/ErrorHandlerLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
@@ -94,13 +93,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(msg.sender, payload);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result) = target.call{value: msg.value, gas: gasleft()}(
+        (bool success, bytes memory returnData) = target.call{value: msg.value, gas: gasleft()}(
             payload
         );
 
-        if (!success) {
-            ErrorHandlerLib.revertWithParsedError(result);
-        }
+        bytes memory result = Address.verifyCallResult(success, returnData, "LSP6: Unknow Error");
 
         emit Executed(msg.value, bytes4(payload));
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
@@ -131,13 +128,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(signer, payload);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result) = target.call{value: msg.value, gas: gasleft()}(
+        (bool success, bytes memory returnData) = target.call{value: msg.value, gas: gasleft()}(
             payload
         );
 
-        if (!success) {
-            ErrorHandlerLib.revertWithParsedError(result);
-        }
+        bytes memory result = Address.verifyCallResult(success, returnData, "LSP6: Unknow Error");
 
         emit Executed(msg.value, bytes4(payload));
         return result.length != 0 ? abi.decode(result, (bytes)) : result;

@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {ErrorHandlerLib} from "@erc725/smart-contracts/contracts/utils/ErrorHandlerLib.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 /**
  * @dev UniversalFactory contract can be used to deploy CREATE2 contracts; normal contracts and minimal
@@ -92,8 +92,8 @@ contract UniversalFactory {
 
         if (initializeCallData.length > 0) {
             // solhint-disable avoid-low-level-calls
-            (bool success, bytes memory returnedData) = contractCreated.call(initializeCallData);
-            if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
+            (bool success, bytes memory returnData) = contractCreated.call(initializeCallData);
+            Address.verifyCallResult(success, returnData, "UniversalFactory: Unknow Error");
         }
     }
 
@@ -119,18 +119,18 @@ contract UniversalFactory {
 
         if (initializeCallData.length > 0) {
             // solhint-disable avoid-low-level-calls
-            (bool success, bytes memory returnedData) = proxy.call{value: msg.value}(
+            (bool success, bytes memory returnData) = proxy.call{value: msg.value}(
                 initializeCallData
             );
-            if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
+            Address.verifyCallResult(success, returnData, "UniversalFactory: Unknow Error");
         } else {
             // Return value sent
             if (msg.value > 0) {
                 // solhint-disable avoid-low-level-calls
-                (bool success, bytes memory returnedData) = payable(msg.sender).call{
+                (bool success, bytes memory returnData) = payable(msg.sender).call{
                     value: msg.value
                 }("");
-                if (!success) ErrorHandlerLib.revertWithParsedError(returnedData);
+                Address.verifyCallResult(success, returnData, "UniversalFactory: Unknow Error");
             }
         }
     }
