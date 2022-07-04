@@ -559,7 +559,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     });
   });
 
-  describe.only("setting Allowed Addresses", () => {
+  describe("setting Allowed Addresses", () => {
     let canOnlyAddPermissions: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;
 
@@ -614,7 +614,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe.only("when caller has permission ADDPERMISSIONS", () => {
+    describe("when caller has permission ADDPERMISSIONS", () => {
       it("should fail when trying to edit existing allowed addresses for an address", async () => {
         let key =
           ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
@@ -754,8 +754,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         expect(result).toEqual(value);
       });
 
-      describe.only("when setting an invalid abi-encoded array of address[] for a new beneficiary", () => {
-        it.only("should revert with error when value = random bytes", async () => {
+      describe("when setting an invalid abi-encoded array of address[] for a new beneficiary", () => {
+        it("should revert with error when value = random bytes", async () => {
           let newController = new ethers.Wallet.createRandom();
 
           let key =
