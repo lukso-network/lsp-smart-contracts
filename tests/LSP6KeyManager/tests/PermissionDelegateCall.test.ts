@@ -19,7 +19,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, NotAuthorisedError } from "../../utils/helpers";
+import { abiCoder } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionDelegateCall = (
   buildContext: () => Promise<LSP6TestContext>

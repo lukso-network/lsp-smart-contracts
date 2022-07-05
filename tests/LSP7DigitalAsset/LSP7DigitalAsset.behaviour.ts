@@ -13,8 +13,8 @@ import {
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
 
-// helpers
-import { customRevertErrorMessage } from "../utils/helpers";
+// errors
+import { customRevertErrorMessage } from "../utils/errors";
 
 // constants
 import {

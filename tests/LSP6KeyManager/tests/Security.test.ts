@@ -21,14 +21,14 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
+import { provider, EMPTY_PAYLOAD, ONE_ETH } from "../../utils/helpers";
+
+// errors
 import {
-  provider,
-  EMPTY_PAYLOAD,
   customRevertErrorMessage,
   NoPermissionsSetError,
   InvalidERC725FunctionError,
-  ONE_ETH,
-} from "../../utils/helpers";
+} from "../../utils/errors";
 
 export const testSecurityScenarios = (
   buildContext: () => Promise<LSP6TestContext>

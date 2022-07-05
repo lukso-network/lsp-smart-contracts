@@ -9,11 +9,10 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import {
-  abiCoder,
-  getRandomString,
-  NotAllowedERC725YKeyError,
-} from "../../utils/helpers";
+import { abiCoder, getRandomString } from "../../utils/helpers";
+
+// errors
+import { NotAllowedERC725YKeyError } from "../../utils/errors";
 
 export const shouldBehaveLikeAllowedERC725YKeys = (
   buildContext: () => Promise<LSP6TestContext>

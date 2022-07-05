@@ -10,8 +10,8 @@ import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-// helpers
-import { InvalidERC725FunctionError } from "../../utils/helpers";
+// errors
+import { InvalidERC725FunctionError } from "../../utils/errors";
 
 export const otherTestScenarios = (
   buildContext: () => Promise<LSP6TestContext>

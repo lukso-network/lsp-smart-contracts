@@ -25,12 +25,10 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import {
-  provider,
-  NotAuthorisedError,
-  abiCoder,
-  NotAllowedAddressError,
-} from "../../utils/helpers";
+import { provider, abiCoder } from "../../utils/helpers";
+
+// errors
+import { NotAuthorisedError, NotAllowedAddressError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionTransferValue = (
   buildContext: () => Promise<LSP6TestContext>

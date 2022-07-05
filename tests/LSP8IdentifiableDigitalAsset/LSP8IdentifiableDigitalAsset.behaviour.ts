@@ -15,7 +15,9 @@ import {
 
 // helpers
 import { tokenIdAsBytes32 } from "../utils/tokens";
-import { customRevertErrorMessage } from "../utils/helpers";
+
+// errors
+import { customRevertErrorMessage } from "../utils/errors";
 
 // constants
 import {

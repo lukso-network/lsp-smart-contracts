@@ -11,7 +11,10 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { NotAuthorisedError, provider } from "../../utils/helpers";
+import { provider } from "../../utils/helpers";
+
+// errors
+import { NotAuthorisedError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: () => Promise<LSP6TestContext>

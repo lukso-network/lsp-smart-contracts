@@ -25,11 +25,10 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import {
-  abiCoder,
-  provider,
-  NotAllowedStandardError,
-} from "../../utils/helpers";
+import { abiCoder, provider } from "../../utils/helpers";
+
+// errors
+import { NotAllowedStandardError } from "../../utils/errors";
 
 export const shouldBehaveLikeAllowedStandards = (
   buildContext: () => Promise<LSP6TestContext>
