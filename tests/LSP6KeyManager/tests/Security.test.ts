@@ -232,7 +232,7 @@ export const testSecurityScenarios = (
           .connect(relayer)
           .executeRelayCall(signature, nonce, executeRelayCallPayload)
       ).toBeRevertedWith(
-        `${customRevertErrorMessage} 'InvalidRelayNonce("${signer}", "${nonce}", "${signature}")'`
+        `${customRevertErrorMessage} 'InvalidRelayNonce("${signer.address}", ${nonce}, "${signature}")'`
       );
     });
   });
