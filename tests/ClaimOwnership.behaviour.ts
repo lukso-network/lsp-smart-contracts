@@ -8,7 +8,6 @@ import { OPERATION_TYPES } from "../constants";
 
 // helpers
 import { provider } from "./utils/helpers";
-import { CallerNotPendingOwnerError } from "./utils/errors";
 
 export type ClaimOwnershipTestContext = {
   accounts: SignerWithAddress[];
@@ -142,9 +141,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
       await expect(
         context.contract.connect(context.accounts[2]).claimOwnership()
-      ).toBeRevertedWith(
-        CallerNotPendingOwnerError(context.accounts[2].address)
-      );
+      ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
     });
 
     describe("when caller is the pending owner", () => {

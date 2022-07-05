@@ -12,7 +12,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import { NotAuthorisedError, provider } from "../../utils/helpers";
-import { CallerNotPendingOwnerError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: () => Promise<LSP6TestContext>
@@ -289,9 +288,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await expect(
         notPendingKeyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith(
-        CallerNotPendingOwnerError(notPendingKeyManager.address)
-      );
+      ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
     });
   });
 

@@ -11,12 +11,6 @@ import {IClaimOwnership} from "./IClaimOwnership.sol";
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
-/**
- * @dev reverts when msg.sender is not the `pendingOwner`
- * @param caller the address of the caller that is trying to claim ownership.
- */
-error CallerNotPendingOwner(address caller);
-
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     address public override pendingOwner;
 
@@ -29,7 +23,7 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     }
 
     function _claimOwnership() internal virtual {
-        if (msg.sender != pendingOwner) revert CallerNotPendingOwner(msg.sender);
+        require(msg.sender == pendingOwner, "OwnableClaim: caller is not the pendingOwner");
         _setOwner(pendingOwner);
         pendingOwner = address(0);
     }
