@@ -771,7 +771,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address"));
         });
 
         it("should revert with error when value = invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
@@ -791,12 +791,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address"));
         });
       });
     });
 
-    describe.skip("when caller has permission CHANGEPERMISSIONS", () => {
+    describe("when caller has permission CHANGEPERMISSIONS", () => {
       it("should fail when beneficiary had no values set under AddressPermissions:AllowedAddresses:...", async () => {
         let newController = new ethers.Wallet.createRandom();
 
@@ -959,7 +959,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address"));
         });
 
         it("should revert with error when value = invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
@@ -979,7 +979,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address"));
         });
       });
     });
@@ -1164,7 +1164,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
 
         it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1184,7 +1184,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
       });
     });
@@ -1327,7 +1327,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
 
         it("should revert with error when value = invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1347,7 +1347,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
       });
     });
@@ -1570,7 +1570,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
 
         it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1590,7 +1590,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
       });
     });
@@ -1745,7 +1745,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
 
         it("should revert with error when value = invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1765,7 +1765,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
       });
     });
@@ -1881,7 +1881,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes32[]"));
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
         });
       });
     });

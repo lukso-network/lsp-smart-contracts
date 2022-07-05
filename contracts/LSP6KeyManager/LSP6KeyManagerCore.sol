@@ -290,7 +290,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             // AddressPermissions:AllowedAddresses:<address>
             if (!LSP2Utils.isEncodedArrayOfAddresses(value)) {
-                revert InvalidABIEncodedArray(value, "address[]");
+                revert InvalidABIEncodedArray(value, "address");
             }
             // "LSP6KeyManager: invalid ABI encoded array of addresses"
 
@@ -314,7 +314,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             // AddressPermissions:AllowedFunctions:<address>
             // AddressPermissions:AllowedStandards:<address>
             if (!LSP2Utils.isBytes4EncodedArray(value)) {
-                revert InvalidABIEncodedArray(value, "bytes4[]");
+                revert InvalidABIEncodedArray(value, "bytes4");
             }
             // "LSP6KeyManager: invalid ABI encoded array of bytes4"
 
@@ -334,7 +334,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             // AddressPermissions:AllowedERC725YKeys:<address>
             if (!LSP2Utils.isEncodedArray(value)) {
-                revert InvalidABIEncodedArray(value, "bytes32[]");
+                revert InvalidABIEncodedArray(value, "bytes32");
             }
             // "LSP6KeyManager: invalid ABI encoded array of bytes32"
 
