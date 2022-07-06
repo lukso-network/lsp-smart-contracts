@@ -285,11 +285,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         } else if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
 
-            // AddressPermissions:AllowedAddresses:<address>
-            require(
-                LSP2Utils.isEncodedArrayOfAddresses(value),
-                "LSP6KeyManager: invalid ABI encoded array of addresses"
-            );
+            bool isClearingArray = value.length == 0;
+
+            if (!isClearingArray) {
+                // AddressPermissions:AllowedAddresses:<address>
+                require(
+                    LSP2Utils.isEncodedArrayOfAddresses(value),
+                    "LSP6KeyManager: invalid ABI encoded array of addresses"
+                );
+            }
+
+            
 
             bytes memory storedAllowedAddresses = ERC725Y(target).getData(key);
 
@@ -304,16 +310,20 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             }
 
         } else if (
-            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX ||
-            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX
+            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX ||
+            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX
         ) {
+            bool isClearingArray = value.length == 0;
 
-            // AddressPermissions:AllowedFunctions:<address>
-            // AddressPermissions:AllowedStandards:<address>
-            require(
-                LSP2Utils.isBytes4EncodedArray(value),
-                "LSP6KeyManager: invalid ABI encoded array of bytes4"
-            );
+            if (!isClearingArray) {
+                // AddressPermissions:AllowedFunctions:<address>
+                // AddressPermissions:AllowedStandards:<address>
+                require(
+                    LSP2Utils.isBytes4EncodedArray(value),
+                    "LSP6KeyManager: invalid ABI encoded array of bytes4"
+                );
+            }
+
 
             bytes memory storedAllowedBytes4 = ERC725Y(target).getData(key);
 
@@ -329,11 +339,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         } else if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
 
-            // AddressPermissions:AllowedERC725YKeys:<address>
-            require(
-                LSP2Utils.isEncodedArray(value),
-                "LSP6KeyManager: invalid ABI encoded array of bytes32"
-            );
+            bool isClearingArray = value.length == 0;
+
+            if (!isClearingArray) {
+                // AddressPermissions:AllowedERC725YKeys:<address>
+                require(
+                    LSP2Utils.isEncodedArray(value),
+                    "LSP6KeyManager: invalid ABI encoded array of bytes32"
+                );
+            }
+
 
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(key);
 
