@@ -11,9 +11,11 @@ import {UniversalProfileInitAbstract} from "./UniversalProfileInitAbstract.sol";
  */
 contract UniversalProfileInit is UniversalProfileInitAbstract {
     /**
-     * @dev initialize the base (= implementation) contract
+     * @dev initialize (= lock) base implementation contract on deployment
      */
-    constructor() initializer {} // solhint-disable no-empty-blocks
+    constructor() {
+        _disableInitializers();
+    }
 
     /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP3UniversalProfile key

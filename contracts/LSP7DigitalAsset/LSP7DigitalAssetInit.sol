@@ -14,7 +14,13 @@ import {LSP7DigitalAssetInitAbstract} from "./LSP7DigitalAssetInitAbstract.sol";
  * For a generic mechanism, see {LSP7Mintable}.
  */
 contract LSP7DigitalAssetInit is LSP7DigitalAssetInitAbstract {
-    constructor() initializer {} // solhint-disable no-empty-blocks
+
+    /**
+     * @dev initialize (= lock) base implementation contract on deployment
+     */
+    constructor() {
+        _disableInitializers();
+    }
 
     /**
      * @notice Sets the token-Metadata
