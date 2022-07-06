@@ -10,6 +10,14 @@ import {LSP8IdentifiableDigitalAssetInitAbstract} from "./LSP8IdentifiableDigita
  * @dev Proxy Implementation of a LSP8 compliant contract.
  */
 contract LSP8IdentifiableDigitalAssetInit is LSP8IdentifiableDigitalAssetInitAbstract {
+    
+    /**
+     * @dev initialize (= lock) base implementation contract on deployment
+     */
+    constructor() {
+        _disableInitializers();
+    }
+
     /**
      * @notice Sets the token-Metadata
      * @param name_ The name of the token
