@@ -97,7 +97,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             payload
         );
 
-        bytes memory result = Address.verifyCallResult(success, returnData, "LSP6: Unknow Error");
+        bytes memory result = Address.verifyCallResult(
+            success,
+            returnData,
+            "LSP6: Unknow Error occured when calling the linked target contract"
+        );
 
         emit Executed(msg.value, bytes4(payload));
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
@@ -132,7 +136,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             payload
         );
 
-        bytes memory result = Address.verifyCallResult(success, returnData, "LSP6: Unknow Error");
+        bytes memory result = Address.verifyCallResult(
+            success,
+            returnData,
+            "LSP6: Unknow Error occured when calling the linked target contract"
+        );
 
         emit Executed(msg.value, bytes4(payload));
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
