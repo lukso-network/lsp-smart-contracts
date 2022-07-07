@@ -93,7 +93,11 @@ contract UniversalFactory {
         if (initializeCallData.length > 0) {
             // solhint-disable avoid-low-level-calls
             (bool success, bytes memory returnData) = contractCreated.call(initializeCallData);
-            Address.verifyCallResult(success, returnData, "UniversalFactory: Unknow Error");
+            Address.verifyCallResult(
+                success,
+                returnData,
+                "UniversalFactory: could not initialize the created contract"
+            );
         }
     }
 
@@ -122,8 +126,13 @@ contract UniversalFactory {
             (bool success, bytes memory returnData) = proxy.call{value: msg.value}(
                 initializeCallData
             );
-            Address.verifyCallResult(success, returnData, "UniversalFactory: Unknow Error");
+            Address.verifyCallResult(
+                success,
+                returnData,
+                "UniversalFactory: could not initialize the created contract"
+            );
         } else {
+            // @todo check if this part make sense
             // Return value sent
             if (msg.value > 0) {
                 // solhint-disable avoid-low-level-calls
