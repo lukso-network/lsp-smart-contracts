@@ -21,12 +21,14 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
+import { provider, EMPTY_PAYLOAD, ONE_ETH } from "../../utils/helpers";
+
+// errors
 import {
-  provider,
-  EMPTY_PAYLOAD,
+  customRevertErrorMessage,
   NoPermissionsSetError,
-  ONE_ETH,
-} from "../../utils/helpers";
+  InvalidERC725FunctionError,
+} from "../../utils/errors";
 
 export const testSecurityScenarios = (
   buildContext: () => Promise<LSP6TestContext>
@@ -104,22 +106,18 @@ export const testSecurityScenarios = (
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
     it("via `execute(...)`", async () => {
       let payload =
-        context.universalProfile.interface.encodeFunctionData(
-          "renounceOwnership"
-        );
+        context.universalProfile.interface.getSighash("renounceOwnership");
 
       await expect(
         context.keyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector'");
+      ).toBeRevertedWith(InvalidERC725FunctionError(payload));
     });
 
     it("via `executeRelayCall()`", async () => {
       let nonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       let payload =
-        context.universalProfile.interface.encodeFunctionData(
-          "renounceOwnership"
-        );
+        context.universalProfile.interface.getSighash("renounceOwnership");
 
       let hash = ethers.utils.solidityKeccak256(
         ["address", "uint256", "bytes"],
@@ -139,7 +137,7 @@ export const testSecurityScenarios = (
             payload,
             signature
           )
-      ).toBeRevertedWith("_verifyPermissions: invalid ERC725 selector'");
+      ).toBeRevertedWith(InvalidERC725FunctionError(payload));
     });
   });
 
@@ -232,13 +230,10 @@ export const testSecurityScenarios = (
       await expect(
         context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonce,
-            executeRelayCallPayload,
-            signature
-          )
-      ).toBeRevertedWith("executeRelayCall: Invalid nonce");
+          .executeRelayCall(signature, nonce, executeRelayCallPayload)
+      ).toBeRevertedWith(
+        `${customRevertErrorMessage} 'InvalidRelayNonce("${signer.address}", ${nonce}, "${signature}")'`
+      );
     });
   });
 };

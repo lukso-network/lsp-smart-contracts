@@ -16,11 +16,10 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import {
-  abiCoder,
-  NotAllowedAddressError,
-  NotAuthorisedError,
-} from "../../utils/helpers";
+import { abiCoder } from "../../utils/helpers";
+
+// errors
+import { NotAllowedAddressError, NotAuthorisedError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>

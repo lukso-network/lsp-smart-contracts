@@ -21,8 +21,10 @@ import {
   provider,
   EMPTY_PAYLOAD,
   getRandomAddresses,
-  NotAllowedAddressError,
 } from "../../utils/helpers";
+
+// errors
+import { NotAllowedAddressError } from "../../utils/errors";
 
 export const shouldBehaveLikeAllowedAddresses = (
   buildContext: () => Promise<LSP6TestContext>

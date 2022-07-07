@@ -206,6 +206,28 @@ const LSP1_TYPE_IDS = {
 // ----------
 
 const Errors = {
+	LSP2: {
+		'0xb614e91e': {
+			error: 'InvalidABIEncodedArray(bytes,string)',
+			message: 'LSP2Utils: Invalid ABI encoded array',
+		},
+	},
+	LSP4: {
+		'0x85c169bd': {
+			error: 'LSP4TokenNameNotEditable()',
+			message: 'LSP4: Token name cannot be edited',
+		},
+		'0x76755b38': {
+			error: 'LSP4TokenSymbolNotEditable()',
+			message: 'LSP4: Token symbol cannot be edited',
+		},
+	},
+	LSP5: {
+		'0xecba7af8': {
+			error: 'InvalidLSP5ReceivedAssetsArrayLength(bytes,uint256)',
+			message: 'LSP5: Invalid value for `LSP5ReceivedAssets[]` (array length)',
+		},
+	},
 	LSP6: {
 		'0xf292052a': {
 			error: 'NoPermissionsSet(address)',
@@ -219,6 +241,11 @@ const Errors = {
 			error: 'NotAllowedAddress(address,address)',
 			message: 'LSP6: not allowed to interact with address.',
 		},
+		'0x42013ee4': {
+			error: 'NotAllowedStandard(address,address)',
+			message:
+				'LSP6: cannot interact with a contract that does not implement an allowed standard.',
+		},
 		'0x84135110': {
 			error: 'NotAllowedFunction(address,bytes4)',
 			message: 'LSP6: not allowed to run the function.',
@@ -226,6 +253,14 @@ const Errors = {
 		'0x3003e7ae': {
 			error: 'NotAllowedERC725YKey(address,bytes32)',
 			message: 'LSP6: not allowed to set the ERC725Y data key.',
+		},
+		'0xc9bd9eb9': {
+			error: 'InvalidRelayNonce(address,uint256,bytes)',
+			message: 'LSP6: invalid nonce provided for signer address',
+		},
+		'0x2ba8851c': {
+			error: 'InvalidERC725Function(bytes4)',
+			message: 'LSP6: unknown or invalid ERC725 function selector',
 		},
 	},
 	LSP7: {

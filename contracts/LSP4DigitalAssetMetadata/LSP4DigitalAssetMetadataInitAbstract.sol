@@ -7,6 +7,9 @@ import {ERC725YInitAbstract, ERC725YCore} from "@erc725/smart-contracts/contract
 // constants
 import "./LSP4Constants.sol";
 
+// errors
+import {LSP4TokenNameNotEditable, LSP4TokenSymbolNotEditable} from "./LSP4Errors.sol";
+
 /**
  * @title LSP4DigitalAssetMetadata
  * @author Matthew Stevens
@@ -27,9 +30,17 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
         super._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
     }
 
+    /**
+     * @dev the ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed via this function
+     *      once the digital asset contract has been deployed
+     */
     function _setData(bytes32 key, bytes memory value) internal virtual override {
-        require(key != _LSP4_TOKEN_NAME_KEY, "LSP4: cannot edit Token Name after deployment");
-        require(key != _LSP4_TOKEN_SYMBOL_KEY, "LSP4: cannot edit Token Symbol after deployment");
-        super._setData(key, value);
+        if (key == _LSP4_TOKEN_NAME_KEY) {
+            revert LSP4TokenNameNotEditable();
+        } else if (key == _LSP4_TOKEN_SYMBOL_KEY) {
+            revert LSP4TokenSymbolNotEditable();
+        } else {
+            super._setData(key, value);
+        }
     }
 }
