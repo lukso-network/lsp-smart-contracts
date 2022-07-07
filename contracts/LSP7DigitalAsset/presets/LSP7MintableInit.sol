@@ -10,9 +10,11 @@ import {LSP7MintableInitAbstract} from "./LSP7MintableInitAbstract.sol";
  */
 contract LSP7MintableInit is LSP7MintableInitAbstract {
     /**
-     * @dev initialize (= lock) base contract on deployment
+     * @dev initialize (= lock) base implementation contract on deployment
      */
-    constructor() initializer {}
+    constructor() {
+        _disableInitializers();
+    }
 
     /**
      * @notice Sets the token-Metadata and register LSP7InterfaceId

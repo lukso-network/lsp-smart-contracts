@@ -10,6 +10,13 @@ import {LSP6KeyManagerInitAbstract} from "./LSP6KeyManagerInitAbstract.sol";
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
 contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract {
+    
+    /**
+     * @dev initialize (= lock) base implementation contract on deployment
+     */
+    constructor() {
+        _disableInitializers();
+    }
     /**
      * @notice Initiate the account with the address of the ERC725Account contract and sets LSP6KeyManager InterfaceId
      * @param target_ The address of the ER725Account to control
