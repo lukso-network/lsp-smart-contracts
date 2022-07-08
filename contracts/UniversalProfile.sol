@@ -5,9 +5,8 @@ pragma solidity ^0.8.0;
 import {LSP0ERC725Account} from "./LSP0ERC725Account/LSP0ERC725Account.sol";
 
 // constants
-// prettier-ignore
 import {
-    _LSP3_SUPPORTED_STANDARDS_KEY, 
+    _LSP3_SUPPORTED_STANDARDS_KEY,
     _LSP3_SUPPORTED_STANDARDS_VALUE
 } from "./LSP3UniversalProfile/LSP3Constants.sol";
 
