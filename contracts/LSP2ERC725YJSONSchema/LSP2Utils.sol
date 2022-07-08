@@ -26,7 +26,7 @@ library LSP2Utils {
         require(
             dataKey[dataKey.length - 2] == 0x5b && // "[" in utf8 encoded
                 dataKey[dataKey.length - 1] == 0x5d, // "]" in utf8
-            "Missing empty square brackets "[]" at the end of the key name'
+            "Missing empty square brackets '[]' at the end of the key name"
         );
 
         return keccak256(dataKey);
