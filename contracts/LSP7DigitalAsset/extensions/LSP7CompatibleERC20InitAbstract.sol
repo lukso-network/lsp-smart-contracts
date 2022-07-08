@@ -3,7 +3,11 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP7DigitalAssetInitAbstract, LSP4DigitalAssetMetadataInitAbstract, ERC725YCore} from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract,
+    LSP4DigitalAssetMetadataInitAbstract,
+    ERC725YCore
+} from "../LSP7DigitalAssetInitAbstract.sol";
 import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 import {LSP7CompatibleERC20Core} from "./LSP7CompatibleERC20Core.sol";
 
