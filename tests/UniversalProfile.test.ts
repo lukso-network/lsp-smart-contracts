@@ -23,17 +23,23 @@ import {
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
 } from "./UniversalProfile.behaviour";
+import { provider } from "./utils/helpers";
 
 describe("UniversalProfile", () => {
   describe("when using UniversalProfile contract with constructor", () => {
-    const buildLSP3TestContext = async (): Promise<LSP3TestContext> => {
+    const buildLSP3TestContext = async (
+      initialFunding?: number
+    ): Promise<LSP3TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
+        initialFunding,
       };
       const universalProfile = await new UniversalProfile__factory(
         accounts[0]
-      ).deploy(deployParams.owner.address);
+      ).deploy(deployParams.owner.address, {
+        value: initialFunding,
+      });
 
       return { accounts, universalProfile, deployParams };
     };
@@ -67,6 +73,27 @@ describe("UniversalProfile", () => {
         return { accounts, contract, deployParams, onlyOwnerRevertString };
       };
 
+    [
+      { initialFunding: undefined },
+      { initialFunding: 0 },
+      { initialFunding: 5 },
+    ].forEach((testCase) => {
+      describe("when deploying the contract with or without value", () => {
+        let context: LSP3TestContext;
+
+        beforeEach(async () => {
+          context = await buildLSP3TestContext(testCase.initialFunding);
+        });
+
+        it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
+          const balance = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(balance.toNumber()).toEqual(testCase.initialFunding || 0);
+        });
+      });
+    });
+
     describe("when deploying the contract", () => {
       let context: LSP3TestContext;
 
@@ -76,11 +103,7 @@ describe("UniversalProfile", () => {
 
       describe("when initializing the contract", () => {
         shouldInitializeLikeLSP3(async () => {
-          const { universalProfile, deployParams } = context;
-          return {
-            universalProfile,
-            deployParams,
-          };
+          return context;
         });
       });
     });
@@ -93,10 +116,13 @@ describe("UniversalProfile", () => {
   });
 
   describe("when using UniversalProfile contract with proxy", () => {
-    const buildLSP3TestContext = async (): Promise<LSP3TestContext> => {
+    const buildLSP3TestContext = async (
+      initialFunding?: number
+    ): Promise<LSP3TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
+        initialFunding,
       };
       const universalProfileInit = await new UniversalProfileInit__factory(
         accounts[0]
@@ -116,7 +142,8 @@ describe("UniversalProfile", () => {
 
     const initializeProxy = async (context: LSP3TestContext) => {
       return context.universalProfile["initialize(address)"](
-        context.deployParams.owner.address
+        context.deployParams.owner.address,
+        { value: context.deployParams.initialFunding }
       );
     };
 
@@ -198,32 +225,40 @@ describe("UniversalProfile", () => {
       });
     });
 
-    describe("when deploying the contract as proxy", () => {
-      let context: LSP3TestContext;
+    [
+      { initialFunding: undefined },
+      { initialFunding: 0 },
+      { initialFunding: 5 },
+    ].forEach((testCase) => {
+      describe("when deploying the proxy contract", () => {
+        let context: LSP3TestContext;
 
-      beforeEach(async () => {
-        context = await buildLSP3TestContext();
-      });
-
-      describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP3(async () => {
-          const { universalProfile, deployParams } = context;
-          await initializeProxy(context);
-
-          return {
-            universalProfile,
-            deployParams,
-          };
+        beforeEach(async () => {
+          context = await buildLSP3TestContext(testCase.initialFunding);
         });
-      });
 
-      describe("when calling `initialize(...)` more than once", () => {
-        it("should revert", async () => {
-          await initializeProxy(context);
+        describe("when initializing the proxy contract with or without value", () => {
+          it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
+            const balance = await provider.getBalance(
+              context.universalProfile.address
+            );
+            expect(balance.toNumber()).toEqual(testCase.initialFunding || 0);
+          });
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
-            "Initializable: contract is already initialized"
-          );
+          shouldInitializeLikeLSP3(async () => {
+            await initializeProxy(context);
+            return context;
+          });
+        });
+
+        describe("when calling `initialize(...)` more than once", () => {
+          it("should revert", async () => {
+            await initializeProxy(context);
+
+            await expect(initializeProxy(context)).toBeRevertedWith(
+              "Initializable: contract is already initialized"
+            );
+          });
         });
       });
     });
