@@ -11,9 +11,11 @@ import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725AccountInitAbstract.sol
  */
 contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
     /**
-     * @dev initialize the base (= implementation) contract
+     * @dev @dev initialize (= lock) base implementation contract on deployment
      */
-    constructor() initializer {} // solhint-disable no-empty-blocks
+    constructor() {
+        _disableInitializers();
+    }
 
     /**
      * @notice Sets the owner of the contract

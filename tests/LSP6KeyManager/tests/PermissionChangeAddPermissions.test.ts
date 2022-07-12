@@ -14,7 +14,13 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, NotAuthorisedError } from "../../utils/helpers";
+import { abiCoder } from "../../utils/helpers";
+
+// errors
+import {
+  NotAuthorisedError,
+  InvalidABIEncodedArrayError,
+} from "../../utils/errors";
 
 export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -767,9 +773,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of addresses"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address"));
         });
 
         it("should revert with error when value = invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
@@ -789,9 +793,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of addresses"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address"));
         });
       });
     });
@@ -959,9 +961,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of addresses"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address"));
         });
 
         it("should revert with error when value = invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
@@ -981,9 +981,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of addresses"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "address"));
         });
       });
     });
@@ -1168,9 +1166,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes4"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
 
         it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1190,9 +1186,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes4"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
       });
     });
@@ -1335,9 +1329,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes4"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
 
         it("should revert with error when value = invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1357,9 +1349,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes4"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
       });
     });
@@ -1582,9 +1572,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes4"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
 
         it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1604,9 +1592,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes4"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
       });
     });
@@ -1761,9 +1747,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes4"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
 
         it("should revert with error when value = invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1783,9 +1767,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes4"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
         });
       });
     });
@@ -1999,9 +1981,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes32"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
         });
       });
     });

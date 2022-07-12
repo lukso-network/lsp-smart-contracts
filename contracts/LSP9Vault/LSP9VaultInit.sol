@@ -11,9 +11,11 @@ import {LSP9VaultInitAbstract} from "./LSP9VaultInitAbstract.sol";
  */
 contract LSP9VaultInit is LSP9VaultInitAbstract {
     /**
-     * @dev lock the base (= implementation) contract on deployment
+     * @dev initialize (= lock) base implementation contract on deployment
      */
-    constructor() initializer {} // solhint-disable no-empty-blocks
+    constructor() {
+        _disableInitializers();
+    }
 
     /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key

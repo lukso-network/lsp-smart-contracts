@@ -364,7 +364,9 @@ describe("UniversalFactory contract", () => {
           context.universalFactory
             .connect(context.accounts.deployer2)
             .deployCreate2(PayableContractBytecode, salt, RandomCalldata)
-        ).toBeRevertedWith("Transaction reverted without a reason string");
+        ).toBeRevertedWith(
+          "UniversalFactory: could not initialize the created contract"
+        );
       });
 
       it("should pass when deploying a CREATE2 contract and passing calldata for a non-existing function where fallback function exist", async () => {
@@ -667,7 +669,9 @@ describe("UniversalFactory contract", () => {
                 value: 100,
               }
             )
-        ).toBeRevertedWith("Transaction reverted without a reason string");
+        ).toBeRevertedWith(
+          "UniversalFactory: could not initialize the created contract"
+        );
       });
 
       it("should pass when deploying a proxy and sending value to a payable function in deployCreate2Proxy", async () => {
@@ -710,7 +714,9 @@ describe("UniversalFactory contract", () => {
           context.universalFactory
             .connect(context.accounts.deployer1)
             .deployCreate2Proxy(payableContract.address, salt, RandomCalldata)
-        ).toBeRevertedWith("Transaction reverted without a reason string");
+        ).toBeRevertedWith(
+          "UniversalFactory: could not initialize the created contract"
+        );
       });
 
       it("should pass when deploying a proxy and passing calldata for a non-existing function where fallback function exist", async () => {

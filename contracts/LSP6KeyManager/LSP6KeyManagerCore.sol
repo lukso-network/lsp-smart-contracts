@@ -16,13 +16,13 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ErrorHandlerLib} from "@erc725/smart-contracts/contracts/utils/ErrorHandlerLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
 
 // errors
 import "./LSP6Errors.sol";
+import {InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 
 // constants
 // prettier-ignore
@@ -94,13 +94,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(msg.sender, payload);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result) = target.call{value: msg.value, gas: gasleft()}(
+        (bool success, bytes memory returnData) = target.call{value: msg.value, gas: gasleft()}(
             payload
         );
 
-        if (!success) {
-            ErrorHandlerLib.revertWithParsedError(result);
-        }
+        bytes memory result = Address.verifyCallResult(
+            success,
+            returnData,
+            "LSP6: Unknow Error occured when calling the linked target contract"
+        );
 
         emit Executed(msg.value, bytes4(payload));
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
@@ -123,7 +125,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         address signer = keccak256(blob).toEthSignedMessageHash().recover(signature);
 
-        require(_isValidNonce(signer, nonce), "executeRelayCall: Invalid nonce");
+        if (!_isValidNonce(signer, nonce)) {
+            revert InvalidRelayNonce(signer, nonce, signature);
+        }
 
         // increase nonce after successful verification
         _nonceStore[signer][nonce >> 128]++;
@@ -131,13 +135,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(signer, payload);
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory result) = target.call{value: msg.value, gas: gasleft()}(
+        (bool success, bytes memory returnData) = target.call{value: msg.value, gas: gasleft()}(
             payload
         );
 
-        if (!success) {
-            ErrorHandlerLib.revertWithParsedError(result);
-        }
+        bytes memory result = Address.verifyCallResult(
+            success,
+            returnData,
+            "LSP6: Unknow Error occured when calling the linked target contract"
+        );
 
         emit Executed(msg.value, bytes4(payload));
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
@@ -236,7 +242,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             _requirePermissions(from, permissions, _PERMISSION_CHANGEOWNER);
     
         } else {
-            revert("_verifyPermissions: invalid ERC725 selector");
+            revert InvalidERC725Function(erc725Function);
         }
     }
 
@@ -287,15 +293,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             bool isClearingArray = value.length == 0;
 
-            if (!isClearingArray) {
-                // AddressPermissions:AllowedAddresses:<address>
-                require(
-                    LSP2Utils.isEncodedArrayOfAddresses(value),
-                    "LSP6KeyManager: invalid ABI encoded array of addresses"
-                );
+            // AddressPermissions:AllowedAddresses:<address>
+            if (!isClearingArray && !LSP2Utils.isEncodedArrayOfAddresses(value)) {
+                revert InvalidABIEncodedArray(value, "address");
             }
-
-            
 
             bytes memory storedAllowedAddresses = ERC725Y(target).getData(key);
 
@@ -315,15 +316,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         ) {
             bool isClearingArray = value.length == 0;
 
-            if (!isClearingArray) {
-                // AddressPermissions:AllowedFunctions:<address>
-                // AddressPermissions:AllowedStandards:<address>
-                require(
-                    LSP2Utils.isBytes4EncodedArray(value),
-                    "LSP6KeyManager: invalid ABI encoded array of bytes4"
-                );
+            // AddressPermissions:AllowedFunctions:<address>
+            // AddressPermissions:AllowedStandards:<address>
+            if (!isClearingArray && !LSP2Utils.isBytes4EncodedArray(value)) {
+                revert InvalidABIEncodedArray(value, "bytes4");
             }
-
 
             bytes memory storedAllowedBytes4 = ERC725Y(target).getData(key);
 
@@ -341,14 +338,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             bool isClearingArray = value.length == 0;
 
-            if (!isClearingArray) {
-                // AddressPermissions:AllowedERC725YKeys:<address>
-                require(
-                    LSP2Utils.isEncodedArray(value),
-                    "LSP6KeyManager: invalid ABI encoded array of bytes32"
-                );
+            // AddressPermissions:AllowedERC725YKeys:<address>
+            if (!isClearingArray && !LSP2Utils.isEncodedArray(value)) {
+                revert InvalidABIEncodedArray(value, "bytes32");
             }
-
 
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(key);
 
@@ -593,7 +586,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         for (uint256 ii = 0; ii < allowedStandardsList.length; ii++) {
             if (to.supportsERC165Interface(allowedStandardsList[ii])) return;
         }
-        revert("Not Allowed Standards");
+        revert NotAllowedStandard(from, to);
     }
 
     /**

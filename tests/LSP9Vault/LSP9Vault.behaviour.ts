@@ -11,11 +11,10 @@ import {
 } from "../../types";
 
 // helpers
-import {
-  ARRAY_LENGTH,
-  generateKeysAndValues,
-  NotAllowedAddressError,
-} from "../utils/helpers";
+import { ARRAY_LENGTH, generateKeysAndValues } from "../utils/helpers";
+
+// errors
+import { NotAllowedAddressError } from "../utils/errors";
 
 // fixtures
 import { callPayload } from "../utils/fixtures";
