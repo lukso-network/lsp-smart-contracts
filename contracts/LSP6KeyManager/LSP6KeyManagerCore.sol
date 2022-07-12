@@ -291,11 +291,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         } else if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
 
+            bool isClearingArray = value.length == 0;
+
             // AddressPermissions:AllowedAddresses:<address>
-            if (!LSP2Utils.isEncodedArrayOfAddresses(value)) {
+            if (!isClearingArray && !LSP2Utils.isEncodedArrayOfAddresses(value)) {
                 revert InvalidABIEncodedArray(value, "address");
             }
-            // "LSP6KeyManager: invalid ABI encoded array of addresses"
 
             bytes memory storedAllowedAddresses = ERC725Y(target).getData(key);
 
@@ -310,16 +311,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             }
 
         } else if (
-            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX ||
-            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX
+            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX ||
+            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX
         ) {
+            bool isClearingArray = value.length == 0;
 
             // AddressPermissions:AllowedFunctions:<address>
             // AddressPermissions:AllowedStandards:<address>
-            if (!LSP2Utils.isBytes4EncodedArray(value)) {
+            if (!isClearingArray && !LSP2Utils.isBytes4EncodedArray(value)) {
                 revert InvalidABIEncodedArray(value, "bytes4");
             }
-            // "LSP6KeyManager: invalid ABI encoded array of bytes4"
 
             bytes memory storedAllowedBytes4 = ERC725Y(target).getData(key);
 
@@ -335,11 +336,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         } else if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
 
+            bool isClearingArray = value.length == 0;
+
             // AddressPermissions:AllowedERC725YKeys:<address>
-            if (!LSP2Utils.isEncodedArray(value)) {
+            if (!isClearingArray && !LSP2Utils.isEncodedArray(value)) {
                 revert InvalidABIEncodedArray(value, "bytes32");
             }
-            // "LSP6KeyManager: invalid ABI encoded array of bytes32"
 
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(key);
 
