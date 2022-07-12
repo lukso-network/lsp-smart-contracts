@@ -11,7 +11,6 @@ import {setDataSingleSelector} from "../LSP6KeyManager/LSP6Constants.sol";
 contract Executor {
     uint256 internal constant _OPERATION_CALL = 0;
 
-    // prettier-ignore
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
     LSP6KeyManager private _keyManager;
@@ -28,7 +27,6 @@ contract Executor {
     // -----------
 
     function setHardcodedKey() public returns (bytes memory) {
-        // prettier-ignore
         bytes32 key = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
         bytes memory value = "Some value";
 
@@ -87,7 +85,6 @@ contract Executor {
     // ----------------------
 
     function setHardcodedKeyRawCall() public returns (bool) {
-        // prettier-ignore
         bytes32 key = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
         bytes memory value = "Some value";
 

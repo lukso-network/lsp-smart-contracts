@@ -4,7 +4,9 @@ pragma solidity ^0.8.0;
 // interfaces
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import {
+    ILSP1UniversalReceiverDelegate
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
@@ -17,8 +19,16 @@ import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
 
 // constants
 import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
-import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE, _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import {_INTERFACEID_LSP9, _TYPEID_LSP9_VAULTRECIPIENT, _TYPEID_LSP9_VAULTSENDER} from "./LSP9Constants.sol";
+import {
+    _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
+} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP9,
+    _TYPEID_LSP9_VAULTRECIPIENT,
+    _TYPEID_LSP9_VAULTSENDER
+} from "./LSP9Constants.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver

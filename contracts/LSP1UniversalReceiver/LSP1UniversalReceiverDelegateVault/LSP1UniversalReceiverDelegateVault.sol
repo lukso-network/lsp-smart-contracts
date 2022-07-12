@@ -10,8 +10,14 @@ import {TokenHandling} from "./Handling/TokenHandling.sol";
 
 // constants
 import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
-import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "../../LSP7DigitalAsset/LSP7Constants.sol";
-import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import {
+    _TYPEID_LSP7_TOKENSSENDER,
+    _TYPEID_LSP7_TOKENSRECIPIENT
+} from "../../LSP7DigitalAsset/LSP7Constants.sol";
+import {
+    _TYPEID_LSP8_TOKENSSENDER,
+    _TYPEID_LSP8_TOKENSRECIPIENT
+} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 
 /**
  * @title Core Implementation of contract writing the received LSP7 and LSP8 assets into your Vault using

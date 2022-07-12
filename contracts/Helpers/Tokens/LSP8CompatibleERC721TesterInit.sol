@@ -3,8 +3,12 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP8IdentifiableDigitalAsset} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
-import {LSP8CompatibleERC721InitAbstract} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721InitAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8CompatibleERC721InitAbstract
+} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721InitAbstract.sol";
 
 // constants
 import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";

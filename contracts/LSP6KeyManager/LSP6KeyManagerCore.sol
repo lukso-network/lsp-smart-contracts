@@ -25,7 +25,6 @@ import "./LSP6Errors.sol";
 import {InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 
 // constants
-// prettier-ignore
 import {
     OPERATION_CALL,
     OPERATION_CREATE,
@@ -33,7 +32,11 @@ import {
     OPERATION_STATICCALL,
     OPERATION_DELEGATECALL
 } from "@erc725/smart-contracts/contracts/constants.sol";
-import {_INTERFACEID_ERC1271, _ERC1271_MAGICVALUE, _ERC1271_FAILVALUE} from "../LSP0ERC725Account/LSP0Constants.sol";
+import {
+    _INTERFACEID_ERC1271,
+    _ERC1271_MAGICVALUE,
+    _ERC1271_FAILVALUE
+} from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
 
 /**
@@ -177,9 +180,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
-        // prettier-ignore
         if (erc725Function == setDataSingleSelector) {
-
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(payload[4:], (bytes32, bytes));
 
             if (
@@ -187,23 +188,21 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 bytes6(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
                 bytes16(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX
             ) {
-
                 _verifyCanSetPermissions(inputKey, inputValue, from, permissions);
-
             } else {
-
                 bytes32[] memory wrappedInputKey = new bytes32[](1);
                 wrappedInputKey[0] = inputKey;
 
                 _verifyCanSetData(from, permissions, wrappedInputKey);
             }
-
         } else if (erc725Function == setDataMultipleSelector) {
-
-            (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(payload[4:], (bytes32[], bytes[]));
+            (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
+                payload[4:],
+                (bytes32[], bytes[])
+            );
 
             bool isSettingERC725YKeys = false;
-            
+
             // loop through each ERC725Y data keys
             for (uint256 ii = 0; ii < inputKeys.length; ii++) {
                 bytes32 key = inputKeys[ii];
@@ -223,24 +222,18 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     // if the key is any other bytes32 key
                     isSettingERC725YKeys = true;
                 }
-
             }
 
             if (isSettingERC725YKeys) {
                 _verifyCanSetData(from, permissions, inputKeys);
             }
-
         } else if (erc725Function == IERC725X.execute.selector) {
-            
             _verifyCanExecute(from, permissions, payload);
-
         } else if (
             erc725Function == OwnableUnset.transferOwnership.selector ||
             erc725Function == IClaimOwnership.claimOwnership.selector
         ) {
-
             _requirePermissions(from, permissions, _PERMISSION_CHANGEOWNER);
-    
         } else {
             revert InvalidERC725Function(erc725Function);
         }

@@ -2,7 +2,9 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import {ILSP1UniversalReceiverDelegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import {
+    ILSP1UniversalReceiverDelegate
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";

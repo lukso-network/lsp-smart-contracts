@@ -14,7 +14,6 @@ import {LSP7DigitalAssetInitAbstract} from "./LSP7DigitalAssetInitAbstract.sol";
  * For a generic mechanism, see {LSP7Mintable}.
  */
 contract LSP7DigitalAssetInit is LSP7DigitalAssetInitAbstract {
-
     /**
      * @dev initialize (= lock) base implementation contract on deployment
      */
