@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // --- ERC725Y entries
 
-// bytes10(keccak256('SupportedStandard')) + bytes2(0) + bytes20(keccak256('LSP4DigitalAsset'))
+// bytes10(keccak256('SupportedStandards')) + bytes2(0) + bytes20(keccak256('LSP4DigitalAsset'))
 bytes32 constant _LSP4_SUPPORTED_STANDARDS_KEY = 0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c;
 
 // bytes4(keccak256('LSP4DigitalAsset'))
