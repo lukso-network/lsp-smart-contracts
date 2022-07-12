@@ -11,33 +11,21 @@ library UtilsLib {
     /**
      * @dev concatenate two bytes16
      */
-    function concatTwoBytes16(bytes16 b1, bytes16 b2)
-        internal
-        pure
-        returns (bytes memory result)
-    {
+    function concatTwoBytes16(bytes16 b1, bytes16 b2) internal pure returns (bytes memory result) {
         result = bytes.concat(b1, b2);
     }
 
     /**
      * @dev cast uint256 to bytes
      */
-    function uint256ToBytes(uint256 num)
-        internal
-        pure
-        returns (bytes memory bytes_)
-    {
+    function uint256ToBytes(uint256 num) internal pure returns (bytes memory bytes_) {
         bytes_ = bytes.concat(bytes32(num));
     }
 
     /**
      * @dev cast address to bytes
      */
-    function addressToBytes(address addr)
-        internal
-        pure
-        returns (bytes memory bytes_)
-    {
+    function addressToBytes(address addr) internal pure returns (bytes memory bytes_) {
         bytes_ = bytes.concat(bytes20(addr));
     }
 }

@@ -3,7 +3,9 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP8IdentifiableDigitalAssetInitAbstract} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAssetInitAbstract
+} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 contract LSP8InitTester is LSP8IdentifiableDigitalAssetInitAbstract {
     function initialize(

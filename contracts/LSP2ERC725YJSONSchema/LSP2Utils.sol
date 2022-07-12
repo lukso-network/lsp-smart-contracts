@@ -23,11 +23,10 @@ library LSP2Utils {
     function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
         bytes memory dataKey = bytes(keyName);
 
-        // prettier-ignore
         require(
             dataKey[dataKey.length - 2] == 0x5b && // "[" in utf8 encoded
                 dataKey[dataKey.length - 1] == 0x5d, // "]" in utf8
-            "Missing empty square brackets \"[]\" at the end of the key name"
+            "Missing empty square brackets '[]' at the end of the key name"
         );
 
         return keccak256(dataKey);
@@ -69,7 +68,11 @@ library LSP2Utils {
     {
         bytes32 firstWordHash = keccak256(bytes(firstWord));
 
-        bytes memory temporaryBytes = bytes.concat(bytes10(firstWordHash), bytes2(0), bytes20(addr));
+        bytes memory temporaryBytes = bytes.concat(
+            bytes10(firstWordHash),
+            bytes2(0),
+            bytes20(addr)
+        );
 
         return bytes32(temporaryBytes);
     }

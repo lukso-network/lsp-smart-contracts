@@ -6,7 +6,11 @@ pragma solidity ^0.8.0;
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // modules
-import {LSP8IdentifiableDigitalAssetInitAbstract, LSP4DigitalAssetMetadataInitAbstract, ERC725YCore} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAssetInitAbstract,
+    LSP4DigitalAssetMetadataInitAbstract,
+    ERC725YCore
+} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 import {LSP8CompatibleERC721Core} from "./LSP8CompatibleERC721Core.sol";
 

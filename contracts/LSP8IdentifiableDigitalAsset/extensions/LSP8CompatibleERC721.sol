@@ -9,7 +9,11 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // modules
-import {LSP8IdentifiableDigitalAsset, LSP4DigitalAssetMetadata, ERC725YCore} from "../LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8IdentifiableDigitalAsset,
+    LSP4DigitalAssetMetadata,
+    ERC725YCore
+} from "../LSP8IdentifiableDigitalAsset.sol";
 import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 import {LSP8CompatibleERC721Core} from "./LSP8CompatibleERC721Core.sol";
 

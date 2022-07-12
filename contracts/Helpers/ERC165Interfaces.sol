@@ -16,15 +16,22 @@ import {IERC223} from "./Tokens/IERC223.sol";
 
 // LSPs interfaces
 import {ILSP1UniversalReceiver as ILSP1} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {ILSP1UniversalReceiverDelegate as ILSP1Delegate} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import {
+    ILSP1UniversalReceiverDelegate as ILSP1Delegate
+} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
 import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
-import {ILSP8IdentifiableDigitalAsset as ILSP8} from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
+import {
+    ILSP8IdentifiableDigitalAsset as ILSP8
+} from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
 import {IClaimOwnership, _INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
 
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
-import {_INTERFACEID_LSP1, _INTERFACEID_LSP1_DELEGATE} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    _INTERFACEID_LSP1,
+    _INTERFACEID_LSP1_DELEGATE
+} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
 import {_INTERFACEID_LSP8} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";

@@ -21,6 +21,7 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { provider, AddressOffset } from "../utils/helpers";
 
 import { bytecode as UniversalProfileBytecode } from "../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json";
+import { bytecode as LSP6KeyManagerBytecode } from "../../artifacts/contracts/LSP6KeyManager/LSP6KeyManager.sol/LSP6KeyManager.json";
 import { bytecode as UniversalProfileInitBytecode } from "../../artifacts/contracts/UniversalProfileInit.sol/UniversalProfileInit.json";
 import { bytecode as PayableContractBytecode } from "../../artifacts/contracts/Helpers/PayableContract.sol/PayableContract.json";
 import { bytecode as FallbackContractBytecode } from "../../artifacts/contracts/Helpers/FallbackContract.sol/FallbackContract.json";
@@ -309,13 +310,13 @@ describe("UniversalFactory contract", () => {
       it("should revert when sending value while deploying a non payable constructor contract", async () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["OtherSalt"]);
 
-        let UPBytecode =
-          UniversalProfileBytecode +
+        let KMBytecode =
+          LSP6KeyManagerBytecode +
           AddressOffset +
           ethers.constants.AddressZero.substr(2);
 
         await expect(
-          context.universalFactory.deployCreate2(UPBytecode, salt, "0x", {
+          context.universalFactory.deployCreate2(KMBytecode, salt, "0x", {
             value: 100,
           })
         ).toBeRevertedWith("Create2: Failed on deploy");

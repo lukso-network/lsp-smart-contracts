@@ -3,7 +3,9 @@
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP8IdentifiableDigitalAsset} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
 
 contract LSP8Tester is LSP8IdentifiableDigitalAsset {
     /* solhint-disable no-empty-blocks */
