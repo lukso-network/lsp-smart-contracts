@@ -1925,9 +1925,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes32"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
         });
       });
 
@@ -2081,9 +2079,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes32"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
         });
       });
 
@@ -2144,9 +2140,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).toBeRevertedWith(
-            "LSP6KeyManager: invalid ABI encoded array of bytes32"
-          );
+          ).toBeRevertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
         });
       });
     });
