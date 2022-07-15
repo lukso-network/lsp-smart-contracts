@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
-import {ILSP7CompatibilityForERC20} from "./ILSP7CompatibilityForERC20.sol";
+import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
 
 // modules
 import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
@@ -13,23 +13,26 @@ import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 /**
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
-abstract contract LSP7CompatibilityForERC20Core is
+abstract contract LSP7CompatibleERC20Core is
     LSP4Compatibility,
     LSP7DigitalAssetCore,
-    ILSP7CompatibilityForERC20
+    ILSP7CompatibleERC20
 {
+    // --- Overrides
+
     /**
-     * @inheritdoc ILSP7CompatibilityForERC20
+     * @inheritdoc ILSP7CompatibleERC20
      */
-    function approve(address operator, uint256 amount) external virtual override {
-        return authorizeOperator(operator, amount);
+    function approve(address operator, uint256 amount) public virtual override returns (bool) {
+        authorizeOperator(operator, amount);
+        return true;
     }
 
     /**
-     * @inheritdoc ILSP7CompatibilityForERC20
+     * @inheritdoc ILSP7CompatibleERC20
      */
     function allowance(address tokenOwner, address operator)
-        external
+        public
         view
         virtual
         override
@@ -39,16 +42,17 @@ abstract contract LSP7CompatibilityForERC20Core is
     }
 
     /**
-     * @inheritdoc ILSP7CompatibilityForERC20
+     * @inheritdoc ILSP7CompatibleERC20
      * @dev Compatible with ERC20 transfer.
      * Using force=true so that EOA and any contract may receive the tokens.
      */
-    function transfer(address to, uint256 amount) external virtual override {
-        return transfer(_msgSender(), to, amount, true, "");
+    function transfer(address to, uint256 amount) public virtual override returns (bool) {
+        transfer(_msgSender(), to, amount, true, "");
+        return true;
     }
 
     /**
-     * @inheritdoc ILSP7CompatibilityForERC20
+     * @inheritdoc ILSP7CompatibleERC20
      * @dev Compatible with ERC20 transferFrom.
      * Using force=true so that EOA and any contract may receive the tokens.
      */
@@ -56,11 +60,10 @@ abstract contract LSP7CompatibilityForERC20Core is
         address from,
         address to,
         uint256 amount
-    ) external virtual override {
-        return transfer(from, to, amount, true, "");
+    ) public virtual override returns (bool) {
+        transfer(from, to, amount, true, "");
+        return true;
     }
-
-    // --- Overrides
 
     function authorizeOperator(address operator, uint256 amount)
         public
@@ -71,6 +74,8 @@ abstract contract LSP7CompatibilityForERC20Core is
 
         emit Approval(_msgSender(), operator, amount);
     }
+
+    // --- Internals
 
     function _transfer(
         address from,

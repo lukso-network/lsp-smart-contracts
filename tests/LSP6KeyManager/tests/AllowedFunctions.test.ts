@@ -11,7 +11,10 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, NotAllowedFunctionError } from "../../utils/helpers";
+import { abiCoder } from "../../utils/helpers";
+
+// errors
+import { NotAllowedFunctionError } from "../../utils/errors";
 
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>

@@ -9,11 +9,10 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import {
-  abiCoder,
-  getRandomString,
-  NotAllowedERC725YKeyError,
-} from "../../utils/helpers";
+import { abiCoder, getRandomString } from "../../utils/helpers";
+
+// errors
+import { NotAllowedERC725YKeyError } from "../../utils/errors";
 
 export const shouldBehaveLikeAllowedERC725YKeys = (
   buildContext: () => Promise<LSP6TestContext>
@@ -1642,6 +1641,90 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           );
         });
       });
+    });
+  });
+
+  describe("bytes32(0) (= zero key) as an allowed ERC725Y data key", () => {
+    let controllerCanSetSomeKeys: SignerWithAddress;
+
+    const customKey1 = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes("CustomKey1")
+    );
+    const customKey2 = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes("CustomKey2")
+    );
+
+    const zeroKey =
+      "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+    beforeAll(async () => {
+      context = await buildContext();
+
+      controllerCanSetSomeKeys = context.accounts[1];
+
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          controllerCanSetSomeKeys.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          controllerCanSetSomeKeys.address.substring(2),
+      ];
+
+      const permissionValues = [
+        ALL_PERMISSIONS,
+        PERMISSIONS.SETDATA,
+        abiCoder.encode(["bytes32[]"], [[customKey1, customKey2, zeroKey]]),
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    [
+      { allowedDataKey: customKey1 },
+      { allowedDataKey: customKey2 },
+      { allowedDataKey: zeroKey },
+    ].forEach((testCase) => {
+      it(`should pass when setting an allowed data key: ${testCase.allowedDataKey}`, async () => {
+        const key = testCase.allowedDataKey;
+        const value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value for " + key)
+        );
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [key, value]
+          );
+
+        await context.keyManager
+          .connect(controllerCanSetSomeKeys)
+          .execute(setDataPayload);
+
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).toEqual(value);
+      });
+    });
+
+    it("should fail when setting a non-allowed data key", async () => {
+      const key = ERC725YKeys.LSP3["LSP3Profile"];
+      const value = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("some value for " + key)
+      );
+
+      const setDataPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32,bytes)",
+          [key, value]
+        );
+
+      await expect(
+        context.keyManager
+          .connect(controllerCanSetSomeKeys)
+          .execute(setDataPayload)
+      ).toBeRevertedWith(
+        NotAllowedERC725YKeyError(controllerCanSetSomeKeys.address, key)
+      );
     });
   });
 };

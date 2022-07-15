@@ -10,6 +10,13 @@ import {LSP7MintableInitAbstract} from "./LSP7MintableInitAbstract.sol";
  */
 contract LSP7MintableInit is LSP7MintableInitAbstract {
     /**
+     * @dev initialize (= lock) base implementation contract on deployment
+     */
+    constructor() {
+        _disableInitializers();
+    }
+
+    /**
      * @notice Sets the token-Metadata and register LSP7InterfaceId
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token
@@ -21,7 +28,7 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
         string memory symbol_,
         address newOwner_,
         bool isNFT_
-    ) public virtual override initializer {
+    ) public virtual initializer {
         LSP7MintableInitAbstract._initialize(name_, symbol_, newOwner_, isNFT_);
     }
 }

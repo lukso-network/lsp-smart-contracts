@@ -11,10 +11,17 @@ import {LSP9VaultInitAbstract} from "./LSP9VaultInitAbstract.sol";
  */
 contract LSP9VaultInit is LSP9VaultInitAbstract {
     /**
-     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
-     * @param _newOwner the owner of the contract
+     * @dev initialize (= lock) base implementation contract on deployment
      */
-    function initialize(address _newOwner) public virtual initializer {
-        LSP9VaultInitAbstract._initialize(_newOwner);
+    constructor() {
+        _disableInitializers();
+    }
+
+    /**
+     * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
+     * @param newOwner the owner of the contract
+     */
+    function initialize(address newOwner) public virtual initializer {
+        LSP9VaultInitAbstract._initialize(newOwner);
     }
 }

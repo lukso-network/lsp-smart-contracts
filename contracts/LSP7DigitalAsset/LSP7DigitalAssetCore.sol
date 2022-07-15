@@ -25,6 +25,8 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
  * @title LSP7DigitalAsset contract
  * @author Matthew Stevens
  * @dev Core Implementation of a LSP7 compliant contract.
+ *
+ * This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
  */
 abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
     using Address for address;
@@ -133,7 +135,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         uint256[] memory amount,
         bool force,
         bytes[] memory data
-    ) external virtual override {
+    ) public virtual override {
         if (
             from.length != to.length || from.length != amount.length || from.length != data.length
         ) {

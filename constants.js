@@ -24,7 +24,7 @@ const INTERFACE_IDS = {
 	LSP7DigitalAsset: '0xe33f65c3',
 	LSP8IdentifiableDigitalAsset: '0x49399145',
 	LSP9Vault: '0x8c1d44f6',
-	ClaimOwnership: '0xad7dd9b0',
+	ClaimOwnership: '0xd225f160',
 };
 
 // ERC1271
@@ -190,22 +190,44 @@ const PERMISSIONS = {
 
 const LSP1_TYPE_IDS = {
 	// keccak256('LSP7TokensSender')
-	LSP7_TOKENSENDER: "0x40b8bec57d7b5ff0dbd9e9acd0a47dfeb0101e1a203766f5ccab00445fbf39e9",
+	LSP7_TOKENSENDER: '0x40b8bec57d7b5ff0dbd9e9acd0a47dfeb0101e1a203766f5ccab00445fbf39e9',
 	// keccak256('LSP7TokensRecipient')
-	LSP7_TOKENRECIPIENT: "0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f",
+	LSP7_TOKENRECIPIENT: '0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f',
 	// keccak256('LSP8TokensSender')
-	LSP8_TOKENSENDER: "0x3724c94f0815e936299cca424da4140752198e0beb7931a6e0925d11bc97544c",
+	LSP8_TOKENSENDER: '0x3724c94f0815e936299cca424da4140752198e0beb7931a6e0925d11bc97544c',
 	// keccak256('LSP8TokensRecipient')
-	LSP8_TOKENRECIPIENT: "0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01",
+	LSP8_TOKENRECIPIENT: '0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01',
 	// keccak256("LSP9VaultSender")
-	LSP9_VAULTSENDER: "0x3ca9f769340018257ac15b3a00e502e8fb730d66086f774210f84d0205af31e7",
+	LSP9_VAULTSENDER: '0x3ca9f769340018257ac15b3a00e502e8fb730d66086f774210f84d0205af31e7',
 	// keccak256("LSP9VaultRecipient")
-	LSP9_VAULTRECIPIENT: "0x09aaf55960715d8d86b57af40be36b0bfd469c9a3643445d8c65d39e27b4c56f"
-}
+	LSP9_VAULTRECIPIENT: '0x09aaf55960715d8d86b57af40be36b0bfd469c9a3643445d8c65d39e27b4c56f',
+};
 
 // ----------
 
 const Errors = {
+	LSP2: {
+		'0xb614e91e': {
+			error: 'InvalidABIEncodedArray(bytes,string)',
+			message: 'LSP2Utils: Invalid ABI encoded array',
+		},
+	},
+	LSP4: {
+		'0x85c169bd': {
+			error: 'LSP4TokenNameNotEditable()',
+			message: 'LSP4: Token name cannot be edited',
+		},
+		'0x76755b38': {
+			error: 'LSP4TokenSymbolNotEditable()',
+			message: 'LSP4: Token symbol cannot be edited',
+		},
+	},
+	LSP5: {
+		'0xecba7af8': {
+			error: 'InvalidLSP5ReceivedAssetsArrayLength(bytes,uint256)',
+			message: 'LSP5: Invalid value for `LSP5ReceivedAssets[]` (array length)',
+		},
+	},
 	LSP6: {
 		'0xf292052a': {
 			error: 'NoPermissionsSet(address)',
@@ -219,6 +241,11 @@ const Errors = {
 			error: 'NotAllowedAddress(address,address)',
 			message: 'LSP6: not allowed to interact with address.',
 		},
+		'0x42013ee4': {
+			error: 'NotAllowedStandard(address,address)',
+			message:
+				'LSP6: cannot interact with a contract that does not implement an allowed standard.',
+		},
 		'0x84135110': {
 			error: 'NotAllowedFunction(address,bytes4)',
 			message: 'LSP6: not allowed to run the function.',
@@ -226,6 +253,14 @@ const Errors = {
 		'0x3003e7ae': {
 			error: 'NotAllowedERC725YKey(address,bytes32)',
 			message: 'LSP6: not allowed to set the ERC725Y data key.',
+		},
+		'0xc9bd9eb9': {
+			error: 'InvalidRelayNonce(address,uint256,bytes)',
+			message: 'LSP6: invalid nonce provided for signer address',
+		},
+		'0x2ba8851c': {
+			error: 'InvalidERC725Function(bytes4)',
+			message: 'LSP6: unknown or invalid ERC725 function selector',
 		},
 	},
 	LSP7: {
@@ -348,12 +383,12 @@ const EventSignatures = {
 		 *      uint256 indexed _operation,
 		 *      address indexed _to,
 		 *      uint256 indexed _value,
-		 *      bytes _data
+		 *      bytes4 _data
 		 * );
 		 *
-		 * signature = keccak256('Executed(uint256,address,uint256,bytes)')
+		 * signature = keccak256('Executed(uint256,address,uint256,bytes4)')
 		 */
-		Executed: '0x1f920dbda597d7bf95035464170fa58d0a4b57f13a1c315ace6793b9f63688b8',
+		Executed: '0x4810874456b8e6487bd861375cf6abd8e1c8bb5858c8ce36a86a04dabfac199e',
 	},
 	ERC725Y: {
 		/**
@@ -393,12 +428,12 @@ const EventSignatures = {
 		/**
 		 * event Executed(
 		 *     uint256 indexed _value,
-		 *     bytes _data
+		 *     bytes4 _data
 		 * );
 		 *
-		 * signature = keccak256('Executed(uint256,bytes)')
+		 * signature = keccak256('Executed(uint256,bytes4)')
 		 */
-		Executed: '0x2e733a17851169f232b3859260eb3ad2a086afd54e999eb4ea9afb7791702e41',
+		Executed: '0x6b9340454526f665e369d7ac17353d0b73774a4a80f746b959ece8130e0f1d72',
 	},
 	LSP7: {
 		/**

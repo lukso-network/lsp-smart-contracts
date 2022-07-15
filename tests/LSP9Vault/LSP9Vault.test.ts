@@ -133,6 +133,34 @@ describe("LSP9Vault", () => {
       );
     };
 
+    describe("when deploying the base implementation contract", () => {
+      it("should have locked (= initialized) the implementation contract", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp9VaultInit = await new LSP9VaultInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const isInitialized = await lsp9VaultInit.callStatic.initialized();
+
+        expect(isInitialized).toBeTruthy();
+      });
+
+      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp9VaultInit = await new LSP9VaultInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp9VaultInit.initialize(randomCaller.address)
+        ).toBeRevertedWith("Initializable: contract is already initialized");
+      });
+    });
+
     describe("when deploying the contract as proxy", () => {
       let context: LSP9TestContext;
 

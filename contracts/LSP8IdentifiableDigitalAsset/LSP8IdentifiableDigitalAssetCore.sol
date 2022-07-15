@@ -204,7 +204,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
         bytes32[] memory tokenId,
         bool force,
         bytes[] memory data
-    ) external virtual override {
+    ) public virtual override {
         if (
             from.length != to.length || from.length != tokenId.length || from.length != data.length
         ) {

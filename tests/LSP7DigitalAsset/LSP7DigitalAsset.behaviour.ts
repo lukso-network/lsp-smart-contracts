@@ -13,7 +13,10 @@ import {
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
 
-// helpers
+// errors
+import { customRevertErrorMessage } from "../utils/errors";
+
+// constants
 import {
   ERC725YKeys,
   INTERFACE_IDS,
@@ -80,7 +83,9 @@ export const shouldBehaveLikeLSP7 = (
         context.lsp7
           .connect(context.deployParams.newOwner)
           ["setData(bytes32,bytes)"](key, value)
-      ).toBeRevertedWith("LSP4: cannot edit Token Name after deployment");
+      ).toBeRevertedWith(
+        `${customRevertErrorMessage} 'LSP4TokenNameNotEditable()'`
+      );
     });
 
     it("should revert when trying to edit Token Symbol", async () => {
@@ -91,7 +96,9 @@ export const shouldBehaveLikeLSP7 = (
         context.lsp7
           .connect(context.deployParams.newOwner)
           ["setData(bytes32,bytes)"](key, value)
-      ).toBeRevertedWith("LSP4: cannot edit Token Symbol after deployment");
+      ).toBeRevertedWith(
+        `${customRevertErrorMessage} 'LSP4TokenSymbolNotEditable()'`
+      );
     });
   });
 
@@ -1181,9 +1188,7 @@ export const shouldInitializeLikeLSP7 = (
       await expect(context.initializeTransaction).toHaveEmittedWith(
         context.lsp7,
         "DataChanged",
-        [
-          SupportedStandards.LSP4DigitalAsset.key
-        ]
+        [SupportedStandards.LSP4DigitalAsset.key]
       );
       expect(
         await context.lsp7["getData(bytes32)"](

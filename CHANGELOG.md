@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.1...v0.6.2) (2022-07-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename `LSP7CompatibilityForERC20` > `LSP7CompatibleERC20` (#208)
+* rename `LSP8CompatibilityForERC721` > `LSP7CompatibleERC721` (#218)
+* lock LSP0 and LSP3 base contracts on deployment (#204)
+* lock LSP6 base contract on deployment (#203)
+* lock LSP7 base contracts on deployment (`LSP7DigitalAssetInit`, `LSP7MintableInit` and `LSP7CompatibleERC20Init`) + improve heading comments (#206)
+* lock LSP8 base contracts on deployment (`LSP8IdentifiableDigitalAssetInit`, `LSP8MintableInit`, `LSP8CompatibleERC721Init`)
+* lock LSP9 base contracts on deployment + improve variable names (#212)
+* add return statement to `LSP7CompatibleERC20` functions `approve`, `transfer` and `transferFrom` for ERC20 backward compatibility
+* changed `ClaimOwnership` interface ID (#214)
+
+### Features
+
+* add payable on up  `constructor` / `initializer(...)` ([#219](https://github.com/lukso-network/lsp-smart-contracts/issues/219)) ([2f8adbd](https://github.com/lukso-network/lsp-smart-contracts/commit/2f8adbd942a460eeab588a901937fd187de79789))
+* rename `LSP7CompatibilityForERC20` to `LSP7CompatibleERC20` + add mintable preset contracts ([#208](https://github.com/lukso-network/lsp-smart-contracts/issues/208)) ([fc7b0df](https://github.com/lukso-network/lsp-smart-contracts/commit/fc7b0df338b7410612255e6d2b24c9dee6eb2c02))
+* rename `LSP8CompatibilityForERC721` to `LSP8CompatibleERC721` + add mintable preset contracts ([#218](https://github.com/lukso-network/lsp-smart-contracts/issues/218)) ([53e33cc](https://github.com/lukso-network/lsp-smart-contracts/commit/53e33cc5359244cbc6f9f1db4ffc7c5b1348ad67))
+
+
+### Bug Fixes
+
+* add return statement to LSP7Compat functions for ERC20 backward compatibility ([ae2a572](https://github.com/lukso-network/lsp-smart-contracts/commit/ae2a572a28d06a350ec17391eebec05914bb2d3f))
+* assets inheritance + lock `LSP8MintableInit` base contract on deployment ([#217](https://github.com/lukso-network/lsp-smart-contracts/pull/217)) ([275cc3a](https://github.com/lukso-network/lsp-smart-contracts/commit/275cc3adb721b83c1a6361cc9c4bf192125d0eb3))
+* edit old `Executed` event signatures in `constants.js` ([#209](https://github.com/lukso-network/lsp-smart-contracts/pull/209)) ([a21a06d](https://github.com/lukso-network/lsp-smart-contracts/commit/a21a06d1d9a0e9c01adf8174da205baa7b7dc4ae))
+* enable to clear array for allowed data key permissions ([#224](https://github.com/lukso-network/lsp-smart-contracts/pull/224)) ([a039e86](https://github.com/lukso-network/lsp-smart-contracts/commit/a039e8674557ae57546f65a10e9235bf3147a2d4))
+* lock base `LSP7CompatibleERC20Init` contract on deployment ([6dbb24a](https://github.com/lukso-network/lsp-smart-contracts/commit/6dbb24a61538068ac82682774a927f3e88c9c203))
+* lock LSP0 and LSP3 base contracts on deployment ([#204](https://github.com/lukso-network/lsp-smart-contracts/pull/204)) ([bbdd1d4](https://github.com/lukso-network/lsp-smart-contracts/commit/bbdd1d466dd95fbead9b71d2cf8160df04ed77fc))
+* lock LSP7 base contracts on deployment + improve heading comments ([#206](https://github.com/lukso-network/lsp-smart-contracts/pull/206)) ([b029430](https://github.com/lukso-network/lsp-smart-contracts/commit/b0294300d88b84a1bce66977adc58cb8aba85d77))
+* lock LSP9 base contracts on deployment + improve variable names ([#212](https://github.com/lukso-network/lsp-smart-contracts/pull/212)) ([96cb9b7](https://github.com/lukso-network/lsp-smart-contracts/commit/96cb9b7de7281b7d7bb5514ddb1936c01aef592e))
+* underflow error for AllowedERC725YKey ([#226](https://github.com/lukso-network/lsp-smart-contracts/pull/226)) ([c549873](https://github.com/lukso-network/lsp-smart-contracts/commit/c549873ca9c048496d141dd82afcb0d1eb39a4ee))
+* updated final file path of the ABI file ([#221](https://github.com/lukso-network/lsp-smart-contracts/pull/221)) ([990a116](https://github.com/lukso-network/lsp-smart-contracts/commit/990a1166b4cb517466c6669d96868489bfd0e8ab))
+* use safer code for LSP6 - Key Manager contracts and improve styles ([#203](https://github.com/lukso-network/lsp-smart-contracts/pull/203)) ([4e0a59b](https://github.com/lukso-network/lsp-smart-contracts/commit/4e0a59be704e9c1310e6634b10910f531bf7c874))
+
+
+* `ClaimOwnership` interface ID ([#214](https://github.com/lukso-network/lsp-smart-contracts/pull/214)) ([d9ea4c9](https://github.com/lukso-network/lsp-smart-contracts/commit/d9ea4c967e44f69aad8df5aef553516e38509bdd))
+
 ## [0.6.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.0...v0.6.1) (2022-06-10)
 
 ### BREAKING CHANGES

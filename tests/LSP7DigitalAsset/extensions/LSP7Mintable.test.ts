@@ -1,3 +1,4 @@
+import { ethers } from "hardhat";
 import {
   LSP7MintableInit,
   LSP7MintableInit__factory,
@@ -93,6 +94,39 @@ describe("LSP7Mintable", () => {
         context.deployParams.isNFT
       );
     };
+
+    describe("when deploying the base implementation contract", () => {
+      it("should have locked (= initialized) the implementation contract", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp7MintableInit = await new LSP7MintableInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const isInitialized = await lsp7MintableInit.callStatic.initialized();
+
+        expect(isInitialized).toBeTruthy();
+      });
+
+      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp7MintableInit = await new LSP7MintableInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp7MintableInit["initialize(string,string,address,bool)"](
+            "XXXXXXXXXXX",
+            "XXX",
+            randomCaller.address,
+            false
+          )
+        ).toBeRevertedWith("Initializable: contract is already initialized");
+      });
+    });
 
     describe("when deploying the contract as proxy", () => {
       let context: LSP7MintableTestContext;

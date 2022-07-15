@@ -3,74 +3,12 @@ import { ethers } from "hardhat";
 export const abiCoder = ethers.utils.defaultAbiCoder;
 export const provider = ethers.provider;
 
-export const ZeroAddress = "0x0000000000000000000000000000000000000000";
 export const AddressOffset = "000000000000000000000000";
 export const EMPTY_PAYLOAD = "0x";
-export const DUMMY_PAYLOAD = "0xaabbccdd123456780000000000";
 export const ONE_ETH = ethers.utils.parseEther("1");
-
-export const DUMMY_PRIVATEKEY =
-  "0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe";
-
-export const DUMMY_RECIPIENT = ethers.utils.getAddress(
-  "0xcafecafecafecafecafecafecafecafecafecafe"
-);
 
 export const LSP1_HOOK_PLACEHOLDER =
   "0xffffffffffffffff0000000000000000aaaaaaaaaaaaaaaa1111111111111111";
-
-export const ERC777TokensRecipient =
-  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-
-export const LSP5_ARRAY_KEY = {
-  ELEMENT1:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000",
-  ELEMENT2:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001",
-  ELEMENT3:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002",
-  ELEMENT4:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000003",
-  ELEMENT5:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000004",
-  ELEMENT6:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000005",
-  ELEMENT7:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000006",
-  ELEMENT8:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000007",
-};
-
-export const LSP10_ARRAY_KEY = {
-  ELEMENT1:
-    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000000",
-  ELEMENT2:
-    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000001",
-  ELEMENT3:
-    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000002",
-  ELEMENT4:
-    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000003",
-  ELEMENT5:
-    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000004",
-  ELEMENT6:
-    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000005",
-  ELEMENT7:
-    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000006",
-  ELEMENT8:
-    "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000007",
-};
-
-// bytes8 index
-export const INDEX = {
-  ZERO: "0000000000000000",
-  ONE: "0000000000000001",
-  TWO: "0000000000000002",
-  THREE: "0000000000000003",
-  FOUR: "0000000000000004",
-  FIVE: "0000000000000005",
-  SIX: "0000000000000006",
-  SEVEN: "0000000000000007",
-};
 
 // bytes32 arraylength
 
@@ -133,31 +71,6 @@ export function getRandomString() {
   }
   return randoms.join("");
 }
-
-// LSP6 - KeyManager
-
-const customRevertErrorMessage =
-  "VM Exception while processing transaction: reverted with custom error";
-
-export const NoPermissionsSetError = (_from) => {
-  return `${customRevertErrorMessage} 'NoPermissionsSet("${_from}")'`;
-};
-
-export const NotAuthorisedError = (_from, _permission) => {
-  return `${customRevertErrorMessage} 'NotAuthorised("${_from}", "${_permission}")'`;
-};
-
-export const NotAllowedAddressError = (_from, _to) => {
-  return `${customRevertErrorMessage} 'NotAllowedAddress("${_from}", "${_to}")'`;
-};
-
-export const NotAllowedFunctionError = (_from, _functionSelector) => {
-  return `${customRevertErrorMessage} 'NotAllowedFunction("${_from}", "${_functionSelector}")'`;
-};
-
-export const NotAllowedERC725YKeyError = (_from, _erc725YKey) => {
-  return `${customRevertErrorMessage} 'NotAllowedERC725YKey("${_from}", "${_erc725YKey}")'`;
-};
 
 export async function getMapAndArrayKeyValues(
   account,

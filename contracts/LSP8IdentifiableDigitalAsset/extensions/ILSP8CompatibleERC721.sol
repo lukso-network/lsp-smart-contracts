@@ -8,7 +8,7 @@ import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.so
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
-interface ILSP8CompatibilityForERC721 is ILSP8IdentifiableDigitalAsset {
+interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
     /**
      * @notice To provide compatibility with indexing ERC721 events.
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.

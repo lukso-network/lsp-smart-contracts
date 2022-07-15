@@ -6,9 +6,9 @@ pragma solidity ^0.8.0;
 import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
 
 /**
- * @dev LSP8 extension, for compatibility for clients / tools that expect ERC20.
+ * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
-interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
+interface ILSP7CompatibleERC20 is ILSP7DigitalAsset {
     /**
      * @notice To provide compatibility with indexing ERC20 events.
      * @dev Emitted when `amount` tokens is transferred from `from` to `to`.
@@ -32,7 +32,7 @@ interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
      * @param to The receiving address
      * @param amount The amount of tokens to transfer
      */
-    function transfer(address to, uint256 amount) external;
+    function transfer(address to, uint256 amount) external returns (bool);
 
     /*
      * @dev Compatible with ERC20 transferFrom
@@ -44,14 +44,14 @@ interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
         address from,
         address to,
         uint256 amount
-    ) external;
+    ) external returns (bool);
 
     /*
      * @dev Compatible with ERC20 approve
      * @param operator The address to approve for `amount`
      * @param amount The amount to approve
      */
-    function approve(address operator, uint256 amount) external;
+    function approve(address operator, uint256 amount) external returns (bool);
 
     /*
      * @dev Compatible with ERC20 allowance
@@ -59,5 +59,5 @@ interface ILSP7CompatibilityForERC20 is ILSP7DigitalAsset {
      * @param operator The address approved by the `tokenOwner`
      * @return The amount `operator` is approved by `tokenOwner`
      */
-    function allowance(address tokenOwner, address operator) external returns (uint256);
+    function allowance(address tokenOwner, address operator) external view returns (uint256);
 }

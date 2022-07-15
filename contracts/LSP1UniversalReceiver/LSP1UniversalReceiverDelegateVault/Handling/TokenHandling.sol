@@ -43,15 +43,16 @@ abstract contract TokenHandling {
             // if the map value is already set, then do nothing
             if (bytes12(mapValue) != bytes12(0)) return "";
 
-            (bytes32[] memory keys, bytes[] memory values) = LSP5Utils.addMapAndArrayKey(
-                IERC725Y(msg.sender),
-                arrayLengthKey,
-                mapKey,
-                caller,
-                interfaceID
-            );
+            (bytes32[] memory receiverDataKeys, bytes[] memory receiverDataValues) = LSP5Utils
+                .addMapAndArrayKey(
+                    IERC725Y(msg.sender),
+                    arrayLengthKey,
+                    mapKey,
+                    caller,
+                    interfaceID
+                );
 
-            IERC725Y(msg.sender).setData(keys, values);
+            IERC725Y(msg.sender).setData(receiverDataKeys, receiverDataValues);
         } else {
             // if there is no map value for the asset to remove, then do nothing
             if (bytes12(mapValue) == bytes12(0)) return "";
@@ -60,15 +61,16 @@ abstract contract TokenHandling {
             uint256 balance = ILSP7DigitalAsset(caller).balanceOf(msg.sender);
             if (balance != 0) return "";
 
-            (bytes32[] memory keys, bytes[] memory values) = LSP5Utils.removeMapAndArrayKey(
-                IERC725Y(msg.sender),
-                arrayLengthKey,
-                mapPrefix,
-                mapKey,
-                mapValue
-            );
+            (bytes32[] memory senderDataKeys, bytes[] memory senderDataValues) = LSP5Utils
+                .removeMapAndArrayKey(
+                    IERC725Y(msg.sender),
+                    arrayLengthKey,
+                    mapPrefix,
+                    mapKey,
+                    mapValue
+                );
 
-            IERC725Y(msg.sender).setData(keys, values);
+            IERC725Y(msg.sender).setData(senderDataKeys, senderDataValues);
         }
     }
 }

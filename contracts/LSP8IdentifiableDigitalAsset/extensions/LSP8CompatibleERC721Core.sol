@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
-import {ILSP8CompatibilityForERC721} from "./ILSP8CompatibilityForERC721.sol";
+import {ILSP8CompatibleERC721} from "./ILSP8CompatibleERC721.sol";
 
 // libraries
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -20,15 +20,15 @@ import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.s
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
-abstract contract LSP8CompatibilityForERC721Core is
+abstract contract LSP8CompatibleERC721Core is
     LSP4Compatibility,
     LSP8IdentifiableDigitalAssetCore,
-    ILSP8CompatibilityForERC721
+    ILSP8CompatibleERC721
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /*
-     * @inheritdoc ILSP8CompatibilityForERC721
+     * @inheritdoc ILSP8CompatibleERC721
      */
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         // silence compiler warning about unused variable
@@ -44,25 +44,25 @@ abstract contract LSP8CompatibilityForERC721Core is
     }
 
     /**
-     * @inheritdoc ILSP8CompatibilityForERC721
+     * @inheritdoc ILSP8CompatibleERC721
      */
-    function ownerOf(uint256 tokenId) external view virtual override returns (address) {
+    function ownerOf(uint256 tokenId) public view virtual override returns (address) {
         return tokenOwnerOf(bytes32(tokenId));
     }
 
     /**
-     * @inheritdoc ILSP8CompatibilityForERC721
+     * @inheritdoc ILSP8CompatibleERC721
      */
-    function approve(address operator, uint256 tokenId) external virtual override {
+    function approve(address operator, uint256 tokenId) public virtual override {
         authorizeOperator(operator, bytes32(tokenId));
 
         emit Approval(tokenOwnerOf(bytes32(tokenId)), operator, tokenId);
     }
 
     /**
-     * @inheritdoc ILSP8CompatibilityForERC721
+     * @inheritdoc ILSP8CompatibleERC721
      */
-    function getApproved(uint256 tokenId) external view virtual override returns (address) {
+    function getApproved(uint256 tokenId) public view virtual override returns (address) {
         bytes32 tokenIdAsBytes32 = bytes32(tokenId);
         _existsOrError(tokenIdAsBytes32);
 
@@ -83,7 +83,7 @@ abstract contract LSP8CompatibilityForERC721Core is
     }
 
     /*
-     * @inheritdoc ILSP8CompatibilityForERC721
+     * @inheritdoc ILSP8CompatibleERC721
      */
     function isApprovedForAll(address tokenOwner, address operator)
         public
@@ -100,7 +100,7 @@ abstract contract LSP8CompatibilityForERC721Core is
     }
 
     /**
-     * @inheritdoc ILSP8CompatibilityForERC721
+     * @inheritdoc ILSP8CompatibleERC721
      * @dev Compatible with ERC721 transferFrom.
      * Using force=true so that EOA and any contract may receive the tokenId.
      */
@@ -108,12 +108,12 @@ abstract contract LSP8CompatibilityForERC721Core is
         address from,
         address to,
         uint256 tokenId
-    ) external virtual override {
+    ) public virtual override {
         return transfer(from, to, bytes32(tokenId), true, "");
     }
 
     /**
-     * @inheritdoc ILSP8CompatibilityForERC721
+     * @inheritdoc ILSP8CompatibleERC721
      * @dev Compatible with ERC721 safeTransferFrom.
      * Using force=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
@@ -121,7 +121,7 @@ abstract contract LSP8CompatibilityForERC721Core is
         address from,
         address to,
         uint256 tokenId
-    ) external virtual override {
+    ) public virtual override {
         return transfer(from, to, bytes32(tokenId), false, "");
     }
 
@@ -134,7 +134,7 @@ abstract contract LSP8CompatibilityForERC721Core is
         address to,
         uint256 tokenId,
         bytes memory data
-    ) external virtual override {
+    ) public virtual override {
         return transfer(from, to, bytes32(tokenId), false, data);
     }
 

@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
 // modules
-import {LSP7CompatibilityForERC20InitAbstract} from "./LSP7CompatibilityForERC20InitAbstract.sol";
+import {
+    LSP8CompatibleERC721MintableInitAbstract
+} from "./LSP8CompatibleERC721MintableInitAbstract.sol";
 
-contract LSP7CompatibilityForERC20Init is LSP7CompatibilityForERC20InitAbstract {
+contract LSP8CompatibleERC721MintableInit is LSP8CompatibleERC721MintableInitAbstract {
     /**
      * @notice Sets the name, the symbol and the owner of the token
      * @param name_ The name of the token
@@ -17,6 +18,6 @@ contract LSP7CompatibilityForERC20Init is LSP7CompatibilityForERC20InitAbstract 
         string memory symbol_,
         address newOwner_
     ) public virtual initializer {
-        LSP7CompatibilityForERC20InitAbstract._initialize(name_, symbol_, newOwner_);
+        LSP8CompatibleERC721MintableInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 }

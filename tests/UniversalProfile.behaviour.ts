@@ -19,7 +19,7 @@ import {
 export type LSP3TestContext = {
   accounts: SignerWithAddress[];
   universalProfile: UniversalProfile;
-  deployParams: { owner: SignerWithAddress };
+  deployParams: { owner: SignerWithAddress; initialFunding?: number };
 };
 
 export const shouldBehaveLikeLSP3 = (
@@ -240,14 +240,10 @@ export const shouldBehaveLikeLSP3 = (
   });
 };
 
-export type LSP3InitializeTestContext = {
-  universalProfile: UniversalProfile;
-};
-
 export const shouldInitializeLikeLSP3 = (
-  buildContext: () => Promise<LSP3InitializeTestContext>
+  buildContext: () => Promise<LSP3TestContext>
 ) => {
-  let context: LSP3InitializeTestContext;
+  let context: LSP3TestContext;
 
   beforeEach(async () => {
     context = await buildContext();

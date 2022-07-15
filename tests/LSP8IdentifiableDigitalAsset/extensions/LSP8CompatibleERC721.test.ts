@@ -1,23 +1,23 @@
 import { ethers } from "hardhat";
 
 import {
-  LSP8CompatibilityForERC721Tester__factory,
-  LSP8CompatibilityForERC721InitTester__factory,
+  LSP8CompatibleERC721Tester__factory,
+  LSP8CompatibleERC721InitTester__factory,
 } from "../../../types";
 
 import {
   getNamedAccounts,
-  shouldBehaveLikeLSP8CompatibilityForERC721,
-  shouldInitializeLikeLSP8CompatibilityForERC721,
-  LSP8CompatibilityForERC721TestContext,
-} from "./LSP8CompatibilityForERC721.behaviour";
+  shouldBehaveLikeLSP8CompatibleERC721,
+  shouldInitializeLikeLSP8CompatibleERC721,
+  LSP8CompatibleERC721TestContext,
+} from "./LSP8CompatibleERC721.behaviour";
 
 import { deployProxy } from "../../utils/fixtures";
 
-describe("LSP8CompatibilityForERC721", () => {
-  describe("when using LSP8CompatibilityForERC721 contract with constructor", () => {
+describe("LSP8CompatibleERC721", () => {
+  describe("when using LSP8CompatibleERC721 contract with constructor", () => {
     const buildTestContext =
-      async (): Promise<LSP8CompatibilityForERC721TestContext> => {
+      async (): Promise<LSP8CompatibleERC721TestContext> => {
         const accounts = await getNamedAccounts();
 
         const tokenUriHex = ethers.utils.hexlify(
@@ -39,48 +39,46 @@ describe("LSP8CompatibilityForERC721", () => {
           lsp4MetadataValue,
         };
 
-        const lsp8CompatibilityForERC721 =
-          await new LSP8CompatibilityForERC721Tester__factory(
-            accounts.owner
-          ).deploy(
+        const lsp8CompatibleERC721 =
+          await new LSP8CompatibleERC721Tester__factory(accounts.owner).deploy(
             deployParams.name,
             deployParams.symbol,
             deployParams.newOwner,
             deployParams.lsp4MetadataValue
           );
 
-        return { accounts, lsp8CompatibilityForERC721, deployParams };
+        return { accounts, lsp8CompatibleERC721, deployParams };
       };
 
     describe("when deploying the contract", () => {
-      let context: LSP8CompatibilityForERC721TestContext;
+      let context: LSP8CompatibleERC721TestContext;
 
       beforeEach(async () => {
         context = await buildTestContext();
       });
 
       describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP8CompatibilityForERC721(async () => {
-          const { lsp8CompatibilityForERC721, deployParams } = context;
+        shouldInitializeLikeLSP8CompatibleERC721(async () => {
+          const { lsp8CompatibleERC721, deployParams } = context;
 
           return {
-            lsp8CompatibilityForERC721,
+            lsp8CompatibleERC721,
             deployParams,
             initializeTransaction:
-              context.lsp8CompatibilityForERC721.deployTransaction,
+              context.lsp8CompatibleERC721.deployTransaction,
           };
         });
       });
     });
 
     describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP8CompatibilityForERC721(buildTestContext);
+      shouldBehaveLikeLSP8CompatibleERC721(buildTestContext);
     });
   });
 
   describe("when using LSP8 contract with proxy", () => {
     const buildTestContext =
-      async (): Promise<LSP8CompatibilityForERC721TestContext> => {
+      async (): Promise<LSP8CompatibleERC721TestContext> => {
         const accounts = await getNamedAccounts();
 
         const tokenUriHex = ethers.utils.hexlify(
@@ -102,26 +100,25 @@ describe("LSP8CompatibilityForERC721", () => {
           lsp4MetadataValue,
         };
 
-        const lsp8CompatibilityForERC721TesterInit =
-          await new LSP8CompatibilityForERC721InitTester__factory(
+        const lsp8CompatibleERC721TesterInit =
+          await new LSP8CompatibleERC721InitTester__factory(
             accounts.owner
           ).deploy();
-        const lsp8CompatibilityForERC721Proxy = await deployProxy(
-          lsp8CompatibilityForERC721TesterInit.address,
+        const lsp8CompatibleERC721Proxy = await deployProxy(
+          lsp8CompatibleERC721TesterInit.address,
           accounts.owner
         );
-        const lsp8CompatibilityForERC721 =
-          lsp8CompatibilityForERC721TesterInit.attach(
-            lsp8CompatibilityForERC721Proxy
-          );
+        const lsp8CompatibleERC721 = lsp8CompatibleERC721TesterInit.attach(
+          lsp8CompatibleERC721Proxy
+        );
 
-        return { accounts, lsp8CompatibilityForERC721, deployParams };
+        return { accounts, lsp8CompatibleERC721, deployParams };
       };
 
     const initializeProxy = async (
-      context: LSP8CompatibilityForERC721TestContext
+      context: LSP8CompatibleERC721TestContext
     ) => {
-      return context.lsp8CompatibilityForERC721[
+      return context.lsp8CompatibleERC721[
         "initialize(string,string,address,bytes)"
       ](
         context.deployParams.name,
@@ -132,19 +129,19 @@ describe("LSP8CompatibilityForERC721", () => {
     };
 
     describe("when deploying the contract as proxy", () => {
-      let context: LSP8CompatibilityForERC721TestContext;
+      let context: LSP8CompatibleERC721TestContext;
 
       beforeEach(async () => {
         context = await buildTestContext();
       });
 
       describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP8CompatibilityForERC721(async () => {
-          const { lsp8CompatibilityForERC721, deployParams } = context;
+        shouldInitializeLikeLSP8CompatibleERC721(async () => {
+          const { lsp8CompatibleERC721, deployParams } = context;
           const initializeTransaction = await initializeProxy(context);
 
           return {
-            lsp8CompatibilityForERC721,
+            lsp8CompatibleERC721,
             deployParams,
             initializeTransaction,
           };
@@ -163,7 +160,7 @@ describe("LSP8CompatibilityForERC721", () => {
     });
 
     describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP8CompatibilityForERC721(() =>
+      shouldBehaveLikeLSP8CompatibleERC721(() =>
         buildTestContext().then(async (context) => {
           await initializeProxy(context);
 

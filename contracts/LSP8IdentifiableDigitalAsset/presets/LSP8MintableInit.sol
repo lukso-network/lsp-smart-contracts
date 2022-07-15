@@ -10,6 +10,13 @@ import {LSP8MintableInitAbstract} from "./LSP8MintableInitAbstract.sol";
  */
 contract LSP8MintableInit is LSP8MintableInitAbstract {
     /**
+     * @dev initialize (= lock) base implementation contract on deployment
+     */
+    constructor() {
+        _disableInitializers();
+    }
+
+    /**
      * @notice Sets the token-Metadata and register LSP8InterfaceId
      * @param name_ The name of the token
      * @param symbol_ The symbol of the token

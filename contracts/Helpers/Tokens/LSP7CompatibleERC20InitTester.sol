@@ -4,17 +4,11 @@ pragma solidity ^0.8.0;
 
 // modules
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
-import {LSP7CompatibilityForERC20InitAbstract} from "../../LSP7DigitalAsset/extensions/LSP7CompatibilityForERC20InitAbstract.sol";
+import {
+    LSP7CompatibleERC20Init
+} from "../../LSP7DigitalAsset/extensions/LSP7CompatibleERC20Init.sol";
 
-contract LSP7CompatibilityForERC20InitTester is LSP7CompatibilityForERC20InitAbstract {
-    function initialize(
-        string memory name,
-        string memory symbol,
-        address newOwner
-    ) public virtual initializer {
-        LSP7CompatibilityForERC20InitAbstract._initialize(name, symbol, newOwner);
-    }
-
+contract LSP7CompatibleERC20InitTester is LSP7CompatibleERC20Init {
     function mint(
         address to,
         uint256 amount,

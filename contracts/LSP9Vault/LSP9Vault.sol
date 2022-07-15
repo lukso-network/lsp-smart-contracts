@@ -11,7 +11,11 @@ import {LSP9VaultCore, ClaimOwnership} from "./LSP9VaultCore.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE} from "../LSP9Vault/LSP9Constants.sol";
+import {
+    _INTERFACEID_LSP9,
+    _LSP9_SUPPORTED_STANDARDS_KEY,
+    _LSP9_SUPPORTED_STANDARDS_VALUE
+} from "../LSP9Vault/LSP9Constants.sol";
 
 /**
  * @title Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -21,14 +25,14 @@ import {_INTERFACEID_LSP9, _LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDA
 contract LSP9Vault is LSP9VaultCore {
     /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
-     * @param _newOwner the owner of the contract
+     * @param newOwner the owner of the contract
      */
-    constructor(address _newOwner) {
-        OwnableUnset._setOwner(_newOwner);
+    constructor(address newOwner) {
+        OwnableUnset._setOwner(newOwner);
 
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
-        _notifyVaultReceiver(_newOwner);
+        _notifyVaultReceiver(newOwner);
     }
 }

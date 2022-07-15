@@ -13,6 +13,29 @@ import {UtilsLib} from "../Utils/UtilsLib.sol";
 // constants
 import {_TYPEID_LSP7_TOKENSSENDER} from "../LSP7DigitalAsset/LSP7Constants.sol";
 
+/**
+ * @dev reverts when the value stored under the 'LSP5ReceivedAssets[]' data key is not valid.
+ *      The value stored under this data key should be exactly 32 bytes long.
+ *
+ *      Only possible valid values are:
+ *      - any valid uint256 values
+ *          i.e. 0x0000000000000000000000000000000000000000000000000000000000000000 (zero), meaning empty array, no assets received.
+ *          i.e. 0x0000000000000000000000000000000000000000000000000000000000000005 (non-zero), meaning 5 array elements, 5 assets received.
+ *
+ *      - 0x (nothing stored under this data key, equivalent to empty array)
+ *
+ * @param invalidValue the invalid value stored under the LSP5ReceivedAssets[] data key
+ * @param invalidValueLength the invalid number of bytes stored under the LSP5ReceivedAssets[] data key (MUST be 32)
+ */
+error InvalidLSP5ReceivedAssetsArrayLength(bytes invalidValue, uint256 invalidValueLength);
+
+/**
+ * @title LSP5Utils
+ * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
+ * @dev LSP5Utils is a library of functions that are used to register and manage assets received by an ERC725Y smart contract
+ *      based on the LSP5 - Received Assets standard
+ *      https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-5-ReceivedAssets.md
+ */
 library LSP5Utils {
     /**
      * @dev Generating the data keys/values to be set on the account after receiving assets/vaults
@@ -66,7 +89,10 @@ library LSP5Utils {
             keys[2] = mapKey;
             values[2] = bytes.concat(interfaceID, bytes8(uint64(arrayLength)));
         } else {
-            revert("Invalid length of the LSP5ReceivedAssets[] Key");
+            revert InvalidLSP5ReceivedAssetsArrayLength(
+                encodedArrayLength,
+                encodedArrayLength.length
+            );
         }
     }
 
