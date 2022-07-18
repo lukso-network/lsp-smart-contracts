@@ -3,22 +3,18 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP7CappedSupplyCore.sol";
-import "../LSP7DigitalAssetInit.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
+import {LSP7CappedSupplyCore} from "./LSP7CappedSupplyCore.sol";
 
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
 abstract contract LSP7CappedSupplyInitAbstract is
-    Initializable,
-    LSP7CappedSupplyCore,
-    LSP7DigitalAssetInit
+    LSP7DigitalAssetInitAbstract,
+    LSP7CappedSupplyCore
 {
-    function _initialize(uint256 tokenSupplyCap_)
-        internal
-        virtual
-        onlyInitializing
-    {
+    function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
         if (tokenSupplyCap_ == 0) {
             revert LSP7CappedSupplyRequired();
         }

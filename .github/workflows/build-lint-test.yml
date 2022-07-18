@@ -1,0 +1,94 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI - Build + Lint + Test
+
+on:
+  pull_request:
+    branches:
+      - "main"
+      - "develop"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+      - name: Use Node.js '16.15.0'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.15.0"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Solidity Linter
+        run: npm run linter
+
+      - name: Build contract artifacts
+        run: npm run build --if-present
+
+      - name: Generate typechain types
+        run: npm run generate-types
+
+      - name: cache dependencies + build
+        uses: actions/cache@v2
+        with:
+          path: |
+            artifacts
+            node_modules 
+            types
+          key: ${{ github.run_id }}
+
+  test-suites:
+    strategy:
+      matrix:
+        lsp:
+          [
+            "up",
+            "lsp1",
+            "lsp2",
+            "lsp4",
+            "lsp6",
+            "lsp7",
+            "lsp8",
+            "lsp9",
+            "universalfactory",
+            "helpers",
+          ]
+
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: restore cache
+        uses: actions/cache@v2
+        id: "build-cache"
+        with:
+          path: |
+            artifacts
+            node_modules 
+            types
+          key: ${{ github.run_id }}
+
+      - name: Use Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Generate typechain types
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: npm run generate-types
+
+      - name: run tests
+        run: npm run test:${{ matrix.lsp }}

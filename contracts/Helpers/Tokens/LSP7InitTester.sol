@@ -2,17 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import "../../LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol";
+// modules
+import {LSP7DigitalAssetInit} from "../../LSP7DigitalAsset/LSP7DigitalAssetInit.sol";
 
-contract LSP7InitTester is LSP7DigitalAssetInitAbstract {
-    function initialize(
-        string memory name,
-        string memory symbol,
-        address newOwner
-    ) public initializer {
-        LSP7DigitalAssetInitAbstract._initialize(name, symbol, newOwner, false);
-    }
-
+contract LSP7InitTester is LSP7DigitalAssetInit {
     function mint(
         address to,
         uint256 amount,
@@ -22,6 +15,9 @@ contract LSP7InitTester is LSP7DigitalAssetInitAbstract {
         _mint(to, amount, force, data);
     }
 
+    /**
+     * TODO: add burnable as extension or preset
+     */
     function burn(
         address from,
         uint256 amount,

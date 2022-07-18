@@ -4,9 +4,9 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 // constants
 import {
   ERC725YKeys,
-  ALL_PERMISSIONS_SET,
+  ALL_PERMISSIONS,
   PERMISSIONS,
-  ERC1271,
+  ERC1271_VALUES,
 } from "../../../constants";
 
 // setup
@@ -41,9 +41,9 @@ export const shouldBehaveLikePermissionSign = (
     ];
 
     const permissionsValues = [
-      ALL_PERMISSIONS_SET,
-      ethers.utils.hexZeroPad(PERMISSIONS.SIGN, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      ALL_PERMISSIONS,
+      PERMISSIONS.SIGN,
+      PERMISSIONS.CALL,
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -57,7 +57,7 @@ export const shouldBehaveLikePermissionSign = (
       messageHash,
       signature
     );
-    expect(result).toEqual(ERC1271.MAGIC_VALUE);
+    expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
   });
 
   it("can verify signature from signer on KeyManager", async () => {
@@ -68,7 +68,7 @@ export const shouldBehaveLikePermissionSign = (
       messageHash,
       signature
     );
-    expect(result).toEqual(ERC1271.MAGIC_VALUE);
+    expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
   });
 
   it("should fail when verifying signature from address with no SIGN permission", async () => {
@@ -79,7 +79,7 @@ export const shouldBehaveLikePermissionSign = (
       messageHash,
       signature
     );
-    expect(result).toEqual(ERC1271.FAIL_VALUE);
+    expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
   });
 
   it("should fail when verifying signature from address with no permissions set", async () => {
@@ -90,6 +90,6 @@ export const shouldBehaveLikePermissionSign = (
       messageHash,
       signature
     );
-    expect(result).toEqual(ERC1271.FAIL_VALUE);
+    expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
   });
 };

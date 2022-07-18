@@ -2,19 +2,16 @@
 
 pragma solidity ^0.8.0;
 
-// modules
-import "../LSP7DigitalAssetCore.sol";
-
 // interfaces
-import "./ILSP7CappedSupply.sol";
+import {ILSP7CappedSupply} from "./ILSP7CappedSupply.sol";
+
+// modules
+import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
-abstract contract LSP7CappedSupplyCore is
-    ILSP7CappedSupply,
-    LSP7DigitalAssetCore
-{
+abstract contract LSP7CappedSupplyCore is LSP7DigitalAssetCore, ILSP7CappedSupply {
     // --- Errors
 
     error LSP7CappedSupplyRequired();

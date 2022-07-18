@@ -2,10 +2,13 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "@erc725/smart-contracts/contracts/ERC725Y.sol";
+import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // constants
 import "./LSP4Constants.sol";
+
+// errors
+import {LSP4TokenNameNotEditable, LSP4TokenSymbolNotEditable} from "./LSP4Errors.sol";
 
 /**
  * @title LSP4DigitalAssetMetadata
@@ -25,12 +28,23 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
         address newOwner_
     ) ERC725Y(newOwner_) {
         // set key SupportedStandards:LSP4DigitalAsset
-        _setData(
-            _LSP4_SUPPORTED_STANDARDS_KEY,
-            _LSP4_SUPPORTED_STANDARDS_VALUE
-        );
+        super._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 
-        _setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
-        _setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+        super._setData(_LSP4_TOKEN_NAME_KEY, bytes(name_));
+        super._setData(_LSP4_TOKEN_SYMBOL_KEY, bytes(symbol_));
+    }
+
+    /**
+     * @dev the ERC725Y data keys `LSP4TokenName` and `LSP4TokenSymbol` cannot be changed via this function
+     *      once the digital asset contract has been deployed
+     */
+    function _setData(bytes32 key, bytes memory value) internal virtual override {
+        if (key == _LSP4_TOKEN_NAME_KEY) {
+            revert LSP4TokenNameNotEditable();
+        } else if (key == _LSP4_TOKEN_SYMBOL_KEY) {
+            revert LSP4TokenSymbolNotEditable();
+        } else {
+            super._setData(key, value);
+        }
     }
 }

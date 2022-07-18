@@ -9,7 +9,7 @@ module.exports = async () => {
 				{
 					sourcemap: true,
 					loaders: {
-						'.spec.ts': 'ts',
+						'.test.ts': 'ts',
 					},
 				},
 			],
@@ -18,7 +18,7 @@ module.exports = async () => {
 			ethers,
 		},
 		testMatch: ['**/?(*.)+(spec|test).[t]s?(x)'],
-		// do not run tests located under any tests/ subdirectory 
+		// do not run tests located under any tests/ subdirectory
 		testPathIgnorePatterns: ['<rootDir>/tests/[^/]+/tests/'],
 		logHeapUsage: true,
 		testEnvironment: 'node',

@@ -4,14 +4,17 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
-import { ERC725YKeys, OPERATIONS, PERMISSIONS } from "../../../constants";
+import { ERC725YKeys, OPERATION_TYPES, PERMISSIONS } from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, NotAllowedFunctionError } from "../../utils/helpers";
+import { abiCoder } from "../../utils/helpers";
+
+// errors
+import { NotAllowedFunctionError } from "../../utils/errors";
 
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -43,8 +46,8 @@ export const shouldBehaveLikeAllowedFunctions = (
     ];
 
     let permissionsValues = [
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
-      ethers.utils.hexZeroPad(PERMISSIONS.CALL, 32),
+      PERMISSIONS.CALL,
+      PERMISSIONS.CALL,
       abiCoder.encode(
         ["bytes4[]"],
         [[targetContract.interface.getSighash("setName")]]
@@ -65,7 +68,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             targetContract.interface.encodeFunctionData("setName", [newName]);
           let executePayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
@@ -90,7 +93,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
           let executePayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
@@ -123,7 +126,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executePayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
@@ -153,24 +156,22 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
           let executePayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
             ]);
 
-          try {
-            await context.keyManager
+          await expect(
+            context.keyManager
               .connect(addressCanCallOnlyOneFunction)
-              .execute(executePayload);
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAllowedFunctionError(
-                addressCanCallOnlyOneFunction.address,
-                targetContract.interface.getSighash("setNumber")
-              )
-            );
-          }
+              .execute(executePayload)
+          ).toBeRevertedWith(
+            NotAllowedFunctionError(
+              addressCanCallOnlyOneFunction.address,
+              targetContract.interface.getSighash("setNumber")
+            )
+          );
 
           let result = await targetContract.callStatic.getNumber();
           expect(
@@ -188,21 +189,19 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "execute",
-          [OPERATIONS.CALL, targetContract.address, 0, randomPayload]
+          [OPERATION_TYPES.CALL, targetContract.address, 0, randomPayload]
         );
 
-        try {
-          await context.keyManager
+        await expect(
+          context.keyManager
             .connect(addressCanCallOnlyOneFunction)
-            .execute(payload);
-        } catch (error) {
-          expect(error.message).toMatch(
-            NotAllowedFunctionError(
-              addressCanCallOnlyOneFunction.address,
-              "0xbaadca11"
-            )
-          );
-        }
+            .execute(payload)
+        ).toBeRevertedWith(
+          NotAllowedFunctionError(
+            addressCanCallOnlyOneFunction.address,
+            "0xbaadca11"
+          )
+        );
       });
     });
   });
@@ -224,15 +223,22 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
             ]);
 
+          const HARDHAT_CHAINID = 31337;
+
           let hash = ethers.utils.solidityKeccak256(
-            ["address", "uint256", "bytes"],
-            [context.keyManager.address, nonce, executeRelayCallPayload]
+            ["uint256", "address", "uint256", "bytes"],
+            [
+              HARDHAT_CHAINID,
+              context.keyManager.address,
+              nonce,
+              executeRelayCallPayload,
+            ]
           );
 
           let signature = await addressCanCallOnlyOneFunction.signMessage(
@@ -240,10 +246,9 @@ export const shouldBehaveLikeAllowedFunctions = (
           );
 
           await context.keyManager.executeRelayCall(
-            context.keyManager.address,
+            signature,
             nonce,
-            executeRelayCallPayload,
-            signature
+            executeRelayCallPayload
           );
           let endResult = await targetContract.callStatic.getName();
           expect(endResult).toEqual(newName);
@@ -261,36 +266,40 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATIONS.CALL,
+              OPERATION_TYPES.CALL,
               targetContract.address,
               0,
               targetContractPayload,
             ]);
 
+          const HARDHAT_CHAINID = 31337;
+
           let hash = ethers.utils.solidityKeccak256(
-            ["address", "uint256", "bytes"],
-            [context.keyManager.address, nonce, executeRelayCallPayload]
+            ["uint256", "address", "uint256", "bytes"],
+            [
+              HARDHAT_CHAINID,
+              context.keyManager.address,
+              nonce,
+              executeRelayCallPayload,
+            ]
           );
 
           let signature = await addressCanCallOnlyOneFunction.signMessage(
             ethers.utils.arrayify(hash)
           );
 
-          try {
-            await context.keyManager.executeRelayCall(
-              context.keyManager.address,
+          await expect(
+            context.keyManager.executeRelayCall(
+              signature,
               nonce,
-              executeRelayCallPayload,
-              signature
-            );
-          } catch (error) {
-            expect(error.message).toMatch(
-              NotAllowedFunctionError(
-                addressCanCallOnlyOneFunction.address,
-                targetContract.interface.getSighash("setNumber")
-              )
-            );
-          }
+              executeRelayCallPayload
+            )
+          ).toBeRevertedWith(
+            NotAllowedFunctionError(
+              addressCanCallOnlyOneFunction.address,
+              targetContract.interface.getSighash("setNumber")
+            )
+          );
 
           let endResult = await targetContract.callStatic.getNumber();
           expect(endResult.toString()).toEqual(currentNumber.toString());

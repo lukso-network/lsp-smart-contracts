@@ -1,11 +1,27 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.0;
 
-import "./Handling/TokenAndVaultHandling.sol";
+// interfaces
+import {ILSP1UniversalReceiverDelegate} from "../ILSP1UniversalReceiverDelegate.sol";
 
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+// modules
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {TokenAndVaultHandling} from "./Handling/TokenAndVaultHandling.sol";
 
-import "../ILSP1UniversalReceiverDelegate.sol";
+// constants
+import {_INTERFACEID_LSP1_DELEGATE} from "../LSP1Constants.sol";
+import {
+    _TYPEID_LSP7_TOKENSSENDER,
+    _TYPEID_LSP7_TOKENSRECIPIENT
+} from "../../LSP7DigitalAsset/LSP7Constants.sol";
+import {
+    _TYPEID_LSP8_TOKENSSENDER,
+    _TYPEID_LSP8_TOKENSRECIPIENT
+} from "../../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
+import {
+    _TYPEID_LSP9_VAULTSENDER,
+    _TYPEID_LSP9_VAULTRECIPIENT
+} from "../../LSP9Vault/LSP9Constants.sol";
 
 /**
  * @title Core Implementation of contract writing the received Vaults and LSP7, LSP8 assets into your ERC725Account using
@@ -18,8 +34,8 @@ import "../ILSP1UniversalReceiverDelegate.sol";
  *
  */
 contract LSP1UniversalReceiverDelegateUP is
-    ILSP1UniversalReceiverDelegate,
     ERC165,
+    ILSP1UniversalReceiverDelegate,
     TokenAndVaultHandling
 {
     /**
@@ -29,8 +45,9 @@ contract LSP1UniversalReceiverDelegateUP is
      */
     function universalReceiverDelegate(
         address sender,
+        uint256 value,
         bytes32 typeId,
-        bytes memory data
+        bytes memory data // solhint-disable no-unused-vars
     ) public virtual override returns (bytes memory result) {
         if (
             typeId == _TYPEID_LSP7_TOKENSSENDER ||
@@ -40,7 +57,7 @@ contract LSP1UniversalReceiverDelegateUP is
             typeId == _TYPEID_LSP9_VAULTSENDER ||
             typeId == _TYPEID_LSP9_VAULTRECIPIENT
         ) {
-            result = _tokenAndVaultHandling(sender, typeId, data);
+            result = _tokenAndVaultHandling(sender, typeId);
         }
 
         /* @TODO
@@ -55,15 +72,7 @@ contract LSP1UniversalReceiverDelegateUP is
     /**
      * @inheritdoc ERC165
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_LSP1_DELEGATE ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == _INTERFACEID_LSP1_DELEGATE || super.supportsInterface(interfaceId);
     }
 }
