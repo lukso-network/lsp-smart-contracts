@@ -27,6 +27,12 @@ abstract contract LSP8CompatibleERC721Core is
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    /**
+     * Mapping from owner to operator approvals
+     * @dev for backward compatibility with ERC721
+     */
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
+
     /*
      * @inheritdoc ILSP8CompatibleERC721
      */
@@ -57,6 +63,10 @@ abstract contract LSP8CompatibleERC721Core is
         authorizeOperator(operator, bytes32(tokenId));
 
         emit Approval(tokenOwnerOf(bytes32(tokenId)), operator, tokenId);
+    }
+
+    function setApprovalForAll(address operator, bool approved) public virtual override {
+        _setApprovalForAll(msg.sender, operator, approved);
     }
 
     /**
@@ -92,11 +102,7 @@ abstract contract LSP8CompatibleERC721Core is
         override
         returns (bool)
     {
-        // silence compiler warning about unused variable
-        tokenOwner;
-        operator;
-
-        return false;
+        return _operatorApprovals[tokenOwner][operator];
     }
 
     /**
@@ -183,5 +189,20 @@ abstract contract LSP8CompatibleERC721Core is
         super._burn(tokenId, data);
 
         emit Transfer(tokenOwner, address(0), abi.decode(abi.encodePacked(tokenId), (uint256)));
+    }
+
+    /**
+     * @dev Approve `operator` to operate on all of `owner` tokens
+     *
+     * Emits an {ApprovalForAll} event.
+     */
+    function _setApprovalForAll(
+        address tokensOwner,
+        address operator,
+        bool approved
+    ) internal virtual {
+        require(tokensOwner != operator, "LSP8: approve to caller");
+        _operatorApprovals[tokensOwner][operator] = approved;
+        emit ApprovalForAll(tokensOwner, operator, approved);
     }
 }
