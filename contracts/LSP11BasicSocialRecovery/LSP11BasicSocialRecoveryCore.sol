@@ -77,15 +77,6 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         _;
     }
 
-    /**
-     * @dev Throws if:
-     * - The address trying to recover didn't reach the guardiansThreshold
-     * - The secret word provided is incorrect
-     */
-    modifier recoverRequirements(bytes32 recoverProcessId, string memory plainSecret) virtual {
-        _;
-    }
-
     // ---- public view functions
 
     /**
@@ -200,6 +191,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
             "Owner of account doesn't support LSP6 InterfaceId"
         );
 
+        // Setting permissions for `msg.sender`
         (bytes32[] memory keys, bytes[] memory values) = LSP6Utils.setupPermissions(
             account,
             msg.sender,
@@ -220,6 +212,11 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
 
     // ---- internal functions
 
+    /**
+     * @dev Throws if:
+     * - The address trying to recover didn't reach the guardiansThreshold
+     * - The secret word provided is incorrect
+     */
     function _checkRequirements(bytes32 recoverProcessId, string memory plainSecret) internal view {
         uint256 senderVotes;
 
