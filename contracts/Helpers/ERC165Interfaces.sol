@@ -26,6 +26,8 @@ import {
 } from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
 import {IClaimOwnership, _INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
 
+import {ILSP11BasicSocialRecovery} from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
+
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
@@ -36,6 +38,7 @@ import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
 import {_INTERFACEID_LSP8} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
+import {_INTERFACEID_LSP11} from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
 
 /**
  * @dev This contract calculates the ERC165 interface IDs of each LSP contract
@@ -146,7 +149,7 @@ contract CalculateLSPInterfaces {
     }
 
     function calculateInterfaceLSP11() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP11SocialRecovery).interfaceId;
+        bytes4 interfaceId = type(ILSP11BasicSocialRecovery).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_LSP11,
