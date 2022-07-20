@@ -218,12 +218,11 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
      * - The secret word provided is incorrect
      */
     function _checkRequirements(bytes32 recoverProcessId, string memory plainSecret) internal view {
+        uint256 recoverCounter = _recoveryCounter;
         uint256 senderVotes;
 
         for (uint256 i = 0; i < _guardians.length(); i++) {
-            if (
-                _guardiansVotes[_recoveryCounter][recoverProcessId][_guardians.at(i)] == msg.sender
-            ) {
+            if (_guardiansVotes[recoverCounter][recoverProcessId][_guardians.at(i)] == msg.sender) {
                 senderVotes++;
             }
         }
