@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "./LSP11BasicSocialRecoveryInitAbstract.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {LSP11BasicSocialRecoveryInitAbstract} from "./LSP11BasicSocialRecoveryInitAbstract.sol";
 
 /**
  * @title Deployable Proxy Implementation of LSP11-BasicSocialRecovery standard

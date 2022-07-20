@@ -2,11 +2,11 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import "@erc725/smart-contracts/contracts/ERC725.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "../LSP6KeyManager/LSP6KeyManager.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // libraries
 
@@ -14,20 +14,18 @@ import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
 
 // interfaces
-import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import "./ILSP11BasicSocialRecovery.sol";
+import {ILSP11BasicSocialRecovery} from "./ILSP11BasicSocialRecovery.sol";
 
 // constants
-import "../LSP1UniversalReceiver/LSP1Constants.sol";
-import "../LSP6KeyManager/LSP6Constants.sol";
-import "./LSP11Constants.sol";
+import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
+import {_INTERFACEID_LSP11} from "./LSP11Constants.sol";
 
 /**
  * @title Core Implementation of LSP11-BasicSocialRecovery standard
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @notice Recovers the permission of a key to control an ERC725 contract through LSP6KeyManager
  */
-abstract contract LSP11BasicSocialRecoveryCore is ILSP11BasicSocialRecovery, OwnableUnset, ERC165 {
+abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11BasicSocialRecovery {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
