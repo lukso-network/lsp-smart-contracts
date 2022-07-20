@@ -10,6 +10,10 @@ import "./LSP11BasicSocialRecoveryInitAbstract.sol";
  * @notice Recovers the permission of a key to control an ERC725 contract through LSP6KeyManager
  */
 contract LSP11BasicSocialRecoveryInit is LSP11BasicSocialRecoveryInitAbstract {
+    constructor() {
+        _disableInitializers();
+    }
+
     /**
      * @notice Initiate the contract with the address of the ERC725 contract and sets the owner
      * @param _account The address of the ER725 contract to recover and the owner of the contract

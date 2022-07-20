@@ -10,15 +10,9 @@ import "./LSP11BasicSocialRecoveryCore.sol";
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @notice Recovers the permission of a key to control an ERC725 contract through LSP6KeyManager
  */
-contract LSP11BasicSocialRecoveryInitAbstract is
-    Initializable,
-    LSP11BasicSocialRecoveryCore
-{
+contract LSP11BasicSocialRecoveryInitAbstract is Initializable, LSP11BasicSocialRecoveryCore {
     function _initialize(address _account) internal virtual onlyInitializing {
         account = ERC725(_account);
-
-        if (_account != owner()) {
-            OwnableUnset.initOwner(_account);
-        }
+        OwnableUnset._setOwner(_account);
     }
 }

@@ -2,14 +2,16 @@
 pragma solidity ^0.8.0;
 
 // modules
-import "@erc725/smart-contracts/contracts/utils/OwnableUnset.sol";
+import "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import "@erc725/smart-contracts/contracts/ERC725.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // libraries
-import "../Utils/ERC725Utils.sol";
+
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
 
 // interfaces
 import "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
@@ -25,11 +27,7 @@ import "./LSP11Constants.sol";
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @notice Recovers the permission of a key to control an ERC725 contract through LSP6KeyManager
  */
-abstract contract LSP11BasicSocialRecoveryCore is
-    ILSP11BasicSocialRecovery,
-    OwnableUnset,
-    ERC165
-{
+abstract contract LSP11BasicSocialRecoveryCore is ILSP11BasicSocialRecovery, OwnableUnset, ERC165 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
@@ -51,8 +49,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
 
     // Stores the address voted for by a guardian in a specific
     // recoverProcessId, in the current `_recoveryCounter`
-    mapping(uint256 => mapping(bytes32 => mapping(address => address)))
-        internal _guardiansVotes;
+    mapping(uint256 => mapping(bytes32 => mapping(address => address))) internal _guardiansVotes;
 
     // Mapps all recoverProcessesIds to the _recoveryCounter
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _recoverProcessesIds;
@@ -62,7 +59,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
 
     // All Permission to set for the new Owner
     bytes internal constant _ALL_PERMISSIONS =
-        hex"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        hex"0000000000000000000000000000000000000000000000000000000000007fbf";
 
     // ---- modifiers
 
@@ -87,29 +84,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
      * - The address trying to recover didn't reach the guardiansThreshold
      * - The secret word provided is incorrect
      */
-    modifier recoverRequirements(
-        bytes32 recoverProcessId,
-        string memory plainSecret
-    ) virtual {
-        uint256 senderVotes;
-        for (uint256 i = 0; i < _guardians.length(); i++) {
-            if (
-                _guardiansVotes[_recoveryCounter][recoverProcessId][
-                    _guardians.at(i)
-                ] == msg.sender
-            ) {
-                senderVotes++;
-            }
-        }
-        require(
-            senderVotes >= _guardiansThreshold,
-            "You didnt reach the threshold"
-        );
-
-        require(
-            keccak256(abi.encodePacked(plainSecret)) == _secretHash,
-            "Wrong secret"
-        );
+    modifier recoverRequirements(bytes32 recoverProcessId, string memory plainSecret) virtual {
         _;
     }
 
@@ -132,12 +107,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getRecoverProcessesIds()
-        public
-        view
-        override
-        returns (bytes32[] memory)
-    {
+    function getRecoverProcessesIds() public view override returns (bytes32[] memory) {
         return _recoverProcessesIds[_recoveryCounter].values();
     }
 
@@ -165,32 +135,16 @@ abstract contract LSP11BasicSocialRecoveryCore is
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function addGuardian(address newGuardian)
-        public
-        virtual
-        override
-        onlyOwner
-    {
-        require(
-            !_guardians.contains(newGuardian),
-            "Provided address is already a guardian"
-        );
+    function addGuardian(address newGuardian) public virtual override onlyOwner {
+        require(!_guardians.contains(newGuardian), "Provided address is already a guardian");
         _guardians.add(newGuardian);
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function removeGuardian(address currentGuardian)
-        public
-        virtual
-        override
-        onlyOwner
-    {
-        require(
-            _guardians.contains(currentGuardian),
-            "Provided address is not a guardian"
-        );
+    function removeGuardian(address currentGuardian) public virtual override onlyOwner {
+        require(_guardians.contains(currentGuardian), "Provided address is not a guardian");
         require(
             _guardians.length() > _guardiansThreshold,
             "Guardians number can not be lower than the threshold"
@@ -201,12 +155,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function setThreshold(uint256 newThreshold)
-        public
-        virtual
-        override
-        onlyOwner
-    {
+    function setThreshold(uint256 newThreshold) public virtual override onlyOwner {
         require(
             newThreshold <= _guardians.length() && newThreshold > 0,
             "Threshold should be between 1 and the guardiansCount"
@@ -217,13 +166,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function setSecret(bytes32 newHash)
-        public
-        virtual
-        override
-        onlyOwner
-        NotZeroBytes32(newHash)
-    {
+    function setSecret(bytes32 newHash) public virtual override onlyOwner NotZeroBytes32(newHash) {
         _secretHash = newHash;
     }
 
@@ -237,9 +180,7 @@ abstract contract LSP11BasicSocialRecoveryCore is
         onlyGuardians
     {
         _recoverProcessesIds[_recoveryCounter].add(recoverProcessId);
-        _guardiansVotes[_recoveryCounter][recoverProcessId][
-            msg.sender
-        ] = newOwner;
+        _guardiansVotes[_recoveryCounter][recoverProcessId][msg.sender] = newOwner;
     }
 
     /**
@@ -249,24 +190,23 @@ abstract contract LSP11BasicSocialRecoveryCore is
         bytes32 recoverProcessId,
         string memory plainSecret,
         bytes32 newHash
-    )
-        public
-        virtual
-        override
-        NotZeroBytes32(newHash)
-        recoverRequirements(recoverProcessId, plainSecret)
-    {
+    ) public virtual override NotZeroBytes32(newHash) {
+        _checkRequirements(recoverProcessId, plainSecret);
+        // Starting new recover counter
         _recoveryCounter++;
         _secretHash = newHash;
 
         address keyManager = account.owner();
         require(
-            ERC165Checker.supportsInterface(keyManager, _INTERFACEID_LSP6),
-            "Owner of the account doesn't support LSP6 InterfaceId"
+            ERC165Checker.supportsERC165Interface(keyManager, _INTERFACEID_LSP6),
+            "Owner of account doesn't support LSP6 InterfaceId"
         );
 
-        (bytes32[] memory keys, bytes[] memory values) = LSP6Utils
-            .setupPermissions(account, msg.sender, _ALL_PERMISSIONS);
+        (bytes32[] memory keys, bytes[] memory values) = LSP6Utils.setupPermissions(
+            account,
+            msg.sender,
+            _ALL_PERMISSIONS
+        );
 
         LSP6Utils.setDataViaKeyManager(keyManager, keys, values);
     }
@@ -276,15 +216,24 @@ abstract contract LSP11BasicSocialRecoveryCore is
     /**
      * @inheritdoc ERC165
      */
-    function supportsInterface(bytes4 _interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
-        return
-            _interfaceId == _INTERFACEID_LSP11 ||
-            super.supportsInterface(_interfaceId);
+    function supportsInterface(bytes4 _interfaceId) public view virtual override returns (bool) {
+        return _interfaceId == _INTERFACEID_LSP11 || super.supportsInterface(_interfaceId);
+    }
+
+    // ---- internal functions
+
+    function _checkRequirements(bytes32 recoverProcessId, string memory plainSecret) internal view {
+        uint256 senderVotes;
+
+        for (uint256 i = 0; i < _guardians.length(); i++) {
+            if (
+                _guardiansVotes[_recoveryCounter][recoverProcessId][_guardians.at(i)] == msg.sender
+            ) {
+                senderVotes++;
+            }
+        }
+        require(senderVotes >= _guardiansThreshold, "You didnt reach the threshold");
+
+        require(keccak256(abi.encodePacked(plainSecret)) == _secretHash, "Wrong secret");
     }
 }

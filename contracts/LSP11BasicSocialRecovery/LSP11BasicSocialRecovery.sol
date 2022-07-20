@@ -16,9 +16,6 @@ contract LSP11BasicSocialRecovery is LSP11BasicSocialRecoveryCore {
      */
     constructor(address _account) {
         account = ERC725(_account);
-
-        if (_account != owner()) {
-            OwnableUnset.initOwner(_account);
-        }
+        OwnableUnset._setOwner(_account);
     }
 }
