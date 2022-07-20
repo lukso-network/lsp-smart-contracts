@@ -79,10 +79,6 @@
                "value":"0xa245bbda"
             },
             {
-               "key":"LSP0ERC725Account",
-               "value":"0x9a3bfe88"
-            },
-            {
                "key":"LSP6KeyManager",
                "value":"0xc403d48f"
             },
@@ -546,7 +542,7 @@
          "name":"LSP1_TYPE_IDS",
          "type":"enum",
          "documentation":"prettier-ignore",
-         "rawValueType":"Int",
+         "rawValueType":"String",
          "cases":[
             {
                "documentation":[
