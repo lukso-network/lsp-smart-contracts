@@ -8,11 +8,7 @@ import {
   UniversalProfile,
 } from "../../types";
 
-import {
-  ALL_PERMISSIONS_SET,
-  ERC725YKeys,
-  INTERFACE_IDS,
-} from "../../constants";
+import { ALL_PERMISSIONS, ERC725YKeys, INTERFACE_IDS } from "../../constants";
 
 import { ARRAY_LENGTH } from "../utils/helpers";
 import { callPayload } from "../utils/fixtures";
@@ -898,13 +894,19 @@ export const shouldBehaveLikeLSP11 = (
       ).toBeRevertedWith("Wrong secret");
     });
 
-
     it("Should pass when `AddressToRecover1` try to recover in a recoverProcessId where he reach threshold with correct secret", async () => {
       const txParams = {
         recoverProcessId: ethers.utils.solidityKeccak256(["string"], ["LUKSO"]),
         secret: "LUKSO",
         newHash: ethers.utils.solidityKeccak256(["string"], ["NewLUKSO"]),
       };
+
+      const value = await context.universalProfile.callStatic[
+        "getData(bytes32)"
+      ](
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.lsp11BasicSocialRecovery.address.substr(2)
+      );
 
       await context.lsp11BasicSocialRecovery
         .connect(context.accounts.AddresstoRecover1)
@@ -957,31 +959,31 @@ export const shouldBehaveLikeLSP11 = (
         value: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("I have access")),
       };
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "setData",
-        [[txParams.key], [txParams.value]]
+        "setData(bytes32,bytes)",
+        [txParams.key, txParams.value]
       );
       await context.lsp6KeyManager
         .connect(context.accounts.AddresstoRecover1)
         .execute(payload);
 
-      const [value] = await context.universalProfile.callStatic.getData([
-        txParams.key,
-      ]);
+      const value = await context.universalProfile.callStatic[
+        "getData(bytes32)"
+      ](txParams.key);
       expect(value).toEqual(txParams.value);
     });
 
     it("Should return all permission when viewing the permission of the address recovered", async () => {
       const txParams = {
-        permissionArrayKey: ERC725YKeys.LSP6["AddressPermissions[]"],
+        permissionArrayKey: ERC725YKeys.LSP6["AddressPermissions[]"].length,
         permissionInArrayKey:
-          ERC725YKeys.LSP6["AddressPermissions[]"].substring(0, 34) +
+          ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000003",
         permissionMap:
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           context.accounts.AddresstoRecover1.address.substr(2),
       };
       const [permissionArrayLength, controllerAddress, controllerPermissions] =
-        await context.universalProfile.callStatic.getData([
+        await context.universalProfile.callStatic["getData(bytes32[])"]([
           txParams.permissionArrayKey,
           txParams.permissionInArrayKey,
           txParams.permissionMap,
@@ -991,7 +993,7 @@ export const shouldBehaveLikeLSP11 = (
       expect(ethers.utils.getAddress(controllerAddress)).toEqual(
         context.accounts.AddresstoRecover1.address
       );
-      expect(controllerPermissions).toEqual(ALL_PERMISSIONS_SET);
+      expect(controllerPermissions).toEqual(ALL_PERMISSIONS);
     });
 
     it("Should pass when guardians try to vote for the `AddresstoRecover2` address", async () => {
@@ -1057,16 +1059,16 @@ export const shouldBehaveLikeLSP11 = (
         );
 
       const tx2Params = {
-        permissionArrayKey: ERC725YKeys.LSP6["AddressPermissions[]"],
+        permissionArrayKey: ERC725YKeys.LSP6["AddressPermissions[]"].length,
         permissionInArrayKey:
-          ERC725YKeys.LSP6["AddressPermissions[]"].substring(0, 34) +
+          ERC725YKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000004",
         permissionMap:
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           context.accounts.AddresstoRecover2.address.substr(2),
       };
       const [permissionArrayLength, controllerAddress, controllerPermissions] =
-        await context.universalProfile.callStatic.getData([
+        await context.universalProfile.callStatic["getData(bytes32[])"]([
           tx2Params.permissionArrayKey,
           tx2Params.permissionInArrayKey,
           tx2Params.permissionMap,
@@ -1076,7 +1078,7 @@ export const shouldBehaveLikeLSP11 = (
       expect(ethers.utils.getAddress(controllerAddress)).toEqual(
         context.accounts.AddresstoRecover2.address
       );
-      expect(controllerPermissions).toEqual(ALL_PERMISSIONS_SET);
+      expect(controllerPermissions).toEqual(ALL_PERMISSIONS);
     });
   });
 };
@@ -1108,7 +1110,7 @@ export const shouldInitializeLikeLSP11 = (
     it("Should have registered the LSP11 interface", async () => {
       expect(
         await context.lsp11BasicSocialRecovery.supportsInterface(
-          INTERFACE_IDS.LSP11
+          INTERFACE_IDS.LSP11BasicSocialRecovery
         )
       );
     });

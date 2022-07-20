@@ -159,33 +159,39 @@ export async function setupProfileWithKeyManagerWithURD(
 }
 
 export async function grantPermissionViaKeyManager(
-  EOA,
+  EOA: SignerWithAddress,
   universalProfile,
   lsp6KeyManager,
   addressToGrant,
   permissions
 ) {
-  const [rawPermissionArrayLength] = await universalProfile
-    .connect(EOA)
-    .getData([ERC725YKeys.LSP6["AddressPermissions[]"]]);
+  const rawPermissionArrayLength = await universalProfile.callStatic[
+    "getData(bytes32)"
+  ](ERC725YKeys.LSP6["AddressPermissions[]"].length);
+
   let permissionArrayLength = ethers.BigNumber.from(
     rawPermissionArrayLength
   ).toNumber();
+
   const newPermissionArrayLength = permissionArrayLength + 1;
   const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(newPermissionArrayLength),
     32
   );
-  const payload = universalProfile.interface.encodeFunctionData("setData", [
+
+  const payload = universalProfile.interface.encodeFunctionData(
+    "setData(bytes32[],bytes[])",
     [
-      ERC725YKeys.LSP6["AddressPermissions[]"],
-      ERC725YKeys.LSP6["AddressPermissions[]"].substring(0, 34) +
-        rawPermissionArrayLength.substring(34, 66),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        addressToGrant.substr(2),
-    ],
-    [newRawPermissionArrayLength, addressToGrant, permissions],
-  ]);
+      [
+        ERC725YKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+          rawPermissionArrayLength.substring(34, 66),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          addressToGrant.substr(2),
+      ],
+      [newRawPermissionArrayLength, addressToGrant, permissions],
+    ]
+  );
   await lsp6KeyManager.connect(EOA).execute(payload);
 }
 

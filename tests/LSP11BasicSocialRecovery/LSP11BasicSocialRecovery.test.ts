@@ -1,3 +1,4 @@
+import { ethers } from "hardhat";
 import {
   getNamedAccounts,
   shouldInitializeLikeLSP11,
@@ -5,7 +6,7 @@ import {
   shouldBehaveLikeLSP11,
 } from "./LSP11BasicSocialRecovery.behaviour";
 
-import { deployProxy } from "../utils/proxy";
+import { deployProxy } from "../utils/fixtures";
 
 import {
   grantPermissionViaKeyManager,
@@ -17,7 +18,7 @@ import {
   UniversalProfile,
   LSP11BasicSocialRecoveryInit__factory,
 } from "../../types";
-import { ethers } from "ethers";
+
 import { PERMISSIONS } from "../../constants";
 
 describe("LSP11BasicSocialRecovery contract", () => {
@@ -40,7 +41,9 @@ describe("LSP11BasicSocialRecovery contract", () => {
         );
 
       const lsp11Permissions = ethers.utils.hexZeroPad(
-        PERMISSIONS.SETDATA + PERMISSIONS.ADDPERMISSIONS,
+        parseInt(Number(PERMISSIONS.SETDATA)) +
+          parseInt(Number(PERMISSIONS.ADDPERMISSIONS)) +
+          parseInt(Number(PERMISSIONS.CHANGEPERMISSIONS)),
         32
       );
 
@@ -112,7 +115,9 @@ describe("LSP11BasicSocialRecovery contract", () => {
       );
 
       const lsp11Permissions = ethers.utils.hexZeroPad(
-        PERMISSIONS.SETDATA + PERMISSIONS.ADDPERMISSIONS,
+        parseInt(Number(PERMISSIONS.SETDATA)) +
+          parseInt(Number(PERMISSIONS.ADDPERMISSIONS)) +
+          parseInt(Number(PERMISSIONS.CHANGEPERMISSIONS)),
         32
       );
 
