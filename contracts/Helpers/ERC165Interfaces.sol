@@ -153,7 +153,7 @@ contract CalculateLSPInterfaces {
 
         require(
             interfaceId == _INTERFACEID_LSP11,
-            "_LSP9_INTERFACE_ID does not match XOR of the functions"
+            "_LSP11_INTERFACE_ID does not match XOR of the functions"
         );
 
         return interfaceId;
