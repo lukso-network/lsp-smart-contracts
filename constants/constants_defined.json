@@ -31,20 +31,12 @@
                "value":"0x01ffc9a7"
             },
             {
-               "key":"ERC20",
-               "value":"0x36372b07"
-            },
-            {
                "key":"ERC1271",
                "value":"0x1626ba7e"
             },
             {
-               "key":"ERC725X",
-               "value":"0x44c028fe"
-            },
-            {
-               "key":"ERC725Y",
-               "value":"0x714df77c"
+               "key":"ERC20",
+               "value":"0x36372b07"
             },
             {
                "key":"ERC223",
@@ -67,8 +59,16 @@
                "value":"0xd9b67a26"
             },
             {
-               "key":"ERC725Account",
-               "value":"0x63cb749b"
+               "key":"ERC725X",
+               "value":"0x44c028fe"
+            },
+            {
+               "key":"ERC725Y",
+               "value":"0x714df77c"
+            },
+            {
+               "key":"LSP0ERC725Account",
+               "value":"0x9a3bfe88"
             },
             {
                "key":"LSP1UniversalReceiver",
