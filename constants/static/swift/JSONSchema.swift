@@ -26,10 +26,8 @@ public struct JSONSchema {
         case Array = "Array"
         /// A key that maps two words.
         case Mapping = "Mapping"
-        /// A key that maps a word to an address.
-        case Bytes20Mapping = "Bytes20Mapping"
         /// A key that maps a word, to a grouping word to an address.
-        case Bytes20MappingWithGrouping = "Bytes20MappingWithGrouping"
+        case MappingWithGrouping = "MappingWithGrouping"
     }
     
     public enum ValueType {
