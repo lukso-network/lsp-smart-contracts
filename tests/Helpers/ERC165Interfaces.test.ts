@@ -67,6 +67,11 @@ describe("Calculate LSP interfaces", () => {
     const result = await contract.calculateInterfaceClaimOwnership();
     expect(result).toEqual(INTERFACE_IDS.ClaimOwnership);
   });
+
+  it("LSP11", async () => {
+    const result = await contract.callStatic.calculateInterfaceLSP11();
+    expect(result).toEqual(INTERFACE_IDS.LSP11BasicSocialRecovery);
+  });
 });
 
 describe("Calculate ERC interfaces", () => {

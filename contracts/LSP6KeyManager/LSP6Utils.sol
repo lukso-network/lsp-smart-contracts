@@ -104,4 +104,31 @@ library LSP6Utils {
         bytes memory payload = abi.encodeWithSelector(hex"14a6e293", keys, values);
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
+
+    function setupPermissions(
+        IERC725Y _account,
+        address _address,
+        bytes memory permissions
+    ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
+        keys = new bytes32[](3);
+        values = new bytes[](3);
+
+        uint256 arrayLength = uint256(bytes32(_account.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY)));
+        uint256 newArrayLength = arrayLength + 1;
+
+        keys[0] = _LSP6KEY_ADDRESSPERMISSIONS_ARRAY;
+        values[0] = abi.encodePacked(newArrayLength);
+
+        keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
+            _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
+            arrayLength
+        );
+        values[1] = abi.encodePacked(_address);
+
+        keys[2] = LSP2Utils.generateMappingWithGroupingKey(
+            _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+            bytes20(_address)
+        );
+        values[2] = permissions;
+    }
 }
