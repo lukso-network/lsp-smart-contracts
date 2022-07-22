@@ -14,7 +14,7 @@ import {LSP11BasicSocialRecoveryCore} from "./LSP11BasicSocialRecoveryCore.sol";
  */
 contract LSP11BasicSocialRecoveryInitAbstract is Initializable, LSP11BasicSocialRecoveryCore {
     function _initialize(address _account) internal virtual onlyInitializing {
-        account = ERC725(_account);
+        account = _account;
         OwnableUnset._setOwner(_account);
     }
 }

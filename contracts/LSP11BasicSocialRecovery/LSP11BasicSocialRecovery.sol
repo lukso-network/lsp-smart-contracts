@@ -17,7 +17,7 @@ contract LSP11BasicSocialRecovery is LSP11BasicSocialRecoveryCore {
      * @param _account The address of the ER725 contract to recover and the owner of the contract
      */
     constructor(address _account) {
-        account = ERC725(_account);
+        account = _account;
         OwnableUnset._setOwner(_account);
     }
 }

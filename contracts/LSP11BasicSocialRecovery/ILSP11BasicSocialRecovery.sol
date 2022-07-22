@@ -14,7 +14,7 @@ interface ILSP11BasicSocialRecovery {
     /**
      * @dev The account to recover
      */
-    function account() external view returns (ERC725);
+    function account() external view returns (address);
 
     /**
      * @dev Returns the address of all guardians
