@@ -289,7 +289,7 @@
                      "documentation":"AddressPermissions:AllowedAddresses:<address>",
                      "type":"ERC725Y_JSONSchema",
                      "key":"0x4b80742de2bfc6dd6b3c0000",
-                     "keyType":"Bytes20MappingWithGrouping",
+                     "keyType":"MappingWithGrouping",
                      "valueType":"address[]",
                      "valueContent":"Address"
                   },
@@ -298,7 +298,7 @@
                      "documentation":"AddressPermissions:AllowedFunctions:<address>",
                      "type":"ERC725Y_JSONSchema",
                      "key":"0x4b80742de2bf8efea1e80000",
-                     "keyType":"Bytes20MappingWithGrouping",
+                     "keyType":"MappingWithGrouping",
                      "valueContent":"Bytes4",
                      "valueType":"bytes4[]"
                   },
@@ -307,7 +307,7 @@
                      "documentation":"AddressPermissions:AllowedStandards:<address>",
                      "type":"ERC725Y_JSONSchema",
                      "key":"0x4b80742de2bf3efa94a30000",
-                     "keyType":"Bytes20MappingWithGrouping",
+                     "keyType":"MappingWithGrouping",
                      "valueType":"bytes4[]",
                      "valueContent":"Bytes4"
                   },
@@ -316,7 +316,7 @@
                      "documentation":"AddressPermissions:AllowedERC725YKeys:<address>",
                      "type":"ERC725Y_JSONSchema",
                      "key":"0x4b80742de2bf90b8b4850000",
-                     "keyType":"Bytes20MappingWithGrouping",
+                     "keyType":"MappingWithGrouping",
                      "valueType":"bytes4[]",
                      "valueContent":"Bytes4"
                   }
