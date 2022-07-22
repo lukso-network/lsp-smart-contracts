@@ -41,8 +41,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
         );
 
       const lsp11Permissions = ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.SETDATA)) +
-          parseInt(Number(PERMISSIONS.ADDPERMISSIONS)) +
+        parseInt(Number(PERMISSIONS.ADDPERMISSIONS)) +
           parseInt(Number(PERMISSIONS.CHANGEPERMISSIONS)),
         32
       );
@@ -115,8 +114,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
       );
 
       const lsp11Permissions = ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.SETDATA)) +
-          parseInt(Number(PERMISSIONS.ADDPERMISSIONS)) +
+        parseInt(Number(PERMISSIONS.ADDPERMISSIONS)) +
           parseInt(Number(PERMISSIONS.CHANGEPERMISSIONS)),
         32
       );
