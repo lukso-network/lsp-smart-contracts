@@ -96,18 +96,6 @@ describe("LSP7Mintable", () => {
     };
 
     describe("when deploying the base implementation contract", () => {
-      it("should have locked (= initialized) the implementation contract", async () => {
-        const accounts = await ethers.getSigners();
-
-        const lsp7MintableInit = await new LSP7MintableInit__factory(
-          accounts[0]
-        ).deploy();
-
-        const isInitialized = await lsp7MintableInit.callStatic.initialized();
-
-        expect(isInitialized).toBeTruthy();
-      });
-
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
