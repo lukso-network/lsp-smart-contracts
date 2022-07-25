@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// prettier-ignore
-
-import "@erc725/smart-contracts/contracts/ERC725.sol";
-
 /**
  * @title The implementation interface for LSP11-BasicSocialRecovery standard
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
