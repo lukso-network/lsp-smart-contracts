@@ -63,4 +63,4 @@ analyze:
     - contracts/Custom/ClaimOwnership.sol
     # Legacy L14
     # ------------------
-    - contracts/UniversalReceiverAddressStore.sol
+    - contracts/Legacy/UniversalReceiverAddressStore.sol
