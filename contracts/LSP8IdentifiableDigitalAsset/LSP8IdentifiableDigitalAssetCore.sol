@@ -19,7 +19,6 @@ import "./LSP8Errors.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-// import {} from "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "./LSP8Constants.sol";
 
 /**
