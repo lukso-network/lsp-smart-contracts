@@ -7,7 +7,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
- * @dev Required interface of a LSP8 compliant contract.
+ * @title interface of the LSP8 - Identifiable Digital Asset standard.
  */
 interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
     // --- Events
