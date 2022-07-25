@@ -181,9 +181,12 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         bytes32 newHash
     ) public virtual override NotZeroBytes32(newHash) {
         _checkRequirements(recoverProcessId, plainSecret);
-        // Starting new recover counter
-        _recoveryCounter++;
+
         _secretHash = newHash;
+        // Starting new recover counter
+        unchecked {
+            _recoveryCounter++;
+        }
 
         address keyManager = ERC725(account).owner();
         require(
@@ -220,10 +223,16 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     function _checkRequirements(bytes32 recoverProcessId, string memory plainSecret) internal view {
         uint256 recoverCounter = _recoveryCounter;
         uint256 senderVotes;
+        uint256 guardiansLength = _guardians.length();
 
-        for (uint256 i = 0; i < _guardians.length(); i++) {
-            if (_guardiansVotes[recoverCounter][recoverProcessId][_guardians.at(i)] == msg.sender) {
-                senderVotes++;
+        unchecked {
+            for (uint256 i = 0; i < guardiansLength; i++) {
+                if (
+                    _guardiansVotes[recoverCounter][recoverProcessId][_guardians.at(i)] ==
+                    msg.sender
+                ) {
+                    senderVotes++;
+                }
             }
         }
         require(senderVotes >= _guardiansThreshold, "You didnt reach the threshold");
