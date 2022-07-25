@@ -6,7 +6,7 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
 import {LSP11BasicSocialRecoveryInitAbstract} from "./LSP11BasicSocialRecoveryInitAbstract.sol";
 
 /**
- * @title Deployable Proxy Implementation of LSP11-BasicSocialRecovery standard
+ * @title Deployable Proxy Implementation of LSP11 - Basic Social Recovery standard
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @notice Recovers the permission of a key to control an ERC725 contract through LSP6KeyManager
  */

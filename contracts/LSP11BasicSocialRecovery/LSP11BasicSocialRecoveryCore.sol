@@ -48,10 +48,10 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     // recoverProcessId, in the current `_recoveryCounter`
     mapping(uint256 => mapping(bytes32 => mapping(address => address))) internal _guardiansVotes;
 
-    // Mapps all recoverProcessesIds to the _recoveryCounter
+    // Maps all recoverProcessesIds to the _recoveryCounter
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _recoverProcessesIds;
 
-    // Stores the guardians
+    // List of guardians addresses
     EnumerableSet.AddressSet internal _guardians;
 
     // All Permission to set for the new Owner

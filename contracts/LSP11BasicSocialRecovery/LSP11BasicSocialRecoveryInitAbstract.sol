@@ -8,7 +8,7 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 import {LSP11BasicSocialRecoveryCore} from "./LSP11BasicSocialRecoveryCore.sol";
 
 /**
- * @title Inheritable Proxy Implementation of LSP11-BasicSocialRecovery standard
+ * @title Inheritable Proxy Implementation of LSP11 - Basic Social Recovery standard
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @notice Recovers the permission of a key to control an ERC725 contract through LSP6KeyManager
  */
