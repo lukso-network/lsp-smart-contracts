@@ -12,7 +12,6 @@ import { ALL_PERMISSIONS, ERC725YKeys, INTERFACE_IDS } from "../../constants";
 
 import { ARRAY_LENGTH } from "../utils/helpers";
 import { callPayload } from "../utils/fixtures";
-import { access } from "fs";
 
 export type LSP11TestAccounts = {
   owner: SignerWithAddress;

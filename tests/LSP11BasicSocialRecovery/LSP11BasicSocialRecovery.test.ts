@@ -1,4 +1,12 @@
 import { ethers } from "hardhat";
+
+import {
+  LSP11BasicSocialRecovery__factory,
+  LSP6KeyManager,
+  UniversalProfile,
+  LSP11BasicSocialRecoveryInit__factory,
+} from "../../types";
+
 import {
   getNamedAccounts,
   shouldInitializeLikeLSP11,
@@ -6,18 +14,11 @@ import {
   shouldBehaveLikeLSP11,
 } from "./LSP11BasicSocialRecovery.behaviour";
 
-import { deployProxy } from "../utils/fixtures";
-
 import {
   grantPermissionViaKeyManager,
   setupProfileWithKeyManagerWithURD,
+  deployProxy,
 } from "../utils/fixtures";
-import {
-  LSP11BasicSocialRecovery__factory,
-  LSP6KeyManager,
-  UniversalProfile,
-  LSP11BasicSocialRecoveryInit__factory,
-} from "../../types";
 
 import { PERMISSIONS } from "../../constants";
 

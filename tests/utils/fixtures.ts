@@ -158,6 +158,10 @@ export async function setupProfileWithKeyManagerWithURD(
   return [universalProfile, lsp6KeyManager, lsp1universalReceiverDelegateUP];
 }
 
+/**
+ * Sets `permissions` for the `addressToGrant` on the `universalProfile`
+ * via `lsp6KeyManager`
+ */
 export async function grantPermissionViaKeyManager(
   EOA: SignerWithAddress,
   universalProfile,
