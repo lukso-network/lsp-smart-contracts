@@ -7,7 +7,7 @@ analyze:
   mode: deep
   async: true
   create-group: true
-  group-name: "@lukso/lsp-universalprofile-smart-contracts"
+  group-name: "@lukso/lsp-smart-contracts"
   solc: 0.8.7
   remappings:
     - "@erc725/smart-contracts/=node_modules/@erc725/smart-contracts/"
