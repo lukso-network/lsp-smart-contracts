@@ -58,6 +58,7 @@
   "dependencies": {
     "@erc725/smart-contracts": "^3.1.2",
     "@openzeppelin/contracts": "^4.7.1",
+    "@openzeppelin/contracts-upgradeable": "^4.7.1",
     "solidity-bytes-utils": "0.8.0"
   },
   "devDependencies": {
