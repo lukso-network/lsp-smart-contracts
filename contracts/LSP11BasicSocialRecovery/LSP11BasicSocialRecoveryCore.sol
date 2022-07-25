@@ -17,7 +17,7 @@ import {LSP6Utils} from "../LSP6KeyManager/LSP6Utils.sol";
 import {ILSP11BasicSocialRecovery} from "./ILSP11BasicSocialRecovery.sol";
 
 // constants
-import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
+import {_INTERFACEID_LSP6, _ALL_DEFAULT_PERMISSIONS} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP11} from "./LSP11Constants.sol";
 
 /**
@@ -56,8 +56,6 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     EnumerableSet.AddressSet internal _guardians;
 
     // All Permission to set for the new Owner
-    bytes internal constant _ALL_PERMISSIONS =
-        hex"0000000000000000000000000000000000000000000000000000000000007fbf";
 
     // ---- modifiers
 
@@ -198,7 +196,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         (bytes32[] memory keys, bytes[] memory values) = LSP6Utils.setupPermissions(
             ERC725(account),
             msg.sender,
-            _ALL_PERMISSIONS
+            abi.encodePacked(_ALL_DEFAULT_PERMISSIONS)
         );
 
         LSP6Utils.setDataViaKeyManager(keyManager, keys, values);
