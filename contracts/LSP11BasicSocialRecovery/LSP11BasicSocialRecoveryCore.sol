@@ -165,8 +165,9 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         override
         onlyGuardians
     {
-        _recoverProcessesIds[_recoveryCounter].add(recoverProcessId);
-        _guardiansVotes[_recoveryCounter][recoverProcessId][msg.sender] = newOwner;
+        uint256 recoverCounter = _recoveryCounter;
+        _recoverProcessesIds[recoverCounter].add(recoverProcessId);
+        _guardiansVotes[recoverCounter][recoverProcessId][msg.sender] = newOwner;
     }
 
     /**
