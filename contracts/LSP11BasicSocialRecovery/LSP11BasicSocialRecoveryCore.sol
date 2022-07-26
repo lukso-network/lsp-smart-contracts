@@ -193,11 +193,12 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         );
 
         // Setting permissions for `msg.sender`
-        (bytes32[] memory keys, bytes[] memory values) = LSP6Utils.setupPermissions(
-            ERC725(account),
-            msg.sender,
-            abi.encodePacked(_ALL_DEFAULT_PERMISSIONS)
-        );
+        (bytes32[] memory keys, bytes[] memory values) = LSP6Utils
+            .createPermissionsKeysForController(
+                ERC725(account),
+                msg.sender,
+                abi.encodePacked(_ALL_DEFAULT_PERMISSIONS)
+            );
 
         LSP6Utils.setDataViaKeyManager(keyManager, keys, values);
     }

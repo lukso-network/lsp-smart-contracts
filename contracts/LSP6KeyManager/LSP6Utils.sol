@@ -105,7 +105,7 @@ library LSP6Utils {
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 
-    function setupPermissions(
+    function createPermissionsKeysForController(
         IERC725Y _account,
         address _address,
         bytes memory permissions
