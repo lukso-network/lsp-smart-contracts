@@ -181,7 +181,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         _checkRequirements(recoverProcessId, plainSecret);
 
         _secretHash = newHash;
-        // Starting new recover counter
+        // Starting new recovery counter
         unchecked {
             _recoveryCounter++;
         }

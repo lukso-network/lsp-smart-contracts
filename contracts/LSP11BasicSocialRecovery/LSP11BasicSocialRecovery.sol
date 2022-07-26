@@ -13,7 +13,7 @@ import {LSP11BasicSocialRecoveryCore} from "./LSP11BasicSocialRecoveryCore.sol";
  */
 contract LSP11BasicSocialRecovery is LSP11BasicSocialRecoveryCore {
     /**
-     * @notice Initiate the contract with the address of the ERC725 contract and sets the owner
+     * @notice link the contract with an ERC725 contract at address: `_account` and set `_account` as the owner.
      * @param _account The address of the ER725 contract to recover and the owner of the contract
      */
     constructor(address _account) {
