@@ -69,7 +69,7 @@ abstract contract LSP8CompatibleERC721Core is
     }
 
     function setApprovalForAll(address operator, bool approved) public virtual override {
-        _setApprovalForAll(msg.sender, operator, approved);
+        _setApprovalForAll(_msgSender(), operator, approved);
     }
 
     /**
@@ -172,13 +172,13 @@ abstract contract LSP8CompatibleERC721Core is
     ) internal virtual override {
         address operator = _msgSender();
 
-        if (!isApprovedForAll(from, operator) && !_isOperatorOrOwner(operator, bytes32(tokenId))) {
-            revert LSP8NotTokenOperator(bytes32(tokenId), operator);
+        if (!isApprovedForAll(from, operator) && !_isOperatorOrOwner(operator, tokenId)) {
+            revert LSP8NotTokenOperator(tokenId, operator);
         }
 
         super._transfer(from, to, tokenId, force, data);
 
-        emit Transfer(from, to, abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(from, to, uint256(tokenId));
     }
 
     function _mint(
@@ -189,7 +189,7 @@ abstract contract LSP8CompatibleERC721Core is
     ) internal virtual override {
         super._mint(to, tokenId, force, data);
 
-        emit Transfer(address(0), to, abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(address(0), to, uint256(tokenId));
     }
 
     function _burn(bytes32 tokenId, bytes memory data) internal virtual override {
@@ -197,7 +197,7 @@ abstract contract LSP8CompatibleERC721Core is
 
         super._burn(tokenId, data);
 
-        emit Transfer(tokenOwner, address(0), abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(tokenOwner, address(0), uint256(tokenId));
     }
 
     /**
@@ -210,7 +210,7 @@ abstract contract LSP8CompatibleERC721Core is
         address operator,
         bool approved
     ) internal virtual {
-        require(tokensOwner != operator, "LSP8: approve to caller");
+        require(tokensOwner != operator, "LSP8CompatibleERC721: approve to caller");
         _operatorApprovals[tokensOwner][operator] = approved;
         emit ApprovalForAll(tokensOwner, operator, approved);
     }

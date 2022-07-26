@@ -226,7 +226,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     }
 
     function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
-        // TODO: here is a good exmaple of why having multiple operators will be expensive.. we
+        // TODO: here is a good example of why having multiple operators will be expensive.. we
         // need to clear them on token transfer
         //
         // NOTE: this may cause a tx to fail if there is too many operators to clear, in which case
