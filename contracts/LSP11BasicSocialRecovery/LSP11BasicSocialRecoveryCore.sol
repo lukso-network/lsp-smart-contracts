@@ -62,7 +62,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
      * @dev Throws if hash provided is bytes32(0)
      */
     modifier NotZeroBytes32(bytes32 secretHash) virtual {
-        require(secretHash != bytes32(0), "Invalid hash");
+        require(secretHash != bytes32(0), "Secret Hash cannot be bytes32(0)");
         _;
     }
 

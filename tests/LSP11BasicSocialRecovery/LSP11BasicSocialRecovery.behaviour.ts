@@ -570,7 +570,7 @@ export const shouldBehaveLikeLSP11 = (
               payload
             )
           )
-      ).toBeRevertedWith("Invalid hash");
+      ).toBeRevertedWith("Secret Hash cannot be bytes32(0)");
     });
 
     it("Should pass when owner try to setSecret", async () => {
