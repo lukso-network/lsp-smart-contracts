@@ -14,6 +14,9 @@ import { INTERFACE_IDS, SupportedStandards } from "../../../constants";
 import type { BytesLike } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
+import { customRevertErrorMessage } from "../../utils/errors";
+import { getRandomAddresses } from "../../utils/helpers";
+
 export type LSP8CompatibleERC721TestAccounts = {
   owner: SignerWithAddress;
   tokenReceiver: SignerWithAddress;
@@ -240,114 +243,202 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
   });
 
   describe("setApprovalForAll", () => {
-    const tokenIds = [0, 1, 2, 3, 4];
+    const tokenIds = [
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 1")),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 2")),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 3")),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 4")),
+      ethers.utils.keccak256(ethers.utils.toUtf8Bytes("NFT 5")),
+    ];
 
     beforeEach(async () => {
-      // owner has multiple tokenIds (x5)
-      // 1. mint 5 NFT for address tokenOwner
-      for (let ii = 0; ii < tokenIds.length; ii++) {
+      tokenIds.map(async (tokenId) => {
         const txParams = {
           to: context.accounts.owner.address,
-          tokenId: ii,
-          data: ethers.utils.toUtf8Bytes(`mint tokenId ${ii} for the owner`),
+          tokenId: tokenId,
+          data: ethers.utils.toUtf8Bytes(
+            `mint tokenId ${tokenId} for the owner`
+          ),
         };
 
         await context.lsp8CompatibleERC721
           .connect(context.accounts.owner)
           .mint(txParams.to, txParams.tokenId, txParams.data);
-      }
 
-      // 2. call setApprovalForAll to approve operator for all tokenIds of tokenOwner
+        // @todo
+        // add 3 x individual operators per tokenId to test if the operators array is cleared
+        // once the tokenId has been transferred by operator that is approvedForAll
+        // const operatorsPerTokenIds = getRandomAddresses(3);
+
+        // operatorsPerTokenIds.map(async (operator) => {
+        //   await context.lsp8CompatibleERC721
+        //     .connect(context.accounts.owner)
+        //     .approve(operator, tokenId);
+        // });
+      });
+
       await context.lsp8CompatibleERC721
         .connect(context.accounts.owner)
         .setApprovalForAll(context.accounts.operator.address, true);
     });
 
-    describe("when calling isApprovedForAll for operator", () => {
-      it("should return true", async () => {
-        const result = await context.lsp8CompatibleERC721.isApprovedForAll(
-          context.accounts.owner.address,
-          context.accounts.operator.address
-        );
-
-        expect(result).toBeTruthy();
+    describe("when calling setApprovalForAll with true", () => {
+      it("should revert when trying to pass caller address as operator", async () => {
+        await expect(
+          context.lsp8CompatibleERC721
+            .connect(context.accounts.owner)
+            .setApprovalForAll(context.accounts.owner.address, true)
+        ).toBeRevertedWith("LSP8CompatibleERC721: approve to caller");
       });
-    });
 
-    describe("when calling isApprovedForAll for non-operator", () => {
-      it("should return false", async () => {
-        const result = await context.lsp8CompatibleERC721.isApprovedForAll(
-          context.accounts.owner.address,
-          context.accounts.anyone.address
-        );
+      it("should have emitted an ApprovalForAll event", async () => {
+        const txParams = {
+          to: context.accounts.owner.address,
+          tokenId: 5,
+          data: ethers.utils.toUtf8Bytes(`mint tokenId 5 for the owner`),
+        };
 
-        expect(result).toBeFalsy();
-      });
-    });
-
-    [
-      { tokenId: tokenIds[0] },
-      { tokenId: tokenIds[1] },
-      { tokenId: tokenIds[2] },
-      { tokenId: tokenIds[3] },
-      { tokenId: tokenIds[4] },
-    ].forEach((testCase) => {
-      it(`operator should be allowed to transfer tokenId ${testCase.tokenId}`, async () => {
         await context.lsp8CompatibleERC721
-          .connect(context.accounts.operator)
-          .transferFrom(
+          .connect(context.accounts.owner)
+          .mint(txParams.to, txParams.tokenId, txParams.data);
+
+        let tx = await context.lsp8CompatibleERC721
+          .connect(context.accounts.owner)
+          .setApprovalForAll(context.accounts.operator.address, true);
+
+        expect(tx).toHaveEmittedWith(
+          context.lsp8CompatibleERC721,
+          "ApprovalForAll",
+          [
             context.accounts.owner.address,
-            context.accounts.tokenReceiver.address,
-            testCase.tokenId
-          );
-        const newTokenOwner = await context.lsp8CompatibleERC721.ownerOf(
-          testCase.tokenId
+            context.accounts.operator.address,
+            true,
+          ]
         );
-        expect(newTokenOwner).toEqual(context.accounts.tokenReceiver.address);
+      });
+
+      describe("when calling isApprovedForAll", () => {
+        it("should return true for operator", async () => {
+          const result = await context.lsp8CompatibleERC721.isApprovedForAll(
+            context.accounts.owner.address,
+            context.accounts.operator.address
+          );
+
+          expect(result).toBeTruthy();
+        });
+
+        it("should return false for non-operator", async () => {
+          const result = await context.lsp8CompatibleERC721.isApprovedForAll(
+            context.accounts.owner.address,
+            context.accounts.anyone.address
+          );
+
+          expect(result).toBeFalsy();
+        });
       });
     });
 
-    [
-      { tokenId: tokenIds[0] },
-      { tokenId: tokenIds[1] },
-      { tokenId: tokenIds[2] },
-      { tokenId: tokenIds[3] },
-      { tokenId: tokenIds[4] },
-    ].forEach((testCase) => {
-      it(`non-operator should not be allowed to transfer tokenId ${testCase.tokenId} with transferFrom(...)`, async () => {
+    describe("when operator transfer tokenId", () => {
+      [
+        { tokenId: tokenIds[0] },
+        { tokenId: tokenIds[1] },
+        { tokenId: tokenIds[2] },
+        { tokenId: tokenIds[3] },
+        { tokenId: tokenIds[4] },
+      ].forEach((testCase) => {
+        describe(`for tokenId ${testCase.tokenId}:`, () => {
+          it("should have transferred successfully with `transferFrom(...)` (changed token owner)", async () => {
+            const sender = context.accounts.owner.address;
+            const recipient = context.accounts.tokenReceiver.address;
+
+            const tx = await context.lsp8CompatibleERC721
+              .connect(context.accounts.operator)
+              .transferFrom(sender, recipient, testCase.tokenId);
+
+            const newTokenOwner = await context.lsp8CompatibleERC721.ownerOf(
+              testCase.tokenId
+            );
+            expect(newTokenOwner).toEqual(
+              context.accounts.tokenReceiver.address
+            );
+          });
+
+          it("should have emitted a Transfer event", async () => {
+            const sender = context.accounts.owner.address;
+            const recipient = context.accounts.tokenReceiver.address;
+
+            const tx = await context.lsp8CompatibleERC721
+              .connect(context.accounts.operator)
+              .transferFrom(sender, recipient, testCase.tokenId);
+
+            expect(tx).toHaveEmitted(
+              context.lsp8CompatibleERC721,
+              "Transfer(address,address,uint256)",
+              [sender, recipient, testCase.tokenId]
+            );
+          });
+
+          // @todo
+          //   it("should have cleared operators array", async () => {
+          //     const sender = context.accounts.owner.address;
+          //     const recipient = context.accounts.tokenReceiver.address;
+
+          //     const tx = await context.lsp8CompatibleERC721
+          //       .connect(context.accounts.operator)
+          //       .transferFrom(sender, recipient, testCase.tokenId);
+
+          //     const operatorsForTokenIdAfter =
+          //       await context.lsp8CompatibleERC721.getOperatorsOf(
+          //         testCase.tokenId
+          //       );
+
+          //     expect(operatorsForTokenIdAfter).toStrictEqual([]);
+          //   });
+        });
+      });
+    });
+
+    describe("when calling setApprovalForAll with false (removing operator full approval)", () => {
+      beforeEach(async () => {
         await context.lsp8CompatibleERC721
-          .connect(context.accounts.anyone)
-          .transferFrom(
-            context.accounts.owner.address,
-            context.accounts.tokenReceiver.address,
-            testCase.tokenId
-          );
-        const newTokenOwner = await context.lsp8CompatibleERC721.ownerOf(
-          testCase.tokenId
-        );
-        expect(newTokenOwner).toEqual(context.accounts.tokenReceiver.address);
+          .connect(context.accounts.owner)
+          .setApprovalForAll(context.accounts.operator.address, false);
       });
-    });
 
-    // 3. check for each NFT tokenId that operator can transfer
-    // it("operator should be able to transfer tokenId 0", async () => {});
+      [
+        { tokenId: tokenIds[0] },
+        { tokenId: tokenIds[1] },
+        { tokenId: tokenIds[2] },
+        { tokenId: tokenIds[3] },
+        { tokenId: tokenIds[4] },
+      ].forEach((testCase) => {
+        it("should return false when calling isApprovedForAll for operator", async () => {
+          const result = await context.lsp8CompatibleERC721.isApprovedForAll(
+            context.accounts.owner.address,
+            context.accounts.operator.address
+          );
 
-    // for each NFT, check that any random address cannot transfer
-  });
+          expect(result).toBeFalsy();
+        });
 
-  describe("isApprovedForAll", () => {
-    describe("when called", () => {
-      it("should return false", async () => {
-        const tokenOwner = context.accounts.tokenReceiver.address;
-        const operator = context.accounts.operator.address;
+        it(`should revert when operator try to transfer tokenId ${testCase.tokenId} with transferFrom(...)`, async () => {
+          const tokenIdAsBytes32 = ethers.utils.hexZeroPad(
+            ethers.utils.hexValue(ethers.BigNumber.from(testCase.tokenId)),
+            32
+          );
 
-        // LSP8 does not support approving an operator for all tokenIds of a tokenOwner
-        expect(
-          await context.lsp8CompatibleERC721.isApprovedForAll(
-            tokenOwner,
-            operator
-          )
-        ).toBe(false);
+          await expect(
+            context.lsp8CompatibleERC721
+              .connect(context.accounts.operator)
+              .transferFrom(
+                context.accounts.owner.address,
+                context.accounts.tokenReceiver.address,
+                testCase.tokenId
+              )
+          ).toBeRevertedWith(
+            `${customRevertErrorMessage} 'LSP8NotTokenOperator("${tokenIdAsBytes32}", "${context.accounts.operator.address}")'`
+          );
+        });
       });
     });
   });
@@ -449,6 +540,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             ethers.utils.hexlify(txParams.data),
           ]
         );
+
         await expect(tx).toHaveEmittedWith(
           context.lsp8CompatibleERC721,
           "Transfer(address,address,uint256)",
