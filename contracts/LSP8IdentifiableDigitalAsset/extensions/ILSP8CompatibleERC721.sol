@@ -80,7 +80,7 @@ interface ILSP8CompatibleERC721 is ILSP8IdentifiableDigitalAsset {
 
     /**
      * @dev Compatible with ERC721 approve.
-     * @param operator The address to approve for `amount`
+     * @param operator The address to approve for `tokenId`
      * @param tokenId The tokenId to approve
      */
     function approve(address operator, uint256 tokenId) external;

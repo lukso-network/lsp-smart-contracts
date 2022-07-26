@@ -14,6 +14,9 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
+// errors
+import "../LSP8Errors.sol";
+
 // constants
 import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
@@ -115,7 +118,7 @@ abstract contract LSP8CompatibleERC721Core is
         address to,
         uint256 tokenId
     ) public virtual override {
-        return transfer(from, to, bytes32(tokenId), true, "");
+        return _transfer(from, to, bytes32(tokenId), true, "");
     }
 
     /**
@@ -128,7 +131,7 @@ abstract contract LSP8CompatibleERC721Core is
         address to,
         uint256 tokenId
     ) public virtual override {
-        return transfer(from, to, bytes32(tokenId), false, "");
+        return _transfer(from, to, bytes32(tokenId), false, "");
     }
 
     /*
@@ -141,7 +144,7 @@ abstract contract LSP8CompatibleERC721Core is
         uint256 tokenId,
         bytes memory data
     ) public virtual override {
-        return transfer(from, to, bytes32(tokenId), false, data);
+        return _transfer(from, to, bytes32(tokenId), false, data);
     }
 
     // --- Overrides
@@ -167,6 +170,12 @@ abstract contract LSP8CompatibleERC721Core is
         bool force,
         bytes memory data
     ) internal virtual override {
+        address operator = _msgSender();
+
+        if (!isApprovedForAll(from, operator) && !_isOperatorOrOwner(operator, bytes32(tokenId))) {
+            revert LSP8NotTokenOperator(bytes32(tokenId), operator);
+        }
+
         super._transfer(from, to, tokenId, force, data);
 
         emit Transfer(from, to, abi.decode(abi.encodePacked(tokenId), (uint256)));
