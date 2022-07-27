@@ -264,17 +264,6 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         await context.lsp8CompatibleERC721
           .connect(context.accounts.owner)
           .mint(txParams.to, txParams.tokenId, txParams.data);
-
-        // @todo
-        // add 3 x individual operators per tokenId to test if the operators array is cleared
-        // once the tokenId has been transferred by operator that is approvedForAll
-        // const operatorsPerTokenIds = getRandomAddresses(3);
-
-        // operatorsPerTokenIds.map(async (operator) => {
-        //   await context.lsp8CompatibleERC721
-        //     .connect(context.accounts.owner)
-        //     .approve(operator, tokenId);
-        // });
       });
 
       await context.lsp8CompatibleERC721
@@ -351,7 +340,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             const sender = context.accounts.owner.address;
             const recipient = context.accounts.tokenReceiver.address;
 
-            const tx = await context.lsp8CompatibleERC721
+            await context.lsp8CompatibleERC721
               .connect(context.accounts.operator)
               .transferFrom(sender, recipient, testCase.tokenId);
 
@@ -378,22 +367,42 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             );
           });
 
-          // @todo
-          //   it("should have cleared operators array", async () => {
-          //     const sender = context.accounts.owner.address;
-          //     const recipient = context.accounts.tokenReceiver.address;
+          it("should have cleared operators array", async () => {
+            // add 3 x individual operators per tokenId to test if the operators array is cleared
+            // once the tokenId has been transferred by operator that is approvedForAll
+            // const operatorsPerTokenIds = getRandomAddresses(1);
+            const operatorsPerTokenIdsBefore = [
+              "0xcafecafecafecafecafecafecafecafecafecafe",
+              "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+              "0xf00df00df00df00df00df00df00df00df00df00d",
+            ];
 
-          //     const tx = await context.lsp8CompatibleERC721
-          //       .connect(context.accounts.operator)
-          //       .transferFrom(sender, recipient, testCase.tokenId);
+            await context.lsp8CompatibleERC721
+              .connect(context.accounts.owner)
+              .approve(operatorsPerTokenIdsBefore[0], testCase.tokenId);
 
-          //     const operatorsForTokenIdAfter =
-          //       await context.lsp8CompatibleERC721.getOperatorsOf(
-          //         testCase.tokenId
-          //       );
+            await context.lsp8CompatibleERC721
+              .connect(context.accounts.owner)
+              .approve(operatorsPerTokenIdsBefore[1], testCase.tokenId);
 
-          //     expect(operatorsForTokenIdAfter).toStrictEqual([]);
-          //   });
+            await context.lsp8CompatibleERC721
+              .connect(context.accounts.owner)
+              .approve(operatorsPerTokenIdsBefore[2], testCase.tokenId);
+
+            const sender = context.accounts.owner.address;
+            const recipient = context.accounts.tokenReceiver.address;
+
+            await context.lsp8CompatibleERC721
+              .connect(context.accounts.operator)
+              .transferFrom(sender, recipient, testCase.tokenId);
+
+            const operatorsForTokenIdAfter =
+              await context.lsp8CompatibleERC721.getOperatorsOf(
+                testCase.tokenId
+              );
+
+            expect(operatorsForTokenIdAfter).toStrictEqual([]);
+          });
         });
       });
     });
