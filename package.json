@@ -32,8 +32,8 @@
     "release": "run-s clean build package && standard-version",
     "clean": "rm -rf build && rm -rf types",
     "generate-types": "run-p generate-types:*",
-    "generate-types:web3": "typechain --target=web3-v1 'build/contracts/*.json'",
-    "generate-types:ethers": "typechain --target=ethers-v5 'build/contracts/*.json'",
+    "generate-types:web3": "typechain --target=web3-v1 'artifacts/**/*.json'",
+    "generate-types:ethers": "typechain --target=ethers-v5 'artifacts/**/*.json'",
     "remixd": "remixd -s . --remix-ide",
     "linter": "solhint 'contracts/**/*.sol'"
   },

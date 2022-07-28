@@ -33,7 +33,7 @@ jobs:
         run: npm run build --if-present
 
       - name: Generate typechain types
-        run: npm run generate-types
+        run: npm run package && npm run generate-types
 
       - name: cache dependencies + build
         uses: actions/cache@v2
@@ -88,7 +88,7 @@ jobs:
 
       - name: Generate typechain types
         if: steps.build-cache.outputs.cache-hit != 'true'
-        run: npm run generate-types
+        run: npm run package && npm run generate-types
 
       - name: run tests
         run: npm run test:${{ matrix.lsp }}
