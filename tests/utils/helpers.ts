@@ -37,11 +37,11 @@ export const TOKEN_ID = {
 };
 
 export function getRandomAddresses(count) {
-  let addresses = [];
+  let addresses: string[] = [];
   for (let ii = 0; ii < count; ii++) {
     // addresses stored under ERC725Y storage have always lowercases character.
     // therefore, disable the checksum by converting to lowercase to avoid failing tests
-    let randomAddress = new ethers.Wallet.createRandom().address.toLowerCase();
+    let randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
     addresses.push(randomAddress);
   }
 
@@ -49,11 +49,13 @@ export function getRandomAddresses(count) {
 }
 
 export function generateKeysAndValues(_elementObject) {
-  let keys = [];
-  let values = [];
+  let keys: string[] = [];
+  let values: string[] = [];
   for (const [_key, _value] of Object.entries(_elementObject)) {
     let key = ethers.utils.toUtf8Bytes(_key);
-    let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(_value));
+    let value = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes(_value as string)
+    );
 
     keys.push(ethers.utils.keccak256(key));
     values.push(value);
