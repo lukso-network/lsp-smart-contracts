@@ -159,7 +159,7 @@ abstract contract LSP8CompatibleERC721Core is
         emit Approval(
             tokenOwnerOf(tokenId),
             operator,
-            abi.decode(abi.encodePacked(tokenId), (uint256))
+            uint256(tokenId)
         );
     }
 
