@@ -131,7 +131,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @notice execute the received payload (obtained via `execute(...)` and `executeRelayCall(...)`)
      *
-     * @param _payload the payload to execute
+     * @param payload the payload to execute
      * @return bytes the result from calling the target with `_payload`
      */
     function _executePayload(bytes calldata payload) internal view returns (bytes memory) {
