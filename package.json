@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "test": "hardhat compile; NODE_NO_WARNINGS=1 jest",
-    "test:parallel": "run-p test:up test:lsp1 test:lsp4 test:lsp6 test:lsp7 test:lsp8 test:lsp9 test:factory",
+    "test:parallel": "run-p test:up test:lsp1 test:lsp4 test:lsp6 test:lsp7 test:lsp8 test:lsp9 test:UniversalFactory",
     "test:helpers": "NODE_NO_WARNINGS=1 jest tests/Helpers/*.test.ts",
     "test:up": "NODE_NO_WARNINGS=1 jest UniversalProfile",
     "test:lsp1": "NODE_NO_WARNINGS=1 jest LSP1",
