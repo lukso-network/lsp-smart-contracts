@@ -14,6 +14,9 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
+// errors
+import "../LSP8Errors.sol";
+
 // constants
 import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
@@ -26,6 +29,12 @@ abstract contract LSP8CompatibleERC721Core is
     ILSP8CompatibleERC721
 {
     using EnumerableSet for EnumerableSet.AddressSet;
+
+    /**
+     * Mapping from owner to operator approvals
+     * @dev for backward compatibility with ERC721
+     */
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
 
     /*
      * @inheritdoc ILSP8CompatibleERC721
@@ -57,6 +66,10 @@ abstract contract LSP8CompatibleERC721Core is
         authorizeOperator(operator, bytes32(tokenId));
 
         emit Approval(tokenOwnerOf(bytes32(tokenId)), operator, tokenId);
+    }
+
+    function setApprovalForAll(address operator, bool approved) public virtual override {
+        _setApprovalForAll(_msgSender(), operator, approved);
     }
 
     /**
@@ -92,11 +105,7 @@ abstract contract LSP8CompatibleERC721Core is
         override
         returns (bool)
     {
-        // silence compiler warning about unused variable
-        tokenOwner;
-        operator;
-
-        return false;
+        return _operatorApprovals[tokenOwner][operator];
     }
 
     /**
@@ -109,7 +118,7 @@ abstract contract LSP8CompatibleERC721Core is
         address to,
         uint256 tokenId
     ) public virtual override {
-        return transfer(from, to, bytes32(tokenId), true, "");
+        return _transfer(from, to, bytes32(tokenId), true, "");
     }
 
     /**
@@ -122,7 +131,7 @@ abstract contract LSP8CompatibleERC721Core is
         address to,
         uint256 tokenId
     ) public virtual override {
-        return transfer(from, to, bytes32(tokenId), false, "");
+        return _transfer(from, to, bytes32(tokenId), false, "");
     }
 
     /*
@@ -135,7 +144,7 @@ abstract contract LSP8CompatibleERC721Core is
         uint256 tokenId,
         bytes memory data
     ) public virtual override {
-        return transfer(from, to, bytes32(tokenId), false, data);
+        return _transfer(from, to, bytes32(tokenId), false, data);
     }
 
     // --- Overrides
@@ -150,7 +159,7 @@ abstract contract LSP8CompatibleERC721Core is
         emit Approval(
             tokenOwnerOf(tokenId),
             operator,
-            abi.decode(abi.encodePacked(tokenId), (uint256))
+            uint256(tokenId)
         );
     }
 
@@ -161,9 +170,15 @@ abstract contract LSP8CompatibleERC721Core is
         bool force,
         bytes memory data
     ) internal virtual override {
+        address operator = _msgSender();
+
+        if (!isApprovedForAll(from, operator) && !_isOperatorOrOwner(operator, tokenId)) {
+            revert LSP8NotTokenOperator(tokenId, operator);
+        }
+
         super._transfer(from, to, tokenId, force, data);
 
-        emit Transfer(from, to, abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(from, to, uint256(tokenId));
     }
 
     function _mint(
@@ -174,7 +189,7 @@ abstract contract LSP8CompatibleERC721Core is
     ) internal virtual override {
         super._mint(to, tokenId, force, data);
 
-        emit Transfer(address(0), to, abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(address(0), to, uint256(tokenId));
     }
 
     function _burn(bytes32 tokenId, bytes memory data) internal virtual override {
@@ -182,6 +197,21 @@ abstract contract LSP8CompatibleERC721Core is
 
         super._burn(tokenId, data);
 
-        emit Transfer(tokenOwner, address(0), abi.decode(abi.encodePacked(tokenId), (uint256)));
+        emit Transfer(tokenOwner, address(0), uint256(tokenId));
+    }
+
+    /**
+     * @dev Approve `operator` to operate on all of `owner` tokens
+     *
+     * Emits an {ApprovalForAll} event.
+     */
+    function _setApprovalForAll(
+        address tokensOwner,
+        address operator,
+        bool approved
+    ) internal virtual {
+        require(tokensOwner != operator, "LSP8CompatibleERC721: approve to caller");
+        _operatorApprovals[tokensOwner][operator] = approved;
+        emit ApprovalForAll(tokensOwner, operator, approved);
     }
 }
