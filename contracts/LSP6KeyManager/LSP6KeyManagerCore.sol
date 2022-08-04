@@ -26,11 +26,15 @@ import {InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 
 // constants
 import {
+    // ERC725X
     OPERATION_CALL,
     OPERATION_CREATE,
     OPERATION_CREATE2,
     OPERATION_STATICCALL,
-    OPERATION_DELEGATECALL
+    OPERATION_DELEGATECALL,
+    // ERC725Y
+    SETDATA_SELECTOR,
+    SETDATA_ARRAY_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_ERC1271,
@@ -180,7 +184,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
-        if (erc725Function == setDataSingleSelector) {
+        if (erc725Function == SETDATA_SELECTOR) {
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(payload[4:], (bytes32, bytes));
 
             if (
@@ -195,7 +199,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
                 _verifyCanSetData(from, permissions, wrappedInputKey);
             }
-        } else if (erc725Function == setDataMultipleSelector) {
+        } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
             (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
                 payload[4:],
                 (bytes32[], bytes[])
