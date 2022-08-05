@@ -69,7 +69,7 @@ abstract contract LSP8CompatibleERC721Core is
     }
 
     function setApprovalForAll(address operator, bool approved) public virtual override {
-        _setApprovalForAll(_msgSender(), operator, approved);
+        _setApprovalForAll(msg.sender, operator, approved);
     }
 
     /**
@@ -156,11 +156,7 @@ abstract contract LSP8CompatibleERC721Core is
     {
         super.authorizeOperator(operator, tokenId);
 
-        emit Approval(
-            tokenOwnerOf(tokenId),
-            operator,
-            uint256(tokenId)
-        );
+        emit Approval(tokenOwnerOf(tokenId), operator, uint256(tokenId));
     }
 
     function _transfer(
@@ -170,7 +166,7 @@ abstract contract LSP8CompatibleERC721Core is
         bool force,
         bytes memory data
     ) internal virtual override {
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         if (!isApprovedForAll(from, operator) && !_isOperatorOrOwner(operator, tokenId)) {
             revert LSP8NotTokenOperator(tokenId, operator);
