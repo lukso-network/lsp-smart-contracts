@@ -100,19 +100,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function execute(bytes calldata payload) public payable override returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
 
-        // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory returnData) = target.call{value: msg.value, gas: gasleft()}(
-            payload
-        );
-
-        bytes memory result = Address.verifyCallResult(
-            success,
-            returnData,
-            "LSP6: Unknow Error occured when calling the linked target contract"
-        );
-
-        emit Executed(msg.value, bytes4(payload));
-        return result.length != 0 ? abi.decode(result, (bytes)) : result;
+        return _executePayload(payload);
     }
 
     /**
@@ -141,20 +129,31 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         _verifyPermissions(signer, payload);
 
-        // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory returnData) = target.call{value: msg.value, gas: gasleft()}(
-            payload
-        );
+        return _executePayload(payload);
+    }
 
+     /**
+      * @notice execute the received payload (obtained via `execute(...)` and `executeRelayCall(...)`)
+      *
+      * @param payload the payload to execute
+      * @return bytes the result from calling the target with `_payload`
+      */
+     function _executePayload(bytes calldata payload) internal returns (bytes memory) {
+
+         // solhint-disable avoid-low-level-calls
+         (bool success, bytes memory returnData) = target.call{value: msg.value, gas: gasleft()}(
+             payload
+        );
         bytes memory result = Address.verifyCallResult(
             success,
             returnData,
             "LSP6: Unknow Error occured when calling the linked target contract"
         );
 
-        emit Executed(msg.value, bytes4(payload));
-        return result.length != 0 ? abi.decode(result, (bytes)) : result;
-    }
+         emit Executed(msg.value, bytes4(payload));
+         return result.length != 0 ? abi.decode(result, (bytes)) : result;
+
+     }
 
     /**
      * @notice verify the nonce `_idx` for `_from` (obtained via `getNonce(...)`)
