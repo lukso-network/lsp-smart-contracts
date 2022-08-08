@@ -1,3 +1,4 @@
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 
 export const abiCoder = ethers.utils.defaultAbiCoder;
@@ -36,7 +37,7 @@ export const TOKEN_ID = {
   EIGHT: "0x367f9d97f8dd1bece61f8b74c5db7616958147682674fd32de73490bd6347f60",
 };
 
-export function getRandomAddresses(count) {
+export function getRandomAddresses(count: Number): string[] {
   let addresses: string[] = [];
   for (let ii = 0; ii < count; ii++) {
     // addresses stored under ERC725Y storage have always lowercases character.

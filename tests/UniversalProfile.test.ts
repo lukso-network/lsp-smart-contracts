@@ -199,20 +199,6 @@ describe("UniversalProfile", () => {
       };
 
     describe("when deploying the base implementation contract", () => {
-      it("should have locked (= initialized) the implementation contract", async () => {
-        const accounts = await ethers.getSigners();
-
-        const universalProfileInit = await new UniversalProfileInit__factory(
-          accounts[0]
-        ).deploy();
-
-        const isInitialized =
-          await universalProfileInit.callStatic.initialized();
-
-        // initialization use version numbers (as uint8) instead of true/false, so that proxy can upgrade from version 1 > version 2
-        // versionining is disabled in base contract implementation and initialized to max uint8, so 255
-        expect(isInitialized).to.equal(255);
-      });
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
