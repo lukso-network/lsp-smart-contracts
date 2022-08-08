@@ -32,8 +32,8 @@ jobs:
       - name: Build contract artifacts
         run: npm run build --if-present
 
-      - name: Generate typechain types
-        run: npm run package && npm run generate-types
+      # - name: Generate typechain types
+      #   run: npm run package && npm run generate-types
 
       - name: cache dependencies + build
         uses: actions/cache@v2
