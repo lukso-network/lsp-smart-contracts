@@ -15,9 +15,9 @@ abstract contract LSP7MintableInitAbstract is LSP7DigitalAssetInitAbstract, LSP7
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        bool isNFT_
+        bool isNonDivisible_
     ) internal virtual override onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, isNFT_);
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, isNonDivisible_);
     }
 
     /**
