@@ -1,8 +1,9 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
-import { ILSP1UniversalReceiver, UniversalReceiverTester } from "../types";
+import { ILSP1UniversalReceiver, UniversalReceiverTester } from "../../types";
 
 // helpers
 import { abiCoder, LSP1_HOOK_PLACEHOLDER } from "../utils/helpers";
@@ -43,29 +44,29 @@ export const shouldBehaveLikeLSP1 = (
         let receipt = await tx.wait();
 
         // event should come from the lsp1Implementation
-        expect(receipt.logs[0].address).toEqual(
+        expect(receipt.logs[0].address).to.equal(
           context.lsp1Implementation.address
         );
 
         // should be the Universal Receiver event (= event signature)
-        expect(receipt.logs[0].topics[0]).toEqual(
+        expect(receipt.logs[0].topics[0]).to.equal(
           EventSignatures.LSP1["UniversalReceiver"]
         );
 
         // from
-        expect(receipt.logs[0].topics[1]).toEqual(
+        expect(receipt.logs[0].topics[1]).to.equal(
           ethers.utils.hexZeroPad(caller.address.toLowerCase(), 32)
         );
 
         // typeId
-        expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
+        expect(receipt.logs[0].topics[2]).to.equal(LSP1_HOOK_PLACEHOLDER);
 
         // value + receivedData (any parameter not index)
         const dataField = abiCoder.encode(
           ["uint256", "bytes"],
           [valueSent, "0x"]
         );
-        expect(receipt.logs[0].data).toEqual(dataField);
+        expect(receipt.logs[0].data).to.equal(dataField);
       });
     });
 
@@ -80,29 +81,29 @@ export const shouldBehaveLikeLSP1 = (
           let receipt = await tx.wait();
 
           // event should come from account
-          expect(receipt.logs[0].address).toEqual(
+          expect(receipt.logs[0].address).to.equal(
             context.lsp1Implementation.address
           );
           // should be the Universal Receiver event (= event signature)
-          expect(receipt.logs[0].topics[0]).toEqual(
+          expect(receipt.logs[0].topics[0]).to.equal(
             EventSignatures.LSP1["UniversalReceiver"]
           );
           // from
-          expect(receipt.logs[0].topics[1]).toEqual(
+          expect(receipt.logs[0].topics[1]).to.equal(
             ethers.utils.hexZeroPad(
               context.lsp1Checker.address.toLowerCase(),
               32
             )
           );
           // typeId
-          expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
+          expect(receipt.logs[0].topics[2]).to.equal(LSP1_HOOK_PLACEHOLDER);
 
           // value + receivedData (any parameter not index)
           const dataField = abiCoder.encode(
             ["uint256", "bytes"],
             [valueSent, "0x"]
           );
-          expect(receipt.logs[0].data).toEqual(dataField);
+          expect(receipt.logs[0].data).to.equal(dataField);
         });
       });
 
@@ -116,29 +117,29 @@ export const shouldBehaveLikeLSP1 = (
           let receipt = await tx.wait();
 
           // event should come from account
-          expect(receipt.logs[0].address).toEqual(
+          expect(receipt.logs[0].address).to.equal(
             context.lsp1Implementation.address
           );
           // should be the Universal Receiver event (= event signature)
-          expect(receipt.logs[0].topics[0]).toEqual(
+          expect(receipt.logs[0].topics[0]).to.equal(
             EventSignatures.LSP1["UniversalReceiver"]
           );
           // from
-          expect(receipt.logs[0].topics[1]).toEqual(
+          expect(receipt.logs[0].topics[1]).to.equal(
             ethers.utils.hexZeroPad(
               context.lsp1Checker.address.toLowerCase(),
               32
             )
           );
           // typeId
-          expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
+          expect(receipt.logs[0].topics[2]).to.equal(LSP1_HOOK_PLACEHOLDER);
 
           // value + receivedData (any parameter not index)
           const dataField = abiCoder.encode(
             ["uint256", "bytes"],
             [valueSent, "0x"]
           );
-          expect(receipt.logs[0].data).toEqual(dataField);
+          expect(receipt.logs[0].data).to.equal(dataField);
         });
       });
 
@@ -167,29 +168,29 @@ export const shouldBehaveLikeLSP1 = (
         let receipt = await tx.wait();
 
         // event should come from the lsp1Implementation
-        expect(receipt.logs[0].address).toEqual(
+        expect(receipt.logs[0].address).to.equal(
           context.lsp1Implementation.address
         );
 
         // should be the Universal Receiver event (= event signature)
-        expect(receipt.logs[0].topics[0]).toEqual(
+        expect(receipt.logs[0].topics[0]).to.equal(
           EventSignatures.LSP1["UniversalReceiver"]
         );
 
         // from
-        expect(receipt.logs[0].topics[1]).toEqual(
+        expect(receipt.logs[0].topics[1]).to.equal(
           ethers.utils.hexZeroPad(caller.address.toLowerCase(), 32)
         );
 
         // typeId
-        expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
+        expect(receipt.logs[0].topics[2]).to.equal(LSP1_HOOK_PLACEHOLDER);
 
         // value + receivedData (any parameter not index)
         const dataField = abiCoder.encode(
           ["uint256", "bytes"],
           [valueSent.toHexString(), "0x"]
         );
-        expect(receipt.logs[0].data).toEqual(dataField);
+        expect(receipt.logs[0].data).to.equal(dataField);
       });
     });
 
@@ -212,29 +213,29 @@ export const shouldBehaveLikeLSP1 = (
           let receipt = await tx.wait();
 
           // event should come from account
-          expect(receipt.logs[0].address).toEqual(
+          expect(receipt.logs[0].address).to.equal(
             context.lsp1Implementation.address
           );
           // should be the Universal Receiver event (= event signature)
-          expect(receipt.logs[0].topics[0]).toEqual(
+          expect(receipt.logs[0].topics[0]).to.equal(
             EventSignatures.LSP1["UniversalReceiver"]
           );
           // from
-          expect(receipt.logs[0].topics[1]).toEqual(
+          expect(receipt.logs[0].topics[1]).to.equal(
             ethers.utils.hexZeroPad(
               context.lsp1Checker.address.toLowerCase(),
               32
             )
           );
           // typeId
-          expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
+          expect(receipt.logs[0].topics[2]).to.equal(LSP1_HOOK_PLACEHOLDER);
 
           // value + receivedData (any parameter not index)
           const dataField = abiCoder.encode(
             ["uint256", "bytes"],
             [valueSent.toHexString(), "0x"]
           );
-          expect(receipt.logs[0].data).toEqual(dataField);
+          expect(receipt.logs[0].data).to.equal(dataField);
         });
       });
 
@@ -249,29 +250,29 @@ export const shouldBehaveLikeLSP1 = (
           let receipt = await tx.wait();
 
           // event should come from account
-          expect(receipt.logs[0].address).toEqual(
+          expect(receipt.logs[0].address).to.equal(
             context.lsp1Implementation.address
           );
           // should be the Universal Receiver event (= event signature)
-          expect(receipt.logs[0].topics[0]).toEqual(
+          expect(receipt.logs[0].topics[0]).to.equal(
             EventSignatures.LSP1["UniversalReceiver"]
           );
           // from
-          expect(receipt.logs[0].topics[1]).toEqual(
+          expect(receipt.logs[0].topics[1]).to.equal(
             ethers.utils.hexZeroPad(
               context.lsp1Checker.address.toLowerCase(),
               32
             )
           );
           // typeId
-          expect(receipt.logs[0].topics[2]).toEqual(LSP1_HOOK_PLACEHOLDER);
+          expect(receipt.logs[0].topics[2]).to.equal(LSP1_HOOK_PLACEHOLDER);
 
           // value + receivedData (any parameter not index)
           const dataField = abiCoder.encode(
             ["uint256", "bytes"],
             [valueSent.toHexString(), "0x"]
           );
-          expect(receipt.logs[0].data).toEqual(dataField);
+          expect(receipt.logs[0].data).to.equal(dataField);
         });
       });
     });

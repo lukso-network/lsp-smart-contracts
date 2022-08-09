@@ -50,11 +50,13 @@ export function getRandomAddresses(count: Number): string[] {
 }
 
 export function generateKeysAndValues(_elementObject) {
-  let keys = [];
-  let values = [];
+  let keys: string[] = [];
+  let values: string[] = [];
   for (const [_key, _value] of Object.entries(_elementObject)) {
     let key = ethers.utils.toUtf8Bytes(_key);
-    let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(_value));
+    let value = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes(_value as string)
+    );
 
     keys.push(ethers.utils.keccak256(key));
     values.push(value);

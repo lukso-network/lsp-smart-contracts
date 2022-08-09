@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -43,7 +44,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
+      expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
     });
 
     it("should fail when verifying signature from non-owner", async () => {
@@ -57,7 +58,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
 
     /** @todo update this test for claimOwnership(...) */
@@ -80,7 +81,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
   });
 
@@ -116,7 +117,7 @@ export const shouldBehaveLikeLSP3 = (
       );
 
       const result = await context.universalProfile["getData(bytes32[])"](keys);
-      expect(result).toEqual(values);
+      expect(result).to.eql(values);
     });
 
     it("should add +10 more LSP12IssuedAssets[]", async () => {
@@ -137,8 +138,8 @@ export const shouldBehaveLikeLSP3 = (
 
         lsp12IssuedAssetsValues.push(newIssuedAssets[ii]);
       }
-      expect(lsp12IssuedAssetsKeys.length).toEqual(expectedKeysLength);
-      expect(lsp12IssuedAssetsValues.length).toEqual(expectedValuesLength);
+      expect(lsp12IssuedAssetsKeys.length).to.equal(expectedKeysLength);
+      expect(lsp12IssuedAssetsValues.length).to.equal(expectedValuesLength);
 
       let keys = [
         ...lsp12IssuedAssetsKeys,
@@ -147,7 +148,10 @@ export const shouldBehaveLikeLSP3 = (
 
       let values = [
         ...lsp12IssuedAssetsValues,
-        ethers.utils.hexZeroPad(lsp12IssuedAssetsValues.length, 32),
+        ethers.utils.hexZeroPad(
+          ethers.utils.hexlify(lsp12IssuedAssetsValues.length),
+          32
+        ),
       ];
 
       await context.universalProfile["setData(bytes32[],bytes[])"](
@@ -156,7 +160,7 @@ export const shouldBehaveLikeLSP3 = (
       );
 
       const result = await context.universalProfile["getData(bytes32[])"](keys);
-      expect(result).toEqual(values);
+      expect(result).to.eql(values);
     });
 
     for (let ii = 1; ii <= 8; ii++) {
@@ -179,7 +183,10 @@ export const shouldBehaveLikeLSP3 = (
 
         let values = [
           ...lsp12IssuedAssetsValues,
-          ethers.utils.hexZeroPad(lsp12IssuedAssetsValues.length, 32),
+          ethers.utils.hexZeroPad(
+            ethers.utils.hexlify(lsp12IssuedAssetsValues.length),
+            32
+          ),
         ];
 
         await context.universalProfile["setData(bytes32[],bytes[])"](
@@ -190,7 +197,7 @@ export const shouldBehaveLikeLSP3 = (
         const result = await context.universalProfile["getData(bytes32[])"](
           keys
         );
-        expect(result).toEqual(values);
+        expect(result).to.eql(values);
       });
     }
   });
@@ -204,7 +211,7 @@ export const shouldBehaveLikeLSP3 = (
 
       let receipt = await tx.wait();
 
-      expect(receipt.logs[0].topics[0]).toEqual(
+      expect(receipt.logs[0].topics[0]).to.equal(
         EventSignatures.LSP0.ValueReceived
       );
     });
@@ -218,7 +225,7 @@ export const shouldBehaveLikeLSP3 = (
 
       let receipt = await tx.wait();
 
-      expect(receipt.logs[0].topics[0]).toEqual(
+      expect(receipt.logs[0].topics[0]).to.equal(
         EventSignatures.LSP0.ValueReceived
       );
     });
@@ -235,7 +242,7 @@ export const shouldBehaveLikeLSP3 = (
       let receipt = await tx.wait();
 
       // check that no event was emitted
-      expect(receipt.logs.length).toEqual(0);
+      expect(receipt.logs.length).to.equal(0);
     });
   });
 };
@@ -254,49 +261,49 @@ export const shouldInitializeLikeLSP3 = (
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC165
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ERC1271 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC1271
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ERC725X interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC725X
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ERC725Y interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC725Y
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support LSP0 (ERC725Account) interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.LSP0ERC725Account
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support LSP1 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.LSP1UniversalReceiver
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ClaimOwnership interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ClaimOwnership
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
@@ -304,7 +311,7 @@ export const shouldInitializeLikeLSP3 = (
         SupportedStandards.LSP3UniversalProfile.key
       );
 
-      expect(result).toEqual(SupportedStandards.LSP3UniversalProfile.value);
+      expect(result).to.equal(SupportedStandards.LSP3UniversalProfile.value);
     });
   });
 };
