@@ -30,7 +30,7 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     // --- Storage
 
-    bool internal _isNFT;
+    bool internal _isNonDivisible;
 
     uint256 internal _existingTokens;
 
@@ -46,7 +46,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @inheritdoc ILSP7DigitalAsset
      */
     function decimals() public view override returns (uint256) {
-        return _isNFT ? 0 : 18;
+        return _isNonDivisible ? 0 : 18;
     }
 
     /**
