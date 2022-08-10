@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 
 import {
   UniversalProfile__factory,
@@ -43,7 +44,7 @@ describe("Key Manager gas cost interactions", () => {
 
       let contractImplementsERC1271: UniversalProfile;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildLSP6TestContext();
 
         restrictedToOneAddress = context.accounts[1];
@@ -71,13 +72,13 @@ describe("Key Manager gas cost interactions", () => {
         const permissionValues = [
           ALL_PERMISSIONS,
           ethers.utils.hexZeroPad(
-            parseInt(Number(PERMISSIONS.CALL)) +
-              parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
+            ethers.utils.hexlify(Number(PERMISSIONS.CALL) +
+              Number(PERMISSIONS.TRANSFERVALUE)),
             32
           ),
           ethers.utils.hexZeroPad(
-            parseInt(Number(PERMISSIONS.CALL)) +
-              parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
+            ethers.utils.hexlify(Number(PERMISSIONS.CALL) +
+              Number(PERMISSIONS.TRANSFERVALUE)),
             32
           ),
           abiCoder.encode(["address[]"], [[contractImplementsERC1271.address]]),
@@ -121,8 +122,8 @@ describe("Key Manager gas cost interactions", () => {
           let newAccountBalance = await provider.getBalance(
             contractImplementsERC1271.address
           );
-          expect(parseInt(newAccountBalance)).toBeGreaterThan(
-            parseInt(initialAccountBalance)
+          expect(newAccountBalance).to.be.greaterThan(
+            initialAccountBalance
           );
         });
       });
@@ -154,8 +155,8 @@ describe("Key Manager gas cost interactions", () => {
         let newAccountBalance = await provider.getBalance(
           contractImplementsERC1271.address
         );
-        expect(parseInt(newAccountBalance)).toBeGreaterThan(
-          parseInt(initialAccountBalance)
+        expect(newAccountBalance).to.be.greaterThan(
+          initialAccountBalance
         );
       });
 
@@ -186,8 +187,8 @@ describe("Key Manager gas cost interactions", () => {
         let newAccountBalance = await provider.getBalance(
           contractImplementsERC1271.address
         );
-        expect(parseInt(newAccountBalance)).toBeGreaterThan(
-          parseInt(initialAccountBalance)
+        expect(newAccountBalance).to.be.greaterThan(
+          initialAccountBalance
         );
       });
     });

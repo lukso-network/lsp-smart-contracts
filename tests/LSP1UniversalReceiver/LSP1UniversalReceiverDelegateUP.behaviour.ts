@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
@@ -58,7 +59,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 ) => {
   let context: LSP1DelegateTestContext;
 
-  beforeAll(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
@@ -68,7 +69,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         await context.lsp1universalReceiverDelegateUP.supportsInterface(
           INTERFACE_IDS.ERC165
         );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support LSP1Delegate interface", async () => {
@@ -76,13 +77,13 @@ export const shouldBehaveLikeLSP1Delegate = (
         await context.lsp1universalReceiverDelegateUP.supportsInterface(
           INTERFACE_IDS.LSP1UniversalReceiverDelegate
         );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
   });
 
   describe("when testing LSP7-DigitalAsset", () => {
     let lsp7TokenA: LSP7Tester, lsp7TokenB: LSP7Tester, lsp7TokenC: LSP7Tester;
-    beforeAll(async () => {
+    before(async () => {
       lsp7TokenA = await new LSP7Tester__factory(
         context.accounts.random
       ).deploy("TokenAlpha", "TA", context.accounts.random.address);
@@ -98,7 +99,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe("when minting tokens", () => {
       describe("when minting 10 tokenA to universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenA.interface.encodeFunctionData("mint", [
             context.universalProfile1.address,
             "10",
@@ -118,15 +119,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenA
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp7TokenA.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp7TokenA.address);
         });
       });
 
       describe("when minting 10 tokenB to universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenB.interface.encodeFunctionData("mint", [
             context.universalProfile1.address,
             "10",
@@ -146,15 +147,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
       });
 
       describe("when minting 10 of the same tokenB to universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenB.interface.encodeFunctionData("mint", [
             context.universalProfile1.address,
             "10",
@@ -174,15 +175,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
       });
 
       describe("when minting 10 tokenC to universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenC.interface.encodeFunctionData("mint", [
             context.universalProfile1.address,
             "10",
@@ -202,17 +203,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenC
             );
-          expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
-          expect(elementAddress).toEqual(lsp7TokenC.address);
+          expect(indexInMap).to.be.equal(2);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.THREE);
+          expect(elementAddress).to.be.equal(lsp7TokenC.address);
         });
       });
     });
 
     describe("when burning tokens", () => {
       describe("when burning 10 tokenC (last token) from universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenC.interface.encodeFunctionData("burn", [
             context.universalProfile1.address,
             "10",
@@ -235,14 +236,14 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000002",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal("0x");
         });
       });
 
       describe("when burning 10 tokenA (first token) from universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenA.interface.encodeFunctionData("burn", [
             context.universalProfile1.address,
             "10",
@@ -262,10 +263,10 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
 
         it("should update lsp5keys: arrayLength 1, no map, no tokenA address in UP1", async () => {
@@ -278,14 +279,14 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000001",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal("0x");
         });
       });
 
       describe("when burning 10 (half of the amount) tokenB from universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenB.interface.encodeFunctionData("burn", [
             context.universalProfile1.address,
             "10",
@@ -304,15 +305,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
       });
 
       describe("when burning 10 (remaining) tokenB from universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenB.interface.encodeFunctionData("burn", [
             context.universalProfile1.address,
             "10",
@@ -335,9 +336,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000000",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ZERO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ZERO);
+          expect(elementAddress).to.be.equal("0x");
         });
       });
     });
@@ -380,20 +381,20 @@ export const shouldBehaveLikeLSP1Delegate = (
             lsp7TokenC
           );
 
-        expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
-        expect(indexInMapTokenA).toEqual(0);
-        expect(indexInMapTokenB).toEqual(1);
-        expect(indexInMapTokenC).toEqual(2);
-        expect(interfaceIdTokenA).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-        expect(interfaceIdTokenB).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-        expect(interfaceIdTokenC).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-        expect(elementAddressTokenA).toEqual(lsp7TokenA.address);
-        expect(elementAddressTokenB).toEqual(lsp7TokenB.address);
-        expect(elementAddressTokenC).toEqual(lsp7TokenC.address);
+        expect(arrayLength).to.be.equal(ARRAY_LENGTH.THREE);
+        expect(indexInMapTokenA).to.be.equal(0);
+        expect(indexInMapTokenB).to.be.equal(1);
+        expect(indexInMapTokenC).to.be.equal(2);
+        expect(interfaceIdTokenA).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+        expect(interfaceIdTokenB).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+        expect(interfaceIdTokenC).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+        expect(elementAddressTokenA).to.be.equal(lsp7TokenA.address);
+        expect(elementAddressTokenB).to.be.equal(lsp7TokenB.address);
+        expect(elementAddressTokenC).to.be.equal(lsp7TokenC.address);
       });
 
       describe("When transferring 10 (all) token A from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenA.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -415,10 +416,10 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenC
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp7TokenC.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp7TokenC.address);
         });
 
         it("should update lsp5keys: arrayLength 2, no map, no tokenA address in UP1", async () => {
@@ -431,9 +432,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000002",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal("0x");
         });
 
         it("should register lsp5keys: arrayLength 1, index 0, tokenA address in UP2", async () => {
@@ -442,15 +443,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp7TokenA
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp7TokenA.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp7TokenA.address);
         });
       });
 
       describe("When transferring 5 (half of amount) token B from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenB.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -472,10 +473,10 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
 
         it("should register lsp5keys: arrayLength 2, index 1, tokenB address in UP2", async () => {
@@ -484,15 +485,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
       });
 
       describe("When transferring 4 (few) token B from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenB.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -514,10 +515,10 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
 
         it("should keep the same lsp5keys : arrayLength 2, index = 1, tokenB address in UP2", async () => {
@@ -526,15 +527,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
       });
 
       describe("When transferring 1 (remaining) token B from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenB.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -560,9 +561,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000001",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal("0x");
         });
 
         it("should keep the same lsp5keys : arrayLength 2, index = 1, tokenB address in UP2", async () => {
@@ -571,15 +572,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
       });
 
       describe("When transferring 10 (all) token C from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenC.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -605,9 +606,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000001",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ZERO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ZERO);
+          expect(elementAddress).to.be.equal("0x");
         });
 
         it("should register lsp5keys : arrayLength 3, index = 2, tokenC address in UP2", async () => {
@@ -616,15 +617,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp7TokenC
             );
-          expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
-          expect(elementAddress).toEqual(lsp7TokenC.address);
+          expect(indexInMap).to.be.equal(2);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.THREE);
+          expect(elementAddress).to.be.equal(lsp7TokenC.address);
         });
       });
 
       describe("When transferring 1 (few) token B from UP2 to UP1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp7TokenB.interface.encodeFunctionData("transfer", [
             context.universalProfile2.address,
             context.universalProfile1.address,
@@ -646,16 +647,16 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp7TokenB
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp7TokenB.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP7DigitalAsset);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp7TokenB.address);
         });
       });
     });
 
     describe("when removing all keys", () => {
-      beforeAll(async () => {
+      before(async () => {
         const abi1 = lsp7TokenB.interface.encodeFunctionData("burn", [
           context.universalProfile1.address,
           "1",
@@ -713,15 +714,15 @@ export const shouldBehaveLikeLSP1Delegate = (
           "getData(bytes32)"
         ](ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length);
 
-        expect(arrayLengthUP1).toEqual(ARRAY_LENGTH.ZERO);
-        expect(arrayLengthUP2).toEqual(ARRAY_LENGTH.ZERO);
+        expect(arrayLengthUP1).to.be.equal(ARRAY_LENGTH.ZERO);
+        expect(arrayLengthUP2).to.be.equal(ARRAY_LENGTH.ZERO);
       });
     });
   });
 
   describe("when testing LSP8-IdentifiableDigitalAsset", () => {
     let lsp8TokenA: LSP8Tester, lsp8TokenB: LSP8Tester, lsp8TokenC: LSP8Tester;
-    beforeAll(async () => {
+    before(async () => {
       lsp8TokenA = await new LSP8Tester__factory(
         context.accounts.random
       ).deploy("TokenAlpha", "TA", context.accounts.random.address);
@@ -737,7 +738,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe("when minting tokens", () => {
       describe("when minting tokenId 1 of tokenA to universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenA.interface.encodeFunctionData("mint", [
             context.universalProfile1.address,
             TOKEN_ID.ONE,
@@ -757,17 +758,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenA
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp8TokenA.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp8TokenA.address);
         });
       });
 
       describe("when minting tokenId 1 of tokenB to universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenB.interface.encodeFunctionData("mint", [
             context.universalProfile1.address,
             TOKEN_ID.ONE,
@@ -787,17 +788,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
       });
 
       describe("when minting tokenId 2 of tokenB (another) to universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenB.interface.encodeFunctionData("mint", [
             context.universalProfile1.address,
             TOKEN_ID.TWO,
@@ -817,17 +818,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
       });
 
       describe("when minting tokenId 1 of tokenC to universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenC.interface.encodeFunctionData("mint", [
             context.universalProfile1.address,
             TOKEN_ID.ONE,
@@ -847,19 +848,19 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenC
             );
-          expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(2);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
-          expect(elementAddress).toEqual(lsp8TokenC.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.THREE);
+          expect(elementAddress).to.be.equal(lsp8TokenC.address);
         });
       });
     });
 
     describe("when burning tokens", () => {
       describe("when burning tokenId 1 (all balance) of tokenC (last token) from universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenC.interface.encodeFunctionData("burn", [
             TOKEN_ID.ONE,
             "0x",
@@ -881,14 +882,14 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000002",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal("0x");
         });
       });
 
       describe("when burning tokenId 1 (all balance) of tokenA (first token) from universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenA.interface.encodeFunctionData("burn", [
             TOKEN_ID.ONE,
             "0x",
@@ -907,12 +908,12 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
 
         it("should update lsp5keys: arrayLength 1, no map, no tokenA address in UP1", async () => {
@@ -925,14 +926,14 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000001",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal("0x");
         });
       });
 
       describe("when burning 1 tokenId (not all balance) of tokenB from universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenB.interface.encodeFunctionData("burn", [
             TOKEN_ID.ONE,
             "0x",
@@ -950,17 +951,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
       });
 
       describe("when burning all tokenB from universalProfile1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenB.interface.encodeFunctionData("burn", [
             TOKEN_ID.TWO,
             "0x",
@@ -982,9 +983,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000000",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ZERO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ZERO);
+          expect(elementAddress).to.be.equal("0x");
         });
       });
     });
@@ -1036,26 +1037,26 @@ export const shouldBehaveLikeLSP1Delegate = (
             lsp8TokenC
           );
 
-        expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
-        expect(indexInMapTokenA).toEqual(0);
-        expect(indexInMapTokenB).toEqual(1);
-        expect(indexInMapTokenC).toEqual(2);
-        expect(interfaceIdTokenA).toEqual(
+        expect(arrayLength).to.be.equal(ARRAY_LENGTH.THREE);
+        expect(indexInMapTokenA).to.be.equal(0);
+        expect(indexInMapTokenB).to.be.equal(1);
+        expect(indexInMapTokenC).to.be.equal(2);
+        expect(interfaceIdTokenA).to.be.equal(
           INTERFACE_IDS.LSP8IdentifiableDigitalAsset
         );
-        expect(interfaceIdTokenB).toEqual(
+        expect(interfaceIdTokenB).to.be.equal(
           INTERFACE_IDS.LSP8IdentifiableDigitalAsset
         );
-        expect(interfaceIdTokenC).toEqual(
+        expect(interfaceIdTokenC).to.be.equal(
           INTERFACE_IDS.LSP8IdentifiableDigitalAsset
         );
-        expect(elementAddressTokenA).toEqual(lsp8TokenA.address);
-        expect(elementAddressTokenB).toEqual(lsp8TokenB.address);
-        expect(elementAddressTokenC).toEqual(lsp8TokenC.address);
+        expect(elementAddressTokenA).to.be.equal(lsp8TokenA.address);
+        expect(elementAddressTokenB).to.be.equal(lsp8TokenB.address);
+        expect(elementAddressTokenC).to.be.equal(lsp8TokenC.address);
       });
 
       describe("When transferring tokenId 1 (all) of token A from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenA.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -1077,12 +1078,12 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenC
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp8TokenC.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp8TokenC.address);
         });
 
         it("should update lsp5keys: arrayLength 2, no map, no tokenA address in UP1", async () => {
@@ -1095,9 +1096,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000002",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal("0x");
         });
 
         it("should register lsp5keys: arrayLength 1, index 0, tokenA address in UP2", async () => {
@@ -1106,17 +1107,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp8TokenA
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp8TokenA.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp8TokenA.address);
         });
       });
 
       describe("When transferring tokenId 1 (not all balance) of token B from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenB.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -1138,12 +1139,12 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
 
         it("should register lsp5keys: arrayLength 2, index 1, tokenB address in UP2", async () => {
@@ -1152,17 +1153,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
       });
 
       describe("When transferring tokenId 2 (not all balance) of token B from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenB.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -1184,12 +1185,12 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
 
         it("should keep the same lsp5keys : arrayLength 2, index = 1, tokenB address in UP2", async () => {
@@ -1198,17 +1199,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
       });
 
       describe("When transferring tokenId 3 (remaining balance) of token B from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenB.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -1234,9 +1235,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000001",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal("0x");
         });
 
         it("should keep the same lsp5keys : arrayLength 2, index = 1, tokenB address in UP2", async () => {
@@ -1245,17 +1246,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
       });
 
       describe("When transferring tokenId 1 (all balance) of token C from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenC.interface.encodeFunctionData("transfer", [
             context.universalProfile1.address,
             context.universalProfile2.address,
@@ -1281,9 +1282,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000001",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ZERO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ZERO);
+          expect(elementAddress).to.be.equal("0x");
         });
 
         it("should register lsp5keys : arrayLength 3, index = 2, tokenC address in UP2", async () => {
@@ -1292,17 +1293,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp8TokenC
             );
-          expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(2);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
-          expect(elementAddress).toEqual(lsp8TokenC.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.THREE);
+          expect(elementAddress).to.be.equal(lsp8TokenC.address);
         });
       });
 
       describe("When transferring 1 tokenId (not all balance) of token B from UP2 to UP1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp8TokenB.interface.encodeFunctionData("transfer", [
             context.universalProfile2.address,
             context.universalProfile1.address,
@@ -1324,12 +1325,12 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp8TokenB
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset
           );
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp8TokenB.address);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp8TokenB.address);
         });
       });
     });
@@ -1338,7 +1339,7 @@ export const shouldBehaveLikeLSP1Delegate = (
   describe("when testing LSP9-Vault", () => {
     let lsp9VaultA: LSP9Vault, lsp9VaultB: LSP9Vault, lsp9VaultC: LSP9Vault;
 
-    beforeAll(async () => {
+    before(async () => {
       lsp9VaultA = await new LSP9Vault__factory(context.accounts.random).deploy(
         context.accounts.random.address
       );
@@ -1354,7 +1355,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe("when transferring ownership of vaults from EOA to UP", () => {
       describe("When transfering Ownership of VaultA to UP1", () => {
-        beforeAll(async () => {
+        before(async () => {
           await lsp9VaultA
             .connect(context.accounts.random)
             .transferOwnership(context.universalProfile1.address);
@@ -1378,15 +1379,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp9VaultA
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp9VaultA.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp9VaultA.address);
         });
       });
 
       describe("When transfering Ownership of VaultB to UP1", () => {
-        beforeAll(async () => {
+        before(async () => {
           await lsp9VaultB
             .connect(context.accounts.random)
             .transferOwnership(context.universalProfile1.address);
@@ -1410,15 +1411,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp9VaultB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp9VaultB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp9VaultB.address);
         });
       });
 
       describe("When transfering Ownership of VaultC to UP1", () => {
-        beforeAll(async () => {
+        before(async () => {
           await lsp9VaultC
             .connect(context.accounts.random)
             .transferOwnership(context.universalProfile1.address);
@@ -1442,17 +1443,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp9VaultC
             );
-          expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
-          expect(elementAddress).toEqual(lsp9VaultC.address);
+          expect(indexInMap).to.be.equal(2);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.THREE);
+          expect(elementAddress).to.be.equal(lsp9VaultC.address);
         });
       });
     });
 
     describe("when transferring ownership of vaults from UP to UP", () => {
       describe("When transfering Ownership of VaultA from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp9VaultA.interface.encodeFunctionData(
             "transferOwnership",
             [context.universalProfile2.address]
@@ -1483,10 +1484,10 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp9VaultC
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp9VaultC.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp9VaultC.address);
         });
 
         it("should register lsp10key: arrayLength 1, index 0, VaultA address in UP2", async () => {
@@ -1495,15 +1496,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp9VaultA
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp9VaultA.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp9VaultA.address);
         });
       });
 
       describe("When transfering Ownership of VaultB from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp9VaultB.interface.encodeFunctionData(
             "transferOwnership",
             [context.universalProfile2.address]
@@ -1537,9 +1538,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000001",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal("0x");
         });
 
         it("should register lsp10key: arrayLength 2, index 1, VaultB address in UP2", async () => {
@@ -1548,15 +1549,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp9VaultB
             );
-          expect(indexInMap).toEqual(1);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.TWO);
-          expect(elementAddress).toEqual(lsp9VaultB.address);
+          expect(indexInMap).to.be.equal(1);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.TWO);
+          expect(elementAddress).to.be.equal(lsp9VaultB.address);
         });
       });
 
       describe("When transfering Ownership of VaultC from UP1 to UP2", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp9VaultC.interface.encodeFunctionData(
             "transferOwnership",
             [context.universalProfile2.address]
@@ -1590,9 +1591,9 @@ export const shouldBehaveLikeLSP1Delegate = (
                 "00000000000000000000000000000000",
             ]);
 
-          expect(mapValue).toEqual("0x");
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ZERO);
-          expect(elementAddress).toEqual("0x");
+          expect(mapValue).to.be.equal("0x");
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ZERO);
+          expect(elementAddress).to.be.equal("0x");
         });
 
         it("should register lsp10key: arrayLength 3, index 2, VaultC address in UP2", async () => {
@@ -1601,15 +1602,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp9VaultC
             );
-          expect(indexInMap).toEqual(2);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.THREE);
-          expect(elementAddress).toEqual(lsp9VaultC.address);
+          expect(indexInMap).to.be.equal(2);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.THREE);
+          expect(elementAddress).to.be.equal(lsp9VaultC.address);
         });
       });
 
       describe("When transferring Ownership of VaultB from UP2 to UP1", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp9VaultB.interface.encodeFunctionData(
             "transferOwnership",
             [context.universalProfile1.address]
@@ -1639,17 +1640,17 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile1,
               lsp9VaultB
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp9VaultB.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp9VaultB.address);
         });
       });
     });
 
     describe("when transferring ownership of vaults from UP to EOA", () => {
       describe("When transfering Ownership of VaultA from UP2 to EOA", () => {
-        beforeAll(async () => {
+        before(async () => {
           const abi = lsp9VaultA.interface.encodeFunctionData(
             "transferOwnership",
             [context.accounts.any.address]
@@ -1670,10 +1671,10 @@ export const shouldBehaveLikeLSP1Delegate = (
               context.universalProfile2,
               lsp9VaultC
             );
-          expect(indexInMap).toEqual(0);
-          expect(interfaceId).toEqual(INTERFACE_IDS.LSP9Vault);
-          expect(arrayLength).toEqual(ARRAY_LENGTH.ONE);
-          expect(elementAddress).toEqual(lsp9VaultC.address);
+          expect(indexInMap).to.be.equal(0);
+          expect(interfaceId).to.be.equal(INTERFACE_IDS.LSP9Vault);
+          expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+          expect(elementAddress).to.be.equal(lsp9VaultC.address);
         });
       });
     });
