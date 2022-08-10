@@ -1,6 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 const keccak256 = require("keccak256");
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import { NFTStorageMerkle, NFTStorageMerkle__factory } from "../../types";
 
 const { MerkleTree } = require("merkletreejs");
@@ -14,7 +15,7 @@ describe("NFTStorageMerkle", () => {
     let leaves;
     let merkletree;
 
-    beforeAll(async () => {
+    before(async () => {
       accounts = await ethers.getSigners();
       owner = accounts[0];
       nftList = [
@@ -36,13 +37,13 @@ describe("NFTStorageMerkle", () => {
 
     it("Should return 8 for leaves count", () => {
       let count = merkletree.getHexLeaves().length;
-      expect(count).toEqual(8);
+      expect(count).to.be.equal(8);
     });
 
     it("Keccak256 hash should match for the first NFT address", async () => {
       let firstNFT = merkletree.getHexLeaves()[0];
 
-      expect(firstNFT).toEqual(ethers.utils.keccak256(nftList[0]));
+      expect(firstNFT).to.be.equal(ethers.utils.keccak256(nftList[0]));
     });
 
     it("Should verify the proof in the smart contract", async () => {
@@ -55,7 +56,7 @@ describe("NFTStorageMerkle", () => {
         root,
         leaf
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
   });
 });

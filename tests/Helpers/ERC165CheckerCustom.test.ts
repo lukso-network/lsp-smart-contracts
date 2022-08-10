@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import {
   ERC165CheckerCustomTest,
   ERC165CheckerCustomTest__factory,
@@ -21,7 +22,7 @@ describe("Test Custom implementation of ERC165Checker", () => {
   let erc725: ERC725;
   let contractWithFallback: TokenReceiverWithoutLSP1;
 
-  beforeAll(async () => {
+  before(async () => {
     accounts = await ethers.getSigners();
     contract = await new ERC165CheckerCustomTest__factory(accounts[0]).deploy();
     targetContract = await new TargetContract__factory(accounts[0]).deploy();
@@ -40,8 +41,8 @@ describe("Test Custom implementation of ERC165Checker", () => {
       accounts[1].address,
       INTERFACE_IDS.LSP8IdentifiableDigitalAsset
     );
-    expect(result1).toBeFalsy();
-    expect(result2).toBeFalsy();
+    expect(result1).to.be.false;
+    expect(result2).to.be.false;
   });
 
   it("Calling a contract without a fallback function that doesn't support ERC165", async () => {
@@ -49,7 +50,7 @@ describe("Test Custom implementation of ERC165Checker", () => {
       targetContract.address,
       INTERFACE_IDS.ERC165
     );
-    expect(result).toBeFalsy();
+    expect(result).to.be.false;
   });
 
   it("Calling a contract with a fallback function that doesn't support ERC165", async () => {
@@ -57,7 +58,7 @@ describe("Test Custom implementation of ERC165Checker", () => {
       contractWithFallback.address,
       INTERFACE_IDS.ERC165
     );
-    expect(result).toBeFalsy();
+    expect(result).to.be.false;
   });
 
   it("Calling a contract that support ERC165 and ERC725X but doesn't support LSP1", async () => {
@@ -65,18 +66,18 @@ describe("Test Custom implementation of ERC165Checker", () => {
       erc725.address,
       INTERFACE_IDS.ERC165
     );
-    expect(ERC165result).toBeTruthy();
+    expect(ERC165result).to.be.true;
 
     const ERC725Xresult = await contract.supportsERC165Interface(
       erc725.address,
       INTERFACE_IDS.ERC725X
     );
-    expect(ERC725Xresult).toBeTruthy();
+    expect(ERC725Xresult).to.be.true;
 
     const LSP1result = await contract.supportsERC165Interface(
       erc725.address,
       INTERFACE_IDS.LSP1UniversalReceiver
     );
-    expect(LSP1result).toBeFalsy();
+    expect(LSP1result).to.be.false;
   });
 });
