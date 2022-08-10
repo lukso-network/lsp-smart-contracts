@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { ethers } from "hardhat";
 import {
   LSP4CompatibilityTester,
@@ -51,14 +50,14 @@ describe("LSP4Compatibility", () => {
     it("should allow reading name", async () => {
       // using compatibility getter -> returns(string)
       const nameAsString = await context.lsp4Compatibility.name();
-      expect(nameAsString).to.equal(context.deployParams.name);
+      expect(nameAsString).toEqual(context.deployParams.name);
 
       // using getData -> returns(bytes)
       const nameAsBytes = await context.lsp4Compatibility["getData(bytes32)"](
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName"))
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")),
       );
 
-      expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(
+      expect(ethers.utils.toUtf8String(nameAsBytes)).toEqual(
         context.deployParams.name
       );
     });
@@ -66,14 +65,14 @@ describe("LSP4Compatibility", () => {
     it("should allow reading symbol", async () => {
       // using compatibility getter -> returns(string)
       const symbolAsString = await context.lsp4Compatibility.symbol();
-      expect(symbolAsString).to.equal(context.deployParams.symbol);
+      expect(symbolAsString).toEqual(context.deployParams.symbol);
 
       // using getData -> returns(bytes)
       const symbolAsBytes = await context.lsp4Compatibility["getData(bytes32)"](
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol"))
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")),
       );
 
-      expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(
+      expect(ethers.utils.toUtf8String(symbolAsBytes)).toEqual(
         context.deployParams.symbol
       );
     });
