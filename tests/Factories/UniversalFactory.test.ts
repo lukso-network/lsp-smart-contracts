@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import {
   LSP1UniversalReceiverDelegateUP__factory,
   UniversalFactory,
@@ -66,7 +67,7 @@ describe("UniversalFactory contract", () => {
     let fallbackContract: FallbackContract;
     let implementationTester: ImplementationTester;
 
-    beforeAll(async () => {
+    before(async () => {
       context = await buildTestContext();
 
       universalProfileConstructor = await new UniversalProfile__factory(
@@ -121,7 +122,7 @@ describe("UniversalFactory contract", () => {
           .connect(context.accounts.deployer1)
           .callStatic.deployCreate2(UPBytecode, salt, "0x");
 
-        expect(calulcatedAddress).toEqual(contractCreated);
+        expect(calulcatedAddress).to.be.equal(contractCreated);
       });
 
       it("should calculate the address of an initializable contract correctly", async () => {
@@ -152,7 +153,7 @@ describe("UniversalFactory contract", () => {
             initializeCallData
           );
 
-        expect(calulcatedAddress).toEqual(contractCreated);
+        expect(calulcatedAddress).to.be.equal(contractCreated);
       });
 
       it("should calculate a different address of a contract if the salt changed", async () => {
@@ -185,7 +186,7 @@ describe("UniversalFactory contract", () => {
 
         let equalAddresses = calulcatedAddressSalt1 == calulcatedAddressSalt2;
 
-        expect(equalAddresses).toBeFalsy();
+        expect(equalAddresses).to.be.false;
       });
 
       it("should calculate a different address of a contract if the initializeCalldata changed", async () => {
@@ -225,7 +226,7 @@ describe("UniversalFactory contract", () => {
           calculatedAddressInitializableTrue ==
           calculatedAddressInitializableFalse;
 
-        expect(equalAddresses).toBeFalsy();
+        expect(equalAddresses).to.be.false;
       });
 
       it("should calculate a different address of a contract if the bytecode changed", async () => {
@@ -268,7 +269,7 @@ describe("UniversalFactory contract", () => {
         let equalAddresses =
           calulcatedAddressBytecode1 == calulcatedAddressBytecode2;
 
-        expect(equalAddresses).toBeFalsy();
+        expect(equalAddresses).to.be.false;
       });
 
       it("should revert when deploying a minimal proxy from `deployCreate2` function ", async () => {
@@ -285,11 +286,11 @@ describe("UniversalFactory contract", () => {
 
         await expect(
           context.universalFactory.deployCreate2(proxyBytecode, salt, "0x")
-        ).toBeRevertedWith("Minimal Proxies deployment not allowed");
+        ).to.be.revertedWith("Minimal Proxies deployment not allowed");
 
         await expect(
           context.universalFactory.deployCreate2(proxyBytecode, salt, "0x")
-        ).toBeRevertedWith("Minimal Proxies deployment not allowed");
+        ).to.be.revertedWith("Minimal Proxies deployment not allowed");
       });
 
       it("should revert when deploying a CREATE2 contract with the same bytecode and salt ", async () => {
@@ -304,7 +305,7 @@ describe("UniversalFactory contract", () => {
 
         await expect(
           context.universalFactory.deployCreate2(UPBytecode, salt, "0x")
-        ).toBeRevertedWith("Create2: Failed on deploy");
+        ).to.be.revertedWith("Create2: Failed on deploy");
       });
 
       it("should revert when sending value while deploying a non payable constructor contract", async () => {
@@ -319,7 +320,7 @@ describe("UniversalFactory contract", () => {
           context.universalFactory.deployCreate2(KMBytecode, salt, "0x", {
             value: 100,
           })
-        ).toBeRevertedWith("Create2: Failed on deploy");
+        ).to.be.revertedWith("Create2: Failed on deploy");
       });
 
       it("should pass when sending value while deploying a payable constructor contract", async () => {
@@ -350,7 +351,7 @@ describe("UniversalFactory contract", () => {
         );
 
         const balance = (await provider.getBalance(contractCreated)).toNumber();
-        expect(balance).toEqual(valueSent);
+        expect(balance).to.be.equal(valueSent);
       });
 
       it("should revert when deploying a CREATE2 contract and passing calldata for a non-existing function where fallback function doesn't exist", async () => {
@@ -365,7 +366,7 @@ describe("UniversalFactory contract", () => {
           context.universalFactory
             .connect(context.accounts.deployer2)
             .deployCreate2(PayableContractBytecode, salt, RandomCalldata)
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           "UniversalFactory: could not initialize the created contract"
         );
       });
@@ -402,7 +403,7 @@ describe("UniversalFactory contract", () => {
           contractCreatedAddress
         );
         const owner = await universalProfile.callStatic.owner();
-        expect(owner).toEqual(context.accounts.deployer3.address);
+        expect(owner).to.be.equal(context.accounts.deployer3.address);
       });
 
       it("should deploy an initializable CREATE2 contract and get the owner successfully", async () => {
@@ -430,7 +431,7 @@ describe("UniversalFactory contract", () => {
           contractCreatedAddress
         );
         const owner = await factoryTesterContract.callStatic.owner();
-        expect(owner).toEqual(context.accounts.deployer1.address);
+        expect(owner).to.be.equal(context.accounts.deployer1.address);
       });
     });
 
@@ -459,7 +460,7 @@ describe("UniversalFactory contract", () => {
             initializeCallData
           );
 
-        expect(calculatedAddress).toEqual(contractCreated);
+        expect(calculatedAddress).to.be.equal(contractCreated);
       });
 
       it("should calculate the address of a proxy correctly if it's not initializable", async () => {
@@ -480,7 +481,7 @@ describe("UniversalFactory contract", () => {
             "0x"
           );
 
-        expect(calculatedAddress).toEqual(contractCreated);
+        expect(calculatedAddress).to.be.equal(contractCreated);
       });
 
       it("should calculate a different address of a proxy if the `salt` changed", async () => {
@@ -503,7 +504,7 @@ describe("UniversalFactory contract", () => {
 
         let equalAddresses = calculatedAddressSalt1 == calculatedAddressSalt2;
 
-        expect(equalAddresses).toBeFalsy();
+        expect(equalAddresses).to.be.false;
       });
 
       it("should calculate a different address of a proxy if its initializable or not ", async () => {
@@ -533,7 +534,7 @@ describe("UniversalFactory contract", () => {
           calculatedAddressInitializableTrue ==
           calculatedAddressInitializableFalse;
 
-        expect(equalAddresses).toBeFalsy();
+        expect(equalAddresses).to.be.false;
       });
 
       it("should calculate a different address of a proxy if the `initializeCallData` changed", async () => {
@@ -569,7 +570,7 @@ describe("UniversalFactory contract", () => {
           calulcatedAddressinitializeCallData1 ==
           calulcatedAddressinitializeCallData2;
 
-        expect(equalAddresses).toBeFalsy();
+        expect(equalAddresses).to.be.false;
       });
 
       it("should calculate a different address of a proxy if the `baseContract` changed", async () => {
@@ -598,7 +599,7 @@ describe("UniversalFactory contract", () => {
         let equalAddresses =
           calulcatedAddressBaseContract1 == calulcatedAddressBaseContract2;
 
-        expect(equalAddresses).toBeFalsy();
+        expect(equalAddresses).to.be.false;
       });
 
       it("should revert when deploying a CREATE2 proxy contract with the same `baseContract` and salt ", async () => {
@@ -616,7 +617,7 @@ describe("UniversalFactory contract", () => {
             salt,
             "0x"
           )
-        ).toBeRevertedWith("ERC1167: create2 failed");
+        ).to.be.revertedWith("ERC1167: create2 failed");
       });
 
       it("should return the value back if sent to a proxy non-initializable", async () => {
@@ -648,9 +649,9 @@ describe("UniversalFactory contract", () => {
           context.accounts.deployer1.address
         );
 
-        const oldBalanceMinusGas = oldBalance - gasUsed * gasPrice;
-
-        expect(parseInt(newBalance)).toEqual(oldBalanceMinusGas);
+        const oldBalanceMinusGas = oldBalance.sub(ethers.BigNumber.from(gasUsed).mul(gasPrice));
+        
+        expect(newBalance).to.be.equal(oldBalanceMinusGas);
       });
 
       it("should revert when deploying a proxy and sending value to a non payable function in deployCreate2Proxy", async () => {
@@ -670,7 +671,7 @@ describe("UniversalFactory contract", () => {
                 value: 100,
               }
             )
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           "UniversalFactory: could not initialize the created contract"
         );
       });
@@ -703,7 +704,7 @@ describe("UniversalFactory contract", () => {
           );
 
         let balance = (await provider.getBalance(contractCreated)).toNumber();
-        expect(balance).toEqual(valueSent);
+        expect(balance).to.be.equal(valueSent);
       });
 
       it("should revert when deploying a proxy and passing calldata for a non-existing function where fallback function doesn't exist", async () => {
@@ -715,7 +716,7 @@ describe("UniversalFactory contract", () => {
           context.universalFactory
             .connect(context.accounts.deployer1)
             .deployCreate2Proxy(payableContract.address, salt, RandomCalldata)
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           "UniversalFactory: could not initialize the created contract"
         );
       });
@@ -751,7 +752,7 @@ describe("UniversalFactory contract", () => {
         );
 
         const owner = await universalProfile.callStatic.owner();
-        expect(owner).toEqual(ethers.constants.AddressZero);
+        expect(owner).to.be.equal(ethers.constants.AddressZero);
       });
 
       it("should deploy an initializable CREATE2 proxy contract and get the owner successfully", async () => {
@@ -781,7 +782,7 @@ describe("UniversalFactory contract", () => {
         );
 
         const owner = await universalProfile.callStatic.owner();
-        expect(owner).toEqual(context.accounts.deployer4.address);
+        expect(owner).to.be.equal(context.accounts.deployer4.address);
       });
     });
   });
