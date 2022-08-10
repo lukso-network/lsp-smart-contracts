@@ -1,6 +1,5 @@
 import { HardhatUserConfig } from "hardhat/config";
 
-import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-web3";
 import "@nomiclabs/hardhat-etherscan";
 
@@ -9,6 +8,8 @@ import "hardhat-packager";
 import "hardhat-contract-sizer";
 
 import "hardhat-deploy";
+
+import "@nomicfoundation/hardhat-toolbox";
 
 /**
  * @dev uncomment to generate contract docs in Markdown
