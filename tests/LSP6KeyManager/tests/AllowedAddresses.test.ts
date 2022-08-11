@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -21,6 +22,7 @@ import {
   provider,
   EMPTY_PAYLOAD,
   getRandomAddresses,
+  combinePermissions,
 } from "../../utils/helpers";
 
 // errors
@@ -71,20 +73,12 @@ export const shouldBehaveLikeAllowedAddresses = (
 
     let permissionsValues = [
       ALL_PERMISSIONS,
-      ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.CALL)) +
-          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-        32
-      ),
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       abiCoder.encode(
         ["address[]"],
         [[allowedEOA.address, allowedTargetContract.address]]
       ),
-      ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.CALL)) +
-          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-        32
-      ),
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       "0xbadbadbadbad",
     ];
 
@@ -124,14 +118,10 @@ export const shouldBehaveLikeAllowedAddresses = (
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(parseInt(newBalanceUP)).toBeLessThan(
-            parseInt(initialBalanceUP)
-          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
           let newBalanceEOA = await provider.getBalance(recipient);
-          expect(parseInt(newBalanceEOA)).toBeGreaterThan(
-            parseInt(initialBalanceEOA)
-          );
+          expect(newBalanceEOA).to.be.gt(initialBalanceEOA);
         });
       });
     });
@@ -161,12 +151,10 @@ export const shouldBehaveLikeAllowedAddresses = (
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
       );
-      expect(parseInt(newBalanceUP)).toBeLessThan(parseInt(initialBalanceUP));
+      expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
       let newBalanceEOA = await provider.getBalance(allowedEOA.address);
-      expect(parseInt(newBalanceEOA)).toBeGreaterThan(
-        parseInt(initialBalanceEOA)
-      );
+      expect(newBalanceEOA).to.be.gt(initialBalanceEOA);
     });
 
     it("should be allowed to interact with an allowed address (= contract)", async () => {
@@ -192,7 +180,7 @@ export const shouldBehaveLikeAllowedAddresses = (
         .execute(payload);
 
       const result = await allowedTargetContract.callStatic.getName();
-      expect(result).toEqual(argument);
+      expect(result).to.equal(argument);
     });
 
     it("should revert when sending LYX to a non-allowed address (= EOA)", async () => {
@@ -215,7 +203,7 @@ export const shouldBehaveLikeAllowedAddresses = (
         context.keyManager
           .connect(canCallOnlyTwoAddresses)
           .execute(transferPayload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         NotAllowedAddressError(
           canCallOnlyTwoAddresses.address,
           notAllowedEOA.address
@@ -229,10 +217,8 @@ export const shouldBehaveLikeAllowedAddresses = (
         notAllowedEOA.address
       );
 
-      expect(parseInt(newBalanceUP)).toBe(parseInt(initialBalanceUP));
-      expect(parseInt(initialBalanceRecipient)).toBe(
-        parseInt(newBalanceRecipient)
-      );
+      expect(newBalanceUP).to.equal(initialBalanceUP);
+      expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
     });
 
     it("should revert when interacting with an non-allowed address (= contract)", async () => {
@@ -255,7 +241,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await expect(
         context.keyManager.connect(canCallOnlyTwoAddresses).execute(payload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         NotAllowedAddressError(
           canCallOnlyTwoAddresses.address,
           notAllowedTargetContract.address
@@ -292,14 +278,10 @@ export const shouldBehaveLikeAllowedAddresses = (
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(parseInt(newBalanceUP)).toBeLessThan(
-            parseInt(initialBalanceUP)
-          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
           let newBalanceEOA = await provider.getBalance(recipient);
-          expect(parseInt(newBalanceEOA)).toBeGreaterThan(
-            parseInt(initialBalanceEOA)
-          );
+          expect(newBalanceEOA).to.be.gt(initialBalanceEOA);
         });
       });
     });

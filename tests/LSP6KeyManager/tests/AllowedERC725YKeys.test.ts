@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -74,7 +75,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         );
         let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
 
-        expect(decodedResult).toHaveLength(1);
+        expect(decodedResult).to.have.lengthOf(1);
       });
 
       it("`controllerCanSetManyKeys` should have 3 x keys in its list of allowed keys", async () => {
@@ -84,7 +85,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         );
         let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
 
-        expect(decodedResult).toHaveLength(3);
+        expect(decodedResult).to.have.lengthOf(3);
       });
 
       it("`controllerCanSetOneKey` should have the right keys set in its list of allowed keys", async () => {
@@ -94,7 +95,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         );
         let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
 
-        expect(decodedResult).toContain(customKey1);
+        expect(decodedResult).to.include(customKey1);
       });
 
       it("`controllerCanSetManyKeys` should have the right keys set in its list of allowed keys", async () => {
@@ -104,9 +105,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         );
         let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
 
-        expect(decodedResult).toContain(customKey2);
-        expect(decodedResult).toContain(customKey3);
-        expect(decodedResult).toContain(customKey4);
+        expect(decodedResult).to.contain(customKey2);
+        expect(decodedResult).to.contain(customKey3);
+        expect(decodedResult).to.contain(customKey4);
       });
     });
 
@@ -130,7 +131,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(newValue);
+          expect(result).to.equal(newValue);
         });
 
         it("should fail when setting the wrong key", async () => {
@@ -151,7 +152,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetOneKey)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(controllerCanSetOneKey.address, key)
           );
         });
@@ -180,7 +181,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetOneKey)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(controllerCanSetOneKey.address, keys[0])
           );
         });
@@ -207,7 +208,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetOneKey)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(controllerCanSetOneKey.address, keys[1])
           );
         });
@@ -234,7 +235,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
 
         let result = await context.universalProfile["getData(bytes32[])"](keys);
 
-        expect(result).toEqual(values);
+        expect(result).to.equal(values);
       });
 
       it("should fail when the input contains none of the allowed keys", async () => {
@@ -259,7 +260,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           context.keyManager
             .connect(controllerCanSetManyKeys)
             .execute(setDataPayload)
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           NotAllowedERC725YKeyError(controllerCanSetManyKeys.address, keys[0])
         );
       });
@@ -283,7 +284,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(newValue);
+          expect(result).to.equal(newValue);
         });
 
         it("should pass when trying to set the 2nd allowed key", async () => {
@@ -304,7 +305,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(newValue);
+          expect(result).to.equal(newValue);
         });
 
         it("should pass when trying to set the 3rd allowed key", async () => {
@@ -325,7 +326,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(newValue);
+          expect(result).to.equal(newValue);
         });
 
         it("should fail when setting a not-allowed Singleton key", async () => {
@@ -346,7 +347,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetManyKeys)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(controllerCanSetManyKeys.address, key)
           );
         });
@@ -373,7 +374,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             let result = await context.universalProfile["getData(bytes32[])"](
               keys
             );
-            expect(result).toEqual(values);
+            expect(result).to.equal(values);
           });
 
           it("the input is the last two (subset) allowed keys", async () => {
@@ -395,7 +396,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             let result = await context.universalProfile["getData(bytes32[])"](
               keys
             );
-            expect(result).toEqual(values);
+            expect(result).to.equal(values);
           });
 
           it("the input is the first + last (subset) allowed keys", async () => {
@@ -417,7 +418,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             let result = await context.universalProfile["getData(bytes32[])"](
               keys
             );
-            expect(result).toEqual(values);
+            expect(result).to.equal(values);
           });
         });
       });
@@ -446,7 +447,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[1]
@@ -476,7 +477,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[0]
@@ -506,7 +507,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[0]
@@ -536,7 +537,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[1]
@@ -566,7 +567,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[0]
@@ -596,7 +597,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[0]
@@ -626,7 +627,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[1]
@@ -656,7 +657,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[0]
@@ -686,7 +687,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[0]
@@ -717,7 +718,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[0]
@@ -747,7 +748,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[1]
@@ -778,7 +779,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               context.keyManager
                 .connect(controllerCanSetManyKeys)
                 .execute(setDataPayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               NotAllowedERC725YKeyError(
                 controllerCanSetManyKeys.address,
                 keys[2]
@@ -823,7 +824,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
                 context.keyManager
                   .connect(controllerCanSetManyKeys)
                   .execute(setDataPayload)
-              ).toBeRevertedWith(
+              ).to.be.revertedWith(
                 NotAllowedERC725YKeyError(
                   controllerCanSetManyKeys.address,
                   keys[3]
@@ -879,7 +880,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
                 context.keyManager
                   .connect(controllerCanSetManyKeys)
                   .execute(setDataPayload)
-              ).toBeRevertedWith(
+              ).to.be.revertedWith(
                 NotAllowedERC725YKeyError(
                   controllerCanSetManyKeys.address,
                   keys[3]
@@ -957,7 +958,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               let result = await context.universalProfile["getData(bytes32[])"](
                 [customKey2, customKey3, customKey4]
               );
-              expect(result).toEqual([
+              expect(result).to.equal([
                 // when putting duplicates in the keys given as inputs,
                 // the last duplicate value for a key should be the one that override
                 values[5],
@@ -992,7 +993,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(value);
+          expect(result).to.equal(value);
         });
       });
 
@@ -1022,7 +1023,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             keys
           );
 
-          expect(result).toEqual(values);
+          expect(result).to.equal(values);
         });
       });
     });
@@ -1091,7 +1092,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             mappingKey
           );
-          expect(result).toEqual(mappingValue);
+          expect(result).to.equal(mappingValue);
         });
 
         it("should pass when overriding SupportedStandards:LSPX", async () => {
@@ -1113,7 +1114,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             mappingKey
           );
-          expect(result).toEqual(mappingValue);
+          expect(result).to.equal(mappingValue);
         });
 
         it("should pass when setting SupportedStandards:LSPY", async () => {
@@ -1134,7 +1135,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             mappingKey
           );
-          expect(result).toEqual(mappingValue);
+          expect(result).to.equal(mappingValue);
         });
 
         it("should pass when setting SupportedStandards:LSPZ", async () => {
@@ -1156,7 +1157,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             mappingKey
           );
-          expect(result).toEqual(mappingValue);
+          expect(result).to.equal(mappingValue);
         });
 
         it("should fail when setting any other not-allowed Mapping key", async () => {
@@ -1175,7 +1176,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetMappingKeys)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(
               controllerCanSetMappingKeys.address,
               notAllowedMappingKey
@@ -1202,7 +1203,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           let result = await context.universalProfile["getData(bytes32[])"](
             mappingKeys
           );
-          expect(result).toEqual(mappingValues);
+          expect(result).to.equal(mappingValues);
         });
 
         it('(2 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
@@ -1222,7 +1223,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           let result = await context.universalProfile["getData(bytes32[])"](
             mappingKeys
           );
-          expect(result).toEqual(mappingValues);
+          expect(result).to.equal(mappingValues);
         });
 
         it('(3 x keys) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
@@ -1246,7 +1247,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           let result = await context.universalProfile["getData(bytes32[])"](
             mappingKeys
           );
-          expect(result).toEqual(mappingValues);
+          expect(result).to.equal(mappingValues);
         });
 
         it('(3 x keys) (override) should pass when all the keys in the list start with bytes16(keccak256("SupportedStandards"))', async () => {
@@ -1270,7 +1271,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           let result = await context.universalProfile["getData(bytes32[])"](
             mappingKeys
           );
-          expect(result).toEqual(mappingValues);
+          expect(result).to.equal(mappingValues);
         });
 
         it("should fail when the list contains none of the allowed Mapping keys", async () => {
@@ -1301,7 +1302,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetMappingKeys)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(
               controllerCanSetMappingKeys.address,
               randomMappingKeys[0]
@@ -1335,7 +1336,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetMappingKeys)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(
               controllerCanSetMappingKeys.address,
               mappingKeys[1]
@@ -1367,7 +1368,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             randomMappingKey
           );
-          expect(result).toEqual(randomMappingValue);
+          expect(result).to.equal(randomMappingValue);
         });
       });
 
@@ -1403,7 +1404,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             randomMappingKeys
           );
 
-          expect(result).toEqual(randomMappingValues);
+          expect(result).to.equal(randomMappingValues);
         });
       });
     });
@@ -1473,7 +1474,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(value);
+          expect(result).to.equal(value);
         });
 
         it("should pass when setting 1st array element MyArray[0]", async () => {
@@ -1495,7 +1496,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(value);
+          expect(result).to.equal(value);
         });
 
         it("should pass when setting 2nd array element MyArray[1]", async () => {
@@ -1517,7 +1518,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(value);
+          expect(result).to.equal(value);
         });
 
         it("should pass when setting 3rd array element MyArray[3]", async () => {
@@ -1539,7 +1540,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(value);
+          expect(result).to.equal(value);
         });
 
         it("should fail when setting elements of a not-allowed Array (eg: LSP5ReceivedAssets)", async () => {
@@ -1556,7 +1557,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetArrayKeys)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(
               controllerCanSetArrayKeys.address,
               notAllowedArrayKey
@@ -1586,7 +1587,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           let result = await context.universalProfile["getData(bytes32[])"](
             keys
           );
-          expect(result).toEqual(values);
+          expect(result).to.equal(values);
         });
 
         it("should fail when the list contains elements keys of a non-allowed Array (RandomArray[])", async () => {
@@ -1606,7 +1607,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetArrayKeys)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(
               controllerCanSetArrayKeys.address,
               randomArrayKeys[0]
@@ -1633,7 +1634,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             context.keyManager
               .connect(controllerCanSetArrayKeys)
               .execute(setDataPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedERC725YKeyError(
               controllerCanSetArrayKeys.address,
               keys[2]
@@ -1702,7 +1703,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           .execute(setDataPayload);
 
         const result = await context.universalProfile["getData(bytes32)"](key);
-        expect(result).toEqual(value);
+        expect(result).to.equal(value);
       });
     });
 
@@ -1722,7 +1723,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         context.keyManager
           .connect(controllerCanSetSomeKeys)
           .execute(setDataPayload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         NotAllowedERC725YKeyError(controllerCanSetSomeKeys.address, key)
       );
     });

@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -25,7 +26,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, provider } from "../../utils/helpers";
+import { abiCoder, provider, combinePermissions } from "../../utils/helpers";
 
 // errors
 import { NotAllowedStandardError } from "../../utils/errors";
@@ -75,16 +76,8 @@ export const shouldBehaveLikeAllowedStandards = (
 
     let permissionsValues = [
       ALL_PERMISSIONS,
-      ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.CALL)) +
-          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-        32
-      ),
-      ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.CALL)) +
-          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-        32
-      ),
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
       abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.LSP7DigitalAsset]]), // callerTwo
     ];
@@ -113,7 +106,7 @@ export const shouldBehaveLikeAllowedStandards = (
       await context.keyManager.connect(context.owner).execute(upPayload);
       let result = await targetContract.callStatic.getName();
 
-      expect(result).toEqual(newName);
+      expect(result).to.equal(newName);
     });
 
     describe("should allow to interact with a contract that implement (+ register) any interface", () => {
@@ -137,7 +130,7 @@ export const shouldBehaveLikeAllowedStandards = (
           .connect(context.owner)
           .callStatic.execute(upPayload);
         let [result] = abiCoder.decode(["bytes4"], data);
-        expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
       });
 
       it("LSP0 (ERC725Account)", async () => {
@@ -155,7 +148,7 @@ export const shouldBehaveLikeAllowedStandards = (
         const result = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(result).toEqual(value);
+        expect(result).to.equal(value);
       });
     });
   });
@@ -183,7 +176,7 @@ export const shouldBehaveLikeAllowedStandards = (
           .connect(addressCanInteractOnlyWithERC1271)
           .callStatic.execute(upPayload);
         let [result] = abiCoder.decode(["bytes4"], data);
-        expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
+        expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
       });
     });
 
@@ -208,9 +201,7 @@ export const shouldBehaveLikeAllowedStandards = (
         let newAccountBalance = await provider.getBalance(
           otherUniversalProfile.address
         );
-        expect(parseInt(newAccountBalance)).toBeGreaterThan(
-          parseInt(initialAccountBalance)
-        );
+        expect(newAccountBalance).to.be.gt(initialAccountBalance);
       });
     });
 
@@ -230,7 +221,7 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithERC1271)
             .execute(upPayload)
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           NotAllowedStandardError(
             addressCanInteractOnlyWithERC1271.address,
             targetContract.address
@@ -264,7 +255,7 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(upPayload)
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           NotAllowedStandardError(
             addressCanInteractOnlyWithLSP7.address,
             signatureValidatorContract.address
@@ -287,7 +278,7 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(transferLyxPayload)
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           NotAllowedStandardError(
             addressCanInteractOnlyWithLSP7.address,
             otherUniversalProfile.address
