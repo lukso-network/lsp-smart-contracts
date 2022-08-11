@@ -122,9 +122,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await expect(
             context.keyManager.connect(cannotSetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(cannotSetData.address, "SETDATA")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(cannotSetData.address, "SETDATA");
         });
       });
     });
@@ -151,11 +151,11 @@ export const shouldBehaveLikePermissionSetData = (
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).to.equal(
-            Object.values(elements).map((value) =>
-              ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
-            )
+
+          let expectedResult = Object.values(elements).map((value) =>
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
           );
+          expect(fetchedResult).to.deep.equal(expectedResult);
         });
 
         it("(should pass): adding 10 LSP12IssuedAssets", async () => {
@@ -180,10 +180,11 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
+
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
@@ -218,23 +219,23 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           await context.keyManager.connect(context.owner).execute(payload);
+
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
       });
 
       describe("For address that has permission SETDATA", () => {
         it("(should pass): adding 5 singleton keys", async () => {
-          // prettier-ignore
           let elements = {
-                            "MyFirstKey": "aaaaaaaaaa",
-                            "MySecondKey": "bbbbbbbbbb",
-                            "MyThirdKey": "cccccccccc",
-                            "MyFourthKey": "dddddddddd",
-                            "MyFifthKey": "eeeeeeeeee",
-                          };
+            MyFirstKey: "aaaaaaaaaa",
+            MySecondKey: "bbbbbbbbbb",
+            MyThirdKey: "cccccccccc",
+            MyFourthKey: "dddddddddd",
+            MyFifthKey: "eeeeeeeeee",
+          };
 
           let [keys, values] = generateKeysAndValues(elements);
 
@@ -244,14 +245,15 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           await context.keyManager.connect(canSetData).execute(payload);
+
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).to.equal(
-            Object.values(elements).map((value) =>
-              ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
-            )
+
+          let expectedResult = Object.values(elements).map((value) =>
+            ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
           );
+          expect(fetchedResult).to.deep.equal(expectedResult);
         });
 
         it("(should pass): adding 10 LSP12IssuedAssets", async () => {
@@ -276,10 +278,11 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           await context.keyManager.connect(canSetData).execute(payload);
+
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
@@ -314,10 +317,11 @@ export const shouldBehaveLikePermissionSetData = (
           );
 
           await context.keyManager.connect(canSetData).execute(payload);
+
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
       });
 
@@ -340,9 +344,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await expect(
             context.keyManager.connect(cannotSetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(cannotSetData.address, "SETDATA")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(cannotSetData.address, "SETDATA");
         });
 
         it("(should fail): adding 10 LSP12IssuedAssets", async () => {
@@ -368,9 +372,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await expect(
             context.keyManager.connect(cannotSetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(cannotSetData.address, "SETDATA")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(cannotSetData.address, "SETDATA");
         });
 
         it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
@@ -406,9 +410,9 @@ export const shouldBehaveLikePermissionSetData = (
 
           await expect(
             context.keyManager.connect(cannotSetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(cannotSetData.address, "SETDATA")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(cannotSetData.address, "SETDATA");
         });
       });
     });
@@ -577,7 +581,7 @@ export const shouldBehaveLikePermissionSetData = (
     let bob: SignerWithAddress;
     let bobContext: LSP6TestContext;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       aliceContext = await buildContext();
       alice = aliceContext.accounts[0];
 
