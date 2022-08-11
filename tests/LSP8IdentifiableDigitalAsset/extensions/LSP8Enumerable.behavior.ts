@@ -1,5 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { expect } from "chai";
+
 import { LSP8EnumerableTester } from "../../../types";
 
 export type LSP8EnumerableTestAccounts = {
@@ -36,7 +38,7 @@ export const shouldBehaveLikeLSP8Enumerable = (
   describe('when no minted tokens', () => {
     it('should not get token', async () => {
       const tokenSupply = await context.lsp8Enumerable.totalSupply();
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).toEqual(ethers.utils.hexZeroPad(0, 32));
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.be.equal(ethers.utils.hexZeroPad(0, 32));
     });
   });
 
@@ -46,8 +48,8 @@ export const shouldBehaveLikeLSP8Enumerable = (
     it('should access by index', async () => {
       const tokenSupply = await context.lsp8Enumerable.totalSupply();
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, tokenId);
-      expect(await context.lsp8Enumerable.totalSupply()).toEqual(tokenSupply.add(1));
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).toEqual(ethers.utils.hexlify(tokenId));
+      expect(await context.lsp8Enumerable.totalSupply()).to.be.equal(tokenSupply.add(1));
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.be.equal(ethers.utils.hexlify(tokenId));
     });
 
     it('should not access by index after removed', async () => {
@@ -56,9 +58,9 @@ export const shouldBehaveLikeLSP8Enumerable = (
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, tokenId);
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, anotherTokenId);
       await context.lsp8Enumerable.burn(tokenId);
-      expect(await context.lsp8Enumerable.totalSupply()).toEqual(tokenSupply.add(1));
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).toEqual(ethers.utils.hexlify(anotherTokenId));
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply.add(1))).toEqual(ethers.utils.hexZeroPad(0, 32));
+      expect(await context.lsp8Enumerable.totalSupply()).to.be.equal(tokenSupply.add(1));
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.be.equal(ethers.utils.hexlify(anotherTokenId));
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply.add(1))).to.be.equal(ethers.utils.hexZeroPad(0, 32));
     });
 
     it('should access by index after removed', async () => {
@@ -68,9 +70,9 @@ export const shouldBehaveLikeLSP8Enumerable = (
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, anotherTokenId);
       await context.lsp8Enumerable.burn(tokenId);
       await context.lsp8Enumerable.mint(context.accounts.tokenReceiver.address, tokenId);
-      expect(await context.lsp8Enumerable.totalSupply()).toEqual(tokenSupply.add(2));
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).toEqual(ethers.utils.hexlify(anotherTokenId));
-      expect(await context.lsp8Enumerable.tokenAt(tokenSupply.add(1))).toEqual(ethers.utils.hexlify(tokenId));
+      expect(await context.lsp8Enumerable.totalSupply()).to.be.equal(tokenSupply.add(2));
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.be.equal(ethers.utils.hexlify(anotherTokenId));
+      expect(await context.lsp8Enumerable.tokenAt(tokenSupply.add(1))).to.be.equal(ethers.utils.hexlify(tokenId));
     });
   });
 };

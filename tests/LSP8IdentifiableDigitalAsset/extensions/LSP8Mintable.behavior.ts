@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import { LSP8Mintable } from "../../../types";
 
 export type LSP8MintableTestAccounts = {
@@ -47,7 +48,7 @@ export const shouldBehaveLikeLSP8Mintable = (
       );
 
       let postMintTotalSupply = await context.lsp8Mintable.totalSupply();
-      expect(postMintTotalSupply).toEqual(preMintTotalSupply.add(1));
+      expect(postMintTotalSupply).to.be.equal(preMintTotalSupply.add(1));
     });
 
     it("tokenReceiver balance should have increased", async () => {
@@ -55,7 +56,7 @@ export const shouldBehaveLikeLSP8Mintable = (
         context.accounts.tokenReceiver.address
       );
 
-      expect(tokenReceiverBalance.toNumber()).toEqual(1);
+      expect(tokenReceiverBalance.toNumber()).to.be.equal(1);
     });
   });
 
@@ -75,7 +76,7 @@ export const shouldBehaveLikeLSP8Mintable = (
             true,
             "0x"
           )
-      ).toBeRevertedWith("Ownable: caller is not the owner");
+      ).to.be.revertedWith("Ownable: caller is not the owner");
     });
   });
 };

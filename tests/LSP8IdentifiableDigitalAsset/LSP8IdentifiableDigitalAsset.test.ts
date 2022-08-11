@@ -1,4 +1,5 @@
 import { LSP8Tester__factory, LSP8InitTester__factory } from "../../types";
+import { expect } from "chai";
 
 import {
   getNamedAccounts,
@@ -105,7 +106,7 @@ describe("LSP8", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import {
   LSP8EnumerableTester,
   LSP8EnumerableTester__factory,
@@ -106,7 +107,7 @@ describe("LSP8Enumerable", () => {
       describe("when calling initialize more than once", () => {
         it("should revert", async () => {
           await initializeProxy(context);
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertWith(
             "Initializable: contract is already initialized"
           );
         });

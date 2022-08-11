@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import { LSP8CappedSupplyTester } from "../../../types";
 
 import type { BigNumber, BytesLike } from "ethers";
@@ -43,7 +44,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
   describe("tokenSupplyCap", () => {
     it("should allow reading tokenSupplyCap", async () => {
       const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
-      expect(tokenSupplyCap).toEqual(context.deployParams.tokenSupplyCap);
+      expect(tokenSupplyCap).to.be.equal(context.deployParams.tokenSupplyCap);
     });
   });
 
@@ -51,7 +52,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
     it("should allow minting amount up to tokenSupplyCap", async () => {
       const preTokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
       const preTotalSupply = await context.lsp8CappedSupply.totalSupply();
-      expect(preTokenSupplyCap.sub(preTotalSupply).toString()).toEqual(
+      expect(preTokenSupplyCap.sub(preTotalSupply).toString()).to.be.equal(
         String(mintedTokenIds.length)
       );
 
@@ -66,13 +67,13 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const postMintTotalSupply =
           await context.lsp8CappedSupply.totalSupply();
-        expect(postMintTotalSupply).toEqual(preMintTotalSupply.add(1));
+        expect(postMintTotalSupply).to.be.equal(preMintTotalSupply.add(1));
       }
 
       const postTokenSupplyCap =
         await context.lsp8CappedSupply.tokenSupplyCap();
       const postTotalSupply = await context.lsp8CappedSupply.totalSupply();
-      expect(postTotalSupply.sub(postTokenSupplyCap)).toEqual(
+      expect(postTotalSupply.sub(postTokenSupplyCap)).to.be.equal(
         ethers.constants.Zero
       );
     });
@@ -94,7 +95,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
         const preTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(preTotalSupply.sub(tokenSupplyCap)).toEqual(
+        expect(preTotalSupply.sub(tokenSupplyCap)).to.be.equal(
           ethers.constants.Zero
         );
 
@@ -103,7 +104,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
             context.accounts.tokenReceiver.address,
             anotherTokenId
           )
-        ).toBeRevertedWith("LSP8CappedSupplyCannotMintOverCap()");
+        ).to.be.revertedWith("LSP8CappedSupplyCannotMintOverCap()");
       });
 
       it("should allow minting after burning", async () => {
@@ -118,7 +119,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
         const preBurnTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(preBurnTotalSupply.sub(tokenSupplyCap)).toEqual(
+        expect(preBurnTotalSupply.sub(tokenSupplyCap)).to.be.equal(
           ethers.constants.Zero
         );
 
@@ -126,7 +127,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const postBurnTotalSupply =
           await context.lsp8CappedSupply.totalSupply();
-        expect(postBurnTotalSupply).toEqual(preBurnTotalSupply.sub(1));
+        expect(postBurnTotalSupply).to.be.equal(preBurnTotalSupply.sub(1));
 
         await context.lsp8CappedSupply.mint(
           context.accounts.tokenReceiver.address,
@@ -135,7 +136,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const postMintTotalSupply =
           await context.lsp8CappedSupply.totalSupply();
-        expect(postMintTotalSupply.sub(preBurnTotalSupply)).toEqual(
+        expect(postMintTotalSupply.sub(preBurnTotalSupply)).to.be.equal(
           ethers.constants.Zero
         );
       });
