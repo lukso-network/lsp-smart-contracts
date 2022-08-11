@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { calculateCreate2 } from "eth-create2-calculator";
@@ -74,22 +75,24 @@ export const shouldBehaveLikePermissionDeploy = (
       let receipt = await tx.wait();
 
       // should be the ContractCreated event (= event signature)
-      expect(receipt.logs[0].topics[0]).toEqual(
+      expect(receipt.logs[0].topics[0]).to.equal(
         EventSignatures.ERC725X["ContractCreated"]
       );
 
       // operation type
-      expect(receipt.logs[0].topics[1]).toEqual(
+      expect(receipt.logs[0].topics[1]).to.equal(
         ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE, 32)
       );
 
       // address of contract created
-      expect(receipt.logs[0].topics[2]).toEqual(
+      expect(receipt.logs[0].topics[2]).to.equal(
         ethers.utils.hexZeroPad(expectedContractAddress, 32)
       );
 
       // value
-      expect(receipt.logs[0].topics[3]).toEqual(ethers.utils.hexZeroPad(0, 32));
+      expect(receipt.logs[0].topics[3]).to.equal(
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(0), 32)
+      );
     });
 
     it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
@@ -117,16 +120,18 @@ export const shouldBehaveLikePermissionDeploy = (
 
       let receipt = await tx.wait();
 
-      expect(receipt.logs[0].topics[0]).toEqual(
+      expect(receipt.logs[0].topics[0]).to.equal(
         EventSignatures.ERC725X["ContractCreated"]
       );
-      expect(receipt.logs[0].topics[1]).toEqual(
+      expect(receipt.logs[0].topics[1]).to.equal(
         ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE2, 32)
       );
-      expect(receipt.logs[0].topics[2]).toEqual(
+      expect(receipt.logs[0].topics[2]).to.equal(
         ethers.utils.hexZeroPad(preComputedAddress, 32)
       );
-      expect(receipt.logs[0].topics[3]).toEqual(ethers.utils.hexZeroPad(0, 32));
+      expect(receipt.logs[0].topics[3]).to.equal(
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(0), 32)
+      );
     });
   });
 
@@ -151,16 +156,18 @@ export const shouldBehaveLikePermissionDeploy = (
       let tx = await context.keyManager.connect(context.owner).execute(payload);
       let receipt = await tx.wait();
 
-      expect(receipt.logs[0].topics[0]).toEqual(
+      expect(receipt.logs[0].topics[0]).to.equal(
         EventSignatures.ERC725X["ContractCreated"]
       );
-      expect(receipt.logs[0].topics[1]).toEqual(
+      expect(receipt.logs[0].topics[1]).to.equal(
         ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE, 32)
       );
-      expect(receipt.logs[0].topics[2]).toEqual(
+      expect(receipt.logs[0].topics[2]).to.equal(
         ethers.utils.hexZeroPad(expectedContractAddress, 32)
       );
-      expect(receipt.logs[0].topics[3]).toEqual(ethers.utils.hexZeroPad(0, 32));
+      expect(receipt.logs[0].topics[3]).to.equal(
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(0), 32)
+      );
     });
 
     it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
@@ -190,16 +197,18 @@ export const shouldBehaveLikePermissionDeploy = (
 
       let receipt = await tx.wait();
 
-      expect(receipt.logs[0].topics[0]).toEqual(
+      expect(receipt.logs[0].topics[0]).to.equal(
         EventSignatures.ERC725X["ContractCreated"]
       );
-      expect(receipt.logs[0].topics[1]).toEqual(
+      expect(receipt.logs[0].topics[1]).to.equal(
         ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE2, 32)
       );
-      expect(receipt.logs[0].topics[2]).toEqual(
+      expect(receipt.logs[0].topics[2]).to.equal(
         ethers.utils.hexZeroPad(preComputedAddress, 32)
       );
-      expect(receipt.logs[0].topics[3]).toEqual(ethers.utils.hexZeroPad(0, 32));
+      expect(receipt.logs[0].topics[3]).to.equal(
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(0), 32)
+      );
     });
   });
 
@@ -219,7 +228,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
       await expect(
         context.keyManager.connect(addressCannotDeploy).execute(payload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         NotAuthorisedError(addressCannotDeploy.address, "DEPLOY")
       );
     });
@@ -240,7 +249,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
       await expect(
         context.keyManager.connect(addressCannotDeploy).execute(payload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         NotAuthorisedError(addressCannotDeploy.address, "DEPLOY")
       );
     });
