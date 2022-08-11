@@ -18,17 +18,14 @@ import { setupKeyManager } from "../../utils/fixtures";
 import { abiCoder, combinePermissions } from "../../utils/helpers";
 
 // errors
-import {
-  NotAuthorisedError,
-  InvalidABIEncodedArrayError,
-} from "../../utils/errors";
+import { InvalidABIEncodedArrayError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
 
-  describe("setting permissions keys (CHANGE vs ADD Permissions)", () => {
+  describe.only("setting permissions keys (CHANGE vs ADD Permissions)", () => {
     let canOnlyAddPermissions: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress,
       canOnlySetData: SignerWithAddress,
@@ -238,12 +235,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
         it("should be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
@@ -275,12 +269,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
         it("should not be allowed to edit key at index -> AddressPermissions[4]", async () => {
@@ -299,12 +290,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
         });
       });
 
@@ -327,12 +315,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyChangePermissions.address,
-              "ADDPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
         });
 
         it("should not be allowed to set (= ADD) a permission for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
@@ -350,12 +335,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyChangePermissions.address,
-              "ADDPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
         });
 
         it("should be allowed to CHANGE a permission", async () => {
@@ -392,12 +374,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyChangePermissions.address,
-              "ADDPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
         });
 
         it("should be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
@@ -459,9 +438,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlySetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlySetData.address, "ADDPERMISSIONS");
         });
 
         it("should not be allowed to set (= ADD) a permission for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
@@ -477,9 +456,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlySetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlySetData.address, "ADDPERMISSIONS");
         });
 
         it("should not be allowed to CHANGE a permission", async () => {
@@ -496,9 +475,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlySetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlySetData.address, "CHANGEPERMISSIONS");
         });
 
         it("should not be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
@@ -512,9 +491,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlySetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(canOnlySetData.address, "ADDPERMISSIONS")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlySetData.address, "ADDPERMISSIONS");
         });
 
         it("should not be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
@@ -528,9 +507,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlySetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlySetData.address, "CHANGEPERMISSIONS");
         });
 
         it("should not be allowed to edit key at index -> AddressPermissions[4]", async () => {
@@ -549,9 +528,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlySetData).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(canOnlySetData.address, "CHANGEPERMISSIONS")
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlySetData.address, "CHANGEPERMISSIONS");
         });
       });
 
@@ -640,9 +619,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary address had an invalid abi-encoded array of address[] initially", async () => {
@@ -667,9 +646,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed addresses", async () => {
@@ -694,9 +673,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed addresses", async () => {
@@ -721,9 +700,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should pass when beneficiary had no values set under AddressPermissions:AllowedAddresses:... + setting a valid abi-encoded array of address[] (= with 12 x leading '00')", async () => {
@@ -774,7 +753,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "address"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "address");
         });
 
         it("should revert with error when value = invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
@@ -794,7 +778,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "address"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "address");
         });
       });
     });
@@ -824,9 +813,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyChangePermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyChangePermissions.address, "ADDPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
       });
 
       it("should pass when trying to edit existing allowed addresses for an address", async () => {
@@ -962,7 +951,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "address"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "address");
         });
 
         it("should revert with error when value = invalid abi-encoded array of address[] (not enough leading zero bytes for an address -> 10 x '00')", async () => {
@@ -982,7 +976,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "address"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "address");
         });
       });
     });
@@ -1053,9 +1052,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary address had an invalid abi-encoded array of bytes4[] initially", async () => {
@@ -1075,9 +1074,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed functions", async () => {
@@ -1097,9 +1096,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed functions", async () => {
@@ -1119,9 +1118,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should pass when beneficiary had no values set under AddressPermissions:AllowedFunctions:... + setting a valid abi-encoded array of bytes4[] (= 28 leading zeros)", async () => {
@@ -1167,7 +1166,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes4");
         });
 
         it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1187,7 +1191,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes4");
         });
       });
     });
@@ -1212,9 +1221,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyChangePermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyChangePermissions.address, "ADDPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
       });
 
       it("should pass when trying to edit existing allowed bytes4 selectors for an address", async () => {
@@ -1330,7 +1339,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes4");
         });
 
         it("should revert with error when value = invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1350,7 +1364,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes4");
         });
       });
     });
@@ -1431,9 +1450,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary address had an invalid abi-encoded array of bytes4[] initially", async () => {
@@ -1460,9 +1479,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary had 32 x 0 bytes set initially as allowed functions", async () => {
@@ -1489,9 +1508,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary had 40 x 0 bytes set initially as allowed functions", async () => {
@@ -1518,9 +1537,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyAddPermissions.address, "CHANGEPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
       it("should pass when beneficiary had no values set under AddressPermissions:AllowedStandards:... + setting a valid abi-encoded array of bytes4[] (= 28 leading zeros)", async () => {
@@ -1573,7 +1592,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes4");
         });
 
         it("should fail when setting an invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1593,7 +1617,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes4");
         });
       });
     });
@@ -1623,9 +1652,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager.connect(canOnlyChangePermissions).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(canOnlyChangePermissions.address, "ADDPERMISSIONS")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
       });
 
       it("should pass when trying to edit existing allowed standards for an address", async () => {
@@ -1748,7 +1777,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes4");
         });
 
         it("should revert with error when value = invalid abi-encoded array of bytes4[] (not enough leading zero bytes for a bytes4 value -> 26 x '00')", async () => {
@@ -1768,7 +1802,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes4"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes4");
         });
       });
     });
@@ -1857,12 +1896,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
         it("should fail when removing an allowed ERC725Y data key", async () => {
@@ -1882,12 +1918,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
         it("should fail when trying to clear the array completely", async () => {
@@ -1904,12 +1937,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
         it("should fail when setting an invalid abi-encoded array of bytes32[]", async () => {
@@ -1926,7 +1956,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes32");
         });
       });
 
@@ -1980,7 +2015,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes32");
         });
       });
     });
@@ -2080,7 +2120,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes32");
         });
       });
 
@@ -2115,12 +2160,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canOnlyChangePermissions.address,
-              "ADDPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
         });
 
         it("should fail when setting an invalid abi-encoded array of bytes32[]", async () => {
@@ -2141,7 +2183,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(InvalidABIEncodedArrayError(value, "bytes32"));
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidABIEncodedArray"
+            )
+            .withArgs(value, "bytes32");
         });
       });
     });
@@ -2365,12 +2412,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndAddPermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canSetDataAndAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canSetDataAndAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
         it("(should fail): 2 x keys + change 2 x existing permissions", async () => {
@@ -2401,12 +2445,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndAddPermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canSetDataAndAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canSetDataAndAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
         it("(should fail): 2 x keys + (add 1 x new permission) + (change 1 x existing permission)", async () => {
@@ -2439,12 +2480,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndAddPermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canSetDataAndAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canSetDataAndAddPermissions.address, "CHANGEPERMISSIONS");
         });
       });
 
@@ -2548,12 +2586,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canSetDataAndChangePermissions.address,
-              "ADDPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canSetDataAndChangePermissions.address, "ADDPERMISSIONS");
         });
 
         it("{should fail): 2 x keys + increment AddressPermissions[].length by +1", async () => {
@@ -2580,12 +2615,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndChangePermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canSetDataAndChangePermissions.address,
-              "ADDPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canSetDataAndChangePermissions.address, "ADDPERMISSIONS");
         });
 
         it("(should fail): 2 x keys + (add 1 x new permission) + (change 1 x existing permission)", async () => {
@@ -2618,12 +2650,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndAddPermissions)
               .execute(payload)
-          ).to.be.revertedWith(
-            NotAuthorisedError(
-              canSetDataAndAddPermissions.address,
-              "CHANGEPERMISSIONS"
-            )
-          );
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(canSetDataAndAddPermissions.address, "CHANGEPERMISSIONS");
         });
       });
     });

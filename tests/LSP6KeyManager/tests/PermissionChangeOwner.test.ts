@@ -81,9 +81,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
           context.keyManager
             .connect(cannotChangeOwner)
             .execute(transferOwnershipPayload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(cannotChangeOwner.address, "TRANSFEROWNERSHIP")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(cannotChangeOwner.address, "TRANSFEROWNERSHIP");
       });
     });
 
