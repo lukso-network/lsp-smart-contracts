@@ -6,7 +6,6 @@ export const provider = ethers.provider;
 
 export const AddressOffset = "000000000000000000000000";
 export const EMPTY_PAYLOAD = "0x";
-export const ONE_ETH = ethers.utils.parseEther("1");
 
 export const LSP1_HOOK_PLACEHOLDER =
   "0xffffffffffffffff0000000000000000aaaaaaaaaaaaaaaa1111111111111111";

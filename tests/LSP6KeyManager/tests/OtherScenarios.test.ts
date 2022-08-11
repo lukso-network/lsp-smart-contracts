@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract__factory, TargetContract } from "../../../types";
@@ -59,7 +59,7 @@ export const otherTestScenarios = (
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
         context.keyManager.connect(addressCanMakeCall).execute(INVALID_PAYLOAD)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         InvalidERC725FunctionError(INVALID_PAYLOAD.slice(0, 10))
       );
     });
@@ -81,7 +81,7 @@ export const otherTestScenarios = (
 
       await expect(
         context.keyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith("LSP6KeyManager: invalid operation type");
+      ).to.be.revertedWith("LSP6KeyManager: invalid operation type");
     });
 
     it("Should revert because of wrong operation type when caller has not ALL PERMISSIONS", async () => {
@@ -99,7 +99,7 @@ export const otherTestScenarios = (
 
       await expect(
         context.keyManager.connect(addressCanMakeCall).execute(payload)
-      ).toBeRevertedWith("LSP6KeyManager: invalid operation type");
+      ).to.be.revertedWith("LSP6KeyManager: invalid operation type");
     });
   });
 };
