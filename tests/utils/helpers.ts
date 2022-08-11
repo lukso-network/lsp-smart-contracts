@@ -1,4 +1,4 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 
 export const abiCoder = ethers.utils.defaultAbiCoder;
@@ -91,4 +91,15 @@ export async function getMapAndArrayKeyValues(
     );
 
   return [mapValue, arrayLength, elementAddress];
+}
+
+export function combinePermissions(..._permissions: string[]) {
+  let result: BigNumber = ethers.BigNumber.from(0);
+
+  _permissions.forEach((permission) => {
+    let permissionAsBN = ethers.BigNumber.from(permission);
+    result = result.add(permissionAsBN);
+  });
+
+  return ethers.utils.hexZeroPad(result.toHexString(), 32);
 }
