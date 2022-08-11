@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
@@ -22,6 +23,7 @@ import {
   abiCoder,
   generateKeysAndValues,
   getRandomAddresses,
+  combinePermissions,
 } from "../../utils/helpers";
 
 // errors
@@ -52,11 +54,7 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionsValues = [
         ALL_PERMISSIONS,
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.SETDATA)) +
-            parseInt(Number(PERMISSIONS.CALL)),
-          32
-        ),
+        combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.CALL),
         PERMISSIONS.CALL,
       ];
 
@@ -82,7 +80,7 @@ export const shouldBehaveLikePermissionSetData = (
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32)"
           ](key);
-          expect(fetchedResult).toEqual(value);
+          expect(fetchedResult).to.equal(value);
         });
       });
 
@@ -104,7 +102,7 @@ export const shouldBehaveLikePermissionSetData = (
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32)"
           ](key);
-          expect(fetchedResult).toEqual(value);
+          expect(fetchedResult).to.equal(value);
         });
       });
 
@@ -124,7 +122,7 @@ export const shouldBehaveLikePermissionSetData = (
 
           await expect(
             context.keyManager.connect(cannotSetData).execute(payload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAuthorisedError(cannotSetData.address, "SETDATA")
           );
         });
@@ -153,7 +151,7 @@ export const shouldBehaveLikePermissionSetData = (
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).toEqual(
+          expect(fetchedResult).to.equal(
             Object.values(elements).map((value) =>
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
             )
@@ -185,7 +183,7 @@ export const shouldBehaveLikePermissionSetData = (
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).toEqual(values);
+          expect(fetchedResult).to.equal(values);
         });
 
         it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
@@ -223,7 +221,7 @@ export const shouldBehaveLikePermissionSetData = (
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).toEqual(values);
+          expect(fetchedResult).to.equal(values);
         });
       });
 
@@ -249,7 +247,7 @@ export const shouldBehaveLikePermissionSetData = (
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).toEqual(
+          expect(fetchedResult).to.equal(
             Object.values(elements).map((value) =>
               ethers.utils.hexlify(ethers.utils.toUtf8Bytes(value))
             )
@@ -281,7 +279,7 @@ export const shouldBehaveLikePermissionSetData = (
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).toEqual(values);
+          expect(fetchedResult).to.equal(values);
         });
 
         it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
@@ -319,7 +317,7 @@ export const shouldBehaveLikePermissionSetData = (
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
-          expect(fetchedResult).toEqual(values);
+          expect(fetchedResult).to.equal(values);
         });
       });
 
@@ -342,7 +340,7 @@ export const shouldBehaveLikePermissionSetData = (
 
           await expect(
             context.keyManager.connect(cannotSetData).execute(payload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAuthorisedError(cannotSetData.address, "SETDATA")
           );
         });
@@ -370,7 +368,7 @@ export const shouldBehaveLikePermissionSetData = (
 
           await expect(
             context.keyManager.connect(cannotSetData).execute(payload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAuthorisedError(cannotSetData.address, "SETDATA")
           );
         });
@@ -408,7 +406,7 @@ export const shouldBehaveLikePermissionSetData = (
 
           await expect(
             context.keyManager.connect(cannotSetData).execute(payload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAuthorisedError(cannotSetData.address, "SETDATA")
           );
         });
@@ -455,7 +453,7 @@ export const shouldBehaveLikePermissionSetData = (
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(initialStorage).toEqual("0x");
+        expect(initialStorage).to.equal("0x");
 
         // make the executor call
         await contractCanSetData.setHardcodedKey();
@@ -464,7 +462,7 @@ export const shouldBehaveLikePermissionSetData = (
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(newStorage).toEqual(value);
+        expect(newStorage).to.equal(value);
       });
 
       it("Should allow to set a key computed inside a function of the calling contract", async () => {
@@ -472,7 +470,7 @@ export const shouldBehaveLikePermissionSetData = (
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(initialStorage).toEqual("0x");
+        expect(initialStorage).to.equal("0x");
 
         // make the executor call
         await contractCanSetData.setComputedKey();
@@ -481,7 +479,7 @@ export const shouldBehaveLikePermissionSetData = (
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(newStorage).toEqual(value);
+        expect(newStorage).to.equal(value);
       });
 
       it("Should allow to set a key computed from parameters given to a function of the calling contract", async () => {
@@ -489,7 +487,7 @@ export const shouldBehaveLikePermissionSetData = (
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(initialStorage).toEqual("0x");
+        expect(initialStorage).to.equal("0x");
 
         // make the executor call
         await contractCanSetData.setComputedKeyFromParams(key, value);
@@ -498,7 +496,7 @@ export const shouldBehaveLikePermissionSetData = (
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(newStorage).toEqual(value);
+        expect(newStorage).to.equal(value);
       });
     });
 
@@ -508,7 +506,7 @@ export const shouldBehaveLikePermissionSetData = (
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(initialStorage).toEqual("0x");
+        expect(initialStorage).to.equal("0x");
 
         // check if low-level call succeeded
         let result = await contractCanSetData.callStatic.setHardcodedKeyRawCall(
@@ -516,7 +514,7 @@ export const shouldBehaveLikePermissionSetData = (
             gasLimit: GAS_PROVIDED,
           }
         );
-        expect(result).toBeTruthy();
+        expect(result).to.be.true;
 
         // make the executor call
         await contractCanSetData.setHardcodedKeyRawCall({
@@ -527,7 +525,7 @@ export const shouldBehaveLikePermissionSetData = (
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(newStorage).toEqual(value);
+        expect(newStorage).to.equal(value);
       });
 
       it("Should allow to `setComputedKeyRawCall` on UP", async () => {
@@ -535,7 +533,7 @@ export const shouldBehaveLikePermissionSetData = (
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(initialStorage).toEqual("0x");
+        expect(initialStorage).to.equal("0x");
 
         // make the executor call
         await contractCanSetData.setComputedKeyRawCall({
@@ -546,7 +544,7 @@ export const shouldBehaveLikePermissionSetData = (
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(newStorage).toEqual(value);
+        expect(newStorage).to.equal(value);
       });
 
       it("Should allow to `setComputedKeyFromParamsRawCall` on UP", async () => {
@@ -554,7 +552,7 @@ export const shouldBehaveLikePermissionSetData = (
         let initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(initialStorage).toEqual("0x");
+        expect(initialStorage).to.equal("0x");
 
         // make the executor call
         await contractCanSetData.setComputedKeyFromParamsRawCall(key, value, {
@@ -565,7 +563,7 @@ export const shouldBehaveLikePermissionSetData = (
         let newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](key);
-        expect(newStorage).toEqual(value);
+        expect(newStorage).to.equal(value);
       });
     });
   });
@@ -618,7 +616,7 @@ export const shouldBehaveLikePermissionSetData = (
       const result = await aliceContext.universalProfile["getData(bytes32)"](
         key
       );
-      expect(result).toEqual(ALL_PERMISSIONS);
+      expect(result).to.equal(ALL_PERMISSIONS);
     });
 
     it("Bob should have ALL PERMISSIONS in his UP", async () => {
@@ -627,7 +625,7 @@ export const shouldBehaveLikePermissionSetData = (
         bob.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(ALL_PERMISSIONS);
+      expect(result).to.equal(ALL_PERMISSIONS);
     });
 
     it("Alice's UP should have permission SETDATA on Bob's UP", async () => {
@@ -636,7 +634,7 @@ export const shouldBehaveLikePermissionSetData = (
         aliceContext.universalProfile.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(PERMISSIONS.SETDATA);
+      expect(result).to.equal(PERMISSIONS.SETDATA);
     });
 
     it("Alice's UP should be able to `setData(...)` on Bob's UP", async () => {
@@ -671,7 +669,7 @@ export const shouldBehaveLikePermissionSetData = (
       console.log("gas used: ", receipt.gasUsed.toNumber());
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(value);
+      expect(result).to.equal(value);
     });
   });
 
@@ -724,7 +722,7 @@ export const shouldBehaveLikePermissionSetData = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(value);
+          expect(result).to.equal(value);
         });
       }
     });
@@ -745,7 +743,7 @@ export const shouldBehaveLikePermissionSetData = (
         const result = await context.universalProfile["getData(bytes32)"](
           allowedERC725YKeys[0]
         );
-        expect(result).toEqual(value);
+        expect(result).to.equal(value);
       });
 
       it("should be allowed to set the 2nd allowed key", async () => {
@@ -763,7 +761,7 @@ export const shouldBehaveLikePermissionSetData = (
         const result = await context.universalProfile["getData(bytes32)"](
           allowedERC725YKeys[1]
         );
-        expect(result).toEqual(value);
+        expect(result).to.equal(value);
       });
 
       it("should be allowed to set the 3rd allowed key", async () => {
@@ -781,7 +779,7 @@ export const shouldBehaveLikePermissionSetData = (
         const result = await context.universalProfile["getData(bytes32)"](
           allowedERC725YKeys[2]
         );
-        expect(result).toEqual(value);
+        expect(result).to.equal(value);
       });
     });
   });
