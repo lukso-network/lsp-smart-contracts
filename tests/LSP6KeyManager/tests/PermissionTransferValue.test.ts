@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -25,7 +26,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { provider, abiCoder } from "../../utils/helpers";
+import { provider, abiCoder, combinePermissions } from "../../utils/helpers";
 
 // errors
 import { NotAuthorisedError, NotAllowedAddressError } from "../../utils/errors";
@@ -61,11 +62,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       const permissionsValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.TRANSFERVALUE,
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.TRANSFERVALUE)) +
-            parseInt(Number(PERMISSIONS.CALL)),
-          32
-        ),
+        combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.CALL),
         PERMISSIONS.CALL,
       ];
 
@@ -109,14 +106,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(parseInt(newBalanceUP)).toBeLessThan(
-            parseInt(initialBalanceUP)
-          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
           let newBalanceRecipient = await provider.getBalance(recipient);
-          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-            parseInt(initialBalanceRecipient)
-          );
+          expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
         });
 
         it("should pass when caller has permission TRANSFERVALUE only", async () => {
@@ -140,14 +133,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(parseInt(newBalanceUP)).toBeLessThan(
-            parseInt(initialBalanceUP)
-          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
           let newBalanceRecipient = await provider.getBalance(recipient);
-          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-            parseInt(initialBalanceRecipient)
-          );
+          expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
         });
 
         it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
@@ -171,14 +160,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(parseInt(newBalanceUP)).toBeLessThan(
-            parseInt(initialBalanceUP)
-          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
           let newBalanceRecipient = await provider.getBalance(recipient);
-          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-            parseInt(initialBalanceRecipient)
-          );
+          expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
         });
 
         it("should fail when caller does not have permission TRANSFERVALUE", async () => {
@@ -199,7 +184,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             context.keyManager
               .connect(cannotTransferValue)
               .execute(transferPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAuthorisedError(cannotTransferValue.address, "TRANSFERVALUE")
           );
 
@@ -208,10 +193,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
           let newBalanceRecipient = await provider.getBalance(recipient);
 
-          expect(parseInt(newBalanceUP)).toBe(parseInt(initialBalanceUP));
-          expect(parseInt(initialBalanceRecipient)).toBe(
-            parseInt(newBalanceRecipient)
-          );
+          expect(newBalanceUP).to.equal(initialBalanceUP);
+          expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
         });
       });
 
@@ -240,14 +223,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(parseInt(newBalanceUP)).toBeLessThan(
-            parseInt(initialBalanceUP)
-          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
           let newBalanceRecipient = await provider.getBalance(recipient);
-          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-            parseInt(initialBalanceRecipient)
-          );
+          expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
         });
 
         it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
@@ -272,14 +251,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(parseInt(newBalanceUP)).toBeLessThan(
-            parseInt(initialBalanceUP)
-          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
           let newBalanceRecipient = await provider.getBalance(recipient);
-          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-            parseInt(initialBalanceRecipient)
-          );
+          expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
         });
 
         it("should fail when caller has permission TRANSFERVALUE only", async () => {
@@ -300,7 +275,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             context.keyManager
               .connect(canTransferValue)
               .execute(transferPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAuthorisedError(canTransferValue.address, "CALL")
           );
 
@@ -309,10 +284,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
           let newBalanceRecipient = await provider.getBalance(recipient);
 
-          expect(parseInt(newBalanceUP)).toBe(parseInt(initialBalanceUP));
-          expect(parseInt(initialBalanceRecipient)).toBe(
-            parseInt(newBalanceRecipient)
-          );
+          expect(newBalanceUP).to.equal(initialBalanceUP.toNumber());
+          expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
         });
 
         it("should fail when caller does not have permission TRANSFERVALUE", async () => {
@@ -333,7 +306,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             context.keyManager
               .connect(cannotTransferValue)
               .execute(transferPayload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAuthorisedError(cannotTransferValue.address, "TRANSFERVALUE")
           );
 
@@ -342,10 +315,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
           let newBalanceRecipient = await provider.getBalance(recipient);
 
-          expect(parseInt(newBalanceUP)).toBe(parseInt(initialBalanceUP));
-          expect(parseInt(initialBalanceRecipient)).toBe(
-            parseInt(newBalanceRecipient)
-          );
+          expect(newBalanceUP).to.equal(initialBalanceUP.toNumber());
+          expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
         });
       });
     });
@@ -398,7 +369,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         let initialRecipientBalance = await provider.getBalance(
           hardcodedRecipient
         );
-        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("1"));
+        expect(initialUPBalance).to.equal(ethers.utils.parseEther("1"));
 
         await contractCanTransferValue.sendOneLyxHardcoded({
           gasLimit: GAS_PROVIDED,
@@ -409,8 +380,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
         let newRecipientBalance = await provider.getBalance(hardcodedRecipient);
 
-        expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(
+        expect(newUPBalance).to.equal(0);
+        expect(newRecipientBalance).to.equal(
           initialRecipientBalance.add(ethers.utils.parseEther("1"))
         );
       });
@@ -424,7 +395,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         let initialRecipientBalance = await provider.getBalance(
           recipient.address
         );
-        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("1"));
+        expect(initialUPBalance).to.equal(ethers.utils.parseEther("1"));
 
         await contractCanTransferValue.sendOneLyxToRecipient(
           recipient.address,
@@ -438,8 +409,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
         let newRecipientBalance = await provider.getBalance(recipient.address);
 
-        expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(
+        expect(newUPBalance).to.equal(0);
+        expect(newRecipientBalance).to.equal(
           initialRecipientBalance.add(ethers.utils.parseEther("1"))
         );
       });
@@ -453,7 +424,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         let initialRecipientBalance = await provider.getBalance(
           hardcodedRecipient
         );
-        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("1"));
+        expect(initialUPBalance).to.equal(ethers.utils.parseEther("1"));
 
         await contractCanTransferValue.sendOneLyxHardcodedRawCall({
           gasLimit: GAS_PROVIDED,
@@ -464,8 +435,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
         let newRecipientBalance = await provider.getBalance(hardcodedRecipient);
 
-        expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(
+        expect(newUPBalance).to.equal(0);
+        expect(newRecipientBalance).to.equal(
           initialRecipientBalance.add(ethers.utils.parseEther("1"))
         );
       });
@@ -479,7 +450,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         let initialRecipientBalance = await provider.getBalance(
           recipient.address
         );
-        expect(initialUPBalance).toEqBN(ethers.utils.parseEther("1"));
+        expect(initialUPBalance).to.equal(ethers.utils.parseEther("1"));
 
         await contractCanTransferValue.sendOneLyxToRecipientRawCall(
           recipient.address,
@@ -493,8 +464,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
         let newRecipientBalance = await provider.getBalance(recipient.address);
 
-        expect(newUPBalance).toEqBN(0);
-        expect(newRecipientBalance).toEqBN(
+        expect(newUPBalance).to.equal(0);
+        expect(newRecipientBalance).to.equal(
           initialRecipientBalance.add(ethers.utils.parseEther("1"))
         );
       });
@@ -553,7 +524,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       // prettier-ignore
       const result = await aliceContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(ALL_PERMISSIONS);
+      expect(result).to.equal(ALL_PERMISSIONS);
     });
 
     it("Bob should have ALL PERMISSIONS in his UP", async () => {
@@ -562,7 +533,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         bob.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(ALL_PERMISSIONS);
+      expect(result).to.equal(ALL_PERMISSIONS);
     });
 
     it("Alice's UP should have permission TRANSFERVALUE on Bob's UP", async () => {
@@ -571,7 +542,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         aliceContext.universalProfile.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
-      expect(result).toEqual(PERMISSIONS.TRANSFERVALUE);
+      expect(result).to.equal(PERMISSIONS.TRANSFERVALUE);
     });
 
     it("Alice should be able to send 5 LYX from Bob's UP to her UP", async () => {
@@ -581,8 +552,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       let bobUPBalanceBefore = await provider.getBalance(
         bobContext.universalProfile.address
       );
-      expect(aliceUPBalanceBefore).toEqBN(0);
-      expect(bobUPBalanceBefore).toEqBN(ethers.utils.parseEther("5"));
+      expect(aliceUPBalanceBefore).to.equal(0);
+      expect(bobUPBalanceBefore).to.equal(ethers.utils.parseEther("5"));
 
       let finalTransferLyxPayload =
         bobContext.universalProfile.interface.encodeFunctionData("execute", [
@@ -617,8 +588,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       let bobUPBalanceAfter = await provider.getBalance(
         bobContext.universalProfile.address
       );
-      expect(aliceUPBalanceAfter).toEqBN(ethers.utils.parseEther("5"));
-      expect(bobUPBalanceAfter).toEqBN(0);
+      expect(aliceUPBalanceAfter).to.equal(ethers.utils.parseEther("5"));
+      expect(bobUPBalanceAfter).to.equal(0);
     });
   });
 
@@ -655,11 +626,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       const permissionsValues = [
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.SUPER_TRANSFERVALUE)) +
-            parseInt(Number(PERMISSIONS.CALL)),
-          32
-        ),
+        combinePermissions(PERMISSIONS.SUPER_TRANSFERVALUE, PERMISSIONS.CALL),
         // restriction = only a specific address (e.g: an LSP7 contract)
         abiCoder.encode(
           ["address[]"],
@@ -676,7 +643,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     });
 
     describe("should be allowed to send LYX to any EOA", () => {
-      const recipients: SignerWithAddress[] = [
+      const recipients: string[] = [
         ethers.Wallet.createRandom().address,
         ethers.Wallet.createRandom().address,
         ethers.Wallet.createRandom().address,
@@ -684,32 +651,32 @@ export const shouldBehaveLikePermissionTransferValue = (
         ethers.Wallet.createRandom().address,
       ];
 
-      it.each(recipients)("should send LYX to EOA -> %s", async (recipient) => {
-        let initialBalanceUP = await provider.getBalance(
-          context.universalProfile.address
-        );
+      recipients.forEach((recipient) => {
+        it(`should send LYX to EOA -> ${recipient}`, async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
 
-        let initialBalanceRecipient = await provider.getBalance(recipient);
+          let initialBalanceRecipient = await provider.getBalance(recipient);
 
-        let transferPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            recipient,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              recipient,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]);
 
-        await context.keyManager.connect(caller).execute(transferPayload);
+          await context.keyManager.connect(caller).execute(transferPayload);
 
-        let newBalanceUP = await provider.getBalance(
-          context.universalProfile.address
-        );
-        expect(parseInt(newBalanceUP)).toBeLessThan(parseInt(initialBalanceUP));
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
-        let newBalanceRecipient = await provider.getBalance(recipient);
-        expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-          parseInt(initialBalanceRecipient)
-        );
+          let newBalanceRecipient = await provider.getBalance(recipient);
+          expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
+        });
       });
     });
 
@@ -741,16 +708,12 @@ export const shouldBehaveLikePermissionTransferValue = (
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(parseInt(newBalanceUP)).toBeLessThan(
-            parseInt(initialBalanceUP)
-          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
           let newBalanceRecipient = await provider.getBalance(
             recipient.address
           );
-          expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-            parseInt(initialBalanceRecipient)
-          );
+          expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
         });
       }
     });
@@ -781,7 +744,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       await expect(
         context.keyManager.connect(caller).execute(executePayload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         NotAllowedAddressError(caller.address, newLSP7Token.address)
       );
     });
@@ -823,11 +786,11 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       let lsp7RecipientBalanceAfter = await lsp7Token.balanceOf(recipient);
 
-      expect(lsp7SenderBalanceAfter).toEqual(
+      expect(lsp7SenderBalanceAfter).to.equal(
         lsp7SenderBalanceBefore.sub(tokenAmount)
       );
 
-      expect(lsp7RecipientBalanceAfter).toEqual(
+      expect(lsp7RecipientBalanceAfter).to.equal(
         lsp7RecipientBalanceBefore.add(tokenAmount)
       );
     });
@@ -848,7 +811,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       await context.keyManager.connect(caller).execute(payload);
 
       const result = await targetContract.value();
-      expect(result.toNumber()).toEqual(newValue);
+      expect(result).to.equal(newValue);
     });
 
     it("should be allowed to interact with an allowed contract + send some LYX while calling the function", async () => {
@@ -862,7 +825,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       let targetContractLyxBalanceBefore = await provider.getBalance(
         targetContract.address
       );
-      expect(targetContractLyxBalanceBefore.toNumber()).toEqual(0);
+      expect(targetContractLyxBalanceBefore).to.equal(0);
 
       let targetContractPayload = targetContract.interface.encodeFunctionData(
         "updateState",
@@ -883,12 +846,12 @@ export const shouldBehaveLikePermissionTransferValue = (
       let upLyxBalanceAfter = await provider.getBalance(
         context.universalProfile.address
       );
-      expect(upLyxBalanceAfter).toEqual(upLyxBalanceBefore.sub(lyxAmount));
+      expect(upLyxBalanceAfter).to.equal(upLyxBalanceBefore.sub(lyxAmount));
 
       let targetContractLyxBalanceAfter = await provider.getBalance(
         targetContract.address
       );
-      expect(targetContractLyxBalanceAfter).toEqual(lyxAmount);
+      expect(targetContractLyxBalanceAfter).to.equal(lyxAmount);
     });
   });
 
@@ -910,11 +873,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       const permissionsValues = [
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.TRANSFERVALUE)) +
-            parseInt(Number(PERMISSIONS.SUPER_CALL)),
-          32
-        ),
+        combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.SUPER_CALL),
         // restriction = only a specific address
         abiCoder.encode(["address[]"], [[allowedAddress.address]]),
       ];
@@ -947,17 +906,15 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       await expect(
         context.keyManager.connect(caller).execute(transferPayload)
-      ).toBeRevertedWith(NotAllowedAddressError(caller.address, recipient));
+      ).to.be.revertedWith(NotAllowedAddressError(caller.address, recipient));
 
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
       );
-      expect(parseInt(newBalanceUP)).toEqual(parseInt(initialBalanceUP));
+      expect(newBalanceUP).to.equal(initialBalanceUP);
 
       let newBalanceRecipient = await provider.getBalance(recipient);
-      expect(parseInt(newBalanceRecipient)).toEqual(
-        parseInt(initialBalanceRecipient)
-      );
+      expect(newBalanceRecipient).to.equal(initialBalanceRecipient);
     });
 
     it("should be allowed to do a plain LYX transfer to an allowed address", async () => {
@@ -984,14 +941,12 @@ export const shouldBehaveLikePermissionTransferValue = (
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
       );
-      expect(parseInt(newBalanceUP)).toBeLessThan(parseInt(initialBalanceUP));
+      expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
       let newBalanceRecipient = await provider.getBalance(
         allowedAddress.address
       );
-      expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-        parseInt(initialBalanceRecipient)
-      );
+      expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
     });
 
     describe("should be allowed to interact with any contract", () => {
@@ -1020,7 +975,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await context.keyManager.connect(caller).execute(executePayload);
 
             const result = await targetContract.getNumber();
-            expect(result.toNumber()).toEqual(newValue);
+            expect(result).to.equal(newValue);
           });
         }
       });
@@ -1049,8 +1004,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             const recipientTokenBalanceBefore = await lsp7Token.balanceOf(
               tokenRecipient
             );
-            expect(senderTokenBalanceBefore.toNumber()).toEqual(100);
-            expect(recipientTokenBalanceBefore.toNumber()).toEqual(0);
+            expect(senderTokenBalanceBefore).to.equal(100);
+            expect(recipientTokenBalanceBefore).to.equal(0);
 
             let tokenTransferPayload = lsp7Token.interface.encodeFunctionData(
               "transfer",
@@ -1079,10 +1034,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             const recipientTokenBalanceAfter = await lsp7Token.balanceOf(
               tokenRecipient
             );
-            expect(senderTokenBalanceAfter.toNumber()).toEqual(
+            expect(senderTokenBalanceAfter).to.equal(
               senderTokenBalanceBefore.toNumber() - tokenAmount
             );
-            expect(recipientTokenBalanceAfter.toNumber()).toEqual(
+            expect(recipientTokenBalanceAfter).to.equal(
               recipientTokenBalanceBefore.toNumber() + tokenAmount
             );
           });
@@ -1105,7 +1060,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           let targetContractLyxBalanceBefore = await provider.getBalance(
             targetContract.address
           );
-          expect(targetContractLyxBalanceBefore.toNumber()).toEqual(0);
+          expect(targetContractLyxBalanceBefore).to.equal(0);
 
           let targetPayload = targetContract.interface.encodeFunctionData(
             "updateState",
@@ -1124,7 +1079,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           await expect(
             context.keyManager.connect(caller).execute(payload)
-          ).toBeRevertedWith(
+          ).to.be.revertedWith(
             NotAllowedAddressError(caller.address, targetContract.address)
           );
 
@@ -1132,12 +1087,12 @@ export const shouldBehaveLikePermissionTransferValue = (
           let upLyxBalanceAfter = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(upLyxBalanceAfter).toEqual(upLyxBalanceBefore);
+          expect(upLyxBalanceAfter).to.equal(upLyxBalanceBefore);
 
           let targetContractLyxBalanceAfter = await provider.getBalance(
             targetContract.address
           );
-          expect(targetContractLyxBalanceAfter.toNumber()).toEqual(0);
+          expect(targetContractLyxBalanceAfter).to.equal(0);
         });
       }
     });
@@ -1161,10 +1116,9 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       const permissionsValues = [
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.SUPER_TRANSFERVALUE)) +
-            parseInt(Number(PERMISSIONS.SUPER_CALL)),
-          32
+        combinePermissions(
+          PERMISSIONS.SUPER_TRANSFERVALUE,
+          PERMISSIONS.SUPER_CALL
         ),
         // restriction = only a specific address
         abiCoder.encode(["address[]"], [[allowedAddress.address]]),
@@ -1179,7 +1133,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     });
 
     describe("should be allowed to send LYX to any address", () => {
-      const recipients: SignerWithAddress[] = [
+      const recipients: string[] = [
         ethers.Wallet.createRandom().address,
         ethers.Wallet.createRandom().address,
         ethers.Wallet.createRandom().address,
@@ -1187,32 +1141,34 @@ export const shouldBehaveLikePermissionTransferValue = (
         ethers.Wallet.createRandom().address,
       ];
 
-      it.each(recipients)("should send LYX to EOA -> %s", async (recipient) => {
-        let initialBalanceUP = await provider.getBalance(
-          context.universalProfile.address
-        );
+      recipients.forEach((recipient) => {
+        it(`should send LYX to EOA -> ${recipient}`, async () => {
+          let initialBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
 
-        let initialBalanceRecipient = await provider.getBalance(recipient);
+          let initialBalanceRecipient = await provider.getBalance(recipient);
 
-        let transferPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            recipient,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          let transferPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              recipient,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]);
 
-        await context.keyManager.connect(caller).execute(transferPayload);
+          await context.keyManager.connect(caller).execute(transferPayload);
 
-        let newBalanceUP = await provider.getBalance(
-          context.universalProfile.address
-        );
-        expect(parseInt(newBalanceUP)).toBeLessThan(parseInt(initialBalanceUP));
+          let newBalanceUP = await provider.getBalance(
+            context.universalProfile.address
+          );
+          expect(newBalanceUP).to.be.lt(initialBalanceUP.toNumber());
 
-        let newBalanceRecipient = await provider.getBalance(recipient);
-        expect(parseInt(newBalanceRecipient)).toBeGreaterThan(
-          parseInt(initialBalanceRecipient)
-        );
+          let newBalanceRecipient = await provider.getBalance(recipient);
+          expect(newBalanceRecipient).to.be.gt(
+            initialBalanceRecipient.toNumber()
+          );
+        });
       });
     });
 
@@ -1242,7 +1198,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await context.keyManager.connect(caller).execute(executePayload);
 
             const result = await targetContract.getNumber();
-            expect(result.toNumber()).toEqual(newValue);
+            expect(result).to.equal(newValue);
           });
         }
       });
@@ -1271,8 +1227,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             const recipientTokenBalanceBefore = await lsp7Token.balanceOf(
               tokenRecipient
             );
-            expect(senderTokenBalanceBefore.toNumber()).toEqual(100);
-            expect(recipientTokenBalanceBefore.toNumber()).toEqual(0);
+            expect(senderTokenBalanceBefore).to.equal(100);
+            expect(recipientTokenBalanceBefore).to.equal(0);
 
             let tokenTransferPayload = lsp7Token.interface.encodeFunctionData(
               "transfer",
@@ -1301,10 +1257,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             const recipientTokenBalanceAfter = await lsp7Token.balanceOf(
               tokenRecipient
             );
-            expect(senderTokenBalanceAfter.toNumber()).toEqual(
+            expect(senderTokenBalanceAfter).to.equal(
               senderTokenBalanceBefore.toNumber() - tokenAmount
             );
-            expect(recipientTokenBalanceAfter.toNumber()).toEqual(
+            expect(recipientTokenBalanceAfter).to.equal(
               recipientTokenBalanceBefore.toNumber() + tokenAmount
             );
           });
