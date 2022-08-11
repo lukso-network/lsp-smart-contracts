@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import { LSP7Tester__factory, LSP7InitTester__factory } from "../../types";
 
 import {
@@ -115,7 +116,7 @@ describe("LSP7", () => {
             randomCaller.address,
             false
           )
-        ).toBeRevertedWith("Initializable: contract is already initialized");
+        ).to.be.revertedWith("Initializable: contract is already initialized");
       });
     });
 
@@ -143,7 +144,7 @@ describe("LSP7", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

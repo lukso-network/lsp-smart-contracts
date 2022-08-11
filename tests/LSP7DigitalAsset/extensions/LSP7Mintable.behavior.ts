@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import { LSP7Mintable } from "../../../types";
 
 export type LSP7MintableTestAccounts = {
@@ -47,7 +48,7 @@ export const shouldBehaveLikeLSP7Mintable = (
       );
 
       let postTotalSupply = await context.lsp7Mintable.totalSupply();
-      expect(postTotalSupply).toEqual(preTotalSupply.add(amountToMint));
+      expect(postTotalSupply).to.be.equal(preTotalSupply.add(amountToMint));
     });
 
     it("should increase the tokenReceiver balance", async () => {
@@ -57,7 +58,7 @@ export const shouldBehaveLikeLSP7Mintable = (
         context.accounts.tokenReceiver.address
       );
 
-      expect(tokenReceiverBalance.toNumber()).toEqual(amountToMint.toNumber());
+      expect(tokenReceiverBalance.toNumber()).to.be.equal(amountToMint.toNumber());
     });
   });
 
@@ -72,7 +73,7 @@ export const shouldBehaveLikeLSP7Mintable = (
         context.lsp7Mintable
           .connect(nonOwner)
           .mint(nonOwner.address, amountToMint, true, "0x")
-      ).toBeRevertedWith("Ownable: caller is not the owner");
+      ).to.be.revertedWith("Ownable: caller is not the owner");
     });
   });
 };
