@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
@@ -70,13 +70,13 @@ export const shouldBehaveLikePermissionDelegateCall = (
       const currentStorage = await context.universalProfile["getData(bytes32)"](
         key
       );
-      expect(currentStorage).toEqual("0x");
+      expect(currentStorage).to.equal("0x");
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
       let delegateCallPayload =
         erc725YDelegateCallContract.interface.encodeFunctionData(
-          "updateStorage(bytes32,bytes)",
+          "updateStorage",
           [key, value]
         );
 
@@ -90,7 +90,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
       await expect(
         context.keyManager.connect(context.owner).execute(executePayload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
     });
@@ -105,13 +105,13 @@ export const shouldBehaveLikePermissionDelegateCall = (
       const currentStorage = await context.universalProfile["getData(bytes32)"](
         key
       );
-      expect(currentStorage).toEqual("0x");
+      expect(currentStorage).to.equal("0x");
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
       let delegateCallPayload =
         erc725YDelegateCallContract.interface.encodeFunctionData(
-          "updateStorage(bytes32,bytes)",
+          "updateStorage",
           [key, value]
         );
 
@@ -127,7 +127,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
         context.keyManager
           .connect(addressCanDelegateCall)
           .execute(executePayload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
     });
@@ -142,7 +142,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       const currentStorage = await context.universalProfile["getData(bytes32)"](
         key
       );
-      expect(currentStorage).toEqual("0x");
+      expect(currentStorage).to.equal("0x");
 
       // Doing a delegatecall to the setData function of another UP
       // should update the ERC725Y storage of the UP making the delegatecall
@@ -164,7 +164,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
         context.keyManager
           .connect(addressCannotDelegateCall)
           .execute(executePayload)
-      ).toBeRevertedWith(
+      ).to.be.revertedWith(
         "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
     });
@@ -248,11 +248,11 @@ export const shouldBehaveLikePermissionDelegateCall = (
             const currentStorage = await context.universalProfile[
               "getData(bytes32)"
             ](key);
-            expect(currentStorage).toEqual("0x");
+            expect(currentStorage).to.equal("0x");
 
             // prettier-ignore
             let delegateCallPayload = randomContracts[ii].interface.encodeFunctionData(
-              "updateStorage(bytes32,bytes)", [
+              "updateStorage", [
                 key,
                 value,
               ]);
@@ -267,7 +267,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
             await expect(
               context.keyManager.connect(caller).execute(executePayload)
-            ).toBeRevertedWith(
+            ).to.be.revertedWith(
               "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
             );
 
@@ -275,7 +275,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
             const newStorage = await context.universalProfile[
               "getData(bytes32)"
             ](key);
-            expect(newStorage).toEqual("0x");
+            expect(newStorage).to.equal("0x");
           });
         }
       });
@@ -289,11 +289,11 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         // prettier-ignore
         const currentStorage = await context.universalProfile["getData(bytes32)"](key);
-        expect(currentStorage).toEqual("0x");
+        expect(currentStorage).to.equal("0x");
 
         // prettier-ignore
         let delegateCallPayload = allowedDelegateCallContracts[0].interface.encodeFunctionData(
-          "updateStorage(bytes32,bytes)", [
+          "updateStorage", [
             key,
             value,
           ]);
@@ -308,13 +308,13 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         await expect(
           context.keyManager.connect(caller).execute(executePayload)
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
         );
 
         // prettier-ignore
         const newStorage = await context.universalProfile["getData(bytes32)"](key);
-        expect(newStorage).toEqual("0x");
+        expect(newStorage).to.equal("0x");
       });
 
       it("should revert with DELEGATECALL disallowed when trying to interact with the 2nd allowed contract", async () => {
@@ -324,11 +324,11 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         // prettier-ignore
         const currentStorage = await context.universalProfile["getData(bytes32)"](key);
-        expect(currentStorage).toEqual("0x");
+        expect(currentStorage).to.equal("0x");
 
         // prettier-ignore
         let delegateCallPayload = allowedDelegateCallContracts[1].interface.encodeFunctionData(
-          "updateStorage(bytes32,bytes)", [
+          "updateStorage", [
             key,
             value,
           ]);
@@ -343,13 +343,13 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         await expect(
           context.keyManager.connect(caller).execute(executePayload)
-        ).toBeRevertedWith(
+        ).to.be.revertedWith(
           "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
         );
 
         // prettier-ignore
         const newStorage = await context.universalProfile["getData(bytes32)"](key);
-        expect(newStorage).toEqual("0x");
+        expect(newStorage).to.equal("0x");
       });
     });
   });
