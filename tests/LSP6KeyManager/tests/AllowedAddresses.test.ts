@@ -25,9 +25,6 @@ import {
   combinePermissions,
 } from "../../utils/helpers";
 
-// errors
-import { NotAllowedAddressError } from "../../utils/errors";
-
 export const shouldBehaveLikeAllowedAddresses = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
@@ -203,12 +200,9 @@ export const shouldBehaveLikeAllowedAddresses = (
         context.keyManager
           .connect(canCallOnlyTwoAddresses)
           .execute(transferPayload)
-      ).to.be.revertedWith(
-        NotAllowedAddressError(
-          canCallOnlyTwoAddresses.address,
-          notAllowedEOA.address
-        )
-      );
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAllowedAddress")
+        .withArgs(canCallOnlyTwoAddresses.address, notAllowedEOA.address);
 
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
@@ -241,12 +235,12 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await expect(
         context.keyManager.connect(canCallOnlyTwoAddresses).execute(payload)
-      ).to.be.revertedWith(
-        NotAllowedAddressError(
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAllowedAddress")
+        .withArgs(
           canCallOnlyTwoAddresses.address,
           notAllowedTargetContract.address
-        )
-      );
+        );
     });
   });
 

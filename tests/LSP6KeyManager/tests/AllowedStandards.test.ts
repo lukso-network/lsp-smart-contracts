@@ -28,9 +28,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 // helpers
 import { abiCoder, provider, combinePermissions } from "../../utils/helpers";
 
-// errors
-import { NotAllowedStandardError } from "../../utils/errors";
-
 export const shouldBehaveLikeAllowedStandards = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
@@ -221,12 +218,15 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithERC1271)
             .execute(upPayload)
-        ).to.be.revertedWith(
-          NotAllowedStandardError(
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedStandard"
+          )
+          .withArgs(
             addressCanInteractOnlyWithERC1271.address,
             targetContract.address
-          )
-        );
+          );
       });
     });
   });
@@ -255,12 +255,15 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(upPayload)
-        ).to.be.revertedWith(
-          NotAllowedStandardError(
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedStandard"
+          )
+          .withArgs(
             addressCanInteractOnlyWithLSP7.address,
             signatureValidatorContract.address
-          )
-        );
+          );
       });
     });
 
@@ -278,12 +281,15 @@ export const shouldBehaveLikeAllowedStandards = (
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(transferLyxPayload)
-        ).to.be.revertedWith(
-          NotAllowedStandardError(
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedStandard"
+          )
+          .withArgs(
             addressCanInteractOnlyWithLSP7.address,
             otherUniversalProfile.address
-          )
-        );
+          );
       });
     });
   });

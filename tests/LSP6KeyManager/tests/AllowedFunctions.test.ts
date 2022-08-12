@@ -14,9 +14,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 // helpers
 import { abiCoder } from "../../utils/helpers";
 
-// errors
-import { NotAllowedFunctionError } from "../../utils/errors";
-
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
@@ -128,11 +125,6 @@ export const shouldBehaveLikeAllowedFunctions = (
               targetContractPayload,
             ]);
 
-          let callResult = await context.keyManager
-            .connect(addressCanCallOnlyOneFunction)
-            .callStatic.execute(executePayload);
-          expect(callResult).to.be.true;
-
           await context.keyManager
             .connect(addressCanCallOnlyOneFunction)
             .execute(executePayload);
@@ -162,12 +154,15 @@ export const shouldBehaveLikeAllowedFunctions = (
             context.keyManager
               .connect(addressCanCallOnlyOneFunction)
               .execute(executePayload)
-          ).to.be.revertedWith(
-            NotAllowedFunctionError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NotAllowedFunction"
+            )
+            .withArgs(
               addressCanCallOnlyOneFunction.address,
               targetContract.interface.getSighash("setNumber")
-            )
-          );
+            );
 
           let result = await targetContract.callStatic.getNumber();
           expect(result.toNumber()).to.not.equal(newNumber);
@@ -188,12 +183,12 @@ export const shouldBehaveLikeAllowedFunctions = (
           context.keyManager
             .connect(addressCanCallOnlyOneFunction)
             .execute(payload)
-        ).to.be.revertedWith(
-          NotAllowedFunctionError(
-            addressCanCallOnlyOneFunction.address,
-            "0xbaadca11"
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedFunction"
           )
-        );
+          .withArgs(addressCanCallOnlyOneFunction.address, "0xbaadca11");
       });
     });
   });
@@ -286,12 +281,15 @@ export const shouldBehaveLikeAllowedFunctions = (
               nonce,
               executeRelayCallPayload
             )
-          ).to.be.revertedWith(
-            NotAllowedFunctionError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NotAllowedFunction"
+            )
+            .withArgs(
               addressCanCallOnlyOneFunction.address,
               targetContract.interface.getSighash("setNumber")
-            )
-          );
+            );
 
           let endResult = await targetContract.callStatic.getNumber();
           expect(endResult.toString()).to.equal(currentNumber.toString());
