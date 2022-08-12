@@ -19,9 +19,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 // helpers
 import { abiCoder } from "../../utils/helpers";
 
-// errors
-import { NotAuthorisedError } from "../../utils/errors";
-
 export const shouldBehaveLikePermissionCall = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
@@ -119,9 +116,9 @@ export const shouldBehaveLikePermissionCall = (
 
         await expect(
           context.keyManager.connect(addressCannotMakeCall).execute(payload)
-        ).to.be.revertedWith(
-          NotAuthorisedError(addressCannotMakeCall.address, "CALL")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(addressCannotMakeCall.address, "CALL");
       });
     });
 
@@ -336,9 +333,9 @@ export const shouldBehaveLikePermissionCall = (
             nonce,
             executeRelayCallPayload
           )
-        ).to.be.revertedWith(
-          NotAuthorisedError(addressCannotMakeCall.address, "CALL")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(addressCannotMakeCall.address, "CALL");
 
         // ensure no state change at the target contract
         const result = await targetContract.callStatic.getName();

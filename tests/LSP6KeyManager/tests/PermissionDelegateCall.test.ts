@@ -218,7 +218,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
     describe("when calling a disallowed contract", () => {
       let randomContracts: ERC725YDelegateCall[];
 
-      beforeAll(async () => {
+      before(async () => {
         randomContracts = [
           await new ERC725YDelegateCall__factory(context.accounts[0]).deploy(
             context.accounts[0].address

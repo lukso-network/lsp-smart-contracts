@@ -19,7 +19,7 @@ import { setupKeyManager } from "../../utils/fixtures";
 import { abiCoder } from "../../utils/helpers";
 
 // errors
-import { NotAllowedAddressError, NotAuthorisedError } from "../../utils/errors";
+import { NotAllowedAddressError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -151,9 +151,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         context.keyManager
           .connect(addressCanMakeStaticCall)
           .execute(executePayload)
-      ).to.be.revertedWith(
-        NotAuthorisedError(addressCanMakeStaticCall.address, "CALL")
-      );
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(addressCanMakeStaticCall.address, "CALL");
     });
   });
 
@@ -174,9 +174,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         context.keyManager
           .connect(addressCannotMakeStaticCall)
           .execute(executePayload)
-      ).to.be.revertedWith(
-        NotAuthorisedError(addressCannotMakeStaticCall.address, "STATICCALL")
-      );
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(addressCannotMakeStaticCall.address, "STATICCALL");
     });
   });
 
@@ -232,11 +232,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         ]
       );
 
-      await expect(
-        context.keyManager.connect(caller).execute(payload)
-      ).to.be.revertedWith(
-        NotAllowedAddressError(caller.address, targetContract.address)
-      );
+      await expect(context.keyManager.connect(caller).execute(payload))
+        .to.be.revertedWithCustomError(context.keyManager, "NotAllowedAddress")
+        .withArgs(caller.address, targetContract.address);
     });
 
     describe("when interacting with 1st allowed contract", () => {

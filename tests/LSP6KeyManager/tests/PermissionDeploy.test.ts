@@ -228,9 +228,9 @@ export const shouldBehaveLikePermissionDeploy = (
 
       await expect(
         context.keyManager.connect(addressCannotDeploy).execute(payload)
-      ).to.be.revertedWith(
-        NotAuthorisedError(addressCannotDeploy.address, "DEPLOY")
-      );
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(addressCannotDeploy.address, "DEPLOY");
     });
     it("should revert when trying to deploy a contract via CREATE2", async () => {
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
@@ -249,9 +249,9 @@ export const shouldBehaveLikePermissionDeploy = (
 
       await expect(
         context.keyManager.connect(addressCannotDeploy).execute(payload)
-      ).to.be.revertedWith(
-        NotAuthorisedError(addressCannotDeploy.address, "DEPLOY")
-      );
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(addressCannotDeploy.address, "DEPLOY");
     });
   });
 };
