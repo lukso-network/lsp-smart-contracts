@@ -25,7 +25,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 ) => {
   let context: LSP6TestContext;
 
-  describe.only("setting permissions keys (CHANGE vs ADD Permissions)", () => {
+  describe("setting permissions keys (CHANGE vs ADD Permissions)", () => {
     let canOnlyAddPermissions: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress,
       canOnlySetData: SignerWithAddress,
@@ -2274,7 +2274,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should pass): 2 x keys + change 2 x existing permissions", async () => {
@@ -2303,7 +2303,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should pass): 2 x keys + (add 1 x new permission) + (change 1 x existing permission)", async () => {
@@ -2336,7 +2336,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
       });
 
@@ -2376,7 +2376,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should fail): 2 x keys + add 2 x new permissions + decrement AddressPermissions[].length by -1", async () => {
@@ -2519,7 +2519,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should pass): 2 x keys + change 2 x existing permissions", async () => {
@@ -2552,7 +2552,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           // prettier-ignore
           const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.equal(values);
+          expect(fetchedResult).to.deep.equal(values);
         });
 
         it("(should fail): 2 x keys + add 2 x new permissions", async () => {
