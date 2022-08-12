@@ -28,13 +28,6 @@ import {
   EMPTY_PAYLOAD,
 } from "../../utils/helpers";
 
-// errors
-import {
-  customRevertErrorMessage,
-  NoPermissionsSetError,
-  InvalidERC725FunctionError,
-} from "../../utils/errors";
-
 export const testSecurityScenarios = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
@@ -101,9 +94,9 @@ export const testSecurityScenarios = (
       context.keyManager
         .connect(addressWithNoPermissions)
         .execute(executePayload)
-    ).to.be.revertedWith(
-      NoPermissionsSetError(addressWithNoPermissions.address)
-    );
+    )
+      .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
+      .withArgs(addressWithNoPermissions.address);
   });
 
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
@@ -111,20 +104,24 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      await expect(
-        context.keyManager.connect(context.owner).execute(payload)
-      ).to.be.revertedWith(InvalidERC725FunctionError(payload));
+      await expect(context.keyManager.connect(context.owner).execute(payload))
+        .to.be.revertedWithCustomError(
+          context.keyManager,
+          "InvalidERC725Function"
+        )
+        .withArgs(payload);
     });
 
     it("via `executeRelayCall()`", async () => {
+      const HARDHAT_CHAINID = 31337;
       let nonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
       let hash = ethers.utils.solidityKeccak256(
-        ["address", "uint256", "bytes"],
-        [context.keyManager.address, nonce, payload]
+        ["uint256", "address", "uint256", "bytes"],
+        [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
       );
 
       let signature = await context.owner.signMessage(
@@ -135,7 +132,12 @@ export const testSecurityScenarios = (
         context.keyManager
           .connect(context.owner)
           .executeRelayCall(signature, nonce, payload)
-      ).to.be.revertedWith(InvalidERC725FunctionError(payload));
+      )
+        .to.be.revertedWithCustomError(
+          context.keyManager,
+          "InvalidERC725Function"
+        )
+        .withArgs(payload);
     });
   });
 
@@ -226,9 +228,12 @@ export const testSecurityScenarios = (
           context.keyManager
             .connect(relayer)
             .executeRelayCall(signature, nonce, executeRelayCallPayload)
-        ).to.be.revertedWith(
-          `${customRevertErrorMessage} 'InvalidRelayNonce("${signer.address}", ${nonce}, "${signature}")'`
-        );
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "InvalidRelayNonce"
+          )
+          .withArgs(signer.address, nonce, signature);
       });
     });
   });

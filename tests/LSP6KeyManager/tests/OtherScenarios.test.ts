@@ -10,9 +10,6 @@ import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-// errors
-import { InvalidERC725FunctionError } from "../../utils/errors";
-
 export const otherTestScenarios = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
@@ -59,9 +56,12 @@ export const otherTestScenarios = (
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
         context.keyManager.connect(addressCanMakeCall).execute(INVALID_PAYLOAD)
-      ).to.be.revertedWith(
-        InvalidERC725FunctionError(INVALID_PAYLOAD.slice(0, 10))
-      );
+      )
+        .to.be.revertedWithCustomError(
+          context.keyManager,
+          "InvalidERC725Function"
+        )
+        .withArgs(INVALID_PAYLOAD.slice(0, 10));
     });
   });
 
