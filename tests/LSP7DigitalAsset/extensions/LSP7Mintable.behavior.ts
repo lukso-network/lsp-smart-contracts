@@ -31,7 +31,7 @@ export const shouldBehaveLikeLSP7Mintable = (
 ) => {
   let context: LSP7MintableTestContext;
 
-  beforeAll(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
@@ -48,7 +48,7 @@ export const shouldBehaveLikeLSP7Mintable = (
       );
 
       let postTotalSupply = await context.lsp7Mintable.totalSupply();
-      expect(postTotalSupply).to.be.equal(preTotalSupply.add(amountToMint));
+      expect(postTotalSupply).to.equal(preTotalSupply.add(amountToMint));
     });
 
     it("should increase the tokenReceiver balance", async () => {
@@ -58,7 +58,7 @@ export const shouldBehaveLikeLSP7Mintable = (
         context.accounts.tokenReceiver.address
       );
 
-      expect(tokenReceiverBalance.toNumber()).to.be.equal(amountToMint.toNumber());
+      expect(tokenReceiverBalance).to.equal(amountToMint);
     });
   });
 

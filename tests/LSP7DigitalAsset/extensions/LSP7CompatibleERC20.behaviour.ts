@@ -1,14 +1,20 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
+
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { BigNumber, ContractTransaction } from "ethers";
+import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 import { INTERFACE_IDS, SupportedStandards } from "../../../constants";
 import {
+  LSP7CompatibleERC20,
+  LSP7CompatibleERC20Tester,
   TokenReceiverWithLSP1,
   TokenReceiverWithLSP1__factory,
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../../types";
+import { ERC725YKeys } from "../../../constants.js"
 
 type LSP7CompatibleERC20TestAccounts = {
   owner: SignerWithAddress;
@@ -38,6 +44,11 @@ export type LSP7CompatibleERC20TestContext = {
   initialSupply: BigNumber;
 };
 
+export type ExpectedError = { 
+  error: string,
+  args: string[]
+}
+
 export const shouldBehaveLikeLSP7CompatibleERC20 = (
   buildContext: () => Promise<LSP7CompatibleERC20TestContext>
 ) => {
@@ -55,7 +66,10 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             ethers.constants.AddressZero,
             context.initialSupply
           )
-        ).to.be.revertedWith("LSP7CannotUseAddressZeroAsOperator()");
+        ).to.be.revertedWithCustomError(
+          context.lsp7CompatibleERC20,
+          "LSP7CannotUseAddressZeroAsOperator"
+        );
       });
     });
 
@@ -69,12 +83,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           tokenOwner,
           operator
         );
-        expect(preAllowance.toString()).to.be.equal("0");
+        expect(preAllowance).to.equal("0");
 
         const tx = await context.lsp7CompatibleERC20.approve(
           operator,
           authorizedAmount
         );
+
         await expect(tx).to.emit(
           context.lsp7CompatibleERC20,
           "AuthorizedOperator"
@@ -83,6 +98,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           tokenOwner,
           authorizedAmount
         );
+
         await expect(tx).to.emit(
           context.lsp7CompatibleERC20,
           "Approval"
@@ -96,7 +112,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           tokenOwner,
           operator
         );
-        expect(postAllowance.toString()).to.be.equal(authorizedAmount);
+        expect(postAllowance).to.equal(authorizedAmount);
       });
     });
 
@@ -117,12 +133,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             tokenOwner,
             operator
           );
-          expect(preAllowance.toString()).to.be.equal(previouslyAuthorizedAmount);
+          expect(preAllowance).to.equal(previouslyAuthorizedAmount);
 
           const tx = await context.lsp7CompatibleERC20.approve(
             operator,
             authorizedAmount
           );
+
           await expect(tx).to.emit(
             context.lsp7CompatibleERC20,
             "AuthorizedOperator"
@@ -131,6 +148,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             tokenOwner,
             authorizedAmount
           );
+
           await expect(tx).to.emit(
             context.lsp7CompatibleERC20,
             "Approval"
@@ -144,7 +162,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             tokenOwner,
             operator
           );
-          expect(postAllowance.toString()).to.be.equal(authorizedAmount);
+          expect(postAllowance).to.equal(authorizedAmount);
         });
       });
 
@@ -164,12 +182,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             tokenOwner,
             operator
           );
-          expect(preAllowance.toString()).to.be.equal(previouslyAuthorizedAmount);
+          expect(preAllowance).to.equal(previouslyAuthorizedAmount);
 
           const tx = await context.lsp7CompatibleERC20.approve(
             operator,
             authorizedAmount
           );
+
           await expect(tx).to.emit(
             context.lsp7CompatibleERC20,
             "RevokedOperator"
@@ -177,6 +196,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             operator,
             tokenOwner
           );
+
           await expect(tx).to.emit(
             context.lsp7CompatibleERC20,
             "Approval"
@@ -190,7 +210,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             tokenOwner,
             operator
           );
-          expect(postAllowance.toString()).to.be.equal(authorizedAmount);
+          expect(postAllowance).to.equal(authorizedAmount);
         });
       });
     });
@@ -209,18 +229,19 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             context.accounts.owner.address,
             context.accounts.operator.address
           )
-        ).to.be.equal(context.initialSupply);
+        ).to.equal(context.initialSupply);
       });
     });
 
     describe("when operator has not been approved", () => {
       it("should return zero", async () => {
+
         expect(
           await context.lsp7CompatibleERC20.allowance(
             context.accounts.owner.address,
             context.accounts.anyone.address
           )
-        ).to.be.equal(ethers.constants.Zero);
+        ).to.equal(ethers.constants.Zero);
       });
     });
   });
@@ -250,6 +271,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           true,
           ethers.utils.hexlify(txParams.data),
         );
+
         await expect(tx).to.emit(
           context.lsp7CompatibleERC20,
           "Transfer(address,address,uint256)"
@@ -295,6 +317,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           false,
           ethers.utils.hexlify(txParams.data),
         );
+        
         await expect(tx).to.emit(
           context.lsp7CompatibleERC20,
           "Transfer(address,address,uint256)"
@@ -384,31 +407,41 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
       // post-conditions
       const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(from);
-      expect(postBalanceOf).to.be.equal(preBalanceOf.sub(amount));
+      expect(postBalanceOf).to.equal(preBalanceOf.sub(amount));
 
       if (operator !== from) {
         const postAllowance = await context.lsp7CompatibleERC20.allowance(
           from,
           operator
         );
-        expect(postAllowance).to.be.equal(preAllowance.sub(amount));
+        expect(postAllowance).to.equal(preAllowance.sub(amount));
       }
     };
+
+
 
     const transferFailScenario = async (
       { from }: TransferParams,
       sendTransaction: () => Promise<ContractTransaction>,
-      expectedError: string
+      expectedError: ExpectedError
     ) => {
       // pre-conditions
       const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(from);
 
       // effect
-      await expect(sendTransaction()).to.be.revertedWith(expectedError);
+      if (expectedError.args.length > 0) {
+        await expect(sendTransaction())
+          .to.be.revertedWithCustomError(context.lsp7CompatibleERC20, expectedError.error)
+          .withArgs(...expectedError.args);
+      }
+      else {
+        await expect(sendTransaction())
+          .to.be.revertedWithCustomError(context.lsp7CompatibleERC20, expectedError.error);
+      }
 
       // post-conditions
       const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(from);
-      expect(postBalanceOf).to.be.equal(preBalanceOf);
+      expect(postBalanceOf).to.equal(preBalanceOf);
     };
 
     [
@@ -504,12 +537,19 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
               to: deployedContracts.tokenReceiverWithoutLSP1.address,
               amount: context.initialSupply.add(1),
             };
-            const expectedError = `LSP7AmountExceedsBalance(${context.initialSupply}, "${txParams.from}", ${txParams.amount})`;
+            const expectedError = "LSP7AmountExceedsBalance";
 
             await transferFailScenario(
               txParams,
               () => sendTransaction(context.lsp7CompatibleERC20, txParams),
-              expectedError
+              {
+                error: expectedError,
+                args: [
+                  context.initialSupply.toHexString(),
+                  txParams.from,
+                  txParams.amount.toHexString()
+                ]
+              }
             );
           });
         });
@@ -551,10 +591,9 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         await context.lsp7CompatibleERC20["getData(bytes32)"](
           SupportedStandards.LSP4DigitalAsset.key
         )
-      ).to.be.equal(SupportedStandards.LSP4DigitalAsset.value);
+      ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey =
-        "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
+      const nameKey = ERC725YKeys.LSP4.LSP4TokenName;
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
@@ -564,10 +603,9 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         ).withArgs(nameKey);
       expect(
         await context.lsp7CompatibleERC20["getData(bytes32)"](nameKey)
-      ).to.be.equal(expectedNameValue);
+      ).to.equal(expectedNameValue);
 
-      const symbolKey =
-        "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
+      const symbolKey = ERC725YKeys.LSP4.LSP4TokenSymbol;
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );
@@ -577,7 +615,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
       ).withArgs(symbolKey);
       expect(
         await context.lsp7CompatibleERC20["getData(bytes32)"](symbolKey)
-      ).to.be.equal(expectedSymbolValue);
+      ).to.equal(expectedSymbolValue);
     });
   });
 };
