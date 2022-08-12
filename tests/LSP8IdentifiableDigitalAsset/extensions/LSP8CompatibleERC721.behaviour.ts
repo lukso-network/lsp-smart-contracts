@@ -46,6 +46,11 @@ export type LSP8CompatibleERC721TestContext = {
   deployParams: LSP8CompatibleERC721DeployParams;
 };
 
+export type ExpectedError = {
+  error: string,
+  args: string[]
+}
+
 const mintedTokenId = "10";
 const neverMintedTokenId = "1010110";
 
@@ -64,7 +69,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         await context.lsp8CompatibleERC721.supportsInterface(
           INTERFACE_IDS.ERC721
         )
-      ).to.be.equal(true);
+      ).to.equal(true);
     });
 
     it("should support ERC721Metadata", async () => {
@@ -72,7 +77,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         await context.lsp8CompatibleERC721.supportsInterface(
           INTERFACE_IDS.ERC721Metadata
         )
-      ).to.be.equal(true);
+      ).to.equal(true);
     });
   });
 
@@ -80,13 +85,13 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     it("should allow reading name", async () => {
       // using compatibility getter -> returns(string)
       const nameAsString = await context.lsp8CompatibleERC721.name();
-      expect(nameAsString).to.be.equal(context.deployParams.name);
+      expect(nameAsString).to.equal(context.deployParams.name);
 
       // using getData -> returns(bytes)
       const nameAsBytes = await context.lsp8CompatibleERC721[
         "getData(bytes32)"
       ](ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenName")));
-      expect(ethers.utils.toUtf8String(nameAsBytes)).to.be.equal(
+      expect(ethers.utils.toUtf8String(nameAsBytes)).to.equal(
         context.deployParams.name
       );
     });
@@ -96,13 +101,13 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     it("should allow reading symbol", async () => {
       // using compatibility getter -> returns(string)
       const symbolAsString = await context.lsp8CompatibleERC721.symbol();
-      expect(symbolAsString).to.be.equal(context.deployParams.symbol);
+      expect(symbolAsString).to.equal(context.deployParams.symbol);
 
       // using getData -> returns(bytes)
       const symbolAsBytes = await context.lsp8CompatibleERC721[
         "getData(bytes32)"
       ](ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4TokenSymbol")));
-      expect(ethers.utils.toUtf8String(symbolAsBytes)).to.be.equal(
+      expect(ethers.utils.toUtf8String(symbolAsBytes)).to.equal(
         context.deployParams.symbol
       );
     });
@@ -116,7 +121,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       );
       // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36 + 2 for prefix = 38
       const offset = 36 * 2 + 2;
-      expect(tokenURIAsString).to.be.equal(
+      expect(tokenURIAsString).to.equal(
         ethers.utils.toUtf8String(
           `0x${context.deployParams.lsp4MetadataValue.slice(offset)}`
         )
@@ -126,7 +131,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       const lsp4MetadataValueAsBytes = await context.lsp8CompatibleERC721[
         "getData(bytes32)"
       ](ethers.utils.keccak256(ethers.utils.toUtf8Bytes("LSP4Metadata")));
-      expect(lsp4MetadataValueAsBytes).to.be.equal(
+      expect(lsp4MetadataValueAsBytes).to.equal(
         context.deployParams.lsp4MetadataValue
       );
     });
@@ -137,9 +142,9 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       it("should revert", async () => {
         await expect(
           context.lsp8CompatibleERC721.ownerOf(neverMintedTokenId)
-        ).to.be.revertedWith(
-          `LSP8NonExistentTokenId("${tokenIdAsBytes32(neverMintedTokenId)}")`
-        );
+        )
+          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NonExistentTokenId")
+          .withArgs(tokenIdAsBytes32(neverMintedTokenId));
       });
     });
 
@@ -153,7 +158,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
         expect(
           await context.lsp8CompatibleERC721.ownerOf(mintedTokenId)
-        ).to.be.equal(context.accounts.owner.address);
+        ).to.equal(context.accounts.owner.address);
       });
     });
   });
@@ -165,9 +170,9 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           context.lsp8CompatibleERC721
             .connect(context.accounts.anyone)
             .approve(context.accounts.operator.address, neverMintedTokenId)
-        ).to.be.revertedWith(
-          `LSP8NonExistentTokenId("${tokenIdAsBytes32(neverMintedTokenId)}")`
-        );
+        )
+          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NonExistentTokenId")
+          .withArgs(tokenIdAsBytes32(neverMintedTokenId));
       });
     });
 
@@ -186,13 +191,13 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             context.lsp8CompatibleERC721
               .connect(context.accounts.anyone)
               .approve(context.accounts.operator.address, mintedTokenId)
-          ).to.be.revertedWith(
-            `LSP8NotTokenOwner("${
-              context.accounts.owner.address
-            }", "${tokenIdAsBytes32(mintedTokenId)}", "${
+          )
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NotTokenOwner")
+            .withArgs(
+              context.accounts.owner.address,
+              tokenIdAsBytes32(mintedTokenId),
               context.accounts.anyone.address
-            }")`
-          );
+            );
         });
       });
 
@@ -234,7 +239,10 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
             await expect(
               context.lsp8CompatibleERC721.approve(operator, tokenId)
-            ).to.be.revertedWith("LSP8CannotUseAddressZeroAsOperator()");
+            ).to.be.revertedWithCustomError(
+              context.lsp8CompatibleERC721,
+              "LSP8CannotUseAddressZeroAsOperator"
+            );
           });
         });
       });
@@ -345,7 +353,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             const newTokenOwner = await context.lsp8CompatibleERC721.ownerOf(
               testCase.tokenId
             );
-            expect(newTokenOwner).to.be.equal(
+            expect(newTokenOwner).to.equal(
               context.accounts.tokenReceiver.address
             );
           });
@@ -445,9 +453,9 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 context.accounts.tokenReceiver.address,
                 testCase.tokenId
               )
-          ).to.be.revertedWith(
-            `${customRevertErrorMessage} 'LSP8NotTokenOperator("${tokenIdAsBytes32}", "${context.accounts.operator.address}")'`
-          );
+          )
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NotTokenOperator")
+            .withArgs(tokenIdAsBytes32, context.accounts.operator.address);
         });
       });
     });
@@ -458,9 +466,9 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
       it("should revert", async () => {
         await expect(
           context.lsp8CompatibleERC721.getApproved(neverMintedTokenId)
-        ).to.be.revertedWith(
-          `LSP8NonExistentTokenId("${tokenIdAsBytes32(neverMintedTokenId)}")`
-        );
+        )
+          .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, "LSP8NonExistentTokenId")
+          .withArgs(tokenIdAsBytes32(neverMintedTokenId));
       });
     });
 
@@ -477,7 +485,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         it("should return address(0)", async () => {
           expect(
             await context.lsp8CompatibleERC721.getApproved(mintedTokenId)
-          ).to.be.equal(ethers.constants.AddressZero);
+          ).to.equal(ethers.constants.AddressZero);
         });
       });
 
@@ -490,7 +498,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
           expect(
             await context.lsp8CompatibleERC721.getApproved(mintedTokenId)
-          ).to.be.equal(context.accounts.operator.address);
+          ).to.equal(context.accounts.operator.address);
         });
       });
 
@@ -518,7 +526,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
           expect(
             await context.lsp8CompatibleERC721.getApproved(mintedTokenId)
-          ).to.be.equal(context.accounts.anotherOperator.address);
+          ).to.equal(context.accounts.anotherOperator.address);
         });
       });
     });
@@ -653,13 +661,14 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     ) => {
       // pre-conditions
       const preOwnerOf = await context.lsp8CompatibleERC721.ownerOf(tokenId);
-      expect(preOwnerOf).to.be.equal(from);
+      expect(preOwnerOf).to.equal(from);
 
       // effect
       const txArgs = [from, to, tokenId];
       if (data) txArgs.push(data);
 
       const tx = await context.lsp8CompatibleERC721[transferFn](...txArgs);
+
       await expect(tx).to.emit(
         context.lsp8CompatibleERC721,
         "Transfer(address,address,address,bytes32,bool,bytes)"
@@ -671,6 +680,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         force,
         expectedData
       );
+
       await expect(tx).to.emit(
         context.lsp8CompatibleERC721,
         "Transfer(address,address,uint256)"
@@ -679,6 +689,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
         to,
         ethers.BigNumber.from(tokenId)
       );
+
       await expect(tx).to.emit(
         context.lsp8CompatibleERC721,
         "RevokedOperator"
@@ -690,25 +701,53 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
       // post-conditions
       const postOwnerOf = await context.lsp8CompatibleERC721.ownerOf(tokenId);
-      expect(postOwnerOf).to.be.equal(to);
+      expect(postOwnerOf).to.equal(to);
     };
 
     const transferFailScenario = async (
-      { from, to, tokenId }: TransferTxParams,
+      { from, to, tokenId, data }: TransferTxParams,
       transferFn: string,
-      expectedError: string
+      expectedError: ExpectedError
     ) => {
+
       // pre-conditions
       const preOwnerOf = await context.lsp8CompatibleERC721.ownerOf(tokenId);
 
       // effect
-      await expect(
-        context.lsp8CompatibleERC721[transferFn](from, to, tokenId)
-      ).to.be.revertedWith(expectedError);
+      if (expectedError.args.length > 0) {
+        if (data != undefined) {
+          await expect(
+            context.lsp8CompatibleERC721[transferFn](from, to, tokenId, data)
+          )
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, expectedError.error)
+            .withArgs(...expectedError.args);
+        }
+        else {
+          await expect(
+            context.lsp8CompatibleERC721[transferFn](from, to, tokenId)
+          )
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, expectedError.error)
+            .withArgs(...expectedError.args);
+        }
+      }
+      else {
+        if (data != undefined) {
+          await expect(
+            context.lsp8CompatibleERC721[transferFn](from, to, tokenId, data)
+          )
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, expectedError.error);
+        }
+        else {
+          await expect(
+            context.lsp8CompatibleERC721[transferFn](from, to, tokenId)
+          )
+            .to.be.revertedWithCustomError(context.lsp8CompatibleERC721, expectedError.error);
+        }
+      }
 
       // post-conditions
       const postOwnerOf = await context.lsp8CompatibleERC721.ownerOf(tokenId);
-      expect(postOwnerOf).to.be.equal(preOwnerOf);
+      expect(postOwnerOf).to.equal(preOwnerOf);
     };
 
     describe("transferFrom", () => {
@@ -782,11 +821,20 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             to: deployedContracts.tokenReceiverWithoutLSP1.address,
             tokenId: mintedTokenId,
           };
-          const expectedError = `LSP8NotTokenOwner("${
-            context.accounts.owner.address
-          }", "${tokenIdAsBytes32(txParams.tokenId)}", "${txParams.from}")`;
+          const expectedError = "LSP8NotTokenOwner";
 
-          await transferFailScenario(txParams, transferFn, expectedError);
+          await transferFailScenario(
+            txParams,
+            transferFn,
+            {
+              error: expectedError,
+              args: [
+                context.accounts.owner.address,
+                tokenIdAsBytes32(txParams.tokenId).toString(),
+                txParams.from
+              ]
+            }
+          );
         });
       });
     });
@@ -805,9 +853,18 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               to: context.accounts.tokenReceiver.address,
               tokenId: mintedTokenId,
             };
-            const expectedError = `LSP8NotifyTokenReceiverIsEOA("${txParams.to}")`;
+            const expectedError = "LSP8NotifyTokenReceiverIsEOA";
 
-            await transferFailScenario(txParams, transferFn, expectedError);
+            await transferFailScenario(
+              txParams,
+              transferFn,
+              {
+                error: expectedError,
+                args: [
+                  txParams.to
+                ]
+              }
+            );
           });
         });
 
@@ -838,9 +895,18 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 to: deployedContracts.tokenReceiverWithoutLSP1.address,
                 tokenId: mintedTokenId,
               };
-              const expectedError = `LSP8NotifyTokenReceiverContractMissingLSP1Interface("${txParams.to}")`;
+              const expectedError = "LSP8NotifyTokenReceiverContractMissingLSP1Interface";
 
-              await transferFailScenario(txParams, transferFn, expectedError);
+              await transferFailScenario(
+                txParams,
+                transferFn,
+                {
+                  error: expectedError,
+                  args: [
+                    txParams.to
+                  ]
+                }
+              );
             });
           });
         });
@@ -854,12 +920,20 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             to: deployedContracts.tokenReceiverWithoutLSP1.address,
             tokenId: mintedTokenId,
           };
+          const expectedError = "LSP8NotTokenOwner";
 
-          const expectedError = `LSP8NotTokenOwner("${
-            context.accounts.owner.address
-          }", "${tokenIdAsBytes32(txParams.tokenId)}", "${txParams.from}")`;
-
-          await transferFailScenario(txParams, transferFn, expectedError);
+          await transferFailScenario(
+            txParams,
+            transferFn,
+            {
+              error: expectedError,
+              args: [
+                context.accounts.owner.address,
+                tokenIdAsBytes32(txParams.tokenId).toString(),
+                txParams.from
+              ]
+            }
+          );
         });
       });
     });
@@ -881,9 +955,18 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               tokenId: mintedTokenId,
               data: expectedData,
             };
-            const expectedError = `LSP8NotifyTokenReceiverIsEOA("${txParams.to}")`;
+            const expectedError = "LSP8NotifyTokenReceiverIsEOA";
 
-            await transferFailScenario(txParams, transferFn, expectedError);
+            await transferFailScenario(
+              txParams,
+              transferFn,
+              {
+                error: expectedError,
+                args: [
+                  txParams.to
+                ]
+              }
+            );
           });
         });
 
@@ -916,9 +999,18 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
                 tokenId: mintedTokenId,
                 data: expectedData,
               };
-              const expectedError = `LSP8NotifyTokenReceiverContractMissingLSP1Interface("${txParams.to}")`;
+              const expectedError = "LSP8NotifyTokenReceiverContractMissingLSP1Interface";
 
-              await transferFailScenario(txParams, transferFn, expectedError);
+              await transferFailScenario(
+                txParams,
+                transferFn,
+                {
+                  error: expectedError,
+                  args: [
+                    txParams.to
+                  ]
+                }
+              );
             });
           });
         });
@@ -933,11 +1025,20 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             tokenId: mintedTokenId,
             data: expectedData,
           };
-          const expectedError = `LSP8NotTokenOwner("${
-            context.accounts.owner.address
-          }", "${tokenIdAsBytes32(txParams.tokenId)}", "${txParams.from}")`;
+          const expectedError = "LSP8NotTokenOwner";
 
-          await transferFailScenario(txParams, transferFn, expectedError);
+          await transferFailScenario(
+            txParams,
+            transferFn,
+            {
+              error: expectedError,
+              args: [
+                context.accounts.owner.address,
+                tokenIdAsBytes32(txParams.tokenId).toString(),
+                txParams.from
+              ]
+            }
+          );
         });
       });
     });
@@ -987,7 +1088,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
         await context.lsp8CompatibleERC721["getData(bytes32)"](
           SupportedStandards.LSP4DigitalAsset.key
         )
-      ).to.be.equal(SupportedStandards.LSP4DigitalAsset.value);
+      ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
       const nameKey =
         "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
@@ -1000,7 +1101,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
       ).withArgs(nameKey);
       expect(
         await context.lsp8CompatibleERC721["getData(bytes32)"](nameKey)
-      ).to.be.equal(expectedNameValue);
+      ).to.equal(expectedNameValue);
 
       const symbolKey =
         "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
@@ -1013,7 +1114,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
       ).withArgs(symbolKey);
       expect(
         await context.lsp8CompatibleERC721["getData(bytes32)"](symbolKey)
-      ).to.be.equal(expectedSymbolValue);
+      ).to.equal(expectedSymbolValue);
     });
   });
 };

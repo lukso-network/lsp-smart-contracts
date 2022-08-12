@@ -11,7 +11,7 @@ import {
   shouldBehaveLikeLSP8Enumerable,
   LSP8EnumerableTestContext,
   getNamedAccounts,
-} from "./LSP8Enumerable.behavior";
+} from "./LSP8Enumerable.behaviour";
 
 import { deployProxy } from "../../utils/fixtures";
 
@@ -107,7 +107,7 @@ describe("LSP8Enumerable", () => {
       describe("when calling initialize more than once", () => {
         it("should revert", async () => {
           await initializeProxy(context);
-          await expect(initializeProxy(context)).to.be.revertWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

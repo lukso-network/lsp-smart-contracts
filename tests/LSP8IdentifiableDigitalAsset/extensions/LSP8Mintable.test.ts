@@ -11,7 +11,7 @@ import {
   shouldBehaveLikeLSP8Mintable,
   LSP8MintableTestContext,
   getNamedAccounts,
-} from "./LSP8Mintable.behavior";
+} from "./LSP8Mintable.behaviour";
 
 import { deployProxy } from "../../utils/fixtures";
 

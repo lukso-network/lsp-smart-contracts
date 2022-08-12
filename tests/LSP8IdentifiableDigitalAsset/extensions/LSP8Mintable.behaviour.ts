@@ -30,7 +30,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 ) => {
   let context: LSP8MintableTestContext;
 
-  beforeAll(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
@@ -48,7 +48,7 @@ export const shouldBehaveLikeLSP8Mintable = (
       );
 
       let postMintTotalSupply = await context.lsp8Mintable.totalSupply();
-      expect(postMintTotalSupply).to.be.equal(preMintTotalSupply.add(1));
+      expect(postMintTotalSupply).to.equal(preMintTotalSupply.add(1));
     });
 
     it("tokenReceiver balance should have increased", async () => {
@@ -56,7 +56,7 @@ export const shouldBehaveLikeLSP8Mintable = (
         context.accounts.tokenReceiver.address
       );
 
-      expect(tokenReceiverBalance.toNumber()).to.be.equal(1);
+      expect(tokenReceiverBalance.toNumber()).to.equal(1);
     });
   });
 
