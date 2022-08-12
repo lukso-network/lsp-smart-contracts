@@ -17,9 +17,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 // helpers
 import { abiCoder, combinePermissions } from "../../utils/helpers";
 
-// errors
-import { InvalidABIEncodedArrayError } from "../../utils/errors";
-
 export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {

@@ -26,9 +26,6 @@ import {
   combinePermissions,
 } from "../../utils/helpers";
 
-// errors
-import { NotAuthorisedError } from "../../utils/errors";
-
 export const shouldBehaveLikePermissionSetData = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {

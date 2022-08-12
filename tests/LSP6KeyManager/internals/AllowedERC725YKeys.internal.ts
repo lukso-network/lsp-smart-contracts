@@ -17,9 +17,6 @@ import { setupKeyManagerHelper } from "../../utils/fixtures";
 // helpers
 import { abiCoder } from "../../utils/helpers";
 
-// errors
-import { NotAllowedERC725YKeyError } from "../../utils/errors";
-
 export const testAllowedERC725YKeysInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {

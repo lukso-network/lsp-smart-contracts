@@ -18,9 +18,6 @@ import {
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
-// errors
-import { NotAuthorisedError } from "../../utils/errors";
-
 export const shouldBehaveLikePermissionDeploy = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
