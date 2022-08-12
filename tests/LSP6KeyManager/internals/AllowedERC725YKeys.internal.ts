@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -70,7 +71,7 @@ export const testAllowedERC725YKeysInternals = (
 
         const expectedResult = [customKey1];
 
-        expect(decodedResult).toEqual(expectedResult);
+        expect(decodedResult).to.deep.equal(expectedResult);
       });
     });
 
@@ -87,12 +88,12 @@ export const testAllowedERC725YKeysInternals = (
             controllerCanSetOneKey.address,
             inputKeys
           )
-        ).toBeRevertedWith(
-          NotAllowedERC725YKeyError(
-            controllerCanSetOneKey.address,
-            inputKeys[1]
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedERC725YKey"
           )
-        );
+          .withArgs(controllerCanSetOneKey.address, inputKeys[1]);
       });
     });
   });
@@ -124,7 +125,7 @@ export const testAllowedERC725YKeysInternals = (
               SINGLETON_KEY
             );
 
-          expect(result.toNumber()).toEqual(0);
+          expect(result.toNumber()).to.equal(0);
         }
       );
 
@@ -136,7 +137,7 @@ export const testAllowedERC725YKeysInternals = (
               ARRAY_KEY
             );
 
-          expect(result.toNumber()).toEqual(16);
+          expect(result.toNumber()).to.equal(16);
         }
       );
 
@@ -149,7 +150,7 @@ export const testAllowedERC725YKeysInternals = (
               MAPPING_KEY
             );
 
-          expect(result.toNumber()).toEqual(16);
+          expect(result.toNumber()).to.equal(16);
         }
       );
 
@@ -162,7 +163,7 @@ export const testAllowedERC725YKeysInternals = (
               BYTES20_MAPPING_KEY
             );
 
-          expect(result.toNumber()).toEqual(24);
+          expect(result.toNumber()).to.equal(24);
         }
       );
     });
