@@ -73,7 +73,7 @@ export const shouldBehaveLikeLSP9 = (
       const result = await context.lsp9Vault.callStatic["getData(bytes32)"](
         keys[0]
       );
-      expect(result).to.be.equal(values[0]);
+      expect(result).to.equal(values[0]);
     });
 
     it("non-owner shouldn't be able to setData", async () => {
@@ -110,7 +110,7 @@ export const shouldBehaveLikeLSP9 = (
       const result = await context.lsp9Vault.callStatic["getData(bytes32)"](
         keys[0]
       );
-      expect(result).to.be.equal(values[0]);
+      expect(result).to.equal(values[0]);
     });
   });
 
@@ -141,7 +141,7 @@ export const shouldBehaveLikeLSP9 = (
         const arrayLength = await context.universalProfile.callStatic[
           "getData(bytes32)"
         ](ERC725YKeys.LSP10["LSP10Vaults[]"].length);
-        expect(arrayLength).to.be.equal(ARRAY_LENGTH.ONE);
+        expect(arrayLength).to.equal(ARRAY_LENGTH.ONE);
       });
     });
 
@@ -189,7 +189,7 @@ export const shouldBehaveLikeLSP9 = (
         const res = await context.lsp9Vault.callStatic["getData(bytes32)"](
           keys[0]
         );
-        expect(res).to.be.equal(values[0]);
+        expect(res).to.equal(values[0]);
       });
 
       it("should fail when friend is interfacting with other contracts", async () => {
@@ -292,7 +292,7 @@ export const shouldInitializeLikeLSP9 = (
         await context.lsp9Vault["getData(bytes32)"](
           SupportedStandards.LSP9Vault.key
         )
-      ).to.be.equal(SupportedStandards.LSP9Vault.value);
+      ).to.equal(SupportedStandards.LSP9Vault.value);
     });
   });
 };
