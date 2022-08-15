@@ -13,7 +13,7 @@ import {
   shouldBehaveLikeLSP7Mintable,
   LSP7MintableTestContext,
   LSP7MintableDeployParams,
-} from "./LSP7Mintable.behavior";
+} from "./LSP7Mintable.behaviour";
 
 import { deployProxy } from "../../utils/fixtures";
 

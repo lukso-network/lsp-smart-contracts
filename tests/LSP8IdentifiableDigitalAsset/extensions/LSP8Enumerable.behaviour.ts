@@ -40,7 +40,7 @@ export const shouldBehaveLikeLSP8Enumerable = (
     it("should not get token", async () => {
       const tokenSupply = await context.lsp8Enumerable.totalSupply();
       expect(await context.lsp8Enumerable.tokenAt(tokenSupply)).to.equal(
-        ethers.utils.hexZeroPad(0, 32)
+        ethers.utils.hexZeroPad(ethers.BigNumber.from(0).toHexString(), 32)
       );
     });
   });
@@ -81,7 +81,7 @@ export const shouldBehaveLikeLSP8Enumerable = (
         ethers.utils.hexlify(anotherTokenId)
       );
       expect(await context.lsp8Enumerable.tokenAt(tokenSupply.add(1))).to.equal(
-        ethers.utils.hexZeroPad(0, 32)
+        ethers.utils.hexZeroPad(ethers.BigNumber.from(0).toHexString(), 32)
       );
     });
 
