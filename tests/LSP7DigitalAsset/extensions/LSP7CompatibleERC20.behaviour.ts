@@ -77,13 +77,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
       it("should succeed by setting the given amount", async () => {
         const operator = context.accounts.operator.address;
         const tokenOwner = context.accounts.owner.address;
-        const authorizedAmount = "1";
+        const authorizedAmount = 1;
 
         const preAllowance = await context.lsp7CompatibleERC20.allowance(
           tokenOwner,
           operator
         );
-        expect(preAllowance).to.equal("0");
+        expect(preAllowance).to.equal(0);
 
         const tx = await context.lsp7CompatibleERC20.approve(
           operator,

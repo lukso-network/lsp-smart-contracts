@@ -56,7 +56,7 @@ export const shouldBehaveLikeLSP8Mintable = (
         context.accounts.tokenReceiver.address
       );
 
-      expect(tokenReceiverBalance.toNumber()).to.equal(1);
+      expect(tokenReceiverBalance).to.equal(1);
     });
   });
 
