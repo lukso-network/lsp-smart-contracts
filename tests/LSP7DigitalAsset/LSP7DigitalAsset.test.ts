@@ -21,18 +21,15 @@ describe("LSP7", () => {
         symbol: "NFT",
         newOwner: accounts.owner.address,
       };
+
       const lsp7 = await new LSP7Tester__factory(accounts.owner).deploy(
         deployParams.name,
         deployParams.symbol,
         deployParams.newOwner
       );
 
-      await lsp7.mint(
-        accounts.owner.address,
-        initialSupply,
-        true,
-        ethers.utils.toUtf8Bytes("mint tokens for the owner")
-      );
+      // mint tokens for the owner
+      await lsp7.mint(accounts.owner.address, initialSupply, true, "0x");
 
       return { accounts, lsp7, deployParams, initialSupply };
     };
@@ -74,18 +71,16 @@ describe("LSP7", () => {
       const lsp7TesterInit = await new LSP7InitTester__factory(
         accounts.owner
       ).deploy();
+
       const lsp7Proxy = await deployProxy(
         lsp7TesterInit.address,
         accounts.owner
       );
+
       const lsp7 = lsp7TesterInit.attach(lsp7Proxy);
 
-      await lsp7.mint(
-        accounts.owner.address,
-        initialSupply,
-        true,
-        ethers.utils.toUtf8Bytes("mint tokens for the owner")
-      );
+      // mint tokens for the owner
+      await lsp7.mint(accounts.owner.address, initialSupply, true, "0x");
 
       return { accounts, lsp7, deployParams, initialSupply };
     };
