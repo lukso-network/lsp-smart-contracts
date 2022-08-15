@@ -78,8 +78,9 @@ export const shouldBehaveLikeClaimOwnership = (
           "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
         const value = "0xabcd";
 
-        // prettier-ignore
-        await context.contract.connect(context.deployParams.owner)["setData(bytes32,bytes)"](key, value);
+        await context.contract
+          .connect(context.deployParams.owner)
+          ["setData(bytes32,bytes)"](key, value);
 
         const result = await context.contract["getData(bytes32)"](key);
         expect(result).to.equal(value);
@@ -232,8 +233,9 @@ export const shouldBehaveLikeClaimOwnership = (
             "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
           const value = "0xabcd";
 
-          // prettier-ignore
-          await context.contract.connect(newOwner)["setData(bytes32,bytes)"](key, value);
+          await context.contract
+            .connect(newOwner)
+            ["setData(bytes32,bytes)"](key, value);
 
           const result = await context.contract["getData(bytes32)"](key);
           expect(result).to.equal(value);
