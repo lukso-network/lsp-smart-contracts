@@ -146,10 +146,12 @@ export const shouldBehaveLikeClaimOwnership = (
 
       beforeEach(async () => {
         newOwner = context.accounts[1];
+
         await context.contract
           .connect(context.deployParams.owner)
           .transferOwnership(newOwner.address);
       });
+
       it("should change the contract owner to the pendingOwner", async () => {
         let pendingOwner = await context.contract.pendingOwner();
 
@@ -164,6 +166,19 @@ export const shouldBehaveLikeClaimOwnership = (
 
         let newPendingOwner = await context.contract.pendingOwner();
         expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+      });
+
+      it("should have emitted a OwnershipTransferred event", async () => {
+        const owner = await context.contract.owner();
+
+        let tx = await context.contract.connect(newOwner).claimOwnership();
+
+        await expect(tx)
+          .to.emit(context.contract, "OwnershipTransferred")
+          .withArgs(
+            owner, // previous owner
+            newOwner.address // new owner
+          );
       });
     });
 
@@ -186,10 +201,11 @@ export const shouldBehaveLikeClaimOwnership = (
             "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
           const value = "0xabcd";
 
-          // prettier-ignore
           await expect(
-                context.contract.connect(previousOwner)["setData(bytes32,bytes)"](key, value)
-              ).to.be.revertedWith(context.onlyOwnerRevertString)
+            context.contract
+              .connect(previousOwner)
+              ["setData(bytes32,bytes)"](key, value)
+          ).to.be.revertedWith(context.onlyOwnerRevertString);
         });
 
         it("should revert when calling `execute(...)`", async () => {
