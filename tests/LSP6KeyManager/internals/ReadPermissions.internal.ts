@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -9,7 +10,7 @@ import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder } from "../../utils/helpers";
+import { abiCoder, combinePermissions } from "../../utils/helpers";
 
 export const testReadingPermissionsInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>
@@ -38,11 +39,7 @@ export const testReadingPermissionsInternals = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.SETDATA)) +
-            parseInt(Number(PERMISSIONS.CALL)),
-          32
-        ),
+        combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.CALL),
       ];
 
       await setupKeyManagerHelper(context, permissionKeys, permissionValues);
@@ -53,7 +50,7 @@ export const testReadingPermissionsInternals = (
         await context.keyManagerInternalTester.getPermissionsFor(
           context.owner.address
         )
-      ).toEqual(ALL_PERMISSIONS); // ALL_PERMISSIONS = "0xffff..."
+      ).to.equal(ALL_PERMISSIONS); // ALL_PERMISSIONS = "0xffff..."
     });
 
     it("Should return SETDATA", async () => {
@@ -61,7 +58,7 @@ export const testReadingPermissionsInternals = (
         await context.keyManagerInternalTester.getPermissionsFor(
           addressCanSetData.address
         )
-      ).toEqual(PERMISSIONS.SETDATA);
+      ).to.equal(PERMISSIONS.SETDATA);
     });
 
     it("Should return SETDATA + CALL", async () => {
@@ -69,13 +66,7 @@ export const testReadingPermissionsInternals = (
         await context.keyManagerInternalTester.getPermissionsFor(
           addressCanSetDataAndCall.address
         )
-      ).toEqual(
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.SETDATA)) +
-            parseInt(Number(PERMISSIONS.CALL)),
-          32
-        )
-      );
+      ).to.equal(combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.CALL));
     });
   });
 
@@ -118,28 +109,28 @@ export const testReadingPermissionsInternals = (
       const result = await context.keyManagerInternalTester.getPermissionsFor(
         moreThan32EmptyBytes.address
       );
-      expect(result).toEqual(expectedEmptyPermission);
+      expect(result).to.equal(expectedEmptyPermission);
     });
 
     it("should cast permissions to 32 bytes when reading permissions stored as less than 32 empty bytes", async () => {
       const result = await context.keyManagerInternalTester.getPermissionsFor(
         lessThan32EmptyBytes.address
       );
-      expect(result).toEqual(expectedEmptyPermission);
+      expect(result).to.equal(expectedEmptyPermission);
     });
 
     it("should cast permissions to 32 bytes when reading permissions stored as one empty byte", async () => {
       const result = await context.keyManagerInternalTester.getPermissionsFor(
         oneEmptyByte.address
       );
-      expect(result).toEqual(expectedEmptyPermission);
+      expect(result).to.equal(expectedEmptyPermission);
     });
   });
 
   describe("`includesPermissions(...)`", () => {
     let addressCanSetData: SignerWithAddress;
 
-    beforeAll(async () => {
+    before(async () => {
       context = await buildContext();
 
       addressCanSetData = context.accounts[1];
@@ -167,7 +158,7 @@ export const testReadingPermissionsInternals = (
           appPermissions,
           PERMISSIONS.SETDATA
         )
-      ).toBeTruthy();
+      ).to.be.true;
     });
   });
 
@@ -244,7 +235,7 @@ export const testReadingPermissionsInternals = (
       let result = await context.universalProfile["getData(bytes32)"](
         ERC725YKeys.LSP6["AddressPermissions[]"].length
       );
-      expect(result).toEqual("0x05");
+      expect(result).to.equal("0x05");
     });
 
     // check array indexes individually
@@ -255,7 +246,7 @@ export const testReadingPermissionsInternals = (
         );
         // raw bytes are stored lower case, so we need to checksum the address retrieved
         result = ethers.utils.getAddress(result);
-        expect(result).toEqual(permissionArrayValues[ii]);
+        expect(result).to.equal(permissionArrayValues[ii]);
       });
     }
   });

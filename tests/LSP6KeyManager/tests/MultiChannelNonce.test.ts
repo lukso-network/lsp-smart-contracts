@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -23,7 +24,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
   let signer: SignerWithAddress, relayer: SignerWithAddress;
   let targetContract: TargetContract;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     signer = context.accounts[1];
@@ -56,14 +57,13 @@ export const shouldBehaveLikeMultiChannelNonce = (
       );
     });
 
-    it.each([
+    [
       { callNb: "First", newName: "Yamen", expectedNonce: latestNonce + 1 },
       { callNb: "Second", newName: "Nour", expectedNonce: latestNonce + 1 },
       { callNb: "Third", newName: "Huss", expectedNonce: latestNonce + 1 },
       { callNb: "Fourth", newName: "Moussa", expectedNonce: latestNonce + 1 },
-    ])(
-      "$callNb call > nonce should increment from $latestNonce to $expectedNonce",
-      async ({ callNb, newName, expectedNonce }) => {
+    ].forEach(({ callNb, newName, expectedNonce }) => {
+      it(`${callNb} call > nonce should increment from ${latestNonce} to ${expectedNonce}`, async () => {
         let targetContractPayload = targetContract.interface.encodeFunctionData(
           "setName",
           [newName]
@@ -102,10 +102,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           0
         );
 
-        expect(fetchedName).toEqual(newName);
-        expect(nonceAfter).toEqBN(latestNonce.add(1)); // ensure the nonce incremented
-      }
-    );
+        expect(fetchedName).to.equal(newName);
+        expect(nonceAfter).to.equal(latestNonce.add(1)); // ensure the nonce incremented
+      });
+    });
   });
 
   describe("out of order execution (channel = n)", () => {
@@ -160,8 +160,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        expect(fetchedName).toEqual(newName);
-        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(fetchedName).to.equal(newName);
+        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${
@@ -209,8 +209,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        expect(fetchedName).toEqual(newName);
-        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(fetchedName).to.equal(newName);
+        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
     });
 
@@ -263,8 +263,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        expect(fetchedName).toEqual(newName);
-        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(fetchedName).to.equal(newName);
+        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${
@@ -312,8 +312,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        expect(fetchedName).toEqual(newName);
-        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(fetchedName).to.equal(newName);
+        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
     });
 
@@ -366,8 +366,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        expect(fetchedName).toEqual(newName);
-        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(fetchedName).to.equal(newName);
+        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
 
       it(`Second call > nonce should increment from ${nonces[1]} to ${
@@ -415,8 +415,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        expect(fetchedName).toEqual(newName);
-        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(fetchedName).to.equal(newName);
+        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
     });
 
@@ -465,8 +465,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
           channelId
         );
 
-        expect(fetchedName).toEqual(newName);
-        expect(nonceAfter).toEqBN(nonceBefore.add(1)); // ensure the nonce incremented
+        expect(fetchedName).to.equal(newName);
+        expect(nonceAfter).to.equal(nonceBefore.add(1)); // ensure the nonce incremented
       });
     });
   });

@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -11,10 +12,7 @@ import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder } from "../../utils/helpers";
-
-// errors
-import { NotAllowedAddressError } from "../../utils/errors";
+import { abiCoder, combinePermissions } from "../../utils/helpers";
 
 export const testAllowedAddressesInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>
@@ -55,11 +53,7 @@ export const testAllowedAddressesInternals = (
 
       let permissionsValues = [
         ALL_PERMISSIONS,
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.CALL)) +
-            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-          32
-        ),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
         abiCoder.encode(
           ["address[]"],
           [[allowedEOA.address, allowedTargetContract.address]]
@@ -83,7 +77,7 @@ export const testAllowedAddressesInternals = (
           await ethers.utils.getAddress(allowedTargetContract.address),
         ];
 
-        expect(decodedResult).toEqual([expectedResult]);
+        expect(decodedResult).to.deep.equal([expectedResult]);
       });
 
       it("should return no bytes when no allowed addresses are set", async () => {
@@ -91,7 +85,7 @@ export const testAllowedAddressesInternals = (
           await context.keyManagerInternalTester.getAllowedAddressesFor(
             context.owner.address
           );
-        expect(bytesResult).toEqual("0x");
+        expect(bytesResult).to.equal("0x");
 
         let resultFromAccount = await context.universalProfile[
           "getData(bytes32)"
@@ -99,7 +93,7 @@ export const testAllowedAddressesInternals = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
             context.owner.address.substring(2)
         );
-        expect(resultFromAccount).toEqual("0x");
+        expect(resultFromAccount).to.equal("0x");
       });
     });
 
@@ -125,12 +119,12 @@ export const testAllowedAddressesInternals = (
             canCallOnlyTwoAddresses.address,
             disallowedAddress
           )
-        ).toBeRevertedWith(
-          NotAllowedAddressError(
-            canCallOnlyTwoAddresses.address,
-            disallowedAddress
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "NotAllowedAddress"
           )
-        );
+          .withArgs(canCallOnlyTwoAddresses.address, disallowedAddress);
       });
 
       it("should not revert when user has no address listed (= all addresses whitelisted)", async () => {
@@ -171,7 +165,7 @@ export const testAllowedAddressesInternals = (
 
     const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
 
-    beforeAll(async () => {
+    before(async () => {
       context = await buildContext();
 
       controller = {
@@ -204,11 +198,7 @@ export const testAllowedAddressesInternals = (
 
       for (let ii = 0; ii < Object.values(controller).length; ii++) {
         permissionValues.push(
-          ethers.utils.hexZeroPad(
-            parseInt(Number(PERMISSIONS.CALL)) +
-              parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-            32
-          )
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE)
         );
       }
 
@@ -255,12 +245,15 @@ export const testAllowedAddressesInternals = (
               controller.thirtyTwoZeroBytes.address,
               randomAddress
             )
-          ).toBeRevertedWith(
-            NotAllowedAddressError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NotAllowedAddress"
+            )
+            .withArgs(
               controller.thirtyTwoZeroBytes.address,
               ethers.utils.getAddress(randomAddress)
-            )
-          );
+            );
         });
 
         it(`fourtyZeroBytes -> ${zeroBytesValues[5]}`, async () => {
@@ -269,12 +262,15 @@ export const testAllowedAddressesInternals = (
               controller.fourtyZeroBytes.address,
               randomAddress
             )
-          ).toBeRevertedWith(
-            NotAllowedAddressError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NotAllowedAddress"
+            )
+            .withArgs(
               controller.fourtyZeroBytes.address,
               ethers.utils.getAddress(randomAddress)
-            )
-          );
+            );
         });
 
         it(`sixtyFourZeroBytes -> ${zeroBytesValues[6]}`, async () => {
@@ -283,12 +279,15 @@ export const testAllowedAddressesInternals = (
               controller.sixtyFourZeroBytes.address,
               randomAddress
             )
-          ).toBeRevertedWith(
-            NotAllowedAddressError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NotAllowedAddress"
+            )
+            .withArgs(
               controller.sixtyFourZeroBytes.address,
               ethers.utils.getAddress(randomAddress)
-            )
-          );
+            );
         });
 
         it(`hundredZeroBytes -> ${zeroBytesValues[7]}`, async () => {
@@ -297,12 +296,15 @@ export const testAllowedAddressesInternals = (
               controller.hundredZeroBytes.address,
               randomAddress
             )
-          ).toBeRevertedWith(
-            NotAllowedAddressError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NotAllowedAddress"
+            )
+            .withArgs(
               controller.hundredZeroBytes.address,
               ethers.utils.getAddress(randomAddress)
-            )
-          );
+            );
         });
       });
     });
@@ -329,7 +331,7 @@ export const testAllowedAddressesInternals = (
 
     const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
 
-    beforeAll(async () => {
+    before(async () => {
       context = await buildContext();
 
       controller = {
@@ -367,31 +369,11 @@ export const testAllowedAddressesInternals = (
 
       let permissionValues = [
         ALL_PERMISSIONS,
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.CALL)) +
-            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-          32
-        ),
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.CALL)) +
-            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-          32
-        ),
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.CALL)) +
-            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-          32
-        ),
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.CALL)) +
-            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-          32
-        ),
-        ethers.utils.hexZeroPad(
-          parseInt(Number(PERMISSIONS.CALL)) +
-            parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-          32
-        ),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       ];
 
       permissionValues = permissionValues.concat(randomValues);
@@ -407,12 +389,15 @@ export const testAllowedAddressesInternals = (
               controller.emptyABIEncodedArray.address,
               randomAddress
             )
-          ).toBeRevertedWith(
-            NotAllowedAddressError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NotAllowedAddress"
+            )
+            .withArgs(
               controller.emptyABIEncodedArray.address,
               ethers.utils.getAddress(randomAddress)
-            )
-          );
+            );
         });
 
         it(`emptyABIEncodedArrayWithMoreZeros -> ${randomValues[1]}`, async () => {
@@ -421,12 +406,15 @@ export const testAllowedAddressesInternals = (
               controller.emptyABIEncodedArrayWithMoreZeros.address,
               randomAddress
             )
-          ).toBeRevertedWith(
-            NotAllowedAddressError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NotAllowedAddress"
+            )
+            .withArgs(
               controller.emptyABIEncodedArrayWithMoreZeros.address,
               ethers.utils.getAddress(randomAddress)
-            )
-          );
+            );
         });
 
         it(`multipleOf32Bytes -> ${randomValues[2]}`, async () => {
@@ -435,12 +423,15 @@ export const testAllowedAddressesInternals = (
               controller.multipleOf32Bytes.address,
               randomAddress
             )
-          ).toBeRevertedWith(
-            NotAllowedAddressError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NotAllowedAddress"
+            )
+            .withArgs(
               controller.multipleOf32Bytes.address,
               ethers.utils.getAddress(randomAddress)
-            )
-          );
+            );
         });
       });
 
