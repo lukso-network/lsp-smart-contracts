@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import { LSP7CappedSupplyTester } from "../../../types";
 
 import type { BigNumber } from "ethers";
@@ -38,7 +39,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
   describe("tokenSupplyCap", () => {
     it("should allow reading tokenSupplyCap", async () => {
       const tokenSupplyCap = await context.lsp7CappedSupply.tokenSupplyCap();
-      expect(tokenSupplyCap).toEqual(context.deployParams.tokenSupplyCap);
+      expect(tokenSupplyCap).to.equal(context.deployParams.tokenSupplyCap);
     });
   });
 
@@ -46,7 +47,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
     it("should allow minting amount up to tokenSupplyCap", async () => {
       const preTokenSupplyCap = await context.lsp7CappedSupply.tokenSupplyCap();
       const preTotalSupply = await context.lsp7CappedSupply.totalSupply();
-      expect(preTokenSupplyCap.sub(preTotalSupply)).toEqual(
+      expect(preTokenSupplyCap.sub(preTotalSupply)).to.equal(
         context.deployParams.tokenSupplyCap
       );
 
@@ -58,7 +59,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
       const postTokenSupplyCap =
         await context.lsp7CappedSupply.tokenSupplyCap();
       const postTotalSupply = await context.lsp7CappedSupply.totalSupply();
-      expect(postTotalSupply.sub(postTokenSupplyCap)).toEqual(
+      expect(postTotalSupply.sub(postTokenSupplyCap)).to.equal(
         ethers.constants.Zero
       );
     });
@@ -72,7 +73,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
 
         const tokenSupplyCap = await context.lsp7CappedSupply.tokenSupplyCap();
         const preTotalSupply = await context.lsp7CappedSupply.totalSupply();
-        expect(preTotalSupply.sub(tokenSupplyCap)).toEqual(
+        expect(preTotalSupply.sub(tokenSupplyCap)).to.equal(
           ethers.constants.Zero
         );
 
@@ -81,7 +82,10 @@ export const shouldBehaveLikeLSP7CappedSupply = (
             context.accounts.tokenReceiver.address,
             1
           )
-        ).toBeRevertedWith("LSP7CappedSupplyCannotMintOverCap()");
+        ).to.be.revertedWithCustomError(
+          context.lsp7CappedSupply,
+          "LSP7CappedSupplyCannotMintOverCap"
+        );
       });
 
       it("should allow minting after burning", async () => {
@@ -92,7 +96,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
 
         const tokenSupplyCap = await context.lsp7CappedSupply.tokenSupplyCap();
         const preBurnTotalSupply = await context.lsp7CappedSupply.totalSupply();
-        expect(preBurnTotalSupply.sub(tokenSupplyCap)).toEqual(
+        expect(preBurnTotalSupply.sub(tokenSupplyCap)).to.equal(
           ethers.constants.Zero
         );
 
@@ -102,7 +106,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
 
         const postBurnTotalSupply =
           await context.lsp7CappedSupply.totalSupply();
-        expect(postBurnTotalSupply).toEqual(preBurnTotalSupply.sub(1));
+        expect(postBurnTotalSupply).to.equal(preBurnTotalSupply.sub(1));
 
         await context.lsp7CappedSupply.mint(
           context.accounts.tokenReceiver.address,
@@ -111,7 +115,7 @@ export const shouldBehaveLikeLSP7CappedSupply = (
 
         const postMintTotalSupply =
           await context.lsp7CappedSupply.totalSupply();
-        expect(postMintTotalSupply.sub(preBurnTotalSupply)).toEqual(
+        expect(postMintTotalSupply.sub(preBurnTotalSupply)).to.equal(
           ethers.constants.Zero
         );
       });

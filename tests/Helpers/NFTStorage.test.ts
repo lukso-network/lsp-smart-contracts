@@ -37,13 +37,13 @@ describe("NFTStorageMerkle", () => {
 
     it("Should return 8 for leaves count", () => {
       let count = merkletree.getHexLeaves().length;
-      expect(count).to.be.equal(8);
+      expect(count).to.equal(8);
     });
 
     it("Keccak256 hash should match for the first NFT address", async () => {
       let firstNFT = merkletree.getHexLeaves()[0];
 
-      expect(firstNFT).to.be.equal(ethers.utils.keccak256(nftList[0]));
+      expect(firstNFT).to.equal(ethers.utils.keccak256(nftList[0]));
     });
 
     it("Should verify the proof in the smart contract", async () => {
