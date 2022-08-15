@@ -122,7 +122,7 @@ describe("UniversalFactory contract", () => {
           .connect(context.accounts.deployer1)
           .callStatic.deployCreate2(UPBytecode, salt, "0x");
 
-        expect(calulcatedAddress).to.be.equal(contractCreated);
+        expect(calulcatedAddress).to.equal(contractCreated);
       });
 
       it("should calculate the address of an initializable contract correctly", async () => {
@@ -153,7 +153,7 @@ describe("UniversalFactory contract", () => {
             initializeCallData
           );
 
-        expect(calulcatedAddress).to.be.equal(contractCreated);
+        expect(calulcatedAddress).to.equal(contractCreated);
       });
 
       it("should calculate a different address of a contract if the salt changed", async () => {
@@ -351,7 +351,7 @@ describe("UniversalFactory contract", () => {
         );
 
         const balance = (await provider.getBalance(contractCreated)).toNumber();
-        expect(balance).to.be.equal(valueSent);
+        expect(balance).to.equal(valueSent);
       });
 
       it("should revert when deploying a CREATE2 contract and passing calldata for a non-existing function where fallback function doesn't exist", async () => {
@@ -403,7 +403,7 @@ describe("UniversalFactory contract", () => {
           contractCreatedAddress
         );
         const owner = await universalProfile.callStatic.owner();
-        expect(owner).to.be.equal(context.accounts.deployer3.address);
+        expect(owner).to.equal(context.accounts.deployer3.address);
       });
 
       it("should deploy an initializable CREATE2 contract and get the owner successfully", async () => {
@@ -431,7 +431,7 @@ describe("UniversalFactory contract", () => {
           contractCreatedAddress
         );
         const owner = await factoryTesterContract.callStatic.owner();
-        expect(owner).to.be.equal(context.accounts.deployer1.address);
+        expect(owner).to.equal(context.accounts.deployer1.address);
       });
     });
 
@@ -460,7 +460,7 @@ describe("UniversalFactory contract", () => {
             initializeCallData
           );
 
-        expect(calculatedAddress).to.be.equal(contractCreated);
+        expect(calculatedAddress).to.equal(contractCreated);
       });
 
       it("should calculate the address of a proxy correctly if it's not initializable", async () => {
@@ -481,7 +481,7 @@ describe("UniversalFactory contract", () => {
             "0x"
           );
 
-        expect(calculatedAddress).to.be.equal(contractCreated);
+        expect(calculatedAddress).to.equal(contractCreated);
       });
 
       it("should calculate a different address of a proxy if the `salt` changed", async () => {
@@ -649,9 +649,11 @@ describe("UniversalFactory contract", () => {
           context.accounts.deployer1.address
         );
 
-        const oldBalanceMinusGas = oldBalance.sub(ethers.BigNumber.from(gasUsed).mul(gasPrice));
-        
-        expect(newBalance).to.be.equal(oldBalanceMinusGas);
+        const oldBalanceMinusGas = oldBalance.sub(
+          ethers.BigNumber.from(gasUsed).mul(gasPrice)
+        );
+
+        expect(newBalance).to.equal(oldBalanceMinusGas);
       });
 
       it("should revert when deploying a proxy and sending value to a non payable function in deployCreate2Proxy", async () => {
@@ -704,7 +706,7 @@ describe("UniversalFactory contract", () => {
           );
 
         let balance = (await provider.getBalance(contractCreated)).toNumber();
-        expect(balance).to.be.equal(valueSent);
+        expect(balance).to.equal(valueSent);
       });
 
       it("should revert when deploying a proxy and passing calldata for a non-existing function where fallback function doesn't exist", async () => {
@@ -752,7 +754,7 @@ describe("UniversalFactory contract", () => {
         );
 
         const owner = await universalProfile.callStatic.owner();
-        expect(owner).to.be.equal(ethers.constants.AddressZero);
+        expect(owner).to.equal(ethers.constants.AddressZero);
       });
 
       it("should deploy an initializable CREATE2 proxy contract and get the owner successfully", async () => {
@@ -782,7 +784,7 @@ describe("UniversalFactory contract", () => {
         );
 
         const owner = await universalProfile.callStatic.owner();
-        expect(owner).to.be.equal(context.accounts.deployer4.address);
+        expect(owner).to.equal(context.accounts.deployer4.address);
       });
     });
   });

@@ -26,7 +26,8 @@ describe("Address Registry contracts", () => {
     });
 
     it("add same address", async () => {
-      expect(await addressRegistry.containsAddress(accounts[1].address)).to.be.true;
+      expect(await addressRegistry.containsAddress(accounts[1].address)).to.be
+        .true;
 
       await addressRegistry.addAddress(accounts[1].address);
       expect(await addressRegistry.getAddress(0)).to.equal(accounts[1].address);
@@ -34,26 +35,24 @@ describe("Address Registry contracts", () => {
 
     it("should add and remove address", async () => {
       await addressRegistry.addAddress(accounts[4].address);
-      expect(
-        await addressRegistry.containsAddress(accounts[4].address)
-      ).to.be.true;
+      expect(await addressRegistry.containsAddress(accounts[4].address)).to.be
+        .true;
 
       await addressRegistry.removeAddress(accounts[4].address);
-      expect(
-        await addressRegistry.containsAddress(accounts[4].address)
-      ).to.be.false;
+      expect(await addressRegistry.containsAddress(accounts[4].address)).to.be
+        .false;
     });
 
     it("should give the right count", async () => {
-      expect(await addressRegistry.length()).to.be.equal("1");
+      expect(await addressRegistry.length()).to.equal("1");
       // add new entry
       await addressRegistry.addAddress(accounts[2].address);
-      expect(await addressRegistry.length()).to.be.equal("2");
+      expect(await addressRegistry.length()).to.equal("2");
     });
 
     it("get correct index", async () => {
-      expect(await addressRegistry.getIndex(accounts[1].address)).to.be.equal("0");
-      expect(await addressRegistry.getIndex(accounts[2].address)).to.be.equal("1");
+      expect(await addressRegistry.getIndex(accounts[1].address)).to.equal("0");
+      expect(await addressRegistry.getIndex(accounts[2].address)).to.equal("1");
 
       await expect(
         addressRegistry.getIndex(accounts[4].address)

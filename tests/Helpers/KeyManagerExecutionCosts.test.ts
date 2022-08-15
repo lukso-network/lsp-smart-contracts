@@ -72,13 +72,15 @@ describe("Key Manager gas cost interactions", () => {
         const permissionValues = [
           ALL_PERMISSIONS,
           ethers.utils.hexZeroPad(
-            ethers.utils.hexlify(Number(PERMISSIONS.CALL) +
-              Number(PERMISSIONS.TRANSFERVALUE)),
+            ethers.utils.hexlify(
+              Number(PERMISSIONS.CALL) + Number(PERMISSIONS.TRANSFERVALUE)
+            ),
             32
           ),
           ethers.utils.hexZeroPad(
-            ethers.utils.hexlify(Number(PERMISSIONS.CALL) +
-              Number(PERMISSIONS.TRANSFERVALUE)),
+            ethers.utils.hexlify(
+              Number(PERMISSIONS.CALL) + Number(PERMISSIONS.TRANSFERVALUE)
+            ),
             32
           ),
           abiCoder.encode(["address[]"], [[contractImplementsERC1271.address]]),
@@ -122,9 +124,7 @@ describe("Key Manager gas cost interactions", () => {
           let newAccountBalance = await provider.getBalance(
             contractImplementsERC1271.address
           );
-          expect(newAccountBalance).to.be.greaterThan(
-            initialAccountBalance
-          );
+          expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
         });
       });
 
@@ -155,9 +155,7 @@ describe("Key Manager gas cost interactions", () => {
         let newAccountBalance = await provider.getBalance(
           contractImplementsERC1271.address
         );
-        expect(newAccountBalance).to.be.greaterThan(
-          initialAccountBalance
-        );
+        expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
 
       it("when caller has only 1 x allowed address + 1 x allowed standard allowed", async () => {
@@ -187,9 +185,7 @@ describe("Key Manager gas cost interactions", () => {
         let newAccountBalance = await provider.getBalance(
           contractImplementsERC1271.address
         );
-        expect(newAccountBalance).to.be.greaterThan(
-          initialAccountBalance
-        );
+        expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
     });
   });
