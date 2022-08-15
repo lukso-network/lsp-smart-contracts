@@ -38,7 +38,9 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
     mintedTokenIds = Array(context.deployParams.tokenSupplyCap.toNumber())
       .fill(null)
-      .map((_, i) => ethers.utils.keccak256(ethers.BigNumber.from(i).toHexString()));
+      .map((_, i) =>
+        ethers.utils.keccak256(ethers.BigNumber.from(i).toHexString())
+      );
   });
 
   describe("tokenSupplyCap", () => {

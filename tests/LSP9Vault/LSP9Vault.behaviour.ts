@@ -213,13 +213,12 @@ export const shouldBehaveLikeLSP9 = (
                 payload
               )
             )
-        ).to.be.revertedWithCustomError(
-          context.lsp6KeyManager,
-          "NotAllowedAddress"
-        ).withArgs(
-          context.accounts.friend.address,
-          disallowedAddress          
-        );
+        )
+          .to.be.revertedWithCustomError(
+            context.lsp6KeyManager,
+            "NotAllowedAddress"
+          )
+          .withArgs(context.accounts.friend.address, disallowedAddress);
       });
     });
   });
@@ -284,10 +283,9 @@ export const shouldInitializeLikeLSP9 = (
     });
 
     it("should have set expected entries with ERC725Y.setData", async () => {
-      await expect(context.initializeTransaction).to.emit(
-        context.lsp9Vault,
-        "DataChanged"
-      ).withArgs(SupportedStandards.LSP9Vault.key);
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp9Vault, "DataChanged")
+        .withArgs(SupportedStandards.LSP9Vault.key);
       expect(
         await context.lsp9Vault["getData(bytes32)"](
           SupportedStandards.LSP9Vault.key
