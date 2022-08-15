@@ -90,7 +90,7 @@ describe("UniversalProfile", () => {
           const balance = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(balance.toNumber()).to.equal(testCase.initialFunding || 0);
+          expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });
     });
@@ -231,7 +231,7 @@ describe("UniversalProfile", () => {
             const balance = await provider.getBalance(
               context.universalProfile.address
             );
-            expect(balance.toNumber()).to.equal(testCase.initialFunding || 0);
+            expect(balance).to.equal(testCase.initialFunding || 0);
           });
 
           shouldInitializeLikeLSP3(async () => {
