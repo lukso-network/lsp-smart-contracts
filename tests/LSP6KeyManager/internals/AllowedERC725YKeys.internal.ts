@@ -122,7 +122,7 @@ export const testAllowedERC725YKeysInternals = (
               SINGLETON_KEY
             );
 
-          expect(result.toNumber()).to.equal(0);
+          expect(result).to.equal(0);
         }
       );
 
@@ -134,7 +134,7 @@ export const testAllowedERC725YKeysInternals = (
               ARRAY_KEY
             );
 
-          expect(result.toNumber()).to.equal(16);
+          expect(result).to.equal(16);
         }
       );
 
@@ -147,7 +147,7 @@ export const testAllowedERC725YKeysInternals = (
               MAPPING_KEY
             );
 
-          expect(result.toNumber()).to.equal(16);
+          expect(result).to.equal(16);
         }
       );
 
@@ -160,7 +160,7 @@ export const testAllowedERC725YKeysInternals = (
               BYTES20_MAPPING_KEY
             );
 
-          expect(result.toNumber()).to.equal(24);
+          expect(result).to.equal(24);
         }
       );
     });

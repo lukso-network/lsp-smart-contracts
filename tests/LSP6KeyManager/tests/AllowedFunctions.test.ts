@@ -102,8 +102,8 @@ export const shouldBehaveLikeAllowedFunctions = (
             .execute(executePayload);
 
           let result = await targetContract.callStatic.getNumber();
-          expect(result.toNumber()).to.not.equal(initialNumber.toNumber());
-          expect(result.toNumber()).to.equal(newNumber);
+          expect(result).to.not.equal(initialNumber);
+          expect(result).to.equal(newNumber);
         });
       });
     });
@@ -165,8 +165,8 @@ export const shouldBehaveLikeAllowedFunctions = (
             );
 
           let result = await targetContract.callStatic.getNumber();
-          expect(result.toNumber()).to.not.equal(newNumber);
-          expect(result.toNumber()).to.equal(initialNumber.toNumber());
+          expect(result).to.not.equal(newNumber);
+          expect(result).to.equal(initialNumber);
         });
       });
 
