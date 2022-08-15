@@ -243,29 +243,17 @@ export const shouldBehaveLikeClaimOwnership = (
           const recipient = context.accounts[3];
           const amount = ethers.utils.parseEther("3");
 
-          const recipientBalanceBefore = await provider.getBalance(
-            recipient.address
+          await expect(() =>
+            context.contract
+              .connect(newOwner)
+              .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
+          ).to.changeEtherBalances(
+            [context.contract.address, recipient.address],
+            [
+              `-${amount}`, // account balance should have gone down
+              amount, // recipient balance should have gone up
+            ]
           );
-          const accountBalanceBefore = await provider.getBalance(
-            context.contract.address
-          );
-
-          await context.contract
-            .connect(newOwner)
-            .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x");
-
-          const recipientBalanceAfter = await provider.getBalance(
-            recipient.address
-          );
-          const accountBalanceAfter = await provider.getBalance(
-            context.contract.address
-          );
-
-          // recipient balance should have gone up
-          expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
-
-          // account balance should have gone down
-          expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
         });
       });
     });
