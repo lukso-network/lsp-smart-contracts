@@ -458,7 +458,7 @@ export const shouldBehaveLikeLSP7 = (
           operator: SignerWithAddress,
           expectedError: ExpectedError
         ) => {
-          if (expectedError.args.length > 0)
+          if (expectedError.args.length > 0) {
             await expect(
               context.lsp7
                 .connect(operator)
@@ -466,12 +466,13 @@ export const shouldBehaveLikeLSP7 = (
             )
               .to.be.revertedWithCustomError(context.lsp7, expectedError.error)
               .withArgs(...expectedError.args);
-          else
+          } else {
             await expect(
               context.lsp7
                 .connect(operator)
                 .transfer(from, to, amount, force, data)
             ).to.be.revertedWithCustomError(context.lsp7, expectedError.error);
+          }
         };
 
         const sendingTransferTransactions = (
