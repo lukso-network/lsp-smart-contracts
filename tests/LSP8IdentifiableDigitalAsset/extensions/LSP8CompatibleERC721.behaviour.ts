@@ -10,7 +10,7 @@ import {
   TokenReceiverWithoutLSP1,
 } from "../../../types";
 import { tokenIdAsBytes32 } from "../../utils/tokens";
-import { INTERFACE_IDS, SupportedStandards } from "../../../constants";
+import { ERC725YKeys, INTERFACE_IDS, SupportedStandards } from "../../../constants";
 
 import type { BytesLike } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
@@ -1090,8 +1090,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
         )
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey =
-        "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
+      const nameKey = ERC725YKeys.LSP4["LSP4TokenName"];
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
@@ -1103,8 +1102,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
         await context.lsp8CompatibleERC721["getData(bytes32)"](nameKey)
       ).to.equal(expectedNameValue);
 
-      const symbolKey =
-        "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
+      const symbolKey = ERC725YKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );
