@@ -189,9 +189,7 @@ export const shouldBehaveLikeLSP7 = (
 
     describe("decimals", () => {
       it("should return 18 as default value", async () => {
-        expect(await context.lsp7.decimals()).to.equal(
-          ethers.BigNumber.from("18")
-        );
+        expect(await context.lsp7.decimals()).to.equal(18);
       });
     });
 
@@ -353,12 +351,13 @@ export const shouldBehaveLikeLSP7 = (
               context.accounts.owner.address
             )
           ).to.equal(context.initialSupply);
+
           expect(
             await context.lsp7.isOperatorFor(
               context.accounts.operatorWithLowAuthorizedAmount.address,
               context.accounts.owner.address
             )
-          ).to.equal(ethers.BigNumber.from("1"));
+          ).to.equal(1);
         });
       });
     });
