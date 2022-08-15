@@ -38,7 +38,7 @@ contract LSP1UniversalReceiverDelegateVault is
      */
     function universalReceiverDelegate(
         address sender,
-        uint256 value,
+        uint256 value, // solhint-disable no-unused-vars
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
     ) public virtual override returns (bytes memory result) {

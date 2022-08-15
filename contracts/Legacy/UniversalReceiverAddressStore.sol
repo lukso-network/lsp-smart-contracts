@@ -40,6 +40,7 @@ contract UniversalReceiverAddressStore is
         return _addressStore.remove(_address);
     }
 
+    // solhint-disable no-unused-vars
     function universalReceiverDelegate(
         address sender,
         uint256 value,

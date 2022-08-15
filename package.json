@@ -8,7 +8,7 @@
   "files": [
     "contracts/**/*.sol",
     "!contracts/Helpers/**/*.sol",
-    "artifacts/**/*.json",
+    "artifacts/*.json",
     "constants.js",
     "README.md",
     "CONTRIBUTING.md",
@@ -30,7 +30,7 @@
     "build": "hardhat compile",
     "package": "hardhat prepare-package",
     "release": "run-s clean build package && standard-version",
-    "clean": "rm -rf build && rm -rf types",
+    "clean": "hardhat clean",
     "generate-types": "run-p generate-types:*",
     "generate-types:web3": "typechain --target=web3-v1 'build/contracts/*.json'",
     "generate-types:ethers": "typechain --target=ethers-v5 'build/contracts/*.json'",
