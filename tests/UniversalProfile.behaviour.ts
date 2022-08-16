@@ -207,12 +207,12 @@ export const shouldBehaveLikeLSP3 = (
       const sender = context.accounts[0];
       const amount = ethers.utils.parseEther("5");
 
-      let tx = await sender.sendTransaction({
-        to: context.universalProfile.address,
-        value: amount,
-      });
-
-      await expect(tx)
+      await expect(
+        sender.sendTransaction({
+          to: context.universalProfile.address,
+          value: amount,
+        })
+      )
         .to.emit(context.universalProfile, "ValueReceived")
         .withArgs(sender.address, amount);
     });
@@ -221,13 +221,13 @@ export const shouldBehaveLikeLSP3 = (
       const sender = context.accounts[0];
       const amount = ethers.utils.parseEther("5");
 
-      let tx = await context.accounts[0].sendTransaction({
-        to: context.universalProfile.address,
-        value: amount,
-        data: "0xaabbccdd",
-      });
-
-      await expect(tx)
+      await expect(
+        sender.sendTransaction({
+          to: context.universalProfile.address,
+          value: amount,
+          data: "0xaabbccdd",
+        })
+      )
         .to.emit(context.universalProfile, "ValueReceived")
         .withArgs(sender.address, amount);
     });

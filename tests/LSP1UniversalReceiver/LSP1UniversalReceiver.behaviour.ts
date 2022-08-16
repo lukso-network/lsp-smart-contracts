@@ -36,13 +36,13 @@ export const shouldBehaveLikeLSP1 = (
         const caller = context.accounts[2];
         const data = "0xaabbccdd";
 
-        let tx = await context.lsp1Implementation
-          .connect(caller)
-          .universalReceiver(LSP1_HOOK_PLACEHOLDER, data, {
-            value: valueSent,
-          });
-
-        await expect(tx)
+        await expect(
+          context.lsp1Implementation
+            .connect(caller)
+            .universalReceiver(LSP1_HOOK_PLACEHOLDER, data, {
+              value: valueSent,
+            })
+        )
           .to.emit(context.lsp1Implementation, "UniversalReceiver")
           .withArgs(
             // from
@@ -62,12 +62,12 @@ export const shouldBehaveLikeLSP1 = (
     describe("from a Contract", () => {
       describe("via a contract call - `contract.universalReceiver(...)`", () => {
         it("should emit an UniversalReceiver(...) event", async () => {
-          let tx = await context.lsp1Checker.checkImplementation(
-            context.lsp1Implementation.address,
-            LSP1_HOOK_PLACEHOLDER
-          );
-
-          await expect(tx)
+          await expect(
+            context.lsp1Checker.checkImplementation(
+              context.lsp1Implementation.address,
+              LSP1_HOOK_PLACEHOLDER
+            )
+          )
             .to.emit(context.lsp1Implementation, "UniversalReceiver")
             .withArgs(
               // from
@@ -86,12 +86,12 @@ export const shouldBehaveLikeLSP1 = (
 
       describe("via a low-level call - `address(contract).call(...)`", () => {
         it("should emit an UniversalReceiver(...) event", async () => {
-          let tx = await context.lsp1Checker.checkImplementationLowLevelCall(
-            context.lsp1Implementation.address,
-            LSP1_HOOK_PLACEHOLDER
-          );
-
-          await expect(tx)
+          await expect(
+            context.lsp1Checker.checkImplementationLowLevelCall(
+              context.lsp1Implementation.address,
+              LSP1_HOOK_PLACEHOLDER
+            )
+          )
             .to.emit(context.lsp1Implementation, "UniversalReceiver")
             .withArgs(
               // from
@@ -169,13 +169,13 @@ export const shouldBehaveLikeLSP1 = (
 
       describe("via a contract call - `contract.universalReceiver(...)`", () => {
         it("should emit an UniversalReceiver(...) event", async () => {
-          let tx = await context.lsp1Checker.checkImplementation(
-            context.lsp1Implementation.address,
-            LSP1_HOOK_PLACEHOLDER,
-            { value: valueSent }
-          );
-
-          await expect(tx)
+          await expect(
+            context.lsp1Checker.checkImplementation(
+              context.lsp1Implementation.address,
+              LSP1_HOOK_PLACEHOLDER,
+              { value: valueSent }
+            )
+          )
             .to.emit(context.lsp1Implementation, "UniversalReceiver")
             .withArgs(
               // from
@@ -194,13 +194,13 @@ export const shouldBehaveLikeLSP1 = (
 
       describe("via a low-level call - `address(contract).call(...)`", () => {
         it("should emit an UniversalReceiver(...) event", async () => {
-          let tx = await context.lsp1Checker.checkImplementationLowLevelCall(
-            context.lsp1Implementation.address,
-            LSP1_HOOK_PLACEHOLDER,
-            { value: valueSent }
-          );
-
-          await expect(tx)
+          await expect(
+            context.lsp1Checker.checkImplementationLowLevelCall(
+              context.lsp1Implementation.address,
+              LSP1_HOOK_PLACEHOLDER,
+              { value: valueSent }
+            )
+          )
             .to.emit(context.lsp1Implementation, "UniversalReceiver")
             .withArgs(
               // from

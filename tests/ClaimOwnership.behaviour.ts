@@ -172,9 +172,7 @@ export const shouldBehaveLikeClaimOwnership = (
       it("should have emitted a OwnershipTransferred event", async () => {
         const owner = await context.contract.owner();
 
-        let tx = await context.contract.connect(newOwner).claimOwnership();
-
-        await expect(tx)
+        await expect(await context.contract.connect(newOwner).claimOwnership())
           .to.emit(context.contract, "OwnershipTransferred")
           .withArgs(
             owner, // previous owner
