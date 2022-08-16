@@ -1,15 +1,22 @@
 import { HardhatUserConfig } from "hardhat/config";
 
-import "@nomiclabs/hardhat-web3";
-import "@nomiclabs/hardhat-etherscan";
+/**
+ * this package includes:
+ *  - @nomiclabs/hardhat-ethers
+ *  - @nomicfoundation/hardhat-chai-matchers
+ *  - @nomicfoundation/hardhat-network-helpers
+ *  - @nomiclabs/hardhat-etherscan
+ *  - @typechain/hardhat
+ */
+import "@nomicfoundation/hardhat-toolbox";
 
-import "@typechain/hardhat";
+// additional hardhat plugins
 import "hardhat-packager";
 import "hardhat-contract-sizer";
-
 import "hardhat-deploy";
 
-import "@nomicfoundation/hardhat-toolbox";
+// Typescript types for web3.js
+import "@nomiclabs/hardhat-web3";
 
 /**
  * @dev uncomment to generate contract docs in Markdown
