@@ -134,6 +134,7 @@ const config: HardhatUserConfig = {
   },
   paths: {
     artifacts: "artifacts",
+    tests: "tests",
   },
   typechain: {
     outDir: "types",
