@@ -23,6 +23,7 @@ jobs:
         run: |
           npm ci
 
+      # This will also generate the Typechain types used by the Chai tests
       - name: Build and Test
         run: |
           npm run build --if-present

@@ -29,11 +29,9 @@ jobs:
       - name: Run Solidity Linter
         run: npm run linter
 
+      # This will also generate the Typechain types used by the Chai tests
       - name: Build contract artifacts
         run: npm run build --if-present
-
-      # - name: Generate typechain types
-      #   run: npm run package && npm run generate-types
 
       - name: cache dependencies + build
         uses: actions/cache@v2
@@ -82,13 +80,10 @@ jobs:
           node-version: "16.x"
           cache: "npm"
 
+      # This will also generate the Typechain types used by the Chai tests
       - name: Install dependencies
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm ci
-
-      - name: Generate typechain types
-        if: steps.build-cache.outputs.cache-hit != 'true'
-        run: npm run package && npm run generate-types
 
       - name: run tests
         run: npm run test:${{ matrix.lsp }}
