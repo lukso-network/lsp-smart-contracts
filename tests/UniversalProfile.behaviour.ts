@@ -204,30 +204,32 @@ export const shouldBehaveLikeLSP3 = (
 
   describe("when sending native tokens to the contract", () => {
     it("should emit the right ValueReceived event", async () => {
-      let tx = await context.accounts[0].sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("5"),
-      });
+      const sender = context.accounts[0];
+      const amount = ethers.utils.parseEther("5");
 
-      let receipt = await tx.wait();
-
-      expect(receipt.logs[0].topics[0]).to.equal(
-        EventSignatures.LSP0.ValueReceived
-      );
+      await expect(
+        sender.sendTransaction({
+          to: context.universalProfile.address,
+          value: amount,
+        })
+      )
+        .to.emit(context.universalProfile, "ValueReceived")
+        .withArgs(sender.address, amount);
     });
 
     it("should allow to send a random payload as well, and emit the ValueReceived event", async () => {
-      let tx = await context.accounts[0].sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("5"),
-        data: "0xaabbccdd",
-      });
+      const sender = context.accounts[0];
+      const amount = ethers.utils.parseEther("5");
 
-      let receipt = await tx.wait();
-
-      expect(receipt.logs[0].topics[0]).to.equal(
-        EventSignatures.LSP0.ValueReceived
-      );
+      await expect(
+        sender.sendTransaction({
+          to: context.universalProfile.address,
+          value: amount,
+          data: "0xaabbccdd",
+        })
+      )
+        .to.emit(context.universalProfile, "ValueReceived")
+        .withArgs(sender.address, amount);
     });
   });
 
@@ -239,10 +241,8 @@ export const shouldBehaveLikeLSP3 = (
         data: "0xaabbccdd",
       });
 
-      let receipt = await tx.wait();
-
       // check that no event was emitted
-      expect(receipt.logs.length).to.equal(0);
+      await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
     });
   });
 };

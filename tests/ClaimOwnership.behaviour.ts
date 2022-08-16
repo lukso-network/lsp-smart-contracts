@@ -78,8 +78,9 @@ export const shouldBehaveLikeClaimOwnership = (
           "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
         const value = "0xabcd";
 
-        // prettier-ignore
-        await context.contract.connect(context.deployParams.owner)["setData(bytes32,bytes)"](key, value);
+        await context.contract
+          .connect(context.deployParams.owner)
+          ["setData(bytes32,bytes)"](key, value);
 
         const result = await context.contract["getData(bytes32)"](key);
         expect(result).to.equal(value);
@@ -146,10 +147,12 @@ export const shouldBehaveLikeClaimOwnership = (
 
       beforeEach(async () => {
         newOwner = context.accounts[1];
+
         await context.contract
           .connect(context.deployParams.owner)
           .transferOwnership(newOwner.address);
       });
+
       it("should change the contract owner to the pendingOwner", async () => {
         let pendingOwner = await context.contract.pendingOwner();
 
@@ -164,6 +167,17 @@ export const shouldBehaveLikeClaimOwnership = (
 
         let newPendingOwner = await context.contract.pendingOwner();
         expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+      });
+
+      it("should have emitted a OwnershipTransferred event", async () => {
+        const owner = await context.contract.owner();
+
+        await expect(await context.contract.connect(newOwner).claimOwnership())
+          .to.emit(context.contract, "OwnershipTransferred")
+          .withArgs(
+            owner, // previous owner
+            newOwner.address // new owner
+          );
       });
     });
 
@@ -186,10 +200,11 @@ export const shouldBehaveLikeClaimOwnership = (
             "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
           const value = "0xabcd";
 
-          // prettier-ignore
           await expect(
-                context.contract.connect(previousOwner)["setData(bytes32,bytes)"](key, value)
-              ).to.be.revertedWith(context.onlyOwnerRevertString)
+            context.contract
+              .connect(previousOwner)
+              ["setData(bytes32,bytes)"](key, value)
+          ).to.be.revertedWith(context.onlyOwnerRevertString);
         });
 
         it("should revert when calling `execute(...)`", async () => {
@@ -216,8 +231,9 @@ export const shouldBehaveLikeClaimOwnership = (
             "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
           const value = "0xabcd";
 
-          // prettier-ignore
-          await context.contract.connect(newOwner)["setData(bytes32,bytes)"](key, value);
+          await context.contract
+            .connect(newOwner)
+            ["setData(bytes32,bytes)"](key, value);
 
           const result = await context.contract["getData(bytes32)"](key);
           expect(result).to.equal(value);
@@ -227,29 +243,17 @@ export const shouldBehaveLikeClaimOwnership = (
           const recipient = context.accounts[3];
           const amount = ethers.utils.parseEther("3");
 
-          const recipientBalanceBefore = await provider.getBalance(
-            recipient.address
+          await expect(() =>
+            context.contract
+              .connect(newOwner)
+              .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
+          ).to.changeEtherBalances(
+            [context.contract.address, recipient.address],
+            [
+              `-${amount}`, // account balance should have gone down
+              amount, // recipient balance should have gone up
+            ]
           );
-          const accountBalanceBefore = await provider.getBalance(
-            context.contract.address
-          );
-
-          await context.contract
-            .connect(newOwner)
-            .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x");
-
-          const recipientBalanceAfter = await provider.getBalance(
-            recipient.address
-          );
-          const accountBalanceAfter = await provider.getBalance(
-            context.contract.address
-          );
-
-          // recipient balance should have gone up
-          expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
-
-          // account balance should have gone down
-          expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
         });
       });
     });
