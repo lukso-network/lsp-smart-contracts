@@ -134,11 +134,10 @@ describe("Address Registry contracts", () => {
       ).to.equal(false);
     });
 
-    it.skip("should fail if called by a regular address", async () => {
-      //simply reverts as no ERC165 is detected
-      await expect(
-        addressRegistryRequireERC725.addAddress(accounts[5].address)
-      ).to.be.reverted("");
+    it("should fail if called by a regular address", async () => {
+      // simply reverts as no ERC165 is detected
+      await expect(addressRegistryRequireERC725.addAddress(accounts[5].address))
+        .to.be.reverted;
     });
   });
 });
