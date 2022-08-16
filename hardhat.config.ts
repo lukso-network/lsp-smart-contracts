@@ -70,6 +70,14 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+  gasReporter: {
+    enabled: true,
+    currency: "USD",
+    gasPrice: 21,
+    excludeContracts: ["Helpers/"],
+    src: "./contracts",
+    showMethodSig: true,
+  },
   solidity: {
     version: "0.8.7",
     settings: {
