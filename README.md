@@ -62,8 +62,7 @@ contract MyAccount is LSP0ERC725Account {
 
 
 ### Testing
-
-Jest contract tests are defined under the tests directory. To run all the tests, run:
+Chai contract tests are defined under the tests directory. To run all the tests, run:
 
 ```bash
 $ npm test

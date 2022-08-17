@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -17,9 +18,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import { abiCoder } from "../../utils/helpers";
-
-// errors
-import { NotAuthorisedError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -77,7 +75,7 @@ export const shouldBehaveLikePermissionCall = (
         await context.keyManager.connect(context.owner).execute(payload);
 
         const result = await targetContract.callStatic.getName();
-        expect(result).toEqual(argument);
+        expect(result).to.equal(argument);
       });
     });
 
@@ -98,7 +96,7 @@ export const shouldBehaveLikePermissionCall = (
         await context.keyManager.connect(addressCanMakeCall).execute(payload);
 
         const result = await targetContract.callStatic.getName();
-        expect(result).toEqual(argument);
+        expect(result).to.equal(argument);
       });
     });
 
@@ -118,9 +116,9 @@ export const shouldBehaveLikePermissionCall = (
 
         await expect(
           context.keyManager.connect(addressCannotMakeCall).execute(payload)
-        ).toBeRevertedWith(
-          NotAuthorisedError(addressCannotMakeCall.address, "CALL")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(addressCannotMakeCall.address, "CALL");
       });
     });
 
@@ -144,7 +142,7 @@ export const shouldBehaveLikePermissionCall = (
           .callStatic.execute(executePayload);
 
         let [decodedResult] = abiCoder.decode(["string"], result);
-        expect(decodedResult).toEqual(expectedName);
+        expect(decodedResult).to.equal(expectedName);
       });
 
       it("Should return the value to the Key Manager <- UP <- targetContract.getNumber()", async () => {
@@ -166,7 +164,7 @@ export const shouldBehaveLikePermissionCall = (
           .callStatic.execute(executePayload);
 
         let [decodedResult] = abiCoder.decode(["uint256"], result);
-        expect(decodedResult).toEqual(expectedNumber);
+        expect(decodedResult).to.equal(expectedNumber);
       });
     });
 
@@ -185,7 +183,7 @@ export const shouldBehaveLikePermissionCall = (
           ]
         );
 
-        await expect(context.keyManager.execute(payload)).toBeRevertedWith(
+        await expect(context.keyManager.execute(payload)).to.be.revertedWith(
           "TargetContract:revertCall: this function has reverted!"
         );
       });
@@ -240,7 +238,7 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         const result = await targetContract.callStatic.getName();
-        expect(result).toEqual(newName);
+        expect(result).to.equal(newName);
       });
     });
 
@@ -288,7 +286,7 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         const result = await targetContract.callStatic.getName();
-        expect(result).toEqual(newName);
+        expect(result).to.equal(newName);
       });
     });
 
@@ -335,13 +333,13 @@ export const shouldBehaveLikePermissionCall = (
             nonce,
             executeRelayCallPayload
           )
-        ).toBeRevertedWith(
-          NotAuthorisedError(addressCannotMakeCall.address, "CALL")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(addressCannotMakeCall.address, "CALL");
 
         // ensure no state change at the target contract
         const result = await targetContract.callStatic.getName();
-        expect(result).toEqual(initialName);
+        expect(result).to.equal(initialName);
       });
     });
   });

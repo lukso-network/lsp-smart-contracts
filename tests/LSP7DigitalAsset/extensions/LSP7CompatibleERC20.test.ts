@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 
 import {
   LSP7CompatibleERC20Tester__factory,
@@ -120,7 +121,7 @@ describe("LSP7CompatibleERC20", () => {
           lsp7CompatibilityForERC20TesterInit[
             "initialize(string,string,address)"
           ]("XXXXXXXXXXX", "XXX", randomCaller.address)
-        ).toBeRevertedWith("Initializable: contract is already initialized");
+        ).to.be.revertedWith("Initializable: contract is already initialized");
       });
     });
 
@@ -148,7 +149,7 @@ describe("LSP7CompatibleERC20", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

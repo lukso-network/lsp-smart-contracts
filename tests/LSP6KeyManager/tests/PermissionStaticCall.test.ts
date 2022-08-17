@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
@@ -17,9 +17,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import { abiCoder } from "../../utils/helpers";
-
-// errors
-import { NotAllowedAddressError, NotAuthorisedError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -79,7 +76,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         .callStatic.execute(executePayload);
 
       let [decodedResult] = abiCoder.decode(["string"], result);
-      expect(decodedResult).toEqual(expectedName);
+      expect(decodedResult).to.equal(expectedName);
     });
   });
 
@@ -103,7 +100,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         .callStatic.execute(executePayload);
 
       let [decodedResult] = abiCoder.decode(["string"], result);
-      expect(decodedResult).toEqual(expectedName);
+      expect(decodedResult).to.equal(expectedName);
     });
 
     it("should revert when trying to change state at the target contract", async () => {
@@ -126,11 +123,11 @@ export const shouldBehaveLikePermissionStaticCall = (
         context.keyManager
           .connect(addressCanMakeStaticCall)
           .execute(executePayload)
-      ).toBeReverted();
+      ).to.be.reverted;
 
       // ensure state hasn't changed.
       let newValue = await targetContract.callStatic.getName();
-      expect(initialValue).toEqual(newValue);
+      expect(initialValue).to.equal(newValue);
     });
 
     it("should revert when caller try to make a CALL", async () => {
@@ -151,9 +148,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         context.keyManager
           .connect(addressCanMakeStaticCall)
           .execute(executePayload)
-      ).toBeRevertedWith(
-        NotAuthorisedError(addressCanMakeStaticCall.address, "CALL")
-      );
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(addressCanMakeStaticCall.address, "CALL");
     });
   });
 
@@ -174,9 +171,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         context.keyManager
           .connect(addressCannotMakeStaticCall)
           .execute(executePayload)
-      ).toBeRevertedWith(
-        NotAuthorisedError(addressCannotMakeStaticCall.address, "STATICCALL")
-      );
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(addressCannotMakeStaticCall.address, "STATICCALL");
     });
   });
 
@@ -232,11 +229,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         ]
       );
 
-      await expect(
-        context.keyManager.connect(caller).execute(payload)
-      ).toBeRevertedWith(
-        NotAllowedAddressError(caller.address, targetContract.address)
-      );
+      await expect(context.keyManager.connect(caller).execute(payload))
+        .to.be.revertedWithCustomError(context.keyManager, "NotAllowedAddress")
+        .withArgs(caller.address, targetContract.address);
     });
 
     describe("when interacting with 1st allowed contract", () => {
@@ -260,7 +255,7 @@ export const shouldBehaveLikePermissionStaticCall = (
           .callStatic.execute(payload);
 
         const [decodedResult] = abiCoder.decode(["string"], result);
-        expect(decodedResult).toEqual(name);
+        expect(decodedResult).to.equal(name);
       });
 
       it("should allow to call view function -> getNumber()", async () => {
@@ -283,7 +278,7 @@ export const shouldBehaveLikePermissionStaticCall = (
           .callStatic.execute(payload);
 
         const [decodedResult] = abiCoder.decode(["uint256"], result);
-        expect(decodedResult).toEqual(number);
+        expect(decodedResult).to.equal(number);
       });
 
       it("should revert when calling state changing function -> setName(string)", async () => {
@@ -301,7 +296,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         await expect(
           context.keyManager.connect(caller).callStatic.execute(payload)
-        ).toBeReverted();
+        ).to.be.reverted;
       });
 
       it("should revert when calling state changing function -> setNumber(uint256)", async () => {
@@ -319,7 +314,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         await expect(
           context.keyManager.connect(caller).callStatic.execute(payload)
-        ).toBeReverted();
+        ).to.be.reverted;
       });
     });
 
@@ -344,7 +339,7 @@ export const shouldBehaveLikePermissionStaticCall = (
           .callStatic.execute(payload);
 
         const [decodedResult] = abiCoder.decode(["string"], result);
-        expect(decodedResult).toEqual(name);
+        expect(decodedResult).to.equal(name);
       });
 
       it("should allow to interact with 2nd allowed contract - getNumber()", async () => {
@@ -367,7 +362,7 @@ export const shouldBehaveLikePermissionStaticCall = (
           .callStatic.execute(payload);
 
         const [decodedResult] = abiCoder.decode(["uint256"], result);
-        expect(decodedResult).toEqual(number);
+        expect(decodedResult).to.equal(number);
       });
 
       it("should revert when calling state changing function -> setName(string)", async () => {
@@ -385,7 +380,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         await expect(
           context.keyManager.connect(caller).callStatic.execute(payload)
-        ).toBeReverted();
+        ).to.be.reverted;
       });
 
       it("should revert when calling state changing function -> setNumber(uint256)", async () => {
@@ -403,7 +398,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         await expect(
           context.keyManager.connect(caller).callStatic.execute(payload)
-        ).toBeReverted();
+        ).to.be.reverted;
       });
     });
   });
@@ -469,7 +464,7 @@ export const shouldBehaveLikePermissionStaticCall = (
             .callStatic.execute(payload);
 
           const [decodedResult] = abiCoder.decode(["string"], result);
-          expect(decodedResult).toEqual(name);
+          expect(decodedResult).to.equal(name);
         });
       }
     });
