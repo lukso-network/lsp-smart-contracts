@@ -612,13 +612,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     function _countTrailingZeroBytes(bytes32 dataKey) internal pure returns (uint256) {
-        uint256 count = 32;
+        uint256 nByte = 32;
 
         // CHECK each bytes of the data key, starting from the end (right to left)
         // skip each empty bytes `0x00` and continue searching until we find the first non-empty byte
-        while (count > 0 && dataKey[--count] == 0x00) continue;
+        while (nByte > 0 && dataKey[--nByte] == 0x00) continue;
 
-        return 32 - count;
+        return 32 - nByte;
     }
 
     function _requirePermissions(
