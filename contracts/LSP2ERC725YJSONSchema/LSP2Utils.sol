@@ -16,10 +16,18 @@ library LSP2Utils {
 
     /* solhint-disable no-inline-assembly */
 
+    /**
+     * Generate a Singleton data key of `keyName`
+     * @param keyName The string that will be used to generate a Singleton data key
+     */
     function generateSingletonKey(string memory keyName) internal pure returns (bytes32) {
         return keccak256(bytes(keyName));
     }
 
+    /**
+     * Generating an Array data key for the `keyName`.
+     * @param keyName The string that will be used to generate an Array data key 
+     */
     function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
         bytes memory dataKey = bytes(keyName);
 
@@ -32,6 +40,12 @@ library LSP2Utils {
         return keccak256(dataKey);
     }
 
+    /**
+     * Generates a Array index data key by concatenating the first 16 bytes of `arrayKey`
+     * and `index` transformed from uint256 to bytes16 (uint256 -> uint128 -> bytes16)
+     * @param arrayKey The key from which we're getting the first half of the Array index data key from
+     * @param index Used to generate the second half of the Array index data key
+     */
     function generateArrayElementKeyAtIndex(bytes32 arrayKey, uint256 index)
         internal
         pure
@@ -44,6 +58,14 @@ library LSP2Utils {
         return bytes32(elementInArray);
     }
 
+    /**
+     * Generates a Mapping data key by using two strings:
+     * <bytes10(keccak256(firstWord))>:<bytes20(keccak256(firstWord))>
+     * @param firstWord Used to generate a hash and its first 10 bytes
+     * are used for the first part of the Mapping data key
+     * @param lastWord Used to generate a hash and its first 20 bytes
+     * are used for the last part of the mapping data key
+     */
     function generateMappingKey(string memory firstWord, string memory lastWord)
         internal
         pure
@@ -61,6 +83,13 @@ library LSP2Utils {
         return bytes32(temporaryBytes);
     }
 
+    /**
+     * Generates a Mapping data key by using one string and an address:
+     * <bytes10(keccak256(firstWord))>:<bytes20(addr)>
+     * @param firstWord Used to generate a hash and its first 10 bytes
+     * are used for the first part of the Mapping data key
+     * @param addr used for the last part of the Mapping data key
+     */
     function generateMappingKey(string memory firstWord, address addr)
         internal
         pure
@@ -77,6 +106,12 @@ library LSP2Utils {
         return bytes32(temporaryBytes);
     }
 
+    /**
+     * Generate a Mapping data key by using one bytes12 and one bytes20
+     * <keyPrefix>:<bytes20Value>
+     * @param keyPrefix First part of the Mapping data key
+     * @param bytes20Value Second part of the Mapping data key
+     */
     function generateMappingKey(bytes12 keyPrefix, bytes20 bytes20Value)
         internal
         pure
@@ -86,6 +121,15 @@ library LSP2Utils {
         return bytes32(generatedKey);
     }
 
+    /**
+     * Generate a Mapping with Grouping data key by using two strings and an address
+     * <bytes6(keccak256(firstWord))>:<bytes4(keccak256(secondWord))>:<bytes20(addr)>
+     * @param firstWord Used to generate a hash and its first 6 bytes
+     * are used for the first part of the Mapping with Grouping data key
+     * @param secondWord Used to generate a hash and its first 4 bytes
+     * are used for the second part of the Mapping with Grouping data key
+     * @param addr Used for the last part of the Mapping with Grouping data key
+     */
     function generateMappingWithGroupingKey(
         string memory firstWord,
         string memory secondWord,
@@ -104,6 +148,12 @@ library LSP2Utils {
         return bytes32(temporaryBytes);
     }
 
+    /**
+     * Generate a Mapping with Grouping data key by using a bytes12 and a bytes20
+     * <keyPrefix>:<bytes20Value>
+     * @param keyPrefix Used for the first part of the Mapping with Grouping data key
+     * @param bytes20Value Used for the first last of the Mapping with Grouping data key
+     */
     function generateMappingWithGroupingKey(bytes12 keyPrefix, bytes20 bytes20Value)
         internal
         pure
@@ -113,6 +163,12 @@ library LSP2Utils {
         return bytes32(generatedKey);
     }
 
+    /**
+     * Generate JSON URL value
+     * @param hashFunction The function used to hash the JSON file
+     * @param json Bytes value of the JSON file
+     * @param url The URL where the JSON file is hosted
+     */
     function generateJSONURLValue(
         string memory hashFunction,
         string memory json,
@@ -124,6 +180,12 @@ library LSP2Utils {
         key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
+    /**
+     * Generate ASSET URL value
+     * @param hashFunction The function used to hash the JSON file
+     * @param assetBytes Bytes value of the JSON file
+     * @param url The URL where the JSON file is hosted
+     */
     function generateASSETURLValue(
         string memory hashFunction,
         string memory assetBytes,
@@ -135,6 +197,10 @@ library LSP2Utils {
         key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
+    /**
+     * Verifing if `data` is an encoded array
+     * @param data The value that is to be verified
+     */
     function isEncodedArray(bytes memory data) internal pure returns (bool) {
         uint256 nbOfBytes = data.length;
 
@@ -157,6 +223,10 @@ library LSP2Utils {
         return true;
     }
 
+    /**
+     * Verifing if `data` is an encoded array of addresses (address[])
+     * @param data The value that is to be verified
+     */
     function isEncodedArrayOfAddresses(bytes memory data) internal pure returns (bool) {
         if (!isEncodedArray(data)) return false;
 
@@ -179,6 +249,10 @@ library LSP2Utils {
         return true;
     }
 
+    /**
+     * Verifing if `data` is an encoded array of bytes4 (bytes4[])
+     * @param data The value that is to be verified
+     */
     function isBytes4EncodedArray(bytes memory data) internal pure returns (bool) {
         if (!isEncodedArray(data)) return false;
 
