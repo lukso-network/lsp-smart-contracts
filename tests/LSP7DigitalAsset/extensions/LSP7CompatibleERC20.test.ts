@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 
 import {
   LSP7CompatibleERC20Tester__factory,
@@ -106,20 +107,6 @@ describe("LSP7CompatibleERC20", () => {
     };
 
     describe("when deploying the base implementation contract", () => {
-      it("should have locked (= initialized) the implementation contract", async () => {
-        const accounts = await ethers.getSigners();
-
-        const lsp7CompatibilityForERC20TesterInit =
-          await new LSP7CompatibleERC20InitTester__factory(
-            accounts[0]
-          ).deploy();
-
-        const isInitialized =
-          await lsp7CompatibilityForERC20TesterInit.callStatic.initialized();
-
-        expect(isInitialized).toBeTruthy();
-      });
-
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
@@ -134,7 +121,7 @@ describe("LSP7CompatibleERC20", () => {
           lsp7CompatibilityForERC20TesterInit[
             "initialize(string,string,address)"
           ]("XXXXXXXXXXX", "XXX", randomCaller.address)
-        ).toBeRevertedWith("Initializable: contract is already initialized");
+        ).to.be.revertedWith("Initializable: contract is already initialized");
       });
     });
 
@@ -162,7 +149,7 @@ describe("LSP7CompatibleERC20", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

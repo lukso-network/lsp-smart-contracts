@@ -9,6 +9,7 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
+import {SETDATA_ARRAY_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
 import "../LSP6KeyManager/LSP6Constants.sol";
 
 library LSP6Utils {
@@ -101,7 +102,7 @@ library LSP6Utils {
         bytes32[] memory keys,
         bytes[] memory values
     ) internal returns (bytes memory result) {
-        bytes memory payload = abi.encodeWithSelector(hex"14a6e293", keys, values);
+        bytes memory payload = abi.encodeWithSelector(SETDATA_ARRAY_SELECTOR, keys, values);
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 }

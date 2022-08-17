@@ -1,14 +1,22 @@
 import { HardhatUserConfig } from "hardhat/config";
 
-import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-web3";
-import "@nomiclabs/hardhat-etherscan";
+/**
+ * this package includes:
+ *  - @nomiclabs/hardhat-ethers
+ *  - @nomicfoundation/hardhat-chai-matchers
+ *  - @nomicfoundation/hardhat-network-helpers
+ *  - @nomiclabs/hardhat-etherscan
+ *  - @typechain/hardhat
+ */
+import "@nomicfoundation/hardhat-toolbox";
 
-import "@typechain/hardhat";
+// additional hardhat plugins
 import "hardhat-packager";
 import "hardhat-contract-sizer";
-
 import "hardhat-deploy";
+
+// Typescript types for web3.js
+import "@nomiclabs/hardhat-web3";
 
 /**
  * @dev uncomment to generate contract docs in Markdown
@@ -61,6 +69,14 @@ const config: HardhatUserConfig = {
         },
       },
     ],
+  },
+  gasReporter: {
+    enabled: true,
+    currency: "USD",
+    gasPrice: 21,
+    excludeContracts: ["Helpers/"],
+    src: "./contracts",
+    showMethodSig: true,
   },
   solidity: {
     version: "0.8.7",
@@ -133,6 +149,7 @@ const config: HardhatUserConfig = {
   },
   paths: {
     artifacts: "artifacts",
+    tests: "tests",
   },
   typechain: {
     outDir: "types",

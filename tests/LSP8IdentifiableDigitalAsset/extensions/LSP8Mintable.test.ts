@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import {
   LSP8Mintable,
   LSP8Mintable__factory,
@@ -10,7 +11,7 @@ import {
   shouldBehaveLikeLSP8Mintable,
   LSP8MintableTestContext,
   getNamedAccounts,
-} from "./LSP8Mintable.behavior";
+} from "./LSP8Mintable.behaviour";
 
 import { deployProxy } from "../../utils/fixtures";
 
@@ -107,7 +108,7 @@ describe("LSP8Mintable", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

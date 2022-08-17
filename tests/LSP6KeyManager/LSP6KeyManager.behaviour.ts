@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 
 import { INTERFACE_IDS } from "../../constants";
@@ -110,26 +111,26 @@ export const shouldInitializeLikeLSP6 = (
       const result = await context.keyManager.supportsInterface(
         INTERFACE_IDS.ERC165
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ERC1271 interface", async () => {
       const result = await context.keyManager.supportsInterface(
         INTERFACE_IDS.ERC1271
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support LSP6 interface", async () => {
       const result = await context.keyManager.supportsInterface(
         INTERFACE_IDS.LSP6KeyManager
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should be linked to the right ERC725 account contract", async () => {
       let account = await context.keyManager.target();
-      expect(account).toEqual(context.universalProfile.address);
+      expect(account).to.equal(context.universalProfile.address);
     });
   });
 };

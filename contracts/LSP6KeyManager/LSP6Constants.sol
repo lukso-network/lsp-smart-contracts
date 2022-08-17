@@ -57,9 +57,3 @@ bytes32 constant _PERMISSION_SUPER_TRANSFERVALUE = 0x000000000000000000000000000
 bytes32 constant _PERMISSION_SUPER_CALL         = 0x0000000000000000000000000000000000000000000000000000000000001000;
 bytes32 constant _PERMISSION_SUPER_STATICCALL   = 0x0000000000000000000000000000000000000000000000000000000000002000;
 bytes32 constant _PERMISSION_SUPER_DELEGATECALL = 0x0000000000000000000000000000000000000000000000000000000000004000;
-
-
-/// @dev see IERC725Y interface
-///      https://github.com/ERC725Alliance/ERC725/blob/main/implementations/contracts/interfaces/IERC725Y.sol
-bytes4 constant setDataSingleSelector = bytes4(keccak256("setData(bytes32,bytes)"));
-bytes4 constant setDataMultipleSelector = bytes4(keccak256("setData(bytes32[],bytes[])"));

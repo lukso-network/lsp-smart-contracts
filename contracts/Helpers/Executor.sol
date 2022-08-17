@@ -6,7 +6,7 @@ import {UniversalProfile} from "../UniversalProfile.sol";
 import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // constants
-import {setDataSingleSelector} from "../LSP6KeyManager/LSP6Constants.sol";
+import {SETDATA_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
 
 contract Executor {
     uint256 internal constant _OPERATION_CALL = 0;
@@ -30,7 +30,7 @@ contract Executor {
         bytes32 key = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
         bytes memory value = "Some value";
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -39,7 +39,7 @@ contract Executor {
         bytes32 key = keccak256(abi.encodePacked("Some Key"));
         bytes memory value = abi.encodePacked("Some value");
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -48,7 +48,7 @@ contract Executor {
         public
         returns (bytes memory)
     {
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, _key, _value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, _key, _value);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -88,7 +88,7 @@ contract Executor {
         bytes32 key = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
         bytes memory value = "Some value";
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,
@@ -104,7 +104,7 @@ contract Executor {
         bytes32 key = keccak256(abi.encodePacked("Some Key"));
         bytes memory value = abi.encodePacked("Some value");
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,
@@ -120,7 +120,7 @@ contract Executor {
         public
         returns (bool)
     {
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, _key, _value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, _key, _value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
             _keyManager.execute.selector,

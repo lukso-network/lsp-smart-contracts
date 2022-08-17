@@ -10,8 +10,7 @@ import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // errors
@@ -28,12 +27,10 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
  *
  * This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
  */
-abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
-    using Address for address;
-
+abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     // --- Storage
 
-    bool internal _isNFT;
+    bool internal _isNonDivisible;
 
     uint256 internal _existingTokens;
 
@@ -49,7 +46,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
      * @inheritdoc ILSP7DigitalAsset
      */
     function decimals() public view override returns (uint256) {
-        return _isNFT ? 0 : 18;
+        return _isNonDivisible ? 0 : 18;
     }
 
     /**
@@ -74,14 +71,14 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
      * @inheritdoc ILSP7DigitalAsset
      */
     function authorizeOperator(address operator, uint256 amount) public virtual override {
-        _updateOperator(_msgSender(), operator, amount);
+        _updateOperator(msg.sender, operator, amount);
     }
 
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
     function revokeOperator(address operator) public virtual override {
-        _updateOperator(_msgSender(), operator, 0);
+        _updateOperator(msg.sender, operator, 0);
     }
 
     /**
@@ -113,7 +110,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) public virtual override {
-        address operator = _msgSender();
+        address operator = msg.sender;
         if (operator != from) {
             uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];
             if (amount > operatorAmount) {
@@ -203,7 +200,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
             revert LSP7CannotSendWithAddressZero();
         }
 
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         _beforeTokenTransfer(address(0), to, amount);
 
@@ -240,7 +237,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        address operator = _msgSender();
+        address operator = msg.sender;
         if (operator != from) {
             uint256 authorizedAmount = _operatorAuthorizedAmount[from][operator];
             if (amount > authorizedAmount) {
@@ -287,7 +284,7 @@ abstract contract LSP7DigitalAssetCore is Context, ILSP7DigitalAsset {
             revert LSP7AmountExceedsBalance(balance, from, amount);
         }
 
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         _beforeTokenTransfer(from, to, amount);
 

@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -21,14 +22,11 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { provider, EMPTY_PAYLOAD, ONE_ETH } from "../../utils/helpers";
-
-// errors
 import {
-  customRevertErrorMessage,
-  NoPermissionsSetError,
-  InvalidERC725FunctionError,
-} from "../../utils/errors";
+  provider,
+  combinePermissions,
+  EMPTY_PAYLOAD,
+} from "../../utils/helpers";
 
 export const testSecurityScenarios = (
   buildContext: () => Promise<LSP6TestContext>
@@ -69,11 +67,7 @@ export const testSecurityScenarios = (
 
     const permissionValues = [
       ALL_PERMISSIONS,
-      ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.CALL)) +
-          parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-        32
-      ),
+      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
     ];
 
     await setupKeyManager(context, permissionKeys, permissionValues);
@@ -100,7 +94,9 @@ export const testSecurityScenarios = (
       context.keyManager
         .connect(addressWithNoPermissions)
         .execute(executePayload)
-    ).toBeRevertedWith(NoPermissionsSetError(addressWithNoPermissions.address));
+    )
+      .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
+      .withArgs(addressWithNoPermissions.address);
   });
 
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
@@ -108,20 +104,24 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      await expect(
-        context.keyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith(InvalidERC725FunctionError(payload));
+      await expect(context.keyManager.connect(context.owner).execute(payload))
+        .to.be.revertedWithCustomError(
+          context.keyManager,
+          "InvalidERC725Function"
+        )
+        .withArgs(payload);
     });
 
     it("via `executeRelayCall()`", async () => {
+      const HARDHAT_CHAINID = 31337;
       let nonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
       let hash = ethers.utils.solidityKeccak256(
-        ["address", "uint256", "bytes"],
-        [context.keyManager.address, nonce, payload]
+        ["uint256", "address", "uint256", "bytes"],
+        [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
       );
 
       let signature = await context.owner.signMessage(
@@ -131,13 +131,13 @@ export const testSecurityScenarios = (
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(
-            context.keyManager.address,
-            nonce,
-            payload,
-            signature
-          )
-      ).toBeRevertedWith(InvalidERC725FunctionError(payload));
+          .executeRelayCall(signature, nonce, payload)
+      )
+        .to.be.revertedWithCustomError(
+          context.keyManager,
+          "InvalidERC725Function"
+        )
+        .withArgs(payload);
     });
   });
 
@@ -150,7 +150,7 @@ export const testSecurityScenarios = (
         context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATION_TYPES.CALL,
           maliciousContract.address,
-          ONE_ETH,
+          ethers.utils.parseEther("1"),
           EMPTY_PAYLOAD,
         ]);
 
@@ -181,59 +181,60 @@ export const testSecurityScenarios = (
         maliciousContract.address
       );
 
-      expect(parseInt(newAccountBalance.toString())).toEqual(
-        initialAccountBalance.toString() - ONE_ETH.toString()
+      expect(newAccountBalance).to.equal(
+        initialAccountBalance.sub(ethers.utils.parseEther("1"))
       );
-      expect(parseInt(newAttackerContractBalance.toString())).toEqual(
-        parseInt(ONE_ETH.toString())
-      );
+      expect(newAttackerContractBalance).to.equal(ethers.utils.parseEther("1"));
     });
-  });
 
-  describe("when calling via `executeRelayCall(...)`", () => {
-    const channelId = 0;
+    describe("when calling via `executeRelayCall(...)`", () => {
+      const channelId = 0;
 
-    it("Replay Attack should fail because of invalid nonce", async () => {
-      let nonce = await context.keyManager.callStatic.getNonce(
-        signer.address,
-        channelId
-      );
-
-      let executeRelayCallPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
+      it("Replay Attack should fail because of invalid nonce", async () => {
+        let nonce = await context.keyManager.callStatic.getNonce(
           signer.address,
-          ONE_ETH,
-          EMPTY_PAYLOAD,
-        ]);
+          channelId
+        );
 
-      const HARDHAT_CHAINID = 31337;
+        let executeRelayCallPayload =
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            signer.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]);
 
-      let hash = ethers.utils.solidityKeccak256(
-        ["uint256", "address", "uint256", "bytes"],
-        [
-          HARDHAT_CHAINID,
-          context.keyManager.address,
-          nonce,
-          executeRelayCallPayload,
-        ]
-      );
+        const HARDHAT_CHAINID = 31337;
 
-      let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        let hash = ethers.utils.solidityKeccak256(
+          ["uint256", "address", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            executeRelayCallPayload,
+          ]
+        );
 
-      // first call
-      await context.keyManager
-        .connect(relayer)
-        .executeRelayCall(signature, nonce, executeRelayCallPayload);
+        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
 
-      // 2nd call = replay attack
-      await expect(
-        context.keyManager
+        // first call
+        await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonce, executeRelayCallPayload)
-      ).toBeRevertedWith(
-        `${customRevertErrorMessage} 'InvalidRelayNonce("${signer.address}", ${nonce}, "${signature}")'`
-      );
+          .executeRelayCall(signature, nonce, executeRelayCallPayload);
+
+        // 2nd call = replay attack
+        await expect(
+          context.keyManager
+            .connect(relayer)
+            .executeRelayCall(signature, nonce, executeRelayCallPayload)
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "InvalidRelayNonce"
+          )
+          .withArgs(signer.address, nonce, signature);
+      });
     });
   });
 };

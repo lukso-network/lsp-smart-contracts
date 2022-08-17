@@ -10,8 +10,7 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // errors
@@ -19,7 +18,6 @@ import "./LSP8Errors.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-// import {} from "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "./LSP8Constants.sol";
 
 /**
@@ -27,10 +25,9 @@ import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "./LSP8Con
  * @author Matthew Stevens
  * @dev Core Implementation of a LSP8 compliant contract.
  */
-abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8IdentifiableDigitalAsset {
+abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
-    using Address for address;
 
     // --- Storage
 
@@ -90,7 +87,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
      */
     function authorizeOperator(address operator, bytes32 tokenId) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address caller = _msgSender();
+        address caller = msg.sender;
 
         if (tokenOwner != caller) {
             revert LSP8NotTokenOwner(tokenOwner, tokenId, caller);
@@ -115,7 +112,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
      */
     function revokeOperator(address operator, bytes32 tokenId) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address caller = _msgSender();
+        address caller = msg.sender;
 
         if (tokenOwner != caller) {
             revert LSP8NotTokenOwner(tokenOwner, tokenId, caller);
@@ -186,7 +183,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
         bool force,
         bytes memory data
     ) public virtual override {
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         if (!_isOperatorOrOwner(operator, tokenId)) {
             revert LSP8NotTokenOperator(tokenId, operator);
@@ -226,7 +223,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     }
 
     function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
-        // TODO: here is a good exmaple of why having multiple operators will be expensive.. we
+        // TODO: here is a good example of why having multiple operators will be expensive.. we
         // need to clear them on token transfer
         //
         // NOTE: this may cause a tx to fail if there is too many operators to clear, in which case
@@ -285,7 +282,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
             revert LSP8TokenIdAlreadyMinted(tokenId);
         }
 
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         _beforeTokenTransfer(address(0), to, tokenId);
 
@@ -308,7 +305,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
      */
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         _beforeTokenTransfer(tokenOwner, address(0), tokenId);
 
@@ -348,7 +345,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
             revert LSP8CannotSendToAddressZero();
         }
 
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         _beforeTokenTransfer(from, to, tokenId);
 
