@@ -142,7 +142,7 @@ library LSP5Utils {
             keys[2] = arrayElementKeyToRemove;
             values[2] = "";
 
-            // Swapping last element in ArrayKey with the elemnt in ArrayKey to remove || {Swap and pop} method;
+            // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
         } else {
             /**
