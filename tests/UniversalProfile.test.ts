@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import {
   ILSP1UniversalReceiver,
   LSP0ERC725Account,
@@ -89,7 +90,7 @@ describe("UniversalProfile", () => {
           const balance = await provider.getBalance(
             context.universalProfile.address
           );
-          expect(balance.toNumber()).toEqual(testCase.initialFunding || 0);
+          expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });
     });
@@ -209,7 +210,7 @@ describe("UniversalProfile", () => {
 
         await expect(
           universalProfileInit.initialize(randomCaller.address)
-        ).toBeRevertedWith("Initializable: contract is already initialized");
+        ).to.be.revertedWith("Initializable: contract is already initialized");
       });
     });
 
@@ -230,7 +231,7 @@ describe("UniversalProfile", () => {
             const balance = await provider.getBalance(
               context.universalProfile.address
             );
-            expect(balance.toNumber()).toEqual(testCase.initialFunding || 0);
+            expect(balance).to.equal(testCase.initialFunding || 0);
           });
 
           shouldInitializeLikeLSP3(async () => {
@@ -243,7 +244,7 @@ describe("UniversalProfile", () => {
           it("should revert", async () => {
             await initializeProxy(context);
 
-            await expect(initializeProxy(context)).toBeRevertedWith(
+            await expect(initializeProxy(context)).to.be.revertedWith(
               "Initializable: contract is already initialized"
             );
           });

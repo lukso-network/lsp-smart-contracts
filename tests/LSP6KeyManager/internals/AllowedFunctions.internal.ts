@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
@@ -59,7 +59,7 @@ export const testAllowedFunctionsInternals = (
       );
     let decodedResult = abiCoder.decode(["bytes4[]"], bytesResult);
 
-    expect(decodedResult).toEqual([
+    expect(decodedResult).to.deep.equal([
       [targetContract.interface.getSighash("setName")],
     ]);
 
@@ -72,12 +72,12 @@ export const testAllowedFunctionsInternals = (
       resultFromAccount
     );
 
-    expect(decodedResultFromAccount).toEqual([
+    expect(decodedResultFromAccount).to.deep.equal([
       [targetContract.interface.getSighash("setName")],
     ]);
 
     // also make sure that both functions from keyManager and from erc725 account return the same thing
-    expect(bytesResult).toEqual(resultFromAccount);
+    expect(bytesResult).to.equal(resultFromAccount);
   });
 
   it("should return an empty byte when address has no allowed functions listed", async () => {
@@ -85,12 +85,12 @@ export const testAllowedFunctionsInternals = (
       await context.keyManagerInternalTester.getAllowedFunctionsFor(
         context.owner.address
       );
-    expect([bytesResult]).toEqual(["0x"]);
+    expect([bytesResult]).to.deep.equal(["0x"]);
 
     let resultFromAccount = await context.universalProfile["getData(bytes32)"](
       ERC725YKeys.LSP6["AddressPermissions:AllowedFunctions"] +
         context.owner.address.substring(2)
     );
-    expect(resultFromAccount).toEqual("0x");
+    expect(resultFromAccount).to.equal("0x");
   });
 };
