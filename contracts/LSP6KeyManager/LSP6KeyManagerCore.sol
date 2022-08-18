@@ -271,15 +271,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     ) internal view {
         // prettier-ignore
         if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
-            
+
             // key = AddressPermissions:Permissions:<address>
             _verifyCanSetBytes32Permissions(key, from, permissions);
-        
+
         } else if (key == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
 
             // key = AddressPermissions[]
             _verifyCanSetPermissionsArray(key, value, from, permissions);
-        
+
         } else if (bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
 
             // key = AddressPermissions[index]
@@ -477,7 +477,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
 
-        if (value > 0) {
+        if (value != 0) {
             // prettier-ignore
             hasSuperTransferValue || _requirePermissions(from, permissions, _PERMISSION_TRANSFERVALUE);
         }
@@ -489,7 +489,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (hasSuperOperation && isCallDataPresent && value == 0) return;
 
         // Skip if caller has SUPER permission for value transfers
-        if (hasSuperTransferValue && !isCallDataPresent && value > 0) return;
+        if (hasSuperTransferValue && !isCallDataPresent && value != 0) return;
 
         // Skip if both SUPER permissions are present
         if (hasSuperOperation && hasSuperTransferValue) return;
@@ -498,7 +498,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         address to = address(bytes20(payload[48:68]));
         _verifyAllowedAddress(from, to);
 
-        if (to.code.length > 0) {
+        if (to.code.length != 0) {
             // CHECK for ALLOWED STANDARDS
             _verifyAllowedStandard(from, to);
 

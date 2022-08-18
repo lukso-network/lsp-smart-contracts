@@ -54,7 +54,7 @@ abstract contract LSP0ERC725AccountCore is
      * @dev Emits an event when receiving native tokens
      */
     fallback() external payable virtual {
-        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     //    TODO to be discussed
