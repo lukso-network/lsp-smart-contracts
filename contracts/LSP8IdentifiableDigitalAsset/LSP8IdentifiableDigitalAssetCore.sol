@@ -336,6 +336,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bool force,
         bytes memory data
     ) internal virtual {
+        if (from == to) {
+            revert LSP8CannotSendToFromAddress();
+        }
+
         address tokenOwner = tokenOwnerOf(tokenId);
         if (tokenOwner != from) {
             revert LSP8NotTokenOwner(tokenOwner, tokenId, from);

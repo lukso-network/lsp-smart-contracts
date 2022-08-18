@@ -775,6 +775,24 @@ export const shouldBehaveLikeLSP8 = (
                 });
               });
             });
+
+            describe("when `from == to` address (= sending to tokenId's owner itself)", () => {
+              it("should revert", async () => {
+                const txParams = {
+                  from: context.accounts.owner.address,
+                  to: context.accounts.owner.address,
+                  tokenId: mintedTokenId,
+                  force,
+                  data,
+                };
+                const expectedError = "LSP8CannotSendToFromAddress";
+
+                await transferFailScenario(txParams, operator, {
+                  error: expectedError,
+                  args: [],
+                });
+              });
+            });
           });
 
           describe("when force=false", () => {
@@ -856,6 +874,24 @@ export const shouldBehaveLikeLSP8 = (
                 });
               });
             });
+
+            // describe.only("when `from == to` address (= sending to tokenId's owner itself)", () => {
+            //   it("should revert", async () => {
+            //     const txParams = {
+            //       from: context.accounts.owner.address,
+            //       to: context.accounts.owner.address,
+            //       tokenId: mintedTokenId,
+            //       force,
+            //       data,
+            //     };
+            //     const expectedError = "LSP8CannotSendToFromAddress";
+
+            //     await transferFailScenario(txParams, operator, {
+            //       error: expectedError,
+            //       args: [],
+            //     });
+            //   });
+            // });
           });
         };
 
