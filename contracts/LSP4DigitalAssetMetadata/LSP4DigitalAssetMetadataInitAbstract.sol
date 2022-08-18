@@ -22,6 +22,7 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
         string memory symbol_,
         address newOwner_
     ) internal virtual onlyInitializing {
+        require(newOwner_ != address(0), "LSP4: new owner cannot be the zero address");
         ERC725YInitAbstract._initialize(newOwner_);
 
         // set SupportedStandards:LSP4DigitalAsset

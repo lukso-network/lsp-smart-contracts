@@ -1,5 +1,6 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
+
 import { LSP7Tester__factory, LSP7InitTester__factory } from "../../types";
 
 import {
@@ -18,7 +19,7 @@ describe("LSP7", () => {
       const initialSupply = ethers.BigNumber.from("3");
       const deployParams = {
         name: "LSP7 - deployed with constructor",
-        symbol: "NFT",
+        symbol: "Token",
         newOwner: accounts.owner.address,
       };
 
@@ -35,13 +36,31 @@ describe("LSP7", () => {
     };
 
     describe("when deploying the contract", () => {
-      let context: LSP7TestContext;
+      it("should revert when deploying with address(0) as owner", async () => {
+        const accounts = await ethers.getSigners();
 
-      beforeEach(async () => {
-        context = await buildTestContext();
+        const deployParams = {
+          name: "LSP7 - deployed with constructor",
+          symbol: "Token",
+          newOwner: ethers.constants.AddressZero,
+        };
+
+        await expect(
+          new LSP7Tester__factory(accounts[0]).deploy(
+            deployParams.name,
+            deployParams.symbol,
+            deployParams.newOwner
+          )
+        ).to.be.revertedWith("LSP4: new owner cannot be the zero address");
       });
 
-      describe("when initializing the contract", () => {
+      describe("once the contract was deployed", () => {
+        let context: LSP7TestContext;
+
+        beforeEach(async () => {
+          context = await buildTestContext();
+        });
+
         shouldInitializeLikeLSP7(async () => {
           const { lsp7, deployParams } = context;
           return {
@@ -120,6 +139,17 @@ describe("LSP7", () => {
 
       beforeEach(async () => {
         context = await buildTestContext();
+      });
+
+      it("should revert when initializing with address(0) as owner", async () => {
+        await expect(
+          context.lsp7["initialize(string,string,address,bool)"](
+            context.deployParams.name,
+            context.deployParams.symbol,
+            ethers.constants.AddressZero,
+            false
+          )
+        ).to.be.revertedWith("LSP4: new owner cannot be the zero address");
       });
 
       describe("when initializing the contract", () => {

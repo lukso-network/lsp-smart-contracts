@@ -27,6 +27,8 @@ abstract contract LSP4DigitalAssetMetadata is ERC725Y {
         string memory symbol_,
         address newOwner_
     ) ERC725Y(newOwner_) {
+        require(newOwner_ != address(0), "LSP4: new owner cannot be the zero address");
+
         // set key SupportedStandards:LSP4DigitalAsset
         super._setData(_LSP4_SUPPORTED_STANDARDS_KEY, _LSP4_SUPPORTED_STANDARDS_VALUE);
 
