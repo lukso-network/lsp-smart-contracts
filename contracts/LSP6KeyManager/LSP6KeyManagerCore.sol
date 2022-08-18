@@ -611,14 +611,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         revert NotAllowedFunction(from, functionSelector);
     }
 
-    function _countTrailingZeroBytes(bytes32 key) internal pure returns (uint256) {
-        uint256 index = 31;
+    function _countTrailingZeroBytes(bytes32 dataKey) internal pure returns (uint256) {
+        uint256 nByte = 32;
 
-        // CHECK each bytes of the key, starting from the end (right to left)
-        // skip each empty bytes `0x00` to find the first non-empty byte
-        while (key[index] == 0x00 && index != 0) index--;
+        // CHECK each bytes of the data key, starting from the end (right to left)
+        // skip each empty bytes `0x00` until we find the first non-empty byte
+        while (nByte > 0 && dataKey[nByte - 1] == 0x00) nByte--;
 
-        return 32 - (index + 1);
+        return 32 - nByte;
     }
 
     function _requirePermissions(
