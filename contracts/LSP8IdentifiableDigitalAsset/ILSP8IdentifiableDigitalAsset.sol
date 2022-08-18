@@ -168,6 +168,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      *
      * - `from` cannot be the zero address.
      * - `to` cannot be the zero address.
+     * - `from` and `to` cannot be the same addresses.
      * - `tokenId` token must be owned by `from`.
      * - If the caller is not `from`, it must be an operator of `tokenId`.
      *
