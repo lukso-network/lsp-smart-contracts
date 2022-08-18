@@ -5,10 +5,10 @@ pragma solidity ^0.8.0;
 // modules
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 import {
-    LSP7CompatibleERC20Init
-} from "../../LSP7DigitalAsset/extensions/LSP7CompatibleERC20Init.sol";
+    LSP7CompatibleERC20InitAbstract
+} from "../../LSP7DigitalAsset/extensions/LSP7CompatibleERC20InitAbstract.sol";
 
-contract LSP7CompatibleERC20InitTester is LSP7CompatibleERC20Init {
+contract LSP7CompatibleERC20InitTester is LSP7CompatibleERC20InitAbstract {
     function mint(
         address to,
         uint256 amount,
