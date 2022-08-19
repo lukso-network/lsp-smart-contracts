@@ -59,12 +59,6 @@ contract LSP1UniversalReceiverDelegateUP is
         ) {
             result = _tokenAndVaultHandling(sender, typeId);
         }
-
-        /* @TODO
-          else if() {
-            result = FollowerHandling(sender, typeId, data);
-            }
-        */
     }
 
     // --- Overrides
