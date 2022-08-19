@@ -129,6 +129,25 @@ describe("LSP8CompatibleERC721", () => {
       );
     };
 
+    describe("when deploying the base implementation contract", () => {
+      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp8CompatibilityForERC721TesterInit =
+          await new LSP8CompatibleERC721InitTester__factory(
+            accounts[0]
+          ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp8CompatibilityForERC721TesterInit[
+            "initialize(string,string,address,bytes)"
+          ]("XXXXXXXXXXX", "XXX", randomCaller.address, "0x")
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+      });
+    });
+
     describe("when deploying the contract as proxy", () => {
       let context: LSP8CompatibleERC721TestContext;
 
@@ -169,5 +188,6 @@ describe("LSP8CompatibleERC721", () => {
         })
       );
     });
+
   });
 });
