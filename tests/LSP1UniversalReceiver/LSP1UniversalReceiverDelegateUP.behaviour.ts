@@ -1678,6 +1678,29 @@ export const shouldBehaveLikeLSP1Delegate = (
         });
       });
     });
+
+    describe("when deploying vault to a UP directly", () => {
+      let lsp9VaultD: LSP9Vault;
+
+      before(async () => {
+        lsp9VaultD = await new LSP9Vault__factory(
+          context.accounts.random
+        ).deploy(context.universalProfile1.address);
+      });
+
+      it("should register the data key relevant to the vault deployed in the UP storage", async () => {
+        const [indexInMap, interfaceId, arrayLength, elementAddress] =
+          await getLSP10MapAndArrayKeysValue(
+            context.universalProfile1,
+            lsp9VaultD
+          );
+
+        expect(indexInMap).to.equal(1);
+        expect(interfaceId).to.equal(INTERFACE_IDS.LSP9Vault);
+        expect(arrayLength).to.equal(ARRAY_LENGTH.TWO);
+        expect(elementAddress).to.equal(lsp9VaultD.address);
+      });
+    });
   });
 };
 
