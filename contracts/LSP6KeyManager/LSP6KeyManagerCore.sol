@@ -470,16 +470,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             ? false
             : permissions.hasPermission(_extractSuperPermissionFromOperation(operationType));
 
-        if (isCallDataPresent) {
-            // prettier-ignore
-            hasSuperOperation || _requirePermissions(from, permissions, _extractPermissionFromOperation(operationType));
+        if (isCallDataPresent && !hasSuperOperation) {
+            _requirePermissions(from, permissions, _extractPermissionFromOperation(operationType));
         }
 
         bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
 
-        if (value != 0) {
-            // prettier-ignore
-            hasSuperTransferValue || _requirePermissions(from, permissions, _PERMISSION_TRANSFERVALUE);
+        if (value != 0 && !hasSuperTransferValue) {
+            _requirePermissions(from, permissions, _PERMISSION_TRANSFERVALUE);
         }
 
         // Skip on contract creation (CREATE or CREATE2)
@@ -625,7 +623,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
-    ) internal pure returns (bool) {
+    ) internal pure {
         if (!addressPermissions.hasPermission(permissionRequired)) {
             string memory permissionErrorString = _getPermissionErrorString(permissionRequired);
             revert NotAuthorised(from, permissionErrorString);
