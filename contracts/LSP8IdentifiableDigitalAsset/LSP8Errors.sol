@@ -15,6 +15,8 @@ error LSP8CannotSendToAddressZero();
 
 error LSP8CannotSendToFromAddress();
 
+error LSP8NonExistingOperator(address _address, bytes32 tokenId);
+
 error LSP8TokenIdAlreadyMinted(bytes32 tokenId);
 
 error LSP8InvalidTransferBatch();

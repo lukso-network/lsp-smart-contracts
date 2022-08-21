@@ -218,7 +218,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         address tokenOwner,
         bytes32 tokenId
     ) internal virtual {
-        _operators[tokenId].remove(operator);
+        bool isRemoved = _operators[tokenId].remove(operator);
+        if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
         emit RevokedOperator(operator, tokenOwner, tokenId);
     }
 
