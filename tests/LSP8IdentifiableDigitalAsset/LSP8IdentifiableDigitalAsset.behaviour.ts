@@ -17,16 +17,12 @@ import {
 // helpers
 import { tokenIdAsBytes32 } from "../utils/tokens";
 
-// errors
-import { customRevertErrorMessage } from "../utils/errors";
-
 // constants
 import {
   ERC725YKeys,
   INTERFACE_IDS,
   SupportedStandards,
 } from "../../constants";
-import { token } from "../../types/@openzeppelin/contracts";
 
 export type LSP8TestAccounts = {
   owner: SignerWithAddress;
