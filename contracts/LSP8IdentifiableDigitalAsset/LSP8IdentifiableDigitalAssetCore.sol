@@ -102,7 +102,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             return;
         }
 
-        _operators[tokenId].add(operator);
+        bool isAdded = _operators[tokenId].add(operator);
+        if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
         emit AuthorizedOperator(operator, tokenOwner, tokenId);
     }
