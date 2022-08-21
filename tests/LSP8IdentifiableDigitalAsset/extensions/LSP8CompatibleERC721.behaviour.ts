@@ -516,10 +516,6 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
       describe("when many context.accounts have been approved for the tokenId", () => {
         it("should return the last new authorized operator", async () => {
-          // We approve the same account in the first and third approve call, with a different
-          // account in the second call as the last "new" approval.
-          // This is to highlight its not 100% the same behavior as ERC721 since that implementation
-          // has one active approval at a time, and LSP8 has a list of authorized operator addresses
           const operatorFirstAndThirdCall = context.accounts.operator.address;
           const operatorSecondCall = context.accounts.anotherOperator.address;
 
@@ -529,10 +525,6 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           );
           await context.lsp8CompatibleERC721.approve(
             operatorSecondCall,
-            tokenIdAsBytes32(mintedTokenId)
-          );
-          await context.lsp8CompatibleERC721.approve(
-            operatorFirstAndThirdCall,
             tokenIdAsBytes32(mintedTokenId)
           );
 
