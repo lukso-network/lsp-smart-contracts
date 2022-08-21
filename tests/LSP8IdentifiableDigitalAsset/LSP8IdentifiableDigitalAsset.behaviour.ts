@@ -321,7 +321,6 @@ export const shouldBehaveLikeLSP8 = (
 
             it("should revert", async () => {
               const operator = context.accounts.operator.address;
-              const tokenOwner = context.accounts.owner.address;
               const tokenId = mintedTokenId;
 
               await expect(context.lsp8.authorizeOperator(operator, tokenId))
