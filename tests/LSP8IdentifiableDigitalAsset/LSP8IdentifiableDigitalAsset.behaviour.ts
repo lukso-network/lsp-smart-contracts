@@ -26,6 +26,7 @@ import {
   INTERFACE_IDS,
   SupportedStandards,
 } from "../../constants";
+import { token } from "../../types/@openzeppelin/contracts";
 
 export type LSP8TestAccounts = {
   owner: SignerWithAddress;
@@ -425,6 +426,20 @@ export const shouldBehaveLikeLSP8 = (
               context.lsp8,
               "LSP8CannotUseAddressZeroAsOperator"
             );
+          });
+        });
+
+        describe("when address provided to revoke is not an existing operator", () => {
+          it("should revert", async () => {
+            const operator = context.accounts.anyone.address;
+            const tokenId = mintedTokenId;
+
+            await expect(context.lsp8.revokeOperator(operator, tokenId))
+              .to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8NonExistingOperator"
+              )
+              .withArgs(operator, tokenId);
           });
         });
       });
