@@ -145,7 +145,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         onlyAllowed
     {
         require(dataKeys.length == dataValues.length, "Keys length not equal to values length");
-        for (uint256 i = 0; i < dataKeys.length; i++) {
+        for (uint256 i = 0; i < dataKeys.length; i = _uncheckedIncrement(i)) {
             _setData(dataKeys[i], dataValues[i]);
         }
     }
@@ -200,6 +200,16 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     function _notifyVaultReceiver(address receiver) internal virtual {
         if (ERC165Checker.supportsERC165Interface(receiver, _INTERFACEID_LSP1)) {
             ILSP1UniversalReceiver(receiver).universalReceiver(_TYPEID_LSP9_VAULTRECIPIENT, "");
+        }
+    }
+
+    /**
+     * @dev Will return unchecked incremented uint256
+     *      can be used to save gas when iterating over loops
+     */
+    function _uncheckedIncrement(uint256 i) internal pure returns (uint256) {
+        unchecked {
+            return i + 1;
         }
     }
 }
