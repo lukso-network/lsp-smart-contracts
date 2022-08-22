@@ -662,8 +662,35 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (permission == _PERMISSION_CALL) return "CALL";
         if (permission == _PERMISSION_STATICCALL) return "STATICCALL";
         if (permission == _PERMISSION_DELEGATECALL) return "DELEGATECALL";
-        // TODO: add support to display CREATE or CREATE2 in the revert error
-        if (permission == _PERMISSION_DEPLOY) return "DEPLOY";
+        if (permission == _PERMISSION_DEPLOY) {
+            // support to display CREATE or CREATE2 in the revert error
+            // althought CREATE and CREATE2 fall under the same permission ("DEPLOY"), 
+            // differentiate them when reverting to help debugging contract deployment that failed
+            uint256 operationType;
+            bytes memory payload;
+
+            bytes4 selector = msg.sig;
+            if (selector == ILSP6KeyManager.execute.selector) {
+                payload = abi.decode(msg.data[4:], (bytes));
+            }
+
+            if (selector == ILSP6KeyManager.executeRelayCall.selector) {
+                ( , , payload) = abi.decode(msg.data[4:], (bytes, uint256, bytes));
+            }
+
+            (operationType, , , ) = abi.decode(
+                BytesLib.slice({
+                    _bytes: payload,
+                    // discard first 4 bytes of the payload (= ERC725X.execute(...) selector)
+                    _start: 4, 
+                    _length: payload.length - 4
+                }), 
+                (uint256, address, uint256, bytes)
+            );
+
+            if (operationType == OPERATION_CREATE) return "CREATE";
+            if (operationType == OPERATION_CREATE2) return "CREATE2";
+        }
         if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
         if (permission == _PERMISSION_SIGN) return "SIGN";
     }
