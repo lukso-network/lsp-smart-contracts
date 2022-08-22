@@ -473,7 +473,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 operationType = uint256(bytes32(payload[4:36]));
         require(operationType < 5, "LSP6KeyManager: invalid operation type");
 
-        // TODO: if re-enable delegatecall, add check to ensure owner() + initialized() are not overriden after delegatecall
         require(
             operationType != OPERATION_DELEGATECALL,
             "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
