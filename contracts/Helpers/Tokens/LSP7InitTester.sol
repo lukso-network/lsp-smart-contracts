@@ -15,9 +15,6 @@ contract LSP7InitTester is LSP7DigitalAssetInit {
         _mint(to, amount, force, data);
     }
 
-    /**
-     * TODO: add burnable as extension or preset
-     */
     function burn(
         address from,
         uint256 amount,
