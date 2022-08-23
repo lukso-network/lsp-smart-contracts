@@ -29,7 +29,7 @@ abstract contract TokenHandling {
         (
             bool isReceiving,
             bytes32 arrayLengthKey,
-            bytes12 mapPrefix,
+            bytes10 mapPrefix,
             bytes4 interfaceID
         ) = LSP1Utils.getTransferDetails(typeId);
 

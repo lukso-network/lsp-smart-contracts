@@ -108,7 +108,7 @@ library LSP5Utils {
     function removeMapAndArrayKey(
         IERC725Y account,
         bytes32 arrayLengthKey,
-        bytes12 mapKeyPrefix,
+        bytes10 mapKeyPrefix,
         bytes32 mapKeyToRemove,
         bytes memory mapValue
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
@@ -209,7 +209,7 @@ library LSP5Utils {
     function removeMapAndArrayKeyViaKeyManager(
         IERC725Y account,
         bytes32 arrayLengthKey,
-        bytes12 mapKeyPrefix,
+        bytes10 mapKeyPrefix,
         bytes32 mapKeyToRemove,
         bytes memory mapValue,
         address keyManager

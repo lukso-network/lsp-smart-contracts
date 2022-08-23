@@ -20,7 +20,7 @@ library LSP2Utils {
      * @dev Generates a data key of keyType Singleton
      * @param keyName The string to hash to generate a Singleton data key
      * @return a bytes32 dataKey
-     * 
+     *
      */
     function generateSingletonKey(string memory keyName) internal pure returns (bytes32) {
         return keccak256(bytes(keyName));
@@ -28,7 +28,7 @@ library LSP2Utils {
 
     /**
      * @dev Generates a data key of keyType Array by hashing `keyName`.
-     * @param keyName The string that will be used to generate an data key of keyType Array 
+     * @param keyName The string that will be used to generate an data key of keyType Array
      */
     function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
         bytes memory dataKey = bytes(keyName);
@@ -110,16 +110,16 @@ library LSP2Utils {
 
     /**
      * @dev Generate a data key of keyType Mapping
-     * <keyPrefix>:<bytes20Value>
+     * <bytes10keyPrefix>:<bytes2(0)>:<bytes20Value>
      * @param keyPrefix First part of the data key of keyType Mapping
      * @param bytes20Value Second part of the data key of keyType Mapping
      */
-    function generateMappingKey(bytes12 keyPrefix, bytes20 bytes20Value)
+    function generateMappingKey(bytes10 keyPrefix, bytes20 bytes20Value)
         internal
         pure
         returns (bytes32)
     {
-        bytes memory generatedKey = bytes.concat(keyPrefix, bytes20Value);
+        bytes memory generatedKey = bytes.concat(keyPrefix, bytes2(0), bytes20Value);
         return bytes32(generatedKey);
     }
 
@@ -152,16 +152,16 @@ library LSP2Utils {
 
     /**
      * @dev Generate a data key of keyType MappingWithGrouping
-     * <keyPrefix>:<bytes20Value>
+     * <bytes10keyPrefix>:<bytes2(0)>:<bytes20Value>
      * @param keyPrefix Used for the first part of the data key of keyType MappingWithGrouping
      * @param bytes20Value Used for the first last of the data key of keyType MappingWithGrouping
      */
-    function generateMappingWithGroupingKey(bytes12 keyPrefix, bytes20 bytes20Value)
+    function generateMappingWithGroupingKey(bytes10 keyPrefix, bytes20 bytes20Value)
         internal
         pure
         returns (bytes32)
     {
-        bytes memory generatedKey = bytes.concat(keyPrefix, bytes20Value);
+        bytes memory generatedKey = bytes.concat(keyPrefix, bytes2(0), bytes20Value);
         return bytes32(generatedKey);
     }
 

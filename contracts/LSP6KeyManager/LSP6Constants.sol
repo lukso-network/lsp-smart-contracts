@@ -17,20 +17,20 @@ bytes16 constant _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX = 0xdf30dba06db6a30e65
 // AddressPermissions:...
 bytes6 constant _LSP6KEY_ADDRESSPERMISSIONS_PREFIX = 0x4b80742de2bf;
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('Permissions')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX = 0x4b80742de2bf82acb3630000; // AddressPermissions:Permissions:<address> --> bytes32
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('Permissions')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX = 0x4b80742de2bf82acb363; // AddressPermissions:Permissions:<address> --> bytes32
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedAddresses')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX = 0x4b80742de2bfc6dd6b3c0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedAddresses')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX = 0x4b80742de2bfc6dd6b3c; // AddressPermissions:AllowedAddresses:<address> --> address[]
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedFunctions')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX = 0x4b80742de2bf8efea1e80000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedFunctions')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX = 0x4b80742de2bf8efea1e8; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedStandards')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX = 0x4b80742de2bf3efa94a30000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedStandards')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX = 0x4b80742de2bf3efa94a3; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YKeys')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX = 0x4b80742de2bf90b8b4850000; // AddressPermissions:AllowedERC725YKeys:<address> --> bytes32[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YKeys')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX = 0x4b80742de2bf90b8b485; // AddressPermissions:AllowedERC725YKeys:<address> --> bytes32[]
 
 // DEFAULT PERMISSIONS VALUES
 bytes32 constant _PERMISSION_CHANGEOWNER        = 0x0000000000000000000000000000000000000000000000000000000000000001;
