@@ -69,6 +69,12 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
     /**
      * @inheritdoc ILSP7DigitalAsset
+     *
+     * @dev To increase or decrease the authorized amount of an operator, it's advised to call
+     * {revokeOperator} first, and then re-call {authorizeOperator} with the new amount
+     * to avoid front-running and Allowance Double-Spend Exploit
+     * Check more information here:
+     * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
      */
     function authorizeOperator(address operator, uint256 amount) public virtual override {
         _updateOperator(msg.sender, operator, amount);
