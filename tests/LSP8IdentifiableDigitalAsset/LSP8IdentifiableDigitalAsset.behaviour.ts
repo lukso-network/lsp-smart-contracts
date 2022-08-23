@@ -250,7 +250,7 @@ export const shouldBehaveLikeLSP8 = (
       });
 
       describe("when the given address does not owns some tokens", () => {
-        it("should empty list", async () => {
+        it("should return an empty list", async () => {
           expect(
             await context.lsp8.tokenIdsOf(context.accounts.anyone.address)
           ).to.be.deep.equal([]);
@@ -1416,6 +1416,106 @@ export const shouldBehaveLikeLSP8 = (
                 error: expectedError,
                 args: [txParams.tokenId[0].toString(), operator.address],
               });
+            });
+          });
+        });
+      });
+    });
+
+    describe("_burn", () => {
+      describe("when tokenId has not been minted", () => {
+        it("should revert", async () => {
+          await expect(context.lsp8.burn(neverMintedTokenId, "0x"))
+            .to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8NonExistentTokenId"
+            )
+            .withArgs(neverMintedTokenId);
+        });
+      });
+
+      describe("when tokenId has been minted", () => {
+        describe("after burning a tokenId", () => {
+          it("should have decreased the total supply", async () => {
+            const totalSupplyBefore = await context.lsp8.totalSupply();
+
+            await context.lsp8.burn(mintedTokenId, "0x");
+
+            const totalSupplyAfter = await context.lsp8.totalSupply();
+
+            expect(totalSupplyAfter).to.equal(totalSupplyBefore.sub(1));
+          });
+
+          it("should have emitted a Transfer event with address(0) as `to` param", async () => {
+            await expect(context.lsp8.burn(mintedTokenId, "0x"))
+              .to.emit(context.lsp8, "Transfer")
+              .withArgs(
+                context.accounts.owner.address, // operator
+                context.accounts.owner.address, // tokenOwner
+                ethers.constants.AddressZero,
+                mintedTokenId,
+                false,
+                "0x"
+              );
+          });
+
+          describe("when calling `tokenOwnerOf(...)` for the burnt tokenId", () => {
+            it("should revert stating tokenId does not exist", async () => {
+              await context.lsp8.burn(mintedTokenId, "0x");
+
+              await expect(
+                context.lsp8.tokenOwnerOf(mintedTokenId)
+              ).to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8NonExistentTokenId"
+              );
+            });
+          });
+
+          describe("when calling `tokenIdsOf(...)` with the initial owner address of the burnt token", () => {
+            it("should return a list of tokenIds that does not contain the burnt tokenId", async () => {
+              const tokenIdsOfOwnerBefore = await context.lsp8.tokenIdsOf(
+                context.accounts.owner.address
+              );
+              expect(tokenIdsOfOwnerBefore).to.contain(mintedTokenId);
+
+              await context.lsp8.burn(mintedTokenId, "0x");
+
+              const tokenIdsOfOwnerAfter = await context.lsp8.tokenIdsOf(
+                context.accounts.owner.address
+              );
+              expect(tokenIdsOfOwnerAfter).to.not.contain(mintedTokenId);
+            });
+          });
+
+          describe("when trying to get the operators for the burnt tokenId", () => {
+            it("should revert stating tokenId does not exist", async () => {
+              await context.lsp8.authorizeOperator(
+                context.accounts.operator.address,
+                mintedTokenId
+              );
+
+              await context.lsp8.authorizeOperator(
+                context.accounts.anotherOperator.address,
+                mintedTokenId
+              );
+
+              const operatorsForTokenIdBefore =
+                await context.lsp8.getOperatorsOf(mintedTokenId);
+
+              expect(operatorsForTokenIdBefore).to.deep.equal([
+                context.accounts.operator.address,
+                context.accounts.anotherOperator.address,
+              ]);
+
+              await context.lsp8.burn(mintedTokenId, "0x");
+
+              await expect(
+                context.lsp8.getOperatorsOf(mintedTokenId)
+              ).to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8NonExistentTokenId"
+              );
             });
           });
         });

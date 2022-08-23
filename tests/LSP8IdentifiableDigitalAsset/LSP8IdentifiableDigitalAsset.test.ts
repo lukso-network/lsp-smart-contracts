@@ -1,5 +1,7 @@
-import { LSP8Tester__factory, LSP8InitTester__factory } from "../../types";
+import { ethers } from "hardhat";
 import { expect } from "chai";
+
+import { LSP8Tester__factory, LSP8InitTester__factory } from "../../types";
 
 import {
   getNamedAccounts,
@@ -29,13 +31,31 @@ describe("LSP8", () => {
     };
 
     describe("when deploying the contract", () => {
-      let context: LSP8TestContext;
+      it("should revert when deploying with address(0) as owner", async () => {
+        const accounts = await ethers.getSigners();
 
-      beforeEach(async () => {
-        context = await buildTestContext();
+        const deployParams = {
+          name: "LSP8 - deployed with constructor",
+          symbol: "NFT",
+          newOwner: ethers.constants.AddressZero,
+        };
+
+        await expect(
+          new LSP8Tester__factory(accounts[0]).deploy(
+            deployParams.name,
+            deployParams.symbol,
+            ethers.constants.AddressZero
+          )
+        ).to.be.revertedWith("LSP4: new owner cannot be the zero address");
       });
 
-      describe("when initializing the contract", () => {
+      describe("once the contract was deployed", () => {
+        let context: LSP8TestContext;
+
+        beforeEach(async () => {
+          context = await buildTestContext();
+        });
+
         shouldInitializeLikeLSP8(async () => {
           const { lsp8, deployParams } = context;
 
@@ -87,6 +107,16 @@ describe("LSP8", () => {
 
       beforeEach(async () => {
         context = await buildTestContext();
+      });
+
+      it("should revert when initializing with address(0) as owner", async () => {
+        await expect(
+          context.lsp8["initialize(string,string,address)"](
+            context.deployParams.name,
+            context.deployParams.symbol,
+            ethers.constants.AddressZero
+          )
+        ).to.be.revertedWith("LSP4: new owner cannot be the zero address");
       });
 
       describe("when initializing the contract", () => {
