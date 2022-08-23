@@ -630,7 +630,7 @@ describe("UniversalFactory contract", () => {
               value: ethers.utils.parseEther("1300"),
             })
         ).to.be.revertedWith(
-          "UniversalFactory: Value cannot be sent to Proxies on deployment"
+          "UniversalFactory: value cannot be sent to the factory if initializeCallData is empty"
         );
       });
 

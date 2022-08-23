@@ -134,7 +134,7 @@ contract UniversalFactory {
         } else {
             require(
                 msg.value == 0,
-                "UniversalFactory: Value cannot be sent to Proxies on deployment"
+                "UniversalFactory: value cannot be sent to the factory if initializeCallData is empty"
             );
         }
     }
