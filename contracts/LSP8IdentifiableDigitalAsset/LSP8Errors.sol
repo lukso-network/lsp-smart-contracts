@@ -15,7 +15,7 @@ error LSP8CannotUseAddressZeroAsOperator();
 
 error LSP8CannotSendToAddressZero();
 
-error LSP8CannotSendToFromAddress();
+error LSP8CannotSendToSelf();
 
 error LSP8NonExistingOperator(address _address, bytes32 tokenId);
 

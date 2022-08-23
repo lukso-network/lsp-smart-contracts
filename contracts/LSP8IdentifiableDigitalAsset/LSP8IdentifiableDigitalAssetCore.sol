@@ -42,6 +42,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     // Mapping a `tokenId` to its authorized operator addresses.
     mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
+    mapping(address => EnumerableSet.Bytes32Set) internal _tokenIdsForOperator;
+
     // --- Token queries
 
     /**
@@ -339,7 +341,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bytes memory data
     ) internal virtual {
         if (from == to) {
-            revert LSP8CannotSendToFromAddress();
+            revert LSP8CannotSendToSelf();
         }
 
         address tokenOwner = tokenOwnerOf(tokenId);
