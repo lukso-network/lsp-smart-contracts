@@ -132,15 +132,10 @@ contract UniversalFactory {
                 "UniversalFactory: could not initialize the created contract"
             );
         } else {
-            // @todo check if this part make sense
-            // Return value sent
-            if (msg.value != 0) {
-                // solhint-disable avoid-low-level-calls
-                (bool success, bytes memory returnData) = payable(msg.sender).call{
-                    value: msg.value
-                }("");
-                Address.verifyCallResult(success, returnData, "UniversalFactory: Unknow Error");
-            }
+            require(
+                msg.value == 0,
+                "UniversalFactory: value cannot be sent to the factory if initializeCallData is empty"
+            );
         }
     }
 
