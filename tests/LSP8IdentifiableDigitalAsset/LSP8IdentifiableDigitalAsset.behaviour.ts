@@ -319,24 +319,16 @@ export const shouldBehaveLikeLSP8 = (
               );
             });
 
-            it("should succeed", async () => {
+            it("should revert", async () => {
               const operator = context.accounts.operator.address;
-              const tokenOwner = context.accounts.owner.address;
               const tokenId = mintedTokenId;
 
-              await context.lsp8.authorizeOperator(operator, tokenId);
-
-              const tx = await context.lsp8.authorizeOperator(
-                operator,
-                tokenId
-              );
-
-              await expect(tx)
-                .to.emit(context.lsp8, "AuthorizedOperator")
-                .withArgs(operator, tokenOwner, tokenId);
-
-              expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be
-                .true;
+              await expect(context.lsp8.authorizeOperator(operator, tokenId))
+                .to.be.revertedWithCustomError(
+                  context.lsp8,
+                  "LSP8OperatorAlreadyAuthorized"
+                )
+                .withArgs(operator, tokenId);
             });
           });
 
@@ -969,16 +961,6 @@ export const shouldBehaveLikeLSP8 = (
         const anotherMintedTokenId = tokenIdAsBytes32("5555");
 
         beforeEach(async () => {
-          // setup so we can observe operators being cleared during transferBatch tests
-          await context.lsp8.authorizeOperator(
-            context.accounts.operator.address,
-            mintedTokenId
-          );
-          await context.lsp8.authorizeOperator(
-            context.accounts.anotherOperator.address,
-            mintedTokenId
-          );
-
           // setup so we can transfer multiple tokenIds during transferBatch test
           await context.lsp8.mint(
             context.accounts.owner.address,
