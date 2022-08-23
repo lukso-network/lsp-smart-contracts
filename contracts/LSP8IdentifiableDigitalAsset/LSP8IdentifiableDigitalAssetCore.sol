@@ -209,7 +209,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             revert LSP8InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < from.length; i++) {
+        for (uint256 i = 0; i < from.length; i = _uncheckedIncrement(i)) {
             transfer(from[i], to[i], tokenId[i], force, data[i]);
         }
     }
@@ -234,7 +234,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
 
         uint256 operatorListLength = operatorsForTokenId.length();
-        for (uint256 i = 0; i < operatorListLength; i++) {
+        for (uint256 i = 0; i < operatorListLength; i = _uncheckedIncrement(i)) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId);
@@ -435,6 +435,16 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             } else {
                 revert LSP8NotifyTokenReceiverIsEOA(to);
             }
+        }
+    }
+
+    /**
+     * @dev Will return unchecked incremented uint256
+     *      can be used to save gas when iterating over loops
+     */
+    function _uncheckedIncrement(uint256 i) internal pure returns (uint256) {
+        unchecked {
+            return i + 1;
         }
     }
 }
