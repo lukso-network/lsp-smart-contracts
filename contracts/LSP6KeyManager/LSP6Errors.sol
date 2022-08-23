@@ -46,6 +46,14 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
 error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
 
 /**
+ * @dev reverts when `dataKey` is a bytes32 that does not adhere to any of the
+ *      permission data keys specified by the LSP6 standard
+ *
+ * @param dataKey the dataKey that does not match with any of the standard LSP6 permission data keys
+ */
+error NotRecognisedPermissionKey(bytes32 dataKey);
+
+/**
  * @dev reverts when the address provided as a target (= account) linked to this KeyManager is invalid
  *      e.g. address(0)
  */

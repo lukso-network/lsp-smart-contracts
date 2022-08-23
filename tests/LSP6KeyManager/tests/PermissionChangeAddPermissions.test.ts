@@ -192,6 +192,35 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           const result = await context.universalProfile["getData(bytes32)"](key);
           expect(ethers.utils.getAddress(result)).to.equal(value);
         });
+
+        // this include any permission data key that start with bytes6(keccak256('AddressPermissions'))
+        describe("if the data key starts with AddressPermissions: but is a non-standard LSP6 permission data key", () => {
+          it("should revert", async () => {
+            let beneficiary = context.accounts[8];
+
+            // AddressPermissions:MyCustomPermissions:<address>
+            let key =
+              "0x4b80742de2bf9e659ba40000" + beneficiary.address.substring(2);
+
+            // the value does not matter in the case of the test here
+            let value =
+              "0x0000000000000000000000000000000000000000000000000000000000000008";
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, value]
+            );
+
+            await expect(
+              context.keyManager.connect(context.owner).execute(payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotRecognisedPermissionKey"
+              )
+              .withArgs(key.toLowerCase());
+          });
+        });
       });
 
       describe("when caller is an address with permission ADDPERMISSIONS", () => {
@@ -290,6 +319,35 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+        });
+
+        describe("if the data key starts with AddressPermissions: but is a non-standard LSP6 permission data key", () => {
+          it("should revert when trying to set a non-standard LSP6 permission data key", async () => {
+            // this include any permission data key that start with bytes8(keccak256('AddressPermissions'))
+            let beneficiary = context.accounts[8];
+
+            // AddressPermissions:MyCustomPermissions:<address>
+            let key =
+              "0x4b80742de2bf9e659ba40000" + beneficiary.address.substring(2);
+
+            // the value does not matter in the case of the test here
+            let value =
+              "0x0000000000000000000000000000000000000000000000000000000000000008";
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, value]
+            );
+
+            await expect(
+              context.keyManager.connect(canOnlyAddPermissions).execute(payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotRecognisedPermissionKey"
+              )
+              .withArgs(key.toLowerCase());
+          });
         });
       });
 
@@ -416,6 +474,37 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           const result = await context.universalProfile["getData(bytes32)"](key);
           expect(ethers.utils.getAddress(result)).to.equal(value);
         });
+
+        describe("if the data key starts with AddressPermissions: but is a non-standard LSP6 permission data key", () => {
+          it("should revert when trying to set a non-standard LSP6 permission data key", async () => {
+            // this include any permission data key that start with bytes8(keccak256('AddressPermissions'))
+            let beneficiary = context.accounts[8];
+
+            // AddressPermissions:MyCustomPermissions:<address>
+            let key =
+              "0x4b80742de2bf9e659ba40000" + beneficiary.address.substring(2);
+
+            // the value does not matter in the case of the test here
+            let value =
+              "0x0000000000000000000000000000000000000000000000000000000000000008";
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, value]
+            );
+
+            await expect(
+              context.keyManager
+                .connect(canOnlyChangePermissions)
+                .execute(payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotRecognisedPermissionKey"
+              )
+              .withArgs(key.toLowerCase());
+          });
+        });
       });
 
       describe("when caller is an address with permission SETDATA", () => {
@@ -528,6 +617,35 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "CHANGEPERMISSIONS");
+        });
+
+        describe("if the data key starts with AddressPermissions: but is a non-standard LSP6 permission data key", () => {
+          it("should revert when trying to set a non-standard LSP6 permission data key", async () => {
+            // this include any permission data key that start with bytes8(keccak256('AddressPermissions'))
+            let beneficiary = context.accounts[8];
+
+            // AddressPermissions:MyCustomPermissions:<address>
+            let key =
+              "0x4b80742de2bf9e659ba40000" + beneficiary.address.substring(2);
+
+            // the value does not matter in the case of the test here
+            let value =
+              "0x0000000000000000000000000000000000000000000000000000000000000008";
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, value]
+            );
+
+            await expect(
+              context.keyManager.connect(canOnlySetData).execute(payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotRecognisedPermissionKey"
+              )
+              .withArgs(key.toLowerCase());
+          });
         });
       });
 

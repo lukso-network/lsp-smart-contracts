@@ -57,21 +57,6 @@ abstract contract LSP0ERC725AccountCore is
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 
-    //    TODO to be discussed
-    //    function fallback()
-    //    public
-    //    {
-    //        address to = owner();
-    //        assembly {
-    //            calldatacopy(0, 0, calldatasize())
-    //            let result := staticcall(gas(), to, 0, calldatasize(), 0, 0)
-    //            returndatacopy(0, 0, returndatasize())
-    //            switch result
-    //            case 0  { revert (0, returndatasize()) }
-    //            default { return (0, returndatasize()) }
-    //        }
-    //    }
-
     // ERC165
 
     /**
