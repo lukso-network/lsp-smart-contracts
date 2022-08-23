@@ -620,40 +620,18 @@ describe("UniversalFactory contract", () => {
         ).to.be.revertedWith("ERC1167: create2 failed");
       });
 
-      it("should return the value back if sent to a proxy non-initializable", async () => {
+      it("should revert when sending value while deploying a CREATE2 proxy without `initializeCallData`", async () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
 
-        const contractCreated = await context.universalFactory
-          .connect(context.accounts.deployer1)
-          .callStatic.deployCreate2Proxy(
-            universalReceiverDelegate.address,
-            salt,
-            "0x"
-          );
-
-        let oldBalance = await provider.getBalance(
-          context.accounts.deployer1.address
+        await expect(
+          context.universalFactory
+            .connect(context.accounts.deployer1)
+            .deployCreate2Proxy(universalReceiverDelegate.address, salt, "0x", {
+              value: ethers.utils.parseEther("1300"),
+            })
+        ).to.be.revertedWith(
+          "UniversalFactory: Value cannot be sent to Proxies on deployment"
         );
-
-        const tx = await context.universalFactory
-          .connect(context.accounts.deployer1)
-          .deployCreate2Proxy(universalReceiverDelegate.address, salt, "0x", {
-            value: ethers.utils.parseEther("1300"),
-          });
-
-        const receipt = await tx.wait();
-        const gasUsed = receipt.gasUsed.toNumber();
-        const gasPrice = tx.gasPrice.toNumber();
-
-        let newBalance = await provider.getBalance(
-          context.accounts.deployer1.address
-        );
-
-        const oldBalanceMinusGas = oldBalance.sub(
-          ethers.BigNumber.from(gasUsed).mul(gasPrice)
-        );
-
-        expect(newBalance).to.equal(oldBalanceMinusGas);
       });
 
       it("should revert when deploying a proxy and sending value to a non payable function in deployCreate2Proxy", async () => {
