@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.6;
+pragma solidity ^0.8.5;
 
 // modules
 import {LSP6KeyManagerInitAbstract} from "./LSP6KeyManagerInitAbstract.sol";
