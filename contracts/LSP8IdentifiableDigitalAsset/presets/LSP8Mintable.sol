@@ -5,11 +5,12 @@ pragma solidity ^0.8.0;
 // modules
 import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
 import {LSP8MintableCore} from "./LSP8MintableCore.sol";
+import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
  * @dev LSP8 extension.
  */
-contract LSP8Mintable is LSP8IdentifiableDigitalAsset, LSP8MintableCore {
+contract LSP8Mintable is LSP8IdentifiableDigitalAsset, LSP8MintableCore, ReentrancyGuard {
     // solhint-disable no-empty-blocks
     /**
      * @notice Sets the token-Metadata and register LSP8InterfaceId
@@ -31,7 +32,7 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, LSP8MintableCore {
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public override onlyOwner {
+    ) public override onlyOwner nonReentrant {
         _mint(to, tokenId, force, data);
     }
 }

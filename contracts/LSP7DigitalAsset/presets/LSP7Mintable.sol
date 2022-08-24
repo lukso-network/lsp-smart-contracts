@@ -5,13 +5,14 @@ pragma solidity ^0.8.0;
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 import {LSP7MintableCore} from "./LSP7MintableCore.sol";
+import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
  * @title LSP7Mintable
  * @author Jean Cavallera, Yamen Merhi
  * @dev LSP7 extension, mintable.
  */
-contract LSP7Mintable is LSP7DigitalAsset, LSP7MintableCore {
+contract LSP7Mintable is LSP7DigitalAsset, LSP7MintableCore, ReentrancyGuard {
     // solhint-disable no-empty-blocks
 
     /**
@@ -36,7 +37,7 @@ contract LSP7Mintable is LSP7DigitalAsset, LSP7MintableCore {
         uint256 amount,
         bool force,
         bytes memory data
-    ) public override onlyOwner {
+    ) public override onlyOwner nonReentrant {
         _mint(to, amount, force, data);
     }
 }
