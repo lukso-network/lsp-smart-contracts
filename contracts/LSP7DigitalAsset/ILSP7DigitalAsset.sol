@@ -94,7 +94,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
      *
      *
-     * See {isOperatorFor}.
+     * See {authorizedAmountFor}.
      *
      * Requirements
      *
@@ -108,7 +108,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param operator The address to revoke as an operator.
      * @dev Removes `operator` address as an operator of callers tokens.
      *
-     * See {isOperatorFor}.
+     * See {authorizedAmountFor}.
      *
      * Requirements
      *
@@ -126,7 +126,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function isOperatorFor(address operator, address tokenOwner) external view returns (uint256);
+    function authorizedAmountFor(address operator, address tokenOwner) external view returns (uint256);
 
     // --- Transfer functionality
 

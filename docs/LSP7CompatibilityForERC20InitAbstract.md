@@ -144,10 +144,10 @@ Sets the token-Metadata and register LSP7InterfaceId
 |---|---|---|
 | _newOwner | address | the owner of the contract
 
-### isOperatorFor
+### authorizedAmountFor
 
 ```solidity
-function isOperatorFor(address operator, address tokenOwner) external view returns (uint256)
+function authorizedAmountFor(address operator, address tokenOwner) external view returns (uint256)
 ```
 
 
@@ -220,7 +220,7 @@ function revokeOperator(address operator) external nonpayable
 
 
 
-*Removes `operator` address as an operator of callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
+*Removes `operator` address as an operator of callers tokens. See {authorizedAmountFor}. Requirements - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 

@@ -18,7 +18,7 @@ function authorizeOperator(address operator, uint256 amount) external nonpayable
 
 
 
-*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
+*Sets `amount` as the amount of tokens `operator` address has access to from callers tokens. See {authorizedAmountFor}. Requirements - `operator` cannot be the zero address. Emits an {AuthorizedOperator} event.*
 
 #### Parameters
 
@@ -121,10 +121,10 @@ Sets the token max supply
 |---|---|---|
 | tokenSupplyCap_ | uint256 | The Token max supply
 
-### isOperatorFor
+### authorizedAmountFor
 
 ```solidity
-function isOperatorFor(address operator, address tokenOwner) external view returns (uint256)
+function authorizedAmountFor(address operator, address tokenOwner) external view returns (uint256)
 ```
 
 
@@ -197,7 +197,7 @@ function revokeOperator(address operator) external nonpayable
 
 
 
-*Removes `operator` address as an operator of callers tokens. See {isOperatorFor}. Requirements - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
+*Removes `operator` address as an operator of callers tokens. See {authorizedAmountFor}. Requirements - `operator` cannot be the zero address. Emits a {RevokedOperator} event.*
 
 #### Parameters
 

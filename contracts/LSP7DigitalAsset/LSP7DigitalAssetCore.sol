@@ -94,7 +94,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function isOperatorFor(address operator, address tokenOwner)
+    function authorizedAmountFor(address operator, address tokenOwner)
         public
         view
         virtual
@@ -160,7 +160,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * amount is zero then the operator is being revoked, otherwise the operator amount is being
      * modified.
      *
-     * See {isOperatorFor}.
+     * See {authorizedAmountFor}.
      *
      * Emits either {AuthorizedOperator} or {RevokedOperator} event.
      *
