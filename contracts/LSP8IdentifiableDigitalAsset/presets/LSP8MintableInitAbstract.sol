@@ -2,18 +2,21 @@
 
 pragma solidity ^0.8.0;
 
+// interfaces
+import {ILSP8Mintable} from "./ILSP8Mintable.sol";
 // modules
 import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {LSP8MintableCore} from "./LSP8MintableCore.sol";
+import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
  * @dev LSP8 extension.
  */
 abstract contract LSP8MintableInitAbstract is
     LSP8IdentifiableDigitalAssetInitAbstract,
-    LSP8MintableCore
+    ILSP8Mintable,
+    ReentrancyGuard
 {
     function _initialize(
         string memory name_,
@@ -24,14 +27,14 @@ abstract contract LSP8MintableInitAbstract is
     }
 
     /**
-     * @inheritdoc LSP8MintableCore
+     * @inheritdoc ILSP8Mintable
      */
     function mint(
         address to,
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner {
+    ) public virtual override onlyOwner nonReentrant {
         _mint(to, tokenId, force, data);
     }
 }

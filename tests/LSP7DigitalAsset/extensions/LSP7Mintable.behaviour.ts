@@ -1,16 +1,26 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import { LSP7Mintable } from "../../../types";
+import {
+  LSP7Mintable,
+  UniversalProfile,
+  LSP6KeyManager,
+  UniversalReceiverDelegateTokenReentrant__factory,
+} from "../../../types";
+
+import { setupProfileWithKeyManagerWithURD } from "../../utils/fixtures";
+
+import { PERMISSIONS, ERC725YKeys, OPERATION_TYPES } from "../../../constants";
 
 export type LSP7MintableTestAccounts = {
   owner: SignerWithAddress;
   tokenReceiver: SignerWithAddress;
+  profileOwner: SignerWithAddress;
 };
 
 export const getNamedAccounts = async (): Promise<LSP7MintableTestAccounts> => {
-  const [owner, tokenReceiver] = await ethers.getSigners();
-  return { owner, tokenReceiver };
+  const [owner, tokenReceiver, profileOwner] = await ethers.getSigners();
+  return { owner, tokenReceiver, profileOwner };
 };
 
 export type LSP7MintableDeployParams = {
@@ -74,6 +84,73 @@ export const shouldBehaveLikeLSP7Mintable = (
           .connect(nonOwner)
           .mint(nonOwner.address, amountToMint, true, "0x")
       ).to.be.revertedWith("Ownable: caller is not the owner");
+    });
+  });
+
+  describe("when owner try to re-enter mint function", () => {
+    let universalProfile;
+    let lsp6KeyManager;
+
+    before(async () => {
+      const [UP, KM] = await setupProfileWithKeyManagerWithURD(
+        context.accounts.profileOwner
+      );
+
+      universalProfile = UP as UniversalProfile;
+      lsp6KeyManager = KM as LSP6KeyManager;
+
+      await context.lsp7Mintable
+        .connect(context.accounts.owner)
+        .transferOwnership(universalProfile.address);
+
+      const URDTokenReentrant =
+        await new UniversalReceiverDelegateTokenReentrant__factory(
+          context.accounts.profileOwner
+        ).deploy();
+
+      const setDataPayload = universalProfile.interface.encodeFunctionData(
+        "setData(bytes32[],bytes[])",
+        [
+          [
+            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+              URDTokenReentrant.address.substr(2),
+            ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+          ],
+          [PERMISSIONS.CALL, URDTokenReentrant.address],
+        ]
+      );
+
+      await lsp6KeyManager
+        .connect(context.accounts.profileOwner)
+        .execute(setDataPayload);
+    });
+    it("should revert", async () => {
+      const firstAmount = 50;
+      const secondAmount = 150;
+
+      const reentrantMintPayload =
+        context.lsp7Mintable.interface.encodeFunctionData("mint", [
+          universalProfile.address,
+          firstAmount,
+          false,
+          "0x",
+        ]);
+
+      const mintPayload = context.lsp7Mintable.interface.encodeFunctionData(
+        "mint",
+        [universalProfile.address, secondAmount, false, reentrantMintPayload]
+      );
+
+      const executePayload = universalProfile.interface.encodeFunctionData(
+        "execute",
+        [OPERATION_TYPES.CALL, context.lsp7Mintable.address, 0, mintPayload]
+      );
+
+      await expect(
+        lsp6KeyManager
+          .connect(context.accounts.profileOwner)
+          .execute(executePayload)
+      ).to.be.revertedWith("ReentrancyGuard: reentrant call");
     });
   });
 };
