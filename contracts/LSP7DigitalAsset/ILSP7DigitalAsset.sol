@@ -84,11 +84,15 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param amount The amount of tokens operator has access to.
      * @dev Sets `amount` as the amount of tokens `operator` address has access to from callers tokens.
      *
-     * To increase or decrease the authorized amount of an operator, it's advised to call
-     * {revokeOperator} first, and then re-call {authorizeOperator} with the new amount
-     * to avoid front-running and Allowance Double-Spend Exploit
-     * Check more information here:
+     * To avoid front-running and Allowance Double-Spend Exploit when
+     * increasing or decreasing the authorized amount of an operator,
+     * it is advised to:
+     *     1. call {revokeOperator} first, and
+     *     2. then re-call {authorizeOperator} with the new amount
+     *
+     * for more information, see:
      * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+     *
      *
      * See {isOperatorFor}.
      *
