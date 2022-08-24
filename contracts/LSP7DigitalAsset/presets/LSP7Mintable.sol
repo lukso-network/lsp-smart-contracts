@@ -2,9 +2,11 @@
 
 pragma solidity ^0.8.0;
 
+// interfaces
+import {ILSP7Mintable} from "./ILSP7Mintable.sol";
+
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
-import {LSP7MintableCore} from "./LSP7MintableCore.sol";
 import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
@@ -12,7 +14,7 @@ import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
  * @author Jean Cavallera, Yamen Merhi
  * @dev LSP7 extension, mintable.
  */
-contract LSP7Mintable is LSP7DigitalAsset, LSP7MintableCore, ReentrancyGuard {
+contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable, ReentrancyGuard {
     // solhint-disable no-empty-blocks
 
     /**
@@ -30,7 +32,7 @@ contract LSP7Mintable is LSP7DigitalAsset, LSP7MintableCore, ReentrancyGuard {
     ) LSP7DigitalAsset(name_, symbol_, newOwner_, isNonDivisible_) {}
 
     /**
-     * @inheritdoc LSP7MintableCore
+     * @inheritdoc ILSP7Mintable
      */
     function mint(
         address to,

@@ -2,10 +2,12 @@
 
 pragma solidity ^0.8.0;
 
+// interfaces
+import {ILSP7Mintable} from "./ILSP7Mintable.sol";
+
 // modules
 import {LSP7DigitalAssetInit} from "../LSP7DigitalAssetInit.sol";
 import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
-import {LSP7MintableCore} from "./LSP7MintableCore.sol";
 import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
@@ -13,7 +15,7 @@ import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
  */
 abstract contract LSP7MintableInitAbstract is
     LSP7DigitalAssetInitAbstract,
-    LSP7MintableCore,
+    ILSP7Mintable,
     ReentrancyGuard
 {
     function _initialize(
@@ -26,7 +28,7 @@ abstract contract LSP7MintableInitAbstract is
     }
 
     /**
-     * @inheritdoc LSP7MintableCore
+     * @inheritdoc ILSP7Mintable
      */
     function mint(
         address to,

@@ -2,15 +2,17 @@
 
 pragma solidity ^0.8.0;
 
+// interfaces
+import {ILSP8Mintable} from "./ILSP8Mintable.sol";
+
 // modules
 import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
-import {LSP8MintableCore} from "./LSP8MintableCore.sol";
 import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
  * @dev LSP8 extension.
  */
-contract LSP8Mintable is LSP8IdentifiableDigitalAsset, LSP8MintableCore, ReentrancyGuard {
+contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable, ReentrancyGuard {
     // solhint-disable no-empty-blocks
     /**
      * @notice Sets the token-Metadata and register LSP8InterfaceId
@@ -25,7 +27,7 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, LSP8MintableCore, Reentra
     ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
 
     /**
-     * @inheritdoc LSP8MintableCore
+     * @inheritdoc ILSP8Mintable
      */
     function mint(
         address to,
