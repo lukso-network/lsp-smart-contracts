@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP7 = 0xe33f65c3;
+bytes4 constant _INTERFACEID_LSP7 = 0x5fcaac27;
 
 // --- Token Hooks
 
