@@ -254,6 +254,14 @@ const Errors = {
 			error: 'NotAllowedERC725YKey(address,bytes32)',
 			message: 'LSP6: not allowed to set the ERC725Y data key.',
 		},
+		'0x0f7d735b': {
+			error: 'NotRecognisedPermissionKey(bytes32)',
+			message: 'LSP6: could not recognise the permission data key being set.',
+		},
+		'0xfc854579': {
+			error: 'InvalidLSP6Target()',
+			message: 'LSP6: cannot linked the Key Manager to address(0).',
+		},
 		'0xc9bd9eb9': {
 			error: 'InvalidRelayNonce(address,uint256,bytes)',
 			message: 'LSP6: invalid nonce provided for signer address',
@@ -323,6 +331,10 @@ const Errors = {
 		'0x24ecef4d': {
 			error: 'LSP8CannotSendToAddressZero()',
 			message: 'LSP8: cannot send to address(0).',
+		},
+		'0x5d67d6c1': {
+			error: 'LSP8CannotSendToSelf()',
+			message: 'LSP8: the `from` and `to` address cannot be the same on transfer.',
 		},
 		'0x34c7b511': {
 			error: 'LSP8TokenIdAlreadyMinted(bytes32)',

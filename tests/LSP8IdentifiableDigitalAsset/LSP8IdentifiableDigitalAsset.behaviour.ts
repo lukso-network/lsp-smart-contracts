@@ -788,7 +788,7 @@ export const shouldBehaveLikeLSP8 = (
                   force,
                   data,
                 };
-                const expectedError = "LSP8CannotSendToFromAddress";
+                const expectedError = "LSP8CannotSendToSelf";
 
                 await transferFailScenario(txParams, operator, {
                   error: expectedError,
@@ -887,7 +887,7 @@ export const shouldBehaveLikeLSP8 = (
                   force,
                   data,
                 };
-                const expectedError = "LSP8CannotSendToFromAddress";
+                const expectedError = "LSP8CannotSendToSelf";
 
                 await transferFailScenario(txParams, operator, {
                   error: expectedError,
