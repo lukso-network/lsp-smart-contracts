@@ -38,7 +38,7 @@ abstract contract LSP7CompatibleERC20Core is
         override
         returns (uint256)
     {
-        return isOperatorFor(operator, tokenOwner);
+        return authorizedAmountFor(operator, tokenOwner);
     }
 
     /**

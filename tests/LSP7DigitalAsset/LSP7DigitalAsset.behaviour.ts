@@ -207,7 +207,7 @@ export const shouldBehaveLikeLSP7 = (
             .withArgs(operator, tokenOwner, amount);
 
           expect(
-            await context.lsp7.isOperatorFor(operator, tokenOwner)
+            await context.lsp7.authorizedAmountFor(operator, tokenOwner)
           ).to.equal(amount);
         });
 
@@ -233,7 +233,7 @@ export const shouldBehaveLikeLSP7 = (
               .withArgs(operator, tokenOwner, amount);
 
             expect(
-              await context.lsp7.isOperatorFor(operator, tokenOwner)
+              await context.lsp7.authorizedAmountFor(operator, tokenOwner)
             ).to.equal(amount);
           });
         });
@@ -263,9 +263,9 @@ export const shouldBehaveLikeLSP7 = (
 
         // pre-conditions
         await context.lsp7.authorizeOperator(operator, amount);
-        expect(await context.lsp7.isOperatorFor(operator, tokenOwner)).to.equal(
-          amount
-        );
+        expect(
+          await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+        ).to.equal(amount);
 
         // effects
         const tx = await context.lsp7.revokeOperator(operator);
@@ -274,9 +274,9 @@ export const shouldBehaveLikeLSP7 = (
           .withArgs(operator, tokenOwner);
 
         // post-conditions
-        expect(await context.lsp7.isOperatorFor(operator, tokenOwner)).to.equal(
-          ethers.constants.Zero
-        );
+        expect(
+          await context.lsp7.authorizedAmountFor(operator, tokenOwner)
+        ).to.equal(ethers.constants.Zero);
       });
     });
 
@@ -293,11 +293,11 @@ export const shouldBehaveLikeLSP7 = (
       });
     });
 
-    describe("isOperatorFor", () => {
+    describe("authorizedAmountFor", () => {
       describe("when operator is the token owner", () => {
         it("should return the balance of the token owner", async () => {
           expect(
-            await context.lsp7.isOperatorFor(
+            await context.lsp7.authorizedAmountFor(
               context.accounts.owner.address,
               context.accounts.owner.address
             )
@@ -310,7 +310,7 @@ export const shouldBehaveLikeLSP7 = (
       describe("when operator has not been authorized", () => {
         it("should return zero", async () => {
           expect(
-            await context.lsp7.isOperatorFor(
+            await context.lsp7.authorizedAmountFor(
               context.accounts.operator.address,
               context.accounts.owner.address
             )
@@ -326,7 +326,7 @@ export const shouldBehaveLikeLSP7 = (
           );
 
           expect(
-            await context.lsp7.isOperatorFor(
+            await context.lsp7.authorizedAmountFor(
               context.accounts.operator.address,
               context.accounts.owner.address
             )
@@ -346,14 +346,14 @@ export const shouldBehaveLikeLSP7 = (
           );
 
           expect(
-            await context.lsp7.isOperatorFor(
+            await context.lsp7.authorizedAmountFor(
               context.accounts.operator.address,
               context.accounts.owner.address
             )
           ).to.equal(context.initialSupply);
 
           expect(
-            await context.lsp7.isOperatorFor(
+            await context.lsp7.authorizedAmountFor(
               context.accounts.operatorWithLowAuthorizedAmount.address,
               context.accounts.owner.address
             )
@@ -408,7 +408,7 @@ export const shouldBehaveLikeLSP7 = (
           // pre-conditions
           const preFromBalanceOf = await context.lsp7.balanceOf(from);
           const preToBalanceOf = await context.lsp7.balanceOf(to);
-          const preIsOperatorFor = await context.lsp7.isOperatorFor(
+          const preIsOperatorFor = await context.lsp7.authorizedAmountFor(
             operator.address,
             from
           );
@@ -429,7 +429,7 @@ export const shouldBehaveLikeLSP7 = (
           expect(postToBalanceOf).to.equal(preToBalanceOf.add(amount));
 
           if (operator.address !== from) {
-            const postIsOperatorFor = await context.lsp7.isOperatorFor(
+            const postIsOperatorFor = await context.lsp7.authorizedAmountFor(
               operator.address,
               from
             );
@@ -691,7 +691,7 @@ export const shouldBehaveLikeLSP7 = (
                 data: "0x",
               };
               const expectedError = "LSP7AmountExceedsAuthorizedAmount";
-              const operatorAmount = await context.lsp7.isOperatorFor(
+              const operatorAmount = await context.lsp7.authorizedAmountFor(
                 operator.address,
                 txParams.from
               );
@@ -720,14 +720,17 @@ export const shouldBehaveLikeLSP7 = (
               data: "0x",
             };
             const expectedError = "LSP7AmountExceedsAuthorizedAmount";
-            const operatorAmount = await context.lsp7.isOperatorFor(
+            const operatorAmount = await context.lsp7.authorizedAmountFor(
               operator.address,
               txParams.from
             );
 
             // pre-conditions
             expect(
-              await context.lsp7.isOperatorFor(operator.address, txParams.from)
+              await context.lsp7.authorizedAmountFor(
+                operator.address,
+                txParams.from
+              )
             ).to.equal(ethers.constants.Zero);
 
             // effects
@@ -804,10 +807,11 @@ export const shouldBehaveLikeLSP7 = (
               expect(postBalanceOf).to.equal(amount[index]);
 
               if (operator.address !== from[index]) {
-                const postIsOperatorFor = await context.lsp7.isOperatorFor(
-                  operator.address,
-                  from[index]
-                );
+                const postIsOperatorFor =
+                  await context.lsp7.authorizedAmountFor(
+                    operator.address,
+                    from[index]
+                  );
                 expect(postIsOperatorFor).to.equal(
                   postIsOperatorFor.sub(amount[index])
                 );
@@ -1177,7 +1181,7 @@ export const shouldBehaveLikeLSP7 = (
                 data: ["0x"],
               };
               const expectedError = "LSP7AmountExceedsAuthorizedAmount";
-              const operatorAmount = await context.lsp7.isOperatorFor(
+              const operatorAmount = await context.lsp7.authorizedAmountFor(
                 operator.address,
                 txParams.from[0]
               );
@@ -1205,7 +1209,7 @@ export const shouldBehaveLikeLSP7 = (
                 data: ["0x"],
               };
               const expectedError = "LSP7AmountExceedsAuthorizedAmount";
-              const operatorAmount = await context.lsp7.isOperatorFor(
+              const operatorAmount = await context.lsp7.authorizedAmountFor(
                 operator.address,
                 txParams.from[0]
               );
