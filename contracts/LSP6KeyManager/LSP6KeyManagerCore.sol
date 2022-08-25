@@ -503,7 +503,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         // CHECK that claimOwnership cannot be called by target
         if (to == target && bytes4(payload[164:168]) == IClaimOwnership.claimOwnership.selector)
-         revert TargetCannotClaimOwnership();
+         revert TargetCannotSelfClaimOwnership();
 
         // Skip on contract creation (CREATE or CREATE2)
         if (isContractCreation) return;
