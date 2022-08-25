@@ -99,6 +99,26 @@ export const testSecurityScenarios = (
       .withArgs(addressWithNoPermissions.address);
   });
 
+  it("should revert when calling claimOwnership(..) of the target through execute(..)", async () => {
+    const claimOwnershipPayload =
+      context.universalProfile.interface.encodeFunctionData("claimOwnership");
+
+    const executePayload =
+      context.universalProfile.interface.encodeFunctionData("execute", [
+        OPERATION_TYPES.CALL,
+        context.universalProfile.address,
+        0,
+        claimOwnershipPayload,
+      ]);
+
+    await expect(
+      context.keyManager.connect(context.owner).execute(executePayload)
+    ).to.be.revertedWithCustomError(
+      context.keyManager,
+      "TargetCannotSelfClaimOwnership"
+    );
+  });
+
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
     it("via `execute(...)`", async () => {
       let payload =
