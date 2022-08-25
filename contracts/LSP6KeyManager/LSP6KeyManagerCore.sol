@@ -241,7 +241,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
             _verifyCanTransferOwnership(from, permissions, payload);
 
-        } else if(erc725Function == IClaimOwnership.claimOwnership.selector) {
+        } else if (erc725Function == IClaimOwnership.claimOwnership.selector) {
             _requirePermissions(from, permissions,_PERMISSION_CHANGEOWNER);
         } else {
             revert InvalidERC725Function(erc725Function);
@@ -502,7 +502,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
 
         // CHECK that claimOwnership cannot be called by target
-        if(to == target && bytes4(payload[164:168]) == IClaimOwnership.claimOwnership.selector)
+        if (to == target && bytes4(payload[164:168]) == IClaimOwnership.claimOwnership.selector)
          revert TargetCannotClaimOwnership();
 
         // Skip on contract creation (CREATE or CREATE2)
