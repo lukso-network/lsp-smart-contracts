@@ -46,6 +46,16 @@ error NotAllowedFunction(address from, bytes4 disallowedFunction);
 error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
 
 /**
+ * @dev reverts when the target calls {claimOwnership} on itself
+ */
+error TargetCannotSelfClaimOwnership();
+
+/**
+ * @dev reverts when transferring ownership of the target to the target itself
+ */
+error CannotTransferOwnershipToTarget();
+
+/**
  * @dev reverts when `dataKey` is a bytes32 that does not adhere to any of the
  *      permission data keys specified by the LSP6 standard
  *

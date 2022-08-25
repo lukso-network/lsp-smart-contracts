@@ -237,11 +237,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             }
         } else if (erc725Function == IERC725X.execute.selector) {
             _verifyCanExecute(from, permissions, payload);
-        } else if (
-            erc725Function == OwnableUnset.transferOwnership.selector ||
-            erc725Function == IClaimOwnership.claimOwnership.selector
-        ) {
-            _requirePermissions(from, permissions, _PERMISSION_CHANGEOWNER);
+
+        } else if (erc725Function == OwnableUnset.transferOwnership.selector) {
+            _verifyCanTransferOwnership(from, permissions, payload);
+
+        } else if(erc725Function == IClaimOwnership.claimOwnership.selector) {
+            _requirePermissions(from, permissions,_PERMISSION_CHANGEOWNER);
         } else {
             revert InvalidERC725Function(erc725Function);
         }
@@ -478,6 +479,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
         );
 
+        address to = address(bytes20(payload[48:68]));
         uint256 value = uint256(bytes32(payload[68:100]));
 
         // prettier-ignore
@@ -499,6 +501,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             _requirePermissions(from, permissions, _PERMISSION_TRANSFERVALUE);
         }
 
+        // CHECK that claimOwnership cannot be called by target
+        if(to == target && bytes4(payload[164:168]) == IClaimOwnership.claimOwnership.selector)
+         revert TargetCannotClaimOwnership();
+
         // Skip on contract creation (CREATE or CREATE2)
         if (isContractCreation) return;
 
@@ -512,7 +518,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (hasSuperOperation && hasSuperTransferValue) return;
 
         // CHECK for ALLOWED ADDRESSES
-        address to = address(bytes20(payload[48:68]));
         _verifyAllowedAddress(from, to);
 
         if (to.code.length != 0) {
@@ -636,6 +641,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         while (nByte > 0 && dataKey[nByte - 1] == 0x00) nByte--;
 
         return 32 - nByte;
+    }
+
+    function _verifyCanTransferOwnership(address from, bytes32 permissions, bytes calldata payload) internal view {
+        _requirePermissions(from, permissions,_PERMISSION_CHANGEOWNER);
+        address potentielOwner =  address(bytes20(payload[16:36]));
+        if (potentielOwner == target) revert CannotTransferOwnershipToTarget();
     }
 
     function _requirePermissions(
