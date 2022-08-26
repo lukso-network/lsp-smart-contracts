@@ -95,7 +95,7 @@ abstract contract LSP0ERC725AccountCore is
      * @dev The block number saved in the first step for
      * renouncing ownership of the contract
      */
-    uint256 private lastRenounceOwnershipBlock;
+    uint256 private _lastRenounceOwnershipBlock;
 
     /**
      * @dev Save the block number for of the first step 
@@ -107,7 +107,7 @@ abstract contract LSP0ERC725AccountCore is
         override
         onlyOwner
     {
-        lastRenounceOwnershipBlock = block.number;
+        _lastRenounceOwnershipBlock = block.number;
     }
 
     /**
@@ -120,7 +120,7 @@ abstract contract LSP0ERC725AccountCore is
         onlyOwner
     {
         require(
-            lastRenounceOwnershipBlock + 100 >= block.number,
+            _lastRenounceOwnershipBlock + 100 >= block.number,
             "ClaimOwnership: Cannot confirm renouncing ownership of the contract"
         );
         _setOwner(address(0));
