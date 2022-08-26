@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
@@ -243,6 +243,80 @@ export const shouldBehaveLikeLSP3 = (
 
       // check that no event was emitted
       await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
+    });
+  });
+
+  describe("when renouncing ownership of the vault", async () => {
+    before(async () => {
+      await network.provider.send("hardhat_mine", ["0xffff"]);
+    });
+
+    beforeEach(async () => {
+      context = await buildContext();
+    });
+
+    it("should fail to confirm renounce ownership directly", async () => {
+      const confirmingRenounceOwnership = context.universalProfile
+        .connect(context.accounts[0])
+        .confirmRenounceOwnership();
+
+      await expect(confirmingRenounceOwnership).to.be.revertedWith(
+        "ClaimOwnership: Cannot confirm renouncing ownership of the contract"
+      );
+    });
+
+    it("should fail to confirm if 100 blocks pass", async () => {
+      await context.universalProfile
+        .connect(context.accounts[0])
+        .renounceOwnership();
+
+      await network.provider.send("hardhat_mine", ["0x64"]);
+
+      const confirmingRenounceOwnership = context.universalProfile
+        .connect(context.accounts[0])
+        .confirmRenounceOwnership();
+
+      await expect(confirmingRenounceOwnership).to.be.revertedWith(
+        "ClaimOwnership: Cannot confirm renouncing ownership of the contract"
+      );
+    });
+
+    it("should renounce ownership in a 2-step process 99 blocks after the initiation", async () => {
+      await context.universalProfile
+        .connect(context.accounts[0])
+        .renounceOwnership();
+
+      expect(await context.universalProfile.owner()).to.equal(
+        context.accounts[0].address
+      );
+
+      await network.provider.send("hardhat_mine", ["0x63"]);
+
+      await context.universalProfile
+        .connect(context.accounts[0])
+        .confirmRenounceOwnership();
+
+      expect(await context.universalProfile.owner()).to.equal(
+        ethers.utils.hexZeroPad("0x", 20)
+      );
+    });
+
+    it("should renounce ownership in a 2-step process", async () => {
+      await context.universalProfile
+        .connect(context.accounts[0])
+        .renounceOwnership();
+
+      expect(await context.universalProfile.owner()).to.equal(
+        context.accounts[0].address
+      );
+
+      await context.universalProfile
+        .connect(context.accounts[0])
+        .confirmRenounceOwnership();
+
+      expect(await context.universalProfile.owner()).to.equal(
+        ethers.utils.hexZeroPad("0x", 20)
+      );
     });
   });
 };
