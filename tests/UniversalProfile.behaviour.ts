@@ -256,13 +256,12 @@ export const shouldBehaveLikeLSP3 = (
     });
 
     it("should fail to confirm renounce ownership directly", async () => {
-      const confirmingRenounceOwnership = context.universalProfile
+      await context.universalProfile
         .connect(context.accounts[0])
-        .confirmRenounceOwnership();
+        .renounceOwnership();
 
-      await expect(confirmingRenounceOwnership).to.be.revertedWith(
-        "ClaimOwnership: Cannot confirm renouncing ownership of the contract"
-      );
+      expect(await context.universalProfile.owner())
+        .to.equal(context.accounts[0].address);
     });
 
     it("should fail to confirm if 100 blocks pass", async () => {
@@ -272,13 +271,12 @@ export const shouldBehaveLikeLSP3 = (
 
       await network.provider.send("hardhat_mine", ["0x64"]);
 
-      const confirmingRenounceOwnership = context.universalProfile
+      await context.universalProfile
         .connect(context.accounts[0])
-        .confirmRenounceOwnership();
+        .renounceOwnership();
 
-      await expect(confirmingRenounceOwnership).to.be.revertedWith(
-        "ClaimOwnership: Cannot confirm renouncing ownership of the contract"
-      );
+      expect(await context.universalProfile.owner())
+        .to.equal(context.accounts[0].address);
     });
 
     it("should renounce ownership in a 2-step process 99 blocks after the initiation", async () => {
@@ -286,19 +284,17 @@ export const shouldBehaveLikeLSP3 = (
         .connect(context.accounts[0])
         .renounceOwnership();
 
-      expect(await context.universalProfile.owner()).to.equal(
-        context.accounts[0].address
-      );
+      expect(await context.universalProfile.owner())
+        .to.equal(context.accounts[0].address);
 
       await network.provider.send("hardhat_mine", ["0x63"]);
 
       await context.universalProfile
         .connect(context.accounts[0])
-        .confirmRenounceOwnership();
+        .renounceOwnership();
 
-      expect(await context.universalProfile.owner()).to.equal(
-        ethers.utils.hexZeroPad("0x", 20)
-      );
+      expect(await context.universalProfile.owner())
+        .to.equal(ethers.utils.hexZeroPad("0x", 20));
     });
 
     it("should renounce ownership in a 2-step process", async () => {
@@ -306,17 +302,15 @@ export const shouldBehaveLikeLSP3 = (
         .connect(context.accounts[0])
         .renounceOwnership();
 
-      expect(await context.universalProfile.owner()).to.equal(
-        context.accounts[0].address
-      );
+      expect(await context.universalProfile.owner())
+        .to.equal(context.accounts[0].address);
 
       await context.universalProfile
         .connect(context.accounts[0])
-        .confirmRenounceOwnership();
+        .renounceOwnership();
 
-      expect(await context.universalProfile.owner()).to.equal(
-        ethers.utils.hexZeroPad("0x", 20)
-      );
+      expect(await context.universalProfile.owner())
+        .to.equal(ethers.utils.hexZeroPad("0x", 20));
     });
   });
 };

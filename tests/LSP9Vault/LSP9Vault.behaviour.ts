@@ -232,13 +232,12 @@ export const shouldBehaveLikeLSP9 = (
       });
 
       it("should fail to confirm renounce ownership directly", async () => {
-        const confirmingRenounceOwnership = context.lsp9Vault
+        await context.lsp9Vault
           .connect(context.accounts.owner)
-          .confirmRenounceOwnership();
+          .renounceOwnership();
 
-        await expect(confirmingRenounceOwnership).to.be.revertedWith(
-          "ClaimOwnership: Cannot confirm renouncing ownership of the contract"
-        );
+        expect(await context.lsp9Vault.owner())
+          .to.equal(context.accounts.owner.address);
       });
 
       it("should fail to confirm if 100 blocks pass", async () => {
@@ -248,13 +247,12 @@ export const shouldBehaveLikeLSP9 = (
 
         await network.provider.send("hardhat_mine", ["0x64"]);
 
-        const confirmingRenounceOwnership = context.lsp9Vault
+        await context.lsp9Vault
           .connect(context.accounts.owner)
-          .confirmRenounceOwnership();
+          .renounceOwnership();
 
-        await expect(confirmingRenounceOwnership).to.be.revertedWith(
-          "ClaimOwnership: Cannot confirm renouncing ownership of the contract"
-        );
+        expect(await context.lsp9Vault.owner())
+          .to.equal(context.accounts.owner.address);
       });
 
       it("should renounce ownership in a 2-step process 99 blocks after the initiation", async () => {
@@ -262,19 +260,17 @@ export const shouldBehaveLikeLSP9 = (
           .connect(context.accounts.owner)
           .renounceOwnership();
 
-        expect(await context.lsp9Vault.owner()).to.equal(
-          context.accounts.owner.address
-        );
+        expect(await context.lsp9Vault.owner())
+          .to.equal(context.accounts.owner.address);
 
         await network.provider.send("hardhat_mine", ["0x63"]);
 
         await context.lsp9Vault
           .connect(context.accounts.owner)
-          .confirmRenounceOwnership();
+          .renounceOwnership();
 
-        expect(await context.lsp9Vault.owner()).to.equal(
-          ethers.utils.hexZeroPad("0x", 20)
-        );
+        expect(await context.lsp9Vault.owner())
+          .to.equal(ethers.utils.hexZeroPad("0x", 20));
       });
 
       it("should renounce ownership in a 2-step process", async () => {
@@ -282,17 +278,15 @@ export const shouldBehaveLikeLSP9 = (
           .connect(context.accounts.owner)
           .renounceOwnership();
 
-        expect(await context.lsp9Vault.owner()).to.equal(
-          context.accounts.owner.address
-        );
+        expect(await context.lsp9Vault.owner())
+          .to.equal(context.accounts.owner.address);
 
         await context.lsp9Vault
           .connect(context.accounts.owner)
-          .confirmRenounceOwnership();
+          .renounceOwnership();
 
-        expect(await context.lsp9Vault.owner()).to.equal(
-          ethers.utils.hexZeroPad("0x", 20)
-        );
+        expect(await context.lsp9Vault.owner())
+          .to.equal(ethers.utils.hexZeroPad("0x", 20));
       });
     });
   });
