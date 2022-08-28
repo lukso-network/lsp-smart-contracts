@@ -31,4 +31,30 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     function _transferOwnership(address newOwner) internal virtual {
         pendingOwner = newOwner;
     }
+
+    /**
+     * @dev The block number saved in the first step for
+     * renouncing ownership of the contract
+     */
+    uint256 private _lastRenounceOwnershipBlock;
+
+    /**
+     * @dev Save the block number for the first step if `_lastRenounceOwnershipBlock`
+     * is more than 100 block back. And execute `renounceOwnership` otherwise.
+     * 
+     */
+    function renounceOwnership()
+        public
+        virtual
+        override
+        onlyOwner
+    {
+        if (_lastRenounceOwnershipBlock + 100 >= block.number) {
+            _setOwner(address(0));
+        }
+        else {
+            _lastRenounceOwnershipBlock = block.number;
+        }
+    }
+    
 }
