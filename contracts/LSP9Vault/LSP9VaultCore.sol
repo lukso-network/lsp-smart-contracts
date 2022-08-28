@@ -117,38 +117,15 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     }
 
     /**
-     * @dev The block number saved in the first step for
-     * renouncing ownership of the contract
-     */
-    uint256 private __lastRenounceOwnershipBlock;
-
-    /**
-     * @dev Save the block number for of the first step 
-     * for renouncing ownership of the contract
+     * @dev Renounce ownership of the contract in a 2-step process
      */
     function renounceOwnership()
         public
         virtual
-        override
+        override(ClaimOwnership, OwnableUnset)
         onlyOwner
     {
-        __lastRenounceOwnershipBlock = block.number;
-    }
-
-    /**
-     * @dev Confirm renouncing ownersip of the contract
-     * Available only within the first 100 blocks after `renounceOwnership()`
-     */
-    function confirmRenounceOwnership()
-        public
-        virtual
-        onlyOwner
-    {
-        require(
-            __lastRenounceOwnershipBlock + 100 >= block.number,
-            "ClaimOwnership: Cannot confirm renouncing ownership of the contract"
-        );
-        _setOwner(address(0));
+        ClaimOwnership.renounceOwnership();
     }
 
     // ERC725
