@@ -87,7 +87,7 @@ export const shouldBehaveLikeLSP7Mintable = (
     });
   });
 
-  describe("when owner try to re-enter mint function", () => {
+  describe("when owner try to re-enter mint function through the UniversalReceiverDelegate", () => {
     let universalProfile;
     let lsp6KeyManager;
 
@@ -124,7 +124,7 @@ export const shouldBehaveLikeLSP7Mintable = (
         .connect(context.accounts.profileOwner)
         .execute(setDataPayload);
     });
-    it("should revert", async () => {
+    it("should pass", async () => {
       const firstAmount = 50;
       const secondAmount = 150;
 
@@ -146,11 +146,15 @@ export const shouldBehaveLikeLSP7Mintable = (
         [OPERATION_TYPES.CALL, context.lsp7Mintable.address, 0, mintPayload]
       );
 
-      await expect(
-        lsp6KeyManager
-          .connect(context.accounts.profileOwner)
-          .execute(executePayload)
-      ).to.be.revertedWith("ReentrancyGuard: reentrant call");
+      await lsp6KeyManager
+        .connect(context.accounts.profileOwner)
+        .execute(executePayload);
+
+      const balanceOfUP = await context.lsp7Mintable.callStatic.balanceOf(
+        universalProfile.address
+      );
+
+      expect(balanceOfUP).to.equal(firstAmount + secondAmount);
     });
   });
 };

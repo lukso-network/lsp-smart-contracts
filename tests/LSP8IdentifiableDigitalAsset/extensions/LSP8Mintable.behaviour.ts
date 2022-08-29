@@ -11,6 +11,7 @@ import {
 import { setupProfileWithKeyManagerWithURD } from "../../utils/fixtures";
 
 import { PERMISSIONS, ERC725YKeys, OPERATION_TYPES } from "../../../constants";
+import { equal } from "assert";
 
 export type LSP8MintableTestAccounts = {
   owner: SignerWithAddress;
@@ -90,7 +91,7 @@ export const shouldBehaveLikeLSP8Mintable = (
     });
   });
 
-  describe("when owner try to re-enter mint function", () => {
+  describe("when owner try to re-enter function through the UniversalReceiverDelegate", () => {
     let universalProfile;
     let lsp6KeyManager;
 
@@ -127,26 +128,21 @@ export const shouldBehaveLikeLSP8Mintable = (
         .connect(context.accounts.profileOwner)
         .execute(setDataPayload);
     });
-    it("should revert", async () => {
+    it("should pass", async () => {
       const randomTokenId = ethers.utils.randomBytes(32);
       const secondRandomTokenId = ethers.utils.randomBytes(32);
 
       const reentrantMintPayload =
         context.lsp8Mintable.interface.encodeFunctionData("mint", [
           universalProfile.address,
-          randomTokenId,
+          secondRandomTokenId,
           false,
           "0x",
         ]);
 
       const mintPayload = context.lsp8Mintable.interface.encodeFunctionData(
         "mint",
-        [
-          universalProfile.address,
-          secondRandomTokenId,
-          false,
-          reentrantMintPayload,
-        ]
+        [universalProfile.address, randomTokenId, false, reentrantMintPayload]
       );
 
       const executePayload = universalProfile.interface.encodeFunctionData(
@@ -154,11 +150,23 @@ export const shouldBehaveLikeLSP8Mintable = (
         [OPERATION_TYPES.CALL, context.lsp8Mintable.address, 0, mintPayload]
       );
 
-      await expect(
-        lsp6KeyManager
-          .connect(context.accounts.profileOwner)
-          .execute(executePayload)
-      ).to.be.revertedWith("ReentrancyGuard: reentrant call");
+      await lsp6KeyManager
+        .connect(context.accounts.profileOwner)
+        .execute(executePayload);
+
+      const balanceOfUP = await context.lsp8Mintable.callStatic.balanceOf(
+        universalProfile.address
+      );
+
+      const tokenIdsOfUP = await context.lsp8Mintable.callStatic.tokenIdsOf(
+        universalProfile.address
+      );
+
+      expect(balanceOfUP).to.equal(2);
+      expect(tokenIdsOfUP[0]).to.equal(ethers.utils.hexlify(randomTokenId));
+      expect(tokenIdsOfUP[1]).to.equal(
+        ethers.utils.hexlify(secondRandomTokenId)
+      );
     });
   });
 };
