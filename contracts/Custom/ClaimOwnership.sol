@@ -12,6 +12,14 @@ import {IClaimOwnership} from "./IClaimOwnership.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
+    /**
+     * @dev The block number saved in the first step for
+     * renouncing ownership of the contract
+     */
+    uint256 private _lastRenounceOwnershipBlock;
+    /**
+     * @dev The address that may use `claimOwnership()`
+     */
     address public override pendingOwner;
 
     function claimOwnership() public virtual override {
@@ -20,6 +28,10 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
 
     function transferOwnership(address newOwner) public virtual override onlyOwner {
         _transferOwnership(newOwner);
+    }
+
+    function renounceOwnership() public virtual override onlyOwner {
+        _renounceOwnership();
     }
 
     function _claimOwnership() internal virtual {
@@ -33,21 +45,13 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     }
 
     /**
-     * @dev The block number saved in the first step for
-     * renouncing ownership of the contract
-     */
-    uint256 private _lastRenounceOwnershipBlock;
-
-    /**
      * @dev Save the block number for the first step if `_lastRenounceOwnershipBlock`
      * is more than 100 block back. And execute `renounceOwnership` otherwise.
      * 
      */
-    function renounceOwnership()
-        public
+    function _renounceOwnership()
+        internal
         virtual
-        override
-        onlyOwner
     {
         if (_lastRenounceOwnershipBlock + 100 >= block.number) {
             _setOwner(address(0));
