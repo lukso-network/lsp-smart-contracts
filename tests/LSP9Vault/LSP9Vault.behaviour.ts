@@ -254,12 +254,9 @@ export const shouldBehaveLikeLSP9 = (
         await expect(renounceOwnershipSecond)
           .to.be.revertedWithCustomError(
             context.lsp9Vault,
-            "RenounceOwnershipPending"
+            "RenounceOwnershipAvailableAtBlockNumber"
           )
-          .withArgs(
-            "OwnableClaim: Renounce ownership can be confirmed at block",
-            (await renounceOwnershipOnce).blockNumber + 100
-          );
+          .withArgs((await renounceOwnershipOnce).blockNumber + 100);
 
         expect(await context.lsp9Vault.owner()).to.equal(
           context.accounts.owner.address

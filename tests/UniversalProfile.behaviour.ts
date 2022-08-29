@@ -278,12 +278,9 @@ export const shouldBehaveLikeLSP3 = (
       await expect(renounceOwnershipSecond)
         .to.be.revertedWithCustomError(
           context.universalProfile,
-          "RenounceOwnershipPending"
+          "RenounceOwnershipAvailableAtBlockNumber"
         )
-        .withArgs(
-          "OwnableClaim: Renounce ownership can be confirmed at block",
-          (await renounceOwnershipOnce).blockNumber + 100
-        );
+        .withArgs((await renounceOwnershipOnce).blockNumber + 100);
 
       expect(await context.universalProfile.owner()).to.equal(
         context.accounts[0].address
