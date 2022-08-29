@@ -11,6 +11,8 @@ import {IClaimOwnership} from "./IClaimOwnership.sol";
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
+    error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
+
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     /**
      * @dev The block number saved in the first step for
@@ -28,8 +30,6 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
      * @dev The address that may use `claimOwnership()`
      */
     address public override pendingOwner;
-
-    error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
 
     function claimOwnership() public virtual override {
         _claimOwnership();
