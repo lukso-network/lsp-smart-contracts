@@ -49,12 +49,9 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
      * is more than 200 block back.
      * Execute `renounceOwnership` if the `_lastRenounceOwnershipBlock`
      * is less than 200 blocks back and more than 100 blocks.
-     * 
+     *
      */
-    function _renounceOwnership()
-        internal
-        virtual
-    {
+    function _renounceOwnership() internal virtual {
         uint256 _delayBlocks = 100;
 
         if (_lastBlock <= block.number && (_lastBlock + _delayBlocks) > block.number) {
@@ -62,7 +59,10 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
                 "OwnableClaim: Renounce ownership can be confirmed at block",
                 _lastBlock + _delayBlocks
             );
-        } else if ((_lastBlock + _delayBlocks) <= block.number && (_lastBlock + _delayBlocks * 2) > block.number) {
+        } else if (
+            (_lastBlock + _delayBlocks) <= block.number &&
+            (_lastBlock + _delayBlocks * 2) > block.number
+        ) {
             _setOwner(address(0));
             delete _lastBlock;
         } else {
@@ -70,5 +70,4 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
             emit RenounceOwnershipInitiated();
         }
     }
-    
 }
