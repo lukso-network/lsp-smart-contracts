@@ -290,11 +290,11 @@ export const shouldBehaveLikeLSP9 = (
           .to.emit(context.lsp9Vault, "OwnershipTransferred")
           .withArgs(
             context.accounts.owner.address,
-            ethers.utils.hexZeroPad("0x", 20)
+            ethers.constants.AddressZero
           );
 
         expect(await context.lsp9Vault.owner()).to.equal(
-          ethers.utils.hexZeroPad("0x", 20)
+          ethers.constants.AddressZero
         );
       });
     });

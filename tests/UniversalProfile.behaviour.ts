@@ -312,13 +312,10 @@ export const shouldBehaveLikeLSP3 = (
 
       await expect(renounceOwnershipSecond)
         .to.emit(context.universalProfile, "OwnershipTransferred")
-        .withArgs(
-          context.accounts[0].address,
-          ethers.utils.hexZeroPad("0x", 20)
-        );
+        .withArgs(context.accounts[0].address, ethers.constants.AddressZero);
 
       expect(await context.universalProfile.owner()).to.equal(
-        ethers.utils.hexZeroPad("0x", 20)
+        ethers.constants.AddressZero
       );
     });
   });
