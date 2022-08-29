@@ -228,7 +228,7 @@ export const shouldBehaveLikePermissionDeploy = (
           context.keyManager.connect(addressCannotDeploy).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "CREATE");
+          .withArgs(addressCannotDeploy.address, "DEPLOY");
       });
 
       it("should revert when trying to deploy a contract via CREATE2", async () => {
@@ -250,7 +250,7 @@ export const shouldBehaveLikePermissionDeploy = (
           context.keyManager.connect(addressCannotDeploy).execute(payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "CREATE2");
+          .withArgs(addressCannotDeploy.address, "DEPLOY");
       });
     });
 
@@ -290,7 +290,7 @@ export const shouldBehaveLikePermissionDeploy = (
             .executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "CREATE");
+          .withArgs(addressCannotDeploy.address, "DEPLOY");
       });
 
       it("should revert when trying to deploy a contract via CREATE2", async () => {
@@ -331,7 +331,7 @@ export const shouldBehaveLikePermissionDeploy = (
             .executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "CREATE2");
+          .withArgs(addressCannotDeploy.address, "DEPLOY");
       });
     });
   });
