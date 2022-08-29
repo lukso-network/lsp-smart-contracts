@@ -22,6 +22,8 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
      */
     address public override pendingOwner;
 
+    error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
+
     function claimOwnership() public virtual override {
         _claimOwnership();
     }
@@ -55,10 +57,7 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
         uint256 _delayBlocks = 100;
 
         if (_lastBlock <= block.number && (_lastBlock + _delayBlocks) > block.number) {
-            revert RenounceOwnershipPending(
-                "OwnableClaim: Renounce ownership can be confirmed at block",
-                _lastBlock + _delayBlocks
-            );
+            revert RenounceOwnershipAvailableAtBlockNumber(_lastBlock + _delayBlocks);
         } else if (
             (_lastBlock + _delayBlocks) <= block.number &&
             (_lastBlock + _delayBlocks * 2) > block.number
