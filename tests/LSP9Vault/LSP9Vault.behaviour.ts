@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 import { expect } from "chai";
@@ -219,6 +219,80 @@ export const shouldBehaveLikeLSP9 = (
             "NotAllowedAddress"
           )
           .withArgs(context.accounts.friend.address, disallowedAddress);
+      });
+    });
+
+    describe("when renouncing ownership of the vault", async () => {
+      before(async () => {
+        await network.provider.send("hardhat_mine", ["0xffff"]);
+      });
+
+      beforeEach(async () => {
+        context = await buildContext();
+      });
+
+      it("should fail to confirm if delay didn't expire", async () => {
+        const renounceOwnershipOnce = context.lsp9Vault
+          .connect(context.accounts.owner)
+          .renounceOwnership();
+
+        await expect(renounceOwnershipOnce).to.emit(
+          context.lsp9Vault,
+          "RenounceOwnershipInitiated"
+        );
+
+        expect(await context.lsp9Vault.owner()).to.equal(
+          context.accounts.owner.address
+        );
+
+        await network.provider.send("hardhat_mine", ["0x62"]); // skip 98 blocks
+
+        const renounceOwnershipSecond = context.lsp9Vault
+          .connect(context.accounts.owner)
+          .renounceOwnership();
+
+        await expect(renounceOwnershipSecond)
+          .to.be.revertedWithCustomError(
+            context.lsp9Vault,
+            "RenounceOwnershipAvailableAtBlockNumber"
+          )
+          .withArgs((await renounceOwnershipOnce).blockNumber + 100);
+
+        expect(await context.lsp9Vault.owner()).to.equal(
+          context.accounts.owner.address
+        );
+      });
+
+      it("should renounce ownership in a 2-step process after delay expires", async () => {
+        const renounceOwnershipOnce = context.lsp9Vault
+          .connect(context.accounts.owner)
+          .renounceOwnership();
+
+        await expect(renounceOwnershipOnce).to.emit(
+          context.lsp9Vault,
+          "RenounceOwnershipInitiated"
+        );
+
+        expect(await context.lsp9Vault.owner()).to.equal(
+          context.accounts.owner.address
+        );
+
+        await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
+
+        const renounceOwnershipSecond = context.lsp9Vault
+          .connect(context.accounts.owner)
+          .renounceOwnership();
+
+        await expect(renounceOwnershipSecond)
+          .to.emit(context.lsp9Vault, "OwnershipTransferred")
+          .withArgs(
+            context.accounts.owner.address,
+            ethers.constants.AddressZero
+          );
+
+        expect(await context.lsp9Vault.owner()).to.equal(
+          ethers.constants.AddressZero
+        );
       });
     });
   });

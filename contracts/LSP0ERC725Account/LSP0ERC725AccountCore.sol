@@ -91,6 +91,18 @@ abstract contract LSP0ERC725AccountCore is
         ClaimOwnership._transferOwnership(_newOwner);
     }
 
+    /**
+     * @dev Renounce ownership of the contract in a 2-step process
+     */
+    function renounceOwnership()
+        public
+        virtual
+        override(ClaimOwnership, OwnableUnset)
+        onlyOwner
+    {
+        ClaimOwnership._renounceOwnership();
+    }
+
     // ERC1271
 
     /**

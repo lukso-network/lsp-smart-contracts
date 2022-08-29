@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
@@ -243,6 +243,77 @@ export const shouldBehaveLikeLSP3 = (
 
       // check that no event was emitted
       await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
+    });
+  });
+
+  describe("when renouncing ownership of the universal profile", async () => {
+    before(async () => {
+      await network.provider.send("hardhat_mine", ["0xffff"]);
+    });
+
+    beforeEach(async () => {
+      context = await buildContext();
+    });
+
+    it("should fail to confirm if delay didn't expire", async () => {
+      const renounceOwnershipOnce = context.universalProfile
+        .connect(context.accounts[0])
+        .renounceOwnership();
+
+      await expect(renounceOwnershipOnce).to.emit(
+        context.universalProfile,
+        "RenounceOwnershipInitiated"
+      );
+
+      expect(await context.universalProfile.owner()).to.equal(
+        context.accounts[0].address
+      );
+
+      await network.provider.send("hardhat_mine", ["0x62"]); // skip 98 blocks
+
+      const renounceOwnershipSecond = context.universalProfile
+        .connect(context.accounts[0])
+        .renounceOwnership();
+
+      await expect(renounceOwnershipSecond)
+        .to.be.revertedWithCustomError(
+          context.universalProfile,
+          "RenounceOwnershipAvailableAtBlockNumber"
+        )
+        .withArgs((await renounceOwnershipOnce).blockNumber + 100);
+
+      expect(await context.universalProfile.owner()).to.equal(
+        context.accounts[0].address
+      );
+    });
+
+    it("should renounce ownership in a 2-step process after delay expires", async () => {
+      const renounceOwnershipOnce = context.universalProfile
+        .connect(context.accounts[0])
+        .renounceOwnership();
+
+      await expect(renounceOwnershipOnce).to.emit(
+        context.universalProfile,
+        "RenounceOwnershipInitiated"
+      );
+
+      expect(await context.universalProfile.owner()).to.equal(
+        context.accounts[0].address
+      );
+
+      await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
+
+      const renounceOwnershipSecond = context.universalProfile
+        .connect(context.accounts[0])
+        .renounceOwnership();
+
+      await expect(renounceOwnershipSecond)
+        .to.emit(context.universalProfile, "OwnershipTransferred")
+        .withArgs(context.accounts[0].address, ethers.constants.AddressZero);
+
+      expect(await context.universalProfile.owner()).to.equal(
+        ethers.constants.AddressZero
+      );
     });
   });
 };

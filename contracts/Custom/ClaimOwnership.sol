@@ -11,7 +11,24 @@ import {IClaimOwnership} from "./IClaimOwnership.sol";
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
+error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
+
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
+    /**
+     * @dev The block number saved in the first step for
+     * renouncing ownership of the contract
+     */
+    uint256 private _lastBlock;
+
+    /**
+     * @dev The number of blocks needed to pass for successfully
+     * confirming `renounceOwnership()`
+     */
+    uint256 constant _delayBlocks = 100;
+
+    /**
+     * @dev The address that may use `claimOwnership()`
+     */
     address public override pendingOwner;
 
     function claimOwnership() public virtual override {
@@ -22,6 +39,10 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
         _transferOwnership(newOwner);
     }
 
+    function renounceOwnership() public virtual override onlyOwner {
+        _renounceOwnership();
+    }
+
     function _claimOwnership() internal virtual {
         require(msg.sender == pendingOwner, "OwnableClaim: caller is not the pendingOwner");
         _setOwner(pendingOwner);
@@ -30,5 +51,26 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
 
     function _transferOwnership(address newOwner) internal virtual {
         pendingOwner = newOwner;
+    }
+
+    /**
+     * @dev Save the block number for the first step if `_lastRenounceOwnershipBlock`
+     * is more than 200 block back.
+     * Execute `renounceOwnership` if the `_lastRenounceOwnershipBlock`
+     * is less than 200 blocks back and more than 100 blocks.
+     */
+    function _renounceOwnership() internal virtual {
+        if (_lastBlock <= block.number && (_lastBlock + _delayBlocks) > block.number) {
+            revert RenounceOwnershipAvailableAtBlockNumber(_lastBlock + _delayBlocks);
+        } else if (
+            (_lastBlock + _delayBlocks) <= block.number &&
+            (_lastBlock + _delayBlocks * 2) > block.number
+        ) {
+            _setOwner(address(0));
+            delete _lastBlock;
+        } else {
+            _lastBlock = block.number;
+            emit RenounceOwnershipInitiated();
+        }
     }
 }
