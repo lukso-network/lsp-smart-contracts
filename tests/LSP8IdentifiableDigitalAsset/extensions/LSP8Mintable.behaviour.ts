@@ -11,7 +11,6 @@ import {
 import { setupProfileWithKeyManagerWithURD } from "../../utils/fixtures";
 
 import { PERMISSIONS, ERC725YKeys, OPERATION_TYPES } from "../../../constants";
-import { equal } from "assert";
 
 export type LSP8MintableTestAccounts = {
   owner: SignerWithAddress;
