@@ -11,7 +11,7 @@ import {IClaimOwnership} from "./IClaimOwnership.sol";
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
-    error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
+error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
 
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     /**
