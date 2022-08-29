@@ -383,11 +383,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     function _beforeTokenTransfer(
         address from,
         address to,
-        bytes32 tokenId
+        bytes32 tokenId // solhint-disable no-unused-vars
     ) internal virtual {
-        // silence compiler warning about unused variable
-        tokenId;
-
         // token being minted
         if (from == address(0)) {
             _existingTokens += 1;
