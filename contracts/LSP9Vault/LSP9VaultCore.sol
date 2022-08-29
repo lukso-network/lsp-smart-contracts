@@ -125,7 +125,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         override(ClaimOwnership, OwnableUnset)
         onlyOwner
     {
-        ClaimOwnership.renounceOwnership();
+        ClaimOwnership._renounceOwnership();
     }
 
     // ERC725

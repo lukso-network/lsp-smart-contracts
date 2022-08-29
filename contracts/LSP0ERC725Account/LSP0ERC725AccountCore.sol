@@ -100,7 +100,7 @@ abstract contract LSP0ERC725AccountCore is
         override(ClaimOwnership, OwnableUnset)
         onlyOwner
     {
-        ClaimOwnership.renounceOwnership();
+        ClaimOwnership._renounceOwnership();
     }
 
     // ERC1271
