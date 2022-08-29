@@ -8,15 +8,13 @@ import {ILSP8Mintable} from "./ILSP8Mintable.sol";
 import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
  * @dev LSP8 extension.
  */
 abstract contract LSP8MintableInitAbstract is
     LSP8IdentifiableDigitalAssetInitAbstract,
-    ILSP8Mintable,
-    ReentrancyGuard
+    ILSP8Mintable
 {
     function _initialize(
         string memory name_,
@@ -34,7 +32,7 @@ abstract contract LSP8MintableInitAbstract is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner nonReentrant {
+    ) public virtual override onlyOwner {
         _mint(to, tokenId, force, data);
     }
 }

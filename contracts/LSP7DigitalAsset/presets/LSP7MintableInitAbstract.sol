@@ -8,16 +8,11 @@ import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 // modules
 import {LSP7DigitalAssetInit} from "../LSP7DigitalAssetInit.sol";
 import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
-import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
  * @dev LSP7 extension, mintable.
  */
-abstract contract LSP7MintableInitAbstract is
-    LSP7DigitalAssetInitAbstract,
-    ILSP7Mintable,
-    ReentrancyGuard
-{
+abstract contract LSP7MintableInitAbstract is LSP7DigitalAssetInitAbstract, ILSP7Mintable {
     function _initialize(
         string memory name_,
         string memory symbol_,
@@ -35,7 +30,7 @@ abstract contract LSP7MintableInitAbstract is
         uint256 amount,
         bool force,
         bytes memory data
-    ) public override onlyOwner nonReentrant {
+    ) public override onlyOwner {
         _mint(to, amount, force, data);
     }
 }
