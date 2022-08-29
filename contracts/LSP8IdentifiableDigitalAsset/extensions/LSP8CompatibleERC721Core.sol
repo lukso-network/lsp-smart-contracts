@@ -39,10 +39,9 @@ abstract contract LSP8CompatibleERC721Core is
     /*
      * @inheritdoc ILSP8CompatibleERC721
      */
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        // silence compiler warning about unused variable
-        tokenId;
-
+    function tokenURI(
+        uint256 tokenId // solhint-disable no-unused-vars
+    ) public view virtual override returns (string memory) {
         bytes memory data = _getData(_LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
