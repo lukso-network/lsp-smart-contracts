@@ -7,14 +7,13 @@ import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
-import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
  * @title LSP7Mintable
  * @author Jean Cavallera, Yamen Merhi
  * @dev LSP7 extension, mintable.
  */
-contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable, ReentrancyGuard {
+contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
     // solhint-disable no-empty-blocks
 
     /**
@@ -39,7 +38,7 @@ contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable, ReentrancyGuard {
         uint256 amount,
         bool force,
         bytes memory data
-    ) public override onlyOwner nonReentrant {
+    ) public override onlyOwner {
         _mint(to, amount, force, data);
     }
 }

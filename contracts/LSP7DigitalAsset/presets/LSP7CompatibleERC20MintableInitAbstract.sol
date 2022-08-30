@@ -3,12 +3,8 @@ pragma solidity ^0.8.0;
 
 // modules
 import {LSP7CompatibleERC20InitAbstract} from "../extensions/LSP7CompatibleERC20InitAbstract.sol";
-import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
-contract LSP7CompatibleERC20MintableInitAbstract is
-    LSP7CompatibleERC20InitAbstract,
-    ReentrancyGuard
-{
+contract LSP7CompatibleERC20MintableInitAbstract is LSP7CompatibleERC20InitAbstract {
     /**
      * @inheritdoc LSP7CompatibleERC20InitAbstract
      */
@@ -25,7 +21,7 @@ contract LSP7CompatibleERC20MintableInitAbstract is
         uint256 amount,
         bool force,
         bytes memory data
-    ) public onlyOwner nonReentrant {
+    ) public onlyOwner {
         _mint(to, amount, force, data);
     }
 }

@@ -7,12 +7,11 @@ import {ILSP8Mintable} from "./ILSP8Mintable.sol";
 
 // modules
 import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
-import {ReentrancyGuard} from "../..//Utils/ReentrancyGuard.sol";
 
 /**
  * @dev LSP8 extension.
  */
-contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable, ReentrancyGuard {
+contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
     // solhint-disable no-empty-blocks
     /**
      * @notice Sets the token-Metadata and register LSP8InterfaceId
@@ -34,7 +33,7 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable, Reentrancy
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public override onlyOwner nonReentrant {
+    ) public override onlyOwner {
         _mint(to, tokenId, force, data);
     }
 }
