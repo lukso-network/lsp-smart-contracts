@@ -120,6 +120,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) public virtual override {
+        if (from == to) revert LSP7CannotSendToSelf();
+
         address operator = msg.sender;
         if (operator != from) {
             uint256 operatorAmount = _operatorAuthorizedAmount[from][operator];

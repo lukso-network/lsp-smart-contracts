@@ -479,6 +479,7 @@ export const shouldBehaveLikeLSP7 = (
           getOperator: () => SignerWithAddress
         ) => {
           let operator: SignerWithAddress;
+
           beforeEach(() => {
             // passed as a thunk since other before hooks setup accounts map
             operator = getOperator();
@@ -679,6 +680,50 @@ export const shouldBehaveLikeLSP7 = (
 
         describe("when operator sends tx", () => {
           sendingTransferTransactions(() => context.accounts.operator);
+
+          describe("when `from` and `to` address are the same", () => {
+            it("should revert", async () => {
+              const operator = context.accounts.operator;
+
+              const txParams = {
+                from: context.accounts.owner.address,
+                to: context.accounts.owner.address,
+                amount: ethers.BigNumber.from("1"),
+                force: true,
+                data: "0x",
+              };
+
+              const preFromBalanceOf = await context.lsp7.balanceOf(
+                txParams.from
+              );
+              const preOperatorAllowance =
+                await context.lsp7.authorizedAmountFor(
+                  operator.address,
+                  context.accounts.owner.address
+                );
+
+              const expectedError = "LSP7CannotSendToSelf";
+
+              await transferFailScenario(txParams, operator, {
+                error: expectedError,
+                args: [],
+              });
+
+              // token owner balance should not have changed
+              const postFromBalanceOf = await context.lsp7.balanceOf(
+                txParams.from
+              );
+              expect(postFromBalanceOf).to.equal(preFromBalanceOf);
+
+              // operator allowance should not have changed
+              const postOperatorAllowance =
+                await context.lsp7.authorizedAmountFor(
+                  operator.address,
+                  context.accounts.owner.address
+                );
+              expect(postOperatorAllowance).to.equal(preOperatorAllowance);
+            });
+          });
 
           describe("when operator does not have enough authorized amount", () => {
             it("should revert", async () => {
@@ -1169,6 +1214,34 @@ export const shouldBehaveLikeLSP7 = (
 
         describe("when operator sends tx", () => {
           sendingTransferBatchTransactions(() => context.accounts.operator);
+
+          describe("when `to` and `from` are the same address", () => {
+            it("should revert", async () => {
+              const operator = context.accounts.operator;
+              const txParams = {
+                from: [
+                  context.accounts.owner.address,
+                  context.accounts.owner.address,
+                ],
+                to: [
+                  context.accounts.tokenReceiver.address,
+                  context.accounts.owner.address,
+                ],
+                amount: [
+                  context.initialSupply.sub(1),
+                  ethers.BigNumber.from("1"),
+                ],
+                force: true,
+                data: ["0x", "0x"],
+              };
+              const expectedError = "LSP7CannotSendToSelf";
+
+              await transferBatchFailScenario(txParams, operator, {
+                error: expectedError,
+                args: [],
+              });
+            });
+          });
 
           describe("when operator does not have enough authorized amount", () => {
             it("should revert", async () => {
