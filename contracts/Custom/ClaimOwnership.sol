@@ -13,6 +13,11 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 
 error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
 
+/**
+ * @dev reverts when trying to transfer ownership to the address(this)
+ */
+error CannotSelfTransferOwnership();
+
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     /**
      * @dev The block number saved in the first step for
@@ -50,6 +55,7 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     }
 
     function _transferOwnership(address newOwner) internal virtual {
+        if (newOwner == address(this)) revert CannotSelfTransferOwnership();
         pendingOwner = newOwner;
     }
 
