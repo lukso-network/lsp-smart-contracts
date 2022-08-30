@@ -288,6 +288,10 @@ const Errors = {
 			error: 'LSP7CannotSendWithAddressZero()',
 			message: 'LSP7: cannot send token with address(0).',
 		},
+		'0xb9afb000': {
+			error: 'LSP7CannotSendToSelf()',
+			message: 'LSP7: `from` and `to` address cannot be the same',
+		},
 		'0x263eee8d': {
 			error: 'LSP7InvalidTransferBatch()',
 			message: 'LSP7: invalid transfer batch.',
