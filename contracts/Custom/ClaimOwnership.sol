@@ -16,7 +16,7 @@ error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
 /**
  * @dev reverts when trying to transfer ownership to the address(this)
  */
-error CannotSelfTransferOwnership();
+error CannotTransferOwnershipToSelf();
 
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     /**
@@ -55,7 +55,7 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     }
 
     function _transferOwnership(address newOwner) internal virtual {
-        if (newOwner == address(this)) revert CannotSelfTransferOwnership();
+        if (newOwner == address(this)) revert CannotTransferOwnershipToSelf();
         pendingOwner = newOwner;
     }
 

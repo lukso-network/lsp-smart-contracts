@@ -79,7 +79,7 @@ export const shouldBehaveLikeClaimOwnership = (
           .transferOwnership(context.contract.address)
       ).to.be.revertedWithCustomError(
         context.contract,
-        "CannotSelfTransferOwnership"
+        "CannotTransferOwnershipToSelf"
       );
     });
 
