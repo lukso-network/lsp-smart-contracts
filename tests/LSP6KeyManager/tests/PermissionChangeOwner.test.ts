@@ -48,6 +48,25 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
   });
 
+  describe("when transferring Ownership to the target address", () => {
+    it("should revert", async () => {
+      const transferOwnershipPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "transferOwnership",
+          [context.universalProfile.address]
+        );
+
+      await expect(
+        context.keyManager
+          .connect(canChangeOwner)
+          .execute(transferOwnershipPayload)
+      ).to.be.revertedWithCustomError(
+        context.universalProfile,
+        "CannotTransferOwnershipToSelf"
+      );
+    });
+  });
+
   describe("when upgrading to a new KeyManager via transferOwnership(...)", () => {
     let newKeyManager: LSP6KeyManager;
 
@@ -285,7 +304,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await expect(
         notPendingKeyManager.connect(context.owner).execute(payload)
-      ).to.be.revertedWith("OwnableClaim: caller is not the pendingOwner");
+      ).to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
     });
   });
 

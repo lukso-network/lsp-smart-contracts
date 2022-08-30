@@ -72,6 +72,17 @@ export const shouldBehaveLikeClaimOwnership = (
       expect(pendingOwner).to.equal(overridenNewOwner.address);
     });
 
+    it("should revert when transferring Ownership to the contract itself", async () => {
+      await expect(
+        context.contract
+          .connect(context.deployParams.owner)
+          .transferOwnership(context.contract.address)
+      ).to.be.revertedWithCustomError(
+        context.contract,
+        "CannotTransferOwnershipToSelf"
+      );
+    });
+
     describe("it should still be allowed to call onlyOwner functions", () => {
       it("setData(...)", async () => {
         const key =
@@ -139,7 +150,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
       await expect(
         context.contract.connect(context.accounts[2]).claimOwnership()
-      ).to.be.revertedWith("OwnableClaim: caller is not the pendingOwner");
+      ).to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
     });
 
     describe("when caller is the pending owner", () => {

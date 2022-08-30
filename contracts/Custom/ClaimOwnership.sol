@@ -13,6 +13,11 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 
 error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
 
+/**
+ * @dev reverts when trying to transfer ownership to the address(this)
+ */
+error CannotTransferOwnershipToSelf();
+
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     /**
      * @dev The block number saved in the first step for
@@ -44,12 +49,13 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     }
 
     function _claimOwnership() internal virtual {
-        require(msg.sender == pendingOwner, "OwnableClaim: caller is not the pendingOwner");
+        require(msg.sender == pendingOwner, "ClaimOwnership: caller is not the pendingOwner");
         _setOwner(pendingOwner);
         pendingOwner = address(0);
     }
 
     function _transferOwnership(address newOwner) internal virtual {
+        if (newOwner == address(this)) revert CannotTransferOwnershipToSelf();
         pendingOwner = newOwner;
     }
 
