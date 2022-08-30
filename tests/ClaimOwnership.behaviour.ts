@@ -150,7 +150,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
       await expect(
         context.contract.connect(context.accounts[2]).claimOwnership()
-      ).to.be.revertedWith("OwnableClaim: caller is not the pendingOwner");
+      ).to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
     });
 
     describe("when caller is the pending owner", () => {

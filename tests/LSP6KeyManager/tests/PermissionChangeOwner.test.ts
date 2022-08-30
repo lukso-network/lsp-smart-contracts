@@ -285,7 +285,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await expect(
         notPendingKeyManager.connect(context.owner).execute(payload)
-      ).to.be.revertedWith("OwnableClaim: caller is not the pendingOwner");
+      ).to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
     });
   });
 
