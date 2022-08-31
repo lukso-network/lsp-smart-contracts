@@ -60,7 +60,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * no way affects any of the arithmetic of the contract, including
      * {balanceOf} and {transfer}.
      */
-    function decimals() external view returns (uint256);
+    function decimals() external view returns (uint8);
 
     /**
      * @dev Returns the number of existing tokens.
@@ -126,7 +126,10 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function authorizedAmountFor(address operator, address tokenOwner) external view returns (uint256);
+    function authorizedAmountFor(address operator, address tokenOwner)
+        external
+        view
+        returns (uint256);
 
     // --- Transfer functionality
 
