@@ -7,6 +7,7 @@ import { HardhatUserConfig } from "hardhat/config";
  *  - @nomicfoundation/hardhat-network-helpers
  *  - @nomiclabs/hardhat-etherscan
  *  - @typechain/hardhat
+ *  - solidity-coverage
  */
 import "@nomicfoundation/hardhat-toolbox";
 
