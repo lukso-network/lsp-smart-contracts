@@ -1,18 +1,18 @@
 
 # Deployment
 
-You can find a deployment utility with hardhat to easily deploy the smart contracts locally or on our L14 test network,
-if you don't have some LYX test token visit [LUKSO l14 Faucet](http://faucet.l14.lukso.network/), for faucet.
+You can find a deployment utility with hardhat to easily deploy the smart contracts locally or on our L16 test network,
+if you don't have some LYX test token visit [LUKSO l16 Faucet](http://faucet.l16.lukso.network/), for faucet.
 
 All the deployment scripts for `base` contracts initialize the contract after deployment to the zero address for security.
 
 &nbsp;
-## How to deploy on L14 with Hardhat?
+## How to deploy on L16 with Hardhat?
 
 1. write a private key for an address you control in the `hardhat.config.ts` file. For instance for L16 network:
 
 ```ts
-    // public L14 test network
+    // public L16 test network
     luksoL16: {
       live: true,
       url: "https://rpc.l16.lukso.network",
@@ -26,7 +26,7 @@ All the deployment scripts for `base` contracts initialize the contract after de
 2. run the command using one of the available `--tags`
 
 ```
-npx hardhat deploy --network luksoL14 --tags <options> --reset
+npx hardhat deploy --network luksoL16 --tags <options> --reset
 ```
 
 Available `--tags <options>` are:
@@ -60,12 +60,12 @@ Available `--tags <options>` are:
 
 ```
 // Deploy the 3 contracts
-npx hardhat deploy --network luksoL14 --tags standard --reset
+npx hardhat deploy --network luksoL16 --tags standard --reset
 
 
 // Deploy the 3 contracts as base contracts (to be used behind proxies)
-npx hardhat deploy --network luksoL14 --tags base --reset
+npx hardhat deploy --network luksoL16 --tags base --reset
 
 // Deploy a specific contract
-npx hardhat deploy --network luksoL14 --tags UniversalProfile --reset
+npx hardhat deploy --network luksoL16 --tags UniversalProfile --reset
 ```
