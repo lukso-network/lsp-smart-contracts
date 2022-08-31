@@ -1,0 +1,43 @@
+# This workflow build the contracts, run the tests and submit the code coverage report to coveralls.
+
+name: Test + Generate coverage report
+
+on:
+  workflow_dispatch:
+    types: [trigger-coverage]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        id: "build-cache"
+        with:
+          path: |
+            artifacts
+            node_modules 
+            types
+          key: ${{ github.run_id }}
+
+      - name: Use Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          cache: "npm"
+
+      # This will also generate the Typechain types used by the Chai tests
+      - name: Install dependencies
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          path-to-lcov: ./coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
