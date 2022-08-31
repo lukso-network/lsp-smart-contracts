@@ -87,7 +87,12 @@ jobs:
 
       - name: run tests
         run: npm run test:${{ matrix.lsp }}
-        with:
-          event-type: trigger-coverage
 
-  
+      # Trigger Coverage
+      - name: Trigger Code Coverage Workflow
+        if: github.event_name == 'push'
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+          event-type: trigger-release
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
