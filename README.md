@@ -3,6 +3,9 @@
   <a href="https://www.npmjs.com/package/@lukso/lsp-smart-contracts">
     <img alt="Version" src="https://badge.fury.io/js/@lukso%2Flsp-smart-contracts.svg" />
   </a>
+  <a href='https://coveralls.io/github/lukso-network/lsp-smart-contracts?branch=develop'>
+    <img src='https://coveralls.io/repos/github/lukso-network/lsp-smart-contracts/badge.svg?branch=develop' alt='Coverage Status' />
+  </a>
 </p>
 
 # LSP Smart Contracts
