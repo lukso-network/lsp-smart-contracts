@@ -120,7 +120,7 @@ const config: HardhatUserConfig = {
       "LSP7DigitalAssetInitAbstract",
       "LSP7CappedSupplyInitAbstract",
       "LSP7MintableInit",
-      "LSP8IdentifiableDigitalAssetInit",
+      "LSP8IdentifiableDigitalAssetInitAbstract",
       "LSP8CappedSupplyInitAbstract",
       "LSP8MintableInit",
       "LSP9VaultInit",
