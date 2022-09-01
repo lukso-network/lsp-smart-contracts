@@ -1,3 +1,4 @@
+import { ethers } from "hardhat";
 import { expect } from "chai";
 import {
   LSP8Mintable,
@@ -85,6 +86,27 @@ describe("LSP8Mintable", () => {
         context.deployParams.newOwner
       );
     };
+
+    describe("when deploying the base implementation contract", () => {
+      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp8Mintable = await new LSP8MintableInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp8Mintable["initialize(string,string,address,bool)"](
+            "XXXXXXXXXXX",
+            "XXX",
+            randomCaller.address
+          )
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+      });
+    });
+
     describe("when deploying the contract as proxy", () => {
       let context: LSP8MintableTestContext;
 
