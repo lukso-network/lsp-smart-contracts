@@ -21,7 +21,7 @@ import {_INTERFACEID_LSP7} from "./LSP7Constants.sol";
  * A supply mechanism has to be added in a derived contract using {_mint}
  * For a generic mechanism, see {LSP7Mintable}.
  */
-contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
+abstract contract LSP7DigitalAsset is LSP4DigitalAssetMetadata, LSP7DigitalAssetCore {
     /**
      * @notice Sets the token-Metadata
      * @param name_ The name of the token
