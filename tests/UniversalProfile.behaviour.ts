@@ -102,7 +102,7 @@ export const shouldBehaveLikeLSP3 = (
         ERC725YKeys.LSP3.LSP3Profile,
         ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length,
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
       ];
       let values = [
         "0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178",

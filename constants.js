@@ -69,7 +69,7 @@ const SupportedStandards = {
  * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
  */
 const ERC725YKeys = {
-	LSP0: {
+	LSP1: {
 		// keccak256('LSP1UniversalReceiverDelegate')
 		LSP1UniversalReceiverDelegate:
 			'0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',
@@ -85,6 +85,8 @@ const ERC725YKeys = {
 		LSP4TokenSymbol: '0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756',
 		// keccak256('LSP4Metadata')
 		LSP4Metadata: '0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e',
+		// LSP4CreatorsMap:<address>
+		LSP4CreatorsMap: '0x6de85eaf5d982b4e5da00000',
 		// keccak256('"LSP4Creators[]')
 		'LSP4Creators[]': {
 			// use this key to get the number of elements in the array
@@ -149,7 +151,7 @@ const BasicUPSetup_Schema = [
 	},
 	{
 		name: 'LSP1UniversalReceiverDelegate',
-		key: ERC725YKeys.LSP0['LSP1UniversalReceiverDelegate'],
+		key: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
 		keyType: 'Singleton',
 		valueContent: 'Address',
 		valueType: 'address',
