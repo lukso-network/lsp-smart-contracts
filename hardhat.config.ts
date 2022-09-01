@@ -117,7 +117,7 @@ const config: HardhatUserConfig = {
       "LSP0ERC725AccountInit",
       "LSP4DigitalAssetMetadataInitAbstract",
       "LSP6KeyManagerInit",
-      "LSP7DigitalAssetInit",
+      "LSP7DigitalAssetInitAbstract",
       "LSP7CappedSupplyInitAbstract",
       "LSP7MintableInit",
       "LSP8IdentifiableDigitalAssetInit",

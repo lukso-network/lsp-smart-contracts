@@ -6,7 +6,6 @@ pragma solidity ^0.8.0;
 import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 
 // modules
-import {LSP7DigitalAssetInit} from "../LSP7DigitalAssetInit.sol";
 import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
 
 /**
