@@ -228,7 +228,7 @@ export const shouldBehaveLikeLSP9 = (
         context = await buildContext();
       });
 
-      it.only("should emit UniversalReceiver event", async () => {
+      it("should emit UniversalReceiver event", async () => {
         const transferOwnership = context.lsp9Vault
           .connect(context.accounts.owner)
           .transferOwnership(context.universalProfile.address);
