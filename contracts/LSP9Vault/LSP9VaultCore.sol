@@ -27,7 +27,8 @@ import {
 import {
     _INTERFACEID_LSP9,
     _TYPEID_LSP9_VAULTRECIPIENT,
-    _TYPEID_LSP9_VAULTSENDER
+    _TYPEID_LSP9_VAULTSENDER,
+    _TYPEID_LSP9_VAULTPENDINGOWNER
 } from "./LSP9Constants.sol";
 
 /**
@@ -93,7 +94,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     // ERC173 - Modified ClaimOwnership
 
     /**
-     * @dev Sets the pending owner
+     * @dev Sets the pending owner and notify the pending owner
      */
     function transferOwnership(address newOwner)
         public
@@ -102,6 +103,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         onlyOwner
     {
         ClaimOwnership._transferOwnership(newOwner);
+        _notifyVaultPendingOwner(newOwner);
     }
 
     /**
@@ -212,6 +214,15 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     function _notifyVaultReceiver(address receiver) internal virtual {
         if (ERC165Checker.supportsERC165Interface(receiver, _INTERFACEID_LSP1)) {
             ILSP1UniversalReceiver(receiver).universalReceiver(_TYPEID_LSP9_VAULTRECIPIENT, "");
+        }
+    }
+
+    /**
+     * @dev Calls the universalReceiver function of the recipient if supports LSP1 InterfaceId
+     */
+    function _notifyVaultPendingOwner(address newPendingOwner) internal virtual {
+        if (ERC165Checker.supportsERC165Interface(newPendingOwner, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(newPendingOwner).universalReceiver(_TYPEID_LSP9_VAULTPENDINGOWNER, "");
         }
     }
 
