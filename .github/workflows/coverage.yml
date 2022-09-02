@@ -13,17 +13,7 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Restore cache
-        uses: actions/cache@v2
-        id: "build-cache"
-        with:
-          path: |
-            artifacts
-            node_modules 
-            types
-          key: ${{ github.run_id }}
+      - uses: actions/checkout@v3
 
       - name: Use Node.js v16
         uses: actions/setup-node@v2
