@@ -19,20 +19,16 @@ error NotInRenounceOwnershipInterval(uint256 renounceOwnershipStart, uint256 ren
 error CannotTransferOwnershipToSelf();
 
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
+
+    uint256 private constant _RENOUNCE_OWNERSHIP_DELAY = 100;
+
+    uint256 private constant _RENOUNCE_OWNERSHIP_PERIOD = 100;
+
     /**
      * @dev The block number saved in the first step for
      * renouncing ownership of the contract
      */
-    uint256 private _renounceOwnershipStartAt;
-
-    uint256 private constant _RENOUNCE_OWNERSHIP_DELAY = 100;
-    uint256 private constant _RENOUNCE_OWNERSHIP_PERIOD = 100;
-
-    /**
-     * @dev The number of blocks needed to pass for successfully
-     * confirming `renounceOwnership()`
-     */
-    uint256 private constant _DELAY_BLOCKS = 100;
+    uint256 private _renounceOwnershipStartedAt;
 
     /**
      * @dev The address that may use `claimOwnership()`
@@ -69,26 +65,24 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
      * is less than 200 blocks back and more than 100 blocks.
      */
     function _renounceOwnership() internal virtual {
-        // 1. the `_lastBlock` variable does not give enough context. It is very generic, and the name is confusing
-        // 2. step 1 is actually the last else statement, last step is the first if statement.
-        uint256 currentBlock = block.number;
-        uint256 renounceOwnershipStart = _renounceOwnershipStartAt + _RENOUNCE_OWNERSHIP_DELAY;
-        uint256 renounceOwnershipEnd = renounceOwnershipStart + _RENOUNCE_OWNERSHIP_PERIOD;
-
         // TO renounce ownership of the contract, we need to instantiate a renounce ownership process
+        uint256 currentBlock = block.number;
+        uint256 confirmationPeriodStart = _renounceOwnershipStartedAt + _RENOUNCE_OWNERSHIP_DELAY;
+        uint256 confirmationPeriodEnd = confirmationPeriodStart + _RENOUNCE_OWNERSHIP_PERIOD;
+
         // if we second call happen "too late", we start the process again
-        if (currentBlock > renounceOwnershipEnd) {
-            _renounceOwnershipStartAt = block.number;
+        if (currentBlock > confirmationPeriodEnd) {
+            _renounceOwnershipStartedAt = currentBlock;
             emit RenounceOwnershipInitiated();
             return;
         }
 
         // if we second call happen "too early", we revert
-        if (currentBlock < renounceOwnershipStart) {
-            revert NotInRenounceOwnershipInterval(renounceOwnershipStart, renounceOwnershipEnd);
+        if (currentBlock < confirmationPeriodStart) {
+            revert NotInRenounceOwnershipInterval(confirmationPeriodStart, confirmationPeriodEnd);
         }
 
         _setOwner(address(0));
-        delete renounceOwnershipStart;
+        delete _renounceOwnershipStartedAt;
     }
 }
