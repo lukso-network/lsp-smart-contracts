@@ -45,7 +45,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function decimals() public view override returns (uint256) {
+    function decimals() public view override returns (uint8) {
         return _isNonDivisible ? 0 : 18;
     }
 
