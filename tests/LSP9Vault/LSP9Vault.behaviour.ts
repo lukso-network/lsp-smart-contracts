@@ -27,6 +27,7 @@ import {
   SupportedStandards,
   PERMISSIONS,
   OPERATION_TYPES,
+  LSP1_TYPE_IDS,
 } from "../../constants";
 import { lsp9Vault } from "../../types/contracts";
 
@@ -219,6 +220,28 @@ export const shouldBehaveLikeLSP9 = (
             "NotAllowedAddress"
           )
           .withArgs(context.accounts.friend.address, disallowedAddress);
+      });
+    });
+
+    describe("when transferring ownership of the vault", () => {
+      beforeEach(async () => {
+        context = await buildContext();
+      });
+
+      it("should emit UniversalReceiver event", async () => {
+        const transferOwnership = context.lsp9Vault
+          .connect(context.accounts.owner)
+          .transferOwnership(context.universalProfile.address);
+
+        await expect(transferOwnership)
+          .to.emit(context.universalProfile, "UniversalReceiver")
+          .withArgs(
+            context.lsp9Vault.address,
+            0,
+            LSP1_TYPE_IDS.LSP9_VAULTPENDINGOWNER,
+            "0x",
+            "0x"
+          );
       });
     });
 
