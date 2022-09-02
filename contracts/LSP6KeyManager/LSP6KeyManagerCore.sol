@@ -13,6 +13,7 @@ import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // libraries
+import {GasLib} from "../Utils/GasLib.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -209,7 +210,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bool isSettingERC725YKeys = false;
 
             // loop through each ERC725Y data keys
-            for (uint256 ii = 0; ii < inputKeys.length; ii = _uncheckedIncrement(ii)) {
+            for (uint256 ii = 0; ii < inputKeys.length; ii = GasLib.uncheckedIncrement(ii)) {
                 bytes32 key = inputKeys[ii];
                 bytes memory value = inputValues[ii];
 
@@ -424,12 +425,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes32 mask;
 
         // loop through each allowed ERC725Y key retrieved from storage
-        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii = _uncheckedIncrement(ii)) {
+        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii = GasLib.uncheckedIncrement(ii)) {
             // required to know which part of the input key to compare against the allowed key
             zeroBytesCount = _countTrailingZeroBytes(allowedERC725YKeys[ii]);
 
             // loop through each keys given as input
-            for (uint256 jj = 0; jj < inputKeys.length; jj = _uncheckedIncrement(jj)) {
+            for (uint256 jj = 0; jj < inputKeys.length; jj = GasLib.uncheckedIncrement(jj)) {
                 // skip permissions keys that have been previously checked and "nulled"
                 if (inputKeys[jj] == bytes32(0)) continue;
 
@@ -453,7 +454,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             }
         }
 
-        for (uint256 ii = 0; ii < inputKeys.length; ii = _uncheckedIncrement(ii)) {
+        for (uint256 ii = 0; ii < inputKeys.length; ii = GasLib.uncheckedIncrement(ii)) {
             if (inputKeys[ii] != bytes32(0)) revert NotAllowedERC725YKey(from, inputKeys[ii]);
         }
     }
@@ -571,7 +572,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
 
-        for (uint256 ii = 0; ii < allowedAddressesList.length; ii = _uncheckedIncrement(ii)) {
+        for (uint256 ii = 0; ii < allowedAddressesList.length; ii = GasLib.uncheckedIncrement(ii)) {
             if (to == allowedAddressesList[ii]) return;
         }
         revert NotAllowedAddress(from, to);
@@ -596,7 +597,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         bytes4[] memory allowedStandardsList = abi.decode(allowedStandards, (bytes4[]));
 
-        for (uint256 ii = 0; ii < allowedStandardsList.length; ii = _uncheckedIncrement(ii)) {
+        for (uint256 ii = 0; ii < allowedStandardsList.length; ii = GasLib.uncheckedIncrement(ii)) {
             if (to.supportsERC165Interface(allowedStandardsList[ii])) return;
         }
         revert NotAllowedStandard(from, to);
@@ -622,7 +623,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
 
-        for (uint256 ii = 0; ii < allowedFunctionsList.length; ii = _uncheckedIncrement(ii)) {
+        for (uint256 ii = 0; ii < allowedFunctionsList.length; ii = GasLib.uncheckedIncrement(ii)) {
             if (functionSelector == allowedFunctionsList[ii]) return;
         }
         revert NotAllowedFunction(from, functionSelector);
@@ -664,15 +665,5 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (permission == _PERMISSION_DEPLOY) return "DEPLOY";
         if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
         if (permission == _PERMISSION_SIGN) return "SIGN";
-    }
-
-    /**
-     * @dev Will return unchecked incremented uint256
-     *      can be used to save gas when iterating over loops
-     */
-    function _uncheckedIncrement(uint256 i) internal pure returns (uint256) {
-        unchecked {
-            return i + 1;
-        }
     }
 }

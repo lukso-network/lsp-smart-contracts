@@ -6,6 +6,7 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // libraries
+import {GasLib} from "../Utils/GasLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
@@ -151,7 +152,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < from.length; i = _uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < from.length; i = GasLib.uncheckedIncrement(i)) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(from[i], to[i], amount[i], force, data[i]);
         }
@@ -374,16 +375,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             } else {
                 revert LSP7NotifyTokenReceiverIsEOA(to);
             }
-        }
-    }
-
-    /**
-     * @dev Will return unchecked incremented uint256
-     *      can be used to save gas when iterating over loops
-     */
-    function _uncheckedIncrement(uint256 i) internal pure returns (uint256) {
-        unchecked {
-            return i + 1;
         }
     }
 }
