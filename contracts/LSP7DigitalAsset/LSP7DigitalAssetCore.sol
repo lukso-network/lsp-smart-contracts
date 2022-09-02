@@ -45,14 +45,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function decimals() public view override returns (uint8) {
+    function decimals() public view returns (uint8) {
         return _isNonDivisible ? 0 : 18;
     }
 
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() public view returns (uint256) {
         return _existingTokens;
     }
 
@@ -61,7 +61,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function balanceOf(address tokenOwner) public view override returns (uint256) {
+    function balanceOf(address tokenOwner) public view returns (uint256) {
         return _tokenOwnerBalances[tokenOwner];
     }
 
@@ -80,14 +80,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
      *
      */
-    function authorizeOperator(address operator, uint256 amount) public virtual override {
+    function authorizeOperator(address operator, uint256 amount) public virtual {
         _updateOperator(msg.sender, operator, amount);
     }
 
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function revokeOperator(address operator) public virtual override {
+    function revokeOperator(address operator) public virtual {
         _updateOperator(msg.sender, operator, 0);
     }
 
@@ -98,7 +98,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         public
         view
         virtual
-        override
         returns (uint256)
     {
         if (tokenOwner == operator) {
@@ -119,7 +118,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256 amount,
         bool force,
         bytes memory data
-    ) public virtual override {
+    ) public virtual {
         if (from == to) revert LSP7CannotSendToSelf();
 
         address operator = msg.sender;
@@ -144,7 +143,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256[] memory amount,
         bool force,
         bytes[] memory data
-    ) public virtual override {
+    ) public virtual {
         if (
             from.length != to.length || from.length != amount.length || from.length != data.length
         ) {

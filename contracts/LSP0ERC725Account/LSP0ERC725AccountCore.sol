@@ -115,7 +115,6 @@ abstract contract LSP0ERC725AccountCore is
     function isValidSignature(bytes32 dataHash, bytes memory signature)
         public
         view
-        override
         returns (bytes4 magicValue)
     {
         address _owner = owner();
@@ -146,7 +145,6 @@ abstract contract LSP0ERC725AccountCore is
         public
         payable
         virtual
-        override
         returns (bytes memory returnValue)
     {
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);

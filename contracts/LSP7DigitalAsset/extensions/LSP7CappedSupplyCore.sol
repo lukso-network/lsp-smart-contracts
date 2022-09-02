@@ -26,7 +26,7 @@ abstract contract LSP7CappedSupplyCore is LSP7DigitalAssetCore, ILSP7CappedSuppl
     /**
      * @inheritdoc ILSP7CappedSupply
      */
-    function tokenSupplyCap() public view virtual override returns (uint256) {
+    function tokenSupplyCap() public view virtual returns (uint256) {
         return _tokenSupplyCap;
     }
 

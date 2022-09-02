@@ -55,7 +55,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using ECDSA for bytes32;
     using ERC165Checker for address;
 
-    address public override target;
+    address public target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     /**
@@ -71,7 +71,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function getNonce(address from, uint256 channelId) public view override returns (uint256) {
+    function getNonce(address from, uint256 channelId) public view returns (uint256) {
         uint128 nonceId = uint128(_nonceStore[from][channelId]);
         return (uint256(channelId) << 128) | nonceId;
     }
@@ -82,7 +82,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function isValidSignature(bytes32 dataHash, bytes memory signature)
         public
         view
-        override
         returns (bytes4 magicValue)
     {
         address recoveredAddress = dataHash.recover(signature);
@@ -97,7 +96,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata payload) public payable override returns (bytes memory) {
+    function execute(bytes calldata payload) public payable returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
 
         return _executePayload(payload);
@@ -110,7 +109,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory signature,
         uint256 nonce,
         bytes calldata payload
-    ) public payable override returns (bytes memory) {
+    ) public payable returns (bytes memory) {
         bytes memory blob = abi.encodePacked(
             block.chainid,
             address(this), // needs to be signed for this keyManager

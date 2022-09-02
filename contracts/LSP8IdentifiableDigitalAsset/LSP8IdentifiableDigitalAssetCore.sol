@@ -49,7 +49,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() public view returns (uint256) {
         return _existingTokens;
     }
 
@@ -58,14 +58,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function balanceOf(address tokenOwner) public view override returns (uint256) {
+    function balanceOf(address tokenOwner) public view returns (uint256) {
         return _ownedTokens[tokenOwner].length();
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenOwnerOf(bytes32 tokenId) public view override returns (address) {
+    function tokenOwnerOf(bytes32 tokenId) public view returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
 
         if (tokenOwner == address(0)) {
@@ -78,7 +78,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenIdsOf(address tokenOwner) public view override returns (bytes32[] memory) {
+    function tokenIdsOf(address tokenOwner) public view returns (bytes32[] memory) {
         return _ownedTokens[tokenOwner].values();
     }
 
@@ -87,7 +87,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function authorizeOperator(address operator, bytes32 tokenId) public virtual override {
+    function authorizeOperator(address operator, bytes32 tokenId) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
         address caller = msg.sender;
 
@@ -113,7 +113,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function revokeOperator(address operator, bytes32 tokenId) public virtual override {
+    function revokeOperator(address operator, bytes32 tokenId) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
         address caller = msg.sender;
 
@@ -140,7 +140,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         public
         view
         virtual
-        override
         returns (bool)
     {
         _existsOrError(tokenId);
@@ -155,7 +154,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         public
         view
         virtual
-        override
         returns (address[] memory)
     {
         _existsOrError(tokenId);
@@ -185,7 +183,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override {
+    ) public virtual {
         address operator = msg.sender;
 
         if (!_isOperatorOrOwner(operator, tokenId)) {
@@ -204,7 +202,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bytes32[] memory tokenId,
         bool force,
         bytes[] memory data
-    ) public virtual override {
+    ) public virtual {
         if (
             from.length != to.length || from.length != tokenId.length || from.length != data.length
         ) {

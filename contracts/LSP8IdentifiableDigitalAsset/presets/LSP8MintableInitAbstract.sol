@@ -32,7 +32,7 @@ abstract contract LSP8MintableInitAbstract is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner {
+    ) public virtual onlyOwner {
         _mint(to, tokenId, force, data);
     }
 }
