@@ -11,7 +11,7 @@ import {IClaimOwnership} from "./IClaimOwnership.sol";
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
-error RenounceOwnershipAvailableAtBlockNumber(uint256 blockNumber);
+error NotInRenounceOwnershipInterval(uint256 renounceOwnershipStart, uint256 renounceOwnershipEnd);
 
 /**
  * @dev reverts when trying to transfer ownership to the address(this)
@@ -23,7 +23,10 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
      * @dev The block number saved in the first step for
      * renouncing ownership of the contract
      */
-    uint256 private _lastBlock;
+    uint256 private _renounceOwnershipStartAt;
+
+    uint256 private constant _RENOUNCE_OWNERSHIP_DELAY = 100;
+    uint256 private constant _RENOUNCE_OWNERSHIP_PERIOD = 100;
 
     /**
      * @dev The number of blocks needed to pass for successfully
@@ -66,17 +69,26 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
      * is less than 200 blocks back and more than 100 blocks.
      */
     function _renounceOwnership() internal virtual {
-        if (_lastBlock <= block.number && (_lastBlock + _DELAY_BLOCKS) > block.number) {
-            revert RenounceOwnershipAvailableAtBlockNumber(_lastBlock + _DELAY_BLOCKS);
-        } else if (
-            (_lastBlock + _DELAY_BLOCKS) <= block.number &&
-            (_lastBlock + _DELAY_BLOCKS * 2) > block.number
-        ) {
-            _setOwner(address(0));
-            delete _lastBlock;
-        } else {
-            _lastBlock = block.number;
+        // 1. the `_lastBlock` variable does not give enough context. It is very generic, and the name is confusing
+        // 2. step 1 is actually the last else statement, last step is the first if statement.
+        uint256 currentBlock = block.number;
+        uint256 renounceOwnershipStart = _renounceOwnershipStartAt + _RENOUNCE_OWNERSHIP_DELAY;
+        uint256 renounceOwnershipEnd = renounceOwnershipStart + _RENOUNCE_OWNERSHIP_PERIOD;
+
+        // TO renounce ownership of the contract, we need to instantiate a renounce ownership process
+        // if we second call happen "too late", we start the process again
+        if (currentBlock > renounceOwnershipEnd) {
+            _renounceOwnershipStartAt = block.number;
             emit RenounceOwnershipInitiated();
+            return;
         }
+
+        // if we second call happen "too early", we revert
+        if (currentBlock < renounceOwnershipStart) {
+            revert NotInRenounceOwnershipInterval(renounceOwnershipStart, renounceOwnershipEnd);
+        }
+
+        _setOwner(address(0));
+        delete renounceOwnershipStart;
     }
 }
