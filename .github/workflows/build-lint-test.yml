@@ -80,18 +80,9 @@ jobs:
           node-version: "16.x"
           cache: "npm"
 
-      # This will also generate the Typechain types used by the Chai tests
       - name: Install dependencies
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: run tests
         run: npm run test:${{ matrix.lsp }}
-
-      # Trigger Coverage
-      - name: Trigger Code Coverage Workflow
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
-          event-type: trigger-release
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
