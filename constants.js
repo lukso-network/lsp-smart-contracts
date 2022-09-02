@@ -17,14 +17,14 @@ const INTERFACE_IDS = {
 	ERC1155: '0xd9b67a26',
 	ERC725X: '0x44c028fe',
 	ERC725Y: '0x714df77c',
-	LSP0ERC725Account: '0x9a3bfe88',
+	LSP0ERC725Account: '0xeb6be62e',
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
 	LSP6KeyManager: '0xc403d48f',
 	LSP7DigitalAsset: '0x5fcaac27',
 	LSP8IdentifiableDigitalAsset: '0x49399145',
-	LSP9Vault: '0x8c1d44f6',
-	ClaimOwnership: '0xd225f160',
+	LSP9Vault: '0xfd4d5c50',
+	ClaimOwnership: '0xa375e9c6',
 };
 
 // ERC1271
@@ -75,10 +75,12 @@ const ERC725YKeys = {
 			'0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',
 	},
 	LSP3: {
+		SupportedStandards_LSP3: SupportedStandards.LSP3UniversalProfile,
 		// keccak256('LSP3Profile')
 		LSP3Profile: '0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5',
 	},
 	LSP4: {
+		SupportedStandards_LSP4: SupportedStandards.LSP4DigitalAsset,
 		// keccak256('LSP4TokenName')
 		LSP4TokenName: '0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1',
 		// keccak256('LSP4TokenSymbol')
@@ -120,6 +122,9 @@ const ERC725YKeys = {
 		'AddressPermissions:AllowedStandards': '0x4b80742de2bf3efa94a30000',
 		// AddressPermissions:AllowedERC725YKeys:<address>
 		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
+	},
+	LSP9: {
+		SupportedStandards_LSP9: SupportedStandards.LSP9Vault,
 	},
 	LSP10: {
 		// keccak256('LSP10VaultsMap')
@@ -209,6 +214,16 @@ const LSP1_TYPE_IDS = {
 // ----------
 
 const Errors = {
+	ClaimOwnership: {
+		'0x39351224': {
+			error: 'RenounceOwnershipAvailableAtBlockNumber(uint256)',
+			message: 'ClaimOwnership: Second renounce ownership call available after 100 block delay from the first call',
+		},
+		'0x43b248cd': {
+			error: 'CannotTransferOwnershipToSelf()',
+			message: 'ClaimOwnership: Cannot transfer ownership to address(this)',
+		},
+	},
 	LSP2: {
 		'0xb614e91e': {
 			error: 'InvalidABIEncodedArray(bytes,string)',
@@ -382,6 +397,15 @@ const EventSignatures = {
 		 */
 		OwnershipTransfered: '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0',
 	},
+	ClaimOwnership: {
+		/**
+		 * event RenounceOwnershipInitiated();
+		 *
+		 * signature = keccak256('RenounceOwnershipInitiated()')
+		 */
+		RenounceOwnershipInitiated:
+			'0X56272768d104766ae5e663c58927d0a9e47effb40b9a8f6644ac5dfbc9e56f84',
+	},
 	ERC725X: {
 		/**
 		 * event ContractCreated(
@@ -407,11 +431,14 @@ const EventSignatures = {
 	},
 	ERC725Y: {
 		/**
-		 * event DataChanged(bytes32 indexed key);
+		 * event DataChanged(
+		 * 		bytes32 indexed dataKey,
+		 * 		bytes dataValue
+		 * );
 		 *
-		 * signature = keccak256('DataChanged(bytes32)')
+		 * signature = keccak256('DataChanged(bytes32,bytes)')
 		 */
-		DataChanged: '0xcdf4e344c0d23d4cdd0474039d176c55b19d531070dbe17856bfb993a5b5720b',
+		DataChanged: '0xece574603820d07bc9b91f2a932baadf4628aabcb8afba49776529c14a6104b2',
 	},
 	// ERC725Account
 	LSP0: {
@@ -518,6 +545,17 @@ const EventSignatures = {
 		 * signature = keccak256('RevokedOperator(address,address,bytes32)')
 		 */
 		RevokedOperator: '17d5389f6ab6adb2647dfa0aa365c323d37adacc30b33a65310b6158ce1373d5',
+	},
+	LSP9: {
+		/**
+		 * event ValueReceived(
+		 *      address indexed sender,
+		 *      uint256 indexed value
+		 * );
+		 *
+		 * signature = keccak256('ValueReceived(address,uint256)')
+		 */
+		ValueReceived: '0x7e71433ddf847725166244795048ecf3e3f9f35628254ecbf736056664233493',
 	},
 	Helpers: {
 		/**
