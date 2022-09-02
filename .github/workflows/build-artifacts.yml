@@ -14,7 +14,7 @@ jobs:
   build-artifacts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -69,7 +69,7 @@ jobs:
         if: github.event_name == 'push'  && steps.check.outputs.changed == 'true'
         with:
           name: upcontracts.jar
-          path: java/build/libs/upcontracts.jar 
+          path: java/build/libs/upcontracts.jar
 
       # Trigger Release
       - name: Repository Dispatch
