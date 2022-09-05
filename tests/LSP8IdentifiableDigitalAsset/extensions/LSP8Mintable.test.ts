@@ -98,7 +98,7 @@ describe("LSP8Mintable", () => {
         const randomCaller = accounts[1];
 
         await expect(
-          lsp8Mintable["initialize(string,string,address,bool)"](
+          lsp8Mintable["initialize(string,string,address)"](
             "XXXXXXXXXXX",
             "XXX",
             randomCaller.address
