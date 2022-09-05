@@ -9,6 +9,7 @@ import {
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {GasLib} from "../Utils/GasLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
@@ -194,6 +195,17 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     }
 
     // internal functions
+
+    /**
+     * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
+     */
+    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
+        store[dataKey] = dataValue;
+        emit DataChanged(
+            dataKey,
+            dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
+        );
+    }
 
     /**
      * @dev Calls the universalReceiver function of the sender if supports LSP1 InterfaceId
