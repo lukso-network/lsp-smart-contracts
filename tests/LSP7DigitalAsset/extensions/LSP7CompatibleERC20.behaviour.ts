@@ -561,7 +561,10 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
     it("should have set expected entries with ERC725Y.setData", async () => {
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7CompatibleERC20, "DataChanged")
-        .withArgs(SupportedStandards.LSP4DigitalAsset.key);
+        .withArgs(
+          SupportedStandards.LSP4DigitalAsset.key,
+          SupportedStandards.LSP4DigitalAsset.value
+        );
       expect(
         await context.lsp7CompatibleERC20["getData(bytes32)"](
           SupportedStandards.LSP4DigitalAsset.key
@@ -574,7 +577,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7CompatibleERC20, "DataChanged")
-        .withArgs(nameKey);
+        .withArgs(nameKey, expectedNameValue);
       expect(
         await context.lsp7CompatibleERC20["getData(bytes32)"](nameKey)
       ).to.equal(expectedNameValue);
@@ -585,7 +588,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7CompatibleERC20, "DataChanged")
-        .withArgs(symbolKey);
+        .withArgs(symbolKey, expectedSymbolValue);
       expect(
         await context.lsp7CompatibleERC20["getData(bytes32)"](symbolKey)
       ).to.equal(expectedSymbolValue);

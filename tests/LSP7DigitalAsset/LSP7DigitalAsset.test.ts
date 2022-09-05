@@ -1,7 +1,11 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
-import { LSP7Tester__factory, LSP7InitTester__factory } from "../../types";
+import {
+  LSP7Tester__factory,
+  LSP7InitTester__factory,
+  LSP7DigitalAsset,
+} from "../../types";
 
 import {
   getNamedAccounts,
@@ -9,6 +13,11 @@ import {
   shouldInitializeLikeLSP7,
   LSP7TestContext,
 } from "./LSP7DigitalAsset.behaviour";
+
+import {
+  LS4DigitalAssetMetadataTestContext,
+  shouldBehaveLikeLSP4DigitalAssetMetadata,
+} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour";
 
 import { deployProxy } from "../utils/fixtures";
 
@@ -34,6 +43,22 @@ describe("LSP7", () => {
 
       return { accounts, lsp7, deployParams, initialSupply };
     };
+
+    const buildLSP4DigitalAssetMetadataTestContext =
+      async (): Promise<LS4DigitalAssetMetadataTestContext> => {
+        const { lsp7 } = await buildTestContext();
+        let accounts = await ethers.getSigners();
+
+        let deployParams = {
+          owner: accounts[0],
+        };
+
+        return {
+          contract: lsp7 as LSP7DigitalAsset,
+          accounts,
+          deployParams,
+        };
+      };
 
     describe("when deploying the contract", () => {
       it("should revert when deploying with address(0) as owner", async () => {
@@ -75,6 +100,9 @@ describe("LSP7", () => {
     });
 
     describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP4DigitalAssetMetadata(
+        buildLSP4DigitalAssetMetadataTestContext
+      );
       shouldBehaveLikeLSP7(buildTestContext);
     });
   });
