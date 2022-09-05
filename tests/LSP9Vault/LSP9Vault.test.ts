@@ -7,6 +7,11 @@ import {
 } from "../ClaimOwnership.behaviour";
 
 import {
+  RenounceOwnershipTestContext,
+  shouldBehaveLikeRenounceOwnership
+} from "../RenounceOwnership.behaviour";
+
+import {
   LSP9Vault__factory,
   LSP9VaultInit__factory,
   UniversalProfile,
@@ -71,6 +76,18 @@ describe("LSP9Vault", () => {
         };
       };
 
+    const buildRenounceOwnershipTestContext =
+      async (): Promise<RenounceOwnershipTestContext> => {
+        const accounts = await ethers.getSigners();
+        const deployParams = { owner: accounts[0] };
+  
+        const contract = await new LSP9Vault__factory(accounts[0]).deploy(
+          accounts[0].address
+        );
+  
+        return { accounts, contract, deployParams };
+      };
+
     describe("when deploying the contract", () => {
       let context: LSP9TestContext;
 
@@ -94,6 +111,7 @@ describe("LSP9Vault", () => {
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP9(buildTestContext);
       shouldBehaveLikeClaimOwnership(buildClaimOwnershipTestContext);
+      shouldBehaveLikeRenounceOwnership(buildRenounceOwnershipTestContext);
     });
   });
 
@@ -203,6 +221,18 @@ describe("LSP9Vault", () => {
           contract: context.lsp9Vault,
           deployParams: { owner: context.accounts.owner },
           onlyOwnerRevertString,
+        };
+      });
+
+      shouldBehaveLikeRenounceOwnership(async () => {
+        let context = await buildTestContext();
+        let accounts = await ethers.getSigners();
+        await initializeProxy(context);
+
+        return {
+          accounts: accounts,
+          contract: context.lsp9Vault,
+          deployParams: { owner: context.accounts.owner },
         };
       });
     });
