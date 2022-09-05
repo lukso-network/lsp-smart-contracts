@@ -173,7 +173,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         public
         payable
         virtual
-        override
         returns (bytes memory returnValue)
     {
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);

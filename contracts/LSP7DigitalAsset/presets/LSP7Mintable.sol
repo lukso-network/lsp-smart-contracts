@@ -38,7 +38,7 @@ contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
         uint256 amount,
         bool force,
         bytes memory data
-    ) public override onlyOwner {
+    ) public virtual onlyOwner {
         _mint(to, amount, force, data);
     }
 }

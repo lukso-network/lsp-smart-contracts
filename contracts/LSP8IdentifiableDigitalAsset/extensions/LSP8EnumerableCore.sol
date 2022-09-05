@@ -21,7 +21,7 @@ abstract contract LSP8EnumerableCore is LSP8IdentifiableDigitalAssetCore, ILSP8E
     /**
      * @inheritdoc ILSP8Enumerable
      */
-    function tokenAt(uint256 index) public view override returns (bytes32) {
+    function tokenAt(uint256 index) public view returns (bytes32) {
         return _indexToken[index];
     }
 
