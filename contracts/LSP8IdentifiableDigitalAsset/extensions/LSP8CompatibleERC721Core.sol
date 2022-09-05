@@ -41,7 +41,7 @@ abstract contract LSP8CompatibleERC721Core is
      */
     function tokenURI(
         uint256 tokenId // solhint-disable no-unused-vars
-    ) public view virtual override returns (string memory) {
+    ) public view virtual returns (string memory) {
         bytes memory data = _getData(_LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
@@ -54,27 +54,27 @@ abstract contract LSP8CompatibleERC721Core is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      */
-    function ownerOf(uint256 tokenId) public view virtual override returns (address) {
+    function ownerOf(uint256 tokenId) public view virtual returns (address) {
         return tokenOwnerOf(bytes32(tokenId));
     }
 
     /**
      * @inheritdoc ILSP8CompatibleERC721
      */
-    function approve(address operator, uint256 tokenId) public virtual override {
+    function approve(address operator, uint256 tokenId) public virtual {
         authorizeOperator(operator, bytes32(tokenId));
 
         emit Approval(tokenOwnerOf(bytes32(tokenId)), operator, tokenId);
     }
 
-    function setApprovalForAll(address operator, bool approved) public virtual override {
+    function setApprovalForAll(address operator, bool approved) public virtual {
         _setApprovalForAll(msg.sender, operator, approved);
     }
 
     /**
      * @inheritdoc ILSP8CompatibleERC721
      */
-    function getApproved(uint256 tokenId) public view virtual override returns (address) {
+    function getApproved(uint256 tokenId) public view virtual returns (address) {
         bytes32 tokenIdAsBytes32 = bytes32(tokenId);
         _existsOrError(tokenIdAsBytes32);
 
@@ -101,7 +101,6 @@ abstract contract LSP8CompatibleERC721Core is
         public
         view
         virtual
-        override
         returns (bool)
     {
         return _operatorApprovals[tokenOwner][operator];
@@ -116,7 +115,7 @@ abstract contract LSP8CompatibleERC721Core is
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
+    ) public virtual {
         return _transfer(from, to, bytes32(tokenId), true, "");
     }
 
@@ -129,7 +128,7 @@ abstract contract LSP8CompatibleERC721Core is
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
+    ) public virtual {
         return _transfer(from, to, bytes32(tokenId), false, "");
     }
 
@@ -142,7 +141,7 @@ abstract contract LSP8CompatibleERC721Core is
         address to,
         uint256 tokenId,
         bytes memory data
-    ) public virtual override {
+    ) public virtual {
         return _transfer(from, to, bytes32(tokenId), false, data);
     }
 

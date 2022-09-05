@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP9 = 0x8c1d44f6;
+bytes4 constant _INTERFACEID_LSP9 = 0xfd4d5c50;
 
 // --- ERC725Y Keys
 

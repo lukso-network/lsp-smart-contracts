@@ -14,9 +14,6 @@ import {
 // helpers
 import { ARRAY_LENGTH, generateKeysAndValues } from "../utils/helpers";
 
-// errors
-import { NotAllowedAddressError } from "../utils/errors";
-
 // fixtures
 import { callPayload } from "../utils/fixtures";
 
@@ -29,7 +26,6 @@ import {
   OPERATION_TYPES,
   LSP1_TYPE_IDS,
 } from "../../constants";
-import { lsp9Vault } from "../../types/contracts";
 
 export type LSP9TestAccounts = {
   owner: SignerWithAddress;
@@ -95,7 +91,7 @@ export const shouldBehaveLikeLSP9 = (
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
-          ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
           lsp1UniversalReceiverDelegateVaultSetter.address
         );
 
@@ -112,6 +108,48 @@ export const shouldBehaveLikeLSP9 = (
         keys[0]
       );
       expect(result).to.equal(values[0]);
+    });
+
+    describe("when setting a data key with a value less than 256 bytes", () => {
+      it("should emit DataChanged event with the whole data value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
+
+        await expect(context.lsp9Vault["setData(bytes32,bytes)"](key, value))
+          .to.emit(context.lsp9Vault, "DataChanged")
+          .withArgs(key, value);
+
+        const result = await context.lsp9Vault["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
+    });
+
+    describe("when setting a data key with a value more than 256 bytes", () => {
+      it("should emit DataChanged event with only the first 256 bytes of the value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+        await expect(context.lsp9Vault["setData(bytes32,bytes)"](key, value))
+          .to.emit(context.lsp9Vault, "DataChanged")
+          .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+        const result = await context.lsp9Vault["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
+    });
+
+    describe("when setting a data key with a value exactly 256 bytes long", () => {
+      it("should emit DataChanged event with the whole data value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+
+        await expect(context.lsp9Vault["setData(bytes32,bytes)"](key, value))
+          .to.emit(context.lsp9Vault, "DataChanged")
+          .withArgs(key, value);
+
+        const result = await context.lsp9Vault["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
     });
   });
 
@@ -308,7 +346,10 @@ export const shouldInitializeLikeLSP9 = (
     it("should have set expected entries with ERC725Y.setData", async () => {
       await expect(context.initializeTransaction)
         .to.emit(context.lsp9Vault, "DataChanged")
-        .withArgs(SupportedStandards.LSP9Vault.key);
+        .withArgs(
+          SupportedStandards.LSP9Vault.key,
+          SupportedStandards.LSP9Vault.value
+        );
       expect(
         await context.lsp9Vault["getData(bytes32)"](
           SupportedStandards.LSP9Vault.key

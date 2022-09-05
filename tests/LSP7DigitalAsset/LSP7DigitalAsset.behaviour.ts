@@ -14,9 +14,6 @@ import {
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
 
-// errors
-import { customRevertErrorMessage } from "../utils/errors";
-
 // constants
 import {
   ERC725YKeys,
@@ -78,35 +75,6 @@ export const shouldBehaveLikeLSP7 = (
 
   beforeEach(async () => {
     context = await buildContext();
-  });
-
-  describe("when setting data on ERC725Y storage", () => {
-    it("should revert when trying to edit Token Name", async () => {
-      const key = ERC725YKeys.LSP4["LSP4TokenName"];
-      const value = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes("Overriden Token Name")
-      );
-
-      expect(
-        context.lsp7
-          .connect(context.deployParams.newOwner)
-          ["setData(bytes32,bytes)"](key, value)
-      ).to.be.revertedWithCustomError(context.lsp7, "LSP4TokenNameNotEditable");
-    });
-
-    it("should revert when trying to edit Token Symbol", async () => {
-      const key = ERC725YKeys.LSP4["LSP4TokenSymbol"];
-      const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("BAD"));
-
-      expect(
-        context.lsp7
-          .connect(context.deployParams.newOwner)
-          ["setData(bytes32,bytes)"](key, value)
-      ).to.be.revertedWithCustomError(
-        context.lsp7,
-        "LSP4TokenSymbolNotEditable"
-      );
-    });
   });
 
   describe("when minting tokens", () => {
@@ -1337,7 +1305,10 @@ export const shouldInitializeLikeLSP7 = (
     it("should have set expected entries with ERC725Y.setData", async () => {
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7, "DataChanged")
-        .withArgs(SupportedStandards.LSP4DigitalAsset.key);
+        .withArgs(
+          SupportedStandards.LSP4DigitalAsset.key,
+          SupportedStandards.LSP4DigitalAsset.value
+        );
       expect(
         await context.lsp7["getData(bytes32)"](
           SupportedStandards.LSP4DigitalAsset.key
@@ -1350,7 +1321,7 @@ export const shouldInitializeLikeLSP7 = (
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7, "DataChanged")
-        .withArgs(nameKey);
+        .withArgs(nameKey, expectedNameValue);
       expect(await context.lsp7["getData(bytes32)"](nameKey)).to.equal(
         expectedNameValue
       );
@@ -1361,7 +1332,7 @@ export const shouldInitializeLikeLSP7 = (
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp7, "DataChanged")
-        .withArgs(symbolKey);
+        .withArgs(symbolKey, expectedSymbolValue);
       expect(await context.lsp7["getData(bytes32)"](symbolKey)).to.equal(
         expectedSymbolValue
       );

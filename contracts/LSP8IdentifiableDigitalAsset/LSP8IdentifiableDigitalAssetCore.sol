@@ -6,6 +6,7 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP8IdentifiableDigitalAsset} from "./ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
+import {GasLib} from "../Utils/GasLib.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
@@ -49,7 +50,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() public view returns (uint256) {
         return _existingTokens;
     }
 
@@ -58,14 +59,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function balanceOf(address tokenOwner) public view override returns (uint256) {
+    function balanceOf(address tokenOwner) public view returns (uint256) {
         return _ownedTokens[tokenOwner].length();
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenOwnerOf(bytes32 tokenId) public view override returns (address) {
+    function tokenOwnerOf(bytes32 tokenId) public view returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
 
         if (tokenOwner == address(0)) {
@@ -78,7 +79,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenIdsOf(address tokenOwner) public view override returns (bytes32[] memory) {
+    function tokenIdsOf(address tokenOwner) public view returns (bytes32[] memory) {
         return _ownedTokens[tokenOwner].values();
     }
 
@@ -87,7 +88,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function authorizeOperator(address operator, bytes32 tokenId) public virtual override {
+    function authorizeOperator(address operator, bytes32 tokenId) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
         address caller = msg.sender;
 
@@ -113,7 +114,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function revokeOperator(address operator, bytes32 tokenId) public virtual override {
+    function revokeOperator(address operator, bytes32 tokenId) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
         address caller = msg.sender;
 
@@ -140,7 +141,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         public
         view
         virtual
-        override
         returns (bool)
     {
         _existsOrError(tokenId);
@@ -155,7 +155,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         public
         view
         virtual
-        override
         returns (address[] memory)
     {
         _existsOrError(tokenId);
@@ -185,7 +184,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override {
+    ) public virtual {
         address operator = msg.sender;
 
         if (!_isOperatorOrOwner(operator, tokenId)) {
@@ -204,14 +203,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bytes32[] memory tokenId,
         bool force,
         bytes[] memory data
-    ) public virtual override {
+    ) public virtual {
         if (
             from.length != to.length || from.length != tokenId.length || from.length != data.length
         ) {
             revert LSP8InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < from.length; i = _uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < from.length; i = GasLib.uncheckedIncrement(i)) {
             transfer(from[i], to[i], tokenId[i], force, data[i]);
         }
     }
@@ -236,7 +235,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
 
         uint256 operatorListLength = operatorsForTokenId.length();
-        for (uint256 i = 0; i < operatorListLength; i = _uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < operatorListLength; i = GasLib.uncheckedIncrement(i)) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId);
@@ -434,16 +433,6 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             } else {
                 revert LSP8NotifyTokenReceiverIsEOA(to);
             }
-        }
-    }
-
-    /**
-     * @dev Will return unchecked incremented uint256
-     *      can be used to save gas when iterating over loops
-     */
-    function _uncheckedIncrement(uint256 i) internal pure returns (uint256) {
-        unchecked {
-            return i + 1;
         }
     }
 }

@@ -1,7 +1,11 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
-import { LSP8Tester__factory, LSP8InitTester__factory } from "../../types";
+import {
+  LSP8Tester__factory,
+  LSP8InitTester__factory,
+  LSP8IdentifiableDigitalAsset,
+} from "../../types";
 
 import {
   getNamedAccounts,
@@ -9,6 +13,11 @@ import {
   shouldInitializeLikeLSP8,
   LSP8TestContext,
 } from "./LSP8IdentifiableDigitalAsset.behaviour";
+
+import {
+  LS4DigitalAssetMetadataTestContext,
+  shouldBehaveLikeLSP4DigitalAssetMetadata,
+} from "../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour";
 
 import { deployProxy } from "../utils/fixtures";
 
@@ -30,6 +39,22 @@ describe("LSP8", () => {
       return { accounts, lsp8, deployParams };
     };
 
+    const buildLSP4DigitalAssetMetadataTestContext =
+      async (): Promise<LS4DigitalAssetMetadataTestContext> => {
+        const { lsp8 } = await buildTestContext();
+        let accounts = await ethers.getSigners();
+
+        let deployParams = {
+          owner: accounts[0],
+        };
+
+        return {
+          contract: lsp8 as LSP8IdentifiableDigitalAsset,
+          accounts,
+          deployParams,
+        };
+      };
+
     describe("when deploying the contract", () => {
       it("should revert when deploying with address(0) as owner", async () => {
         const accounts = await ethers.getSigners();
@@ -46,7 +71,9 @@ describe("LSP8", () => {
             deployParams.symbol,
             ethers.constants.AddressZero
           )
-        ).to.be.revertedWith("LSP4: new owner cannot be the zero address");
+        ).to.be.revertedWith(
+          "Ownable: contract owner cannot be the zero address"
+        );
       });
 
       describe("once the contract was deployed", () => {
@@ -69,6 +96,9 @@ describe("LSP8", () => {
     });
 
     describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP4DigitalAssetMetadata(
+        buildLSP4DigitalAssetMetadataTestContext
+      );
       shouldBehaveLikeLSP8(buildTestContext);
     });
   });
@@ -94,6 +124,22 @@ describe("LSP8", () => {
       return { accounts, lsp8, deployParams };
     };
 
+    const buildLSP4DigitalAssetMetadataTestContext =
+      async (): Promise<LS4DigitalAssetMetadataTestContext> => {
+        const { lsp8 } = await buildTestContext();
+        let accounts = await ethers.getSigners();
+
+        let deployParams = {
+          owner: accounts[0],
+        };
+
+        return {
+          contract: lsp8 as LSP8IdentifiableDigitalAsset,
+          accounts,
+          deployParams,
+        };
+      }
+
     const initializeProxy = async (context: LSP8TestContext) => {
       return context.lsp8["initialize(string,string,address)"](
         context.deployParams.name,
@@ -116,7 +162,9 @@ describe("LSP8", () => {
             context.deployParams.symbol,
             ethers.constants.AddressZero
           )
-        ).to.be.revertedWith("LSP4: new owner cannot be the zero address");
+        ).to.be.revertedWith(
+          "Ownable: contract owner cannot be the zero address"
+        );
       });
 
       describe("when initializing the contract", () => {
@@ -144,6 +192,18 @@ describe("LSP8", () => {
     });
 
     describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP4DigitalAssetMetadata(async () => {
+        let lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
+        
+        await lsp4Context.contract["initialize(string,string,address)"](
+          "LSP8 - deployed with proxy",
+          "NFT",
+          lsp4Context.deployParams.owner.address
+        )
+
+        return lsp4Context;
+      });
+
       shouldBehaveLikeLSP8(() =>
         buildTestContext().then(async (context) => {
           await initializeProxy(context);

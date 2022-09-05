@@ -101,7 +101,7 @@ export const shouldBehaveLikeLSP3 = (
         ERC725YKeys.LSP3.LSP3Profile,
         ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length,
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
       ];
       let values = [
         "0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178",
@@ -199,6 +199,54 @@ export const shouldBehaveLikeLSP3 = (
         expect(result).to.eql(values);
       });
     }
+
+    describe("when setting a data key with a value less than 256 bytes", () => {
+      it("should emit DataChanged event with the whole data value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
+
+        await expect(
+          context.universalProfile["setData(bytes32,bytes)"](key, value)
+        )
+          .to.emit(context.universalProfile, "DataChanged")
+          .withArgs(key, value);
+
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
+    });
+
+    describe("when setting a data key with a value more than 256 bytes", () => {
+      it("should emit DataChanged event with only the first 256 bytes of the value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+        await expect(
+          context.universalProfile["setData(bytes32,bytes)"](key, value)
+        )
+          .to.emit(context.universalProfile, "DataChanged")
+          .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
+    });
+
+    describe("when setting a data key with a value exactly 256 bytes long", () => {
+      it("should emit DataChanged event with the whole data value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+
+        await expect(
+          context.universalProfile["setData(bytes32,bytes)"](key, value)
+        )
+          .to.emit(context.universalProfile, "DataChanged")
+          .withArgs(key, value);
+
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
+    });
   });
 
   describe("when sending native tokens to the contract", () => {

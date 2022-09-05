@@ -26,7 +26,7 @@ abstract contract LSP8CappedSupplyCore is LSP8IdentifiableDigitalAssetCore, ILSP
     /**
      * @inheritdoc ILSP8CappedSupply
      */
-    function tokenSupplyCap() public view virtual override returns (uint256) {
+    function tokenSupplyCap() public view virtual returns (uint256) {
         return _tokenSupplyCap;
     }
 
