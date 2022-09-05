@@ -9,6 +9,7 @@ import {
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
+import {GasLib} from "../Utils/GasLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
@@ -121,12 +122,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     /**
      * @dev Renounce ownership of the contract in a 2-step process
      */
-    function renounceOwnership()
-        public
-        virtual
-        override(ClaimOwnership, OwnableUnset)
-        onlyOwner
-    {
+    function renounceOwnership() public virtual override(ClaimOwnership, OwnableUnset) onlyOwner {
         ClaimOwnership._renounceOwnership();
     }
 
@@ -159,7 +155,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
         onlyAllowed
     {
         require(dataKeys.length == dataValues.length, "Keys length not equal to values length");
-        for (uint256 i = 0; i < dataKeys.length; i = _uncheckedIncrement(i)) {
+        for (uint256 i = 0; i < dataKeys.length; i = GasLib.uncheckedIncrement(i)) {
             _setData(dataKeys[i], dataValues[i]);
         }
     }
@@ -222,17 +218,10 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
      */
     function _notifyVaultPendingOwner(address newPendingOwner) internal virtual {
         if (ERC165Checker.supportsERC165Interface(newPendingOwner, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(newPendingOwner).universalReceiver(_TYPEID_LSP9_VAULTPENDINGOWNER, "");
-        }
-    }
-
-    /**
-     * @dev Will return unchecked incremented uint256
-     *      can be used to save gas when iterating over loops
-     */
-    function _uncheckedIncrement(uint256 i) internal pure returns (uint256) {
-        unchecked {
-            return i + 1;
+            ILSP1UniversalReceiver(newPendingOwner).universalReceiver(
+                _TYPEID_LSP9_VAULTPENDINGOWNER,
+                ""
+            );
         }
     }
 }
