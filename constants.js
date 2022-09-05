@@ -217,8 +217,8 @@ const LSP1_TYPE_IDS = {
 
 const Errors = {
 	ClaimOwnership: {
-		'0x39351224': {
-			error: 'RenounceOwnershipAvailableAtBlockNumber(uint256)',
+		'0x8b9bf507': {
+			error: 'NotInRenounceOwnershipInterval(uint256,uint256)',
 			message: 'ClaimOwnership: Second renounce ownership call available after 100 block delay from the first call',
 		},
 		'0x43b248cd': {
