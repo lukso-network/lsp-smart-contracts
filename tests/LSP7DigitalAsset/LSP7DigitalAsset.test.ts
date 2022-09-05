@@ -51,7 +51,9 @@ describe("LSP7", () => {
             deployParams.symbol,
             deployParams.newOwner
           )
-        ).to.be.revertedWith("LSP4: new owner cannot be the zero address");
+        ).to.be.revertedWith(
+          "Ownable: contract owner cannot be the zero address"
+        );
       });
 
       describe("once the contract was deployed", () => {
@@ -149,7 +151,9 @@ describe("LSP7", () => {
             ethers.constants.AddressZero,
             false
           )
-        ).to.be.revertedWith("LSP4: new owner cannot be the zero address");
+        ).to.be.revertedWith(
+          "Ownable: contract owner cannot be the zero address"
+        );
       });
 
       describe("when initializing the contract", () => {

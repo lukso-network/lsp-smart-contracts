@@ -19,9 +19,6 @@ import {
 import type { BytesLike } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
-import { customRevertErrorMessage } from "../../utils/errors";
-import { getRandomAddresses } from "../../utils/helpers";
-
 export type LSP8CompatibleERC721TestAccounts = {
   owner: SignerWithAddress;
   tokenReceiver: SignerWithAddress;
@@ -1065,7 +1062,10 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
     it("should have set expected entries with ERC725Y.setData", async () => {
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8CompatibleERC721, "DataChanged")
-        .withArgs(SupportedStandards.LSP4DigitalAsset.key);
+        .withArgs(
+          SupportedStandards.LSP4DigitalAsset.key,
+          SupportedStandards.LSP4DigitalAsset.value
+        );
       expect(
         await context.lsp8CompatibleERC721["getData(bytes32)"](
           SupportedStandards.LSP4DigitalAsset.key
@@ -1078,7 +1078,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8CompatibleERC721, "DataChanged")
-        .withArgs(nameKey);
+        .withArgs(nameKey, expectedNameValue);
       expect(
         await context.lsp8CompatibleERC721["getData(bytes32)"](nameKey)
       ).to.equal(expectedNameValue);
@@ -1089,7 +1089,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
       );
       await expect(context.initializeTransaction)
         .to.emit(context.lsp8CompatibleERC721, "DataChanged")
-        .withArgs(symbolKey);
+        .withArgs(symbolKey, expectedSymbolValue);
       expect(
         await context.lsp8CompatibleERC721["getData(bytes32)"](symbolKey)
       ).to.equal(expectedSymbolValue);
