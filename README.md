@@ -1,14 +1,4 @@
-
-<p align="center">
-  <a href="https://www.npmjs.com/package/@lukso/lsp-smart-contracts">
-    <img alt="Version" src="https://badge.fury.io/js/@lukso%2Flsp-smart-contracts.svg" />
-  </a>
-  <a href='https://coveralls.io/github/lukso-network/lsp-smart-contracts?branch=develop'>
-    <img src='https://coveralls.io/repos/github/lukso-network/lsp-smart-contracts/badge.svg?branch=develop' alt='Coverage Status' />
-  </a>
-</p>
-
-# LSP Smart Contracts
+# LSP Smart Contracts &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp-smart-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp-smart-contracts) [![Coverage Status](https://coveralls.io/repos/github/lukso-network/lsp-smart-contracts/badge.svg?branch=develop)](https://coveralls.io/github/lukso-network/lsp-smart-contracts?branch=develop)
 
 The smart contracts reference implementation of the [LUKSO Standard Proposals (LSPs)](https://github.com/lukso-network/LIPs/tree/main/LSPs).
 
