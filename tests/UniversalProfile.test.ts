@@ -20,11 +20,6 @@ import {
 } from "./ClaimOwnership.behaviour";
 
 import {
-  RenounceOwnershipTestContext,
-  shouldBehaveLikeRenounceOwnership
-} from "./RenounceOwnership.behaviour";
-
-import {
   LSP3TestContext,
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
@@ -79,18 +74,6 @@ describe("UniversalProfile", () => {
         return { accounts, contract, deployParams, onlyOwnerRevertString };
       };
 
-    const buildRenounceOwnershipTestContext =
-      async (): Promise<RenounceOwnershipTestContext> => {
-        const accounts = await ethers.getSigners();
-        const deployParams = { owner: accounts[0] };
-
-        const contract = await new UniversalProfile__factory(
-          accounts[0]
-        ).deploy(accounts[0].address);
-
-        return { accounts, contract, deployParams };
-      };
-
     [
       { initialFunding: undefined },
       { initialFunding: 0 },
@@ -130,7 +113,6 @@ describe("UniversalProfile", () => {
       shouldBehaveLikeLSP3(buildLSP3TestContext);
       shouldBehaveLikeLSP1(buildLSP1TestContext);
       shouldBehaveLikeClaimOwnership(buildClaimOwnershipTestContext);
-      shouldBehaveLikeRenounceOwnership(buildRenounceOwnershipTestContext);
     });
   });
 
@@ -216,31 +198,6 @@ describe("UniversalProfile", () => {
         };
       };
 
-      const buildRenounceOwnershipTestContext =
-        async (): Promise<RenounceOwnershipTestContext> => {
-          const accounts = await ethers.getSigners();
-          const deployParams = { owner: accounts[0] };
-
-          const universalProfileInit = await new UniversalProfileInit__factory(
-            accounts[0]
-          ).deploy();
-  
-          const universalProfileProxy = await deployProxy(
-            universalProfileInit.address,
-            accounts[0]
-          );
-
-          const universalProfile = universalProfileInit.attach(
-            universalProfileProxy
-          );
-
-          return {
-            accounts,
-            contract: universalProfile,
-            deployParams,
-          };
-        };
-
     describe("when deploying the base implementation contract", () => {
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
@@ -320,18 +277,6 @@ describe("UniversalProfile", () => {
         });
 
         return claimOwnershipContext;
-      });
-
-      shouldBehaveLikeRenounceOwnership(async () => {
-        let renounceOwnershipContext = await buildRenounceOwnershipTestContext();
-
-        await initializeProxy({
-          accounts: renounceOwnershipContext.accounts,
-          universalProfile: renounceOwnershipContext.contract as LSP0ERC725Account,
-          deployParams: renounceOwnershipContext.deployParams,
-        });
-
-        return renounceOwnershipContext;
       });
     });
   });
