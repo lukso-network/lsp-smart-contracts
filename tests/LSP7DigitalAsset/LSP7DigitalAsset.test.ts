@@ -112,8 +112,8 @@ describe("LSP7", () => {
       const accounts = await getNamedAccounts();
       const initialSupply = ethers.BigNumber.from("3");
       const deployParams = {
-        name: "LSP7 - deployed with constructor",
-        symbol: "NFT",
+        name: "LSP7 - deployed with proxy",
+        symbol: "TKN",
         newOwner: accounts.owner.address,
       };
 
@@ -133,6 +133,22 @@ describe("LSP7", () => {
 
       return { accounts, lsp7, deployParams, initialSupply };
     };
+
+    const buildLSP4DigitalAssetMetadataTestContext =
+      async (): Promise<LS4DigitalAssetMetadataTestContext> => {
+        const { lsp7 } = await buildTestContext();
+        let accounts = await ethers.getSigners();
+
+        let deployParams = {
+          owner: accounts[0],
+        };
+
+        return {
+          contract: lsp7 as LSP7DigitalAsset,
+          accounts,
+          deployParams,
+        };
+      }
 
     const initializeProxy = async (context: LSP7TestContext) => {
       return context.lsp7["initialize(string,string,address,bool)"](
@@ -209,6 +225,19 @@ describe("LSP7", () => {
     });
 
     describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP4DigitalAssetMetadata(async () => {
+        let lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
+        
+        await lsp4Context.contract["initialize(string,string,address,bool)"](
+          "LSP7 - deployed with proxy",
+          "TKN",
+          lsp4Context.deployParams.owner.address,
+          false
+        )
+
+        return lsp4Context;
+      });
+
       shouldBehaveLikeLSP7(() =>
         buildTestContext().then(async (context) => {
           await initializeProxy(context);

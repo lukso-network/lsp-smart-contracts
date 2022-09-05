@@ -124,6 +124,22 @@ describe("LSP8", () => {
       return { accounts, lsp8, deployParams };
     };
 
+    const buildLSP4DigitalAssetMetadataTestContext =
+      async (): Promise<LS4DigitalAssetMetadataTestContext> => {
+        const { lsp8 } = await buildTestContext();
+        let accounts = await ethers.getSigners();
+
+        let deployParams = {
+          owner: accounts[0],
+        };
+
+        return {
+          contract: lsp8 as LSP8IdentifiableDigitalAsset,
+          accounts,
+          deployParams,
+        };
+      }
+
     const initializeProxy = async (context: LSP8TestContext) => {
       return context.lsp8["initialize(string,string,address)"](
         context.deployParams.name,
@@ -176,6 +192,18 @@ describe("LSP8", () => {
     });
 
     describe("when testing deployed contract", () => {
+      shouldBehaveLikeLSP4DigitalAssetMetadata(async () => {
+        let lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
+        
+        await lsp4Context.contract["initialize(string,string,address)"](
+          "LSP8 - deployed with proxy",
+          "NFT",
+          lsp4Context.deployParams.owner.address
+        )
+
+        return lsp4Context;
+      });
+
       shouldBehaveLikeLSP8(() =>
         buildTestContext().then(async (context) => {
           await initializeProxy(context);
