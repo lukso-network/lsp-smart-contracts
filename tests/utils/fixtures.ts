@@ -130,7 +130,7 @@ export async function setupProfileWithKeyManagerWithURD(
           EOA.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           lsp1universalReceiverDelegateUP.address.substr(2),
-        ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
       ],
       [
         ARRAY_LENGTH.TWO,

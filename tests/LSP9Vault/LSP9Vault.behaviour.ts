@@ -91,7 +91,7 @@ export const shouldBehaveLikeLSP9 = (
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
-          ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
           lsp1UniversalReceiverDelegateVaultSetter.address
         );
 
