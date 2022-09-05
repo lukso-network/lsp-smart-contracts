@@ -205,7 +205,6 @@ describe("LSP9Vault", () => {
           onlyOwnerRevertString,
         };
       });
-
     });
   });
 });
