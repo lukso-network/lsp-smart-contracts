@@ -153,6 +153,21 @@ export const shouldBehaveLikeLSP9 = (
     });
   });
 
+  describe("when testing setting execute", () => {
+    describe("when executing operation (4) DELEGATECALL", () => {
+      it("should revert with unknow operation type string error", async () => {
+        await expect(
+          context.lsp9Vault.execute(
+            OPERATION_TYPES.DELEGATECALL,
+            context.accounts.random.address,
+            0,
+            "0x"
+          )
+        ).to.be.revertedWith("ERC725X: Unknown operation type");
+      });
+    });
+  });
+
   describe("when using vault with UniversalProfile", () => {
     describe("when transferring ownership of the vault to the universalProfile", () => {
       before(async () => {
