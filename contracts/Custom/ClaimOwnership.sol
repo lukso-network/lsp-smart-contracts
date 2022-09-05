@@ -20,13 +20,20 @@ error CannotTransferOwnershipToSelf();
 
 abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
 
+    /**
+     * @dev The number of block that need to pass before one is able to
+     * confirm renouncing ownership
+     */
     uint256 private constant _RENOUNCE_OWNERSHIP_DELAY = 100;
 
+    /**
+     * @dev The number of blocks during which one can renounce ownership
+     */
     uint256 private constant _RENOUNCE_OWNERSHIP_PERIOD = 100;
 
     /**
-     * @dev The block number saved in the first step for
-     * renouncing ownership of the contract
+     * @dev The block number saved when initiating the process of
+     * renouncing ownerhsip
      */
     uint256 private _renounceOwnershipStartedAt;
 
@@ -59,25 +66,20 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     }
 
     /**
-     * @dev Save the block number for the first step if `_lastRenounceOwnershipBlock`
-     * is more than 200 block back.
-     * Execute `renounceOwnership` if the `_lastRenounceOwnershipBlock`
-     * is less than 200 blocks back and more than 100 blocks.
+     * @dev This method is used to initiate or confirm the process of 
+     * renouncing ownership.
      */
     function _renounceOwnership() internal virtual {
-        // TO renounce ownership of the contract, we need to instantiate a renounce ownership process
         uint256 currentBlock = block.number;
         uint256 confirmationPeriodStart = _renounceOwnershipStartedAt + _RENOUNCE_OWNERSHIP_DELAY;
         uint256 confirmationPeriodEnd = confirmationPeriodStart + _RENOUNCE_OWNERSHIP_PERIOD;
 
-        // if we second call happen "too late", we start the process again
         if (currentBlock > confirmationPeriodEnd) {
             _renounceOwnershipStartedAt = currentBlock;
             emit RenounceOwnershipInitiated();
             return;
         }
 
-        // if we second call happen "too early", we revert
         if (currentBlock < confirmationPeriodStart) {
             revert NotInRenounceOwnershipInterval(confirmationPeriodStart, confirmationPeriodEnd);
         }
