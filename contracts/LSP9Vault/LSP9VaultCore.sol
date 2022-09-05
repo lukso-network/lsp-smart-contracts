@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {
     ILSP1UniversalReceiverDelegate
@@ -21,6 +22,8 @@ import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
 
 // constants
 import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
+
+import "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE,
@@ -66,6 +69,38 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     }
 
     // public functions
+
+    /**
+     * @inheritdoc IERC725X
+     * @param operation The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3
+     * @dev Executes any other smart contract.
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * Emits a {Executed} event, when a call is executed under `operationType` 0 and 3
+     * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
+     */
+    function execute(
+        uint256 operation,
+        address to,
+        uint256 value,
+        bytes memory data
+    ) public payable virtual override onlyOwner returns (bytes memory) {
+        require(address(this).balance >= value, "ERC725X: insufficient balance");
+
+        // CALL
+        if (operation == OPERATION_CALL) return _executeCall(to, value, data);
+
+        // Deploy with CREATE
+        if (operation == OPERATION_CREATE) return _deployCreate(to, value, data);
+
+        // Deploy with CREATE2
+        if (operation == OPERATION_CREATE2) return _deployCreate2(to, value, data);
+
+        // STATICCALL
+        if (operation == OPERATION_STATICCALL) return _executeStaticCall(to, value, data);
+
+        revert("ERC725X: Unknown operation type");
+    }
 
     /**
      * @dev Emits an event when receiving native tokens
