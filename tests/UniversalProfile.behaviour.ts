@@ -1,12 +1,12 @@
 import { expect } from "chai";
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
 import { UniversalProfile, TargetContract__factory } from "../types";
 
 // helpers
-import { provider, getRandomAddresses } from "./utils/helpers";
+import { getRandomAddresses } from "./utils/helpers";
 
 // constants
 import {
@@ -242,122 +242,6 @@ export const shouldBehaveLikeLSP3 = (
 
       // check that no event was emitted
       await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
-    });
-  });
-
-  describe.only("renouncingOwnership()", async () => {
-    
-    before(async () => {
-      context = await buildContext();
-
-      // mine 1,000 blocks
-      await network.provider.send("hardhat_mine", [ethers.utils.hexValue(1000)]);
-    });
-    
-    describe("when calling renounceOwnership() the first time", () => {
-      
-      it("should instantiate the renounceOwnership process correctly", async () => {
-        let tx = await context.universalProfile
-          .connect(context.accounts[0])
-          .renounceOwnership();
-
-        await tx.wait();
-        
-        const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(context.universalProfile.address, 2);
-
-        expect(
-          ethers.BigNumber.from(_renounceOwnershipStartedAtAfter).toNumber()
-        ).to.equal(tx.blockNumber);
-      });
-      
-      it("should have emitted a RenounceOwnershipInitiated event", async () => {
-        await expect(
-          context.universalProfile.connect(context.accounts[0]).renounceOwnership()
-        ).to.emit(
-          context.universalProfile, "RenounceOwnershipInitiated"
-        );
-      });
-
-      it("should not change the current owner", async () => {
-        await context.universalProfile
-          .connect(context.accounts[0])
-          .renounceOwnership();
-        
-        expect(await context.universalProfile.owner())
-          .to.equal(context.accounts[0].address);
-      });
-
-    });
-
-    describe("when calling renounceOwnership() the second time", () => {
-      
-      it("should revert if called in the delay period", async () => {
-        const renounceOwnershipOnce = await context.universalProfile
-          .connect(context.accounts[0])
-          .renounceOwnership();
-
-        await network.provider.send("hardhat_mine", ["0x62"]); // skip 98 blocks
-
-        const renounceOwnershipSecond = context.universalProfile
-          .connect(context.accounts[0])
-          .renounceOwnership();
-
-        await expect(renounceOwnershipSecond)
-          .to.be.revertedWithCustomError(
-            context.universalProfile,
-            "NotInRenounceOwnershipInterval"
-          )
-          .withArgs(
-            (await renounceOwnershipOnce).blockNumber + 100,
-            (await renounceOwnershipOnce).blockNumber + 200
-          );
-
-        expect(await context.universalProfile.owner()).to.equal(
-          context.accounts[0].address
-        );
-        
-      });
-    
-      it("should pass if called afer the delay nad before the confirmation period end", async () => {
-        await context.universalProfile
-          .connect(context.accounts[0])
-          .renounceOwnership();
-  
-        await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
-  
-        const renounceOwnershipSecond = context.universalProfile
-          .connect(context.accounts[0])
-          .renounceOwnership();
-  
-        await expect(renounceOwnershipSecond)
-          .to.emit(context.universalProfile, "OwnershipTransferred")
-          .withArgs(context.accounts[0].address, ethers.constants.AddressZero);
-  
-        expect(await context.universalProfile.owner()).to.equal(
-          ethers.constants.AddressZero
-        );
-      });
-    
-      it("should initialize again if the confirmation period passed", async () => {
-
-        await context.universalProfile
-          .connect(context.accounts[0])
-          .renounceOwnership();
-  
-        await network.provider.send("hardhat_mine", ["0xc8"]); // skip 200 blocks
-
-        let tx = await context.universalProfile
-          .connect(context.accounts[0])
-          .renounceOwnership();
-
-        await tx.wait();
-        
-        const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(context.universalProfile.address, 2);
-
-        expect(
-          ethers.BigNumber.from(_renounceOwnershipStartedAtAfter).toNumber()
-        ).to.equal(tx.blockNumber);
-      })
     });
   });
 };
