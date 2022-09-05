@@ -159,27 +159,6 @@ describe("LSP7", () => {
       );
     };
 
-    describe("when deploying the base implementation contract", () => {
-      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
-        const accounts = await ethers.getSigners();
-
-        const lsp7TesterInit = await new LSP7InitTester__factory(
-          accounts[0]
-        ).deploy();
-
-        const randomCaller = accounts[1];
-
-        await expect(
-          lsp7TesterInit["initialize(string,string,address,bool)"](
-            "XXXXXXXXXXX",
-            "XXX",
-            randomCaller.address,
-            false
-          )
-        ).to.be.revertedWith("Initializable: contract is already initialized");
-      });
-    });
-
     describe("when deploying the contract as proxy", () => {
       let context: LSP7TestContext;
 
