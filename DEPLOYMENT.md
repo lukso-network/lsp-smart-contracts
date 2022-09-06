@@ -69,3 +69,65 @@ npx hardhat deploy --network luksoL16 --tags base --reset
 // Deploy a specific contract
 npx hardhat deploy --network luksoL16 --tags UniversalProfile --reset
 ```
+
+## Verify Contracts on L16
+
+We recommend using [`@nomiclabs/hardhat-etherscan`](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan) plugin to verify the lsp-smart-contracts deployed on L16 network.
+
+### 1. add the LUKSO L16 network in your hardhat config under `etherscan`
+
+In your hardhat config file, under the `etherscan` property, add the following configurations for the [LUKSO L16 network](https://docs.lukso.tech/networks/l16-testnet/parameters).
+
+```js
+etherscan: {
+    // no API is required to verify contracts
+    // via the Blockscout instance of L16 network
+    apiKey: "no-api-key-needed",
+    customChains: [
+      {
+        network: "luksoL16",
+        chainId: 2828,
+        urls: {
+          apiURL: "https://explorer.execution.l16.lukso.network/api",
+          browserURL: "https://explorer.execution.l16.lukso.network/",
+        },
+      },
+    ],
+  },
+```
+
+### 2. run `npx hardhat verify`.
+
+See the following commands below for examples.
+
+```bash
+# verify a Universal Profile
+npx hardhat verify <address of the deployed Universal Profile> "constructor arguments" --network luksoL16 --contract path/to/UniversalProfileContract.sol:ContractName
+
+# verify a Key Manager
+npx hardhat verify <address of the deployed Key Manager> "address-of-UP-linked-to-KM" --network luksoL16
+
+# verify the Universal Receiver Delegate of a UP
+npx hardhat verify <address of the deployed URD> --network luksoL16
+
+## Verify a LSP8 contract
+npx hardhat verify <address of the LSP8 contract> "token-name" "token-symbol" "owner-address" --network luksoL16
+```
+
+For base contracts (to be used as implementation behind proxies), the same commands can be used without the constructor arguments.
+
+For LSP7 contracts, the constructor arguments provided to the command must be passed via a separate file. You can also use an external file for the arguments when verifying other contracts as well.
+
+```bash
+npx hardhat verify <address of the LSP7 contract> --constructor-args arguments.js --network luksoL16
+```
+
+```js title="arguments.js"
+module.exports = [
+    '<token-name>',  
+    '<token-symbol>', 
+    '<owner-address>', 
+    false // isNonDivisible_ (true or false)
+];
+
+```
