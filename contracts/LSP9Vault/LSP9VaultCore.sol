@@ -23,7 +23,12 @@ import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
 // constants
 import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
 
-import "@erc725/smart-contracts/contracts/constants.sol";
+import {
+    OPERATION_CALL,
+    OPERATION_STATICCALL,
+    OPERATION_CREATE,
+    OPERATION_CREATE2
+} from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE,
