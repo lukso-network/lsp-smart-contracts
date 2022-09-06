@@ -2,8 +2,6 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {
     ILSP1UniversalReceiverDelegate
@@ -15,8 +13,8 @@ import {GasLib} from "../Utils/GasLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
-import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
-import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
+import {ERC725XCore, IERC725X} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
+import {ERC725YCore, IERC725Y} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
 
