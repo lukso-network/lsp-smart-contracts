@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp-smart-contracts",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "The reference implementation for universal profiles smart contracts",
   "directories": {
     "test": "test"
