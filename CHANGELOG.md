@@ -7,12 +7,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* remove `LSP7Init` and `LSP8Init` + make barebone LSP7/8 contracts non deployable (#296)
-* Update ClaimOwnership, LSP0 and LSP9 InterfaceId (#298)
-* [LSP0, LSP4, LSP9] emit only the first 256 bytes of the value in the `DataChanged` event (#301)
-* use `uint8` instead of `uint256` in LSP7 decimals (#292)
+* remove `LSP7Init` and `LSP8Init` + make barebone LSP7/8 contracts non deployable ([#296](https://github.com/lukso-network/lsp-smart-contracts/issues/296)) ([4dec2f1](https://github.com/lukso-network/lsp-smart-contracts/commit/4dec2f1c739bdca1eb81bf97604861fb8e388cb2))
+* Update ClaimOwnership, LSP0 and LSP9 InterfaceId ([#298](https://github.com/lukso-network/lsp-smart-contracts/issues/298)) ([24a281c](https://github.com/lukso-network/lsp-smart-contracts/commit/24a281cd683951031bbd1ab261b002e0d8e8d6a8))
+* [LSP0, LSP4, LSP9] emit only the first 256 bytes of the value in the `DataChanged` event ([#301](https://github.com/lukso-network/lsp-smart-contracts/issues/301)) ([f92f996](https://github.com/lukso-network/lsp-smart-contracts/commit/f92f996c1aa7bf8789a427ae6cfd6606009079bf))
+* use `uint8` instead of `uint256` in LSP7 decimals ([#292](https://github.com/lukso-network/lsp-smart-contracts/issues/292)) ([cc23ff5](https://github.com/lukso-network/lsp-smart-contracts/commit/cc23ff5ca985baaa3644e39b0628efd11198b94a))
 * add new permission ENCRYPT in `constants.js` (#289)
-* Change `isOperatorFor(..)` to `authorizedAmountFor(..)` in LSP7 (#279)
+* Change `isOperatorFor(..)` to `authorizedAmountFor(..)` in LSP7 ([#279](https://github.com/lukso-network/lsp-smart-contracts/issues/279)) ([afc5895](https://github.com/lukso-network/lsp-smart-contracts/commit/afc58954c5a877615820d5699b6be7a7857a91df))
 
 ### Features
 
@@ -43,11 +43,7 @@ All notable changes to this project will be documented in this file. See [standa
 * replace variable silinter with `solhint-disable` ([#285](https://github.com/lukso-network/lsp-smart-contracts/issues/285)) ([07c6fa1](https://github.com/lukso-network/lsp-smart-contracts/commit/07c6fa156fced93d7517fb83ccee5176e36765a0))
 
 
-* [LSP0, LSP4, LSP9] emit only the first 256 bytes of the value in the `DataChanged` event ([#301](https://github.com/lukso-network/lsp-smart-contracts/issues/301)) ([f92f996](https://github.com/lukso-network/lsp-smart-contracts/commit/f92f996c1aa7bf8789a427ae6cfd6606009079bf))
-* Change `isOperatorFor(..)` to `authorizedAmountFor(..)` in LSP7 ([#279](https://github.com/lukso-network/lsp-smart-contracts/issues/279)) ([afc5895](https://github.com/lukso-network/lsp-smart-contracts/commit/afc58954c5a877615820d5699b6be7a7857a91df))
-* remove `LSP7Init` and `LSP8Init` + make barebone LSP7/8 contracts non deployable ([#296](https://github.com/lukso-network/lsp-smart-contracts/issues/296)) ([4dec2f1](https://github.com/lukso-network/lsp-smart-contracts/commit/4dec2f1c739bdca1eb81bf97604861fb8e388cb2))
-* Update ClaimOwnership, LSP0 and LSP9 InterfaceId ([#298](https://github.com/lukso-network/lsp-smart-contracts/issues/298)) ([24a281c](https://github.com/lukso-network/lsp-smart-contracts/commit/24a281cd683951031bbd1ab261b002e0d8e8d6a8))
-* use `uint8` instead of `uint256` in LSP7 decimals ([#292](https://github.com/lukso-network/lsp-smart-contracts/issues/292)) ([cc23ff5](https://github.com/lukso-network/lsp-smart-contracts/commit/cc23ff5ca985baaa3644e39b0628efd11198b94a))
+
 
 ### [0.6.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.1...v0.6.2) (2022-07-12)
 
