@@ -131,6 +131,9 @@ tmp/
 
 .idea
 
+# auto-generated docs
+docs/
+
 # Solidity Flattener
 flat_contracts/
 
