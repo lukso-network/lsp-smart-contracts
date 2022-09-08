@@ -9,6 +9,7 @@ import {
 } from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
@@ -54,23 +55,8 @@ abstract contract LSP0ERC725AccountCore is
      * @dev Emits an event when receiving native tokens
      */
     fallback() external payable virtual {
-        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
-
-    //    TODO to be discussed
-    //    function fallback()
-    //    public
-    //    {
-    //        address to = owner();
-    //        assembly {
-    //            calldatacopy(0, 0, calldatasize())
-    //            let result := staticcall(gas(), to, 0, calldatasize(), 0, 0)
-    //            returndatacopy(0, 0, returndatasize())
-    //            switch result
-    //            case 0  { revert (0, returndatasize()) }
-    //            default { return (0, returndatasize()) }
-    //        }
-    //    }
 
     // ERC165
 
@@ -106,6 +92,13 @@ abstract contract LSP0ERC725AccountCore is
         ClaimOwnership._transferOwnership(_newOwner);
     }
 
+    /**
+     * @dev Renounce ownership of the contract in a 2-step process
+     */
+    function renounceOwnership() public virtual override(ClaimOwnership, OwnableUnset) onlyOwner {
+        ClaimOwnership._renounceOwnership();
+    }
+
     // ERC1271
 
     /**
@@ -118,7 +111,6 @@ abstract contract LSP0ERC725AccountCore is
     function isValidSignature(bytes32 dataHash, bytes memory signature)
         public
         view
-        override
         returns (bytes4 magicValue)
     {
         address _owner = owner();
@@ -149,7 +141,6 @@ abstract contract LSP0ERC725AccountCore is
         public
         payable
         virtual
-        override
         returns (bytes memory returnValue)
     {
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
@@ -168,5 +159,16 @@ abstract contract LSP0ERC725AccountCore is
             }
         }
         emit UniversalReceiver(msg.sender, msg.value, typeId, returnValue, data);
+    }
+
+    /**
+     * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
+     */
+    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
+        store[dataKey] = dataValue;
+        emit DataChanged(
+            dataKey,
+            dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
+        );
     }
 }

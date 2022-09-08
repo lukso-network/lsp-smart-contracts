@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import {
   LSP7MintableInit,
   LSP7MintableInit__factory,
@@ -12,7 +13,7 @@ import {
   shouldBehaveLikeLSP7Mintable,
   LSP7MintableTestContext,
   LSP7MintableDeployParams,
-} from "./LSP7Mintable.behavior";
+} from "./LSP7Mintable.behaviour";
 
 import { deployProxy } from "../../utils/fixtures";
 
@@ -96,18 +97,6 @@ describe("LSP7Mintable", () => {
     };
 
     describe("when deploying the base implementation contract", () => {
-      it("should have locked (= initialized) the implementation contract", async () => {
-        const accounts = await ethers.getSigners();
-
-        const lsp7MintableInit = await new LSP7MintableInit__factory(
-          accounts[0]
-        ).deploy();
-
-        const isInitialized = await lsp7MintableInit.callStatic.initialized();
-
-        expect(isInitialized).toBeTruthy();
-      });
-
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
@@ -124,7 +113,7 @@ describe("LSP7Mintable", () => {
             randomCaller.address,
             false
           )
-        ).toBeRevertedWith("Initializable: contract is already initialized");
+        ).to.be.revertedWith("Initializable: contract is already initialized");
       });
     });
 
@@ -152,7 +141,7 @@ describe("LSP7Mintable", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

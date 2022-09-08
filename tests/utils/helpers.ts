@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 
 export const abiCoder = ethers.utils.defaultAbiCoder;
@@ -5,7 +6,6 @@ export const provider = ethers.provider;
 
 export const AddressOffset = "000000000000000000000000";
 export const EMPTY_PAYLOAD = "0x";
-export const ONE_ETH = ethers.utils.parseEther("1");
 
 export const LSP1_HOOK_PLACEHOLDER =
   "0xffffffffffffffff0000000000000000aaaaaaaaaaaaaaaa1111111111111111";
@@ -36,12 +36,12 @@ export const TOKEN_ID = {
   EIGHT: "0x367f9d97f8dd1bece61f8b74c5db7616958147682674fd32de73490bd6347f60",
 };
 
-export function getRandomAddresses(count) {
-  let addresses = [];
+export function getRandomAddresses(count: Number): string[] {
+  let addresses: string[] = [];
   for (let ii = 0; ii < count; ii++) {
     // addresses stored under ERC725Y storage have always lowercases character.
     // therefore, disable the checksum by converting to lowercase to avoid failing tests
-    let randomAddress = new ethers.Wallet.createRandom().address.toLowerCase();
+    let randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
     addresses.push(randomAddress);
   }
 
@@ -49,11 +49,13 @@ export function getRandomAddresses(count) {
 }
 
 export function generateKeysAndValues(_elementObject) {
-  let keys = [];
-  let values = [];
+  let keys: string[] = [];
+  let values: string[] = [];
   for (const [_key, _value] of Object.entries(_elementObject)) {
     let key = ethers.utils.toUtf8Bytes(_key);
-    let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(_value));
+    let value = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes(_value as string)
+    );
 
     keys.push(ethers.utils.keccak256(key));
     values.push(value);
@@ -88,4 +90,15 @@ export async function getMapAndArrayKeyValues(
     );
 
   return [mapValue, arrayLength, elementAddress];
+}
+
+export function combinePermissions(..._permissions: string[]) {
+  let result: BigNumber = ethers.BigNumber.from(0);
+
+  _permissions.forEach((permission) => {
+    let permissionAsBN = ethers.BigNumber.from(permission);
+    result = result.add(permissionAsBN);
+  });
+
+  return ethers.utils.hexZeroPad(result.toHexString(), 32);
 }

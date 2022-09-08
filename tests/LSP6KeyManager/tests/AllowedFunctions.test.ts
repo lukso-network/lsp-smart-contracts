@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -12,9 +13,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import { abiCoder } from "../../utils/helpers";
-
-// errors
-import { NotAllowedFunctionError } from "../../utils/errors";
 
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -79,8 +77,8 @@ export const shouldBehaveLikeAllowedFunctions = (
             .execute(executePayload);
 
           let result = await targetContract.callStatic.getName();
-          expect(result !== initialName);
-          expect(result).toEqual(newName);
+          expect(result).to.not.equal(initialName);
+          expect(result).to.equal(newName);
         });
 
         it("should pass when calling any function (eg: `setNumber(...)`)", async () => {
@@ -104,13 +102,8 @@ export const shouldBehaveLikeAllowedFunctions = (
             .execute(executePayload);
 
           let result = await targetContract.callStatic.getNumber();
-          expect(
-            parseInt(ethers.BigNumber.from(result).toNumber(), 10) !==
-              ethers.BigNumber.from(initialNumber).toNumber()
-          );
-          expect(
-            parseInt(ethers.BigNumber.from(result).toNumber(), 10)
-          ).toEqual(newNumber);
+          expect(result).to.not.equal(initialNumber);
+          expect(result).to.equal(newNumber);
         });
       });
     });
@@ -132,18 +125,13 @@ export const shouldBehaveLikeAllowedFunctions = (
               targetContractPayload,
             ]);
 
-          let callResult = await context.keyManager
-            .connect(addressCanCallOnlyOneFunction)
-            .callStatic.execute(executePayload);
-          expect(callResult).toBeTruthy();
-
           await context.keyManager
             .connect(addressCanCallOnlyOneFunction)
             .execute(executePayload);
 
           let result = await targetContract.callStatic.getName();
-          expect(result !== initialName);
-          expect(result).toEqual(newName);
+          expect(result).to.not.equal(initialName);
+          expect(result).to.equal(newName);
         });
 
         it("should revert when the bytes4 selector of the function called is NOT listed in its AllowedFunctions", async () => {
@@ -166,20 +154,19 @@ export const shouldBehaveLikeAllowedFunctions = (
             context.keyManager
               .connect(addressCanCallOnlyOneFunction)
               .execute(executePayload)
-          ).toBeRevertedWith(
-            NotAllowedFunctionError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NotAllowedFunction"
+            )
+            .withArgs(
               addressCanCallOnlyOneFunction.address,
               targetContract.interface.getSighash("setNumber")
-            )
-          );
+            );
 
           let result = await targetContract.callStatic.getNumber();
-          expect(
-            parseInt(ethers.BigNumber.from(result).toNumber(), 10) !== newNumber
-          );
-          expect(
-            parseInt(ethers.BigNumber.from(result).toNumber(), 10)
-          ).toEqual(ethers.BigNumber.from(initialNumber).toNumber());
+          expect(result).to.not.equal(newNumber);
+          expect(result).to.equal(initialNumber);
         });
       });
 
@@ -196,12 +183,12 @@ export const shouldBehaveLikeAllowedFunctions = (
           context.keyManager
             .connect(addressCanCallOnlyOneFunction)
             .execute(payload)
-        ).toBeRevertedWith(
-          NotAllowedFunctionError(
-            addressCanCallOnlyOneFunction.address,
-            "0xbaadca11"
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedFunction"
           )
-        );
+          .withArgs(addressCanCallOnlyOneFunction.address, "0xbaadca11");
       });
     });
   });
@@ -251,7 +238,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             executeRelayCallPayload
           );
           let endResult = await targetContract.callStatic.getName();
-          expect(endResult).toEqual(newName);
+          expect(endResult).to.equal(newName);
         });
 
         it("`setNumber(...)` - should revert when the bytes4 selector of the function called is NOT listed in its AllowedFunctions", async () => {
@@ -294,15 +281,18 @@ export const shouldBehaveLikeAllowedFunctions = (
               nonce,
               executeRelayCallPayload
             )
-          ).toBeRevertedWith(
-            NotAllowedFunctionError(
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NotAllowedFunction"
+            )
+            .withArgs(
               addressCanCallOnlyOneFunction.address,
               targetContract.interface.getSighash("setNumber")
-            )
-          );
+            );
 
           let endResult = await targetContract.callStatic.getNumber();
-          expect(endResult.toString()).toEqual(currentNumber.toString());
+          expect(endResult.toString()).to.equal(currentNumber.toString());
         });
       });
     });

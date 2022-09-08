@@ -45,10 +45,10 @@ contract LSP1UniversalReceiverDelegateUP is
      */
     function universalReceiverDelegate(
         address sender,
-        uint256 value,
+        uint256 value, // solhint-disable no-unused-vars
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
-    ) public virtual override returns (bytes memory result) {
+    ) public virtual returns (bytes memory result) {
         if (
             typeId == _TYPEID_LSP7_TOKENSSENDER ||
             typeId == _TYPEID_LSP7_TOKENSRECIPIENT ||
@@ -59,12 +59,6 @@ contract LSP1UniversalReceiverDelegateUP is
         ) {
             result = _tokenAndVaultHandling(sender, typeId);
         }
-
-        /* @TODO
-          else if() {
-            result = FollowerHandling(sender, typeId, data);
-            }
-        */
     }
 
     // --- Overrides

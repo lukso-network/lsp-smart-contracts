@@ -90,7 +90,7 @@ contract UniversalFactory {
         bytes32 generatedSalt = _generateSalt(initializeCallData, salt);
         contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
 
-        if (initializeCallData.length > 0) {
+        if (initializeCallData.length != 0) {
             // solhint-disable avoid-low-level-calls
             (bool success, bytes memory returnData) = contractCreated.call(initializeCallData);
             Address.verifyCallResult(
@@ -121,7 +121,7 @@ contract UniversalFactory {
         bytes32 generatedSalt = _generateSalt(initializeCallData, salt);
         proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
 
-        if (initializeCallData.length > 0) {
+        if (initializeCallData.length != 0) {
             // solhint-disable avoid-low-level-calls
             (bool success, bytes memory returnData) = proxy.call{value: msg.value}(
                 initializeCallData
@@ -132,15 +132,10 @@ contract UniversalFactory {
                 "UniversalFactory: could not initialize the created contract"
             );
         } else {
-            // @todo check if this part make sense
-            // Return value sent
-            if (msg.value > 0) {
-                // solhint-disable avoid-low-level-calls
-                (bool success, bytes memory returnData) = payable(msg.sender).call{
-                    value: msg.value
-                }("");
-                Address.verifyCallResult(success, returnData, "UniversalFactory: Unknow Error");
-            }
+            require(
+                msg.value == 0,
+                "UniversalFactory: value cannot be sent to the factory if initializeCallData is empty"
+            );
         }
     }
 
@@ -154,7 +149,7 @@ contract UniversalFactory {
         pure
         returns (bytes32)
     {
-        bool initializable = initializeCallData.length > 0;
+        bool initializable = initializeCallData.length != 0;
         if (initializable) {
             return keccak256(abi.encodePacked(initializable, initializeCallData, salt));
         } else {

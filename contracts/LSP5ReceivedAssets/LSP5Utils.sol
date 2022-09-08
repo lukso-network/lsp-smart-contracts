@@ -108,7 +108,7 @@ library LSP5Utils {
     function removeMapAndArrayKey(
         IERC725Y account,
         bytes32 arrayLengthKey,
-        bytes12 mapKeyPrefix,
+        bytes10 mapKeyPrefix,
         bytes32 mapKeyToRemove,
         bytes memory mapValue
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
@@ -142,7 +142,7 @@ library LSP5Utils {
             keys[2] = arrayElementKeyToRemove;
             values[2] = "";
 
-            // Swapping last element in ArrayKey with the elemnt in ArrayKey to remove || {Swap and pop} method;
+            // Swapping last element in ArrayKey with the element in ArrayKey to remove || {Swap and pop} method;
             // check https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/EnumerableSet.sol#L80
         } else {
             /**
@@ -209,7 +209,7 @@ library LSP5Utils {
     function removeMapAndArrayKeyViaKeyManager(
         IERC725Y account,
         bytes32 arrayLengthKey,
-        bytes12 mapKeyPrefix,
+        bytes10 mapKeyPrefix,
         bytes32 mapKeyToRemove,
         bytes memory mapValue,
         address keyManager

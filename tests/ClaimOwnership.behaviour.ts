@@ -1,4 +1,5 @@
-import { ethers } from "hardhat";
+import { expect } from "chai";
+import { ethers, network } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { LSP0ERC725Account, LSP9Vault } from "../types";
@@ -43,7 +44,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
     it("should have set the pendingOwner", async () => {
       let pendingOwner = await context.contract.pendingOwner();
-      expect(pendingOwner).toEqual(newOwner.address);
+      expect(pendingOwner).to.equal(newOwner.address);
     });
 
     it("owner should remain the current owner", async () => {
@@ -57,7 +58,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
       const ownerAfter = await context.contract.owner();
 
-      expect(ownerBefore).toEqual(ownerAfter);
+      expect(ownerBefore).to.equal(ownerAfter);
     });
 
     it("should override the pendingOwner when transferOwnership(...) is called twice", async () => {
@@ -68,7 +69,18 @@ export const shouldBehaveLikeClaimOwnership = (
         .transferOwnership(overridenNewOwner.address);
 
       const pendingOwner = await context.contract.pendingOwner();
-      expect(pendingOwner).toEqual(overridenNewOwner.address);
+      expect(pendingOwner).to.equal(overridenNewOwner.address);
+    });
+
+    it("should revert when transferring Ownership to the contract itself", async () => {
+      await expect(
+        context.contract
+          .connect(context.deployParams.owner)
+          .transferOwnership(context.contract.address)
+      ).to.be.revertedWithCustomError(
+        context.contract,
+        "CannotTransferOwnershipToSelf"
+      );
     });
 
     describe("it should still be allowed to call onlyOwner functions", () => {
@@ -77,11 +89,12 @@ export const shouldBehaveLikeClaimOwnership = (
           "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
         const value = "0xabcd";
 
-        // prettier-ignore
-        await context.contract.connect(context.deployParams.owner)["setData(bytes32,bytes)"](key, value);
+        await context.contract
+          .connect(context.deployParams.owner)
+          ["setData(bytes32,bytes)"](key, value);
 
         const result = await context.contract["getData(bytes32)"](key);
-        expect(result).toEqual(value);
+        expect(result).to.equal(value);
       });
 
       it("execute(...) - LYX transfer", async () => {
@@ -107,14 +120,10 @@ export const shouldBehaveLikeClaimOwnership = (
         );
 
         // recipient balance should have gone up
-        expect(parseInt(recipientBalanceAfter)).toBeGreaterThan(
-          parseInt(recipientBalanceBefore)
-        );
+        expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
 
         // account balance should have gone down
-        expect(parseInt(accountBalanceAfter)).toBeLessThan(
-          parseInt(accountBalanceBefore)
-        );
+        expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
       });
     });
   });
@@ -127,7 +136,7 @@ export const shouldBehaveLikeClaimOwnership = (
         context.contract
           .connect(context.accounts[1])
           .transferOwnership(newOwner.address)
-      ).toBeRevertedWith("Ownable: caller is not the owner");
+      ).to.be.revertedWith("Ownable: caller is not the owner");
     });
   });
 
@@ -141,7 +150,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
       await expect(
         context.contract.connect(context.accounts[2]).claimOwnership()
-      ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
+      ).to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
     });
 
     describe("when caller is the pending owner", () => {
@@ -149,24 +158,37 @@ export const shouldBehaveLikeClaimOwnership = (
 
       beforeEach(async () => {
         newOwner = context.accounts[1];
+
         await context.contract
           .connect(context.deployParams.owner)
           .transferOwnership(newOwner.address);
       });
+
       it("should change the contract owner to the pendingOwner", async () => {
         let pendingOwner = await context.contract.pendingOwner();
 
         await context.contract.connect(newOwner).claimOwnership();
 
         let updatedOwner = await context.contract.owner();
-        expect(updatedOwner).toEqual(pendingOwner);
+        expect(updatedOwner).to.equal(pendingOwner);
       });
 
       it("should have cleared the pendingOwner after transferring ownership", async () => {
         await context.contract.connect(newOwner).claimOwnership();
 
         let newPendingOwner = await context.contract.pendingOwner();
-        expect(newPendingOwner).toEqual(ethers.constants.AddressZero);
+        expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
+      });
+
+      it("should have emitted a OwnershipTransferred event", async () => {
+        const owner = await context.contract.owner();
+
+        await expect(await context.contract.connect(newOwner).claimOwnership())
+          .to.emit(context.contract, "OwnershipTransferred")
+          .withArgs(
+            owner, // previous owner
+            newOwner.address // new owner
+          );
       });
     });
 
@@ -189,10 +211,11 @@ export const shouldBehaveLikeClaimOwnership = (
             "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
           const value = "0xabcd";
 
-          // prettier-ignore
           await expect(
-                context.contract.connect(previousOwner)["setData(bytes32,bytes)"](key, value)
-              ).toBeRevertedWith(context.onlyOwnerRevertString)
+            context.contract
+              .connect(previousOwner)
+              ["setData(bytes32,bytes)"](key, value)
+          ).to.be.revertedWith(context.onlyOwnerRevertString);
         });
 
         it("should revert when calling `execute(...)`", async () => {
@@ -203,13 +226,13 @@ export const shouldBehaveLikeClaimOwnership = (
             context.contract
               .connect(previousOwner)
               .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
-          ).toBeRevertedWith("Ownable: caller is not the owner");
+          ).to.be.revertedWith("Ownable: caller is not the owner");
         });
 
         it("should revert when calling `renounceOwnership(...)`", async () => {
           await expect(
             context.contract.connect(previousOwner).renounceOwnership()
-          ).toBeRevertedWith("Ownable: caller is not the owner");
+          ).to.be.revertedWith("Ownable: caller is not the owner");
         });
       });
 
@@ -219,46 +242,157 @@ export const shouldBehaveLikeClaimOwnership = (
             "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
           const value = "0xabcd";
 
-          // prettier-ignore
-          await context.contract.connect(newOwner)["setData(bytes32,bytes)"](key, value);
+          await context.contract
+            .connect(newOwner)
+            ["setData(bytes32,bytes)"](key, value);
 
           const result = await context.contract["getData(bytes32)"](key);
-          expect(result).toEqual(value);
+          expect(result).to.equal(value);
         });
 
         it("execute(...) - LYX transfer", async () => {
           const recipient = context.accounts[3];
           const amount = ethers.utils.parseEther("3");
 
-          const recipientBalanceBefore = await provider.getBalance(
-            recipient.address
-          );
-          const accountBalanceBefore = await provider.getBalance(
-            context.contract.address
-          );
-
-          await context.contract
-            .connect(newOwner)
-            .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x");
-
-          const recipientBalanceAfter = await provider.getBalance(
-            recipient.address
-          );
-          const accountBalanceAfter = await provider.getBalance(
-            context.contract.address
-          );
-
-          // recipient balance should have gone up
-          expect(parseInt(recipientBalanceAfter)).toBeGreaterThan(
-            parseInt(recipientBalanceBefore)
-          );
-
-          // account balance should have gone down
-          expect(parseInt(accountBalanceAfter)).toBeLessThan(
-            parseInt(accountBalanceBefore)
+          await expect(() =>
+            context.contract
+              .connect(newOwner)
+              .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
+          ).to.changeEtherBalances(
+            [context.contract.address, recipient.address],
+            [
+              `-${amount}`, // account balance should have gone down
+              amount, // recipient balance should have gone up
+            ]
           );
         });
       });
     });
   });
+
+  describe("renounceOwnership(...)", () => {
+    before(async () => {
+      // mine 1,000 blocks
+      await network.provider.send("hardhat_mine", [ethers.utils.hexValue(1000)]);
+  });
+  
+  beforeEach(async () => {
+      context = await buildContext();
+  });
+
+  describe("when calling renounceOwnership() with a non-owner account", () => {
+      it("should revert with custom message", async () => {
+          const tx = context.contract
+              .connect(context.accounts[1])
+              .renounceOwnership();
+          
+          await expect(tx).to.be.revertedWith("Ownable: caller is not the owner");
+      })
+  })
+
+  describe("when calling renounceOwnership() the first time", () => {
+      
+      it("should instantiate the renounceOwnership process correctly", async () => {
+          let tx = await context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership();
+
+          await tx.wait();
+      
+          const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(context.contract.address, 2);
+
+          expect(
+              ethers.BigNumber.from(_renounceOwnershipStartedAtAfter).toNumber()
+          ).to.equal(tx.blockNumber);
+      });
+      
+      it("should have emitted a RenounceOwnershipInitiated event", async () => {
+          await expect(
+              context.contract.connect(context.deployParams.owner).renounceOwnership()
+          ).to.emit(
+              context.contract, "RenounceOwnershipInitiated"
+          );
+      });
+
+      it("should not change the current owner", async () => {
+          await context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership();
+      
+          expect(await context.contract.owner())
+              .to.equal(context.deployParams.owner.address);
+      });
+
+  });
+
+  describe("when calling renounceOwnership() the second time", () => {
+      
+      it("should revert if called in the delay period", async () => {
+          const renounceOwnershipOnce = await context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership();
+
+          await network.provider.send("hardhat_mine", ["0x62"]); // skip 98 blocks
+
+          const renounceOwnershipSecond = context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership();
+
+          await expect(renounceOwnershipSecond)
+              .to.be.revertedWithCustomError(
+                  context.contract,
+                  "NotInRenounceOwnershipInterval"
+              )
+              .withArgs(
+                  (await renounceOwnershipOnce).blockNumber + 100,
+                  (await renounceOwnershipOnce).blockNumber + 200
+              );
+
+          expect(await context.contract.owner()).to.equal(
+              context.deployParams.owner.address
+          );
+      });
+
+      it("should pass if called afer the delay nad before the confirmation period end", async () => {
+          await context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership();
+
+          await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
+
+          const renounceOwnershipSecond = context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership();
+
+          await expect(renounceOwnershipSecond)
+              .to.emit(context.contract, "OwnershipTransferred")
+              .withArgs(context.deployParams.owner.address, ethers.constants.AddressZero);
+
+          expect(await context.contract.owner()).to.equal(
+              ethers.constants.AddressZero
+          );
+      });
+
+      it("should initialize again if the confirmation period passed", async () => {
+
+          await context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership();
+
+          await network.provider.send("hardhat_mine", ["0xc8"]); // skip 200 blocks
+
+          let tx = await context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership();
+
+          await tx.wait();
+      
+          const _renounceOwnershipStartedAtAfter = await provider.getStorageAt(context.contract.address, 2);
+
+          expect(
+              ethers.BigNumber.from(_renounceOwnershipStartedAtAfter).toNumber()
+          ).to.equal(tx.blockNumber);
+      });
+  });
+  })
 };

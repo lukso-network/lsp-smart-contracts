@@ -16,6 +16,8 @@ error LSP7CannotUseAddressZeroAsOperator();
 
 error LSP7CannotSendWithAddressZero();
 
+error LSP7CannotSendToSelf();
+
 error LSP7InvalidTransferBatch();
 
 error LSP7NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);

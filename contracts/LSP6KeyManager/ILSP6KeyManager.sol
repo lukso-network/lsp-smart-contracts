@@ -33,7 +33,7 @@ interface ILSP6KeyManager is
     function getNonce(address from, uint256 channelId) external view returns (uint256);
 
     /**
-     * @notice execute the following payload on the ERC725Account: `_calldata`
+     * @notice execute the following payload on the ERC725Account: `payload`
      * @dev the ERC725Account will return some data on successful call, or revert on failure
      * @param payload the payload to execute. Obtained in web3 via encodeABI()
      * @return the data being returned by the ERC725 Account

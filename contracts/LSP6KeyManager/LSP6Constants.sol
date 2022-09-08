@@ -17,20 +17,20 @@ bytes16 constant _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX = 0xdf30dba06db6a30e65
 // AddressPermissions:...
 bytes6 constant _LSP6KEY_ADDRESSPERMISSIONS_PREFIX = 0x4b80742de2bf;
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('Permissions')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX = 0x4b80742de2bf82acb3630000; // AddressPermissions:Permissions:<address> --> bytes32
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('Permissions')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX = 0x4b80742de2bf82acb363; // AddressPermissions:Permissions:<address> --> bytes32
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedAddresses')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX = 0x4b80742de2bfc6dd6b3c0000; // AddressPermissions:AllowedAddresses:<address> --> address[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedAddresses')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX = 0x4b80742de2bfc6dd6b3c; // AddressPermissions:AllowedAddresses:<address> --> address[]
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedFunctions')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX = 0x4b80742de2bf8efea1e80000; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedFunctions')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX = 0x4b80742de2bf8efea1e8; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedStandards')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX = 0x4b80742de2bf3efa94a30000; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedStandards')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX = 0x4b80742de2bf3efa94a3; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YKeys')) + bytes2(0)
-bytes12 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX = 0x4b80742de2bf90b8b4850000; // AddressPermissions:AllowedERC725YKeys:<address> --> bytes32[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YKeys')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX = 0x4b80742de2bf90b8b485; // AddressPermissions:AllowedERC725YKeys:<address> --> bytes32[]
 
 // DEFAULT PERMISSIONS VALUES
 bytes32 constant _PERMISSION_CHANGEOWNER        = 0x0000000000000000000000000000000000000000000000000000000000000001;
@@ -43,23 +43,18 @@ bytes32 constant _PERMISSION_DELEGATECALL       = 0x0000000000000000000000000000
 bytes32 constant _PERMISSION_DEPLOY             = 0x0000000000000000000000000000000000000000000000000000000000000080;
 bytes32 constant _PERMISSION_TRANSFERVALUE      = 0x0000000000000000000000000000000000000000000000000000000000000100;
 bytes32 constant _PERMISSION_SIGN               = 0x0000000000000000000000000000000000000000000000000000000000000200;
+bytes32 constant _PERMISSION_ENCRYPT            = 0x0000000000000000000000000000000000000000000000000000000000000400;
 
 // SUPER PERMISSIONS
 // -----
 // allow to not check for AddressPermissions:AllowedERC725YKeys:...
-bytes32 constant _PERMISSION_SUPER_SETDATA      = 0x0000000000000000000000000000000000000000000000000000000000000400;
+bytes32 constant _PERMISSION_SUPER_SETDATA      = 0x0000000000000000000000000000000000000000000000000000000000000800;
 
 // allow to not check for:
 //  - AddressPermissions:AllowedAddress:...
 //  - AddressPermissions:AllowedStandards:...
 //  - AddressPermissions:AllowedFunctions:...
-bytes32 constant _PERMISSION_SUPER_TRANSFERVALUE = 0x0000000000000000000000000000000000000000000000000000000000000800;
-bytes32 constant _PERMISSION_SUPER_CALL         = 0x0000000000000000000000000000000000000000000000000000000000001000;
-bytes32 constant _PERMISSION_SUPER_STATICCALL   = 0x0000000000000000000000000000000000000000000000000000000000002000;
-bytes32 constant _PERMISSION_SUPER_DELEGATECALL = 0x0000000000000000000000000000000000000000000000000000000000004000;
-
-
-/// @dev see IERC725Y interface
-///      https://github.com/ERC725Alliance/ERC725/blob/main/implementations/contracts/interfaces/IERC725Y.sol
-bytes4 constant setDataSingleSelector = bytes4(keccak256("setData(bytes32,bytes)"));
-bytes4 constant setDataMultipleSelector = bytes4(keccak256("setData(bytes32[],bytes[])"));
+bytes32 constant _PERMISSION_SUPER_TRANSFERVALUE = 0x0000000000000000000000000000000000000000000000000000000000001000;
+bytes32 constant _PERMISSION_SUPER_CALL          = 0x0000000000000000000000000000000000000000000000000000000000002000;
+bytes32 constant _PERMISSION_SUPER_STATICCALL    = 0x0000000000000000000000000000000000000000000000000000000000004000;
+bytes32 constant _PERMISSION_SUPER_DELEGATECALL  = 0x0000000000000000000000000000000000000000000000000000000000008000;

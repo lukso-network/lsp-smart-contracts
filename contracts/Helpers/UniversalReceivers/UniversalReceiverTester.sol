@@ -26,5 +26,6 @@ contract UniversalReceiverTester {
         require(success, "low-level call to `universalReceiver(...)` function failed");
     }
 
+    // solhint-disable no-empty-blocks
     receive() external payable {}
 }

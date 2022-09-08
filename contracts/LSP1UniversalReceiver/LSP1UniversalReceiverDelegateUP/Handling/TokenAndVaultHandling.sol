@@ -28,9 +28,6 @@ abstract contract TokenAndVaultHandling {
         internal
         returns (bytes memory result)
     {
-        // avoid EOAs spamming the storage
-        if (caller.code.length == 0) return "";
-
         address keyManager = ERC725Y(msg.sender).owner();
         if (!ERC165Checker.supportsERC165Interface(keyManager, _INTERFACEID_LSP6)) return "";
 
@@ -42,7 +39,7 @@ abstract contract TokenAndVaultHandling {
         (
             bool isReceiving,
             bytes32 arrayLengthKey,
-            bytes12 mapPrefix,
+            bytes10 mapPrefix,
             bytes4 interfaceID
         ) = LSP1Utils.getTransferDetails(typeId);
 

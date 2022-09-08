@@ -32,7 +32,7 @@ library LSP1Utils {
         returns (
             bool isReceiving,
             bytes32 arrayKey,
-            bytes12 mapPrefix,
+            bytes10 mapPrefix,
             bytes4 interfaceId
         )
     {

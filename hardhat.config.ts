@@ -1,14 +1,23 @@
 import { HardhatUserConfig } from "hardhat/config";
 
-import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-web3";
-import "@nomiclabs/hardhat-etherscan";
+/**
+ * this package includes:
+ *  - @nomiclabs/hardhat-ethers
+ *  - @nomicfoundation/hardhat-chai-matchers
+ *  - @nomicfoundation/hardhat-network-helpers
+ *  - @nomiclabs/hardhat-etherscan
+ *  - @typechain/hardhat
+ *  - solidity-coverage
+ */
+import "@nomicfoundation/hardhat-toolbox";
 
-import "@typechain/hardhat";
+// additional hardhat plugins
 import "hardhat-packager";
 import "hardhat-contract-sizer";
-
 import "hardhat-deploy";
+
+// Typescript types for web3.js
+import "@nomiclabs/hardhat-web3";
 
 /**
  * @dev uncomment to generate contract docs in Markdown
@@ -62,8 +71,16 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+  gasReporter: {
+    enabled: true,
+    currency: "USD",
+    gasPrice: 21,
+    excludeContracts: ["Helpers/"],
+    src: "./contracts",
+    showMethodSig: true,
+  },
   solidity: {
-    version: "0.8.7",
+    version: "0.8.10",
     settings: {
       optimizer: {
         enabled: true,
@@ -99,26 +116,26 @@ const config: HardhatUserConfig = {
       // ------------------
       "UniversalProfileInit",
       "LSP0ERC725AccountInit",
-      "LSP4DigitalAssetMetadataInit",
+      "LSP4DigitalAssetMetadataInitAbstract",
       "LSP6KeyManagerInit",
-      "LSP7DigitalAssetInit",
-      "LSP7CappedSupplyInit",
+      "LSP7DigitalAssetInitAbstract",
+      "LSP7CappedSupplyInitAbstract",
       "LSP7MintableInit",
-      "LSP8IdentifiableDigitalAssetInit",
-      "LSP8CappedSupplyInit",
+      "LSP8IdentifiableDigitalAssetInitAbstract",
+      "LSP8CappedSupplyInitAbstract",
       "LSP8MintableInit",
       "LSP9VaultInit",
       // ERC Compatible tokens
       // ------------------
       "LSP4Compatibility",
-      "LSP8CompatibleERC721",
-      "LSP8CompatibleERC721Init",
-      "LSP8CompatibleERC721Mintable",
-      "LSP8CompatibleERC721MintableInit",
       "LSP7CompatibleERC20",
-      "LSP7CompatibleERC20Init",
+      "LSP7CompatibleERC20InitAbstract",
       "LSP7CompatibleERC20Mintable",
       "LSP7CompatibleERC20MintableInit",
+      "LSP8CompatibleERC721",
+      "LSP8CompatibleERC721InitAbstract",
+      "LSP8CompatibleERC721Mintable",
+      "LSP8CompatibleERC721MintableInit",
       // Legacy L14
       // ------------------
       "UniversalReceiverAddressStore",
@@ -133,6 +150,7 @@ const config: HardhatUserConfig = {
   },
   paths: {
     artifacts: "artifacts",
+    tests: "tests",
   },
   typechain: {
     outDir: "types",

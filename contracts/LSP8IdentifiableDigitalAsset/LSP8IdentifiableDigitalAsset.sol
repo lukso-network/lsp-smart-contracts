@@ -17,7 +17,7 @@ import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
  * @author Matthew Stevens
  * @dev Implementation of a LSP8 compliant contract.
  */
-contract LSP8IdentifiableDigitalAsset is
+abstract contract LSP8IdentifiableDigitalAsset is
     LSP4DigitalAssetMetadata,
     LSP8IdentifiableDigitalAssetCore
 {

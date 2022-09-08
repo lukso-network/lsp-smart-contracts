@@ -24,15 +24,12 @@ import "../../../LSP9Vault/LSP9Constants.sol";
  */
 abstract contract TokenHandling {
     function _tokenHandling(address caller, bytes32 typeId) internal returns (bytes memory result) {
-        // avoid EOAs spamming the storage
-        if (caller.code.length == 0) return "";
-
         if (!ERC165Checker.supportsERC165Interface(msg.sender, _INTERFACEID_LSP9)) return "";
 
         (
             bool isReceiving,
             bytes32 arrayLengthKey,
-            bytes12 mapPrefix,
+            bytes10 mapPrefix,
             bytes4 interfaceID
         ) = LSP1Utils.getTransferDetails(typeId);
 

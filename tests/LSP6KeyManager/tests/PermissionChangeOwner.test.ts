@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -12,9 +13,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import { provider } from "../../utils/helpers";
-
-// errors
-import { NotAuthorisedError } from "../../utils/errors";
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: () => Promise<LSP6TestContext>
@@ -50,6 +48,25 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
   });
 
+  describe("when transferring Ownership to the target address", () => {
+    it("should revert", async () => {
+      const transferOwnershipPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "transferOwnership",
+          [context.universalProfile.address]
+        );
+
+      await expect(
+        context.keyManager
+          .connect(canChangeOwner)
+          .execute(transferOwnershipPayload)
+      ).to.be.revertedWithCustomError(
+        context.universalProfile,
+        "CannotTransferOwnershipToSelf"
+      );
+    });
+  });
+
   describe("when upgrading to a new KeyManager via transferOwnership(...)", () => {
     let newKeyManager: LSP6KeyManager;
 
@@ -80,9 +97,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
           context.keyManager
             .connect(cannotChangeOwner)
             .execute(transferOwnershipPayload)
-        ).toBeRevertedWith(
-          NotAuthorisedError(cannotChangeOwner.address, "TRANSFEROWNERSHIP")
-        );
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(cannotChangeOwner.address, "TRANSFEROWNERSHIP");
       });
     });
 
@@ -104,7 +121,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
       it("should have set newKeyManager as pendingOwner", async () => {
         let pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).toEqual(newKeyManager.address);
+        expect(pendingOwner).to.equal(newKeyManager.address);
       });
 
       it("owner should remain the current KeyManager", async () => {
@@ -122,8 +139,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         const ownerAfter = await context.universalProfile.owner();
 
-        expect(ownerBefore).toEqual(context.keyManager.address);
-        expect(ownerAfter).toEqual(context.keyManager.address);
+        expect(ownerBefore).to.equal(context.keyManager.address);
+        expect(ownerAfter).to.equal(context.keyManager.address);
       });
 
       it("should override the pendingOwner when transferOwnership(...) is called twice", async () => {
@@ -141,7 +158,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           );
 
         const pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).toEqual(overridenPendingOwner.address);
+        expect(pendingOwner).to.equal(overridenPendingOwner.address);
       });
 
       describe("it should still be possible to call onlyOwner functions via the old KeyManager", () => {
@@ -160,7 +177,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           const result = await context.universalProfile["getData(bytes32)"](
             key
           );
-          expect(result).toEqual(value);
+          expect(result).to.equal(value);
         });
 
         it("execute(...) - LYX transfer", async () => {
@@ -189,14 +206,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
           );
 
           // recipient balance should have gone up
-          expect(parseInt(recipientBalanceAfter)).toBeGreaterThan(
-            parseInt(recipientBalanceBefore)
-          );
+          expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
 
           // account balance should have gone down
-          expect(parseInt(accountBalanceAfter)).toBeLessThan(
-            parseInt(accountBalanceBefore)
-          );
+          expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
         });
       });
     });
@@ -220,7 +233,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it("should have set newKeyManager as pendingOwner", async () => {
         let pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).toEqual(newKeyManager.address);
+        expect(pendingOwner).to.equal(newKeyManager.address);
       });
 
       it("owner should remain the current KeyManager", async () => {
@@ -238,8 +251,8 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         const ownerAfter = await context.universalProfile.owner();
 
-        expect(ownerBefore).toEqual(context.keyManager.address);
-        expect(ownerAfter).toEqual(context.keyManager.address);
+        expect(ownerBefore).to.equal(context.keyManager.address);
+        expect(ownerAfter).to.equal(context.keyManager.address);
       });
 
       it("should override the pendingOwner when transferOwnership(...) is called twice", async () => {
@@ -257,7 +270,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           );
 
         const pendingOwner = await context.universalProfile.pendingOwner();
-        expect(pendingOwner).toEqual(overridenPendingOwner.address);
+        expect(pendingOwner).to.equal(overridenPendingOwner.address);
       });
     });
   });
@@ -291,7 +304,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       await expect(
         notPendingKeyManager.connect(context.owner).execute(payload)
-      ).toBeRevertedWith("OwnableClaim: caller is not the pendingOwner");
+      ).to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
     });
   });
 
@@ -323,7 +336,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       await newKeyManager.connect(context.owner).execute(payload);
 
       let updatedOwner = await context.universalProfile.owner();
-      expect(updatedOwner).toEqual(pendingOwner);
+      expect(updatedOwner).to.equal(pendingOwner);
     });
 
     it("should have cleared the pendingOwner after transfering ownership", async () => {
@@ -333,7 +346,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       await newKeyManager.connect(context.owner).execute(payload);
 
       let newPendingOwner = await context.universalProfile.pendingOwner();
-      expect(newPendingOwner).toEqual(ethers.constants.AddressZero);
+      expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
     });
   });
 
@@ -376,7 +389,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await expect(
           oldKeyManager.connect(context.owner).execute(payload)
-        ).toBeRevertedWith("Ownable: caller is not the owner");
+        ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
       it("should revert when calling `execute(...)`", async () => {
@@ -390,7 +403,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await expect(
           oldKeyManager.connect(context.owner).execute(payload)
-        ).toBeRevertedWith("Ownable: caller is not the owner");
+        ).to.be.revertedWith("Ownable: caller is not the owner");
       });
     });
 
@@ -408,7 +421,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         await newKeyManager.connect(context.owner).execute(payload);
 
         const result = await context.universalProfile["getData(bytes32)"](key);
-        expect(result).toEqual(value);
+        expect(result).to.equal(value);
       });
 
       it("execute(...) - LYX transfer", async () => {
@@ -437,14 +450,10 @@ export const shouldBehaveLikePermissionChangeOwner = (
         );
 
         // recipient balance should have gone up
-        expect(parseInt(recipientBalanceAfter)).toBeGreaterThan(
-          parseInt(recipientBalanceBefore)
-        );
+        expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
 
         // account balance should have gone down
-        expect(parseInt(accountBalanceAfter)).toBeLessThan(
-          parseInt(accountBalanceBefore)
-        );
+        expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
       });
     });
   });

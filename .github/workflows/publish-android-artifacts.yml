@@ -3,17 +3,17 @@ name: Upload Android Github artifacts CD
 
 on:
   repository_dispatch:
-      types: [trigger-release]
+    types: [trigger-release]
 
 jobs:
   android-build-artifacts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
-        with: 
+        with:
           workflow: build-artifacts.yml
           workflow_conclusion: success
           name: upcontracts.jar

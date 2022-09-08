@@ -51,6 +51,7 @@ contract CalculateLSPInterfaces {
             type(IERC1271).interfaceId ^
             type(ILSP1).interfaceId ^
             OwnableUnset.owner.selector ^
+            OwnableUnset.renounceOwnership.selector ^
             OwnableUnset.transferOwnership.selector ^
             type(IClaimOwnership).interfaceId;
 
@@ -119,6 +120,7 @@ contract CalculateLSPInterfaces {
             type(IERC725Y).interfaceId ^
             type(ILSP1).interfaceId ^
             OwnableUnset.owner.selector ^
+            OwnableUnset.renounceOwnership.selector ^
             OwnableUnset.transferOwnership.selector ^
             type(IClaimOwnership).interfaceId;
 
@@ -135,6 +137,7 @@ contract CalculateLSPInterfaces {
         bytes4 interfaceId = 
             OwnableUnset.owner.selector ^
             OwnableUnset.transferOwnership.selector ^
+            OwnableUnset.renounceOwnership.selector ^
             type(IClaimOwnership).interfaceId;
 
         require(

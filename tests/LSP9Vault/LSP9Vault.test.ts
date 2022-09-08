@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 
 import {
   ClaimOwnershipTestContext,
@@ -134,18 +135,6 @@ describe("LSP9Vault", () => {
     };
 
     describe("when deploying the base implementation contract", () => {
-      it("should have locked (= initialized) the implementation contract", async () => {
-        const accounts = await ethers.getSigners();
-
-        const lsp9VaultInit = await new LSP9VaultInit__factory(
-          accounts[0]
-        ).deploy();
-
-        const isInitialized = await lsp9VaultInit.callStatic.initialized();
-
-        expect(isInitialized).toBeTruthy();
-      });
-
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
@@ -157,7 +146,7 @@ describe("LSP9Vault", () => {
 
         await expect(
           lsp9VaultInit.initialize(randomCaller.address)
-        ).toBeRevertedWith("Initializable: contract is already initialized");
+        ).to.be.revertedWith("Initializable: contract is already initialized");
       });
     });
 
@@ -185,7 +174,7 @@ describe("LSP9Vault", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

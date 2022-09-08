@@ -9,9 +9,15 @@ error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
 
 error LSP8NotTokenOperator(bytes32 tokenId, address caller);
 
+error LSP8OperatorAlreadyAuthorized(address operator, bytes32 tokenId);
+
 error LSP8CannotUseAddressZeroAsOperator();
 
 error LSP8CannotSendToAddressZero();
+
+error LSP8CannotSendToSelf();
+
+error LSP8NonExistingOperator(address _address, bytes32 tokenId);
 
 error LSP8TokenIdAlreadyMinted(bytes32 tokenId);
 
