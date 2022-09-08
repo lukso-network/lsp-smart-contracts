@@ -58,7 +58,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         expect(await context.token.owner()).to.be.equal(context.keyManager.address)
     });
 
-    it("should set the necessary permissions correctly", async () => {
+    it("should set the necessary controller permissions correctly", async () => {
         const keys = [
             ERC725YKeys.LSP6["AddressPermissions[]"].length,
             ERC725YKeys.LSP6["AddressPermissions[]"].index + ethers.utils.hexZeroPad(ethers.utils.hexValue(0), 16).substring(2),
@@ -74,7 +74,76 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         expect(await context.token["getData(bytes32[])"](keys)).to.be.deep.equal(values);
     });
 
-    describe("using LSP7 setData(..) through LSP6", () => {
+    describe("using execute(..) in lSP7 through LSP6", () => {
+        it("should revert", async () => {
+            const newTokenContract = await new LSP7Tester__factory(context.accounts[0])
+                .deploy(
+                    "NewTokenName",
+                    "NewTokenSymbol",
+                    context.accounts[0].address
+                );
+            const mintPayload = newTokenContract.interface.encodeFunctionData(
+                "mint",
+                [
+                    context.accounts[0].address,
+                    1000,
+                    true,
+                    "0x"
+                ]
+            );
+            
+            const ABI = ["function execute(uint256 operation, address to, uint256 value, bytes calldata data) external;"];
+            const ERC725XInterface = new ethers.utils.Interface(ABI);
+            const payload = ERC725XInterface.encodeFunctionData(
+                "execute",
+                [
+                    0,
+                    newTokenContract.address,
+                    0,
+                    mintPayload
+                ]
+            );
+
+            const executePayload = context.keyManager
+                .connect(context.accounts[0])
+                .execute(payload);
+            
+            await expect(executePayload)
+                .to.be.revertedWith("LSP6: Unknown Error occured when calling the linked target contract");
+        });
+    });
+
+    describe("using renounceOwnership(..) in LSP7 through LSP6", () => {
+        it("should revert", async () => {
+            const renounceOwnershipPayload = context.token.interface.encodeFunctionData("renounceOwnership")
+
+            const executeRenounceOwnershipPayload = context.keyManager
+                .connect(context.accounts[0])
+                .execute(renounceOwnershipPayload);
+            
+            await expect(executeRenounceOwnershipPayload)
+                .to.be.revertedWithCustomError(
+                    context.keyManager,
+                    "InvalidERC725Function"
+                )
+                .withArgs(renounceOwnershipPayload);
+        });
+    });
+
+    describe("using transferOwnership(..) in LSP7 through LSP6", () => {
+        it("should revert", async () => {
+            const transferOwnershipPayload = context.token.interface.encodeFunctionData("transferOwnership", [context.accounts[0].address])
+
+            await context.keyManager
+                .connect(context.accounts[0])
+                .execute(transferOwnershipPayload);
+            
+            expect(await context.token.owner())
+                .to.equal(context.accounts[0].address);
+        });
+    });
+
+    describe("using setData(..) in lSP7 through LSP6", () => {
         it("should allow first controller to add a new controller", async () => {
             // Create a payload that adds new controller with set data permission
             const keys = [
@@ -213,45 +282,6 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
                     context.accounts[1].address,
                     ethers.utils.keccak256(ethers.utils.toUtf8Bytes("FirstRandomString")).substring(0, 30) + ethers.utils.hexZeroPad(ethers.utils.hexValue(0), 18).substring(2)
                 );
-        });
-    });
-
-    describe("using execute(..) in LSP7 through LSP6", () => {
-        it("should revert", async () => {
-            const newTokenContract = await new LSP7Tester__factory(context.accounts[0])
-                .deploy(
-                    "NewTokenName",
-                    "NewTokenSymbol",
-                    context.accounts[0].address
-                );
-            const mintPayload = newTokenContract.interface.encodeFunctionData(
-                "mint",
-                [
-                    context.accounts[0].address,
-                    1000,
-                    true,
-                    "0x"
-                ]
-            );
-            
-            const ABI = ["function execute(uint256 operation, address to, uint256 value, bytes calldata data) external;"];
-            const ERC725XInterface = new ethers.utils.Interface(ABI);
-            const payload = ERC725XInterface.encodeFunctionData(
-                "execute",
-                [
-                    0,
-                    newTokenContract.address,
-                    0,
-                    mintPayload
-                ]
-            );
-
-            const executePayload = context.keyManager
-                .connect(context.accounts[0])
-                .execute(payload);
-            
-            await expect(executePayload)
-                .to.be.revertedWith("LSP6: Unknown Error occured when calling the linked target contract");
         });
     });
 
