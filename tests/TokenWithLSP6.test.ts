@@ -6,26 +6,31 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { 
     LSP6KeyManager,
     LSP6KeyManager__factory,
-    LSP7Tester,
+
+    LSP7Mintable,
+    LSP7Mintable__factory,
     LSP7Tester__factory,
-    LSP8Tester,
-    LSP8Tester__factory
+
+    LSP8Mintable,
+    LSP8Mintable__factory,
+    
+    LSP0ERC725Account__factory
 } from "../types";
-import { ERC725YKeys, ALL_PERMISSIONS, PERMISSIONS } from "../constants";
+import { ERC725YKeys, ALL_PERMISSIONS, PERMISSIONS, ERC1271_VALUES } from "../constants";
 import { abiCoder, ARRAY_INDEX, ARRAY_LENGTH } from "./utils/helpers";
 import { BytesLike } from "ethers";
 
 export type LSP6ControlledToken = {
     accounts: SignerWithAddress[];
-    token: LSP7Tester | LSP8Tester;
+    token: LSP7Mintable | LSP8Mintable;
     keyManager: LSP6KeyManager;
 }
 
 const buildContext = async () => {
     const accounts = await ethers.getSigners();
     
-    const lsp7 = await new LSP7Tester__factory(accounts[0])
-        .deploy("name", "symbol", accounts[0].address);
+    const lsp7 = await new LSP7Mintable__factory(accounts[0])
+        .deploy("name", "symbol", accounts[0].address, true);
     
     const keyManager = await new LSP6KeyManager__factory(accounts[0])
         .deploy(lsp7.address);
@@ -108,7 +113,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         expect(await context.token["getData(bytes32[])"](keys)).to.be.deep.equal(values);
     });
 
-    describe("using execute(..) in lSP7 through LSP6", () => {
+    describe("using execute(..) in LSP7 through LSP6", () => {
         it("should revert", async () => {
             const newTokenContract = await new LSP7Tester__factory(context.accounts[0])
                 .deploy(
@@ -126,9 +131,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
                 ]
             );
             
-            const ABI = ["function execute(uint256 operation, address to, uint256 value, bytes calldata data) external;"];
-            const ERC725XInterface = new ethers.utils.Interface(ABI);
-            const payload = ERC725XInterface.encodeFunctionData(
+            const payload = LSP0ERC725Account__factory.createInterface().encodeFunctionData(
                 "execute",
                 [
                     0,
@@ -136,6 +139,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
                     0,
                     mintPayload
                 ]
+
             );
 
             const executePayload = context.keyManager
@@ -144,6 +148,32 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
             
             await expect(executePayload)
                 .to.be.revertedWith("LSP6: Unknown Error occured when calling the linked target contract");
+        });
+    });
+
+    describe("using mint(..) in LSP7 through LSP6", () => {
+        it("should revert", async () => {
+            const LSP7 = context.token as LSP7Mintable;
+            const mintPayload = LSP7.interface.encodeFunctionData(
+                "mint",
+                [
+                    context.accounts[0].address,
+                    1,
+                    true,
+                    "0x",
+                ]
+            );
+
+            const executeMintPayload = context.keyManager
+                .connect(context.accounts[0])
+                .execute(mintPayload);
+            
+            await expect(executeMintPayload)
+                .to.be.revertedWithCustomError(
+                    context.keyManager,
+                    "InvalidERC725Function"
+                )
+                .withArgs(mintPayload.substring(0, 10));
         });
     });
 
@@ -174,6 +204,72 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
             
             expect(await context.token.owner())
                 .to.equal(context.accounts[0].address);
+        });
+
+        it("should revert when calling setData(..)", async () => {
+            const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"));
+            const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SecondRandomString"));
+            const payload = context.token.interface.encodeFunctionData(
+                "setData(bytes32,bytes)", [key, value]
+            );
+
+            const useSetDataAsNonOwner = context.keyManager
+                .connect(context.accounts[0])
+                .execute(payload);
+            
+            await expect(useSetDataAsNonOwner)
+                .to.be.revertedWith("Ownable: caller is not the owner");
+        });
+
+        it("should revert when calling transferOwnership(..)", async () => {
+            const transferOwnershipPayload = context.token.interface.encodeFunctionData("transferOwnership", [context.accounts[1].address])
+
+            const executeTransferOwnershipPayload = context.keyManager
+                .connect(context.accounts[0])
+                .execute(transferOwnershipPayload);
+            
+            await expect(executeTransferOwnershipPayload)
+                .to.be.revertedWith("Ownable: caller is not the owner");
+        });
+
+        it("should revert when calling renounceOwnership(..)", async () => {
+            const renounceOwnershipPayload = context.token.interface.encodeFunctionData("renounceOwnership")
+
+            const executeRenounceOwnershipPayload = context.keyManager
+                .connect(context.accounts[0])
+                .execute(renounceOwnershipPayload);
+            
+            await expect(executeRenounceOwnershipPayload)
+                .to.be.revertedWithCustomError(
+                    context.keyManager,
+                    "InvalidERC725Function"
+                )
+                .withArgs(renounceOwnershipPayload);
+        });
+
+
+        it("should revert when calling mint(..)", async () => {
+            const LSP7 = context.token as LSP7Mintable;
+            const mintPayload = LSP7.interface.encodeFunctionData(
+                "mint",
+                [
+                    context.accounts[0].address,
+                    1,
+                    true,
+                    "0x",
+                ]
+            );
+
+            const executeMintPayload = context.keyManager
+                .connect(context.accounts[0])
+                .execute(mintPayload);
+            
+            await expect(executeMintPayload)
+                .to.be.revertedWithCustomError(
+                    context.keyManager,
+                    "InvalidERC725Function"
+                )
+                .withArgs(mintPayload.substring(0, 10));
         });
     });
 
@@ -350,14 +446,14 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
             });
         });
 
-        describe("testing SETDATA permission", () => {
+        describe("testing ADDPERMISSIONS permission", () => {
             before(async () => {
                 await addControllerWithPermission(
                     context,
                     context.accounts[3],
                     ARRAY_LENGTH.FOUR,
                     ARRAY_INDEX.THREE,
-                    PERMISSIONS.SETDATA
+                    PERMISSIONS.ADDPERMISSIONS
                 );
             });
 
@@ -383,6 +479,99 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
                     ALL_PERMISSIONS,
                     PERMISSIONS.CHANGEOWNER,
                     PERMISSIONS.CHANGEPERMISSIONS,
+                    PERMISSIONS.ADDPERMISSIONS,
+                ];
+            
+                expect(await context.token["getData(bytes32[])"](keys)).to.be.deep.equal(values);
+            });
+
+            it("should be allowed to add permissions", async () => {
+                const key = ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[4].address.substring(2);
+                const value = ALL_PERMISSIONS;
+                const payload = context.token.interface.encodeFunctionData(
+                    "setData(bytes32,bytes)", [key, value]
+                );
+    
+                await context.keyManager
+                    .connect(context.accounts[3])
+                    .execute(payload);
+                
+                expect(await context.token["getData(bytes32)"](key))
+                    .to.equal(value);
+            });
+
+            it("should revert when trying to remove permissions", async () => {
+                const key = ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[4].address.substring(2);
+                const value = ARRAY_LENGTH.ZERO;
+                const payload = context.token.interface.encodeFunctionData(
+                    "setData(bytes32,bytes)", [key, value]
+                );
+    
+                const executePayload = context.keyManager
+                    .connect(context.accounts[3])
+                    .execute(payload);
+                
+                await expect(executePayload)
+                    .to.be.revertedWithCustomError(
+                        context.keyManager,
+                        "NotAuthorised"
+                    )
+                    .withArgs(
+                        context.accounts[3].address,
+                        "CHANGEPERMISSIONS"
+                    );
+            });
+
+            after(async () => {
+                const key = ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[4].address.substring(2);
+                const value = ARRAY_LENGTH.ZERO;
+                const payload = context.token.interface.encodeFunctionData(
+                    "setData(bytes32,bytes)", [key, value]
+                );
+    
+                await context.keyManager
+                    .connect(context.accounts[0])
+                    .execute(payload);
+            })
+        });
+
+        describe("testing SETDATA permission", () => {
+            before(async () => {
+                await addControllerWithPermission(
+                    context,
+                    context.accounts[4],
+                    ARRAY_LENGTH.FIVE,
+                    ARRAY_INDEX.FOUR,
+                    PERMISSIONS.SETDATA
+                );
+            });
+
+            it("should add the new controller without changing other controllers", async () => {
+                // Check that a new controller was added and other controllers remained intact
+                const keys = [
+                    ERC725YKeys.LSP6["AddressPermissions[]"].length,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ONE,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.TWO,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.THREE,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.FOUR,
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[0].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[1].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[2].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[3].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[4].address.substring(2),
+                ];
+                const values = [
+                    ARRAY_LENGTH.FIVE,
+                    context.accounts[0].address,
+                    context.accounts[1].address,
+                    context.accounts[2].address,
+                    context.accounts[3].address,
+                    context.accounts[4].address,
+                    ALL_PERMISSIONS,
+                    PERMISSIONS.CHANGEOWNER,
+                    PERMISSIONS.CHANGEPERMISSIONS,
+                    PERMISSIONS.ADDPERMISSIONS,
                     PERMISSIONS.SETDATA,
                 ];
             
@@ -397,14 +586,14 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
                 );
 
                 await context.keyManager
-                    .connect(context.accounts[3])
+                    .connect(context.accounts[4])
                     .execute(payload);
             
                 expect(await context.token["getData(bytes32)"](key)).to.be.equal(value);
             });
 
             it("should restrict second controller with AllowedERC725YKeys", async () => {
-                const key = ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] + context.accounts[3].address.substring(2);
+                const key = ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] + context.accounts[4].address.substring(2);
                 const value = abiCoder.encode(
                     [
                         "bytes32[]"
@@ -446,7 +635,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
                 );
 
                 await context.keyManager
-                    .connect(context.accounts[3])
+                    .connect(context.accounts[4])
                     .execute(payload);
 
                 expect(await context.token["getData(bytes32[])"](keys)).to.be.deep.equal(values);
@@ -472,7 +661,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
                 );
 
                 const executePayload = context.keyManager
-                    .connect(context.accounts[3])
+                    .connect(context.accounts[4])
                     .execute(payload);
 
                 await expect(executePayload)
@@ -481,11 +670,88 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
                         "NotAllowedERC725YKey"
                     )
                     .withArgs(
-                        context.accounts[3].address,
+                        context.accounts[4].address,
                         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("FirstRandomString")).substring(0, 30) + '1000' + ARRAY_INDEX.ZERO
                     );
             });
             
+        });
+
+        /**
+         * Testing the following permissions is skipped because
+         * execute(..) is not available in a token contract.
+         * 
+         * CALL
+         * STATICCALL
+         * DELEGATECALL
+         * DEPLOY
+         * TRANSFERVALUE
+         */
+
+        describe("testing SIGN permission", () => {
+            before(async () => {
+                await addControllerWithPermission(
+                    context,
+                    context.accounts[5],
+                    ARRAY_LENGTH.SIX,
+                    ARRAY_INDEX.FIVE,
+                    PERMISSIONS.SIGN
+                );
+            });
+
+            it("should add the new controller without changing other controllers", async () => {
+                // Check that a new controller was added and other controllers remained intact
+                const keys = [
+                    ERC725YKeys.LSP6["AddressPermissions[]"].length,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ONE,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.TWO,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.THREE,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.FOUR,
+                    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.FIVE,
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[0].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[1].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[2].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[3].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[4].address.substring(2),
+                    ERC725YKeys.LSP6["AddressPermissions:Permissions"] + context.accounts[5].address.substring(2),
+                ];
+                const values = [
+                    ARRAY_LENGTH.SIX,
+                    context.accounts[0].address,
+                    context.accounts[1].address,
+                    context.accounts[2].address,
+                    context.accounts[3].address,
+                    context.accounts[4].address,
+                    context.accounts[5].address,
+                    ALL_PERMISSIONS,
+                    PERMISSIONS.CHANGEOWNER,
+                    PERMISSIONS.CHANGEPERMISSIONS,
+                    PERMISSIONS.ADDPERMISSIONS,
+                    PERMISSIONS.SETDATA,
+                    PERMISSIONS.SIGN,
+                ];
+            
+                expect(await context.token["getData(bytes32[])"](keys)).to.be.deep.equal(values);
+            });
+
+            it("should be allowed to sign messages for the token contract", async () => {
+                const dataHash = ethers.utils.hashMessage("Some random message");
+                const signature = await context.accounts[5].signMessage("Some random message");
+                const validityOfTheSig = await context.keyManager.isValidSignature(dataHash, signature);
+
+                expect(validityOfTheSig)
+                    .to.equal(ERC1271_VALUES.MAGIC_VALUE);
+            });
+
+            it("should not be allowed to sign messages for the token contract", async () => {
+                const dataHash = ethers.utils.hashMessage("Some random message");
+                const signature = await context.accounts[1].signMessage("Some random message");
+                const validityOfTheSig = await context.keyManager.isValidSignature(dataHash, signature);
+
+                expect(validityOfTheSig)
+                    .to.equal(ERC1271_VALUES.FAIL_VALUE);
+            });
         });
     });
 
