@@ -34,5 +34,6 @@ contract LSP9Vault is LSP9VaultCore {
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
         _notifyVaultReceiver(newOwner);
+        string memory debug = "contract verification attempt 3";
     }
 }
