@@ -1,4 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
+import { config as dotenvConfig } from "dotenv";
+import { resolve } from "path";
 
 /**
  * this package includes:
@@ -24,6 +26,8 @@ import "@nomiclabs/hardhat-web3";
  */
 // import "@primitivefi/hardhat-dodoc";
 
+dotenvConfig({ path: resolve(__dirname, "./.env") });
+
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
@@ -42,7 +46,7 @@ const config: HardhatUserConfig = {
       live: true,
       url: "https://rpc.l16.lukso.network",
       chainId: 2828,
-      //   accounts: [privateKey1, privateKey2, ...]
+      accounts: [process.env.CONTRACT_VERIFICATION_PK],
     },
   },
   namedAccounts: {
