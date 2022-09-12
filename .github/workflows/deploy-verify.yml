@@ -12,9 +12,6 @@ on:
       - "ci/verify-contracts"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
   deploy-verify:
     runs-on: ubuntu-latest
     steps:
