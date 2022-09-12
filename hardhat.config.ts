@@ -46,7 +46,7 @@ const config: HardhatUserConfig = {
       live: true,
       url: "https://rpc.l16.lukso.network",
       chainId: 2828,
-      accounts: [process.env.CONTRACT_VERIFICATION_PK],
+      accounts: [process.env.CONTRACT_VERIFICATION_PK] || [],
     },
   },
   namedAccounts: {
