@@ -49,7 +49,7 @@ jobs:
       - name: Deploy + Verify LSP7Mintable on L16
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP7Mintable >> LSP7_deployment.txt
-          LSP7_Address=$(grep -o -E '0x(\w|\s){40}' URD_deployment.txt | tail -n 1)
+          LSP7_Address=$(grep -o -E '0x(\w|\s){40}' LSP7_deployment.txt | tail -n 1)
           echo "module.exports = [ 'LSP7 Mintable', 'LSP7M', '$DEPLOYER_ADDRESS', false ];" >> lsp7arguments.js
           npx hardhat verify $LSP7_Address --constructor-args lsp7arguments.js --network luksoL16
 
