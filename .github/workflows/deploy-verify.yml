@@ -32,12 +32,12 @@ jobs:
       # Save the output of the deployment in a text file
       - name: Deploy + Verify UniversalProfile on L16
         run: |
-          hardhat deploy --network luksoL16 --tags UniversalProfile --reset >> deployment.txt
+          npx hardhat deploy --network luksoL16 --tags UniversalProfile --reset >> deployment.txt
           UP_ADDRESS=$(grep -o -E '0x(\w|\s){40}' deployment.txt | tail -n 1)
-          hardhat verify $UP_ADDRESS "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --network luksoL16 --contract contracts/UniversalProfile.sol:UniversalProfile
+          npx hardhat verify $UP_ADDRESS "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --network luksoL16 --contract contracts/UniversalProfile.sol:UniversalProfile
 
       - name: Deploy + Verify LSP1UniversalReceiverDelegateUP on L16
         run: |
-          hardhat deploy --network luksoL16 --tags LSP1UniversalReceiverDelegateUP --reset >> deployment.txt
+          npx hardhat deploy --network luksoL16 --tags LSP1UniversalReceiverDelegateUP --reset >> deployment.txt
           URD_ADDRESS=$(grep -o -E '0x(\w|\s){40}' deployment.txt | tail -n 1)
           npx hardhat verify $URD_ADDRESS --network luksoL16
