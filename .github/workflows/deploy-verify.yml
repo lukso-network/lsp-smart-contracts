@@ -1,0 +1,40 @@
+# This workflow deploys and verify the lsp-smart-contracts and verify them.
+
+name: Deploy + Verify Contracts
+
+on:
+  push:
+    branches:
+      - "ci/verify-contracts"
+
+jobs:
+  deploy-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js '16.15.0'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.15.0"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # This will also generate the Typechain types used by the Chai tests
+      - name: Build contract artifacts
+        run: npm run build --if-present
+
+      # Save the output of the deployment in a text file
+      - name: Deploy + Verify UniversalProfile on L16
+        run: |
+          hardhat deploy --network luksoL16 --tags UniversalProfile --reset >> deployment.txt
+          UP_ADDRESS=$(grep -o -E '0x(\w|\s){40}' deployment.txt | tail -n 1)
+          hardhat verify $UP_ADDRESS "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --network luksoL16 --contract contracts/UniversalProfile.sol:UniversalProfile
+
+      - name: Deploy + Verify LSP1UniversalReceiverDelegateUP on L16
+        run: |
+          hardhat deploy --network luksoL16 --tags LSP1UniversalReceiverDelegateUP --reset >> deployment.txt
+          URD_ADDRESS=$(grep -o -E '0x(\w|\s){40}' deployment.txt | tail -n 1)
+          npx hardhat verify $URD_ADDRESS --network luksoL16
