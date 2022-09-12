@@ -70,7 +70,8 @@ jobs:
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP8Mintable --reset >> LSP8_deployment.txt
           LSP8_ADDRESS=$(grep -o -E '0x(\w|\s){40}' LSP8_deployment.txt | tail -n 1)
-          npx hardhat verify $LSP8_ADDRESS "LSP8 Mintable" "LSP8M" $DEPLOYER_ADDRESS --network luksoL16
+          echo "module.exports = [ 'LSP8 Mintable', 'LSP8M', '$DEPLOYER_ADDRESS' ];" >> lsp8arguments.js
+          npx hardhat verify $LSP8_ADDRESS --network --constructor-args lsp8arguments.js luksoL16
 
       - name: Deploy + Verify LSP9Vault on L16
         if: always()
@@ -80,6 +81,7 @@ jobs:
           npx hardhat verify $LSP9_ADDRESS $DEPLOYER_ADDRESS --network luksoL16
 
   deploy-verify-base:
+    if: always()
     strategy:
       matrix:
         base_contract:

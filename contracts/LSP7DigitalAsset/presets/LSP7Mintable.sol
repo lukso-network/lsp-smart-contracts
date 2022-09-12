@@ -29,7 +29,7 @@ contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
         address newOwner_,
         bool isNonDivisible_
     ) LSP7DigitalAsset(name_, symbol_, newOwner_, isNonDivisible_) {
-        string memory debug = "contract verification attempt 4";
+        string memory debug = "contract verification attempt 5";
     }
 
     /**
