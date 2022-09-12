@@ -42,6 +42,7 @@ jobs:
       # Save the output of the deployment in a text file.
       # For the UP, we need to specify the contract as UniversalProfile and LSP0ERC725Account have the same runtime code.
       - name: Deploy + Verify UniversalProfile + LSP6KeyManager on L16
+        if: always()
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP6KeyManager --reset >> UP_KM_deployment.txt
           UP_ADDRESS=$(grep -o -E '0x(\w|\s){40}' UP_KM_deployment.txt | head -n 2 | tail -n 1)
@@ -50,12 +51,14 @@ jobs:
           npx hardhat verify $KM_ADDRESS $UP_ADDRESS --network luksoL16
 
       - name: Deploy + Verify LSP1UniversalReceiverDelegateUP on L16
+        if: always()
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP1UniversalReceiverDelegateUP --reset >> URD_deployment.txt
           URD_ADDRESS=$(grep -o -E '0x(\w|\s){40}' URD_deployment.txt | tail -n 1)
           npx hardhat verify $URD_ADDRESS --network luksoL16
 
       - name: Deploy + Verify LSP7Mintable on L16
+        if: always()
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP7Mintable --reset >> LSP7_deployment.txt
           LSP7_Address=$(grep -o -E '0x(\w|\s){40}' LSP7_deployment.txt | tail -n 1)
@@ -63,12 +66,14 @@ jobs:
           npx hardhat verify $LSP7_Address --constructor-args lsp7arguments.js --network luksoL16
 
       - name: Deploy + Verify LSP8Mintable on L16
+        if: always()
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP8Mintable --reset >> LSP8_deployment.txt
           LSP8_ADDRESS=$(grep -o -E '0x(\w|\s){40}' LSP8_deployment.txt.txt | tail -n 1)
           npx hardhat verify $LSP8_ADDRESS "LSP8 Mintable" "LSP8M" $DEPLOYER_ADDRESS --network luksoL16
 
       - name: Deploy + Verify LSP9Vault on L16
+        if: always()
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP9Vault --reset >> LSP9_deployment.txt
           LSP9_ADDRESS=$(grep -o -E '0x(\w|\s){40}' LSP8_deployment.txt.txt | tail -n 1)
@@ -112,6 +117,7 @@ jobs:
         run: npm ci
 
       - name: Deploy + Verify ${{ matrix.base_contract }} on L16
+        if: always()
         run: |
           npx hardhat deploy --network luksoL16 --tags ${{ matrix.base_contract }} --reset >> base_deployment.txt
           BASE_CONTRACT_ADDRESS=$(grep -o -E '0x(\w|\s){40}' base_deployment.txt.txt | tail -n 1)
