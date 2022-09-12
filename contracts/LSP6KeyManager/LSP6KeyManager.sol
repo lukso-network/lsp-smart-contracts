@@ -18,6 +18,6 @@ contract LSP6KeyManager is LSP6KeyManagerCore {
     constructor(address target_) {
         if (target_ == address(0)) revert InvalidLSP6Target();
         target = target_;
-        string memory debug = "contract verification attempt 3";
+        string memory debug = "contract verification attempt 4";
     }
 }
