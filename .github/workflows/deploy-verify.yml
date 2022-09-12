@@ -2,6 +2,9 @@
 
 name: Deploy + Verify Contracts
 
+env:
+  CONTRACT_VERIFICATION_PK: ${{ secrets.CONTRACT_VERIFICATION_PK }}
+
 on:
   push:
     branches:
