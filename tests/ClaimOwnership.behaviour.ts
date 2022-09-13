@@ -132,7 +132,7 @@ export const shouldBehaveLikeClaimOwnership = (
         await network.provider.send("hardhat_mine", [ethers.utils.hexValue(1000)]);
       });
 
-      it.only("should disallow using claimOwnership after renounceOwnership", async () => {
+      it("should disallow using claimOwnership after renounceOwnership", async () => {
         await context.contract
           .connect(context.deployParams.owner)
           .renounceOwnership();
