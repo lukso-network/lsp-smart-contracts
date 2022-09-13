@@ -153,13 +153,13 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [0, newTokenContract.address, 0, mintPayload]
         );
 
-      const executePayload = context.keyManager
-        .connect(context.owner)
-        .execute(payload);
-
-      await expect(executePayload).to.be.revertedWith(
-        "LSP6: Unknown Error occured when calling the linked target contract"
-      );
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          .execute(payload)
+      ).to.be.revertedWith(
+          "LSP6: Unknown Error occured when calling the linked target contract"
+        );
     });
   });
 
@@ -173,12 +173,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         "0x",
       ]);
 
-      const executeMintPayload = context.keyManager
-        .connect(context.owner)
-        .execute(mintPayload);
-
-      await expect(executeMintPayload)
-        .to.be.revertedWithCustomError(
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          .execute(mintPayload)
+      ).to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
         )
@@ -191,12 +190,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       const renounceOwnershipPayload =
         context.token.interface.encodeFunctionData("renounceOwnership");
 
-      const executeRenounceOwnershipPayload = context.keyManager
-        .connect(context.owner)
-        .execute(renounceOwnershipPayload);
-
-      await expect(executeRenounceOwnershipPayload)
-        .to.be.revertedWithCustomError(
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          .execute(renounceOwnershipPayload)
+      ).to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
         )
@@ -232,11 +230,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         [key, value]
       );
 
-      const useSetDataAsNonOwner = context.keyManager
-        .connect(context.owner)
-        .execute(payload);
-
-      await expect(useSetDataAsNonOwner).to.be.revertedWith(
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          .execute(payload)
+      ).to.be.revertedWith(
         "Ownable: caller is not the owner"
       );
     });
@@ -267,12 +265,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         "0x",
       ]);
 
-      const executeMintPayload = context.keyManager
-        .connect(context.owner)
-        .execute(mintPayload);
-
-      await expect(executeMintPayload)
-        .to.be.revertedWithCustomError(
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          .execute(mintPayload)
+      ).to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
         )
@@ -301,11 +298,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           context.accounts[1].address,
         ]);
 
-      const executeTransferOwnershipPayload = context.keyManager
-        .connect(context.owner)
-        .execute(transferOwnershipPayload);
-
-      await expect(executeTransferOwnershipPayload).to.be.revertedWith(
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          .execute(transferOwnershipPayload)
+      ).to.be.revertedWith(
         "Ownable: caller is not the owner"
       );
     });
@@ -322,12 +319,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       const renounceOwnershipPayload =
         context.token.interface.encodeFunctionData("renounceOwnership");
 
-      const executeRenounceOwnershipPayload = context.keyManager
-        .connect(context.owner)
-        .execute(renounceOwnershipPayload);
-
-      await expect(executeRenounceOwnershipPayload)
-        .to.be.revertedWithCustomError(
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          .execute(renounceOwnershipPayload)
+      ).to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
         )
@@ -390,12 +386,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
             addressCanChangeOwner.address,
           ]);
 
-        const transferOwnership = context.keyManager
-          .connect(addressCanChangePermissions)
-          .execute(transferOwnershipPayload);
-
-        expect(transferOwnership)
-          .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
+        expect(
+          context.keyManager
+            .connect(addressCanChangePermissions)
+            .execute(transferOwnershipPayload)
+        ).to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
           .withArgs(addressCanChangePermissions.address);
       });
 
@@ -471,12 +466,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [key, value]
         );
 
-        const changePermission = context.keyManager
-          .connect(addressCanChangeOwner)
-          .execute(payload);
-
-        await expect(changePermission)
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        await expect(
+          context.keyManager
+            .connect(addressCanChangeOwner)
+            .execute(payload)
+        ).to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCanChangeOwner.address, "CHANGEPERMISSIONS");
       });
 
@@ -581,12 +575,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [key, value]
         );
 
-        const executePayload = context.keyManager
-          .connect(addressCanAddPermissions)
-          .execute(payload);
-
-        await expect(executePayload)
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        await expect(
+          context.keyManager
+            .connect(addressCanAddPermissions)
+            .execute(payload)
+        ).to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCanAddPermissions.address, "CHANGEPERMISSIONS");
       });
 
@@ -756,12 +749,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [keys, values]
         );
 
-        const executePayload = context.keyManager
-          .connect(addressCanSetData)
-          .execute(payload);
-
-        await expect(executePayload)
-          .to.be.revertedWithCustomError(
+        await expect(
+          context.keyManager
+            .connect(addressCanSetData)
+            .execute(payload)
+        ).to.be.revertedWithCustomError(
             context.keyManager,
             "NotAllowedERC725YKey"
           )
