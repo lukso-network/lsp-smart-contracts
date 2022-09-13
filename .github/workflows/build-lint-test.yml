@@ -3,6 +3,9 @@
 
 name: Node.js CI - Build + Lint + Test
 
+env:
+  CONTRACT_VERIFICATION_PK: ${{ secrets.CONTRACT_VERIFICATION_PK }}
+
 on:
   pull_request:
     branches:
