@@ -126,31 +126,6 @@ export const shouldBehaveLikeClaimOwnership = (
         expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
       });
     });
-
-    describe("it should not allow transfer-renounce-claim behavior", () => {
-      before(async () => {
-        await network.provider.send("hardhat_mine", [ethers.utils.hexValue(1000)]);
-      });
-
-      it("should disallow using claimOwnership after renounceOwnership", async () => {
-        await context.contract
-          .connect(context.deployParams.owner)
-          .renounceOwnership();
-        
-        await network.provider.send("hardhat_mine", [ethers.utils.hexValue(100)]);
-        
-        await context.contract
-          .connect(context.deployParams.owner)
-          .renounceOwnership();
-
-        const claimAfterRenounce = context.contract
-          .connect(newOwner)
-          .claimOwnership();
-        
-        await expect(claimAfterRenounce)
-          .to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
-      });
-    });
   });
 
   describe("when non-owner call transferOwnership(...)", () => {
@@ -378,7 +353,7 @@ export const shouldBehaveLikeClaimOwnership = (
         );
       });
 
-      it("should pass if called afer the delay nad before the confirmation period end", async () => {
+      it("should pass if called after the delay and before the confirmation period end", async () => {
         await context.contract
           .connect(context.deployParams.owner)
           .renounceOwnership();
@@ -417,6 +392,25 @@ export const shouldBehaveLikeClaimOwnership = (
         expect(
           ethers.BigNumber.from(_renounceOwnershipStartedAtAfter).toNumber()
         ).to.equal(tx.blockNumber);
+      });
+
+      it("should reset the pendingOwner whenever renounceOwnership(..) is confirmed", async () => {
+        await context.contract
+          .connect(context.deployParams.owner)
+          .transferOwnership(newOwner.address);
+
+        await context.contract
+          .connect(context.deployParams.owner)
+          .renounceOwnership();
+        
+        await network.provider.send("hardhat_mine", [ethers.utils.hexValue(100)]);
+        
+        await context.contract
+          .connect(context.deployParams.owner)
+          .renounceOwnership();
+        
+        expect(await context.contract.pendingOwner())
+          .to.equal(ethers.constants.AddressZero);
       });
     });
   });
