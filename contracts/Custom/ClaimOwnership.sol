@@ -92,5 +92,6 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
 
         _setOwner(address(0));
         delete _renounceOwnershipStartedAt;
+        delete pendingOwner;
     }
 }
