@@ -19,7 +19,7 @@ import {
   PERMISSIONS,
   ERC1271_VALUES,
 } from "../../../constants";
-import { abiCoder, ARRAY_INDEX, ARRAY_LENGTH } from "../../utils/helpers";
+import { abiCoder, ARRAY_LENGTH } from "../../utils/helpers";
 import { BytesLike } from "ethers";
 
 export type LSP6ControlledToken = {
@@ -44,7 +44,7 @@ const buildContext = async () => {
 
   const keys = [
     ERC725YKeys.LSP6["AddressPermissions[]"].length,
-    ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
+    ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
     ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
       accounts[0].address.substring(2),
   ];
@@ -99,7 +99,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
   it("should set the necessary controller permissions correctly", async () => {
     const keys = [
       ERC725YKeys.LSP6["AddressPermissions[]"].length,
-      ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
+      ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         context.accounts[0].address.substring(2),
     ];
@@ -281,7 +281,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           context,
           context.accounts[1],
           ARRAY_LENGTH.TWO,
-          ARRAY_INDEX.ONE,
+          "0".repeat(31) + "1",
           PERMISSIONS.CHANGEOWNER
         );
       });
@@ -290,8 +290,8 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         // Check that a new controller was added and other controllers remained intact
         const keys = [
           ERC725YKeys.LSP6["AddressPermissions[]"].length,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ONE,
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "1",
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             context.accounts[0].address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -369,7 +369,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           context,
           context.accounts[2],
           ARRAY_LENGTH.THREE,
-          ARRAY_INDEX.TWO,
+          "0".repeat(31) + "2",
           PERMISSIONS.CHANGEPERMISSIONS
         );
       });
@@ -378,9 +378,9 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         // Check that a new controller was added and other controllers remained intact
         const keys = [
           ERC725YKeys.LSP6["AddressPermissions[]"].length,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ONE,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.TWO,
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "1",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "2",
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             context.accounts[0].address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -459,7 +459,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           context,
           context.accounts[3],
           ARRAY_LENGTH.FOUR,
-          ARRAY_INDEX.THREE,
+          "0".repeat(31) + "3",
           PERMISSIONS.ADDPERMISSIONS
         );
       });
@@ -468,10 +468,10 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         // Check that a new controller was added and other controllers remained intact
         const keys = [
           ERC725YKeys.LSP6["AddressPermissions[]"].length,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ONE,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.TWO,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.THREE,
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "1",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "2",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "3",
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             context.accounts[0].address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -552,7 +552,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           context,
           context.accounts[4],
           ARRAY_LENGTH.FIVE,
-          ARRAY_INDEX.FOUR,
+          "0".repeat(31) + "4",
           PERMISSIONS.SETDATA
         );
       });
@@ -561,11 +561,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         // Check that a new controller was added and other controllers remained intact
         const keys = [
           ERC725YKeys.LSP6["AddressPermissions[]"].length,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ONE,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.TWO,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.THREE,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.FOUR,
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "1",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "2",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "3",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "4",
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             context.accounts[0].address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -623,7 +623,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
             [
               ethers.utils
                 .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
-                .substring(0, 34) + ARRAY_INDEX.ZERO,
+                .substring(0, 34) + "0".repeat(31) + "0",
             ],
           ]
         );
@@ -642,16 +642,16 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("FirstRandomString")),
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
-            .substring(0, 34) + ARRAY_INDEX.ZERO,
+            .substring(0, 34) + "0".repeat(31) + "0",
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
-            .substring(0, 34) + ARRAY_INDEX.ONE,
+            .substring(0, 34) + "0".repeat(31) + "1",
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
-            .substring(0, 34) + ARRAY_INDEX.TWO,
+            .substring(0, 34) + "0".repeat(31) + "2",
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
-            .substring(0, 34) + ARRAY_INDEX.THREE,
+            .substring(0, 34) + "0".repeat(31) + "3",
         ];
         const values = [
           ARRAY_LENGTH.FOUR,
@@ -687,22 +687,22 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
             .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
             .substring(0, 30) +
             "1000" +
-            ARRAY_INDEX.ZERO,
+            "0".repeat(31) + "0",
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
             .substring(0, 30) +
             "0100" +
-            ARRAY_INDEX.ONE,
+            "0".repeat(31) + "1",
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
             .substring(0, 30) +
             "0010" +
-            ARRAY_INDEX.TWO,
+            "0".repeat(31) + "2",
           ethers.utils
             .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
             .substring(0, 30) +
             "0001" +
-            ARRAY_INDEX.THREE,
+            "0".repeat(31) + "3",
         ];
         const values = [
           ARRAY_LENGTH.FOUR,
@@ -739,7 +739,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
               .keccak256(ethers.utils.toUtf8Bytes("FirstRandomString"))
               .substring(0, 30) +
               "1000" +
-              ARRAY_INDEX.ZERO
+              "0".repeat(31) + "0"
           );
       });
     });
@@ -761,7 +761,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           context,
           context.accounts[5],
           ARRAY_LENGTH.SIX,
-          ARRAY_INDEX.FIVE,
+          "0".repeat(31) + "5",
           PERMISSIONS.SIGN
         );
       });
@@ -770,12 +770,12 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         // Check that a new controller was added and other controllers remained intact
         const keys = [
           ERC725YKeys.LSP6["AddressPermissions[]"].length,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ZERO,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.ONE,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.TWO,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.THREE,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.FOUR,
-          ERC725YKeys.LSP6["AddressPermissions[]"].index + ARRAY_INDEX.FIVE,
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "0",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "1",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "2",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "3",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "4",
+          ERC725YKeys.LSP6["AddressPermissions[]"].index + "0".repeat(31) + "5",
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             context.accounts[0].address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
