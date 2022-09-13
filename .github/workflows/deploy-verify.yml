@@ -19,9 +19,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Use Node.js '16.15.0'
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.15.0"
+          node-version: "16.x"
           cache: "npm"
 
       - name: Install dependencies
@@ -43,6 +43,9 @@ jobs:
       # Save the output of the deployment in a text file.
       # For the UP, we need to specify the contract as UniversalProfile and LSP0ERC725Account have the same runtime code.
       - name: Deploy + Verify UniversalProfile + LSP6KeyManager on L16
+        # the hardhat verify command sometimes returns Unknown UID error, even if the contract got verified successfully.
+        # This would result in an error and stop the CI. Adding `if: always()` enforces all the steps to run
+        # to deploy and verify the other contracts despite this message.
         if: always()
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP6KeyManager --reset >> UP_KM_deployment.txt
@@ -60,6 +63,8 @@ jobs:
 
       - name: Deploy + Verify LSP7Mintable on L16
         if: always()
+        # LSP7 constructor takes a boolean parameter that error when passed as CLI argument.
+        # Create js file with constructor arguments to bypass this error.
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP7Mintable --reset >> LSP7_deployment.txt
           LSP7_Address=$(grep -o -E '0x(\w|\s){40}' LSP7_deployment.txt | tail -n 1)
@@ -71,8 +76,7 @@ jobs:
         run: |
           npx hardhat deploy --network luksoL16 --tags LSP8Mintable --reset >> LSP8_deployment.txt
           LSP8_ADDRESS=$(grep -o -E '0x(\w|\s){40}' LSP8_deployment.txt | tail -n 1)
-          echo "module.exports = [ 'LSP8 Mintable', 'LSP8M', '$DEPLOYER_ADDRESS' ];" >> lsp8arguments.js
-          npx hardhat verify $LSP8_ADDRESS --constructor-args lsp8arguments.js --network luksoL16
+          npx hardhat verify $LSP8_ADDRESS 'LSP8 Mintable' 'LSP8M' $DEPLOYER_ADDRESS --network luksoL16
 
       - name: Deploy + Verify LSP9Vault on L16
         if: always()
@@ -82,8 +86,9 @@ jobs:
           npx hardhat verify $LSP9_ADDRESS $DEPLOYER_ADDRESS --network luksoL16
 
   deploy-verify-base:
-    if: always()
     strategy:
+      # run each base contract verification one after the other to prevent submitting multiple transactions at the same time with the same nonce.
+      max-parallel: 1
       matrix:
         base_contract:
           [
@@ -110,7 +115,7 @@ jobs:
           key: ${{ github.run_id }}
 
       - name: Use Node.js v16
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "16.x"
           cache: "npm"
@@ -120,8 +125,7 @@ jobs:
         run: npm ci
 
       - name: Deploy + Verify ${{ matrix.base_contract }} on L16
-        if: always()
         run: |
           npx hardhat deploy --network luksoL16 --tags ${{ matrix.base_contract }} --reset >> base_deployment.txt
-          BASE_CONTRACT_ADDRESS=$(grep -o -E '0x(\w|\s){40}' base_deployment.txt.txt | tail -n 1)
+          BASE_CONTRACT_ADDRESS=$(grep -o -E '0x(\w|\s){40}' base_deployment.txt | tail -n 1)
           npx hardhat verify $BASE_CONTRACT_ADDRESS --network luksoL16

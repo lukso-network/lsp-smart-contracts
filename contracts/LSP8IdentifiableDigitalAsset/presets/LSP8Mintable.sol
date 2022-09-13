@@ -23,9 +23,7 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {
-        string memory debug = "contract verification attempt 6";
-    }
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
 
     /**
      * @inheritdoc ILSP8Mintable

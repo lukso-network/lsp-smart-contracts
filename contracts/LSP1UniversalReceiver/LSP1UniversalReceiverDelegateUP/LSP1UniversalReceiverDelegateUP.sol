@@ -58,7 +58,6 @@ contract LSP1UniversalReceiverDelegateUP is
             typeId == _TYPEID_LSP9_VAULTRECIPIENT
         ) {
             result = _tokenAndVaultHandling(sender, typeId);
-            string memory debug = "contract verification attempt 6";
         }
     }
 
