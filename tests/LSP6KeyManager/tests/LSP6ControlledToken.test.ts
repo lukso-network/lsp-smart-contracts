@@ -12,14 +12,14 @@ import {
   LSP8Mintable,
   LSP8Mintable__factory,
   LSP0ERC725Account__factory,
-} from "../types";
+} from "../../../types";
 import {
   ERC725YKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   ERC1271_VALUES,
-} from "../constants";
-import { abiCoder, ARRAY_INDEX, ARRAY_LENGTH } from "./utils/helpers";
+} from "../../../constants";
+import { abiCoder, ARRAY_INDEX, ARRAY_LENGTH } from "../../utils/helpers";
 import { BytesLike } from "ethers";
 
 export type LSP6ControlledToken = {
