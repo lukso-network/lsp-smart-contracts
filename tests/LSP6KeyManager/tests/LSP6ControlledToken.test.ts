@@ -135,34 +135,6 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
     );
   });
 
-  describe("when trying to call execute(..) function on LSP7 through LSP6", () => {
-    it("should revert because function does not exist on LSP7", async () => {
-      // deploying a dummy token contract with public mint function
-      const newTokenContract = await new LSP7Tester__factory(
-        context.owner
-      ).deploy("NewTokenName", "NewTokenSymbol", context.owner.address);
-      // creating a payload to mint tokens in the new contract
-      const mintPayload = newTokenContract.interface.encodeFunctionData(
-        "mint",
-        [context.owner.address, 1000, true, "0x"]
-      );
-
-      const payload =
-        LSP0ERC725Account__factory.createInterface().encodeFunctionData(
-          "execute",
-          [0, newTokenContract.address, 0, mintPayload]
-        );
-
-      await expect(
-        context.keyManager
-          .connect(context.owner)
-          .execute(payload)
-      ).to.be.revertedWith(
-          "LSP6: Unknown Error occured when calling the linked target contract"
-        );
-    });
-  });
-
   describe("when trying to call mint(..) function on  in LSP7 through LSP6", () => {
     it("should revert because function does not exist on LSP6", async () => {
       const LSP7 = context.token as LSP7Mintable;
@@ -774,6 +746,33 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
      * DEPLOY
      * TRANSFERVALUE
      */
+    describe("when trying to call execute(..) function on LSP7 through LSP6", () => {
+      it("should revert because function does not exist on LSP7", async () => {
+        // deploying a dummy token contract with public mint function
+        const newTokenContract = await new LSP7Tester__factory(
+          context.owner
+        ).deploy("NewTokenName", "NewTokenSymbol", context.owner.address);
+        // creating a payload to mint tokens in the new contract
+        const mintPayload = newTokenContract.interface.encodeFunctionData(
+          "mint",
+          [context.owner.address, 1000, true, "0x"]
+        );
+
+        const payload =
+          LSP0ERC725Account__factory.createInterface().encodeFunctionData(
+            "execute",
+            [0, newTokenContract.address, 0, mintPayload]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(context.owner)
+            .execute(payload)
+        ).to.be.revertedWith(
+            "LSP6: Unknown Error occured when calling the linked target contract"
+          );
+      });
+    });
 
     describe("testing SIGN permission", () => {
       before(async () => {
