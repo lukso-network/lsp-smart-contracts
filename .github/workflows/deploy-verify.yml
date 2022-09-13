@@ -13,7 +13,7 @@ on:
       - "ci/verify-contracts"
 
 jobs:
-  deploy-verify:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -40,64 +40,28 @@ jobs:
             types
           key: ${{ github.run_id }}
 
-      # Save the output of the deployment in a text file.
-      # For the UP, we need to specify the contract as UniversalProfile and LSP0ERC725Account have the same runtime code.
-      - name: Deploy + Verify UniversalProfile + LSP6KeyManager on L16
-        # the hardhat verify command sometimes returns Unknown UID error, even if the contract got verified successfully.
-        # This would result in an error and stop the CI. Adding `if: always()` enforces all the steps to run
-        # to deploy and verify the other contracts despite this message.
-        if: always()
-        run: |
-          npx hardhat deploy --network luksoL16 --tags LSP6KeyManager --reset >> UP_KM_deployment.txt
-          UP_ADDRESS=$(grep -o -E '0x(\w|\s){40}' UP_KM_deployment.txt | head -n 2 | tail -n 1)
-          npx hardhat verify $UP_ADDRESS $DEPLOYER_ADDRESS --network luksoL16 --contract contracts/UniversalProfile.sol:UniversalProfile
-          KM_ADDRESS=$(grep -o -E '0x(\w|\s){40}' UP_KM_deployment.txt | tail -n 1)
-          npx hardhat verify $KM_ADDRESS $UP_ADDRESS --network luksoL16
-
-      - name: Deploy + Verify LSP1UniversalReceiverDelegateUP on L16
-        if: always()
-        run: sh ./scripts/deploy_verify.sh -n luksoL16 -c LSP1UniversalReceiverDelegateUP
-
-      - name: Deploy + Verify LSP7Mintable on L16
-        if: always()
-        # LSP7 constructor takes a boolean parameter that error when passed as CLI argument.
-        # Create js file with constructor arguments to bypass this error.
-        run: |
-          npx hardhat deploy --network luksoL16 --tags LSP7Mintable --reset >> LSP7_deployment.txt
-          LSP7_Address=$(grep -o -E '0x(\w|\s){40}' LSP7_deployment.txt | tail -n 1)
-          echo "module.exports = [ 'LSP7 Mintable', 'LSP7M', '$DEPLOYER_ADDRESS', false ];" >> lsp7arguments.js
-          npx hardhat verify $LSP7_Address --constructor-args lsp7arguments.js --network luksoL16
-
-      - name: Deploy + Verify LSP8Mintable on L16
-        if: always()
-        run: |
-          npx hardhat deploy --network luksoL16 --tags LSP8Mintable --reset >> LSP8_deployment.txt
-          LSP8_ADDRESS=$(grep -o -E '0x(\w|\s){40}' LSP8_deployment.txt | tail -n 1)
-          npx hardhat verify $LSP8_ADDRESS 'LSP8 Mintable' 'LSP8M' $DEPLOYER_ADDRESS --network luksoL16
-
-      - name: Deploy + Verify LSP9Vault on L16
-        if: always()
-        run: |
-          npx hardhat deploy --network luksoL16 --tags LSP9Vault --reset >> LSP9_deployment.txt
-          LSP9_ADDRESS=$(grep -o -E '0x(\w|\s){40}' LSP9_deployment.txt | tail -n 1)
-          npx hardhat verify $LSP9_ADDRESS $DEPLOYER_ADDRESS --network luksoL16
-
-  deploy-verify-base:
+  deploy-verify:
+    runs-on: ubuntu-latest
+    needs: [build]
     strategy:
       # run each base contract verification one after the other to prevent submitting multiple transactions at the same time with the same nonce.
       max-parallel: 1
       matrix:
-        base_contract:
-          [
+        contracts: [
+            # Standard contracts
+            "UniversalProfile",
+            "LSP6KeyManager",
+            "LSP1UniversalReceiverDelegateUP",
+            "LSP7Mintable",
+            "LSP8Mintable",
+            "LSP9Vault",
+            # Base contracts (for proxies)
             "UniversalProfileInit",
             "LSP6KeyManagerInit",
             "LSP7MintableInit",
             "LSP8MintableInit",
             "LSP9VaultInit",
           ]
-
-    runs-on: ubuntu-latest
-    needs: [deploy-verify]
     steps:
       - uses: actions/checkout@v3
 
@@ -121,5 +85,5 @@ jobs:
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Deploy + Verify ${{ matrix.base_contract }} on L16
-        run: sh ./scripts/deploy_verify.sh -n luksoL16 -c ${{ matrix.base_contract }}
+      - name: Deploy + Verify ${{ matrix.contracts }} on L16
+        run: sh ./scripts/deploy_verify.sh -n luksoL16 -c ${{ matrix.contracts }}
