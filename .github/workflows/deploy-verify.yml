@@ -56,10 +56,7 @@ jobs:
 
       - name: Deploy + Verify LSP1UniversalReceiverDelegateUP on L16
         if: always()
-        run: |
-          npx hardhat deploy --network luksoL16 --tags LSP1UniversalReceiverDelegateUP --reset >> URD_deployment.txt
-          URD_ADDRESS=$(grep -o -E '0x(\w|\s){40}' URD_deployment.txt | tail -n 1)
-          npx hardhat verify $URD_ADDRESS --network luksoL16
+        run: sh ./scripts/deploy_verify.sh -n luksoL16 -c LSP1UniversalReceiverDelegateUP
 
       - name: Deploy + Verify LSP7Mintable on L16
         if: always()
@@ -125,7 +122,4 @@ jobs:
         run: npm ci
 
       - name: Deploy + Verify ${{ matrix.base_contract }} on L16
-        run: |
-          npx hardhat deploy --network luksoL16 --tags ${{ matrix.base_contract }} --reset >> base_deployment.txt
-          BASE_CONTRACT_ADDRESS=$(grep -o -E '0x(\w|\s){40}' base_deployment.txt | tail -n 1)
-          npx hardhat verify $BASE_CONTRACT_ADDRESS --network luksoL16
+        run: sh ./scripts/deploy_verify.sh -n luksoL16 -c ${{ matrix.base_contract }}
