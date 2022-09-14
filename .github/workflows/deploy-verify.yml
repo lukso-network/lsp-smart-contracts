@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "ci/verify-contracts"
+      - "main"
 
 jobs:
   build:
