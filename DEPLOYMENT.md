@@ -31,7 +31,7 @@ npx hardhat deploy --network luksoL16 --tags <options> --reset
 
 Available `--tags <options>` are:
 
-- `UniversalProfile`: deploy a Universal Profile with the deployer as the owner
+- `UniversalProfile`: deploy a Universal Profile with the deployer as the owner.
 
 - `UniversalProfileInit`: deploy + initialize (= lock) a Universal Profile as a base contract that can be used as implementation behind proxy.
 
@@ -39,15 +39,21 @@ Available `--tags <options>` are:
 
 - `LSP6KeyManagerInit`: deploy + initialize (= lock) both a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).   
 
-- `LSP1UniversalReceiverDelegateUP`: deploy a Universal Receiver Delegate contract that can be used to register assets received by a Universal Profile.
+- `LSP1UniversalReceiverDelegateUP`: deploy a Universal Receiver Delegate contract that can be used to register assets and vaults received by a Universal Profile.
+
+- `LSP1UniversalReceiverDelegateVault`: deploy a Universal Receiver Delegate contract that can be used to register assets received by a LSP9Vault.
 
 - `LSP7Mintable`: deploy a `LSP7Mintable` contract (Token), using the deployer address as the owner and allowing this deployer address to then mint tokens. The `isNFT_` parameter is set to `false`, making the token divisible.
 
 - `LSP8Mintable`: deploy a `LSP7Mintable` contract (NFT), using the deployer address as the owner and allowing this deployer address to then mint tokens.
 
-- `LSP7MintableInit`: deploy + initialize (= lock) a `LSP7MintableInit` contract (Token), that can be used as implementation behind proxy.  The base contract is deployed with the `isNFT_` parameter set to `false`, making the implementation token divisible.
+- `LSP7MintableInit`: deploy + initialize (= lock) a `LSP7MintableInit` contract (Token), that can be used as implementation behind proxy. The base contract is deployed with the `isNonDivisible_` parameter set to `false`, making the implementation token divisible.
 
 - `LSP8MintableInit`: deploy + initialize (= lock) a `LSP8MintableInit` contract, that can be used as implementation behind proxy.
+
+- `LSP9Vault`: deploy a `LSP9Vault` contract with the deployer as the owner.
+
+- `LSP9VaultInit`: deploy + initialize (= lock) a `LSP9VaultInit` contract that can be used as implementation behind proxy.
 
 
 - `standard`: deploy the 4 standard contract above.
@@ -102,7 +108,7 @@ See the following commands below for examples.
 
 ```bash
 # verify a Universal Profile
-npx hardhat verify <address of the deployed Universal Profile> "constructor arguments" --network luksoL16 --contract path/to/UniversalProfileContract.sol:ContractName
+npx hardhat verify <address of the deployed Universal Profile> "profile-owner" --network luksoL16 --contract path/to/UniversalProfileContract.sol:ContractName
 
 # verify a Key Manager
 npx hardhat verify <address of the deployed Key Manager> "address-of-UP-linked-to-KM" --network luksoL16
@@ -112,6 +118,9 @@ npx hardhat verify <address of the deployed URD> --network luksoL16
 
 ## Verify a LSP8 contract
 npx hardhat verify <address of the LSP8 contract> "token-name" "token-symbol" "owner-address" --network luksoL16
+
+## Verify a LSP9 contracts
+npx hardhat verify <address of the LSP9 contract> "vault-owner" --network luksoL16
 ```
 
 For base contracts (to be used as implementation behind proxies), the same commands can be used without the constructor arguments.
