@@ -323,6 +323,19 @@ export const shouldBehaveLikeClaimOwnership = (
           .to.equal(context.deployParams.owner.address);
       });
 
+      it("should not reset the pendingOwner", async () => {
+        await context.contract
+          .connect(context.deployParams.owner)
+          .transferOwnership(newOwner.address);
+
+        await context.contract
+          .connect(context.deployParams.owner)
+          .renounceOwnership();
+        
+        expect(await context.contract.pendingOwner())
+          .to.equal(newOwner.address);
+      });
+
     });
 
     describe("when calling renounceOwnership() the second time", () => {
@@ -391,7 +404,8 @@ export const shouldBehaveLikeClaimOwnership = (
 
         expect(
           ethers.BigNumber.from(_renounceOwnershipStartedAtAfter).toNumber()
-        ).to.equal(tx.blockNumber);
+        )
+          .to.equal(tx.blockNumber);
       });
 
       it("should reset the pendingOwner whenever renounceOwnership(..) is confirmed", async () => {
