@@ -63,7 +63,7 @@ abstract contract ClaimOwnership is IClaimOwnership, OwnableUnset {
     function _claimOwnership() internal virtual {
         require(msg.sender == pendingOwner, "ClaimOwnership: caller is not the pendingOwner");
         _setOwner(pendingOwner);
-        pendingOwner = address(0);
+        delete pendingOwner;
     }
 
     function _transferOwnership(address newOwner) internal virtual {
