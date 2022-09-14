@@ -2,13 +2,14 @@ import { expect } from "chai";
 import { ethers, network } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { LSP0ERC725Account, LSP9Vault } from "../types";
+import { contracts, LSP0ERC725Account, LSP9Vault } from "../types";
 
 // constants
-import { OPERATION_TYPES } from "../constants";
+import { INTERFACE_IDS, OPERATION_TYPES } from "../constants";
 
 // helpers
 import { provider } from "./utils/helpers";
+import { lsp0Erc725Account } from "../types/factories/contracts";
 
 export type ClaimOwnershipTestContext = {
   accounts: SignerWithAddress[];
@@ -485,11 +486,21 @@ export const shouldBehaveLikeClaimOwnership = (
               ethers.utils.toUtf8Bytes("Random Value")
             );
 
+            /** @todo check using Typescript type */
+            const getExpectedRevertString = async () => {
+              if (await context.contract.supportsInterface(INTERFACE_IDS.LSP9Vault)) {
+                return "Only Owner or Universal Receiver Delegate allowed";
+              } else {
+                return "Ownable: caller is not the owner";
+              }
+            }
+            const revertString = await getExpectedRevertString()
+
             await expect(
               context.contract
                 .connect(context.deployParams.owner)
                 ["setData(bytes32,bytes)"](key, value)
-            ).to.be.revertedWith("Ownable: caller is not the owner");
+            ).to.be.revertedWith(revertString);
           });
 
           it("transfer LYX via `execute(...)`", async () => {
