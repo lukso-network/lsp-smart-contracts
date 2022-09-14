@@ -39,7 +39,9 @@ Available `--tags <options>` are:
 
 - `LSP6KeyManagerInit`: deploy + initialize (= lock) both a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).   
 
-- `LSP1UniversalReceiverDelegateUP`: deploy a Universal Receiver Delegate contract that can be used to register assets received by a Universal Profile.
+- `LSP1UniversalReceiverDelegateUP`: deploy a Universal Receiver Delegate contract that can be used to register assets and vaults received by a Universal Profile.
+
+- `LSP1UniversalReceiverDelegateVault`: deploy a Universal Receiver Delegate contract that can be used to register assets received by a LSP9Vault.
 
 - `LSP7Mintable`: deploy a `LSP7Mintable` contract (Token), using the deployer address as the owner and allowing this deployer address to then mint tokens. The `isNFT_` parameter is set to `false`, making the token divisible.
 

@@ -44,7 +44,7 @@ elif [ "${contract}" = "LSP9Vault" ]
 then
     npx hardhat verify $CONTRACT_ADDRESS $DEPLOYER_ADDRESS --network luksoL16
 
-# Default: verify contract without any constructor arguments
+# Default: verify contract without any constructor arguments (LSP!UniversalReceiverDelegate of UP or Vault)
 else
     npx hardhat verify $CONTRACT_ADDRESS --network luksoL16
 fi

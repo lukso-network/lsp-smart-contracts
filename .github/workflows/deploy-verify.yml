@@ -52,6 +52,7 @@ jobs:
             "UniversalProfile",
             "LSP6KeyManager",
             "LSP1UniversalReceiverDelegateUP",
+            "LSP1UniversalReceiverDelegateVault",
             "LSP7Mintable",
             "LSP8Mintable",
             "LSP9Vault",
