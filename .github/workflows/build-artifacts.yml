@@ -1,9 +1,6 @@
 # This workflow builds Android and iOS SDK artifacts
 name: Build Artifacts
 
-env:
-  CONTRACT_VERIFICATION_PK: ${{ secrets.CONTRACT_VERIFICATION_PK }}
-
 on:
   pull_request:
     branches:

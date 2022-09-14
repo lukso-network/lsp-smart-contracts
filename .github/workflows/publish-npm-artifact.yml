@@ -1,9 +1,6 @@
 # This workflow build and publish NPM artifacts
 name: Publish NPM artifacts
 
-env:
-  CONTRACT_VERIFICATION_PK: ${{ secrets.CONTRACT_VERIFICATION_PK }}
-
 on:
   repository_dispatch:
     types: [trigger-release]

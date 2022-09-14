@@ -1,4 +1,5 @@
 import { HardhatUserConfig } from "hardhat/config";
+import { NetworkUserConfig } from "hardhat/types";
 import { config as dotenvConfig } from "dotenv";
 import { resolve } from "path";
 
@@ -28,6 +29,20 @@ import "@nomiclabs/hardhat-web3";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
+function getL16ChainConfig(): NetworkUserConfig {
+  const config = {
+    live: true,
+    url: "https://rpc.l16.lukso.network",
+    chainId: 2828,
+  };
+
+  if (process.env.CONTRACT_VERIFICATION_PK !== undefined) {
+    config['accounts'] = [process.env.CONTRACT_VERIFICATION_PK];
+  }
+
+  return config;
+}
+
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
@@ -42,12 +57,7 @@ const config: HardhatUserConfig = {
       chainId: 22,
       //   accounts: [privateKey1, privateKey2, ...]
     },
-    luksoL16: {
-      live: true,
-      url: "https://rpc.l16.lukso.network",
-      chainId: 2828,
-      accounts: [process.env.CONTRACT_VERIFICATION_PK],
-    },
+    luksoL16: getL16ChainConfig()
   },
   namedAccounts: {
     owner: 0,
