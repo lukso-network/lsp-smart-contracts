@@ -11,7 +11,10 @@ import {
 import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 import {LSP7CompatibleERC20Core} from "./LSP7CompatibleERC20Core.sol";
 
-contract LSP7CompatibleERC20InitAbstract is LSP7DigitalAssetInitAbstract, LSP7CompatibleERC20Core {
+abstract contract LSP7CompatibleERC20InitAbstract is
+    LSP7DigitalAssetInitAbstract,
+    LSP7CompatibleERC20Core
+{
     function _initialize(
         string memory name_,
         string memory symbol_,

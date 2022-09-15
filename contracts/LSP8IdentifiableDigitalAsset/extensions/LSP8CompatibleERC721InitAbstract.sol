@@ -20,7 +20,7 @@ import {_INTERFACEID_ERC721, _INTERFACEID_ERC721METADATA} from "./LSP8Compatible
 /**
  * @dev LSP8 extension, for compatibility for clients / tools that expect ERC721.
  */
-contract LSP8CompatibleERC721InitAbstract is
+abstract contract LSP8CompatibleERC721InitAbstract is
     LSP8IdentifiableDigitalAssetInitAbstract,
     LSP8CompatibleERC721Core
 {
