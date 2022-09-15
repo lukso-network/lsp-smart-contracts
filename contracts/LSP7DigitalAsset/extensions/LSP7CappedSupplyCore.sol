@@ -2,16 +2,13 @@
 
 pragma solidity ^0.8.0;
 
-// interfaces
-import {ILSP7CappedSupply} from "./ILSP7CappedSupply.sol";
-
 // modules
 import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
-abstract contract LSP7CappedSupplyCore is LSP7DigitalAssetCore, ILSP7CappedSupply {
+abstract contract LSP7CappedSupplyCore is LSP7DigitalAssetCore {
     // --- Errors
 
     error LSP7CappedSupplyRequired();
@@ -24,7 +21,8 @@ abstract contract LSP7CappedSupplyCore is LSP7DigitalAssetCore, ILSP7CappedSuppl
     // --- Token queries
 
     /**
-     * @inheritdoc ILSP7CappedSupply
+     * @dev Returns the number of tokens that can be minted
+     * @return The number of tokens that can be minted
      */
     function tokenSupplyCap() public view virtual returns (uint256) {
         return _tokenSupplyCap;

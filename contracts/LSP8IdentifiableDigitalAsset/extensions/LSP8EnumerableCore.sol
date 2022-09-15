@@ -2,16 +2,13 @@
 
 pragma solidity ^0.8.0;
 
-// interfaces
-import {ILSP8Enumerable} from "./ILSP8Enumerable.sol";
-
 // modules
 import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 /**
  * @dev LSP8 extension, adds access to a token id by an index.
  */
-abstract contract LSP8EnumerableCore is LSP8IdentifiableDigitalAssetCore, ILSP8Enumerable {
+abstract contract LSP8EnumerableCore is LSP8IdentifiableDigitalAssetCore {
     // Mapping from token index to token id
     mapping(uint256 => bytes32) private _indexToken;
 
@@ -19,7 +16,8 @@ abstract contract LSP8EnumerableCore is LSP8IdentifiableDigitalAssetCore, ILSP8E
     mapping(bytes32 => uint256) private _tokenIndex;
 
     /**
-     * @inheritdoc ILSP8Enumerable
+     * @dev Returns a token id at index. See totalSupply() to get total number of minted tokens.
+     * @return TokenId or 0x00 if no token exist at the index `index`
      */
     function tokenAt(uint256 index) public view returns (bytes32) {
         return _indexToken[index];
