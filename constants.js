@@ -75,12 +75,12 @@ const ERC725YKeys = {
 			'0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',
 	},
 	LSP3: {
-		SupportedStandards_LSP3: SupportedStandards.LSP3UniversalProfile,
+		SupportedStandards_LSP3: SupportedStandards.LSP3UniversalProfile.key,
 		// keccak256('LSP3Profile')
 		LSP3Profile: '0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5',
 	},
 	LSP4: {
-		SupportedStandards_LSP4: SupportedStandards.LSP4DigitalAsset,
+		SupportedStandards_LSP4: SupportedStandards.LSP4DigitalAsset.key,
 		// keccak256('LSP4TokenName')
 		LSP4TokenName: '0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1',
 		// keccak256('LSP4TokenSymbol')
@@ -124,7 +124,7 @@ const ERC725YKeys = {
 		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
 	},
 	LSP9: {
-		SupportedStandards_LSP9: SupportedStandards.LSP9Vault,
+		SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
 	},
 	LSP10: {
 		// keccak256('LSP10VaultsMap')
@@ -219,7 +219,8 @@ const Errors = {
 	ClaimOwnership: {
 		'0x8b9bf507': {
 			error: 'NotInRenounceOwnershipInterval(uint256,uint256)',
-			message: 'ClaimOwnership: Second renounce ownership call available after 100 block delay from the first call',
+			message:
+				'ClaimOwnership: Second renounce ownership call available after 100 block delay from the first call',
 		},
 		'0x43b248cd': {
 			error: 'CannotTransferOwnershipToSelf()',
