@@ -1,20 +1,34 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
+// interfaces
+import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
+import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
+
 // modules
+import {LSP4Compatibility} from "../../LSP4DigitalAssetMetadata/LSP4Compatibility.sol";
 import {
     LSP7DigitalAssetInitAbstract,
     LSP4DigitalAssetMetadataInitAbstract,
     ERC725YCore
 } from "../LSP7DigitalAssetInitAbstract.sol";
 import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
-import {LSP7CompatibleERC20Core} from "./LSP7CompatibleERC20Core.sol";
 
+/**
+ * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
+ */
 abstract contract LSP7CompatibleERC20InitAbstract is
-    LSP7DigitalAssetInitAbstract,
-    LSP7CompatibleERC20Core
+    ILSP7CompatibleERC20,
+    LSP4Compatibility,
+    LSP7DigitalAssetInitAbstract
 {
+    /**
+     * @notice Sets the name, the symbol and the owner of the token
+     * @param name_ The name of the token
+     * @param symbol_ The symbol of the token
+     * @param newOwner_ The owner of the token
+     */
+
     function _initialize(
         string memory name_,
         string memory symbol_,
@@ -23,31 +37,57 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, false);
     }
 
+    /**
+     * @inheritdoc ILSP7CompatibleERC20
+     */
+    function allowance(address tokenOwner, address operator) public view virtual returns (uint256) {
+        return authorizedAmountFor(operator, tokenOwner);
+    }
+
+    /**
+     * @inheritdoc ILSP7CompatibleERC20
+     */
+    function approve(address operator, uint256 amount) public virtual returns (bool) {
+        authorizeOperator(operator, amount);
+        return true;
+    }
+
+    /**
+     * @inheritdoc ILSP7CompatibleERC20
+     * @dev Compatible with ERC20 transferFrom.
+     * Using force=true so that EOA and any contract may receive the tokens.
+     */
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public virtual returns (bool) {
+        transfer(from, to, amount, true, "");
+        return true;
+    }
+
     // --- Overrides
 
+    /**
+     * @inheritdoc ILSP7DigitalAsset
+     */
     function authorizeOperator(address operator, uint256 amount)
         public
         virtual
-        override(LSP7DigitalAssetCore, LSP7CompatibleERC20Core)
+        override(ILSP7DigitalAsset, LSP7DigitalAssetCore)
     {
         super.authorizeOperator(operator, amount);
+        emit Approval(msg.sender, operator, amount);
     }
 
-    function _burn(
-        address from,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual override(LSP7DigitalAssetCore, LSP7CompatibleERC20Core) {
-        super._burn(from, amount, data);
-    }
-
-    function _mint(
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) internal virtual override(LSP7DigitalAssetCore, LSP7CompatibleERC20Core) {
-        super._mint(to, amount, force, data);
+    /**
+     * @inheritdoc ILSP7CompatibleERC20
+     * @dev Compatible with ERC20 transfer.
+     * Using force=true so that EOA and any contract may receive the tokens.
+     */
+    function transfer(address to, uint256 amount) public virtual override returns (bool) {
+        transfer(msg.sender, to, amount, true, "");
+        return true;
     }
 
     function _transfer(
@@ -56,8 +96,28 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         uint256 amount,
         bool force,
         bytes memory data
-    ) internal virtual override(LSP7DigitalAssetCore, LSP7CompatibleERC20Core) {
+    ) internal virtual override {
         super._transfer(from, to, amount, force, data);
+        emit Transfer(from, to, amount);
+    }
+
+    function _mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        super._mint(to, amount, force, data);
+        emit Transfer(address(0), to, amount);
+    }
+
+    function _burn(
+        address from,
+        uint256 amount,
+        bytes memory data
+    ) internal virtual override {
+        super._burn(from, amount, data);
+        emit Transfer(from, address(0), amount);
     }
 
     function _setData(bytes32 key, bytes memory value)
