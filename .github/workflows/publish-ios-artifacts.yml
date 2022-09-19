@@ -29,10 +29,12 @@ jobs:
           git checkout main
           git config --global user.email "release@lukso.network"
           git config --global user.name "LUKSO Bot"
-          git push origin --delete abi-update-release
+          if git show-ref --quiet abi-update-release; then
+            git push origin --delete abi-update-release
+          fi
           git checkout -b abi-update-release
           cp ../ios/UPContractsAbi.swift Sources/UniversalProfile/UpContractsAbi.swift
           git add .
           current_version=$(git describe --tags --abbrev=0)
-          git commit -m "Automatic publish of new contracts ABIs ($current_version) from lukso-network/lsp-smart-contracts"
+          git commit -m "ci: automatic publish of new contracts ABIs ($current_version) from lukso-network/lsp-smart-contracts"
           git push --set-upstream origin abi-update-release
