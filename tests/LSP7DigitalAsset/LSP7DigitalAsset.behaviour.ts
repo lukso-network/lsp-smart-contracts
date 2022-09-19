@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import type { BigNumber } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
@@ -1266,6 +1266,377 @@ export const shouldBehaveLikeLSP7 = (
               });
             });
           });
+        });
+      });
+    });
+  });
+
+  describe("burn", () => {
+    describe("when caller is the `from` address", () => {
+      describe("when using address(0) as `from` address", () => {
+        it("should revert", async () => {
+          const caller = context.accounts.anyone;
+          const amount = 10;
+
+          await expect(
+            context.lsp7
+              .connect(caller)
+              .burn(ethers.constants.AddressZero, amount, "0x")
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7CannotSendWithAddressZero"
+          );
+        });
+      });
+
+      describe("when caller has no token balance", () => {
+        it("should revert", async () => {
+          const caller = context.accounts.anyone;
+          const amount = 10;
+
+          await expect(
+            context.lsp7.connect(caller).burn(caller.address, amount, "0x")
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp7,
+              "LSP7AmountExceedsBalance"
+            )
+            .withArgs(0, caller.address, amount);
+        });
+      });
+
+      describe("when caller has some token balance", () => {
+        beforeEach(async () => {
+          // mint some initial tokens
+          await context.lsp7.mint(
+            context.accounts.owner.address,
+            100,
+            true,
+            "0x"
+          );
+        });
+
+        describe("when burning all its tokens", () => {
+          it("caller balance should then be zero", async () => {
+            const caller = context.accounts.owner;
+            const amount = await context.lsp7.balanceOf(caller.address);
+
+            await context.lsp7
+              .connect(caller)
+              .burn(caller.address, amount, "0x");
+
+            const newBalance = await context.lsp7.balanceOf(caller.address);
+            expect(newBalance).to.equal(0);
+          });
+
+          it("should have decreased the total supply", async () => {
+            const caller = context.accounts.owner;
+            const amount = await context.lsp7.balanceOf(caller.address);
+            const initialSupply = await context.lsp7.totalSupply();
+
+            await context.lsp7
+              .connect(caller)
+              .burn(caller.address, amount, "0x");
+
+            const newSupply = await context.lsp7.totalSupply();
+            expect(newSupply).to.equal(initialSupply.sub(amount));
+          });
+
+          it("should emit a Transfer event with address(0) for `to`", async () => {
+            const caller = context.accounts.owner;
+            const amount = await context.lsp7.balanceOf(caller.address);
+
+            await expect(
+              context.lsp7.connect(caller).burn(caller.address, amount, "0x")
+            )
+              .to.emit(context.lsp7, "Transfer")
+              .withArgs(
+                caller.address,
+                caller.address,
+                ethers.constants.AddressZero,
+                amount,
+                false,
+                "0x"
+              );
+          });
+        });
+
+        describe("when burning less than its tokens balance", () => {
+          it("caller balance should then be decreased", async () => {
+            const caller = context.accounts.owner;
+            const initialBalance = await context.lsp7.balanceOf(caller.address);
+            const amount = 10;
+
+            await context.lsp7
+              .connect(caller)
+              .burn(caller.address, amount, "0x");
+
+            const newBalance = await context.lsp7.balanceOf(caller.address);
+            expect(newBalance).to.equal(initialBalance.sub(amount));
+          });
+
+          it("should have decreased the total supply", async () => {
+            const caller = context.accounts.owner;
+            const amount = 10;
+            const initialSupply = await context.lsp7.totalSupply();
+
+            await context.lsp7
+              .connect(caller)
+              .burn(caller.address, amount, "0x");
+
+            const newSupply = await context.lsp7.totalSupply();
+            expect(newSupply).to.equal(initialSupply.sub(amount));
+          });
+
+          it("should emit a Transfer event with address(0) for `to`", async () => {
+            const caller = context.accounts.owner;
+            const amount = 10;
+
+            await expect(
+              context.lsp7.connect(caller).burn(caller.address, amount, "0x")
+            )
+              .to.emit(context.lsp7, "Transfer")
+              .withArgs(
+                caller.address,
+                caller.address,
+                ethers.constants.AddressZero,
+                amount,
+                false,
+                "0x"
+              );
+          });
+        });
+
+        describe("when burning more than its token balance", () => {
+          it("should revert", async () => {
+            const caller = context.accounts.owner;
+            const balance = await context.lsp7.balanceOf(caller.address);
+            const amount = 1000;
+
+            await expect(
+              context.lsp7.connect(caller).burn(caller.address, amount, "0x")
+            )
+              .to.be.revertedWithCustomError(
+                context.lsp7,
+                "LSP7AmountExceedsBalance"
+              )
+              .withArgs(balance, caller.address, amount);
+          });
+        });
+      });
+    });
+
+    describe("when caller is not an operator for `from`", () => {
+      it("should revert", async () => {
+        // mint some initial tokens
+        await context.lsp7.mint(
+          context.accounts.owner.address,
+          100,
+          true,
+          "0x"
+        );
+
+        const caller = context.accounts.anyone;
+        const amount = 10;
+
+        await expect(
+          context.lsp7
+            .connect(caller)
+            .burn(context.accounts.owner.address, amount, "0x")
+        )
+          .to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7AmountExceedsAuthorizedAmount"
+          )
+          .withArgs(context.accounts.owner.address, 0, caller.address, amount);
+      });
+    });
+
+    describe("when caller is an operator for `from`", () => {
+      const operatorAllowance = 20;
+
+      beforeEach(async () => {
+        // mint some initial tokens
+        await context.lsp7.mint(
+          context.accounts.owner.address,
+          100,
+          true,
+          "0x"
+        );
+
+        await context.lsp7.authorizeOperator(
+          context.accounts.operator.address,
+          operatorAllowance
+        );
+      });
+
+      describe("when burning all its allowance", () => {
+        it("operator allowance should then be zero", async () => {
+          const operator = context.accounts.operator;
+          const amount = operatorAllowance;
+
+          await context.lsp7
+            .connect(operator)
+            .burn(context.accounts.owner.address, amount, "0x");
+
+          const newAllowance = await context.lsp7.authorizedAmountFor(
+            operator.address,
+            context.accounts.owner.address
+          );
+          expect(newAllowance).to.equal(0);
+        });
+
+        it("token owner balance should have decreased", async () => {
+          const operator = context.accounts.operator;
+          const amount = operatorAllowance;
+          const initialBalance = await context.lsp7.balanceOf(
+            context.accounts.owner.address
+          );
+
+          await context.lsp7
+            .connect(operator)
+            .burn(context.accounts.owner.address, amount, "0x");
+
+          const newBalance = await context.lsp7.balanceOf(
+            context.accounts.owner.address
+          );
+          expect(newBalance).to.equal(initialBalance.sub(amount));
+        });
+
+        it("should have decreased the total supply", async () => {
+          const operator = context.accounts.operator;
+          const amount = operatorAllowance;
+          const initialSupply = await context.lsp7.totalSupply();
+
+          await context.lsp7
+            .connect(operator)
+            .burn(context.accounts.owner.address, amount, "0x");
+
+          const newSupply = await context.lsp7.totalSupply();
+          expect(newSupply).to.equal(initialSupply.sub(amount));
+        });
+
+        it("should emit a Transfer event with address(0) for `to`", async () => {
+          const operator = context.accounts.operator;
+          const amount = operatorAllowance;
+
+          await expect(
+            context.lsp7
+              .connect(operator)
+              .burn(context.accounts.owner.address, amount, "0x")
+          )
+            .to.emit(context.lsp7, "Transfer")
+            .withArgs(
+              operator.address,
+              context.accounts.owner.address,
+              ethers.constants.AddressZero,
+              amount,
+              false,
+              "0x"
+            );
+        });
+      });
+
+      describe("when burning part of its allowance", () => {
+        it("operator allowance should have decreased", async () => {
+          const amount = 10;
+          assert.isBelow(amount, operatorAllowance);
+
+          const operator = context.accounts.operator;
+          const initialAllowance = await context.lsp7.authorizedAmountFor(
+            operator.address,
+            context.accounts.owner.address
+          );
+
+          await context.lsp7
+            .connect(operator)
+            .burn(context.accounts.owner.address, amount, "0x");
+
+          const newAllowance = await context.lsp7.authorizedAmountFor(
+            operator.address,
+            context.accounts.owner.address
+          );
+
+          expect(newAllowance).to.equal(initialAllowance.sub(amount));
+        });
+
+        it("token owner balance should have decreased", async () => {
+          const amount = 10;
+          assert.isBelow(amount, operatorAllowance);
+
+          const operator = context.accounts.operator;
+          const initialBalance = await context.lsp7.balanceOf(
+            context.accounts.owner.address
+          );
+
+          await context.lsp7
+            .connect(operator)
+            .burn(context.accounts.owner.address, amount, "0x");
+
+          const newBalance = await context.lsp7.balanceOf(
+            context.accounts.owner.address
+          );
+          expect(newBalance).to.equal(initialBalance.sub(amount));
+        });
+
+        it("should have decreased the total supply", async () => {
+          const amount = 10;
+          assert.isBelow(amount, operatorAllowance);
+
+          const operator = context.accounts.operator;
+          const initialSupply = await context.lsp7.totalSupply();
+
+          await context.lsp7
+            .connect(operator)
+            .burn(context.accounts.owner.address, amount, "0x");
+
+          const newSupply = await context.lsp7.totalSupply();
+          expect(newSupply).to.equal(initialSupply.sub(amount));
+        });
+
+        it("should emit a Transfer event with address(0) for `to`", async () => {
+          const amount = 10;
+          assert.isBelow(amount, operatorAllowance);
+
+          const operator = context.accounts.operator;
+
+          await expect(
+            context.lsp7
+              .connect(operator)
+              .burn(context.accounts.owner.address, amount, "0x")
+          )
+            .to.emit(context.lsp7, "Transfer")
+            .withArgs(
+              operator.address,
+              context.accounts.owner.address,
+              ethers.constants.AddressZero,
+              amount,
+              false,
+              "0x"
+            );
+        });
+      });
+
+      describe("when burning more than its allowance", () => {
+        it("should revert", async () => {
+          const amount = 100;
+          assert.isAbove(amount, operatorAllowance);
+
+          await expect(
+            context.lsp7
+              .connect(context.accounts.operator)
+              .burn(context.accounts.owner.address, amount, "0x")
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp7,
+              "LSP7AmountExceedsAuthorizedAmount"
+            )
+            .withArgs(
+              context.accounts.owner.address,
+              operatorAllowance,
+              context.accounts.operator.address,
+              amount
+            );
         });
       });
     });
