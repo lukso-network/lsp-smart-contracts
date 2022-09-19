@@ -7,26 +7,60 @@ analyze:
   mode: deep
   async: true
   create-group: true
-  group-name: "@lukso/lsp-universalprofile-smart-contracts"
+  group-name: "@lukso/lsp-smart-contracts"
   solc: 0.8.7
   remappings:
     - "@erc725/smart-contracts/=node_modules/@erc725/smart-contracts/"
     - "@openzeppelin/=node_modules/@openzeppelin/"
     - "solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
   targets:
+    # LSP1
+    # ------------------
+    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol
+    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol
     # Standard version
     # ------------------
     - contracts/UniversalProfile.sol
+    - contracts/LSP0ERC725Account/LSP0ERC725Account.sol
+    - contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.sol
     - contracts/LSP6KeyManager/LSP6KeyManager.sol
-    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP.sol
-    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault.sol
     - contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol
+    - contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol
+    - contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20Mintable.sol
+    - contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply.sol
+    - contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol
     - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol
+    - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol
+    - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721Mintable.sol
+    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol
+    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721.sol
+    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol
+    - contracts/LSP9Vault/LSP9Vault.sol
     # Proxy version
     # ------------------
     - contracts/UniversalProfileInit.sol
+    - contracts/LSP0ERC725Account/LSP0ERC725AccountInit.sol
+    - contracts/LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadataInit.sol
     - contracts/LSP6KeyManager/LSP6KeyManagerInit.sol
-    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUPInit.sol
-    - contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVaultInit.sol
-    - contracts/LSP7DigitalAsset/LSP7DigitalAssetInit.sol
-    - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInit.sol
+    - contracts/LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol
+    - contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol
+    - contracts/LSP7DigitalAsset/presets/LSP7CompatibleERC20MintableInit.sol
+    - contracts/LSP7DigitalAsset/extensions/LSP7CappedSupplyInit.sol
+    - contracts/LSP7DigitalAsset/extensions/LSP7CompatibleERC20Init.sol
+    - contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol
+    - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol
+    - contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CompatibleERC721MintableInit.sol
+    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInit.sol
+    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CompatibleERC721Init.sol
+    - contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8EnumerableInitAbstract.sol
+    - contracts/LSP9Vault/LSP9VaultInit.sol
+    # Factories
+    # ------------------
+    - contracts/Factories/Create2Factory.sol
+    - contracts/Factories/UniversalFactory.sol
+    # Others
+    # ------------------
+    - contracts/Custom/ClaimOwnership.sol
+    # Legacy L14
+    # ------------------
+    - contracts/Legacy/UniversalReceiverAddressStore.sol

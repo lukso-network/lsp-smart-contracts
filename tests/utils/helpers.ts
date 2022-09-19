@@ -1,70 +1,14 @@
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 
+export const abiCoder = ethers.utils.defaultAbiCoder;
+export const provider = ethers.provider;
+
+export const AddressOffset = "000000000000000000000000";
 export const EMPTY_PAYLOAD = "0x";
-export const DUMMY_PAYLOAD = "0xaabbccdd123456780000000000";
-export const ONE_ETH = ethers.utils.parseEther("1");
 
-export const DUMMY_PRIVATEKEY =
-  "0xcafecafe7D0F0EBcafeC2D7cafe84cafe3248DDcafe8B80C421CE4C55A26cafe";
-
-export const DUMMY_RECIPIENT = ethers.utils.getAddress(
-  "0xcafecafecafecafecafecafecafecafecafecafe"
-);
-
-export const RANDOM_BYTES32 =
-  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-export const ERC777TokensRecipient =
-  "0xb281fc8c12954d22544db45de3159a39272895b169a852b314f9cc762e44c53b";
-
-export const LSP5_ARRAY_KEY = {
-  ELEMENT1:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000000",
-  ELEMENT2:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000001",
-  ELEMENT3:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000002",
-  ELEMENT4:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000003",
-  ELEMENT5:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000004",
-  ELEMENT6:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000005",
-  ELEMENT7:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000006",
-  ELEMENT8:
-    "0x6460ee3c0aac563ccbf76d6e1d07bada00000000000000000000000000000007",
-};
-
-export const LSP10_ARRAY_KEY = {
-  ELEMENT1:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000000",
-  ELEMENT2:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000001",
-  ELEMENT3:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000002",
-  ELEMENT4:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000003",
-  ELEMENT5:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000004",
-  ELEMENT6:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000005",
-  ELEMENT7:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000006",
-  ELEMENT8:
-     "0x55482936e01da86729a45d2b87a6b1d300000000000000000000000000000007",
-};
-
-// bytes8 index
-export const INDEX = {
-  ZERO: "0000000000000000",
-  ONE: "0000000000000001",
-  TWO: "0000000000000002",
-  THREE: "0000000000000003",
-  FOUR: "0000000000000004",
-  FIVE: "0000000000000005",
-  SIX: "0000000000000006",
-  SEVEN: "0000000000000007",
-};
+export const LSP1_HOOK_PLACEHOLDER =
+  "0xffffffffffffffff0000000000000000aaaaaaaaaaaaaaaa1111111111111111";
 
 // bytes32 arraylength
 
@@ -92,12 +36,12 @@ export const TOKEN_ID = {
   EIGHT: "0x367f9d97f8dd1bece61f8b74c5db7616958147682674fd32de73490bd6347f60",
 };
 
-export function getRandomAddresses(count) {
-  let base = "0xa56039d89BD9451A1ac94a680a20302da2dE92";
-
-  let addresses = [];
-  for (let ii = 10; ii < count + 10; ii++) {
-    let randomAddress = "0x" + parseInt(base + ii).toString(16);
+export function getRandomAddresses(count: Number): string[] {
+  let addresses: string[] = [];
+  for (let ii = 0; ii < count; ii++) {
+    // addresses stored under ERC725Y storage have always lowercases character.
+    // therefore, disable the checksum by converting to lowercase to avoid failing tests
+    let randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
     addresses.push(randomAddress);
   }
 
@@ -105,11 +49,13 @@ export function getRandomAddresses(count) {
 }
 
 export function generateKeysAndValues(_elementObject) {
-  let keys = [];
-  let values = [];
+  let keys: string[] = [];
+  let values: string[] = [];
   for (const [_key, _value] of Object.entries(_elementObject)) {
     let key = ethers.utils.toUtf8Bytes(_key);
-    let value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(_value));
+    let value = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes(_value as string)
+    );
 
     keys.push(ethers.utils.keccak256(key));
     values.push(value);
@@ -118,22 +64,15 @@ export function generateKeysAndValues(_elementObject) {
   return [keys, values];
 }
 
-// LSP6 - KeyManager
-
-const customRevertErrorMessage =
-  "VM Exception while processing transaction: reverted with custom error";
-
-export const NotAuthorisedError = (_from, _permission) => {
-  return `${customRevertErrorMessage} 'NotAuthorised("${_from}", "${_permission}")'`;
-};
-
-export const NotAllowedAddressError = (_from, _to) => {
-  return `${customRevertErrorMessage} 'NotAllowedAddress("${_from}", "${_to}")'`;
-};
-
-export const NotAllowedFunctionError = (_from, _functionSelector) => {
-  return `${customRevertErrorMessage} 'NotAllowedFunction("${_from}", "${_functionSelector}")'`;
-};
+export function getRandomString() {
+  const value =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const randoms = [];
+  for (let i = 0; i < 32; i++) {
+    randoms.push(value[Math.floor(Math.random() * value.length)]);
+  }
+  return randoms.join("");
+}
 
 export async function getMapAndArrayKeyValues(
   account,
@@ -141,11 +80,25 @@ export async function getMapAndArrayKeyValues(
   arrayKey: string,
   elementInArray: string
 ) {
-  let [mapValue, arrayLength, elementAddress] = await account.getData([
-    vaultMapKey,
-    arrayKey,
-    elementInArray,
-  ]);
+  // prettier-ignore
+  let [mapValue, arrayLength, elementAddress] = await account["getData(bytes32[])"](
+        [
+            vaultMapKey, 
+            arrayKey, 
+            elementInArray
+        ]
+    );
 
   return [mapValue, arrayLength, elementAddress];
+}
+
+export function combinePermissions(..._permissions: string[]) {
+  let result: BigNumber = ethers.BigNumber.from(0);
+
+  _permissions.forEach((permission) => {
+    let permissionAsBN = ethers.BigNumber.from(permission);
+    result = result.add(permissionAsBN);
+  });
+
+  return ethers.utils.hexZeroPad(result.toHexString(), 32);
 }

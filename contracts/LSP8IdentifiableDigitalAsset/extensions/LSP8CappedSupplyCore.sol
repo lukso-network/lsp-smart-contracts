@@ -2,19 +2,21 @@
 
 pragma solidity ^0.8.0;
 
-// modules
-import "../LSP8IdentifiableDigitalAssetCore.sol";
-
 // interfaces
-import "./ILSP8CappedSupply.sol";
+import {ILSP8CappedSupply} from "./ILSP8CappedSupply.sol";
+
+// modules
+import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupplyCore is
-    ILSP8CappedSupply,
-    LSP8IdentifiableDigitalAssetCore
-{
+abstract contract LSP8CappedSupplyCore is LSP8IdentifiableDigitalAssetCore, ILSP8CappedSupply {
+    // --- Errors
+
+    error LSP8CappedSupplyRequired();
+    error LSP8CappedSupplyCannotMintOverCap();
+
     // --- Storage
 
     uint256 internal _tokenSupplyCap;
@@ -24,7 +26,7 @@ abstract contract LSP8CappedSupplyCore is
     /**
      * @inheritdoc ILSP8CappedSupply
      */
-    function tokenSupplyCap() public view virtual override returns (uint256) {
+    function tokenSupplyCap() public view virtual returns (uint256) {
         return _tokenSupplyCap;
     }
 
@@ -47,10 +49,10 @@ abstract contract LSP8CappedSupplyCore is
         bool force,
         bytes memory data
     ) internal virtual override {
-        require(
-            totalSupply() + 1 <= tokenSupplyCap(),
-            "LSP8CappedSupply: tokenSupplyCap reached"
-        );
+        if (totalSupply() + 1 > tokenSupplyCap()) {
+            revert LSP8CappedSupplyCannotMintOverCap();
+        }
+
         super._mint(to, tokenId, force, data);
     }
 }

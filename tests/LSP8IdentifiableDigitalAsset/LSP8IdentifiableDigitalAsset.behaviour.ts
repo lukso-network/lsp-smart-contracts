@@ -1,5 +1,10 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { BytesLike } from "ethers";
+import type { TransactionResponse } from "@ethersproject/abstract-provider";
+
+// types
 import {
   LSP8IdentifiableDigitalAsset,
   LSP8Tester,
@@ -8,11 +13,16 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../types";
-import { tokenIdAsBytes32 } from "../utils/tokens";
-import { INTERFACE_IDS, SupportedStandards } from "../../constants";
 
-import type { BytesLike } from "ethers";
-import type { TransactionResponse } from "@ethersproject/abstract-provider";
+// helpers
+import { tokenIdAsBytes32 } from "../utils/tokens";
+
+// constants
+import {
+  ERC725YKeys,
+  INTERFACE_IDS,
+  SupportedStandards,
+} from "../../constants";
 
 export type LSP8TestAccounts = {
   owner: SignerWithAddress;
@@ -40,6 +50,11 @@ export type LSP8TestContext = {
   deployParams: LSP8DeployParams;
 };
 
+export type ExpectedError = {
+  error: string;
+  args: string[];
+};
+
 const mintedTokenId = tokenIdAsBytes32(10);
 const neverMintedTokenId = tokenIdAsBytes32(1010110);
 
@@ -59,7 +74,7 @@ export const shouldBehaveLikeLSP8 = (
           to: context.accounts.tokenReceiver.address,
           tokenId: mintedTokenId,
           force: true,
-          data: ethers.utils.toUtf8Bytes("should revert"),
+          data: "0x",
         };
 
         await context.lsp8.mint(
@@ -76,7 +91,12 @@ export const shouldBehaveLikeLSP8 = (
             txParams.force,
             txParams.data
           )
-        ).toBeRevertedWith("LSP8: tokenId already minted");
+        )
+          .to.be.revertedWithCustomError(
+            context.lsp8,
+            "LSP8TokenIdAlreadyMinted"
+          )
+          .withArgs(txParams.tokenId);
       });
     });
 
@@ -89,7 +109,7 @@ export const shouldBehaveLikeLSP8 = (
             to: ethers.constants.AddressZero,
             tokenId: toBeMintedTokenId,
             force: true,
-            data: ethers.utils.toUtf8Bytes("should revert"),
+            data: "0x",
           };
 
           await expect(
@@ -99,7 +119,10 @@ export const shouldBehaveLikeLSP8 = (
               txParams.force,
               txParams.data
             )
-          ).toBeRevertedWith("LSP8: can not mint to zero address");
+          ).to.be.revertedWithCustomError(
+            context.lsp8,
+            "LSP8CannotSendToAddressZero"
+          );
         });
       });
 
@@ -122,7 +145,7 @@ export const shouldBehaveLikeLSP8 = (
           const tokenOwnerOf = await context.lsp8.tokenOwnerOf(
             txParams.tokenId
           );
-          expect(tokenOwnerOf).toEqual(txParams.to);
+          expect(tokenOwnerOf).to.equal(txParams.to);
         });
       });
     });
@@ -140,7 +163,7 @@ export const shouldBehaveLikeLSP8 = (
 
     describe("totalSupply", () => {
       it("should return total token supply", async () => {
-        expect(await context.lsp8.totalSupply()).toEqual(
+        expect(await context.lsp8.totalSupply()).to.equal(
           ethers.BigNumber.from("1")
         );
       });
@@ -151,7 +174,7 @@ export const shouldBehaveLikeLSP8 = (
         it("should return the owned token count", async () => {
           expect(
             await context.lsp8.balanceOf(context.accounts.owner.address)
-          ).toEqual(ethers.BigNumber.from("1"));
+          ).to.equal(ethers.BigNumber.from("1"));
         });
       });
 
@@ -159,7 +182,7 @@ export const shouldBehaveLikeLSP8 = (
         it("should return zero", async () => {
           expect(
             await context.lsp8.balanceOf(context.accounts.anyone.address)
-          ).toEqual(ethers.BigNumber.from("0"));
+          ).to.equal(ethers.BigNumber.from("0"));
         });
       });
     });
@@ -167,15 +190,18 @@ export const shouldBehaveLikeLSP8 = (
     describe("tokenOwnerOf", () => {
       describe("when tokenId has not been minted", () => {
         it("should revert", async () => {
-          await expect(
-            context.lsp8.tokenOwnerOf(neverMintedTokenId)
-          ).toBeRevertedWith("LSP8: can not query non existent token");
+          await expect(context.lsp8.tokenOwnerOf(neverMintedTokenId))
+            .to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8NonExistentTokenId"
+            )
+            .withArgs(neverMintedTokenId);
         });
       });
 
       describe("when tokenId has been minted", () => {
         it("should return owner address", async () => {
-          expect(await context.lsp8.tokenOwnerOf(mintedTokenId)).toEqual(
+          expect(await context.lsp8.tokenOwnerOf(mintedTokenId)).to.equal(
             context.accounts.owner.address
           );
         });
@@ -187,23 +213,15 @@ export const shouldBehaveLikeLSP8 = (
         it("should return the list of owned tokenIds", async () => {
           expect(
             await context.lsp8.tokenIdsOf(context.accounts.owner.address)
-          ).toEqual([mintedTokenId]);
+          ).to.be.deep.equal([mintedTokenId]);
         });
       });
 
       describe("when the given address does not owns some tokens", () => {
-        it("should empty list", async () => {
+        it("should return an empty list", async () => {
           expect(
             await context.lsp8.tokenIdsOf(context.accounts.anyone.address)
-          ).toEqual([]);
-        });
-      });
-
-      describe("when the given address is the zero address", () => {
-        it("should revert", async () => {
-          await expect(
-            context.lsp8.tokenIdsOf(ethers.constants.AddressZero)
-          ).toBeRevertedWith("LSP8: can not query token for zero address");
+          ).to.be.deep.equal([]);
         });
       });
     });
@@ -216,7 +234,12 @@ export const shouldBehaveLikeLSP8 = (
               context.accounts.operator.address,
               neverMintedTokenId
             )
-          ).toBeRevertedWith("LSP8: can not query non existent token");
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8NonExistentTokenId"
+            )
+            .withArgs(neverMintedTokenId);
         });
       });
 
@@ -229,90 +252,65 @@ export const shouldBehaveLikeLSP8 = (
                 context.accounts.operator.address,
                 mintedTokenId
               )
-          ).toBeRevertedWith(
-            "LSP8: caller can not authorize operator for token id"
-          );
+          )
+            .to.be.revertedWithCustomError(context.lsp8, "LSP8NotTokenOwner")
+            .withArgs(
+              context.accounts.owner.address,
+              mintedTokenId,
+              context.accounts.anyone.address
+            );
         });
       });
 
       describe("when caller is owner of tokenId", () => {
-        describe("when given operator is the tokenOwner", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8.authorizeOperator(
-                context.accounts.owner.address,
-                mintedTokenId
-              )
-            ).toBeRevertedWith(
-              "LSP8: can not authorize token owner as operator"
-            );
-          });
-        });
+        describe("when operator is not the zero address", () => {
+          it("should succeed", async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = mintedTokenId;
 
-        describe("when given operator is different than tokenOwner", () => {
-          describe("when operator is not the zero address", () => {
-            it("should succeed", async () => {
+            const tx = await context.lsp8.authorizeOperator(operator, tokenId);
+
+            await expect(tx)
+              .to.emit(context.lsp8, "AuthorizedOperator")
+              .withArgs(operator, tokenOwner, tokenId);
+
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be
+              .true;
+          });
+
+          describe("when operator is already authorized", () => {
+            beforeEach(async () => {
+              await context.lsp8.authorizeOperator(
+                context.accounts.operator.address,
+                mintedTokenId
+              );
+            });
+
+            it("should revert", async () => {
               const operator = context.accounts.operator.address;
-              const tokenOwner = context.accounts.owner.address;
               const tokenId = mintedTokenId;
 
-              const tx = await context.lsp8.authorizeOperator(
-                operator,
-                tokenId
-              );
-
-              await expect(tx).toHaveEmittedWith(
-                context.lsp8,
-                "AuthorizedOperator",
-                [operator, tokenOwner, tokenId]
-              );
-
-              expect(
-                await context.lsp8.isOperatorFor(operator, tokenId)
-              ).toEqual(true);
-            });
-
-            describe("when operator is already authorized", () => {
-              beforeEach(async () => {
-                await context.lsp8.authorizeOperator(
-                  context.accounts.operator.address,
-                  mintedTokenId
-                );
-              });
-
-              it("should succeed", async () => {
-                const operator = context.accounts.operator.address;
-                const tokenOwner = context.accounts.owner.address;
-                const tokenId = mintedTokenId;
-
-                await context.lsp8.authorizeOperator(operator, tokenId);
-
-                const tx = await context.lsp8.authorizeOperator(
-                  operator,
-                  tokenId
-                );
-
-                await expect(tx).toHaveEmittedWith(
+              await expect(context.lsp8.authorizeOperator(operator, tokenId))
+                .to.be.revertedWithCustomError(
                   context.lsp8,
-                  "AuthorizedOperator",
-                  [operator, tokenOwner, tokenId]
-                );
-
-                expect(
-                  await context.lsp8.isOperatorFor(operator, tokenId)
-                ).toEqual(true);
-              });
+                  "LSP8OperatorAlreadyAuthorized"
+                )
+                .withArgs(operator, tokenId);
             });
+          });
 
-            describe("when operator is the zero address", () => {
-              it("should revert", async () => {
-                const operator = ethers.constants.AddressZero;
-                const tokenId = mintedTokenId;
+          describe("when operator is the zero address", () => {
+            it("should revert", async () => {
+              const operator = ethers.constants.AddressZero;
+              const tokenId = mintedTokenId;
 
-                await expect(
-                  context.lsp8.authorizeOperator(operator, tokenId)
-                ).toBeRevertedWith("LSP8: can not authorize zero address");
-              });
+              await expect(
+                context.lsp8.authorizeOperator(operator, tokenId)
+              ).to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8CannotUseAddressZeroAsOperator"
+              );
             });
           });
         });
@@ -327,7 +325,12 @@ export const shouldBehaveLikeLSP8 = (
               context.accounts.operator.address,
               neverMintedTokenId
             )
-          ).toBeRevertedWith("LSP8: can not query non existent token");
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8NonExistentTokenId"
+            )
+            .withArgs(neverMintedTokenId);
         });
       });
 
@@ -337,63 +340,65 @@ export const shouldBehaveLikeLSP8 = (
             context.lsp8
               .connect(context.accounts.anyone)
               .revokeOperator(context.accounts.operator.address, mintedTokenId)
-          ).toBeRevertedWith(
-            "LSP8: caller can not revoke operator for token id"
-          );
+          )
+            .to.be.revertedWithCustomError(context.lsp8, "LSP8NotTokenOwner")
+            .withArgs(
+              context.accounts.owner.address,
+              mintedTokenId,
+              context.accounts.anyone.address
+            );
         });
       });
 
       describe("when caller is owner of tokenId", () => {
-        describe("when given operator is the tokenOwner", () => {
-          it("should revert", async () => {
-            await expect(
-              context.lsp8.revokeOperator(
-                context.accounts.owner.address,
-                mintedTokenId
-              )
-            ).toBeRevertedWith("LSP8: can not revoke token owner as operator");
+        describe("when operator is not the zero address", () => {
+          it("should succeed", async () => {
+            const operator = context.accounts.operator.address;
+            const tokenOwner = context.accounts.owner.address;
+            const tokenId = mintedTokenId;
+
+            // pre-conditions
+            await context.lsp8.authorizeOperator(operator, tokenId);
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be
+              .true;
+
+            // effects
+            const tx = await context.lsp8.revokeOperator(operator, tokenId);
+            await expect(tx)
+              .to.emit(context.lsp8, "RevokedOperator")
+              .withArgs(operator, tokenOwner, tokenId);
+
+            // post-conditions
+            expect(await context.lsp8.isOperatorFor(operator, tokenId)).to.be
+              .false;
           });
         });
 
-        describe("when given operator is different than tokenOwner", () => {
-          describe("when operator is not the zero address", () => {
-            it("should succeed", async () => {
-              const operator = context.accounts.operator.address;
-              const tokenOwner = context.accounts.owner.address;
-              const tokenId = mintedTokenId;
+        describe("when operator is the zero address", () => {
+          it("should revert", async () => {
+            const operator = ethers.constants.AddressZero;
+            const tokenId = mintedTokenId;
 
-              // pre-conditions
-              await context.lsp8.authorizeOperator(operator, tokenId);
-              expect(
-                await context.lsp8.isOperatorFor(operator, tokenId)
-              ).toEqual(true);
-
-              // effects
-              const tx = await context.lsp8.revokeOperator(operator, tokenId);
-              await expect(tx).toHaveEmittedWith(
-                context.lsp8,
-                "RevokedOperator",
-                [operator, tokenOwner, tokenId]
-              );
-
-              // post-conditions
-              expect(
-                await context.lsp8.isOperatorFor(operator, tokenId)
-              ).toEqual(false);
-            });
+            await expect(
+              context.lsp8.revokeOperator(operator, tokenId)
+            ).to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8CannotUseAddressZeroAsOperator"
+            );
           });
+        });
 
-          describe("when operator is the zero address", () => {
-            it("should revert", async () => {
-              const operator = ethers.constants.AddressZero;
-              const tokenId = mintedTokenId;
+        describe("when address provided to revoke is not an existing operator", () => {
+          it("should revert", async () => {
+            const operator = context.accounts.anyone.address;
+            const tokenId = mintedTokenId;
 
-              await expect(
-                context.lsp8.revokeOperator(operator, tokenId)
-              ).toBeRevertedWith(
-                "LSP8: can not revoke zero address as operator"
-              );
-            });
+            await expect(context.lsp8.revokeOperator(operator, tokenId))
+              .to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8NonExistingOperator"
+              )
+              .withArgs(operator, tokenId);
           });
         });
       });
@@ -407,9 +412,12 @@ export const shouldBehaveLikeLSP8 = (
               context.accounts.operator.address,
               neverMintedTokenId
             )
-          ).toBeRevertedWith(
-            "LSP8: can not query operator for non existent token"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8NonExistentTokenId"
+            )
+            .withArgs(neverMintedTokenId);
         });
       });
 
@@ -421,7 +429,7 @@ export const shouldBehaveLikeLSP8 = (
                 context.accounts.operator.address,
                 mintedTokenId
               )
-            ).toEqual(false);
+            ).to.be.false;
           });
         });
 
@@ -437,7 +445,7 @@ export const shouldBehaveLikeLSP8 = (
                 context.accounts.operator.address,
                 mintedTokenId
               )
-            ).toEqual(true);
+            ).to.be.true;
           });
         });
 
@@ -457,13 +465,13 @@ export const shouldBehaveLikeLSP8 = (
                 context.accounts.operator.address,
                 mintedTokenId
               )
-            ).toEqual(true);
+            ).to.be.true;
             expect(
               await context.lsp8.isOperatorFor(
                 context.accounts.anotherOperator.address,
                 mintedTokenId
               )
-            ).toEqual(true);
+            ).to.be.true;
           });
         });
       });
@@ -472,20 +480,21 @@ export const shouldBehaveLikeLSP8 = (
     describe("getOperatorsOf", () => {
       describe("when tokenId has not been minted", () => {
         it("should revert", async () => {
-          await expect(
-            context.lsp8.getOperatorsOf(neverMintedTokenId)
-          ).toBeRevertedWith(
-            "LSP8: can not query operator for non existent token"
-          );
+          await expect(context.lsp8.getOperatorsOf(neverMintedTokenId))
+            .to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8NonExistentTokenId"
+            )
+            .withArgs(neverMintedTokenId);
         });
       });
 
       describe("when tokenId has been minted", () => {
         describe("when operator has not been authorized", () => {
           it("should return empty list", async () => {
-            expect(await context.lsp8.getOperatorsOf(mintedTokenId)).toEqual(
-              []
-            );
+            expect(
+              await context.lsp8.getOperatorsOf(mintedTokenId)
+            ).to.be.deep.equal([]);
           });
         });
 
@@ -496,9 +505,9 @@ export const shouldBehaveLikeLSP8 = (
               mintedTokenId
             );
 
-            expect(await context.lsp8.getOperatorsOf(mintedTokenId)).toEqual([
-              context.accounts.operator.address,
-            ]);
+            expect(
+              await context.lsp8.getOperatorsOf(mintedTokenId)
+            ).to.be.deep.equal([context.accounts.operator.address]);
           });
         });
 
@@ -513,7 +522,9 @@ export const shouldBehaveLikeLSP8 = (
               mintedTokenId
             );
 
-            expect(await context.lsp8.getOperatorsOf(mintedTokenId)).toEqual([
+            expect(
+              await context.lsp8.getOperatorsOf(mintedTokenId)
+            ).to.be.deep.equal([
               context.accounts.operator.address,
               context.accounts.anotherOperator.address,
             ]);
@@ -567,19 +578,19 @@ export const shouldBehaveLikeLSP8 = (
         ) => {
           // pre-conditions
           const preTokenOwnerOf = await context.lsp8.tokenOwnerOf(tokenId);
-          expect(preTokenOwnerOf).toEqual(from);
+          expect(preTokenOwnerOf).to.equal(from);
 
           const preOperatorsOf = await context.lsp8.getOperatorsOf(tokenId);
-          expect(preOperatorsOf).toEqual([
+          expect(preOperatorsOf).to.be.deep.equal([
             context.accounts.operator.address,
             context.accounts.anotherOperator.address,
           ]);
 
           const preFromTokenIdsOf = await context.lsp8.tokenIdsOf(from);
-          expect(preFromTokenIdsOf.includes(tokenId.toString())).toEqual(true);
+          expect(preFromTokenIdsOf.includes(tokenId.toString())).to.be.true;
 
           const preToTokenIdsOf = await context.lsp8.tokenIdsOf(to);
-          expect(preToTokenIdsOf.includes(tokenId.toString())).toEqual(false);
+          expect(preToTokenIdsOf.includes(tokenId.toString())).to.be.false;
 
           const preFromBalanceOf = await context.lsp8.balanceOf(from);
           const preToBalanceOf = await context.lsp8.balanceOf(to);
@@ -588,45 +599,34 @@ export const shouldBehaveLikeLSP8 = (
           const tx = await context.lsp8
             .connect(operator)
             .transfer(from, to, tokenId, force, data);
-          await expect(tx).toHaveEmittedWith(context.lsp8, "Transfer", [
-            operator.address,
-            from,
-            to,
-            tokenId,
-            force,
-            data,
-          ]);
-          await expect(tx).toHaveEmittedWith(context.lsp8, "RevokedOperator", [
-            context.accounts.operator.address,
-            from,
-            tokenId,
-          ]);
-          await expect(tx).toHaveEmittedWith(context.lsp8, "RevokedOperator", [
-            context.accounts.anotherOperator.address,
-            from,
-            tokenId,
-          ]);
+          await expect(tx)
+            .to.emit(context.lsp8, "Transfer")
+            .withArgs(operator.address, from, to, tokenId, force, data);
+          await expect(tx)
+            .to.emit(context.lsp8, "RevokedOperator")
+            .withArgs(context.accounts.operator.address, from, tokenId);
+          await expect(tx)
+            .to.emit(context.lsp8, "RevokedOperator")
+            .withArgs(context.accounts.anotherOperator.address, from, tokenId);
 
           // post-conditions
           const postTokenOwnerOf = await context.lsp8.tokenOwnerOf(tokenId);
-          expect(postTokenOwnerOf).toEqual(to);
+          expect(postTokenOwnerOf).to.equal(to);
 
           const postOperatorsOf = await context.lsp8.getOperatorsOf(tokenId);
-          expect(postOperatorsOf).toEqual([]);
+          expect(postOperatorsOf).to.be.deep.equal([]);
 
           const postFromTokenIdsOf = await context.lsp8.tokenIdsOf(from);
-          expect(postFromTokenIdsOf.includes(tokenId.toString())).toEqual(
-            false
-          );
+          expect(postFromTokenIdsOf.includes(tokenId.toString())).to.be.false;
 
           const postToTokenIdsOf = await context.lsp8.tokenIdsOf(to);
-          expect(postToTokenIdsOf.includes(tokenId.toString())).toEqual(true);
+          expect(postToTokenIdsOf.includes(tokenId.toString())).to.be.true;
 
           const postFromBalanceOf = await context.lsp8.balanceOf(from);
-          expect(postFromBalanceOf).toEqual(preFromBalanceOf.sub(1));
+          expect(postFromBalanceOf).to.equal(preFromBalanceOf.sub(1));
 
           const postToBalanceOf = await context.lsp8.balanceOf(to);
-          expect(postToBalanceOf).toEqual(preToBalanceOf.add(1));
+          expect(postToBalanceOf).to.equal(preToBalanceOf.add(1));
 
           return tx;
         };
@@ -634,13 +634,22 @@ export const shouldBehaveLikeLSP8 = (
         const transferFailScenario = async (
           { from, to, tokenId, force, data }: TransferTxParams,
           operator: SignerWithAddress,
-          expectedError: string
+          expectedError: ExpectedError
         ) => {
-          await expect(
-            context.lsp8
-              .connect(operator)
-              .transfer(from, to, tokenId, force, data)
-          ).toBeRevertedWith(expectedError);
+          if (expectedError.args.length > 0)
+            await expect(
+              context.lsp8
+                .connect(operator)
+                .transfer(from, to, tokenId, force, data)
+            )
+              .to.be.revertedWithCustomError(context.lsp8, expectedError.error)
+              .withArgs(...expectedError.args);
+          else
+            await expect(
+              context.lsp8
+                .connect(operator)
+                .transfer(from, to, tokenId, force, data)
+            ).to.be.revertedWithCustomError(context.lsp8, expectedError.error);
         };
 
         const sendingTransferTransactions = (
@@ -668,10 +677,12 @@ export const shouldBehaveLikeLSP8 = (
                     force,
                     data,
                   };
-                  const expectedError =
-                    "LSP8: can not transfer to zero address";
+                  const expectedError = "LSP8CannotSendToAddressZero";
 
-                  await transferFailScenario(txParams, operator, expectedError);
+                  await transferFailScenario(txParams, operator, {
+                    error: expectedError,
+                    args: [],
+                  });
                 });
               });
 
@@ -714,11 +725,12 @@ export const shouldBehaveLikeLSP8 = (
                     ]
                   );
 
-                  await expect(tx).toHaveEmittedWith(
-                    helperContracts.tokenReceiverWithLSP1,
-                    "UniversalReceiverCalled",
-                    [typeId, packedData]
-                  );
+                  await expect(tx)
+                    .to.emit(
+                      helperContracts.tokenReceiverWithLSP1,
+                      "UniversalReceiverCalled"
+                    )
+                    .withArgs(typeId, packedData);
                 });
               });
 
@@ -734,6 +746,24 @@ export const shouldBehaveLikeLSP8 = (
                   };
 
                   await transferSuccessScenario(txParams, operator);
+                });
+              });
+            });
+
+            describe("when `from == to` address (= sending to tokenId's owner itself)", () => {
+              it("should revert", async () => {
+                const txParams = {
+                  from: context.accounts.owner.address,
+                  to: context.accounts.owner.address,
+                  tokenId: mintedTokenId,
+                  force,
+                  data,
+                };
+                const expectedError = "LSP8CannotSendToSelf";
+
+                await transferFailScenario(txParams, operator, {
+                  error: expectedError,
+                  args: [],
                 });
               });
             });
@@ -754,9 +784,12 @@ export const shouldBehaveLikeLSP8 = (
                   force,
                   data,
                 };
-                const expectedError = "LSP8: token receiver is EOA";
+                const expectedError = "LSP8NotifyTokenReceiverIsEOA";
 
-                await transferFailScenario(txParams, operator, expectedError);
+                await transferFailScenario(txParams, operator, {
+                  error: expectedError,
+                  args: [txParams.to],
+                });
               });
             });
 
@@ -786,11 +819,12 @@ export const shouldBehaveLikeLSP8 = (
                     ]
                   );
 
-                  await expect(tx).toHaveEmittedWith(
-                    helperContracts.tokenReceiverWithLSP1,
-                    "UniversalReceiverCalled",
-                    [typeId, packedData]
-                  );
+                  await expect(tx)
+                    .to.emit(
+                      helperContracts.tokenReceiverWithLSP1,
+                      "UniversalReceiverCalled"
+                    )
+                    .withArgs(typeId, packedData);
                 });
               });
 
@@ -805,9 +839,30 @@ export const shouldBehaveLikeLSP8 = (
                     data,
                   };
                   const expectedError =
-                    "LSP8: token receiver contract missing LSP1 interface";
+                    "LSP8NotifyTokenReceiverContractMissingLSP1Interface";
 
-                  await transferFailScenario(txParams, operator, expectedError);
+                  await transferFailScenario(txParams, operator, {
+                    error: expectedError,
+                    args: [txParams.to],
+                  });
+                });
+              });
+            });
+
+            describe("when `from == to` address (= sending to tokenId's owner itself)", () => {
+              it("should revert", async () => {
+                const txParams = {
+                  from: context.accounts.owner.address,
+                  to: context.accounts.owner.address,
+                  tokenId: mintedTokenId,
+                  force,
+                  data,
+                };
+                const expectedError = "LSP8CannotSendToSelf";
+
+                await transferFailScenario(txParams, operator, {
+                  error: expectedError,
+                  args: [],
                 });
               });
             });
@@ -829,14 +884,14 @@ export const shouldBehaveLikeLSP8 = (
                 to: context.accounts.tokenReceiver.address,
                 tokenId: mintedTokenId,
                 force: true,
-                data: ethers.utils.hexlify(
-                  ethers.utils.toUtf8Bytes("should revert")
-                ),
+                data: "0x",
               };
-              const expectedError =
-                "LSP8: can not transfer, caller is not the owner or operator of token";
+              const expectedError = "LSP8NotTokenOperator";
 
-              await transferFailScenario(txParams, operator, expectedError);
+              await transferFailScenario(txParams, operator, {
+                error: expectedError,
+                args: [txParams.tokenId.toString(), operator.address],
+              });
             });
           });
         });
@@ -849,14 +904,18 @@ export const shouldBehaveLikeLSP8 = (
               to: context.accounts.tokenReceiver.address,
               tokenId: mintedTokenId,
               force: true,
-              data: ethers.utils.hexlify(
-                ethers.utils.toUtf8Bytes("should revert")
-              ),
+              data: "0x",
             };
-            const expectedError =
-              "LSP8: transfer of tokenId from incorrect owner";
+            const expectedError = "LSP8NotTokenOwner";
 
-            await transferFailScenario(txParams, operator, expectedError);
+            await transferFailScenario(txParams, operator, {
+              error: expectedError,
+              args: [
+                context.accounts.owner.address,
+                txParams.tokenId.toString(),
+                txParams.from,
+              ],
+            });
           });
         });
 
@@ -868,13 +927,14 @@ export const shouldBehaveLikeLSP8 = (
               to: context.accounts.tokenReceiver.address,
               tokenId: neverMintedTokenId,
               force: true,
-              data: ethers.utils.hexlify(
-                ethers.utils.toUtf8Bytes("should revert")
-              ),
+              data: "0x",
             };
-            const expectedError = "LSP8: can not query non existent token";
+            const expectedError = "LSP8NonExistentTokenId";
 
-            await transferFailScenario(txParams, operator, expectedError);
+            await transferFailScenario(txParams, operator, {
+              error: expectedError,
+              args: [txParams.tokenId.toString()],
+            });
           });
         });
       });
@@ -883,16 +943,6 @@ export const shouldBehaveLikeLSP8 = (
         const anotherMintedTokenId = tokenIdAsBytes32("5555");
 
         beforeEach(async () => {
-          // setup so we can observe operators being cleared during transferBatch tests
-          await context.lsp8.authorizeOperator(
-            context.accounts.operator.address,
-            mintedTokenId
-          );
-          await context.lsp8.authorizeOperator(
-            context.accounts.anotherOperator.address,
-            mintedTokenId
-          );
-
           // setup so we can transfer multiple tokenIds during transferBatch test
           await context.lsp8.mint(
             context.accounts.owner.address,
@@ -930,12 +980,12 @@ export const shouldBehaveLikeLSP8 = (
               const preTokenOwnerOf = await context.lsp8.tokenOwnerOf(
                 tokenId[index]
               );
-              expect(preTokenOwnerOf).toEqual(from[index]);
+              expect(preTokenOwnerOf).to.equal(from[index]);
 
               const preOperatorsOf = await context.lsp8.getOperatorsOf(
                 tokenId[index]
               );
-              expect(preOperatorsOf).toEqual([
+              expect(preOperatorsOf).to.be.deep.equal([
                 context.accounts.operator.address,
                 context.accounts.anotherOperator.address,
               ]);
@@ -949,28 +999,30 @@ export const shouldBehaveLikeLSP8 = (
 
           await Promise.all(
             tokenId.map(async (_, index) => {
-              await expect(tx).toHaveEmittedWith(context.lsp8, "Transfer", [
-                operator.address,
-                from[index],
-                to[index],
-                tokenId[index],
-                force,
-                data[index],
-              ]);
-              await expect(tx).toHaveEmittedWith(
-                context.lsp8,
-                "RevokedOperator",
-                [context.accounts.operator.address, from[index], tokenId[index]]
-              );
-              await expect(tx).toHaveEmittedWith(
-                context.lsp8,
-                "RevokedOperator",
-                [
+              await expect(tx)
+                .to.emit(context.lsp8, "Transfer")
+                .withArgs(
+                  operator.address,
+                  from[index],
+                  to[index],
+                  tokenId[index],
+                  force,
+                  data[index]
+                );
+              await expect(tx)
+                .to.emit(context.lsp8, "RevokedOperator")
+                .withArgs(
+                  context.accounts.operator.address,
+                  from[index],
+                  tokenId[index]
+                );
+              await expect(tx)
+                .to.emit(context.lsp8, "RevokedOperator")
+                .withArgs(
                   context.accounts.anotherOperator.address,
                   from[index],
-                  tokenId[index],
-                ]
-              );
+                  tokenId[index]
+                );
             })
           );
 
@@ -980,12 +1032,12 @@ export const shouldBehaveLikeLSP8 = (
               const preTokenOwnerOf = await context.lsp8.tokenOwnerOf(
                 tokenId[index]
               );
-              expect(preTokenOwnerOf).toEqual(to[index]);
+              expect(preTokenOwnerOf).to.equal(to[index]);
 
               const postOperatorsOf = await context.lsp8.getOperatorsOf(
                 tokenId[index]
               );
-              expect(postOperatorsOf).toEqual([]);
+              expect(postOperatorsOf).to.be.deep.equal([]);
             })
           );
 
@@ -995,7 +1047,7 @@ export const shouldBehaveLikeLSP8 = (
         const transferBatchFailScenario = async (
           { from, to, tokenId, force, data }: TransferBatchTxParams,
           operator: SignerWithAddress,
-          expectedError: string
+          expectedError: ExpectedError
         ) => {
           // pre-conditions
           await Promise.all(
@@ -1003,16 +1055,25 @@ export const shouldBehaveLikeLSP8 = (
               const preTokenOwnerOf = await context.lsp8.tokenOwnerOf(
                 tokenId[index]
               );
-              expect(preTokenOwnerOf).toEqual(from[index]);
+              expect(preTokenOwnerOf).to.equal(from[index]);
             })
           );
 
           // effect
-          await expect(
-            context.lsp8
-              .connect(operator)
-              .transferBatch(from, to, tokenId, force, data)
-          ).toBeRevertedWith(expectedError);
+          if (expectedError.args.length > 0)
+            await expect(
+              context.lsp8
+                .connect(operator)
+                .transferBatch(from, to, tokenId, force, data)
+            )
+              .to.be.revertedWithCustomError(context.lsp8, expectedError.error)
+              .withArgs(...expectedError.args);
+          else
+            await expect(
+              context.lsp8
+                .connect(operator)
+                .transferBatch(from, to, tokenId, force, data)
+            ).to.be.revertedWithCustomError(context.lsp8, expectedError.error);
         };
 
         const sendingTransferBatchTransactions = (
@@ -1046,14 +1107,12 @@ export const shouldBehaveLikeLSP8 = (
                     force,
                     data: [data, data],
                   };
-                  const expectedError =
-                    "LSP8: can not transfer to zero address";
+                  const expectedError = "LSP8CannotSendToAddressZero";
 
-                  await transferBatchFailScenario(
-                    txParams,
-                    operator,
-                    expectedError
-                  );
+                  await transferBatchFailScenario(txParams, operator, {
+                    error: expectedError,
+                    args: [],
+                  });
                 });
               });
 
@@ -1112,11 +1171,12 @@ export const shouldBehaveLikeLSP8 = (
                         ]
                       );
 
-                      await expect(tx).toHaveEmittedWith(
-                        helperContracts.tokenReceiverWithLSP1,
-                        "UniversalReceiverCalled",
-                        [typeId, packedData]
-                      );
+                      await expect(tx)
+                        .to.emit(
+                          helperContracts.tokenReceiverWithLSP1,
+                          "UniversalReceiverCalled"
+                        )
+                        .withArgs(typeId, packedData);
                     })
                   );
                 });
@@ -1159,19 +1219,18 @@ export const shouldBehaveLikeLSP8 = (
                   ],
                   to: [
                     context.accounts.tokenReceiver.address,
-                    context.accounts.tokenReceiver.address,
+                    helperContracts.tokenReceiverWithLSP1.address,
                   ],
                   tokenId: [mintedTokenId, anotherMintedTokenId],
                   force,
                   data: [data, data],
                 };
-                const expectedError = "LSP8: token receiver is EOA";
+                const expectedError = "LSP8NotifyTokenReceiverIsEOA";
 
-                await transferBatchFailScenario(
-                  txParams,
-                  operator,
-                  expectedError
-                );
+                await transferBatchFailScenario(txParams, operator, {
+                  error: expectedError,
+                  args: [txParams.to[0]],
+                });
               });
             });
 
@@ -1205,20 +1264,19 @@ export const shouldBehaveLikeLSP8 = (
                     ],
                     to: [
                       helperContracts.tokenReceiverWithoutLSP1.address,
-                      helperContracts.tokenReceiverWithoutLSP1.address,
+                      helperContracts.tokenReceiverWithLSP1.address,
                     ],
                     tokenId: [mintedTokenId, anotherMintedTokenId],
                     force,
                     data: [data, data],
                   };
                   const expectedError =
-                    "LSP8: token receiver contract missing LSP1 interface";
+                    "LSP8NotifyTokenReceiverContractMissingLSP1Interface";
 
-                  await transferBatchFailScenario(
-                    txParams,
-                    operator,
-                    expectedError
-                  );
+                  await transferBatchFailScenario(txParams, operator, {
+                    error: expectedError,
+                    args: [txParams.to[0]],
+                  });
                 });
               });
             });
@@ -1231,20 +1289,18 @@ export const shouldBehaveLikeLSP8 = (
                 from: [context.accounts.tokenReceiver.address],
                 tokenId: [mintedTokenId],
                 force: true,
-                data: [
-                  ethers.utils.hexlify(
-                    ethers.utils.toUtf8Bytes("should revert")
-                  ),
-                ],
+                data: ["0x"],
               };
-              const expectedError =
-                "LSP8: transfer of tokenId from incorrect owner";
+              const expectedError = "LSP8NotTokenOwner";
 
-              await transferBatchFailScenario(
-                txParams,
-                operator,
-                expectedError
-              );
+              await transferBatchFailScenario(txParams, operator, {
+                error: expectedError,
+                args: [
+                  context.accounts.owner.address,
+                  txParams.tokenId[0].toString(),
+                  txParams.from[0],
+                ],
+              });
             });
           });
 
@@ -1255,19 +1311,14 @@ export const shouldBehaveLikeLSP8 = (
                 from: [context.accounts.tokenReceiver.address],
                 tokenId: [neverMintedTokenId],
                 force: true,
-                data: [
-                  ethers.utils.hexlify(
-                    ethers.utils.toUtf8Bytes("should revert")
-                  ),
-                ],
+                data: ["0x"],
               };
-              const expectedError = "LSP8: can not query non existent token";
+              const expectedError = "LSP8NonExistentTokenId";
 
-              await transferBatchFailScenario(
-                txParams,
-                operator,
-                expectedError
-              );
+              await transferBatchFailScenario(txParams, operator, {
+                error: expectedError,
+                args: [txParams.tokenId[0].toString()],
+              });
             });
           });
 
@@ -1284,10 +1335,7 @@ export const shouldBehaveLikeLSP8 = (
                 ],
                 tokenId: [mintedTokenId, anotherMintedTokenId],
                 force: true,
-                data: [
-                  ethers.utils.toUtf8Bytes("should revert"),
-                  ethers.utils.toUtf8Bytes("should revert"),
-                ],
+                data: ["0x", "0x"],
               };
 
               await Promise.all(
@@ -1298,7 +1346,10 @@ export const shouldBehaveLikeLSP8 = (
                       [`${arrayParam}`]: [validTxParams[arrayParam][0]],
                     },
                     operator,
-                    "LSP8: transferBatch list length mismatch"
+                    {
+                      error: "LSP8InvalidTransferBatch",
+                      args: [],
+                    }
                   );
                 })
               );
@@ -1321,19 +1372,113 @@ export const shouldBehaveLikeLSP8 = (
                 from: [context.accounts.tokenReceiver.address],
                 tokenId: [mintedTokenId],
                 force: true,
-                data: [
-                  ethers.utils.hexlify(
-                    ethers.utils.toUtf8Bytes("should revert")
-                  ),
-                ],
+                data: ["0x"],
               };
-              const expectedError =
-                "LSP8: can not transfer, caller is not the owner or operator of token";
+              const expectedError = "LSP8NotTokenOperator";
 
-              await transferBatchFailScenario(
-                txParams,
-                operator,
-                expectedError
+              await transferBatchFailScenario(txParams, operator, {
+                error: expectedError,
+                args: [txParams.tokenId[0].toString(), operator.address],
+              });
+            });
+          });
+        });
+      });
+    });
+
+    describe("_burn", () => {
+      describe("when tokenId has not been minted", () => {
+        it("should revert", async () => {
+          await expect(context.lsp8.burn(neverMintedTokenId, "0x"))
+            .to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8NonExistentTokenId"
+            )
+            .withArgs(neverMintedTokenId);
+        });
+      });
+
+      describe("when tokenId has been minted", () => {
+        describe("after burning a tokenId", () => {
+          it("should have decreased the total supply", async () => {
+            const totalSupplyBefore = await context.lsp8.totalSupply();
+
+            await context.lsp8.burn(mintedTokenId, "0x");
+
+            const totalSupplyAfter = await context.lsp8.totalSupply();
+
+            expect(totalSupplyAfter).to.equal(totalSupplyBefore.sub(1));
+          });
+
+          it("should have emitted a Transfer event with address(0) as `to` param", async () => {
+            await expect(context.lsp8.burn(mintedTokenId, "0x"))
+              .to.emit(context.lsp8, "Transfer")
+              .withArgs(
+                context.accounts.owner.address, // operator
+                context.accounts.owner.address, // tokenOwner
+                ethers.constants.AddressZero,
+                mintedTokenId,
+                false,
+                "0x"
+              );
+          });
+
+          describe("when calling `tokenOwnerOf(...)` for the burnt tokenId", () => {
+            it("should revert stating tokenId does not exist", async () => {
+              await context.lsp8.burn(mintedTokenId, "0x");
+
+              await expect(
+                context.lsp8.tokenOwnerOf(mintedTokenId)
+              ).to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8NonExistentTokenId"
+              );
+            });
+          });
+
+          describe("when calling `tokenIdsOf(...)` with the initial owner address of the burnt token", () => {
+            it("should return a list of tokenIds that does not contain the burnt tokenId", async () => {
+              const tokenIdsOfOwnerBefore = await context.lsp8.tokenIdsOf(
+                context.accounts.owner.address
+              );
+              expect(tokenIdsOfOwnerBefore).to.contain(mintedTokenId);
+
+              await context.lsp8.burn(mintedTokenId, "0x");
+
+              const tokenIdsOfOwnerAfter = await context.lsp8.tokenIdsOf(
+                context.accounts.owner.address
+              );
+              expect(tokenIdsOfOwnerAfter).to.not.contain(mintedTokenId);
+            });
+          });
+
+          describe("when trying to get the operators for the burnt tokenId", () => {
+            it("should revert stating tokenId does not exist", async () => {
+              await context.lsp8.authorizeOperator(
+                context.accounts.operator.address,
+                mintedTokenId
+              );
+
+              await context.lsp8.authorizeOperator(
+                context.accounts.anotherOperator.address,
+                mintedTokenId
+              );
+
+              const operatorsForTokenIdBefore =
+                await context.lsp8.getOperatorsOf(mintedTokenId);
+
+              expect(operatorsForTokenIdBefore).to.deep.equal([
+                context.accounts.operator.address,
+                context.accounts.anotherOperator.address,
+              ]);
+
+              await context.lsp8.burn(mintedTokenId, "0x");
+
+              await expect(
+                context.lsp8.getOperatorsOf(mintedTokenId)
+              ).to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8NonExistentTokenId"
               );
             });
           });
@@ -1359,50 +1504,56 @@ export const shouldInitializeLikeLSP8 = (
   });
 
   describe("when the contract was initialized", () => {
-    it("should have registered its ERC165 interface", async () => {
-      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.LSP8));
+    it("should have registered the ERC165 interface", async () => {
+      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.ERC165));
+    });
+
+    it("should have registered the ERC725Y interface", async () => {
+      expect(await context.lsp8.supportsInterface(INTERFACE_IDS.ERC725Y));
+    });
+
+    it("should have registered the LSP8 interface", async () => {
+      expect(
+        await context.lsp8.supportsInterface(
+          INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+        )
+      );
     });
 
     it("should have set expected entries with ERC725Y.setData", async () => {
-      await expect(context.initializeTransaction).toHaveEmittedWith(
-        context.lsp8,
-        "DataChanged",
-        [
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp8, "DataChanged")
+        .withArgs(
           SupportedStandards.LSP4DigitalAsset.key,
-          SupportedStandards.LSP4DigitalAsset.value,
-        ]
-      );
+          SupportedStandards.LSP4DigitalAsset.value
+        );
       expect(
-        await context.lsp8.getData([SupportedStandards.LSP4DigitalAsset.key])
-      ).toEqual([SupportedStandards.LSP4DigitalAsset.value]);
+        await context.lsp8["getData(bytes32)"](
+          SupportedStandards.LSP4DigitalAsset.key
+        )
+      ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey =
-        "0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1";
+      const nameKey = ERC725YKeys.LSP4["LSP4TokenName"];
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
-      await expect(context.initializeTransaction).toHaveEmittedWith(
-        context.lsp8,
-        "DataChanged",
-        [nameKey, expectedNameValue]
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp8, "DataChanged")
+        .withArgs(nameKey, expectedNameValue);
+      expect(await context.lsp8["getData(bytes32)"](nameKey)).to.equal(
+        expectedNameValue
       );
-      expect(await context.lsp8.getData([nameKey])).toEqual([
-        expectedNameValue,
-      ]);
 
-      const symbolKey =
-        "0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756";
+      const symbolKey = ERC725YKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );
-      await expect(context.initializeTransaction).toHaveEmittedWith(
-        context.lsp8,
-        "DataChanged",
-        [symbolKey, expectedSymbolValue]
+      await expect(context.initializeTransaction)
+        .to.emit(context.lsp8, "DataChanged")
+        .withArgs(symbolKey, expectedSymbolValue);
+      expect(await context.lsp8["getData(bytes32)"](symbolKey)).to.equal(
+        expectedSymbolValue
       );
-      expect(await context.lsp8.getData([symbolKey])).toEqual([
-        expectedSymbolValue,
-      ]);
     });
   });
 };

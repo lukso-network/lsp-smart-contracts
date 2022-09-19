@@ -2,19 +2,21 @@
 
 pragma solidity ^0.8.0;
 
-// modules
-import "../LSP7DigitalAssetCore.sol";
-
 // interfaces
-import "./ILSP7CappedSupply.sol";
+import {ILSP7CappedSupply} from "./ILSP7CappedSupply.sol";
+
+// modules
+import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
 
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
-abstract contract LSP7CappedSupplyCore is
-    ILSP7CappedSupply,
-    LSP7DigitalAssetCore
-{
+abstract contract LSP7CappedSupplyCore is LSP7DigitalAssetCore, ILSP7CappedSupply {
+    // --- Errors
+
+    error LSP7CappedSupplyRequired();
+    error LSP7CappedSupplyCannotMintOverCap();
+
     // --- Storage
 
     uint256 internal _tokenSupplyCap;
@@ -24,7 +26,7 @@ abstract contract LSP7CappedSupplyCore is
     /**
      * @inheritdoc ILSP7CappedSupply
      */
-    function tokenSupplyCap() public view virtual override returns (uint256) {
+    function tokenSupplyCap() public view virtual returns (uint256) {
         return _tokenSupplyCap;
     }
 
@@ -46,10 +48,10 @@ abstract contract LSP7CappedSupplyCore is
         bool force,
         bytes memory data
     ) internal virtual override {
-        require(
-            totalSupply() + amount <= tokenSupplyCap(),
-            "LSP7CappedSupply: tokenSupplyCap reached"
-        );
+        if (totalSupply() + amount > tokenSupplyCap()) {
+            revert LSP7CappedSupplyCannotMintOverCap();
+        }
+
         super._mint(to, amount, force, data);
     }
 }

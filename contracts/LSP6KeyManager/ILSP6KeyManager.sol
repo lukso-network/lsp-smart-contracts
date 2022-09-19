@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import "@erc725/smart-contracts/contracts/interfaces/IERC1271.sol";
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 /**
  * @dev Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -11,42 +11,45 @@ interface ILSP6KeyManager is
     IERC1271
     /* is ERC165 */
 {
-    event Executed(uint256 indexed _value, bytes _data);
+    event Executed(uint256 indexed value, bytes4 selector);
 
     /**
-     * @notice get latest nonce for `_from` for channel ID: `_channel`
+     * @notice returns the address of the account linked to this KeyManager
+     * @dev this can be a contract that implements
+     *  - ERC725X only
+     *  - ERC725Y only
+     *  - any ERC725 based contract (so implementing both ERC725X and ERC725Y)
+     *
+     * @return the address of the linked account
+     */
+    function target() external view returns (address);
+
+    /**
+     * @notice get latest nonce for `from` for channel ID: `channelId`
      * @dev use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)
-     * @param _address caller address
-     * @param _channel channel id
+     * @param from caller address
+     * @param channelId channel id
      */
-    function getNonce(address _address, uint256 _channel)
-        external
-        view
-        returns (uint256);
+    function getNonce(address from, uint256 channelId) external view returns (uint256);
 
     /**
-     * @notice execute the following payload on the ERC725Account: `_data`
+     * @notice execute the following payload on the ERC725Account: `payload`
      * @dev the ERC725Account will return some data on successful call, or revert on failure
-     * @param _data the payload to execute. Obtained in web3 via encodeABI()
-     * @return result_ the data being returned by the ERC725 Account
+     * @param payload the payload to execute. Obtained in web3 via encodeABI()
+     * @return the data being returned by the ERC725 Account
      */
-    function execute(bytes calldata _data)
-        external
-        payable
-        returns (bytes memory);
+    function execute(bytes calldata payload) external payable returns (bytes memory);
 
     /**
      * @dev allows anybody to execute given they have a signed message from an executor
-     * @param _signedFor this KeyManager
-     * @param _nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
-     * @param _data obtained via encodeABI() in web3
-     * @param _signature bytes32 ethereum signature
-     * @return result_ the data being returned by the ERC725 Account
+     * @param signature bytes32 ethereum signature
+     * @param nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
+     * @param payload obtained via encodeABI() in web3
+     * @return the data being returned by the ERC725 Account
      */
     function executeRelayCall(
-        address _signedFor,
-        uint256 _nonce,
-        bytes calldata _data,
-        bytes memory _signature
+        bytes memory signature,
+        uint256 nonce,
+        bytes calldata payload
     ) external payable returns (bytes memory);
 }

@@ -3,18 +3,18 @@ name: Publish NPM artifacts
 
 on:
   repository_dispatch:
-      types: [trigger-release]
+    types: [trigger-release]
 
 jobs:
   npm-build-artifacts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Use Node.js v16
+      - name: Use Node.js '16.15.0'
         uses: actions/setup-node@v2
         with:
-          node-version: "16.x"
+          node-version: "16.15.0"
           registry-url: "https://registry.npmjs.org"
           scope: "@lukso"
           cache: "npm"
@@ -23,6 +23,7 @@ jobs:
         run: |
           npm ci
 
+      # This will also generate the Typechain types used by the Chai tests
       - name: Build and Test
         run: |
           npm run build --if-present
