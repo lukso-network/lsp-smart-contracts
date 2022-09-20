@@ -6,8 +6,9 @@ pragma solidity ^0.8.0;
 import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {LSP8Burnable} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol";
 
-contract LSP8InitTester is LSP8IdentifiableDigitalAssetInitAbstract {
+contract LSP8InitTester is LSP8IdentifiableDigitalAssetInitAbstract, LSP8Burnable {
     function initialize(
         string memory name,
         string memory symbol,
@@ -23,9 +24,5 @@ contract LSP8InitTester is LSP8IdentifiableDigitalAssetInitAbstract {
         bytes memory data
     ) public {
         _mint(to, tokenId, force, data);
-    }
-
-    function burn(bytes32 tokenId, bytes memory data) public {
-        _burn(tokenId, data);
     }
 }
