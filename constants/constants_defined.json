@@ -415,6 +415,7 @@
          "type":"enum",
          "documentation":"prettier-ignore",
          "rawValueType":"String",
+         "caseIterable": true,
          "cases":[
             {
                "key":"CHANGEOWNER",

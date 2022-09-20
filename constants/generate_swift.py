@@ -48,7 +48,8 @@ def createDeclaration(jsonConstant, parentJsonConstant, indentLevel):
 		rawValueType = getValidEnumType(jsonConstant["rawValueType"])
 		if rawValueType == None:
 			raise Exception("\"rawValueType\" '{}' is not valid.".format(jsonConstant["rawValueType"]))
-
+		if jsonConstant.get("caseIterable") == True:
+			rawValueType = rawValueType + ", CaseIterable" 
 		return "public enum {}: {}".format(validName, rawValueType)
 	elif unitType == "json":
 		return "public class {}".format(validName)
