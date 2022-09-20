@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 * split between ENCRYPT/DECRYPT permissions + move SUPER permissions on the left bit range
 
+### Features
+
+- created `LSP7Burnable` and `LSP8Burnable` token extension. (commit [#bc238b5](https://github.com/lukso-network/lsp-smart-contracts/pull/312/commits/bc238b569615d741dc539977bae21fcefc88c317))
+
 ### Bug Fixes
 
 *  Reset `pendingOwner` whenever `renounceOwnership(..)` is used. ([#310](https://github.com/lukso-network/lsp-smart-contracts/issues/310)) ([d0bb563](https://github.com/lukso-network/lsp-smart-contracts/commit/d0bb563dbce36353c8d9407f90c4dfb68c5d47d1))
