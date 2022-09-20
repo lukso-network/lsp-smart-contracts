@@ -408,7 +408,7 @@
          "name":"ALL_PERMISSIONS",
          "type":"const",
          "documentation":"All Permissions currently exclude DELEGATECALL for security.",
-         "value":"\"0x7100000000000000000000000000000000000000000000000000000000000bbf\""
+         "value":"\"0xF800000000000000000000000000000000000000000000000000000000000FBF\""
       },
       {
          "name":"PERMISSIONS",
