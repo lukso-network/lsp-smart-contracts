@@ -4,8 +4,9 @@ pragma solidity ^0.8.0;
 
 // modules
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
+import {LSP7Burnable} from "../../LSP7DigitalAsset/extensions/LSP7Burnable.sol";
 
-contract LSP7Tester is LSP7DigitalAsset {
+contract LSP7Tester is LSP7DigitalAsset, LSP7Burnable {
     /* solhint-disable no-empty-blocks */
     constructor(
         string memory name,
@@ -20,13 +21,5 @@ contract LSP7Tester is LSP7DigitalAsset {
         bytes memory data
     ) public {
         _mint(to, amount, force, data);
-    }
-
-    function burn(
-        address from,
-        uint256 amount,
-        bytes memory data
-    ) public {
-        _burn(from, amount, data);
     }
 }
