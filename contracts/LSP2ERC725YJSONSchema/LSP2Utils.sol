@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {UtilsLib} from "../Utils/UtilsLib.sol";
 
 /**
  * @title ERC725 Utility library to encode key types
@@ -53,10 +52,7 @@ library LSP2Utils {
         pure
         returns (bytes32)
     {
-        bytes memory elementInArray = UtilsLib.concatTwoBytes16(
-            bytes16(arrayKey),
-            bytes16(uint128(index))
-        );
+        bytes memory elementInArray = bytes.concat(bytes16(arrayKey), bytes16(uint128(index)));
         return bytes32(elementInArray);
     }
 
