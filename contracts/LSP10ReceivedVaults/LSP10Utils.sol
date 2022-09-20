@@ -166,7 +166,7 @@ library LSP10Utils {
             );
 
             keys[2] = vaultInArrayKey;
-            values[2] = bytes.concat(lastVaultInArrayMapKey);
+            values[2] = bytes.concat(lastVaultInArrayAddress);
 
             keys[3] = lastVaultInArrayKey;
             values[3] = "";
