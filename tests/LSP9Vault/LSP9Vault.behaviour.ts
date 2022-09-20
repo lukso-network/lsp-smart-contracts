@@ -292,7 +292,7 @@ export const shouldBehaveLikeLSP9 = (
             context.lsp9Vault.address,
             0,
             LSP1_TYPE_IDS.LSP9_VAULTPENDINGOWNER,
-            "0x",
+            "LSP1: typeId out of scope",
             "0x"
           );
       });
