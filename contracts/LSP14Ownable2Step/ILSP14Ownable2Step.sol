@@ -10,5 +10,5 @@ interface ILSP14Ownable2Step {
 
     function pendingOwner() external view returns (address);
 
-    function claimOwnership() external;
+    function acceptOwnership() external;
 }

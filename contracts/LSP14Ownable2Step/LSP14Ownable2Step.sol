@@ -44,12 +44,12 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     uint256 private _renounceOwnershipStartedAt;
 
     /**
-     * @dev The address that may use `claimOwnership()`
+     * @dev The address that may use `acceptOwnership()`
      */
     address public override pendingOwner;
 
-    function claimOwnership() public virtual override {
-        _claimOwnership();
+    function acceptOwnership() public virtual override {
+        _acceptOwnership();
     }
 
     function transferOwnership(address newOwner) public virtual override onlyOwner {
@@ -60,8 +60,8 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         _renounceOwnership();
     }
 
-    function _claimOwnership() internal virtual {
-        require(msg.sender == pendingOwner, "ClaimOwnership: caller is not the pendingOwner");
+    function _acceptOwnership() internal virtual {
+        require(msg.sender == pendingOwner, "Ownable2Step: caller is not the pendingOwner");
         _setOwner(pendingOwner);
         delete pendingOwner;
     }
