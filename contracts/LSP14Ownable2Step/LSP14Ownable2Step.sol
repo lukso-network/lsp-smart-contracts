@@ -46,7 +46,14 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     /**
      * @dev The address that may use `acceptOwnership()`
      */
-    address public override pendingOwner;
+    address private _pendingOwner;
+    
+    /**
+     * @dev Returns the address of the current pending owner.
+     */
+    function pendingOwner() public view virtual returns (address) {
+        return _pendingOwner;
+    }
 
     function acceptOwnership() public virtual override {
         _acceptOwnership();
@@ -61,14 +68,14 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     }
 
     function _acceptOwnership() internal virtual {
-        require(msg.sender == pendingOwner, "Ownable2Step: caller is not the pendingOwner");
-        _setOwner(pendingOwner);
-        delete pendingOwner;
+        require(msg.sender == pendingOwner(), "Ownable2Step: caller is not the pendingOwner");
+        _setOwner(_pendingOwner);
+        delete _pendingOwner;
     }
 
     function _transferOwnership(address newOwner) internal virtual {
         if (newOwner == address(this)) revert CannotTransferOwnershipToSelf();
-        pendingOwner = newOwner;
+        _pendingOwner = newOwner;
         emit OwnershipTransferStarted(owner(), newOwner);
     }
 
@@ -93,6 +100,6 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         _setOwner(address(0));
         delete _renounceOwnershipStartedAt;
-        delete pendingOwner;
+        delete _pendingOwner;
     }
 }
