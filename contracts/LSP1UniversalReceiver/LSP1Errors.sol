@@ -13,4 +13,4 @@ error CannotRegisterEOAsAsAssets(address caller);
  * @param account The address of the account implementing the `universalReceiver(..)` function
  * @param target The address of the target linked to the KeyManager
  */
-error MsgSenderIsNotTheLinkedTarget(address account, address target);
+error CallerNotLSP6LinkedTarget(address account, address target);
