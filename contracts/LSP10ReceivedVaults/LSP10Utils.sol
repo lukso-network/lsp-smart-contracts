@@ -40,6 +40,8 @@ library LSP10Utils {
      * @dev Generating the data keys/values to be set on the receiver address after receiving vaults
      * @param receiver The address receiving the vault and where the Keys should be added
      * @param vault The address of the vault being received
+     * @param vaultMapKey The map key of the vault being received containing the interfaceId of the
+     * vault and the index in the array
      * @param interfaceID The interfaceID of the vault being received
      */
     function generateReceivedVaultKeys(
@@ -91,7 +93,8 @@ library LSP10Utils {
     /**
      * @dev Generating the data keys/values to be set on the sender address after sending vaults
      * @param sender The address sending the vault and where the Keys should be updated
-     * @param vaultMapKey The map key of the vault being sent
+     * @param vaultMapKey The map key of the vault being sent containing the interfaceId of the
+     * vault and the index in the array
      * @param vaultInterfaceIdAndIndex The value of the map key of the vault being sent
      */
     function generateSentVaultKeys(

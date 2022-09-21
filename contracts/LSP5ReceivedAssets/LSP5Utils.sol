@@ -40,6 +40,8 @@ library LSP5Utils {
      * @dev Generating the data keys/values to be set on the receiver address after receiving assets
      * @param receiver The address receiving the asset and where the Keys should be added
      * @param asset The address of the asset being received
+     * @param assetMapKey The map key of the asset being received containing the interfaceId of the
+     * asset and the index in the array
      * @param interfaceID The interfaceID of the asset being received
      */
     function generateReceivedAssetKeys(
@@ -91,7 +93,8 @@ library LSP5Utils {
     /**
      * @dev Generating the data keys/values to be set on the sender address after sending assets
      * @param sender The address sending the asset and where the Keys should be updated
-     * @param assetMapKey The map key of the asset being sent
+     * @param assetMapKey The map key of the asset being received containing the interfaceId of the
+     * asset and the index in the array
      * @param assetInterfaceIdAndIndex The value of the map key of the asset being sent
      */
     function generateSentAssetKeys(
