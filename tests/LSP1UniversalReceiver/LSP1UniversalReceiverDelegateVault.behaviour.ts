@@ -115,7 +115,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             .connect(context.accounts.any)
             .callStatic.universalReceiver(Vault_TypeIds[i], "0x");
 
-          expect(result).to.be.equal(
+          expect(result).to.equal(
             ethers.utils.hexlify(
               ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
             )
@@ -130,7 +130,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           .connect(context.accounts.any)
           .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, "0x");
 
-        expect(result).to.be.equal(
+        expect(result).to.equal(
           ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
           )
