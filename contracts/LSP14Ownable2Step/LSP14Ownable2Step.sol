@@ -11,6 +11,11 @@ import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // constants
 import {
+    _TYPEID_LSP9_VAULTSENDER,
+    _TYPEID_LSP9_VAULTRECIPIENT,
+    _TYPEID_LSP9_VAULTPENDINGOWNER
+} from "../LSP9Vault/LSP9Constants.sol";
+import {
     LSP14OwnershipTransferStarted,
     LSP14OwnershipTransferred_SenderNotification,
     LSP14OwnershipTransferred_RecipientNotification
@@ -89,7 +94,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         _pendingOwner = newOwner;
 
         address currentOwner = owner();
-        _notifyRecipient(newOwner, LSP14OwnershipTransferStarted);
+        _notifyRecipient(newOwner, _TYPEID_LSP9_VAULTPENDINGOWNER);
         require(currentOwner == owner());
 
         emit OwnershipTransferStarted(owner(), newOwner);
@@ -100,14 +105,14 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      * previous owner and the new owner about the process.
      */
     function _acceptOwnership() internal virtual {
-        require(msg.sender == pendingOwner(), "Ownable2Step: caller is not the pendingOwner");
+        require(msg.sender == pendingOwner(), "LSP14: caller is not the pendingOwner");
 
         address previousOwner = owner();
         _setOwner(_pendingOwner);
         delete _pendingOwner;
 
-        _notifySender(previousOwner, LSP14OwnershipTransferred_SenderNotification);
-        _notifyRecipient(msg.sender, LSP14OwnershipTransferred_RecipientNotification);
+        _notifySender(previousOwner, _TYPEID_LSP9_VAULTSENDER);
+        _notifyRecipient(msg.sender, _TYPEID_LSP9_VAULTRECIPIENT);
     }
 
     /**

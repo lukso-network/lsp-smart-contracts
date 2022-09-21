@@ -141,7 +141,7 @@ export const shouldBehaveLikeClaimOwnership = (
     });
   });
 
-  describe("when calling claimOwnership(...)", () => {
+  describe("when calling acceptOwnership(...)", () => {
     it("should revert when caller is not the pending owner", async () => {
       let newOwner = context.accounts[1];
 
@@ -150,8 +150,8 @@ export const shouldBehaveLikeClaimOwnership = (
         .transferOwnership(newOwner.address);
 
       await expect(
-        context.contract.connect(context.accounts[2]).claimOwnership()
-      ).to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
+        context.contract.connect(context.accounts[2]).acceptOwnership()
+      ).to.be.revertedWith("LSP14: caller is not the pendingOwner");
     });
 
     describe("when caller is the pending owner", () => {
@@ -168,14 +168,14 @@ export const shouldBehaveLikeClaimOwnership = (
       it("should change the contract owner to the pendingOwner", async () => {
         let pendingOwner = await context.contract.pendingOwner();
 
-        await context.contract.connect(newOwner).claimOwnership();
+        await context.contract.connect(newOwner).acceptOwnership();
 
         let updatedOwner = await context.contract.owner();
         expect(updatedOwner).to.equal(pendingOwner);
       });
 
       it("should have cleared the pendingOwner after transferring ownership", async () => {
-        await context.contract.connect(newOwner).claimOwnership();
+        await context.contract.connect(newOwner).acceptOwnership();
 
         let newPendingOwner = await context.contract.pendingOwner();
         expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
@@ -184,7 +184,7 @@ export const shouldBehaveLikeClaimOwnership = (
       it("should have emitted a OwnershipTransferred event", async () => {
         const owner = await context.contract.owner();
 
-        await expect(await context.contract.connect(newOwner).claimOwnership())
+        await expect(await context.contract.connect(newOwner).acceptOwnership())
           .to.emit(context.contract, "OwnershipTransferred")
           .withArgs(
             owner, // previous owner
@@ -204,7 +204,7 @@ export const shouldBehaveLikeClaimOwnership = (
           .connect(context.deployParams.owner)
           .transferOwnership(newOwner.address);
 
-        await context.contract.connect(newOwner).claimOwnership();
+        await context.contract.connect(newOwner).acceptOwnership();
       });
 
       describe("previous owner should not be allowed anymore to call onlyOwner functions", () => {
@@ -574,7 +574,7 @@ export const shouldBehaveLikeClaimOwnership = (
           );
         });
 
-        it("previous pendingOwner should not be able to call claimOwnership(...) anymore", async () => {
+        it("previous pendingOwner should not be able to call acceptOwnership(...) anymore", async () => {
           await context.contract
             .connect(context.deployParams.owner)
             .renounceOwnership();
@@ -588,9 +588,9 @@ export const shouldBehaveLikeClaimOwnership = (
             .renounceOwnership();
 
           await expect(
-            context.contract.connect(newOwner).claimOwnership()
+            context.contract.connect(newOwner).acceptOwnership()
           ).to.be.revertedWith(
-            "ClaimOwnership: caller is not the pendingOwner"
+            "LSP14: caller is not the pendingOwner"
           );
         });
       });

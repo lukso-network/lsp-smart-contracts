@@ -24,7 +24,7 @@ const INTERFACE_IDS = {
 	LSP7DigitalAsset: '0x5fcaac27',
 	LSP8IdentifiableDigitalAsset: '0x49399145',
 	LSP9Vault: '0xfd4d5c50',
-	ClaimOwnership: '0xa375e9c6',
+	LSP14Ownable2Step: '0xa375e9c6',
 };
 
 // ERC1271
@@ -219,15 +219,15 @@ const LSP1_TYPE_IDS = {
 // ----------
 
 const Errors = {
-	ClaimOwnership: {
+	LSP14Ownable2Step: {
 		'0x8b9bf507': {
 			error: 'NotInRenounceOwnershipInterval(uint256,uint256)',
 			message:
-				'ClaimOwnership: Second renounce ownership call available after 100 block delay from the first call',
+				'LSP14: Second renounce ownership call available after 100 block delay from the first call',
 		},
 		'0x43b248cd': {
 			error: 'CannotTransferOwnershipToSelf()',
-			message: 'ClaimOwnership: Cannot transfer ownership to address(this)',
+			message: 'LSP14: Cannot transfer ownership to address(this)',
 		},
 	},
 	LSP2: {
@@ -407,7 +407,7 @@ const EventSignatures = {
 		 */
 		OwnershipTransfered: '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0',
 	},
-	ClaimOwnership: {
+	LSP14Ownable2Step: {
 		/**
 		 * event RenounceOwnershipInitiated();
 		 *

@@ -275,7 +275,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
   });
 
-  describe("when calling claimOwnership(...) from a KeyManager that is not the pendingOwner", () => {
+  describe("when calling acceptOwnership(...) from a KeyManager that is not the pendingOwner", () => {
     let newKeyManager: LSP6KeyManager;
 
     beforeEach(async () => {
@@ -300,15 +300,15 @@ export const shouldBehaveLikePermissionChangeOwner = (
       ).deploy(context.universalProfile.address);
 
       let payload =
-        context.universalProfile.interface.getSighash("claimOwnership");
+        context.universalProfile.interface.getSighash("acceptOwnership");
 
       await expect(
         notPendingKeyManager.connect(context.owner).execute(payload)
-      ).to.be.revertedWith("ClaimOwnership: caller is not the pendingOwner");
+      ).to.be.revertedWith("LSP14: caller is not the pendingOwner");
     });
   });
 
-  describe("when calling claimOwnership(...) via the pending new KeyManager", () => {
+  describe("when calling acceptOwnership(...) via the pending new KeyManager", () => {
     let newKeyManager: LSP6KeyManager;
 
     beforeEach(async () => {
@@ -329,7 +329,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     it("should have change the account's owner to the pendingOwner (= pending KeyManager)", async () => {
       let payload =
-        context.universalProfile.interface.getSighash("claimOwnership");
+        context.universalProfile.interface.getSighash("acceptOwnership");
 
       let pendingOwner = await context.universalProfile.pendingOwner();
 
@@ -341,7 +341,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     it("should have cleared the pendingOwner after transfering ownership", async () => {
       let payload =
-        context.universalProfile.interface.getSighash("claimOwnership");
+        context.universalProfile.interface.getSighash("acceptOwnership");
 
       await newKeyManager.connect(context.owner).execute(payload);
 
@@ -350,7 +350,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
   });
 
-  describe("after KeyManager has been upgraded via claimOwnership(...)", () => {
+  describe("after KeyManager has been upgraded via acceptOwnership(...)", () => {
     let oldKeyManager: LSP6KeyManager, newKeyManager: LSP6KeyManager;
 
     beforeEach(async () => {
@@ -371,7 +371,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         .execute(transferOwnershipPayload);
 
       let claimOwnershipPayload =
-        context.universalProfile.interface.getSighash("claimOwnership");
+        context.universalProfile.interface.getSighash("acceptOwnership");
 
       await newKeyManager.connect(context.owner).execute(claimOwnershipPayload);
     });

@@ -66,7 +66,7 @@ describe("Calculate LSP interfaces", () => {
 
   it("IClaimOwnership", async () => {
     const result = await contract.calculateInterfaceClaimOwnership();
-    expect(result).to.equal(INTERFACE_IDS.ClaimOwnership);
+    expect(result).to.equal(INTERFACE_IDS.LSP14Ownable2Step);
   });
 });
 
