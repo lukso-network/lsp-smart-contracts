@@ -466,10 +466,10 @@ const EventSignatures = {
 		/**
 		 * event UniversalReceiver(
 		 *    address indexed from,
-		 * 	  uint256 value,
+		 * 	  uint256 indexed value,
 		 *    bytes32 indexed typeId,
-		 *    bytes indexed returnedValue,
-		 *    bytes receivedData
+		 *    bytes receivedData,
+		 *    bytes returnedValue
 		 * );
 		 *
 		 * signature = keccak256('UniversalReceiver(address,uint256,bytes32,bytes,bytes)')

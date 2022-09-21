@@ -51,10 +51,10 @@ export const shouldBehaveLikeLSP1 = (
             valueSent,
             // typeId
             LSP1_HOOK_PLACEHOLDER,
-            // returnedValue
-            "0x",
             // receivedData
-            data
+            data,
+            // returnedValue
+            "0x"
           );
       });
     });
@@ -76,9 +76,9 @@ export const shouldBehaveLikeLSP1 = (
               valueSent,
               // typeId
               LSP1_HOOK_PLACEHOLDER,
-              // returnedValue
-              "0x",
               // receivedData
+              "0x",
+              // returnedValue
               "0x"
             );
         });
@@ -100,9 +100,9 @@ export const shouldBehaveLikeLSP1 = (
               valueSent,
               // typeId
               LSP1_HOOK_PLACEHOLDER,
-              // returnedValue
-              "0x",
               // receivedData
+              "0x",
+              // returnedValue
               "0x"
             );
         });
@@ -148,13 +148,10 @@ export const shouldBehaveLikeLSP1 = (
         );
 
         // typeId
-        expect(receipt.logs[0].topics[2]).to.equal(LSP1_HOOK_PLACEHOLDER);
+        expect(receipt.logs[0].topics[3]).to.equal(LSP1_HOOK_PLACEHOLDER);
 
-        // value + receivedData (any parameter not index)
-        const dataField = abiCoder.encode(
-          ["uint256", "bytes"],
-          [valueSent.toHexString(), "0x"]
-        );
+        // receivedData + returnedValue (any parameter not index)
+        const dataField = abiCoder.encode(["bytes", "bytes"], ["0x", "0x"]);
         expect(receipt.logs[0].data).to.equal(dataField);
       });
     });
@@ -184,9 +181,9 @@ export const shouldBehaveLikeLSP1 = (
               valueSent,
               // typeId
               LSP1_HOOK_PLACEHOLDER,
-              // returnedValue
-              "0x",
               // receivedData
+              "0x",
+              // returnedValue
               "0x"
             );
         });
@@ -209,9 +206,9 @@ export const shouldBehaveLikeLSP1 = (
               valueSent,
               // typeId
               LSP1_HOOK_PLACEHOLDER,
-              // returnedValue
-              "0x",
               // receivedData
+              "0x",
+              // returnedValue
               "0x"
             );
         });
