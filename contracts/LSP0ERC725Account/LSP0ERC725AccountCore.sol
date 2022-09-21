@@ -81,7 +81,7 @@ abstract contract LSP0ERC725AccountCore is
     // ERC173 - Modified ClaimOwnership
 
     /**
-     * @dev Sets the pending owner
+     * @dev Sets the pending owner and notify the pending owner
      */
     function transferOwnership(address _newOwner)
         public
@@ -95,7 +95,12 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Renounce ownership of the contract in a 2-step process
      */
-    function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) onlyOwner {
+    function renounceOwnership()
+        public
+        virtual
+        override(LSP14Ownable2Step, OwnableUnset)
+        onlyOwner
+    {
         LSP14Ownable2Step._renounceOwnership();
     }
 

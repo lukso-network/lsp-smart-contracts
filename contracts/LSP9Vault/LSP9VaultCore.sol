@@ -32,12 +32,7 @@ import {
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import {
-    _INTERFACEID_LSP9,
-    _TYPEID_LSP9_VAULTRECIPIENT,
-    _TYPEID_LSP9_VAULTSENDER,
-    _TYPEID_LSP9_VAULTPENDINGOWNER
-} from "./LSP9Constants.sol";
+import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -183,32 +178,24 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     /**
      * @dev Sets the pending owner and notify the pending owner
      */
-    function transferOwnership(address newOwner)
+    function transferOwnership(address _newOwner)
         public
         virtual
         override(LSP14Ownable2Step, OwnableUnset)
         onlyOwner
     {
-        LSP14Ownable2Step._transferOwnership(newOwner);
-        _notifyVaultPendingOwner(newOwner);
-    }
-
-    /**
-     * @dev Transfer the ownership and notify the previous and the new owner.
-     */
-    function acceptOwnership() public virtual override {
-        address previousOwner = owner();
-
-        _acceptOwnership();
-
-        _notifyVaultSender(previousOwner);
-        _notifyVaultReceiver(msg.sender);
+        LSP14Ownable2Step._transferOwnership(_newOwner);
     }
 
     /**
      * @dev Renounce ownership of the contract in a 2-step process
      */
-    function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) onlyOwner {
+    function renounceOwnership()
+        public
+        virtual
+        override(LSP14Ownable2Step, OwnableUnset)
+        onlyOwner
+    {
         LSP14Ownable2Step._renounceOwnership();
     }
 
@@ -242,35 +229,5 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
             dataKey,
             dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
         );
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the vault sender if supports LSP1 InterfaceId
-     */
-    function _notifyVaultSender(address sender) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(sender, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(sender).universalReceiver(_TYPEID_LSP9_VAULTSENDER, "");
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the vault owner if supports LSP1 InterfaceId
-     */
-    function _notifyVaultReceiver(address receiver) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(receiver, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(receiver).universalReceiver(_TYPEID_LSP9_VAULTRECIPIENT, "");
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the pending owner if supports LSP1 InterfaceId
-     */
-    function _notifyVaultPendingOwner(address newPendingOwner) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(newPendingOwner, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(newPendingOwner).universalReceiver(
-                _TYPEID_LSP9_VAULTPENDINGOWNER,
-                ""
-            );
-        }
     }
 }

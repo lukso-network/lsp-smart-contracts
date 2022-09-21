@@ -16,6 +16,9 @@ import {
     _LSP9_SUPPORTED_STANDARDS_KEY,
     _LSP9_SUPPORTED_STANDARDS_VALUE
 } from "../LSP9Vault/LSP9Constants.sol";
+import {
+    LSP14OwnershipTransferred_RecipientNotification
+} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 /**
  * @title Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -33,6 +36,6 @@ contract LSP9Vault is LSP9VaultCore {
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
-        _notifyVaultReceiver(newOwner);
+        _notifyRecipient(newOwner, LSP14OwnershipTransferred_RecipientNotification);
     }
 }
