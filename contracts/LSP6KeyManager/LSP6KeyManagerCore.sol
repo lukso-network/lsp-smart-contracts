@@ -402,9 +402,19 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             return;
         }
-
+        
         // key = AddressPermissions[index] -> array index
-        _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
+        bytes memory valueAtIndex = ERC725Y(target).getData(key);
+
+        if (valueAtIndex.length == 0) {
+            _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
+        } else {
+            _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
+        }
+        
+        if (value.length != 20) {
+            revert AddressPermissionArrayIndexValueNotAnAddress(key, value);
+        }
     }
 
     function _verifyAllowedERC725YKeys(address from, bytes32[] memory inputKeys) internal view {
