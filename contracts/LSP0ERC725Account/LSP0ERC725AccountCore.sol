@@ -158,7 +158,7 @@ abstract contract LSP0ERC725AccountCore is
                     .universalReceiverDelegate(msg.sender, msg.value, typeId, data);
             }
         }
-        emit UniversalReceiver(msg.sender, msg.value, typeId, returnValue, data);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, data, returnValue);
     }
 
     /**

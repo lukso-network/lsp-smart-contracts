@@ -175,7 +175,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
                     .universalReceiverDelegate(msg.sender, msg.value, typeId, data);
             }
         }
-        emit UniversalReceiver(msg.sender, msg.value, typeId, returnValue, data);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, data, returnValue);
     }
 
     // ERC173 - Modified ClaimOwnership
