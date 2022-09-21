@@ -17,7 +17,7 @@ import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
+import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 // constants
 import {
@@ -30,7 +30,7 @@ import {
     _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**
  * @title Core Implementation of ERC725Account
@@ -40,7 +40,7 @@ import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
 abstract contract LSP0ERC725AccountCore is
     ERC725XCore,
     ERC725YCore,
-    ClaimOwnership,
+    LSP14Ownable2Step,
     IERC1271,
     ILSP1UniversalReceiver
 {
@@ -86,17 +86,17 @@ abstract contract LSP0ERC725AccountCore is
     function transferOwnership(address _newOwner)
         public
         virtual
-        override(ClaimOwnership, OwnableUnset)
+        override(LSP14Ownable2Step, OwnableUnset)
         onlyOwner
     {
-        ClaimOwnership._transferOwnership(_newOwner);
+        LSP14Ownable2Step._transferOwnership(_newOwner);
     }
 
     /**
      * @dev Renounce ownership of the contract in a 2-step process
      */
-    function renounceOwnership() public virtual override(ClaimOwnership, OwnableUnset) onlyOwner {
-        ClaimOwnership._renounceOwnership();
+    function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) onlyOwner {
+        LSP14Ownable2Step._renounceOwnership();
     }
 
     // ERC1271

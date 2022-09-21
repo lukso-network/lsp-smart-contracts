@@ -24,7 +24,7 @@ import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
 } from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
-import {IClaimOwnership, _INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
+import {ILSP14Ownable2Step, _INTERFACEID_CLAIM_OWNERSHIP} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
@@ -53,7 +53,7 @@ contract CalculateLSPInterfaces {
             OwnableUnset.owner.selector ^
             OwnableUnset.renounceOwnership.selector ^
             OwnableUnset.transferOwnership.selector ^
-            type(IClaimOwnership).interfaceId;
+            type(ILSP14Ownable2Step).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_LSP0,
@@ -122,7 +122,7 @@ contract CalculateLSPInterfaces {
             OwnableUnset.owner.selector ^
             OwnableUnset.renounceOwnership.selector ^
             OwnableUnset.transferOwnership.selector ^
-            type(IClaimOwnership).interfaceId;
+            type(ILSP14Ownable2Step).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_LSP9,
@@ -138,7 +138,7 @@ contract CalculateLSPInterfaces {
             OwnableUnset.owner.selector ^
             OwnableUnset.transferOwnership.selector ^
             OwnableUnset.renounceOwnership.selector ^
-            type(IClaimOwnership).interfaceId;
+            type(ILSP14Ownable2Step).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_CLAIM_OWNERSHIP,

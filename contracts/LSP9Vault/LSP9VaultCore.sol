@@ -16,10 +16,10 @@ import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {ERC725XCore, IERC725X} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {ERC725YCore, IERC725Y} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {ClaimOwnership} from "../Custom/ClaimOwnership.sol";
+import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 // constants
-import {_INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
+import {_INTERFACEID_CLAIM_OWNERSHIP} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 import {
     OPERATION_CALL,
@@ -44,7 +44,7 @@ import {
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1UniversalReceiver {
+contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1UniversalReceiver {
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
@@ -186,20 +186,20 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     function transferOwnership(address newOwner)
         public
         virtual
-        override(ClaimOwnership, OwnableUnset)
+        override(LSP14Ownable2Step, OwnableUnset)
         onlyOwner
     {
-        ClaimOwnership._transferOwnership(newOwner);
+        LSP14Ownable2Step._transferOwnership(newOwner);
         _notifyVaultPendingOwner(newOwner);
     }
 
     /**
      * @dev Transfer the ownership and notify the previous and the new owner.
      */
-    function claimOwnership() public virtual override {
+    function acceptOwnership() public virtual override {
         address previousOwner = owner();
 
-        _claimOwnership();
+        _acceptOwnership();
 
         _notifyVaultSender(previousOwner);
         _notifyVaultReceiver(msg.sender);
@@ -208,8 +208,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, ClaimOwnership, ILSP1Univers
     /**
      * @dev Renounce ownership of the contract in a 2-step process
      */
-    function renounceOwnership() public virtual override(ClaimOwnership, OwnableUnset) onlyOwner {
-        ClaimOwnership._renounceOwnership();
+    function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) onlyOwner {
+        LSP14Ownable2Step._renounceOwnership();
     }
 
     // ERC165

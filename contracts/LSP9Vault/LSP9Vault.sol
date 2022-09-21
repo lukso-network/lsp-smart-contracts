@@ -7,7 +7,7 @@ import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.so
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
-import {LSP9VaultCore, ClaimOwnership} from "./LSP9VaultCore.sol";
+import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
