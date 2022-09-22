@@ -17,7 +17,7 @@ import {
     _LSP9_SUPPORTED_STANDARDS_VALUE
 } from "../LSP9Vault/LSP9Constants.sol";
 import {
-    LSP14OwnershipTransferred_RecipientNotification
+    _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
 } from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 /**
@@ -36,6 +36,6 @@ contract LSP9Vault is LSP9VaultCore {
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
-        _notifyRecipient(newOwner, LSP14OwnershipTransferred_RecipientNotification);
+        _notifyRecipient(newOwner, _TYPEID_LSP14_OwnershipTransferred_RecipientNotification);
     }
 }

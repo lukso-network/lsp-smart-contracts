@@ -106,8 +106,8 @@ export const shouldBehaveLikeLSP1Delegate = (
     describe("when calling with vaults sender and recipient typeIds", () => {
       it("should pass and return typeId out of scope return value", async () => {
         let Vault_TypeIds = [
-          LSP1_TYPE_IDS.LSP9_VAULTRECIPIENT,
-          LSP1_TYPE_IDS.LSP9_VAULTSENDER,
+          LSP1_TYPE_IDS.LSP14_OwnershipTransferred_RecipientNotification,
+          LSP1_TYPE_IDS.LSP14_OwnershipTransferred_SenderNotification,
         ];
 
         for (let i = 0; i < Vault_TypeIds.length; i++) {

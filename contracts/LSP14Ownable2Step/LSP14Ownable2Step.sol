@@ -13,14 +13,9 @@ import "./LSP14Errors.sol";
 
 // constants
 import {
-    _TYPEID_LSP9_VAULTSENDER,
-    _TYPEID_LSP9_VAULTRECIPIENT,
-    _TYPEID_LSP9_VAULTPENDINGOWNER
-} from "../LSP9Vault/LSP9Constants.sol";
-import {
-    LSP14OwnershipTransferStarted,
-    LSP14OwnershipTransferred_SenderNotification,
-    LSP14OwnershipTransferred_RecipientNotification
+    _TYPEID_LSP14_OwnershipTransferStarted,
+    _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
+    _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
 } from "./LSP14Constants.sol";
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
@@ -90,8 +85,11 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
         _pendingOwner = newOwner;
 
         address currentOwner = owner();
-        _notifyRecipient(newOwner, _TYPEID_LSP9_VAULTPENDINGOWNER);
-        require(currentOwner == owner());
+        _notifyRecipient(newOwner, _TYPEID_LSP14_OwnershipTransferStarted);
+        require(
+            currentOwner == owner(),
+            "LSP14: newOwner should accept owership in a separate transaction"
+        );
 
         emit OwnershipTransferStarted(owner(), newOwner);
     }
@@ -107,8 +105,8 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
         _setOwner(_pendingOwner);
         delete _pendingOwner;
 
-        _notifySender(previousOwner, _TYPEID_LSP9_VAULTSENDER);
-        _notifyRecipient(msg.sender, _TYPEID_LSP9_VAULTRECIPIENT);
+        _notifySender(previousOwner, _TYPEID_LSP14_OwnershipTransferred_SenderNotification);
+        _notifyRecipient(msg.sender, _TYPEID_LSP14_OwnershipTransferred_RecipientNotification);
     }
 
     /**

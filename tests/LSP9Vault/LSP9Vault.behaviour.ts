@@ -291,7 +291,7 @@ export const shouldBehaveLikeLSP9 = (
           .withArgs(
             context.lsp9Vault.address,
             0,
-            LSP1_TYPE_IDS.LSP9_VAULTPENDINGOWNER,
+            LSP1_TYPE_IDS.LSP14_OwnershipTransferStarted,
             "0x",
             ethers.utils.hexlify(
               ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")

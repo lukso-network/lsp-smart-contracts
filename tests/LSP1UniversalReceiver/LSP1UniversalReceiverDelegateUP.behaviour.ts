@@ -98,8 +98,8 @@ export const shouldBehaveLikeLSP1Delegate = (
           LSP1_TYPE_IDS.LSP7_TOKENSENDER,
           LSP1_TYPE_IDS.LSP8_TOKENRECIPIENT,
           LSP1_TYPE_IDS.LSP8_TOKENSENDER,
-          LSP1_TYPE_IDS.LSP9_VAULTRECIPIENT,
-          LSP1_TYPE_IDS.LSP9_VAULTSENDER,
+          LSP1_TYPE_IDS.LSP14_OwnershipTransferred_RecipientNotification,
+          LSP1_TYPE_IDS.LSP14_OwnershipTransferred_SenderNotification,
         ];
 
         for (let i = 0; i < URD_TypeIds.length; i++) {

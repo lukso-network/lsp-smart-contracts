@@ -11,17 +11,17 @@ import { INTERFACE_IDS, OPERATION_TYPES } from "../constants";
 import { provider } from "./utils/helpers";
 import { lsp0Erc725Account } from "../types/factories/contracts";
 
-export type ClaimOwnershipTestContext = {
+export type LSP14TestContext = {
   accounts: SignerWithAddress[];
   contract: LSP0ERC725Account | LSP9Vault;
   deployParams: { owner: SignerWithAddress };
   onlyOwnerRevertString: string;
 };
 
-export const shouldBehaveLikeClaimOwnership = (
-  buildContext: () => Promise<ClaimOwnershipTestContext>
+export const shouldBehaveLikeLSP14 = (
+  buildContext: () => Promise<LSP14TestContext>
 ) => {
-  let context: ClaimOwnershipTestContext;
+  let context: LSP14TestContext;
   let newOwner: SignerWithAddress;
 
   beforeEach(async () => {
@@ -488,13 +488,17 @@ export const shouldBehaveLikeClaimOwnership = (
 
             /** @todo check using Typescript type */
             const getExpectedRevertString = async () => {
-              if (await context.contract.supportsInterface(INTERFACE_IDS.LSP9Vault)) {
+              if (
+                await context.contract.supportsInterface(
+                  INTERFACE_IDS.LSP9Vault
+                )
+              ) {
                 return "Only Owner or Universal Receiver Delegate allowed";
               } else {
                 return "Ownable: caller is not the owner";
               }
-            }
-            const revertString = await getExpectedRevertString()
+            };
+            const revertString = await getExpectedRevertString();
 
             await expect(
               context.contract
@@ -589,9 +593,7 @@ export const shouldBehaveLikeClaimOwnership = (
 
           await expect(
             context.contract.connect(newOwner).acceptOwnership()
-          ).to.be.revertedWith(
-            "LSP14: caller is not the pendingOwner"
-          );
+          ).to.be.revertedWith("LSP14: caller is not the pendingOwner");
         });
       });
     });
