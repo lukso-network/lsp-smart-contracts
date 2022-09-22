@@ -147,13 +147,13 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
      * @dev Forwards the call to the UniversalReceiverDelegate if set.
      * @param typeId The type of call received.
-     * @param data The data received.
+     * @param receivedData The data received.
      */
-    function universalReceiver(bytes32 typeId, bytes calldata data)
+    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
         public
         payable
         virtual
-        returns (bytes memory returnValue)
+        returns (bytes memory returnedValue)
     {
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
 
@@ -166,11 +166,11 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
                     _INTERFACEID_LSP1_DELEGATE
                 )
             ) {
-                returnValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, data);
+                returnedValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
             }
         }
-        emit UniversalReceiver(msg.sender, msg.value, typeId, returnValue, data);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValue);
     }
 
     // ERC173 - Modified ClaimOwnership

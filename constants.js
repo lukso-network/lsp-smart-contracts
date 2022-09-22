@@ -190,7 +190,7 @@ const PERMISSIONS = {
     TRANSFERVALUE:        "0x0000000000000000000000000000000000000000000000000000000000000100", // .... 0001 .... ....
     SIGN:                 "0x0000000000000000000000000000000000000000000000000000000000000200", // .... 0010 .... ....
     ENCRYPT:              "0x0000000000000000000000000000000000000000000000000000000000000400", // .... 0100 .... ....   
-    DECRYPT:              "0x0000000000000000000000000000000000000000000000000000000000000400", // .... 1000 .... ....
+    DECRYPT:              "0x0000000000000000000000000000000000000000000000000000000000000800", // .... 1000 .... ....
     // left bits range   
     SUPER_SETDATA:        "0x0800000000000000000000000000000000000000000000000000000000000000",
     SUPER_TRANSFERVALUE:  "0x1000000000000000000000000000000000000000000000000000000000000000",
@@ -466,10 +466,10 @@ const EventSignatures = {
 		/**
 		 * event UniversalReceiver(
 		 *    address indexed from,
-		 * 	  uint256 value,
+		 * 	  uint256 indexed value,
 		 *    bytes32 indexed typeId,
-		 *    bytes indexed returnedValue,
-		 *    bytes receivedData
+		 *    bytes receivedData,
+		 *    bytes returnedValue
 		 * );
 		 *
 		 * signature = keccak256('UniversalReceiver(address,uint256,bytes32,bytes,bytes)')

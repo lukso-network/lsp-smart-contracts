@@ -13,10 +13,19 @@ import {
   LSP1UniversalReceiverDelegateVault,
 } from "../../types";
 
-import { ARRAY_LENGTH, TOKEN_ID } from "../utils/helpers";
+import {
+  ARRAY_LENGTH,
+  TOKEN_ID,
+  LSP1_HOOK_PLACEHOLDER,
+} from "../utils/helpers";
 
 // constants
-import { ERC725YKeys, INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
+import {
+  ERC725YKeys,
+  INTERFACE_IDS,
+  OPERATION_TYPES,
+  LSP1_TYPE_IDS,
+} from "../../constants";
 import { callPayload, getLSP5MapAndArrayKeysValue } from "../utils/fixtures";
 
 export type LSP1TestAccounts = {
@@ -66,6 +75,67 @@ export const shouldBehaveLikeLSP1Delegate = (
           INTERFACE_IDS.LSP1UniversalReceiverDelegate
         );
       expect(result).to.be.true;
+    });
+  });
+
+  describe("When testing EOA call to URD through the UR function", () => {
+    describe("when calling with tokens typeId", () => {
+      it("should revert with custom error", async () => {
+        let URD_TypeIds = [
+          LSP1_TYPE_IDS.LSP7_TOKENRECIPIENT,
+          LSP1_TYPE_IDS.LSP7_TOKENSENDER,
+          LSP1_TYPE_IDS.LSP8_TOKENRECIPIENT,
+          LSP1_TYPE_IDS.LSP8_TOKENSENDER,
+        ];
+
+        for (let i = 0; i < URD_TypeIds.length; i++) {
+          await expect(
+            context.lsp9Vault1
+              .connect(context.accounts.any)
+              .universalReceiver(URD_TypeIds[i], "0x")
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp1universalReceiverDelegateVault,
+              "CannotRegisterEOAsAsAssets"
+            )
+            .withArgs(context.accounts.any.address);
+        }
+      });
+    });
+
+    describe("when calling with vaults sender and recipient typeIds", () => {
+      it("should pass and return typeId out of scope return value", async () => {
+        let Vault_TypeIds = [
+          LSP1_TYPE_IDS.LSP9_VAULTRECIPIENT,
+          LSP1_TYPE_IDS.LSP9_VAULTSENDER,
+        ];
+
+        for (let i = 0; i < Vault_TypeIds.length; i++) {
+          let result = await context.lsp9Vault1
+            .connect(context.accounts.any)
+            .callStatic.universalReceiver(Vault_TypeIds[i], "0x");
+
+          expect(result).to.equal(
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+            )
+          );
+        }
+      });
+    });
+
+    describe("when calling with random bytes32 typeId", () => {
+      it("should pass and return typeId out of scope return value", async () => {
+        let result = await context.lsp9Vault1
+          .connect(context.accounts.any)
+          .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, "0x");
+
+        expect(result).to.equal(
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+          )
+        );
+      });
     });
   });
 
