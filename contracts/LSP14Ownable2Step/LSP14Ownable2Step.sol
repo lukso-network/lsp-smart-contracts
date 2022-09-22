@@ -2,12 +2,14 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import {ILSP14Ownable2Step} from "./ILSP14Ownable2Step.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+
+// errors
+import "./LSP14Errors.sol";
 
 // constants
 import {
@@ -23,23 +25,17 @@ import {
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
 /**
- * @dev reverts when trying to renounce ownership before the initial confirmation delay
- */
-error NotInRenounceOwnershipInterval(uint256 renounceOwnershipStart, uint256 renounceOwnershipEnd);
-
-/**
- * @dev reverts when trying to transfer ownership to the address(this)
- */
-error CannotTransferOwnershipToSelf();
-
-/**
  * @title LSP14Ownable2Step
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi), Daniel Afteni (B00ste)
  * @dev This contract is a modified version of the OwnableUnset implementation, where transferring and renouncing ownership
  *      works as a 2 steps process. This can be used as a confirmation mechanism to prevent potential mistakes when
  *      transferring ownership of the contract, where the control of the contract could be lost forever.
  */
-abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
+abstract contract LSP14Ownable2Step is OwnableUnset {
+    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
+
+    event RenounceOwnershipInitiated();
+
     /**
      * @dev The number of block that need to pass before one is able to
      *  confirm renouncing ownership
