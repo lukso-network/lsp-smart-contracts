@@ -72,3 +72,10 @@ error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
  * @param invalidFunction the bytes4 selector of the invalid function
  */
 error InvalidERC725Function(bytes4 invalidFunction);
+
+/**
+ * @dev reverts when trying to set a value that is not 20 bytes long under AddressPermissions[index]
+ * @param dataKey the AddressPermissions[index] data key
+ * @param invalidValue the invalid value that was attempted to be set under AddressPermissions[index]
+ */
+error AddressPermissionArrayIndexValueNotAnAddress(bytes32 dataKey, bytes invalidValue);
