@@ -27,8 +27,16 @@ import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
  *      transferring ownership of the contract, where the control of the contract could be lost forever.
  */
 abstract contract LSP14Ownable2Step is OwnableUnset {
+    /**
+     * @dev The event is emitted whenever the `transferOwnership(..)`
+     * 2-step process is started
+     */
     event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
 
+    /**
+     * @dev The event is emitted whenever the `renounceOwnership(..)`
+     * 2-step process is started
+     */
     event RenounceOwnershipInitiated();
 
     /**
