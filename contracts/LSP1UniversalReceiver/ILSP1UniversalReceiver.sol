@@ -12,7 +12,7 @@ interface ILSP1UniversalReceiver {
      * @param value The amount sent to the universalReceiver function
      * @param typeId The hash of a specific standard or a hook
      * @param receivedData The arbitrary data passed to universalReceiver function
-     * @param returnedValue The return value of universalReceiver function
+     * @param returnedValue The value returned by the universalReceiver function
      */
     event UniversalReceiver(
         address indexed from,
