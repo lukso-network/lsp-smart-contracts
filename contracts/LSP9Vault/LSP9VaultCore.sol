@@ -19,7 +19,7 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 // constants
-import {_INTERFACEID_CLAIM_OWNERSHIP} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 import {
     OPERATION_CALL,
@@ -214,7 +214,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         return
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||
-            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP ||
+            interfaceId == _INTERFACEID_LSP14 ||
             super.supportsInterface(interfaceId);
     }
 

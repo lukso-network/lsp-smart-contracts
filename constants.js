@@ -17,14 +17,14 @@ const INTERFACE_IDS = {
 	ERC1155: '0xd9b67a26',
 	ERC725X: '0x44c028fe',
 	ERC725Y: '0x714df77c',
-	LSP0ERC725Account: '0xeb6be62e',
+	LSP0ERC725Account: '0xdca05671',
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
 	LSP6KeyManager: '0xc403d48f',
 	LSP7DigitalAsset: '0x5fcaac27',
 	LSP8IdentifiableDigitalAsset: '0x49399145',
-	LSP9Vault: '0xfd4d5c50',
-	LSP14Ownable2Step: '0x9ab669ef',
+	LSP9Vault: '0xca86ec0f',
+	LSP14Ownable2Step: '0x94be5999',
 };
 
 // ERC1271

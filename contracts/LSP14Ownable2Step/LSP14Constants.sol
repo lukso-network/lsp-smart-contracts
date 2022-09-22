@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+bytes4 constant _INTERFACEID_LSP14 = 0x94be5999;
+
 // --- Type IDs
 
 //keccak256(LSP14OwnershipTransferStarted)

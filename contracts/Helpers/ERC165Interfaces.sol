@@ -24,7 +24,8 @@ import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
 } from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
-import {ILSP14Ownable2Step, _INTERFACEID_CLAIM_OWNERSHIP} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
+import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
@@ -50,10 +51,7 @@ contract CalculateLSPInterfaces {
             type(IERC725X).interfaceId ^
             type(IERC1271).interfaceId ^
             type(ILSP1).interfaceId ^
-            OwnableUnset.owner.selector ^
-            OwnableUnset.renounceOwnership.selector ^
-            OwnableUnset.transferOwnership.selector ^
-            type(ILSP14Ownable2Step).interfaceId;
+            calculateInterfaceLSP14();
 
         require(
             interfaceId == _INTERFACEID_LSP0,
@@ -119,10 +117,7 @@ contract CalculateLSPInterfaces {
             type(IERC725X).interfaceId ^
             type(IERC725Y).interfaceId ^
             type(ILSP1).interfaceId ^
-            OwnableUnset.owner.selector ^
-            OwnableUnset.renounceOwnership.selector ^
-            OwnableUnset.transferOwnership.selector ^
-            type(ILSP14Ownable2Step).interfaceId;
+            calculateInterfaceLSP14();
 
         require(
             interfaceId == _INTERFACEID_LSP9,
@@ -132,17 +127,18 @@ contract CalculateLSPInterfaces {
         return interfaceId;
     }
 
-    function calculateInterfaceClaimOwnership() public pure returns (bytes4) {
+    function calculateInterfaceLSP14() public pure returns (bytes4) {
         // prettier-ignore
         bytes4 interfaceId = 
             OwnableUnset.owner.selector ^
             OwnableUnset.transferOwnership.selector ^
             OwnableUnset.renounceOwnership.selector ^
-            type(ILSP14Ownable2Step).interfaceId;
+            LSP14Ownable2Step.pendingOwner.selector ^
+            LSP14Ownable2Step.acceptOwnership.selector;
 
         require(
-            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP,
-            "hardcoded _INTERFACEID_CLAIM_OWNERSHIP does not match XOR of the functions"
+            interfaceId == _INTERFACEID_LSP14,
+            "hardcoded _INTERFACEID_LSP14 does not match XOR of the functions"
         );
 
         return interfaceId;

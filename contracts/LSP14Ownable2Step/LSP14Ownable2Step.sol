@@ -71,7 +71,7 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
         _transferOwnership(newOwner);
     }
 
-    function acceptOwnership() public virtual override {
+    function acceptOwnership() public virtual {
         _acceptOwnership();
     }
 
