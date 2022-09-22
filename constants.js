@@ -219,17 +219,6 @@ const LSP1_TYPE_IDS = {
 // ----------
 
 const Errors = {
-	LSP14Ownable2Step: {
-		'0x8b9bf507': {
-			error: 'NotInRenounceOwnershipInterval(uint256,uint256)',
-			message:
-				'LSP14: Second renounce ownership call available after 100 block delay from the first call',
-		},
-		'0x43b248cd': {
-			error: 'CannotTransferOwnershipToSelf()',
-			message: 'LSP14: Cannot transfer ownership to address(this)',
-		},
-	},
 	LSP2: {
 		'0xb614e91e': {
 			error: 'InvalidABIEncodedArray(bytes,string)',
@@ -391,6 +380,17 @@ const Errors = {
 			message: 'LSP8CappedSupply: cannot mint over the max cap supply',
 		},
 	},
+	LSP14Ownable2Step: {
+		'0x8b9bf507': {
+			error: 'NotInRenounceOwnershipInterval(uint256,uint256)',
+			message:
+				'LSP14: Second renounce ownership call available after 100 block delay from the first call',
+		},
+		'0x43b248cd': {
+			error: 'CannotTransferOwnershipToSelf()',
+			message: 'LSP14: Cannot transfer ownership to address(this)',
+		},
+	},
 };
 
 // ----------
@@ -406,15 +406,6 @@ const EventSignatures = {
 		 * signature = keccak256('OwnershipTransferred(address,address)')
 		 */
 		OwnershipTransfered: '0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0',
-	},
-	LSP14Ownable2Step: {
-		/**
-		 * event RenounceOwnershipInitiated();
-		 *
-		 * signature = keccak256('RenounceOwnershipInitiated()')
-		 */
-		RenounceOwnershipInitiated:
-			'0X56272768d104766ae5e663c58927d0a9e47effb40b9a8f6644ac5dfbc9e56f84',
 	},
 	ERC725X: {
 		/**
@@ -580,6 +571,15 @@ const EventSignatures = {
 		 * signature = keccak256('ReceivedERC777(address,address,address,address,uint256)')
 		 */
 		ReceivedERC777: '0xdc38539587ea4d67f9f649ad9269646bab26927bad175bdcdfdab5dd297d5e1c',
+	},
+	LSP14Ownable2Step: {
+		/**
+		 * event RenounceOwnershipInitiated();
+		 *
+		 * signature = keccak256('RenounceOwnershipInitiated()')
+		 */
+		RenounceOwnershipInitiated:
+			'0X56272768d104766ae5e663c58927d0a9e47effb40b9a8f6644ac5dfbc9e56f84',
 	},
 };
 
