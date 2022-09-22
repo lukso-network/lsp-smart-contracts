@@ -173,7 +173,7 @@ const BasicUPSetup_Schema = [
 // LSP6
 // ----------
 
-// All Permissions currently exclude DELEGATECALL for security
+// All Permissions currently exclude DELEGATECALL and SUPER_DELEGATECALL for security
 const ALL_PERMISSIONS = '0xe800000000000000000000000000000000000000000000000000000000000fbf';
 
 // prettier-ignore
