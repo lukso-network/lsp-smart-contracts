@@ -2,14 +2,14 @@ import { expect } from "chai";
 import { ethers, network } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { contracts, LSP0ERC725Account, LSP9Vault } from "../types";
+import { contracts, LSP0ERC725Account, LSP9Vault } from "../../types";
 
 // constants
-import { INTERFACE_IDS, OPERATION_TYPES } from "../constants";
+import { INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
 
 // helpers
-import { provider } from "./utils/helpers";
-import { lsp0Erc725Account } from "../types/factories/contracts";
+import { provider } from "../utils/helpers";
+import { lsp0Erc725Account } from "../../types/factories/contracts";
 
 export type LSP14TestContext = {
   accounts: SignerWithAddress[];
