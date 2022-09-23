@@ -93,7 +93,7 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
         _pendingOwner = newOwner;
 
         address currentOwner = owner();
-        _notifyRecipient(newOwner, _TYPEID_LSP14_OwnershipTransferStarted);
+        _notifyUniversalReceiver(newOwner, _TYPEID_LSP14_OwnershipTransferStarted, "");
         require(
             currentOwner == owner(),
             "LSP14: newOwner should accept owership in a separate transaction"
@@ -113,8 +113,16 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
         _setOwner(_pendingOwner);
         delete _pendingOwner;
 
-        _notifySender(previousOwner, _TYPEID_LSP14_OwnershipTransferred_SenderNotification);
-        _notifyRecipient(msg.sender, _TYPEID_LSP14_OwnershipTransferred_RecipientNotification);
+        _notifyUniversalReceiver(
+            previousOwner,
+            _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
+            ""
+        );
+        _notifyUniversalReceiver(
+            msg.sender,
+            _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
+            ""
+        );
     }
 
     /**
@@ -146,20 +154,16 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
     // --- URD Hooks
 
     /**
-     * @dev Calls the universalReceiver function of the sender if supports LSP1 InterfaceId
+     * @dev Calls the universalReceiver function of the Universal Profile
+     * if supports LSP1 InterfaceId
      */
-    function _notifySender(address sender, bytes32 typeId) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(sender, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(sender).universalReceiver(typeId, "");
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the owner if supports LSP1 InterfaceId
-     */
-    function _notifyRecipient(address receiver, bytes32 typeId) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(receiver, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(receiver).universalReceiver(typeId, "");
+    function _notifyUniversalReceiver(
+        address universalProfile,
+        bytes32 typeId,
+        bytes memory data
+    ) internal virtual {
+        if (ERC165Checker.supportsERC165Interface(universalProfile, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(universalProfile).universalReceiver(typeId, data);
         }
     }
 }
