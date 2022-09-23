@@ -28,19 +28,17 @@ import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
  */
 abstract contract LSP14Ownable2Step is OwnableUnset {
     /**
-     * @dev The event is emitted whenever the `transferOwnership(..)`
-     * 2-step process is started
+     * @dev emitted whenever the `transferOwnership(..)` 2-step process is started
      */
     event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
 
     /**
-     * @dev The event is emitted whenever the `renounceOwnership(..)`
-     * 2-step process is started
+     * @dev emitted whenever the `renounceOwnership(..)` 2-step process is started
      */
     event RenounceOwnershipInitiated();
 
     /**
-     * @dev The number of block that need to pass before one is able to
+     * @dev The number of block that MUST pass before one is able to
      *  confirm renouncing ownership
      */
     uint256 private constant _RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY = 100;
@@ -57,7 +55,10 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
     uint256 private _renounceOwnershipStartedAt;
 
     /**
-     * @dev The address that may use `acceptOwnership()`
+     * @dev The address that ownership of the contract is transferred to.
+     * This address may use `acceptOwnership()` to gain ownership of the contract.
+     * Meaning that the current owner will lose access to the methods marked as
+     * `onlyOwner` in favor to the `_pendingOwner`.
      */
     address private _pendingOwner;
 
@@ -86,7 +87,10 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
 
     /**
      * @dev Start the process of transferring ownership of the contract
-     * and notify the receiver about it.
+     * and notify the new owner about it.
+     *
+     * Requirements:
+     * - `newOwner` MUST NOT accept ownership of the contract in the same transaction.
      */
     function _transferOwnership(address newOwner) internal virtual {
         if (newOwner == address(this)) revert CannotTransferOwnershipToSelf();
@@ -96,15 +100,15 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
         _notifyUniversalReceiver(newOwner, _TYPEID_LSP14_OwnershipTransferStarted, "");
         require(
             currentOwner == owner(),
-            "LSP14: newOwner should accept owership in a separate transaction"
+            "LSP14: newOwner MUST accept ownership in a separate transaction"
         );
 
-        emit OwnershipTransferStarted(owner(), newOwner);
+        emit OwnershipTransferStarted(currentOwner, newOwner);
     }
 
     /**
-     * @dev Accept ownership of the contract and notifiy
-     * previous owner and the new owner about the process.
+     * @dev Accept ownership of the contract and notify
+     * previous owner and the new owner that ownership has been transferred.
      */
     function _acceptOwnership() internal virtual {
         require(msg.sender == pendingOwner(), "LSP14: caller is not the pendingOwner");
@@ -126,8 +130,8 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
     }
 
     /**
-     * @dev This method is used to initiate or confirm the process of
-     * renouncing ownership.
+     * @dev initiate or confirm the process of renouncing ownership. Leaves the contract
+     * without an owner, making functions marked as `onlyOwner` not callable anymore.
      */
     function _renounceOwnership() internal virtual {
         uint256 currentBlock = block.number;

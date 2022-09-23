@@ -81,7 +81,9 @@ abstract contract LSP0ERC725AccountCore is
     // ERC173 - Modified ClaimOwnership
 
     /**
-     * @dev Sets the pending owner and notify the pending owner
+     * @dev Sets the pending owner and notifies the pending owner
+     *
+     * @param _newOwner The address nofied and set as `pendingOwner`
      */
     function transferOwnership(address _newOwner)
         public

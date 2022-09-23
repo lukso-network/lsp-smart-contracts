@@ -177,6 +177,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
 
     /**
      * @dev Sets the pending owner and notify the pending owner
+     *
+     * @param _newOwner The address nofied and set as `pendingOwner`
      */
     function transferOwnership(address _newOwner)
         public
