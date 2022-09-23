@@ -175,15 +175,15 @@ export const shouldBehaveLikeLSP9 = (
           .connect(context.accounts.owner)
           .transferOwnership(context.universalProfile.address);
 
-        let claimOwnershipSelector =
-          context.universalProfile.interface.getSighash("claimOwnership");
+        let acceptOwnershipSelector =
+          context.universalProfile.interface.getSighash("acceptOwnership");
 
         let executePayload =
           context.universalProfile.interface.encodeFunctionData("execute", [
             OPERATION_TYPES.CALL,
             context.lsp9Vault.address,
             0,
-            claimOwnershipSelector,
+            acceptOwnershipSelector,
           ]);
 
         await context.lsp6KeyManager
@@ -291,7 +291,7 @@ export const shouldBehaveLikeLSP9 = (
           .withArgs(
             context.lsp9Vault.address,
             0,
-            LSP1_TYPE_IDS.LSP9_VAULTPENDINGOWNER,
+            LSP1_TYPE_IDS.LSP14_OwnershipTransferStarted,
             "0x",
             ethers.utils.hexlify(
               ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
@@ -353,9 +353,9 @@ export const shouldInitializeLikeLSP9 = (
       expect(result).to.be.true;
     });
 
-    it("should support ClaimOwnership interface", async () => {
+    it("should support LSP14Ownable2Step interface", async () => {
       const result = await context.lsp9Vault.supportsInterface(
-        INTERFACE_IDS.ClaimOwnership
+        INTERFACE_IDS.LSP14Ownable2Step
       );
       expect(result).to.be.true;
     });

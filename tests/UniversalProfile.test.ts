@@ -15,9 +15,9 @@ import {
 } from "./LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour";
 
 import {
-  ClaimOwnershipTestContext,
-  shouldBehaveLikeClaimOwnership,
-} from "./ClaimOwnership.behaviour";
+  LSP14TestContext,
+  shouldBehaveLikeLSP14,
+} from "./LSP14Ownable2Step/LSP14Ownable2Step.behaviour";
 
 import {
   LSP3TestContext,
@@ -59,20 +59,19 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildClaimOwnershipTestContext =
-      async (): Promise<ClaimOwnershipTestContext> => {
-        const accounts = await ethers.getSigners();
-        const deployParams = {
-          owner: accounts[0],
-        };
-        const contract = await new UniversalProfile__factory(
-          accounts[0]
-        ).deploy(deployParams.owner.address);
-
-        const onlyOwnerRevertString = "Ownable: caller is not the owner";
-
-        return { accounts, contract, deployParams, onlyOwnerRevertString };
+    const buildLSP14TestContext = async (): Promise<LSP14TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = {
+        owner: accounts[0],
       };
+      const contract = await new UniversalProfile__factory(accounts[0]).deploy(
+        deployParams.owner.address
+      );
+
+      const onlyOwnerRevertString = "Ownable: caller is not the owner";
+
+      return { accounts, contract, deployParams, onlyOwnerRevertString };
+    };
 
     [
       { initialFunding: undefined },
@@ -112,7 +111,7 @@ describe("UniversalProfile", () => {
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP3(buildLSP3TestContext);
       shouldBehaveLikeLSP1(buildLSP1TestContext);
-      shouldBehaveLikeClaimOwnership(buildClaimOwnershipTestContext);
+      shouldBehaveLikeLSP14(buildLSP14TestContext);
     });
   });
 
@@ -170,33 +169,32 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildClaimOwnershipTestContext =
-      async (): Promise<ClaimOwnershipTestContext> => {
-        const accounts = await ethers.getSigners();
-        const deployParams = { owner: accounts[0] };
+    const buildLSP14TestContext = async (): Promise<LSP14TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = { owner: accounts[0] };
 
-        const universalProfileInit = await new UniversalProfileInit__factory(
-          accounts[0]
-        ).deploy();
+      const universalProfileInit = await new UniversalProfileInit__factory(
+        accounts[0]
+      ).deploy();
 
-        const universalProfileProxy = await deployProxy(
-          universalProfileInit.address,
-          accounts[0]
-        );
+      const universalProfileProxy = await deployProxy(
+        universalProfileInit.address,
+        accounts[0]
+      );
 
-        const universalProfile = universalProfileInit.attach(
-          universalProfileProxy
-        );
+      const universalProfile = universalProfileInit.attach(
+        universalProfileProxy
+      );
 
-        const onlyOwnerRevertString = "Ownable: caller is not the owner";
+      const onlyOwnerRevertString = "Ownable: caller is not the owner";
 
-        return {
-          accounts,
-          contract: universalProfile,
-          deployParams,
-          onlyOwnerRevertString,
-        };
+      return {
+        accounts,
+        contract: universalProfile,
+        deployParams,
+        onlyOwnerRevertString,
       };
+    };
 
     describe("when deploying the base implementation contract", () => {
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
@@ -267,8 +265,8 @@ describe("UniversalProfile", () => {
         return lsp1Context;
       });
 
-      shouldBehaveLikeClaimOwnership(async () => {
-        let claimOwnershipContext = await buildClaimOwnershipTestContext();
+      shouldBehaveLikeLSP14(async () => {
+        let claimOwnershipContext = await buildLSP14TestContext();
 
         await initializeProxy({
           accounts: claimOwnershipContext.accounts,

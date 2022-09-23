@@ -53,7 +53,7 @@ export async function setupKeyManager(
     .connect(_context.owner)
     ["setData(bytes32[],bytes[])"](
       [
-        // required to set owner permission so that it can claimOwnership(...) via the KeyManager
+        // required to set owner permission so that it can acceptOwnership(...) via the KeyManager
         // otherwise, the KeyManager will flag the calling owner as not having the permission CHANGEOWNER
         // when trying to setup the KeyManager
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -68,7 +68,7 @@ export async function setupKeyManager(
     .transferOwnership(_context.keyManager.address);
 
   let payload =
-    _context.universalProfile.interface.getSighash("claimOwnership");
+    _context.universalProfile.interface.getSighash("acceptOwnership");
 
   await _context.keyManager.connect(_context.owner).execute(payload);
 }
@@ -94,7 +94,7 @@ export async function setupKeyManagerHelper(
     .transferOwnership(_context.keyManagerInternalTester.address);
 
   let payload =
-    _context.universalProfile.interface.getSighash("claimOwnership");
+    _context.universalProfile.interface.getSighash("acceptOwnership");
 
   await _context.keyManagerInternalTester
     .connect(_context.owner)
@@ -145,7 +145,7 @@ export async function setupProfileWithKeyManagerWithURD(
   await universalProfile.connect(EOA).transferOwnership(lsp6KeyManager.address);
 
   const claimOwnershipPayload =
-    universalProfile.interface.getSighash("claimOwnership");
+    universalProfile.interface.getSighash("acceptOwnership");
 
   await lsp6KeyManager.connect(EOA).execute(claimOwnershipPayload);
 

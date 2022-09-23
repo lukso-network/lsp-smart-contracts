@@ -2,9 +2,9 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 
 import {
-  ClaimOwnershipTestContext,
-  shouldBehaveLikeClaimOwnership,
-} from "../ClaimOwnership.behaviour";
+  LSP14TestContext,
+  shouldBehaveLikeLSP14,
+} from "../LSP14Ownable2Step/LSP14Ownable2Step.behaviour";
 
 import {
   LSP9Vault__factory,
@@ -51,25 +51,24 @@ describe("LSP9Vault", () => {
       };
     };
 
-    const buildClaimOwnershipTestContext =
-      async (): Promise<ClaimOwnershipTestContext> => {
-        const accounts = await ethers.getSigners();
-        const deployParams = { owner: accounts[0] };
+    const buildLSP14TestContext = async (): Promise<LSP14TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = { owner: accounts[0] };
 
-        const lsp9Vault = await new LSP9Vault__factory(accounts[0]).deploy(
-          deployParams.owner.address
-        );
+      const lsp9Vault = await new LSP9Vault__factory(accounts[0]).deploy(
+        deployParams.owner.address
+      );
 
-        const onlyOwnerRevertString =
-          "Only Owner or Universal Receiver Delegate allowed";
+      const onlyOwnerRevertString =
+        "Only Owner or Universal Receiver Delegate allowed";
 
-        return {
-          accounts,
-          contract: lsp9Vault,
-          deployParams,
-          onlyOwnerRevertString,
-        };
+      return {
+        accounts,
+        contract: lsp9Vault,
+        deployParams,
+        onlyOwnerRevertString,
       };
+    };
 
     describe("when deploying the contract", () => {
       let context: LSP9TestContext;
@@ -93,7 +92,7 @@ describe("LSP9Vault", () => {
 
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP9(buildTestContext);
-      shouldBehaveLikeClaimOwnership(buildClaimOwnershipTestContext);
+      shouldBehaveLikeLSP14(buildLSP14TestContext);
     });
   });
 
@@ -190,7 +189,7 @@ describe("LSP9Vault", () => {
         })
       );
 
-      shouldBehaveLikeClaimOwnership(async () => {
+      shouldBehaveLikeLSP14(async () => {
         let context = await buildTestContext();
         let accounts = await ethers.getSigners();
         await initializeProxy(context);

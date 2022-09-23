@@ -98,8 +98,8 @@ export const shouldBehaveLikeLSP1Delegate = (
           LSP1_TYPE_IDS.LSP7_TOKENSENDER,
           LSP1_TYPE_IDS.LSP8_TOKENRECIPIENT,
           LSP1_TYPE_IDS.LSP8_TOKENSENDER,
-          LSP1_TYPE_IDS.LSP9_VAULTRECIPIENT,
-          LSP1_TYPE_IDS.LSP9_VAULTSENDER,
+          LSP1_TYPE_IDS.LSP14_OwnershipTransferred_RecipientNotification,
+          LSP1_TYPE_IDS.LSP14_OwnershipTransferred_SenderNotification,
         ];
 
         for (let i = 0; i < URD_TypeIds.length; i++) {
@@ -1416,7 +1416,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               OPERATION_TYPES.CALL,
               lsp9VaultA.address,
               0,
-              lsp9VaultA.interface.getSighash("claimOwnership"),
+              lsp9VaultA.interface.getSighash("acceptOwnership"),
             ]);
 
           await context.lsp6KeyManager1
@@ -1448,7 +1448,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               OPERATION_TYPES.CALL,
               lsp9VaultB.address,
               0,
-              lsp9VaultB.interface.getSighash("claimOwnership"),
+              lsp9VaultB.interface.getSighash("acceptOwnership"),
             ]);
 
           await context.lsp6KeyManager1
@@ -1480,7 +1480,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               OPERATION_TYPES.CALL,
               lsp9VaultC.address,
               0,
-              lsp9VaultC.interface.getSighash("claimOwnership"),
+              lsp9VaultC.interface.getSighash("acceptOwnership"),
             ]);
 
           await context.lsp6KeyManager1
@@ -1521,7 +1521,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               OPERATION_TYPES.CALL,
               lsp9VaultA.address,
               0,
-              lsp9VaultA.interface.getSighash("claimOwnership"),
+              lsp9VaultA.interface.getSighash("acceptOwnership"),
             ]);
 
           await context.lsp6KeyManager2
@@ -1572,7 +1572,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               OPERATION_TYPES.CALL,
               lsp9VaultB.address,
               0,
-              lsp9VaultB.interface.getSighash("claimOwnership"),
+              lsp9VaultB.interface.getSighash("acceptOwnership"),
             ]);
 
           await context.lsp6KeyManager2
@@ -1625,7 +1625,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               OPERATION_TYPES.CALL,
               lsp9VaultC.address,
               0,
-              lsp9VaultC.interface.getSighash("claimOwnership"),
+              lsp9VaultC.interface.getSighash("acceptOwnership"),
             ]);
 
           await context.lsp6KeyManager2
@@ -1678,7 +1678,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               OPERATION_TYPES.CALL,
               lsp9VaultB.address,
               0,
-              lsp9VaultB.interface.getSighash("claimOwnership"),
+              lsp9VaultB.interface.getSighash("acceptOwnership"),
             ]);
 
           await context.lsp6KeyManager1
@@ -1713,7 +1713,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               callPayload(context.universalProfile2, lsp9VaultA.address, abi)
             );
 
-          await lsp9VaultA.connect(context.accounts.any).claimOwnership();
+          await lsp9VaultA.connect(context.accounts.any).acceptOwnership();
         });
 
         it("should pop and swap VaultA with VaultC, lsp10keys (VaultC should become first vault) : arrayLength 1, index = 0, VaultC address in UP2", async () => {
