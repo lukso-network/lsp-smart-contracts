@@ -4,7 +4,7 @@ import { expect } from "chai";
 import {
   LSP14TestContext,
   shouldBehaveLikeLSP14,
-} from "../LSP14Ownable2Step.behaviour";
+} from "../LSP14Ownable2Step/LSP14Ownable2Step.behaviour";
 
 import {
   LSP9Vault__factory,
