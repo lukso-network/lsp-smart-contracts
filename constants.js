@@ -208,12 +208,12 @@ const LSP1_TYPE_IDS = {
 	LSP8_TOKENSENDER: '0x3724c94f0815e936299cca424da4140752198e0beb7931a6e0925d11bc97544c',
 	// keccak256('LSP8TokensRecipient')
 	LSP8_TOKENRECIPIENT: '0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01',
-	// keccak256("LSP9VaultSender")
-	LSP14_OwnershipTransferred_SenderNotification: '0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c',
-	// keccak256("LSP9VaultRecipient")
-	LSP14_OwnershipTransferred_RecipientNotification: '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
-	// keccak256("LSP9VaultPendingOwner")
+	// keccak256("LSP14OwnershipTransferStarted")
 	LSP14_OwnershipTransferStarted: '0xee9a7c0924f740a2ca33d59b7f0c2929821ea9837ce043ce91c1823e9c4e52c0',
+	// keccak256("LSP14OwnershipTransferred_SenderNotification")
+	LSP14_OwnershipTransferred_SenderNotification: '0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c',
+	// keccak256("LSP14OwnershipTransferred_RecipientNotification")
+	LSP14_OwnershipTransferred_RecipientNotification: '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
 
 // ----------
