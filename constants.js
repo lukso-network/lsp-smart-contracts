@@ -580,6 +580,15 @@ const EventSignatures = {
 		 */
 		RenounceOwnershipInitiated:
 			'0X56272768d104766ae5e663c58927d0a9e47effb40b9a8f6644ac5dfbc9e56f84',
+		/**
+		 * event OwnershipTransferStarted(
+		 *    address indexed previousOwner,
+		 *    address indexed newOwner
+		 * );
+		 * 
+		 * signature = keccak256(OwnershipTransferStarted(address,address))
+		 */
+		 OwnershipTransferStarted: '0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700',
 	},
 };
 
