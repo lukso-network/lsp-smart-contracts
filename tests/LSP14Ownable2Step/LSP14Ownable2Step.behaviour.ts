@@ -379,7 +379,7 @@ export const shouldBehaveLikeLSP14 = (
       });
     });
 
-    describe("when calling renounceOwnership() the second time", () => {
+    describe.only("when calling renounceOwnership() the second time", () => {
       it("should revert if called in the delay period", async () => {
         const renounceOwnershipOnce = await context.contract
           .connect(context.deployParams.owner)
@@ -424,6 +424,24 @@ export const shouldBehaveLikeLSP14 = (
               context.deployParams.owner.address,
               ethers.constants.AddressZero
             );
+
+          expect(await context.contract.owner()).to.equal(
+            ethers.constants.AddressZero
+          );
+        });
+
+        it("should have emitted a OwnershipRenounced event", async () => {
+          await context.contract
+            .connect(context.deployParams.owner)
+            .renounceOwnership();
+
+          await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
+
+          await expect(
+            context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership()
+          ).to.emit(context.contract, "OwnershipRenounced");
 
           expect(await context.contract.owner()).to.equal(
             ethers.constants.AddressZero
