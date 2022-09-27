@@ -54,7 +54,7 @@ export const shouldBehaveLikeLSP1 = (
             // receivedData
             data,
             // returnedValue
-            "0x"
+            abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
           );
       });
     });
@@ -79,7 +79,7 @@ export const shouldBehaveLikeLSP1 = (
               // receivedData
               "0x",
               // returnedValue
-              "0x"
+              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
             );
         });
       });
@@ -103,7 +103,7 @@ export const shouldBehaveLikeLSP1 = (
               // receivedData
               "0x",
               // returnedValue
-              "0x"
+              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
             );
         });
       });
@@ -137,7 +137,7 @@ export const shouldBehaveLikeLSP1 = (
             valueSent,
             LSP1_HOOK_PLACEHOLDER,
             "0x",
-            "0x"
+            abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
           );
       });
     });
@@ -170,7 +170,7 @@ export const shouldBehaveLikeLSP1 = (
               // receivedData
               "0x",
               // returnedValue
-              "0x"
+              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
             );
         });
       });
@@ -195,7 +195,7 @@ export const shouldBehaveLikeLSP1 = (
               // receivedData
               "0x",
               // returnedValue
-              "0x"
+              abiCoder.encode(["bytes", "bytes"], ["0x", "0x"])
             );
         });
       });

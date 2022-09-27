@@ -17,6 +17,7 @@ import {
   ARRAY_LENGTH,
   TOKEN_ID,
   LSP1_HOOK_PLACEHOLDER,
+  abiCoder,
 } from "../utils/helpers";
 
 // constants
@@ -116,8 +117,14 @@ export const shouldBehaveLikeLSP1Delegate = (
             .callStatic.universalReceiver(Vault_TypeIds[i], "0x");
 
           expect(result).to.equal(
-            ethers.utils.hexlify(
-              ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+            abiCoder.encode(
+              ["bytes", "bytes"],
+              [
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+                ),
+                "0x",
+              ]
             )
           );
         }
@@ -131,8 +138,14 @@ export const shouldBehaveLikeLSP1Delegate = (
           .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, "0x");
 
         expect(result).to.equal(
-          ethers.utils.hexlify(
-            ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+          abiCoder.encode(
+            ["bytes", "bytes"],
+            [
+              ethers.utils.hexlify(
+                ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+              ),
+              "0x",
+            ]
           )
         );
       });
