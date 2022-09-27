@@ -40,6 +40,7 @@ import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1UniversalReceiver {
+    using ERC165Checker for address;
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
@@ -148,6 +149,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      * @dev Forwards the call to the UniversalReceiverDelegate if set.
      * @param typeId The type of call received.
      * @param receivedData The data received.
+     * @return returnedValue The ABI encoded return value of the LSP1UniversalReceiverDelegate call
+     * and the LSP1TypeIdDelegate call
      */
     function universalReceiver(bytes32 typeId, bytes calldata receivedData)
         public
@@ -156,20 +159,30 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         returns (bytes memory returnedValue)
     {
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory returnedValue1;
 
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
-            if (
-                ERC165Checker.supportsERC165Interface(
-                    universalReceiverDelegate,
-                    _INTERFACEID_LSP1_DELEGATE
-                )
-            ) {
-                returnedValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
+                returnedValue1 = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
                     .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
             }
         }
+
+        bytes memory lsp1TypeIdDelegateValue = _getData(typeId);
+        bytes memory returnedValue2;
+
+        if (lsp1TypeIdDelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
+                returnedValue2 = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            }
+        }
+
+        returnedValue = abi.encode(returnedValue1, returnedValue2);
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValue);
     }
 
