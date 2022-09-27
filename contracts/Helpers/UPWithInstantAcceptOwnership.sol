@@ -28,6 +28,6 @@ contract UPWithInstantAcceptOwnership is LSP0ERC725AccountCore {
         if (typeId == _TYPEID_LSP14_OwnershipTransferStarted) {
             LSP14Ownable2Step(msg.sender).acceptOwnership();
         }
-        returnedValue = LSP0ERC725AccountCore.universalReceiver(typeId, receivedData);
+        super.universalReceiver(typeId, receivedData);
     }
 }

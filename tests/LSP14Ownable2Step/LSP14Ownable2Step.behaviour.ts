@@ -134,7 +134,7 @@ export const shouldBehaveLikeLSP14 = (
       });
     });
 
-    describe("when the URD of the `newOwner` calls `acceptOwnership`", () => {
+    describe("when `acceptOwnership(...)` is called in the same tx as `transferOwnership(...)`", () => {
       let upWithCustomURD: UPWithInstantAcceptOwnership;
       before(async () => {
         context = await buildContext();
@@ -143,7 +143,7 @@ export const shouldBehaveLikeLSP14 = (
         ).deploy(context.accounts[0].address);
       });
 
-      it("should revert with 'LSP14: newOwner MUST accept ownership in a separate transaction'", async () => {
+      it("should revert (e.g: if `universalReceiver(...)` function of `newOwner` calls directly `acceptOwnership(...)')", async () => {
         const ownershipTransfer = context.contract
           .connect(context.deployParams.owner)
           .transferOwnership(upWithCustomURD.address);
