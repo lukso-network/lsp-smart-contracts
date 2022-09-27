@@ -2,7 +2,13 @@ import { expect } from "chai";
 import { ethers, network } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { contracts, LSP0ERC725Account, LSP9Vault } from "../../types";
+import {
+  contracts,
+  LSP0ERC725Account,
+  LSP9Vault,
+  UPWithInstantAcceptOwnership__factory,
+  UPWithInstantAcceptOwnership,
+} from "../../types";
 
 // constants
 import { INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
@@ -125,6 +131,26 @@ export const shouldBehaveLikeLSP14 = (
 
         // account balance should have gone down
         expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
+      });
+    });
+
+    describe("when the URD of the `newOwner` calls `acceptOwnership`", () => {
+      let upWithCustomURD: UPWithInstantAcceptOwnership;
+      before(async () => {
+        context = await buildContext();
+        upWithCustomURD = await new UPWithInstantAcceptOwnership__factory(
+          context.accounts[0]
+        ).deploy(context.accounts[0].address);
+      });
+
+      it("should revert with 'LSP14: newOwner MUST accept ownership in a separate transaction'", async () => {
+        const ownershipTransfer = context.contract
+          .connect(context.deployParams.owner)
+          .transferOwnership(upWithCustomURD.address);
+
+        await expect(ownershipTransfer).to.be.revertedWith(
+          "LSP14: newOwner MUST accept ownership in a separate transaction"
+        );
       });
     });
   });
