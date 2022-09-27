@@ -582,7 +582,7 @@ const EventSignatures = {
 		 *    address indexed newOwner
 		 * );
 		 *
-		 * signature = keccak256(OwnershipTransferStarted(address,address))
+		 * signature = keccak256('OwnershipTransferStarted(address,address)')
 		 */
 		OwnershipTransferStarted:
 			'0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700',
