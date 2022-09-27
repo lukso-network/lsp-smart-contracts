@@ -379,7 +379,7 @@ export const shouldBehaveLikeLSP14 = (
       });
     });
 
-    describe.only("when calling renounceOwnership() the second time", () => {
+    describe("when calling renounceOwnership() the second time", () => {
       it("should revert if called in the delay period", async () => {
         const renounceOwnershipOnce = await context.contract
           .connect(context.deployParams.owner)
