@@ -18,6 +18,7 @@ import {
 import {
   ERC725YKeys,
   INTERFACE_IDS,
+  LSP1_TYPE_IDS,
   SupportedStandards,
 } from "../../constants";
 
@@ -506,8 +507,7 @@ export const shouldBehaveLikeLSP7 = (
 
                   const tx = await transferSuccessScenario(txParams, operator);
 
-                  const typeId =
-                    "0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f";
+                  const typeId = LSP1_TYPE_IDS.LSP7_TOKENRECIPIENT;
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "uint256", "bytes"],
                     [txParams.from, txParams.to, txParams.amount, txParams.data]
@@ -575,8 +575,7 @@ export const shouldBehaveLikeLSP7 = (
 
                   const tx = await transferSuccessScenario(txParams, operator);
 
-                  const typeId =
-                    "0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f";
+                  const typeId = LSP1_TYPE_IDS.LSP7_TOKENRECIPIENT;
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "uint256", "bytes"],
                     [txParams.from, txParams.to, txParams.amount, txParams.data]

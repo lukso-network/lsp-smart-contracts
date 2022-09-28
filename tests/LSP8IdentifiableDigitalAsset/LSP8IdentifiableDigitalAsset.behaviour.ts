@@ -21,6 +21,7 @@ import { tokenIdAsBytes32 } from "../utils/tokens";
 import {
   ERC725YKeys,
   INTERFACE_IDS,
+  LSP1_TYPE_IDS,
   SupportedStandards,
 } from "../../constants";
 
@@ -713,8 +714,7 @@ export const shouldBehaveLikeLSP8 = (
 
                   const tx = await transferSuccessScenario(txParams, operator);
 
-                  const typeId =
-                    "0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01";
+                  const typeId = LSP1_TYPE_IDS.LSP8_TOKENRECIPIENT;
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "bytes32", "bytes"],
                     [
@@ -807,8 +807,7 @@ export const shouldBehaveLikeLSP8 = (
 
                   const tx = await transferSuccessScenario(txParams, operator);
 
-                  const typeId =
-                    "0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01";
+                  const typeId = LSP1_TYPE_IDS.LSP8_TOKENRECIPIENT;
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "bytes32", "bytes"],
                     [
