@@ -6,8 +6,8 @@ bytes4 constant _INTERFACEID_LSP7 = 0x5fcaac27;
 
 // --- Token Hooks
 
-// keccak256('LSP7TokensSender')
-bytes32 constant _TYPEID_LSP7_TOKENSSENDER = 0x40b8bec57d7b5ff0dbd9e9acd0a47dfeb0101e1a203766f5ccab00445fbf39e9;
+// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP7Tokens_SenderNotification'))
+bytes32 constant _TYPEID_LSP7_TOKENSSENDER = 0x0cfc51aec37c55a4d0b10000429ac7a06903dbc9c13dfcb3c9d11df8194581fa;
 
-// keccak256('LSP7TokensRecipient')
-bytes32 constant _TYPEID_LSP7_TOKENSRECIPIENT = 0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f;
+// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP7Tokens_RecipientNotification'))
+bytes32 constant _TYPEID_LSP7_TOKENSRECIPIENT = 0x0cfc51aec37c55a4d0b1000020804611b3e2ea21c480dc465142210acf4a2485;
