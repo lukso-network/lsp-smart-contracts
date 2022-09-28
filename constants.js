@@ -209,11 +209,14 @@ const LSP1_TYPE_IDS = {
 	// keccak256('LSP8TokensRecipient')
 	LSP8_TOKENRECIPIENT: '0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01',
 	// keccak256("LSP14OwnershipTransferStarted")
-	LSP14_OwnershipTransferStarted: '0xee9a7c0924f740a2ca33d59b7f0c2929821ea9837ce043ce91c1823e9c4e52c0',
+	LSP14_OwnershipTransferStarted:
+		'0xee9a7c0924f740a2ca33d59b7f0c2929821ea9837ce043ce91c1823e9c4e52c0',
 	// keccak256("LSP14OwnershipTransferred_SenderNotification")
-	LSP14_OwnershipTransferred_SenderNotification: '0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c',
+	LSP14_OwnershipTransferred_SenderNotification:
+		'0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c',
 	// keccak256("LSP14OwnershipTransferred_RecipientNotification")
-	LSP14_OwnershipTransferred_RecipientNotification: '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
+	LSP14_OwnershipTransferred_RecipientNotification:
+		'0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
 
 // ----------
@@ -574,6 +577,16 @@ const EventSignatures = {
 	},
 	LSP14Ownable2Step: {
 		/**
+		 * event OwnershipTransferStarted(
+		 *    address indexed previousOwner,
+		 *    address indexed newOwner
+		 * );
+		 *
+		 * signature = keccak256('OwnershipTransferStarted(address,address)')
+		 */
+		OwnershipTransferStarted:
+			'0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700',
+		/**
 		 * event RenounceOwnershipInitiated();
 		 *
 		 * signature = keccak256('RenounceOwnershipInitiated()')
@@ -581,14 +594,11 @@ const EventSignatures = {
 		RenounceOwnershipInitiated:
 			'0X56272768d104766ae5e663c58927d0a9e47effb40b9a8f6644ac5dfbc9e56f84',
 		/**
-		 * event OwnershipTransferStarted(
-		 *    address indexed previousOwner,
-		 *    address indexed newOwner
-		 * );
-		 * 
-		 * signature = keccak256(OwnershipTransferStarted(address,address))
+		 * event OwnershipRenounced();
+		 *
+		 * signature = keccak256('OwnershipRenounced()')
 		 */
-		 OwnershipTransferStarted: '0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700',
+		OwnershipRenounced: '0xb7bf72702f3f3fa4264be1e7ff21454ac15cd02da829374909f77f9090199ea2',
 	},
 };
 

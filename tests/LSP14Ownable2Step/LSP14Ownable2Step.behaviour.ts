@@ -430,6 +430,24 @@ export const shouldBehaveLikeLSP14 = (
           );
         });
 
+        it("should have emitted a OwnershipRenounced event", async () => {
+          await context.contract
+            .connect(context.deployParams.owner)
+            .renounceOwnership();
+
+          await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
+
+          await expect(
+            context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership()
+          ).to.emit(context.contract, "OwnershipRenounced");
+
+          expect(await context.contract.owner()).to.equal(
+            ethers.constants.AddressZero
+          );
+        });
+
         it("owner should now be address(0)", async () => {
           await context.contract
             .connect(context.deployParams.owner)
