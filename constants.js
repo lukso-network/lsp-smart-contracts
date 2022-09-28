@@ -200,20 +200,20 @@ const PERMISSIONS = {
 }
 
 const LSP1_TYPE_IDS = {
-	// keccak256('LSP7TokensSender')
-	LSP7_TOKENSENDER: '0x40b8bec57d7b5ff0dbd9e9acd0a47dfeb0101e1a203766f5ccab00445fbf39e9',
-	// keccak256('LSP7TokensRecipient')
-	LSP7_TOKENRECIPIENT: '0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f',
-	// keccak256('LSP8TokensSender')
-	LSP8_TOKENSENDER: '0x3724c94f0815e936299cca424da4140752198e0beb7931a6e0925d11bc97544c',
-	// keccak256('LSP8TokensRecipient')
-	LSP8_TOKENRECIPIENT: '0xc7a120a42b6057a0cbed111fbbfbd52fcd96748c04394f77fc2c3adbe0391e01',
-	// keccak256("LSP14OwnershipTransferStarted")
-	LSP14_OwnershipTransferStarted: '0xee9a7c0924f740a2ca33d59b7f0c2929821ea9837ce043ce91c1823e9c4e52c0',
-	// keccak256("LSP14OwnershipTransferred_SenderNotification")
-	LSP14_OwnershipTransferred_SenderNotification: '0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c',
-	// keccak256("LSP14OwnershipTransferred_RecipientNotification")
-	LSP14_OwnershipTransferred_RecipientNotification: '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
+	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP7Tokens_SenderNotification'))
+	LSP7_TOKENSENDER: '0x0cfc51aec37c55a4d0b10000429ac7a06903dbc9c13dfcb3c9d11df8194581fa',
+	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP7Tokens_RecipientNotification'))
+	LSP7_TOKENRECIPIENT: '0x0cfc51aec37c55a4d0b1000020804611b3e2ea21c480dc465142210acf4a2485',
+		// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP8Tokens_SenderNotification'))
+	LSP8_TOKENSENDER: '0x0cfc51aec37c55a4d0b10000b23eae7e6d1564b295b4c3e3be402d9a2f0776c5',
+	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP8Tokens_RecipientNotification'))
+	LSP8_TOKENRECIPIENT: '0x0cfc51aec37c55a4d0b100000b084a55ebf70fd3c06fd755269dac2212c4d3f0',
+	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferStarted'))
+	LSP14_OwnershipTransferStarted: '0x0cfc51aec37c55a4d0b10000ee9a7c0924f740a2ca33d59b7f0c2929821ea983',
+	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferred_SenderNotification'))
+	LSP14_OwnershipTransferred_SenderNotification: '0x0cfc51aec37c55a4d0b10000a124442e1cc7b52d8e2ede2787d43527dc1f3ae0',
+	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferred_RecipientNotification'))
+	LSP14_OwnershipTransferred_RecipientNotification: '0x0cfc51aec37c55a4d0b10000e32c7debcb817925ba4883fdbfc52797187f28f7',
 };
 
 // ----------
