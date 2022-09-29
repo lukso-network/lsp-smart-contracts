@@ -146,44 +146,46 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
 
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
-     * @dev Forwards the call to the UniversalReceiverDelegate if set.
+     * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
+     * Key and the typeId Key (param) respectivelly. The call will be discarded if no addresses were set.
+     *
      * @param typeId The type of call received.
      * @param receivedData The data received.
-     * @return returnedValue The ABI encoded return value of the LSP1UniversalReceiverDelegate call
-     * and the LSP1TypeIdDelegate call
+     * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
+     * and the LSP1TypeIdDelegate call.
      */
     function universalReceiver(bytes32 typeId, bytes calldata receivedData)
         public
         payable
         virtual
-        returns (bytes memory returnedValue)
+        returns (bytes memory returnedValues)
     {
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
-        bytes memory returnedValue1;
+        bytes memory resultMainDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                returnedValue1 = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                resultMainDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
                     .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
             }
         }
 
         bytes memory lsp1TypeIdDelegateValue = _getData(typeId);
-        bytes memory returnedValue2;
+        bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                returnedValue2 = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
                     .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
             }
         }
 
-        returnedValue = abi.encode(returnedValue1, returnedValue2);
-        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValue);
+        returnedValues = abi.encode(resultMainDelegate, resultTypeIdDelegate);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
 
     // ERC173 - Modified ClaimOwnership
