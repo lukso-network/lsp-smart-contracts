@@ -2,7 +2,13 @@ import { expect } from "chai";
 import { ethers, network } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { contracts, LSP0ERC725Account, LSP9Vault } from "../../types";
+import {
+  contracts,
+  LSP0ERC725Account,
+  LSP9Vault,
+  UPWithInstantAcceptOwnership__factory,
+  UPWithInstantAcceptOwnership,
+} from "../../types";
 
 // constants
 import { INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
@@ -125,6 +131,26 @@ export const shouldBehaveLikeLSP14 = (
 
         // account balance should have gone down
         expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
+      });
+    });
+
+    describe("when `acceptOwnership(...)` is called in the same tx as `transferOwnership(...)`", () => {
+      let upWithCustomURD: UPWithInstantAcceptOwnership;
+      before(async () => {
+        context = await buildContext();
+        upWithCustomURD = await new UPWithInstantAcceptOwnership__factory(
+          context.accounts[0]
+        ).deploy(context.accounts[0].address);
+      });
+
+      it("should revert (e.g: if `universalReceiver(...)` function of `newOwner` calls directly `acceptOwnership(...)')", async () => {
+        const ownershipTransfer = context.contract
+          .connect(context.deployParams.owner)
+          .transferOwnership(upWithCustomURD.address);
+
+        await expect(ownershipTransfer).to.be.revertedWith(
+          "LSP14: newOwner MUST accept ownership in a separate transaction"
+        );
       });
     });
   });
@@ -424,6 +450,24 @@ export const shouldBehaveLikeLSP14 = (
               context.deployParams.owner.address,
               ethers.constants.AddressZero
             );
+
+          expect(await context.contract.owner()).to.equal(
+            ethers.constants.AddressZero
+          );
+        });
+
+        it("should have emitted a OwnershipRenounced event", async () => {
+          await context.contract
+            .connect(context.deployParams.owner)
+            .renounceOwnership();
+
+          await network.provider.send("hardhat_mine", ["0x63"]); // skip 99 blocks
+
+          await expect(
+            context.contract
+              .connect(context.deployParams.owner)
+              .renounceOwnership()
+          ).to.emit(context.contract, "OwnershipRenounced");
 
           expect(await context.contract.owner()).to.equal(
             ethers.constants.AddressZero

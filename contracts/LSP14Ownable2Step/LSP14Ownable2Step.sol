@@ -38,6 +38,11 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
     event RenounceOwnershipInitiated();
 
     /**
+     * @dev emitted when ownership of the contract has been renounced
+     */
+    event OwnershipRenounced();
+
+    /**
      * @dev The number of block that MUST pass before one is able to
      *  confirm renouncing ownership
      */
@@ -153,6 +158,7 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
         _setOwner(address(0));
         delete _renounceOwnershipStartedAt;
         delete _pendingOwner;
+        emit OwnershipRenounced();
     }
 
     // --- URD Hooks
@@ -162,12 +168,12 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
      * if supports LSP1 InterfaceId
      */
     function _notifyUniversalReceiver(
-        address universalProfile,
+        address notifiedContract,
         bytes32 typeId,
         bytes memory data
     ) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(universalProfile, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(universalProfile).universalReceiver(typeId, data);
+        if (ERC165Checker.supportsERC165Interface(notifiedContract, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(notifiedContract).universalReceiver(typeId, data);
         }
     }
 }
