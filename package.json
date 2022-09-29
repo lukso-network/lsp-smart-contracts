@@ -64,6 +64,7 @@
   },
   "devDependencies": {
     "@erc725/erc725.js": "0.8.0",
+    "@lukso/lsp6-signer.js": "^0.0.1-development",
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@primitivefi/hardhat-dodoc": "^0.1.1",
