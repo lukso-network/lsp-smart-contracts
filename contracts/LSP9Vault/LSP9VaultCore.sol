@@ -161,13 +161,13 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         returns (bytes memory returnedValues)
     {
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
-        bytes memory resultMainDelegate;
+        bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultMainDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
                     .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
             }
         }
@@ -176,15 +176,15 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+            address typeIdDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+            if (typeIdDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
+                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(typeIdDelegate)
                     .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
             }
         }
 
-        returnedValues = abi.encode(resultMainDelegate, resultTypeIdDelegate);
+        returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
 
