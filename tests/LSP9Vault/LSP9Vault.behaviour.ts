@@ -12,7 +12,11 @@ import {
 } from "../../types";
 
 // helpers
-import { ARRAY_LENGTH, generateKeysAndValues } from "../utils/helpers";
+import {
+  ARRAY_LENGTH,
+  generateKeysAndValues,
+  abiCoder,
+} from "../utils/helpers";
 
 // fixtures
 import { callPayload } from "../utils/fixtures";
@@ -293,8 +297,14 @@ export const shouldBehaveLikeLSP9 = (
             0,
             LSP1_TYPE_IDS.LSP14_OwnershipTransferStarted,
             "0x",
-            ethers.utils.hexlify(
-              ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+            abiCoder.encode(
+              ["bytes", "bytes"],
+              [
+                ethers.utils.hexlify(
+                  ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+                ),
+                "0x",
+              ]
             )
           );
       });

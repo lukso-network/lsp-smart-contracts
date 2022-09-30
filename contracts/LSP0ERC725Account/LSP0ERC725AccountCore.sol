@@ -44,6 +44,7 @@ abstract contract LSP0ERC725AccountCore is
     IERC1271,
     ILSP1UniversalReceiver
 {
+    using ERC165Checker for address;
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
@@ -140,32 +141,46 @@ abstract contract LSP0ERC725AccountCore is
 
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
-     * @dev Forwards the call to the UniversalReceiverDelegate if set.
+     * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
+     * Key and the typeId Key (param) respectively. The call will be discarded if no addresses were set.
+     *
      * @param typeId The type of call received.
      * @param receivedData The data received.
+     * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
+     * and the LSP1TypeIdDelegate call.
      */
     function universalReceiver(bytes32 typeId, bytes calldata receivedData)
         public
         payable
         virtual
-        returns (bytes memory returnedValue)
+        returns (bytes memory returnedValues)
     {
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
-            if (
-                ERC165Checker.supportsERC165Interface(
-                    universalReceiverDelegate,
-                    _INTERFACEID_LSP1_DELEGATE
-                )
-            ) {
-                returnedValue = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
+                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
                     .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
             }
         }
-        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValue);
+
+        bytes memory lsp1TypeIdDelegateValue = _getData(typeId);
+        bytes memory resultTypeIdDelegate;
+
+        if (lsp1TypeIdDelegateValue.length >= 20) {
+            address typeIdDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+
+            if (typeIdDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
+                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(typeIdDelegate)
+                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            }
+        }
+
+        returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
 
     /**
