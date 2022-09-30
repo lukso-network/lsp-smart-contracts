@@ -147,7 +147,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
      * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
-     * Key and the typeId Key (param) respectivelly. The call will be discarded if no addresses were set.
+     * Key and the typeId Key (param) respectively. The call will be discarded if no addresses are set.
      *
      * @param typeId The type of call received.
      * @param receivedData The data received.
