@@ -119,7 +119,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             payload
         );
 
-        address signer = keccak256(blob).toEthSignedMessageHash().recover(signature);
+        bytes32 hashedMessage = keccak256(blob);
+        bytes32 hashedPrefixedMessage = toLSP6SignedMessageHash(hashedMessage);
+        address signer = hashedPrefixedMessage.recover(signature);
 
         if (!_isValidNonce(signer, nonce)) {
             revert InvalidRelayNonce(signer, nonce, signature);
@@ -131,6 +133,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(signer, payload);
 
         return _executePayload(payload);
+    }
+
+    function toLSP6SignedMessageHash(bytes memory message) public pure returns (bytes32) {
+        bytes memory messagePrefixed = abi.encodePacked("\x19LSP6 ExecuteRelayCall:\n", Strings.toString(message.length), message);
+        return keccak256(messagePrefixed);
+    }
+
+    function toLSP6SignedMessageHash(bytes32 _hash) public pure returns (bytes32) {
+        bytes memory messagePrefixed = abi.encodePacked("\x19LSP6 ExecuteRelayCall:\n32", _hash);
+        return keccak256(messagePrefixed);
     }
 
      /**
@@ -677,8 +689,5 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (permission == _PERMISSION_SIGN) return "SIGN";
     }
 
-    function toLSP6SignedMessageHash(bytes memory message) public pure returns (bytes32) {
-        bytes memory messagePrefixed = abi.encodePacked("\x19LSP6 ExecuteRelayCall:\n", Strings.toString(message.length), message);
-        return keccak256(messagePrefixed);
-    }
+
 }
