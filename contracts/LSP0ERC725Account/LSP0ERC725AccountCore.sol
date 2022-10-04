@@ -54,9 +54,22 @@ abstract contract LSP0ERC725AccountCore is
 
     /**
      * @dev Emits an event when receiving native tokens
+     *
+     * Executed when:
+     * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
+     * - receiving native tokens with some calldata.
      */
     fallback() external payable virtual {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+    }
+
+    /**
+     * @dev Emits an event when receiving native tokens
+     *
+     * Executed when receiving native tokens with empty calldata.
+     */
+    receive() external payable virtual {
+        emit ValueReceived(msg.sender, msg.value);
     }
 
     // ERC165
