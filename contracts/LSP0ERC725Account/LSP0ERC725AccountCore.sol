@@ -56,6 +56,7 @@ abstract contract LSP0ERC725AccountCore is
      * @dev Emits an event when receiving native tokens
      *
      * Executes on calls made with data included
+     * E.g. calls made with `call()`
      */
     fallback() external payable virtual {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
@@ -64,8 +65,8 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Emits an event when receiving native tokens
      *
-     * Executes on calls mae without data included
-     * E.g. calls made via `send()` or `transfer()`
+     * Executes on calls made without data included
+     * E.g. calls made via `send()`, `transfer()` or `call()`
      */
     receive() external payable virtual {
         emit ValueReceived(msg.sender, msg.value);
