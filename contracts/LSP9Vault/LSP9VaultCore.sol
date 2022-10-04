@@ -72,8 +72,9 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     /**
      * @dev Emits an event when receiving native tokens
      *
-     * Executes on calls made with data included
-     * E.g. calls made with `call()`
+     * Executed when:
+     * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
+     * - receiving native tokens with some calldata.
      */
     fallback() external payable virtual {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
@@ -82,8 +83,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     /**
      * @dev Emits an event when receiving native tokens
      *
-     * Executes on calls mae without data included
-     * E.g. calls made via `send()`, `transfer()` or `call()`
+     * Executed when receiving native tokens with empty calldata.
      */
     receive() external payable virtual {
         emit ValueReceived(msg.sender, msg.value);
