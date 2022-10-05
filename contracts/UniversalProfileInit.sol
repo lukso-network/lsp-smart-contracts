@@ -23,6 +23,5 @@ contract UniversalProfileInit is UniversalProfileInitAbstract {
      */
     function initialize(address newOwner) public payable virtual initializer {
         UniversalProfileInitAbstract._initialize(newOwner);
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 }
