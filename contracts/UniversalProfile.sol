@@ -23,5 +23,6 @@ contract UniversalProfile is LSP0ERC725Account {
     constructor(address newOwner) payable LSP0ERC725Account(newOwner) {
         // set key SupportedStandards:LSP3UniversalProfile
         _setData(_LSP3_SUPPORTED_STANDARDS_KEY, _LSP3_SUPPORTED_STANDARDS_VALUE);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 }

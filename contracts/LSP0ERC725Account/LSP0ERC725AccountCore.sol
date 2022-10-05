@@ -194,6 +194,7 @@ abstract contract LSP0ERC725AccountCore is
 
         returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     /**

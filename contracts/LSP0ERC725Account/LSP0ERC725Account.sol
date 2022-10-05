@@ -17,5 +17,6 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore {
      */
     constructor(address newOwner) payable {
         OwnableUnset._setOwner(newOwner);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 }

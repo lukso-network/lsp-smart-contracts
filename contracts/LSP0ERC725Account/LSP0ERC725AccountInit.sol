@@ -23,5 +23,6 @@ contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
      */
     function initialize(address newOwner) public payable virtual initializer {
         LSP0ERC725AccountInitAbstract._initialize(newOwner);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 }
