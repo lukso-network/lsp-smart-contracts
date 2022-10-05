@@ -11,6 +11,7 @@ import {
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {GasLib} from "../Utils/GasLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
 import {ERC725XCore, IERC725X} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
@@ -30,6 +31,7 @@ import {
 import {
     _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
@@ -185,7 +187,12 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
             }
         }
 
-        bytes memory lsp1TypeIdDelegateValue = _getData(typeId);
+        bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+            bytes20(typeId)
+        );
+
+        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
