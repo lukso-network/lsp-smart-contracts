@@ -17,10 +17,10 @@ import {GasLib} from "../Utils/GasLib.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
+import {LSP6Signer} from "./LSP6Signer.sol";
 
 // errors
 import "./LSP6Errors.sol";
@@ -56,6 +56,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using Address for address;
     using ECDSA for bytes32;
     using ERC165Checker for address;
+    using LSP6Signer for bytes32;
 
     address public target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
@@ -119,9 +120,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             payload
         );
 
-        bytes32 hashedMessage = keccak256(blob);
-        bytes32 hashedPrefixedMessage = toLSP6SignedMessageHash(hashedMessage);
-        address signer = hashedPrefixedMessage.recover(signature);
+        address signer = keccak256(blob).toLSP6SignedMessageHash().recover(signature);
 
         if (!_isValidNonce(signer, nonce)) {
             revert InvalidRelayNonce(signer, nonce, signature);
@@ -135,15 +134,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         return _executePayload(payload);
     }
 
-    function toLSP6SignedMessageHash(bytes memory message) public pure returns (bytes32) {
-        bytes memory messagePrefixed = abi.encodePacked("\x19LSP6 ExecuteRelayCall:\n", Strings.toString(message.length), message);
-        return keccak256(messagePrefixed);
-    }
-
-    function toLSP6SignedMessageHash(bytes32 _hash) public pure returns (bytes32) {
-        bytes memory messagePrefixed = abi.encodePacked("\x19LSP6 ExecuteRelayCall:\n32", _hash);
-        return keccak256(messagePrefixed);
-    }
 
      /**
       * @notice execute the received payload (obtained via `execute(...)` and `executeRelayCall(...)`)
