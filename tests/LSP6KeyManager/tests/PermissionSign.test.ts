@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { LSP6Signer } from '@lukso/lsp6-signer.js';
 
 // constants
 import {
@@ -50,47 +51,86 @@ export const shouldBehaveLikePermissionSign = (
     await setupKeyManager(context, permissionsKeys, permissionsValues);
   });
 
-  it("can verify signature from address with ALL PERMISSIONS on KeyManager", async () => {
-    const messageHash = ethers.utils.hashMessage(dataToSign);
-    const signature = await context.owner.signMessage(dataToSign);
+  describe("when address has ALL PERMISSIONS", () => {
 
-    const result = await context.keyManager.callStatic.isValidSignature(
-      messageHash,
-      signature
-    );
-    expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
-  });
+    it("should verify signature sign with Ethereum signed message", async () => {
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await signer.signMessage(dataToSign);
+  
+      const result = await context.keyManager.callStatic.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+    })
 
-  it("can verify signature from signer on KeyManager", async () => {
-    const messageHash = ethers.utils.hashMessage(dataToSign);
-    const signature = await signer.signMessage(dataToSign);
+    it("should fail when verifying a signature signed with LSP6Signer", async () => {
+      const OWNER_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+      const lsp6Signer = new LSP6Signer();
+      // const messageHash = lsp6Signer.hashMessage(dataToSign);
+      const signedMessage = await lsp6Signer.sign(dataToSign, OWNER_PRIVATE_KEY);
+      const result = await context.keyManager.callStatic.isValidSignature(
+        signedMessage.messageHash,
+        signedMessage.signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
+    })
+  })
 
-    const result = await context.keyManager.callStatic.isValidSignature(
-      messageHash,
-      signature
-    );
-    expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
-  });
+  describe("when address has permission SIGN", () => {
+    it("should verify a signature signed with Ethereum signed message", async () => {
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await signer.signMessage(dataToSign);
 
-  it("should fail when verifying signature from address with no SIGN permission", async () => {
-    const messageHash = ethers.utils.hashMessage(dataToSign);
-    const signature = await nonSigner.signMessage(dataToSign);
+      console.log("signature (Ethereum): ", signature)
+  
+      const result = await context.keyManager.callStatic.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
+    })
 
-    const result = await context.keyManager.callStatic.isValidSignature(
-      messageHash,
-      signature
-    );
-    expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
-  });
+    it("should fail when verifying a signature sign with LSP6Signer", async () => {
+      const SIGNER_PRIVATE_KEY = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
+      const lsp6Signer = new LSP6Signer();
+      const messageHash = lsp6Signer.hashMessage(dataToSign);
+      const signedMessage = await lsp6Signer.sign(dataToSign, SIGNER_PRIVATE_KEY);
+      console.log("messageHash: ", messageHash)
+      console.log("signedMessage (LSP6Signer): ", signedMessage)
+  
+      const result = await context.keyManager.callStatic.isValidSignature(
+        signedMessage.messageHash,
+        signedMessage.signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
+    })
+  })
 
-  it("should fail when verifying signature from address with no permissions set", async () => {
-    const messageHash = ethers.utils.hashMessage(dataToSign);
-    const signature = await noPermissionsSet.signMessage(dataToSign);
+  describe("when address does not have permission SIGN", () => {
+    it("should fail when verifying a signature signed with Ethereum signed message", async () => {
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await nonSigner.signMessage(dataToSign);
 
-    const result = await context.keyManager.callStatic.isValidSignature(
-      messageHash,
-      signature
-    );
-    expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
-  });
+      const result = await context.keyManager.callStatic.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
+    })
+
+    it("should fail when verifying a signature signed with LSP6Signer", async () => {
+      const OWNER_PRIVATE_KEY = "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a";
+      const lsp6Signer = new LSP6Signer();
+      const messageHash = lsp6Signer.hashMessage(dataToSign);
+      const signedMessage = await lsp6Signer.sign(messageHash, OWNER_PRIVATE_KEY);
+  
+      const result = await context.keyManager.callStatic.isValidSignature(
+        signedMessage.messageHash,
+        signedMessage.signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
+    })
+  })
+
 };
