@@ -14,5 +14,6 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 abstract contract LSP0ERC725AccountInitAbstract is Initializable, LSP0ERC725AccountCore {
     function _initialize(address newOwner) internal virtual onlyInitializing {
         OwnableUnset._setOwner(newOwner);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 }

@@ -37,5 +37,6 @@ abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
             _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
             ""
         );
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 }
