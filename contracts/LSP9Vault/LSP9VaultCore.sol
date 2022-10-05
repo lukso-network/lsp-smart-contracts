@@ -99,6 +99,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0 and 3
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
+     * Emits a {ValueReceived} event, when receives native token
      */
     function execute(
         uint256 operation,
