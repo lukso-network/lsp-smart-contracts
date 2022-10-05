@@ -207,4 +207,17 @@ abstract contract LSP0ERC725AccountCore is
             dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
         );
     }
+
+    /**
+     * @dev Emit the event ValueReceived in execute(..)
+     */
+    function execute(
+        uint256 operation,
+        address to,
+        uint256 value,
+        bytes memory data
+    ) public payable virtual override onlyOwner returns (bytes memory) {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        super.execute(operation, to, value, data);
+    }
 }
