@@ -95,12 +95,12 @@ export const shouldBehaveLikeLSP1Delegate = (
     describe("when calling with token/vault typeId", () => {
       it("should revert with custom error", async () => {
         let URD_TypeIds = [
-          LSP1_TYPE_IDS.LSP7_TOKENRECIPIENT,
-          LSP1_TYPE_IDS.LSP7_TOKENSENDER,
-          LSP1_TYPE_IDS.LSP8_TOKENRECIPIENT,
-          LSP1_TYPE_IDS.LSP8_TOKENSENDER,
-          LSP1_TYPE_IDS.LSP14_OwnershipTransferred_RecipientNotification,
-          LSP1_TYPE_IDS.LSP14_OwnershipTransferred_SenderNotification,
+          LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
+          LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+          LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification,
+          LSP1_TYPE_IDS.LSP8Tokens_SenderNotification,
+          LSP1_TYPE_IDS.LSP14OwnershipTransferred_RecipientNotification,
+          LSP1_TYPE_IDS.LSP14OwnershipTransferred_SenderNotification,
         ];
 
         for (let i = 0; i < URD_TypeIds.length; i++) {

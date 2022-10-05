@@ -507,7 +507,7 @@ export const shouldBehaveLikeLSP7 = (
 
                   const tx = await transferSuccessScenario(txParams, operator);
 
-                  const typeId = LSP1_TYPE_IDS.LSP7_TOKENRECIPIENT;
+                  const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "uint256", "bytes"],
                     [txParams.from, txParams.to, txParams.amount, txParams.data]
@@ -575,7 +575,7 @@ export const shouldBehaveLikeLSP7 = (
 
                   const tx = await transferSuccessScenario(txParams, operator);
 
-                  const typeId = LSP1_TYPE_IDS.LSP7_TOKENRECIPIENT;
+                  const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "uint256", "bytes"],
                     [txParams.from, txParams.to, txParams.amount, txParams.data]
