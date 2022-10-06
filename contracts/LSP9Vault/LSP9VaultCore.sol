@@ -107,8 +107,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        require(address(this).balance >= value, "ERC725X: insufficient balance");
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        require(address(this).balance >= value, "ERC725X: insufficient balance");
 
         // CALL
         if (operation == OPERATION_CALL) return _executeCall(to, value, data);
@@ -175,6 +175,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         virtual
         returns (bytes memory returnedValues)
     {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         bytes memory resultDefaultDelegate;
 
@@ -201,7 +202,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
 
         returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     // ERC173 - Modified ClaimOwnership

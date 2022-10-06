@@ -27,6 +27,7 @@ import {
  */
 abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
     function _initialize(address newOwner) internal virtual onlyInitializing {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         OwnableUnset._setOwner(newOwner);
 
         // set key SupportedStandards:LSP9Vault
@@ -37,6 +38,5 @@ abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
             _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
             ""
         );
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 }

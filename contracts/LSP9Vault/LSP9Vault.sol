@@ -31,6 +31,8 @@ contract LSP9Vault is LSP9VaultCore {
      * @param newOwner the owner of the contract
      */
     constructor(address newOwner) payable {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+
         OwnableUnset._setOwner(newOwner);
 
         // set key SupportedStandards:LSP9Vault
@@ -41,6 +43,5 @@ contract LSP9Vault is LSP9VaultCore {
             _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
             ""
         );
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 }
