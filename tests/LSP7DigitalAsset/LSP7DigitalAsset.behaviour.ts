@@ -79,6 +79,37 @@ export const shouldBehaveLikeLSP7 = (
   });
 
   describe("when minting tokens", () => {
+    describe("when `amount == 0`", () => {
+      it("should revert if `force == false`", async () => {
+        const txParams = {
+          to: context.accounts.anotherTokenReceiver.address,
+          amount: 0,
+          force: false,
+          data: "0x",
+        };
+
+        await expect(
+          context.lsp7
+            .connect(context.accounts.anyone)
+            .mint(txParams.to, txParams.amount, txParams.force, txParams.data)
+        ).to.be.revertedWithCustomError(context.lsp7, "LSP7MintAmountIsZero");
+      });
+
+      it("should revert if `force == true`", async () => {
+        const txParams = {
+          to: context.accounts.anotherTokenReceiver.address,
+          amount: 0,
+          force: true,
+          data: "0x",
+        };
+
+        await expect(
+          context.lsp7
+            .connect(context.accounts.anyone)
+            .mint(txParams.to, txParams.amount, txParams.force, txParams.data)
+        ).to.be.revertedWithCustomError(context.lsp7, "LSP7MintAmountIsZero");
+      });
+    });
     describe("when `to` is the zero address", () => {
       it("should revert", async () => {
         const txParams = {
@@ -692,6 +723,44 @@ export const shouldBehaveLikeLSP7 = (
             });
           });
 
+          describe("when `amount == 0`", () => {
+            it("should revert with `force == false`", async () => {
+              const caller = context.accounts.anyone;
+
+              const txParams = {
+                from: context.accounts.anyone.address,
+                to: context.accounts.anotherTokenReceiver.address,
+                amount: ethers.BigNumber.from(0),
+                force: false,
+                data: "0x",
+              };
+              const expectedError = "LSP7TransferAmountIsZero";
+
+              await transferFailScenario(txParams, caller, {
+                error: expectedError,
+                args: [],
+              });
+            });
+
+            it("should revert with `force == true`", async () => {
+              const caller = context.accounts.anyone;
+
+              const txParams = {
+                from: context.accounts.anyone.address,
+                to: context.accounts.anotherTokenReceiver.address,
+                amount: ethers.BigNumber.from(0),
+                force: true,
+                data: "0x",
+              };
+              const expectedError = "LSP7TransferAmountIsZero";
+
+              await transferFailScenario(txParams, caller, {
+                error: expectedError,
+                args: [],
+              });
+            });
+          });
+
           describe("when operator does not have enough authorized amount", () => {
             it("should revert", async () => {
               const operator = context.accounts.operatorWithLowAuthorizedAmount;
@@ -1271,6 +1340,18 @@ export const shouldBehaveLikeLSP7 = (
   });
 
   describe("burn", () => {
+    describe("when `amount == 0`", () => {
+      it("should revert", async () => {
+        const caller = context.accounts.anyone;
+        const amount = 0;
+
+        await expect(
+          context.lsp7
+            .connect(caller)
+            .burn(ethers.constants.AddressZero, amount, "0x")
+        ).to.be.revertedWithCustomError(context.lsp7, "LSP7BurnAmountIsZero");
+      });
+    });
     describe("when caller is the `from` address", () => {
       describe("when using address(0) as `from` address", () => {
         it("should revert", async () => {
