@@ -70,6 +70,8 @@ const SupportedStandards = {
  */
 const ERC725YKeys = {
 	LSP1: {
+		// bytes10(keccak256('LSP1UniversalReceiverDelegate'))
+		LSP1UniversalReceiverDelegatePrefix: '0x0cfc51aec37c55a4d0b1',
 		// keccak256('LSP1UniversalReceiverDelegate')
 		LSP1UniversalReceiverDelegate:
 			'0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',

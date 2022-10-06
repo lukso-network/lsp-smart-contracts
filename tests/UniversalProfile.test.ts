@@ -48,9 +48,9 @@ describe("UniversalProfile", () => {
     const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
       const accounts = await ethers.getSigners();
 
-      const lsp1Implementation = (await new UniversalProfile__factory(
+      const lsp1Implementation = await new UniversalProfile__factory(
         accounts[0]
-      ).deploy(accounts[0].address)) as ILSP1UniversalReceiver;
+      ).deploy(accounts[0].address);
 
       const lsp1Checker = await new UniversalReceiverTester__factory(
         accounts[0]
@@ -160,7 +160,9 @@ describe("UniversalProfile", () => {
 
       const lsp1Implementation = universalProfileInit.attach(
         universalProfileProxy
-      ) as ILSP1UniversalReceiver;
+      );
+
+      await lsp1Implementation.initialize(accounts[0].address);
 
       const lsp1Checker = await new UniversalReceiverTester__factory(
         accounts[0]
