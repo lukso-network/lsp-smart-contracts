@@ -41,6 +41,7 @@ import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
  */
 contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1UniversalReceiver {
     using ERC165Checker for address;
+
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
@@ -87,6 +88,25 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      */
     receive() external payable virtual {
         emit ValueReceived(msg.sender, msg.value);
+    }
+
+    // ERC165
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP9 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_LSP14 ||
+            super.supportsInterface(interfaceId);
     }
 
     // ERC725
@@ -204,7 +224,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
 
-    // ERC173 - Modified ClaimOwnership
+    // LSP14 - Ownable2Step
 
     /**
      * @dev Sets the pending owner and notify the pending owner
@@ -230,25 +250,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         onlyOwner
     {
         LSP14Ownable2Step._renounceOwnership();
-    }
-
-    // ERC165
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore)
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_LSP9 ||
-            interfaceId == _INTERFACEID_LSP1 ||
-            interfaceId == _INTERFACEID_LSP14 ||
-            super.supportsInterface(interfaceId);
     }
 
     // internal functions

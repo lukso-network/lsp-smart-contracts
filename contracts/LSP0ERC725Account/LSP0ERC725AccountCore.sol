@@ -46,6 +46,7 @@ abstract contract LSP0ERC725AccountCore is
     ILSP1UniversalReceiver
 {
     using ERC165Checker for address;
+
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
@@ -73,6 +74,8 @@ abstract contract LSP0ERC725AccountCore is
         emit ValueReceived(msg.sender, msg.value);
     }
 
+    // public functions
+
     // ERC165
 
     /**
@@ -91,34 +94,6 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_LSP14 ||
             super.supportsInterface(interfaceId);
-    }
-
-    // ERC173 - Modified ClaimOwnership
-
-    /**
-     * @dev Sets the pending owner and notifies the pending owner
-     *
-     * @param _newOwner The address nofied and set as `pendingOwner`
-     */
-    function transferOwnership(address _newOwner)
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-        onlyOwner
-    {
-        LSP14Ownable2Step._transferOwnership(_newOwner);
-    }
-
-    /**
-     * @dev Renounce ownership of the contract in a 2-step process
-     */
-    function renounceOwnership()
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-        onlyOwner
-    {
-        LSP14Ownable2Step._renounceOwnership();
     }
 
     // ERC1271
@@ -151,63 +126,7 @@ abstract contract LSP0ERC725AccountCore is
         }
     }
 
-    // LSP1
-
-    /**
-     * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
-     * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
-     * Key and the typeId Key (param) respectively. The call will be discarded if no addresses were set.
-     *
-     * @param typeId The type of call received.
-     * @param receivedData The data received.
-     * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
-     * and the LSP1TypeIdDelegate call.
-     */
-    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
-        public
-        payable
-        virtual
-        returns (bytes memory returnedValues)
-    {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
-        bytes memory resultDefaultDelegate;
-
-        if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
-
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
-            }
-        }
-
-        bytes memory lsp1TypeIdDelegateValue = _getData(typeId);
-        bytes memory resultTypeIdDelegate;
-
-        if (lsp1TypeIdDelegateValue.length >= 20) {
-            address typeIdDelegate = address(bytes20(lsp1TypeIdDelegateValue));
-
-            if (typeIdDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(typeIdDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
-            }
-        }
-
-        returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
-        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
-    }
-
-    /**
-     * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
-     */
-    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
-        store[dataKey] = dataValue;
-        emit DataChanged(
-            dataKey,
-            dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
-        );
-    }
+    // ERC725
 
     /**
      * @param operation The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3 DELEGATECALL = 4
@@ -257,5 +176,93 @@ abstract contract LSP0ERC725AccountCore is
         if (operation == OPERATION_DELEGATECALL) return _executeDelegateCall(to, value, data);
 
         revert("ERC725X: Unknown operation type");
+    }
+
+    // LSP1
+
+    /**
+     * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
+     * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
+     * Key and the typeId Key (param) respectively. The call will be discarded if no addresses were set.
+     *
+     * @param typeId The type of call received.
+     * @param receivedData The data received.
+     * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
+     * and the LSP1TypeIdDelegate call.
+     */
+    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
+        public
+        payable
+        virtual
+        returns (bytes memory returnedValues)
+    {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory resultDefaultDelegate;
+
+        if (lsp1DelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
+
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
+                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
+                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            }
+        }
+
+        bytes memory lsp1TypeIdDelegateValue = _getData(typeId);
+        bytes memory resultTypeIdDelegate;
+
+        if (lsp1TypeIdDelegateValue.length >= 20) {
+            address typeIdDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+
+            if (typeIdDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
+                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(typeIdDelegate)
+                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            }
+        }
+
+        returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
+    }
+
+    // LSP14 - Ownable2Step
+
+    /**
+     * @dev Sets the pending owner and notifies the pending owner
+     *
+     * @param _newOwner The address nofied and set as `pendingOwner`
+     */
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(LSP14Ownable2Step, OwnableUnset)
+        onlyOwner
+    {
+        LSP14Ownable2Step._transferOwnership(_newOwner);
+    }
+
+    /**
+     * @dev Renounce ownership of the contract in a 2-step process
+     */
+    function renounceOwnership()
+        public
+        virtual
+        override(LSP14Ownable2Step, OwnableUnset)
+        onlyOwner
+    {
+        LSP14Ownable2Step._renounceOwnership();
+    }
+
+    // internal functions
+
+    /**
+     * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
+     */
+    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
+        store[dataKey] = dataValue;
+        emit DataChanged(
+            dataKey,
+            dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
+        );
     }
 }
