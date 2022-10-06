@@ -227,8 +227,8 @@ abstract contract LSP0ERC725AccountCore is
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         require(address(this).balance >= value, "ERC725X: insufficient balance");
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
 
         // CALL
         if (operation == OPERATION_CALL) return _executeCall(to, value, data);
