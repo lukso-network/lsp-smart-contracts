@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+
 /* solhint-disable */
 contract Reentrancy {
     bytes _payload;
@@ -15,7 +17,8 @@ contract Reentrancy {
     }
 
     fallback() external payable {
-        _target.call(_payload);
+        (bool success, bytes memory returnData) = _target.call(_payload);
+        bytes memory result = Address.verifyCallResult(success, returnData, "");
     }
 }
 /* solhint-enable */
