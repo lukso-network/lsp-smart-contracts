@@ -70,6 +70,8 @@ const SupportedStandards = {
  */
 const ERC725YKeys = {
 	LSP1: {
+		// bytes10(keccak256('LSP1UniversalReceiverDelegate'))
+		LSP1UniversalReceiverDelegatePrefix: '0x0cfc51aec37c55a4d0b1',
 		// keccak256('LSP1UniversalReceiverDelegate')
 		LSP1UniversalReceiverDelegate:
 			'0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',
@@ -200,20 +202,20 @@ const PERMISSIONS = {
 }
 
 const LSP1_TYPE_IDS = {
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP7Tokens_SenderNotification'))
-	LSP7_TOKENSENDER: '0x0cfc51aec37c55a4d0b10000429ac7a06903dbc9c13dfcb3c9d11df8194581fa',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP7Tokens_RecipientNotification'))
-	LSP7_TOKENRECIPIENT: '0x0cfc51aec37c55a4d0b1000020804611b3e2ea21c480dc465142210acf4a2485',
-		// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP8Tokens_SenderNotification'))
-	LSP8_TOKENSENDER: '0x0cfc51aec37c55a4d0b10000b23eae7e6d1564b295b4c3e3be402d9a2f0776c5',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP8Tokens_RecipientNotification'))
-	LSP8_TOKENRECIPIENT: '0x0cfc51aec37c55a4d0b100000b084a55ebf70fd3c06fd755269dac2212c4d3f0',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferStarted'))
-	LSP14_OwnershipTransferStarted: '0x0cfc51aec37c55a4d0b10000ee9a7c0924f740a2ca33d59b7f0c2929821ea983',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferred_SenderNotification'))
-	LSP14_OwnershipTransferred_SenderNotification: '0x0cfc51aec37c55a4d0b10000a124442e1cc7b52d8e2ede2787d43527dc1f3ae0',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferred_RecipientNotification'))
-	LSP14_OwnershipTransferred_RecipientNotification: '0x0cfc51aec37c55a4d0b10000e32c7debcb817925ba4883fdbfc52797187f28f7',
+	// keccak256('LSP7Tokens_SenderNotification')
+	LSP7Tokens_SenderNotification: '0x429ac7a06903dbc9c13dfcb3c9d11df8194581fa047c96d7a4171fc7402958ea',
+	// keccak256('LSP7Tokens_RecipientNotification')
+	LSP7Tokens_RecipientNotification: '0x20804611b3e2ea21c480dc465142210acf4a2485947541770ec1fb87dee4a55c',
+	// keccak256('LSP8Tokens_SenderNotification')
+	LSP8Tokens_SenderNotification: '0xb23eae7e6d1564b295b4c3e3be402d9a2f0776c57bdf365903496f6fa481ab00',
+	// keccak256('LSP8Tokens_RecipientNotification')
+	LSP8Tokens_RecipientNotification: '0x0b084a55ebf70fd3c06fd755269dac2212c4d3f0f4d09079780bfa50c1b2984d',
+	// keccak256('LSP14OwnershipTransferStarted')
+	LSP14OwnershipTransferStarted: '0xee9a7c0924f740a2ca33d59b7f0c2929821ea9837ce043ce91c1823e9c4e52c0',
+	// keccak256('LSP14OwnershipTransferred_SenderNotification')
+	LSP14OwnershipTransferred_SenderNotification: '0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c',
+	// keccak256('LSP14OwnershipTransferred_RecipientNotification')
+	LSP14OwnershipTransferred_RecipientNotification: '0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
 
 // ----------
