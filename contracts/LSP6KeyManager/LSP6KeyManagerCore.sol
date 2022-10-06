@@ -44,12 +44,14 @@ import {
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
 
+import "../Custom/LSP6ReentrancyGuard.sol";
+
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
+abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyGuard {
     using LSP2Utils for *;
     using LSP6Utils for *;
     using Address for address;
@@ -97,7 +99,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata payload) public payable returns (bytes memory) {
+    function execute(bytes calldata payload) public payable nonReentrant(target) returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
 
         return _executePayload(payload);
@@ -110,7 +112,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory signature,
         uint256 nonce,
         bytes calldata payload
-    ) public payable returns (bytes memory) {
+    ) public payable nonReentrant(target) returns (bytes memory) {
         bytes memory blob = abi.encodePacked(
             block.chainid,
             address(this), // needs to be signed for this keyManager
