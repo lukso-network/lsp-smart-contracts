@@ -50,7 +50,7 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
-     * @param value The amount of value sent
+     * @param value The amount of native tokens received
      */
     event ValueReceived(address indexed sender, uint256 indexed value);
 
@@ -74,10 +74,6 @@ abstract contract LSP0ERC725AccountCore is
         emit ValueReceived(msg.sender, msg.value);
     }
 
-    // public functions
-
-    // ERC165
-
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -95,8 +91,6 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_LSP14 ||
             super.supportsInterface(interfaceId);
     }
-
-    // ERC1271
 
     /**
      * @notice Checks if an owner signed `_data`.
@@ -125,8 +119,6 @@ abstract contract LSP0ERC725AccountCore is
                     : _ERC1271_FAILVALUE;
         }
     }
-
-    // ERC725
 
     /**
      * @param operation The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3 DELEGATECALL = 4
@@ -178,8 +170,6 @@ abstract contract LSP0ERC725AccountCore is
         revert("ERC725X: Unknown operation type");
     }
 
-    // LSP1
-
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
      * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
@@ -225,8 +215,6 @@ abstract contract LSP0ERC725AccountCore is
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
 
-    // LSP14 - Ownable2Step
-
     /**
      * @dev Sets the pending owner and notifies the pending owner
      *
@@ -252,8 +240,6 @@ abstract contract LSP0ERC725AccountCore is
     {
         LSP14Ownable2Step._renounceOwnership();
     }
-
-    // internal functions
 
     /**
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue

@@ -45,11 +45,9 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
-     * @param value The amount of value sent
+     * @param value The amount of native tokens received
      */
     event ValueReceived(address indexed sender, uint256 indexed value);
-
-    // modifiers
 
     /**
      * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
@@ -67,8 +65,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         }
         _;
     }
-
-    // public functions
 
     /**
      * @dev Emits an event when receiving native tokens
@@ -90,8 +86,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         emit ValueReceived(msg.sender, msg.value);
     }
 
-    // ERC165
-
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -108,8 +102,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
             interfaceId == _INTERFACEID_LSP14 ||
             super.supportsInterface(interfaceId);
     }
-
-    // ERC725
 
     /**
      * @inheritdoc IERC725X
@@ -177,8 +169,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         }
     }
 
-    // LSP1
-
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
      * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
@@ -224,8 +214,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
 
-    // LSP14 - Ownable2Step
-
     /**
      * @dev Sets the pending owner and notify the pending owner
      *
@@ -251,8 +239,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     {
         LSP14Ownable2Step._renounceOwnership();
     }
-
-    // internal functions
 
     /**
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
