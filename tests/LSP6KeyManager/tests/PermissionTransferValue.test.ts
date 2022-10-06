@@ -27,7 +27,12 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { provider, abiCoder, combinePermissions } from "../../utils/helpers";
+import {
+  provider,
+  abiCoder,
+  combinePermissions,
+  LOCAL_PRIVATE_KEYS,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionTransferValue = (
   buildContext: () => Promise<LSP6TestContext>
@@ -346,7 +351,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           ).to.be.reverted;
         });
 
-        it("should pass if tx was signed with lsp6-signer library", async () => {
+        it("should pass if tx was signed with LSP6 Signer '\x19LSP6 ExecuteRelayCall' prefix", async () => {
           const lsp6Signer = new LSP6Signer();
 
           const amount = ethers.utils.parseEther("3");
@@ -371,11 +376,11 @@ export const shouldBehaveLikePermissionTransferValue = (
             ]
           );
 
-          const OWNER_PRIVATE_KEY =
-            "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-
           // lsp6 signed message prefixed
-          let signedMessage = await lsp6Signer.sign(hash, OWNER_PRIVATE_KEY);
+          let signedMessage = await lsp6Signer.sign(
+            hash,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0
+          );
 
           await expect(
             context.keyManager
@@ -385,7 +390,10 @@ export const shouldBehaveLikePermissionTransferValue = (
                 0,
                 executeRelayCallPayload
               )
-          ).to.not.be.reverted;
+          ).to.changeEtherBalances(
+            [context.universalProfile.address, recipient],
+            [`-${amount}`, amount]
+          );
         });
       });
     });

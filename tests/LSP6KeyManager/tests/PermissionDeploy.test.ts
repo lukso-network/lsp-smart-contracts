@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { calculateCreate2 } from "eth-create2-calculator";
+import { LSP6Signer } from "@lukso/lsp6-signer.js";
 
 import { TargetContract__factory } from "../../../types";
 
@@ -17,6 +18,8 @@ import {
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
+
+import { LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionDeploy = (
   buildContext: () => Promise<LSP6TestContext>
@@ -210,7 +213,7 @@ export const shouldBehaveLikePermissionDeploy = (
   });
 
   describe("when caller is an address that does not have the permission DEPLOY", () => {
-    describe("when calling via execute(...)", () => {
+    describe("-> interacting via execute(...)", () => {
       it("should revert when trying to deploy a contract via CREATE", async () => {
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
@@ -254,84 +257,201 @@ export const shouldBehaveLikePermissionDeploy = (
       });
     });
 
-    describe("when calling via executeRelayCall(...)", () => {
-      it("should revert when trying to deploy a contract via CREATE", async () => {
-        let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+    describe("-> interacting via executeRelayCall(...)", () => {
+      describe("when deploying a contract via CREATE", () => {
+        describe("when signing with Ethereum Signed Message", () => {
+          it("should recover the wrong signer address and revert with `NoPermissionsSet`", async () => {
+            let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
-        let nonce = await context.keyManager.callStatic.getNonce(
-          addressCannotDeploy.address,
-          0
-        );
+            let nonce = await context.keyManager.callStatic.getNonce(
+              addressCannotDeploy.address,
+              0
+            );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CREATE,
-            ethers.constants.AddressZero,
-            0,
-            contractBytecodeToDeploy,
-          ]
-        );
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "execute",
+              [
+                OPERATION_TYPES.CREATE,
+                ethers.constants.AddressZero,
+                0,
+                contractBytecodeToDeploy,
+              ]
+            );
 
-        const HARDHAT_CHAINID = 31337;
+            const HARDHAT_CHAINID = 31337;
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
-          [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
-        );
+            let hashedMessage = ethers.utils.solidityKeccak256(
+              ["uint256", "address", "uint256", "bytes"],
+              [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+            );
 
-        let signature = await addressCannotDeploy.signMessage(
-          ethers.utils.arrayify(hash)
-        );
+            let ethereumSignature = await addressCannotDeploy.signMessage(
+              ethers.utils.arrayify(hashedMessage)
+            );
 
-        await expect(
-          context.keyManager
-            .connect(addressCannotDeploy)
-            .executeRelayCall(signature, nonce, payload)
-        )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "DEPLOY");
+            const lsp6Signer = new LSP6Signer();
+            const incorrectSignerAddress = lsp6Signer.recover(
+              hashedMessage,
+              ethereumSignature
+            );
+
+            await expect(
+              context.keyManager
+                .connect(addressCannotDeploy)
+                .executeRelayCall(ethereumSignature, nonce, payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NoPermissionsSet"
+              )
+              .withArgs(incorrectSignerAddress);
+          });
+        });
+
+        describe("when signing with LSP6Signer '\x19LSP6 ExecuteRelayCall\n'", () => {
+          it("should revert with `NotAuthorised` with correct signer address but missing permission DEPLOY", async () => {
+            let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+
+            let nonce = await context.keyManager.callStatic.getNonce(
+              addressCannotDeploy.address,
+              0
+            );
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "execute",
+              [
+                OPERATION_TYPES.CREATE,
+                ethers.constants.AddressZero,
+                0,
+                contractBytecodeToDeploy,
+              ]
+            );
+
+            const HARDHAT_CHAINID = 31337;
+
+            let hashedMessage = ethers.utils.solidityKeccak256(
+              ["uint256", "address", "uint256", "bytes"],
+              [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+            );
+
+            const lsp6Signer = new LSP6Signer();
+            const lsp6Signature = lsp6Signer.sign(
+              hashedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT2
+            );
+
+            await expect(
+              context.keyManager
+                .connect(addressCannotDeploy)
+                .executeRelayCall(lsp6Signature.signature, nonce, payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(addressCannotDeploy.address, "DEPLOY");
+          });
+        });
       });
 
-      it("should revert when trying to deploy a contract via CREATE2", async () => {
-        let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+      describe("when deploying a contract via CREATE2", () => {
+        describe("when signing with Ethereum Signed Message", () => {
+          it("should recover the wrong signer address and revert with `NoPermissionsSet`", async () => {
+            let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+            let salt =
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
 
-        let nonce = await context.keyManager.callStatic.getNonce(
-          addressCannotDeploy.address,
-          0
-        );
+            let nonce = await context.keyManager.callStatic.getNonce(
+              addressCannotDeploy.address,
+              0
+            );
 
-        let salt =
-          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "execute",
+              [
+                OPERATION_TYPES.CREATE2,
+                ethers.constants.AddressZero,
+                0,
+                contractBytecodeToDeploy + salt.substring(2),
+              ]
+            );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CREATE2,
-            ethers.constants.AddressZero,
-            0,
-            contractBytecodeToDeploy + salt.substring(2),
-          ]
-        );
+            const HARDHAT_CHAINID = 31337;
 
-        const HARDHAT_CHAINID = 31337;
+            let hashedMessage = ethers.utils.solidityKeccak256(
+              ["uint256", "address", "uint256", "bytes"],
+              [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+            );
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
-          [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
-        );
+            let ethereumSignature = await addressCannotDeploy.signMessage(
+              ethers.utils.arrayify(hashedMessage)
+            );
 
-        let signature = await addressCannotDeploy.signMessage(
-          ethers.utils.arrayify(hash)
-        );
+            const lsp6Signer = new LSP6Signer();
+            const incorrectSignerAddress = lsp6Signer.recover(
+              hashedMessage,
+              ethereumSignature
+            );
 
-        await expect(
-          context.keyManager
-            .connect(addressCannotDeploy)
-            .executeRelayCall(signature, nonce, payload)
-        )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotDeploy.address, "DEPLOY");
+            await expect(
+              context.keyManager
+                .connect(addressCannotDeploy)
+                .executeRelayCall(ethereumSignature, nonce, payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NoPermissionsSet"
+              )
+              .withArgs(incorrectSignerAddress);
+          });
+        });
+
+        describe("when signing with LSP6Signer '\x19LSP6 ExecuteRelayCall\n'", () => {
+          it("should revert with `NotAuthorised` with correct signer address but missing permission DEPLOY", async () => {
+            let contractBytecodeToDeploy = TargetContract__factory.bytecode;
+            let salt =
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
+
+            let nonce = await context.keyManager.callStatic.getNonce(
+              addressCannotDeploy.address,
+              0
+            );
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "execute",
+              [
+                OPERATION_TYPES.CREATE2,
+                ethers.constants.AddressZero,
+                0,
+                contractBytecodeToDeploy + salt.substring(2),
+              ]
+            );
+
+            const HARDHAT_CHAINID = 31337;
+
+            let hashedMessage = ethers.utils.solidityKeccak256(
+              ["uint256", "address", "uint256", "bytes"],
+              [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+            );
+
+            const lsp6Signer = new LSP6Signer();
+            const lsp6signature = lsp6Signer.sign(
+              hashedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT2
+            );
+
+            await expect(
+              context.keyManager
+                .connect(addressCannotDeploy)
+                .executeRelayCall(lsp6signature.signature, nonce, payload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(addressCannotDeploy.address, "DEPLOY");
+          });
+        });
       });
     });
   });

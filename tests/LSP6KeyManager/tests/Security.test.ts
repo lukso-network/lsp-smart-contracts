@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { LSP6Signer } from "@lukso/lsp6-signer.js";
 
 import {
   Reentrancy,
@@ -26,6 +27,7 @@ import {
   provider,
   combinePermissions,
   EMPTY_PAYLOAD,
+  LOCAL_PRIVATE_KEYS,
 } from "../../utils/helpers";
 
 export const testSecurityScenarios = (
@@ -119,19 +121,22 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      let hash = ethers.utils.solidityKeccak256(
+      let hashedMessage = ethers.utils.solidityKeccak256(
         ["uint256", "address", "uint256", "bytes"],
         [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
       );
 
-      let signature = await context.owner.signMessage(
-        ethers.utils.arrayify(hash)
+      const lsp6Signer = new LSP6Signer();
+
+      let lsp6Signature = await lsp6Signer.sign(
+        hashedMessage,
+        LOCAL_PRIVATE_KEYS.ACCOUNT0
       );
 
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(signature, nonce, payload)
+          .executeRelayCall(lsp6Signature.signature, nonce, payload)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -206,7 +211,7 @@ export const testSecurityScenarios = (
 
         const HARDHAT_CHAINID = 31337;
 
-        let hash = ethers.utils.solidityKeccak256(
+        let hashedMessage = ethers.utils.solidityKeccak256(
           ["uint256", "address", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
@@ -216,24 +221,36 @@ export const testSecurityScenarios = (
           ]
         );
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        const lsp6Signer = new LSP6Signer();
+        const lsp6Signature = await lsp6Signer.sign(
+          hashedMessage,
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
 
         // first call
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonce, executeRelayCallPayload);
+          .executeRelayCall(
+            lsp6Signature.signature,
+            nonce,
+            executeRelayCallPayload
+          );
 
         // 2nd call = replay attack
         await expect(
           context.keyManager
             .connect(relayer)
-            .executeRelayCall(signature, nonce, executeRelayCallPayload)
+            .executeRelayCall(
+              lsp6Signature.signature,
+              nonce,
+              executeRelayCallPayload
+            )
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidRelayNonce"
           )
-          .withArgs(signer.address, nonce, signature);
+          .withArgs(signer.address, nonce, lsp6Signature.signature);
       });
     });
   });
