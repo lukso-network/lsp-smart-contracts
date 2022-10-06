@@ -157,22 +157,19 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe("when minting tokens", () => {
-      describe("when calling `mint(...)` with `amount` == 0 and a `to` == a universalProfile", () => {
+      describe("when calling `mint(...)` with `amount == 0` and a `to == universalProfile`", () => {
         it("should revert and not register any LSP5ReceivedAssets[]", async () => {
           await expect(
             lsp7TokenA
               .connect(context.accounts.random)
               .mint(context.universalProfile1.address, 0, false, "0x")
-          ).to.be.revertedWithCustomError(
-            lsp7TokenA,
-            "LSP7CannotMintWithZeroAmount"
-          );
+          ).to.be.revertedWithCustomError(lsp7TokenA, "LSP7MintAmountIsZero");
 
           const result = await context.universalProfile1["getData(bytes32)"](
             ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length
           );
 
-          expect(result).to.deep.equal("0x");
+          expect(result).to.equal("0x");
         });
       });
 
@@ -292,21 +289,11 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe("when burning tokens", () => {
-      describe("when calling `burn(...)` with `amount` == 0 and a `to` == a universalProfile", () => {
+      describe("when calling `burn(...)` with `amount == 0` and a `to == a universalProfile`", () => {
         it("should revert and not remove any LSP5ReceivedAssets[] on the UP", async () => {
-          // fund UP with some tokens
-          await lsp7TokenA
-            .connect(context.accounts.random)
-            .mint(context.universalProfile1.address, "10", false, "0x");
-
           const lsp5ReceivedAssetsArrayLength = await context.universalProfile1[
             "getData(bytes32)"
           ](ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length);
-
-          // CHECK that LSP5ReceivedAssets[] is not empty
-          expect(lsp5ReceivedAssetsArrayLength).to.equal(
-            abiCoder.encode(["uint256"], [1])
-          );
 
           const abi = lsp7TokenC.interface.encodeFunctionData("burn", [
             context.universalProfile1.address,
@@ -320,10 +307,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               .execute(
                 callPayload(context.universalProfile1, lsp7TokenA.address, abi)
               )
-          ).to.be.revertedWithCustomError(
-            lsp7TokenA,
-            "LSP7CannotBurnWithZeroAmount"
-          );
+          ).to.be.revertedWithCustomError(lsp7TokenA, "LSP7BurnAmountIsZero");
 
           // CHECK that LSP5ReceivedAssets[] has not changed
           expect(
@@ -467,8 +451,12 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
 
     describe("when transferring tokens", () => {
-      describe("when calling `transfer(...)` with 0 tokens as amount and a universalProfile as `to`", () => {
+      describe("when calling `transfer(...)` with `amount == 0` and `to == universalProfile`", () => {
         it("should revert", async () => {
+          const lsp5ReceivedAssetsArrayLength = await context.universalProfile1[
+            "getData(bytes32)"
+          ](ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length);
+
           await expect(
             lsp7TokenA
               .connect(context.accounts.random)
@@ -481,14 +469,15 @@ export const shouldBehaveLikeLSP1Delegate = (
               )
           ).to.be.revertedWithCustomError(
             lsp7TokenA,
-            "LSP7CannotTransferWithZeroAmount"
+            "LSP7TransferAmountIsZero"
           );
 
-          const result = await context.universalProfile1["getData(bytes32)"](
-            ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length
-          );
-
-          expect(result).to.deep.equal("0x");
+          // CHECK that LSP5ReceivedAssets[] has not changed
+          expect(
+            await context.universalProfile1["getData(bytes32)"](
+              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length
+            )
+          ).to.equal(lsp5ReceivedAssetsArrayLength);
         });
       });
 
