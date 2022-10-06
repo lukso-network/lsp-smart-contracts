@@ -8,6 +8,8 @@ contract Reentrancy {
     bytes _payload;
     address _target;
 
+    bool switchFallback;
+
     constructor(address _keyManager) {
         _target = _keyManager;
     }
@@ -17,8 +19,11 @@ contract Reentrancy {
     }
 
     fallback() external payable {
-        (bool success, bytes memory returnData) = _target.call(_payload);
-        bytes memory result = Address.verifyCallResult(success, returnData, "");
+        if (!switchFallback) {
+            (bool success, bytes memory returnData) = _target.call(_payload);
+            bytes memory result = Address.verifyCallResult(success, returnData, "");
+        }
+        switchFallback = true;
     }
 }
 /* solhint-enable */

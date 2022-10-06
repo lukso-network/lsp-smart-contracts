@@ -237,4 +237,70 @@ export const testSecurityScenarios = (
       });
     });
   });
+
+  describe.only("when reentering execute function", () => {
+    it("should revert if reentered from a random address", async () => {
+      let transferPayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          maliciousContract.address,
+          ethers.utils.parseEther("1"),
+          EMPTY_PAYLOAD,
+        ]);
+
+      let executePayload = context.keyManager.interface.encodeFunctionData(
+        "execute",
+        [transferPayload]
+      );
+
+      await maliciousContract.loadPayload(executePayload);
+
+      const executeTransferPayload = context.keyManager
+        .connect(context.owner)
+        .execute(transferPayload);
+
+      await expect(executeTransferPayload).to.be.revertedWithCustomError(
+        context.keyManager,
+        "ReentrantAddressNotURD"
+      );
+    });
+
+    it("should pass when reentered by URD", async () => {
+      const URDDummy = await new Reentrancy__factory(attacker).deploy(
+        context.keyManager.address
+      );
+
+      const setDataPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [
+            [
+              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                URDDummy.address.substring(2),
+            ],
+            [URDDummy.address, ALL_PERMISSIONS],
+          ]
+        );
+
+      await context.keyManager.connect(context.owner).execute(setDataPayload);
+
+      let transferPayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          URDDummy.address,
+          ethers.utils.parseEther("1"),
+          EMPTY_PAYLOAD,
+        ]);
+
+      let executePayload = context.keyManager.interface.encodeFunctionData(
+        "execute",
+        [transferPayload]
+      );
+
+      await URDDummy.loadPayload(executePayload);
+
+      await context.keyManager.connect(context.owner).execute(transferPayload);
+    });
+  });
 };
