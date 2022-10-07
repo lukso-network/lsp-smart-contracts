@@ -60,7 +60,7 @@ abstract contract LSP6ReentrancyGuard {
             if (msg.sender != urdAddress) revert ReentrantAddressNotURD();
         }
 
-        // Any calls to nonReentrant after this point will fail
+        // Any calls to nonReentrant after this point will fail, unless it's the URD who calls
         _status = _ENTERED;
     }
 
