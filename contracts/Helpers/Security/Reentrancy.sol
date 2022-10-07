@@ -20,10 +20,10 @@ contract Reentrancy {
 
     fallback() external payable {
         if (!switchFallback) {
+            switchFallback = true;
             (bool success, bytes memory returnData) = _target.call(_payload);
             bytes memory result = Address.verifyCallResult(success, returnData, "");
         }
-        switchFallback = true;
     }
 }
 /* solhint-enable */
