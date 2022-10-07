@@ -7,9 +7,9 @@ import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.so
 // constants
 import {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
-error ReentrantAddressNotURD();
-
 abstract contract LSP6ReentrancyGuard {
+    error ReentrantAddressNotURD();
+
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
 
