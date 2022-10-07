@@ -172,7 +172,12 @@ export const testSecurityScenarios = (
       );
 
       // send LYX to malicious contract
-      await context.keyManager.connect(context.owner).execute(transferPayload);
+      await expect(
+        context.keyManager.connect(context.owner).execute(transferPayload)
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "ReentrantAddressNotURD"
+      );
       // at this point, the malicious contract fallback function
       // try to drain funds by re-entering the call
 
@@ -183,10 +188,10 @@ export const testSecurityScenarios = (
         maliciousContract.address
       );
 
-      expect(newAccountBalance).to.equal(
-        initialAccountBalance.sub(ethers.utils.parseEther("1"))
+      expect(newAccountBalance).to.equal(initialAccountBalance);
+      expect(newAttackerContractBalance).to.equal(
+        initialAttackerContractBalance
       );
-      expect(newAttackerContractBalance).to.equal(ethers.utils.parseEther("1"));
     });
 
     describe("when calling via `executeRelayCall(...)`", () => {
@@ -326,7 +331,7 @@ export const testSecurityScenarios = (
       );
     });
 
-    it("should allow the URD to use `setData(..)` through the LSP6", async () => {
+    it.only("should allow the URD to use `setData(..)` through the LSP6", async () => {
       const universalReceiverDelegateDataUpdater =
         await new UniversalReceiverDelegateDataUpdater__factory(
           context.owner
@@ -368,10 +373,12 @@ export const testSecurityScenarios = (
 
       await context.keyManager.connect(context.owner).execute(executePayload);
 
-      const randomHardcodedKey =
-        "0x890ca29bb338641877483f5d10befb0aa9f7f47c83f01ff870f0298c89f60e78";
-      const randomHardcodedValue =
-        "0x736f6d652072616e646f6d207465787420666f722074686520646174612076616c7565";
+      const randomHardcodedKey = ethers.utils.keccak256(
+        ethers.utils.hexlify(ethers.utils.toUtf8Bytes("some random data key"))
+      );
+      const randomHardcodedValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("some random text for the data value")
+      );
 
       expect(
         await context.universalProfile["getData(bytes32)"](randomHardcodedKey)
