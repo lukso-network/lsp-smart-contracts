@@ -7,12 +7,14 @@ import {
   Reentrancy__factory,
   TargetContract,
   TargetContract__factory,
+  UniversalReceiverDelegateDataUpdater__factory,
 } from "../../../types";
 
 // constants
 import {
   ALL_PERMISSIONS,
   ERC725YKeys,
+  LSP1_TYPE_IDS,
   OPERATION_TYPES,
   PERMISSIONS,
 } from "../../../constants";
@@ -238,7 +240,7 @@ export const testSecurityScenarios = (
     });
   });
 
-  describe.only("when reentering execute function", () => {
+  describe("when reentering execute function", () => {
     it("should revert if reentered from a random address", async () => {
       let transferPayload =
         context.universalProfile.interface.encodeFunctionData("execute", [
@@ -266,7 +268,7 @@ export const testSecurityScenarios = (
     });
 
     it("should pass when reentered by URD", async () => {
-      const URDDummy = await new Reentrancy__factory(attacker).deploy(
+      const URDDummy = await new Reentrancy__factory(context.owner).deploy(
         context.keyManager.address
       );
 
@@ -300,7 +302,80 @@ export const testSecurityScenarios = (
 
       await URDDummy.loadPayload(executePayload);
 
+      let initialAccountBalance = await provider.getBalance(
+        context.universalProfile.address
+      );
+      let initialAttackerContractBalance = await provider.getBalance(
+        maliciousContract.address
+      );
+
       await context.keyManager.connect(context.owner).execute(transferPayload);
+
+      let newAccountBalance = await provider.getBalance(
+        context.universalProfile.address
+      );
+      let newAttackerContractBalance = await provider.getBalance(
+        URDDummy.address
+      );
+
+      expect(newAccountBalance).to.equal(
+        initialAccountBalance.sub(ethers.utils.parseEther("2"))
+      );
+      expect(newAttackerContractBalance).to.equal(
+        initialAttackerContractBalance.add(ethers.utils.parseEther("2"))
+      );
+    });
+
+    it("should allow the URD to use `setData(..)` through the LSP6", async () => {
+      const universalReceiverDelegateDataUpdater =
+        await new UniversalReceiverDelegateDataUpdater__factory(
+          context.owner
+        ).deploy();
+
+      const setDataPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [
+            [
+              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                universalReceiverDelegateDataUpdater.address.substring(2),
+            ],
+            [universalReceiverDelegateDataUpdater.address, ALL_PERMISSIONS],
+          ]
+        );
+
+      await context.keyManager.connect(context.owner).execute(setDataPayload);
+
+      const universalReceiverDelegatePayload =
+        universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            LSP1_TYPE_IDS.LSP7_TOKENSENDER,
+            "0x",
+          ]
+        );
+
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          universalReceiverDelegateDataUpdater.address,
+          0,
+          universalReceiverDelegatePayload,
+        ]);
+
+      await context.keyManager.connect(context.owner).execute(executePayload);
+
+      const randomHardcodedKey =
+        "0x890ca29bb338641877483f5d10befb0aa9f7f47c83f01ff870f0298c89f60e78";
+      const randomHardcodedValue =
+        "0x736f6d652072616e646f6d207465787420666f722074686520646174612076616c7565";
+
+      expect(
+        await context.universalProfile["getData(bytes32)"](randomHardcodedKey)
+      ).to.equal(randomHardcodedValue);
     });
   });
 };
