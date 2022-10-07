@@ -331,7 +331,7 @@ export const testSecurityScenarios = (
       );
     });
 
-    it.only("should allow the URD to use `setData(..)` through the LSP6", async () => {
+    it("should allow the URD to use `setData(..)` through the LSP6", async () => {
       const universalReceiverDelegateDataUpdater =
         await new UniversalReceiverDelegateDataUpdater__factory(
           context.owner
@@ -367,7 +367,7 @@ export const testSecurityScenarios = (
         context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATION_TYPES.CALL,
           universalReceiverDelegateDataUpdater.address,
-          0,
+          ethers.utils.parseEther("0"),
           universalReceiverDelegatePayload,
         ]);
 
