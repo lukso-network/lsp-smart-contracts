@@ -27,11 +27,7 @@ abstract contract LSP6ReentrancyGuard {
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
 
-    uint256 private _status;
-
-    constructor() {
-        _status = _NOT_ENTERED;
-    }
+    uint256 private _status = _NOT_ENTERED;
 
     /**
      * @dev This modifier doesn't allow for reentrancy calls unless
