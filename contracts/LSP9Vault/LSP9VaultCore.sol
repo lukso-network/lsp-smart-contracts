@@ -43,14 +43,13 @@ import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
  */
 contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1UniversalReceiver {
     using ERC165Checker for address;
+
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
-     * @param value The amount of value sent
+     * @param value The amount of native tokens received
      */
     event ValueReceived(address indexed sender, uint256 indexed value);
-
-    // modifiers
 
     /**
      * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
@@ -69,7 +68,14 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         _;
     }
 
-    // public functions
+    /**
+     * @dev Emits an event when receiving native tokens
+     *
+     * Executed when receiving native tokens with empty calldata.
+     */
+    receive() external payable virtual {
+        emit ValueReceived(msg.sender, msg.value);
+    }
 
     /**
      * @dev Emits an event when receiving native tokens
@@ -83,15 +89,21 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     }
 
     /**
-     * @dev Emits an event when receiving native tokens
-     *
-     * Executed when receiving native tokens with empty calldata.
+     * @dev See {IERC165-supportsInterface}.
      */
-    receive() external payable virtual {
-        emit ValueReceived(msg.sender, msg.value);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP9 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_LSP14 ||
+            super.supportsInterface(interfaceId);
     }
-
-    // ERC725
 
     /**
      * @inheritdoc IERC725X
@@ -101,6 +113,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0 and 3
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
+     * Emits a {ValueReceived} event, when receives native token
      */
     function execute(
         uint256 operation,
@@ -109,6 +122,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
         require(address(this).balance >= value, "ERC725X: insufficient balance");
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
 
         // CALL
         if (operation == OPERATION_CALL) return _executeCall(to, value, data);
@@ -157,8 +171,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         }
     }
 
-    // LSP1
-
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
      * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
@@ -175,6 +187,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         virtual
         returns (bytes memory returnedValues)
     {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         bytes memory resultDefaultDelegate;
 
@@ -208,8 +221,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
 
-    // ERC173 - Modified ClaimOwnership
-
     /**
      * @dev Sets the pending owner and notify the pending owner
      *
@@ -235,27 +246,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     {
         LSP14Ownable2Step._renounceOwnership();
     }
-
-    // ERC165
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore)
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_LSP9 ||
-            interfaceId == _INTERFACEID_LSP1 ||
-            interfaceId == _INTERFACEID_LSP14 ||
-            super.supportsInterface(interfaceId);
-    }
-
-    // internal functions
 
     /**
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
