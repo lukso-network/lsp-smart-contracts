@@ -1728,12 +1728,6 @@ export const shouldBehaveLikeLSP7 = (
       await context.lsp7.connect(oldOwner).transferOwnership(newOwner.address);
       expect(await context.lsp7.owner()).to.equal(newOwner.address);
     });
-
-    after(async () => {
-      await context.lsp7
-        .connect(context.accounts.owner)
-        .transferOwnership(context.accounts.anyone.address);
-    });
   });
 };
 
