@@ -1721,6 +1721,22 @@ export const shouldBehaveLikeLSP7 = (
       });
     });
   });
+  describe("transferOwnership", () => {
+    it("should tansfer ownership of the contract", async () => {
+      const oldOwner = context.accounts.owner;
+      const newOwner = context.accounts.anyone;
+      await context.lsp7
+        .connect(oldOwner.address)
+        .transferOwnership(newOwner.address);
+      expect(await context.lsp7.owner()).to.equal(newOwner.address);
+    });
+
+    after(async () => {
+      await context.lsp7
+        .connect(context.accounts.owner.address)
+        .transferOwnership(context.accounts.anyone.address);
+    });
+  });
 };
 
 export type LSP7InitializeTestContext = {
