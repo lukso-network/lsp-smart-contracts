@@ -1721,7 +1721,7 @@ export const shouldBehaveLikeLSP7 = (
       });
     });
   });
-  describe.only("transferOwnership", () => {
+  describe("transferOwnership", () => {
     let oldOwner: SignerWithAddress;
     let newOwner: SignerWithAddress;
     before(async () => {
