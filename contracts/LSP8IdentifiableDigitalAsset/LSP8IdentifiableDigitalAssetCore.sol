@@ -137,12 +137,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function isOperatorFor(address operator, bytes32 tokenId)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function isOperatorFor(address operator, bytes32 tokenId) public view virtual returns (bool) {
         _existsOrError(tokenId);
 
         return _isOperatorOrOwner(operator, tokenId);
@@ -151,17 +146,16 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function getOperatorsOf(bytes32 tokenId)
-        public
-        view
-        virtual
-        returns (address[] memory)
-    {
+    function getOperatorsOf(bytes32 tokenId) public view virtual returns (address[] memory) {
         _existsOrError(tokenId);
 
         return _operators[tokenId].values();
     }
 
+    /**
+     * @dev verifies if the `caller` is operator or owner for the `tokenId`
+     * @return true if `caller` is either operator or owner
+     */
     function _isOperatorOrOwner(address caller, bytes32 tokenId)
         internal
         view
@@ -215,6 +209,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         }
     }
 
+    /**
+     * @dev removes `operator` from the list of operatrs of the `tokenId`
+     */
     function _revokeOperator(
         address operator,
         address tokenOwner,
@@ -225,6 +222,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         emit RevokedOperator(operator, tokenOwner, tokenId);
     }
 
+    /**
+     * @dev clear all the operators of the `tokenId`
+     */
     function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
         // here is a good example of why having multiple operators will be expensive.. we
         // need to clear them on token transfer

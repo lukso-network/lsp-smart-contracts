@@ -15,6 +15,11 @@ import "../LSP6KeyManager/LSP6Constants.sol";
 library LSP6Utils {
     using LSP2Utils for bytes12;
 
+    /**
+     * @dev returns the permissions of the `caller` for the ERC725Y `target`
+     * @param target a valid `IERC725Y` interface
+     * @param caller the controller address
+     */
     function getPermissionsFor(IERC725Y target, address caller) internal view returns (bytes32) {
         bytes memory permissions = target.getData(
             LSP2Utils.generateMappingWithGroupingKey(
@@ -26,6 +31,11 @@ library LSP6Utils {
         return bytes32(permissions);
     }
 
+    /**
+     * @dev returns the allowed addresses of the `caller` for the ERC725Y `target`
+     * @param target a valid `IERC725Y` interface
+     * @param caller the controller address
+     */
     function getAllowedAddressesFor(IERC725Y target, address caller)
         internal
         view
@@ -40,6 +50,11 @@ library LSP6Utils {
             );
     }
 
+    /**
+     * @dev returns the allowed functions of the `caller` for the ERC725Y `target`
+     * @param target a valid `IERC725Y` interface
+     * @param caller the controller address
+     */
     function getAllowedFunctionsFor(IERC725Y target, address caller)
         internal
         view
@@ -54,6 +69,11 @@ library LSP6Utils {
             );
     }
 
+    /**
+     * @dev returns the allowed standards of the `caller` for the ERC725Y `target`
+     * @param target a valid `IERC725Y` interface
+     * @param caller the controller address
+     */
     function getAllowedStandardsFor(IERC725Y target, address caller)
         internal
         view
@@ -68,6 +88,11 @@ library LSP6Utils {
             );
     }
 
+    /**
+     * @dev returns the allowed ERC725Y keys of the `caller` for the ERC725Y `target`
+     * @param target a valid `IERC725Y` interface
+     * @param caller the controller address
+     */
     function getAllowedERC725YKeysFor(IERC725Y target, address caller)
         internal
         view
@@ -97,6 +122,12 @@ library LSP6Utils {
         return (addressPermission & permissionToCheck) == permissionToCheck;
     }
 
+    /**
+     * @dev use the `setData(bytes32[],bytes[])` via the KeyManager of the target
+     * @param keyManagerAddress the address of the KeyManager
+     * @param keys the array of data keys
+     * @param values the array of data values
+     */
     function setDataViaKeyManager(
         address keyManagerAddress,
         bytes32[] memory keys,

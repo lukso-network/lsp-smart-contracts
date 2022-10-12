@@ -268,6 +268,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyAllowedERC725YKeys(from, inputKeys);
     }
 
+    /**
+     * @dev verify if `_from` has the required permissions to set some
+     * permissions on the linked ERC725Account
+     * @param key the key whose value will be updated
+     * @param value the updated value for the key
+     * @param from the address who want to set the keys
+     * @param permissions the permissions
+     */
     function _verifyCanSetPermissions(
         bytes32 key,
         bytes memory value,
@@ -366,6 +374,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
     }
 
+    /**
+     * @dev verify if `_from` has the required permissions to either
+     * add or change permissions of another address
+     * @param key the key whose value will be updated
+     * @param from the address who want to set the keys
+     * @param callerPermissions the caller's permission's BitArray
+     */
     function _verifyCanSetBytes32Permissions(
         bytes32 key,
         address from,
@@ -383,6 +398,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
     }
 
+    /**
+     * @dev verify if `_from` has the required permissions to update the
+     * permissions array
+     * @param key the key whose value will be updated
+     * @param value the updated value for the key
+     * @param from the address who want to set the keys
+     * @param permissions the permissions
+     */
     function _verifyCanSetPermissionsArray(
         bytes32 key,
         bytes memory value,
@@ -417,6 +440,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
     }
 
+    /**
+     * @dev verify if `from` is allowed to change the `inputKey`
+     * @param from the address who want to set the keys
+     * @param inputKeys the key that is verified
+     */
     function _verifyAllowedERC725YKeys(address from, bytes32[] memory inputKeys) internal view {
         bytes memory allowedERC725YKeysEncoded = ERC725Y(target).getAllowedERC725YKeysFor(from);
 
@@ -553,6 +581,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_DELEGATECALL;
     }
 
+    /**
+     * @dev returns the `superPermission` needed for a specific `operationType` of the `execute(..)`
+     */
     function _extractSuperPermissionFromOperation(uint256 operationType)
         internal
         pure
@@ -638,6 +669,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         revert NotAllowedFunction(from, functionSelector);
     }
 
+    /**
+     * @dev returns the index of the last non-empty byte, meaning != `0x00`
+     */
     function _countTrailingZeroBytes(bytes32 dataKey) internal pure returns (uint256) {
         uint256 nByte = 32;
 
@@ -648,6 +682,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         return 32 - nByte;
     }
 
+    /**
+     * @dev revert if `from`'s `addressPermissions` doesn't contain `permissionsRequired`
+     * @param from the caller address
+     * @param addressPermissions the caller's permissions BitArray
+     * @param permissionRequired the required permission
+     */
     function _requirePermissions(
         address from,
         bytes32 addressPermissions,
@@ -659,6 +699,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
     }
 
+    /**
+     * @dev returns the `errorName` depending on the `permission` given
+     */
     function _getPermissionErrorString(bytes32 permission)
         internal
         pure

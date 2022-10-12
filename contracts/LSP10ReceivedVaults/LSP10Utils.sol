@@ -178,6 +178,9 @@ library LSP10Utils {
         }
     }
 
+    /**
+     * @dev returns the index from a maping
+     */
     function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint64) {
         bytes memory val = BytesLib.slice(mapValue, 4, 8);
         return BytesLib.toUint64(val, 0);
