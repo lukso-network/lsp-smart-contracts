@@ -15,7 +15,7 @@ contract UniversalReceiverDelegateRevert is ERC165, ILSP1UniversalReceiverDelega
      * @return result the return value of keyManager's execute function
      */
     function universalReceiverDelegate(
-        address notifier,
+        address notifier, // solhint-disable no-unused-vars
         uint256 value, // solhint-disable no-unused-vars
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars

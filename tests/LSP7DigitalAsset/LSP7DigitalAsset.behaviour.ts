@@ -1721,6 +1721,83 @@ export const shouldBehaveLikeLSP7 = (
       });
     });
   });
+  describe("transferOwnership", () => {
+    let oldOwner: SignerWithAddress;
+    let newOwner: SignerWithAddress;
+
+    before(async () => {
+      context = await buildContext();
+      oldOwner = context.accounts.owner;
+      newOwner = context.accounts.anyone;
+    });
+
+    it("should transfer ownership of the contract", async () => {
+      await context.lsp7.connect(oldOwner).transferOwnership(newOwner.address);
+      expect(await context.lsp7.owner()).to.equal(newOwner.address);
+    });
+
+    it("should not allow non-owners to transfer ownership", async () => {
+      const newOwner = context.accounts.anyone;
+      await expect(
+        context.lsp7.connect(newOwner).transferOwnership(newOwner.address)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+    });
+
+    describe("after transferring ownership of the contract", () => {
+      beforeEach(async () => {
+        await context.lsp7
+          .connect(oldOwner)
+          .transferOwnership(newOwner.address);
+      });
+
+      it("old owner should not be allowed to use `transferOwnership(..)`", async () => {
+        const randomAddress = context.accounts.anyone.address;
+        await expect(
+          context.lsp7.connect(oldOwner).transferOwnership(randomAddress)
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("old owner should not be allowed to use `renounceOwnership(..)`", async () => {
+        await expect(
+          context.lsp7.connect(oldOwner).renounceOwnership()
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("old owner should not be allowed to use `setData(..)`", async () => {
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
+        const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
+        await expect(
+          context.lsp7.connect(oldOwner)["setData(bytes32,bytes)"](key, value)
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("new owner should be allowed to use `transferOwnership(..)`", async () => {
+        const randomAddress = context.accounts.anyone.address;
+
+        await context.lsp7.connect(newOwner).transferOwnership(randomAddress);
+
+        expect(await context.lsp7.owner()).to.equal(randomAddress);
+      });
+
+      it("new owner should be allowed to use `renounceOwnership(..)`", async () => {
+        await context.lsp7.connect(newOwner).renounceOwnership();
+
+        expect(await context.lsp7.owner()).to.equal(
+          ethers.constants.AddressZero
+        );
+      });
+
+      it("new owner should be allowed to use `setData(..)`", async () => {
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
+        const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
+        await context.lsp7
+          .connect(newOwner)
+          ["setData(bytes32,bytes)"](key, value);
+
+        expect(await context.lsp7["getData(bytes32)"](key)).to.equal(value);
+      });
+    });
+  });
 };
 
 export type LSP7InitializeTestContext = {
