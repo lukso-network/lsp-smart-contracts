@@ -16,9 +16,10 @@ library LSP6Utils {
     using LSP2Utils for bytes12;
 
     /**
-     * @dev returns the permissions of the `caller` for the ERC725Y `target`
-     * @param target a valid `IERC725Y` interface
-     * @param caller the controller address
+     * @dev read the permissions of a `caller` on an ERC725Y `target` contract.
+     * @param target an `IERC725Y` contract where to read the permissions.
+     * @param caller the controller address to read the permissions from.
+     * @return a `bytes32` BitArray containing the permissions of a controller address.
      */
     function getPermissionsFor(IERC725Y target, address caller) internal view returns (bytes32) {
         bytes memory permissions = target.getData(
@@ -32,9 +33,10 @@ library LSP6Utils {
     }
 
     /**
-     * @dev returns the allowed addresses of the `caller` for the ERC725Y `target`
-     * @param target a valid `IERC725Y` interface
-     * @param caller the controller address
+     * @dev read the allowed addresses of a `caller` on an ERC725Y `target` contract.
+     * @param target an `IERC725Y` contract where to read the permissions.
+     * @param caller the controller address to read the permissions from.
+     * @return an encoded `bytes` value which contains an array of allowed addresses (to interact with) for the controller address.
      */
     function getAllowedAddressesFor(IERC725Y target, address caller)
         internal
@@ -51,9 +53,10 @@ library LSP6Utils {
     }
 
     /**
-     * @dev returns the allowed functions of the `caller` for the ERC725Y `target`
-     * @param target a valid `IERC725Y` interface
-     * @param caller the controller address
+     * @dev read the allowed functions of a `caller` on an ERC725Y `target` contract.
+     * @param target an `IERC725Y` contract where to read the permissions.
+     * @param caller the controller address to read the permissions from.
+     * @return an encoded `bytes` value which contains an array of allowed function signatures (to interact with) for the controller address.
      */
     function getAllowedFunctionsFor(IERC725Y target, address caller)
         internal
@@ -70,9 +73,10 @@ library LSP6Utils {
     }
 
     /**
-     * @dev returns the allowed standards of the `caller` for the ERC725Y `target`
-     * @param target a valid `IERC725Y` interface
-     * @param caller the controller address
+     * @dev read the allowed standards of a `caller` on an ERC725Y `target` contract.
+     * @param target an `IERC725Y` contract where to read the permissions.
+     * @param caller the controller address to read the permissions from.
+     * @return an encoded `bytes` value which contains an array of allowed standards/interfaceIds (to interact with) for the controller address.
      */
     function getAllowedStandardsFor(IERC725Y target, address caller)
         internal
@@ -89,9 +93,10 @@ library LSP6Utils {
     }
 
     /**
-     * @dev returns the allowed ERC725Y keys of the `caller` for the ERC725Y `target`
-     * @param target a valid `IERC725Y` interface
-     * @param caller the controller address
+     * @dev read the allowed ERC725Y keys of a `caller` on an ERC725Y `target` contract.
+     * @param target an `IERC725Y` contract where to read the permissions.
+     * @param caller the controller address to read the permissions from.
+     * @return an encoded `bytes` value which contains an array of allowed ERC725 keys (to interact with) for the controller address.
      */
     function getAllowedERC725YKeysFor(IERC725Y target, address caller)
         internal
