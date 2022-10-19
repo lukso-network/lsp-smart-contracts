@@ -693,15 +693,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes32 permissionRequired
     ) internal pure {
         if (!addressPermissions.hasPermission(permissionRequired)) {
-            string memory permissionErrorString = _getPermissionErrorString(permissionRequired);
+            string memory permissionErrorString = _getPermissionName(permissionRequired);
             revert NotAuthorised(from, permissionErrorString);
         }
     }
 
     /**
-     * @dev returns the `errorName` depending on the `permission` given
+     * @dev returns the name of the permission as a string
      */
-    function _getPermissionErrorString(bytes32 permission)
+    function _getPermissionName(bytes32 permission)
         internal
         pure
         returns (string memory errorMessage)

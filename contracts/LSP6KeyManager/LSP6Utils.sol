@@ -36,7 +36,7 @@ library LSP6Utils {
      * @dev read the allowed addresses of a `caller` on an ERC725Y `target` contract.
      * @param target an `IERC725Y` contract where to read the permissions.
      * @param caller the controller address to read the permissions from.
-     * @return an encoded `bytes` value which contains an array of allowed addresses (to interact with) for the controller address.
+     * @return an abi-encoded array of addresses that the controller address is allowed to interact with.
      */
     function getAllowedAddressesFor(IERC725Y target, address caller)
         internal
@@ -56,7 +56,7 @@ library LSP6Utils {
      * @dev read the allowed functions of a `caller` on an ERC725Y `target` contract.
      * @param target an `IERC725Y` contract where to read the permissions.
      * @param caller the controller address to read the permissions from.
-     * @return an encoded `bytes` value which contains an array of allowed function signatures (to interact with) for the controller address.
+     * @return an abi-encoded array of functions selectors that the controller address is allowed to interact with.
      */
     function getAllowedFunctionsFor(IERC725Y target, address caller)
         internal
@@ -76,7 +76,7 @@ library LSP6Utils {
      * @dev read the allowed standards of a `caller` on an ERC725Y `target` contract.
      * @param target an `IERC725Y` contract where to read the permissions.
      * @param caller the controller address to read the permissions from.
-     * @return an encoded `bytes` value which contains an array of allowed standards/interfaceIds (to interact with) for the controller address.
+     * @return an abi-encoded array of allowed interface ids that the controller address is allowed to interact with.
      */
     function getAllowedStandardsFor(IERC725Y target, address caller)
         internal
@@ -96,7 +96,7 @@ library LSP6Utils {
      * @dev read the allowed ERC725Y keys of a `caller` on an ERC725Y `target` contract.
      * @param target an `IERC725Y` contract where to read the permissions.
      * @param caller the controller address to read the permissions from.
-     * @return an encoded `bytes` value which contains an array of allowed ERC725 keys (to interact with) for the controller address.
+     * @return an abi-encoded array of allowed ERC725 keys that the controller address is allowed to interact with.
      */
     function getAllowedERC725YKeysFor(IERC725Y target, address caller)
         internal
