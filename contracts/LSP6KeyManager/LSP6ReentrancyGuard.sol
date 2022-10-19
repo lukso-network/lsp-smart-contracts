@@ -27,7 +27,7 @@ abstract contract LSP6ReentrancyGuard {
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
 
-    uint256 private _status = _NOT_ENTERED;
+    uint256 private _status;
 
     /**
      * @dev This modifier doesn't allow for reentrancy calls unless
@@ -37,6 +37,13 @@ abstract contract LSP6ReentrancyGuard {
         _nonReentrantBefore(upAddress);
         _;
         _nonReentrantAfter();
+    }
+
+    /**
+     * @dev Initialise _status to _NOT_ENTERED.
+     */
+    function _initializeLSP6ReentrancyGuard() internal {
+        _status = _NOT_ENTERED;
     }
 
     /**

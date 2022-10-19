@@ -44,7 +44,7 @@ import {
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
 
-import "../Custom/LSP6ReentrancyGuard.sol";
+import "./LSP6ReentrancyGuard.sol";
 
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -218,7 +218,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
                 if (bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
                     // CHECK if key = AddressPermissions[] or AddressPermissions[index]
                     _verifyCanSetPermissionsArray(key, value, from, permissions);
-                    
+
                     // "nullify" permission keys to not check them against allowed ERC725Y keys
                     inputKeys[ii] = bytes32(0);
 
@@ -352,10 +352,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
              * if bytes6(key) != bytes6(keccak256("AddressPermissions"))
              * this is not a standard permission key according to LSP6
              * so we revert execution
-             * 
-             * @dev to implement custom permissions keys, consider overriding 
+             *
+             * @dev to implement custom permissions keys, consider overriding
              * this function and implement specific checks
-             * 
+             *
              *      // AddressPermissions:MyCustomPermissions:<address>
              *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
              *
@@ -404,7 +404,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
 
             return;
         }
-        
+
         // key = AddressPermissions[index] -> array index
         bytes memory valueAtIndex = ERC725Y(target).getData(key);
 
@@ -413,7 +413,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
         } else {
             _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
         }
-        
+
         if (value.length != 20) {
             revert AddressPermissionArrayIndexValueNotAnAddress(key, value);
         }
