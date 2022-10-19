@@ -669,7 +669,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev returns the index of the last non-empty byte, meaning != `0x00`
+     * @dev iterates over the zero-bytes of the `dataKey` starting from the end.
+     * 
+     *         stop the iteration here ─┐     start the iteration here ─┐
+     *                                  ↓                               ↓
+     * 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000
+     *                                  ↑
+     *           return the index here ─┘
+     * 
+     * @return index of the last non-empty byte
      */
     function _countTrailingZeroBytes(bytes32 dataKey) internal pure returns (uint256) {
         uint256 nByte = 32;
