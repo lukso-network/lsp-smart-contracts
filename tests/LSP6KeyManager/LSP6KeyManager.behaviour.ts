@@ -92,7 +92,7 @@ export const shouldBehaveLikeLSP6 = (
     otherTestScenarios(buildContext);
   });
 
-  describe("Security", () => {
+  describe.only("Security", () => {
     testSecurityScenarios(buildContext);
   });
 };
