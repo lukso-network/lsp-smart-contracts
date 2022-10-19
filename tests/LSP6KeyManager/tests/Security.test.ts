@@ -374,7 +374,7 @@ export const testSecurityScenarios = (
       await context.keyManager.connect(context.owner).execute(executePayload);
 
       const randomHardcodedKey = ethers.utils.keccak256(
-        ethers.utils.hexlify(ethers.utils.toUtf8Bytes("some random data key"))
+        ethers.utils.toUtf8Bytes("some random data key")
       );
       const randomHardcodedValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes("some random text for the data value")
