@@ -23,6 +23,5 @@ contract LSP6KeyManagerInit is LSP6KeyManagerInitAbstract {
      */
     function initialize(address target_) public virtual initializer {
         LSP6KeyManagerInitAbstract._initialize(target_);
-        _initializeLSP6ReentrancyGuard();
     }
 }

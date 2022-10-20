@@ -11,7 +11,7 @@ abstract contract LSP6ReentrancyGuard {
     /**
      * @dev Revert with this error if the address that tries to reentry is not the URD address
      */
-    error ReentrantAddressNotURD();
+    error ReentrantCall(address reentrantCaller);
 
     // Booleans are more expensive than uint256 or any type that takes up a full
     // word because each write operation emits an extra SLOAD to first read the
@@ -42,25 +42,23 @@ abstract contract LSP6ReentrancyGuard {
     /**
      * @dev Initialise _status to _NOT_ENTERED.
      */
-    function _initializeLSP6ReentrancyGuard() internal {
+    function _setupLSP6ReentrancyGuard() internal {
         _status = _NOT_ENTERED;
     }
 
     /**
      * @dev Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
      * the status is `_ENTERED` in order to revert the call unless the caller is the URD address
-     * Used in the beggining of the `nonReentrant` modifier, before the method execution starts
+     * Used in the beginning of the `nonReentrant` modifier, before the method execution starts
      */
     function _nonReentrantBefore(address upAddress) private {
         // On the first call to nonReentrant, _status will be _NOT_ENTERED
         if (_status == _ENTERED) {
-            //compare URD address and msg.sender
-
             address urdAddress = address(
                 bytes20(IERC725Y(upAddress).getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY))
             );
 
-            if (msg.sender != urdAddress) revert ReentrantAddressNotURD();
+            if (msg.sender != urdAddress) revert ReentrantCall(msg.sender);
         }
 
         // Any calls to nonReentrant after this point will fail, unless it's the URD who calls
