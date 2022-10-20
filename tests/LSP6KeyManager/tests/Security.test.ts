@@ -174,10 +174,7 @@ export const testSecurityScenarios = (
       // send LYX to malicious contract
       await expect(
         context.keyManager.connect(context.owner).execute(transferPayload)
-      ).to.be.revertedWithCustomError(
-        context.keyManager,
-        "ReentrantAddressNotURD"
-      );
+      ).to.be.revertedWithCustomError(context.keyManager, "ReentrantCall");
       // at this point, the malicious contract fallback function
       // try to drain funds by re-entering the call
 
@@ -268,7 +265,7 @@ export const testSecurityScenarios = (
 
       await expect(executeTransferPayload).to.be.revertedWithCustomError(
         context.keyManager,
-        "ReentrantAddressNotURD"
+        "ReentrantCall"
       );
     });
 
