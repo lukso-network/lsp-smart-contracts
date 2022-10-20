@@ -49,7 +49,7 @@ error LSP8NonExistingOperator(address _address, bytes32 tokenId);
 error LSP8TokenIdAlreadyMinted(bytes32 tokenId);
 
 /**
- * @dev reverts when the parameters used for `transferBatch` are not adecvate
+ * @dev reverts when the parameters used for `transferBatch` are not suitable
  * meaning that the arrays: `from`, `to`, `tokenId` and `data` have differnet lengths
  */
 error LSP8InvalidTransferBatch();

@@ -249,7 +249,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
     /**
      * @dev verify if `_from` has the required permissions to set some dataKeys
-     * on the linked ERC725Account
+     * on the linked target
      * @param from the address who want to set the dataKeys
      * @param permissions the permissions
      * @param inputKeys the dataKeys being set
@@ -269,7 +269,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if `_from` is authorised to set some permissions for an address on the linked ERC725Account
+     * @dev verify if `_from` is authorised to set some permissions for an address on the linked target
      * @param dataKey the dataKey whose dataValue will be updated
      * @param dataValue the updated dataValue for the dataKey
      * @param from the address who want to set the dataKeys
@@ -497,7 +497,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
     /**
      * @dev verify if `from` has the required permissions to make an external call
-     * via the linked ERC725Account
+     * via the linked target
      * @param from the address who want to run the execute function on the ERC725Account
      * @param permissions the permissions of the caller
      * @param payload the ABI encoded payload `target.execute(...)`
@@ -594,7 +594,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if `from` is authorised to interact with address `to` via the linked ERC725Account
+     * @dev verify if `from` is authorised to interact with address `to` via the linked target
      * @param from the caller address
      * @param to the address to interact with
      */
@@ -643,7 +643,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if `from` is authorised to use the linked ERC725Account
+     * @dev verify if `from` is authorised to use the linked target
      * to run a specific function `functionSelector` at a target contract
      * @param from the caller address
      * @param functionSelector the bytes4 function selector of the function to run

@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 // --- Errors
 
 /**
- * @dev reverts when the `amount` of tokens which are to be transferred
- * from `tokenOwner` is bigger than the current `balance` of the `tokenOwner`
+ * @dev reverts when one tries to send an `amount` of tokens
+ * which is bigger than the current `balance` of the `tokenOwner`
  */
 error LSP7AmountExceedsBalance(uint256 balance, address tokenOwner, uint256 amount);
 
@@ -51,7 +51,7 @@ error LSP7CannotSendWithAddressZero();
 error LSP7CannotSendToSelf();
 
 /**
- * @dev reverts when the parameters used for `transferBatch` are not adecvate
+ * @dev reverts when the parameters used for `transferBatch` are not suitable
  * meaning that the arrays: `from`, `to`, `amount` and `data` have differnet lengths
  */
 error LSP7InvalidTransferBatch();
