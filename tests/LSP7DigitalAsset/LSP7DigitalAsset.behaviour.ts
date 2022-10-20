@@ -1721,6 +1721,7 @@ export const shouldBehaveLikeLSP7 = (
       });
     });
   });
+  
   describe("transferOwnership", () => {
     let oldOwner: SignerWithAddress;
     let newOwner: SignerWithAddress;

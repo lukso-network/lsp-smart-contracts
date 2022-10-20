@@ -1615,6 +1615,178 @@ export const shouldBehaveLikeLSP8 = (
       });
     });
   });
+
+  describe("burn", () => {
+    let contractOwner: SignerWithAddress;
+    let tokenOwner: SignerWithAddress;
+    let tokenOperator: SignerWithAddress;
+    let randomAddress: SignerWithAddress;
+    let tokenId: BytesLike;
+    let randomTokenId: BytesLike;
+    let anotherTokenId: BytesLike;
+
+    beforeEach(async () => {
+      contractOwner = context.accounts.owner;
+      tokenOwner = context.accounts.tokenReceiver;
+      tokenOperator = context.accounts.operator;
+      randomAddress = context.accounts.anyone;
+
+      tokenId = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("token name 1")
+      );
+      randomTokenId = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("token name 2")
+      );
+      anotherTokenId = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("token name 3")
+      );
+
+      await context.lsp8
+        .connect(contractOwner)
+        .mint(tokenOwner.address, tokenId, true, "0x");
+      await context.lsp8
+        .connect(contractOwner)
+        .mint(tokenOwner.address, anotherTokenId, true, "0x");
+    });
+
+    describe("when tokenId doesn't exist", () => {
+      it("should revert", async () => {
+        await expect(
+          context.lsp8.connect(randomAddress).burn(randomTokenId, "0x")
+        ).to.be.revertedWithCustomError(context.lsp8, "LSP8NonExistentTokenId");
+      });
+    });
+
+    describe("when caller is not the owner of the tokenId", () => {
+      it("should revert", async () => {
+        await expect(context.lsp8.connect(randomAddress).burn(tokenId, "0x"))
+          .to.be.revertedWithCustomError(context.lsp8, "LSP8NotTokenOperator")
+          .withArgs(tokenId, randomAddress.address);
+      });
+    });
+
+    describe("when caller is the owner of the tokenId", () => {
+      it("should allow burning the token", async () => {
+        expect(await context.lsp8.tokenOwnerOf(tokenId)).to.equal(
+          tokenOwner.address
+        );
+        await context.lsp8.connect(tokenOwner).burn(tokenId, "0x");
+        await expect(context.lsp8.tokenOwnerOf(tokenId))
+          .to.be.revertedWithCustomError(context.lsp8, "LSP8NonExistentTokenId")
+          .withArgs(tokenId);
+      });
+    });
+
+    describe("when caller is not an operator for the tokenId", () => {
+      it("should revert", async () => {
+        await context.lsp8
+          .connect(tokenOwner)
+          .authorizeOperator(tokenOperator.address, tokenId);
+
+        await expect(
+          context.lsp8.connect(tokenOperator).burn(anotherTokenId, "0x")
+        )
+          .to.be.revertedWithCustomError(context.lsp8, "LSP8NotTokenOperator")
+          .withArgs(anotherTokenId, tokenOperator.address);
+      });
+    });
+
+    describe("when caller is an operator for the tokenId", () => {
+      it("should allow burning the token", async () => {
+        await context.lsp8
+          .connect(tokenOwner)
+          .authorizeOperator(tokenOperator.address, tokenId);
+
+        expect(await context.lsp8.tokenOwnerOf(tokenId)).to.equal(
+          tokenOwner.address
+        );
+
+        await context.lsp8.connect(tokenOperator).burn(tokenId, "0x");
+
+        await expect(context.lsp8.tokenOwnerOf(tokenId))
+          .to.be.revertedWithCustomError(context.lsp8, "LSP8NonExistentTokenId")
+          .withArgs(tokenId);
+      });
+    });
+  });
+
+  describe("transferOwnership", () => {
+    let oldOwner: SignerWithAddress;
+    let newOwner: SignerWithAddress;
+
+    before(async () => {
+      context = await buildContext();
+      oldOwner = context.accounts.owner;
+      newOwner = context.accounts.anyone;
+    });
+
+    it("should transfer ownership of the contract", async () => {
+      await context.lsp8.connect(oldOwner).transferOwnership(newOwner.address);
+      expect(await context.lsp8.owner()).to.equal(newOwner.address);
+    });
+
+    it("should not allow non-owners to transfer ownership", async () => {
+      const newOwner = context.accounts.anyone;
+      await expect(
+        context.lsp8.connect(newOwner).transferOwnership(newOwner.address)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+    });
+
+    describe("after transferring ownership of the contract", () => {
+      beforeEach(async () => {
+        await context.lsp8
+          .connect(oldOwner)
+          .transferOwnership(newOwner.address);
+      });
+
+      it("old owner should not be allowed to use `transferOwnership(..)`", async () => {
+        const randomAddress = context.accounts.anyone.address;
+        await expect(
+          context.lsp8.connect(oldOwner).transferOwnership(randomAddress)
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("old owner should not be allowed to use `renounceOwnership(..)`", async () => {
+        await expect(
+          context.lsp8.connect(oldOwner).renounceOwnership()
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("old owner should not be allowed to use `setData(..)`", async () => {
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
+        const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
+        await expect(
+          context.lsp8.connect(oldOwner)["setData(bytes32,bytes)"](key, value)
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("new owner should be allowed to use `transferOwnership(..)`", async () => {
+        const randomAddress = context.accounts.anyone.address;
+
+        await context.lsp8.connect(newOwner).transferOwnership(randomAddress);
+
+        expect(await context.lsp8.owner()).to.equal(randomAddress);
+      });
+
+      it("new owner should be allowed to use `renounceOwnership(..)`", async () => {
+        await context.lsp8.connect(newOwner).renounceOwnership();
+
+        expect(await context.lsp8.owner()).to.equal(
+          ethers.constants.AddressZero
+        );
+      });
+
+      it("new owner should be allowed to use `setData(..)`", async () => {
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
+        const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
+        await context.lsp8
+          .connect(newOwner)
+          ["setData(bytes32,bytes)"](key, value);
+
+        expect(await context.lsp8["getData(bytes32)"](key)).to.equal(value);
+      });
+    });
+  });
 };
 
 export type LSP8InitializeTestContext = {
