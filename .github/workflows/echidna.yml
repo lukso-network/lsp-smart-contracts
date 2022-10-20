@@ -1,0 +1,5 @@
+name: echidna-action
+uses: crytic/echidna-action@v2.0.1
+with:
+  files: contracts/fuzzing/
+  contract: LSP6UtilsFuzzing
