@@ -19,7 +19,7 @@ error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
 error LSP8NotTokenOperator(bytes32 tokenId, address caller);
 
 /**
- * @dev reverts when `operator` is already an authorized to trnafer the `tokenId`
+ * @dev reverts when `operator` is already an authorized to transfer the `tokenId`
  */
 error LSP8OperatorAlreadyAuthorized(address operator, bytes32 tokenId);
 
