@@ -24,7 +24,7 @@ error LSP8NotTokenOperator(bytes32 tokenId, address caller);
 error LSP8OperatorAlreadyAuthorized(address operator, bytes32 tokenId);
 
 /**
- * @dev reverts when one tries to authorize the zero address as operator
+ * @dev reverts when one tries to set the zero address as operator
  */
 error LSP8CannotUseAddressZeroAsOperator();
 

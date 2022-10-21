@@ -20,7 +20,7 @@ error LSP7AmountExceedsAuthorizedAmount(
 );
 
 /**
- * @dev reverts when one tries to set an operator the zero address
+ * @dev reverts when one tries to set the zero address as operator
  */
 error LSP7CannotUseAddressZeroAsOperator();
 
