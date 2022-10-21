@@ -210,7 +210,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     }
 
     /**
-     * @dev removes `operator` from the list of operatrs of the `tokenId`
+     * @dev removes `operator` from the list of operators of the `tokenId`
      */
     function _revokeOperator(
         address operator,
