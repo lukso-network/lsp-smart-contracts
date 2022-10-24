@@ -210,7 +210,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     }
 
     /**
-     * @dev removes `operator` from the list of operators of the `tokenId`
+     * @dev removes `operator` from the list of operators for the `tokenId`
      */
     function _revokeOperator(
         address operator,
@@ -223,7 +223,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     }
 
     /**
-     * @dev clear all the operators of the `tokenId`
+     * @dev clear all the operators for the `tokenId`
      */
     function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
         // here is a good example of why having multiple operators will be expensive.. we
