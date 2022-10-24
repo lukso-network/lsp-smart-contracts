@@ -46,6 +46,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
 
+  describe("when calling `getNonce(...)` with a channel ID greater than 2 ** 128", () => {
+    it("should revert", async () => {
+      let channelId = ethers.BigNumber.from(2).pow(129);
+
+      await expect(context.keyManager.getNonce(signer.address, channelId)).to.be
+        .reverted;
+    });
+  });
+
   describe("testing sequential nonces (channel = 0)", () => {
     let channelId = 0;
     let latestNonce;

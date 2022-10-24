@@ -72,9 +72,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function getNonce(address from, uint256 channelId) public view returns (uint256) {
-        uint128 nonceId = uint128(_nonceStore[from][channelId]);
-        return (uint256(channelId) << 128) | nonceId;
+    function getNonce(address from, uint128 channelId) public view returns (uint256) {
+        uint256 nonceInChannel = _nonceStore[from][channelId];
+        return (channelId << 128) | nonceInChannel;
     }
 
     /**

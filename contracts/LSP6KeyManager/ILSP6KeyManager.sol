@@ -25,12 +25,12 @@ interface ILSP6KeyManager is
     function target() external view returns (address);
 
     /**
-     * @notice get latest nonce for `from` for channel ID: `channelId`
+     * @notice get latest nonce for `from` in channel ID: `channelId`
      * @dev use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)
-     * @param from caller address
-     * @param channelId channel id
+     * @param from the caller or signer address
+     * @param channelId the channel id to retrieve the nonce from
      */
-    function getNonce(address from, uint256 channelId) external view returns (uint256);
+    function getNonce(address from, uint128 channelId) external view returns (uint256);
 
     /**
      * @notice execute the following payload on the ERC725Account: `payload`
