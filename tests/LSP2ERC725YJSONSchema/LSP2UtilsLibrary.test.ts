@@ -72,15 +72,26 @@ describe("LSP2Utils", () => {
     });
 
     describe("testing various non-zero bytes input", () => {
-      describe("when 32 bytes (e.g: a `uint256`)", () => {
-        it("should return false (value = 32)", async () => {
+      describe("when 32 bytes", () => {
+        it("should return false (`uint256` data = 32)", async () => {
           const data = abiCoder.encode(["uint256"], [32]);
           const result = await lsp2Utils.isEncodedArray(data);
           expect(result).to.be.false;
         });
 
-        it("should return false (value = 12345)", async () => {
+        it("should return false (`uint256` data = 12345)", async () => {
           const data = abiCoder.encode(["uint256"], [12345]);
+          const result = await lsp2Utils.isEncodedArray(data);
+          expect(result).to.be.false;
+        });
+
+        it("should return false (`bytes32` data = 0xcafecafecafecafe...)", async () => {
+          const data = abiCoder.encode(
+            ["bytes32"],
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            ]
+          );
           const result = await lsp2Utils.isEncodedArray(data);
           expect(result).to.be.false;
         });
