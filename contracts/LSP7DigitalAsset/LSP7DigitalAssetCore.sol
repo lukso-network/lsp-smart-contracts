@@ -208,8 +208,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual {
-        if (amount == 0) revert LSP7MintAmountIsZero();
-
         if (to == address(0)) {
             revert LSP7CannotSendWithAddressZero();
         }
@@ -242,8 +240,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         uint256 amount,
         bytes memory data
     ) internal virtual {
-        if (amount == 0) revert LSP7BurnAmountIsZero();
-
         if (from == address(0)) {
             revert LSP7CannotSendWithAddressZero();
         }
@@ -291,8 +287,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual {
-        if (amount == 0) revert LSP7TransferAmountIsZero();
-
         if (from == address(0) || to == address(0)) {
             revert LSP7CannotSendWithAddressZero();
         }

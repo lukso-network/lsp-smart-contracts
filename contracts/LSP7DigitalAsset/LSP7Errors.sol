@@ -14,12 +14,6 @@ error LSP7AmountExceedsAuthorizedAmount(
 
 error LSP7CannotUseAddressZeroAsOperator();
 
-error LSP7MintAmountIsZero();
-
-error LSP7BurnAmountIsZero();
-
-error LSP7TransferAmountIsZero();
-
 error LSP7CannotSendWithAddressZero();
 
 error LSP7CannotSendToSelf();
