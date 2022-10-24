@@ -4,13 +4,13 @@ pragma solidity ^0.8.0;
 // --- Errors
 
 /**
- * @dev reverts when sending an `amount` of tokens bigger than the current `balance` of the `tokenOwner`.
+ * @dev reverts when sending an `amount` of tokens larger than the current `balance` of the `tokenOwner`.
  */
 error LSP7AmountExceedsBalance(uint256 balance, address tokenOwner, uint256 amount);
 
 /**
- * @dev reverts when one of the operators of `tokenOwner` tries to send
- * an `amount` of tokens which is bigger than the current `authorizedAmount`.
+ * @dev reverts when `operator` of `tokenOwner` send an `amount` of tokens
+ * larger than the `authorizedAmount`.
  */
 error LSP7AmountExceedsAuthorizedAmount(
     address tokenOwner,
@@ -20,7 +20,7 @@ error LSP7AmountExceedsAuthorizedAmount(
 );
 
 /**
- * @dev reverts when one tries to set the zero address as operator.
+ * @dev reverts when trying to set the zero address as an operator.
  */
 error LSP7CannotUseAddressZeroAsOperator();
 
@@ -45,7 +45,7 @@ error LSP7TransferAmountIsZero();
 error LSP7CannotSendWithAddressZero();
 
 /**
- * @dev reverts when one tries to send tokens to itself.
+ * @dev reverts when specifying the same address for `from` or `to` in a token transfer.
  */
 error LSP7CannotSendToSelf();
 
@@ -55,13 +55,13 @@ error LSP7CannotSendToSelf();
 error LSP7InvalidTransferBatch();
 
 /**
- * @dev reverts when the `tokenReceiver` is not implementing LSP1
- * this is the case only when `bool force` is set as `false`.
+ * @dev reverts if the `tokenReceiver` does not implement LSP1
+ * when minting or transferring tokens with `bool force` set as `false`.
  */
 error LSP7NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
 
 /**
- * @dev reverts when the `tokenReceiver` is an EOA
- * this is the case only when `bool force` is set as `false`.
+ * @dev reverts if the `tokenReceiver` is an EOA
+ * when minting or transferring tokens with `bool force` set as `false`.
  */
 error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);

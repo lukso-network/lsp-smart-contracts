@@ -9,12 +9,12 @@ pragma solidity ^0.8.0;
 error LSP8NonExistentTokenId(bytes32 tokenId);
 
 /**
- * @dev reverts when `caller` != `tokenOwner` of the `tokenId`.
+ * @dev reverts when `caller` is not the `tokenOwner` of the `tokenId`.
  */
 error LSP8NotTokenOwner(address tokenOwner, bytes32 tokenId, address caller);
 
 /**
- * @dev reverts when `caller` is not an operator for `tokenId`.
+ * @dev reverts when `caller` is not an allowed operator for `tokenId`.
  */
 error LSP8NotTokenOperator(bytes32 tokenId, address caller);
 
@@ -29,7 +29,7 @@ error LSP8OperatorAlreadyAuthorized(address operator, bytes32 tokenId);
 error LSP8CannotUseAddressZeroAsOperator();
 
 /**
- * @dev reverts when one tries to send token to zero address.
+ * @dev reverts when trying to send token to the zero address.
  */
 error LSP8CannotSendToAddressZero();
 
@@ -54,13 +54,13 @@ error LSP8TokenIdAlreadyMinted(bytes32 tokenId);
 error LSP8InvalidTransferBatch();
 
 /**
- * @dev reverts when the `tokenReceiver` is not implementing LSP1
- * this is the case only when `bool force` is set as `false`.
+ * @dev reverts if the `tokenReceiver` does not implement LSP1
+ * when minting or transferring tokens with `bool force` set as `false`.
  */
 error LSP8NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
 
 /**
- * @dev reverts when the `tokenReceiver` is an EOA
- * this is the case only when `bool force` is set as `false`.
+ * @dev reverts if the `tokenReceiver` is an EOA
+ * when minting or transferring tokens with `bool force` set as `false`.
  */
 error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
