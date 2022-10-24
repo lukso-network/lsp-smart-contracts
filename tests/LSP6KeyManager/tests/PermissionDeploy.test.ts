@@ -68,28 +68,13 @@ export const shouldBehaveLikePermissionDeploy = (
         .connect(context.owner)
         .callStatic.execute(payload);
 
-      let tx = await context.keyManager.connect(context.owner).execute(payload);
-      let receipt = await tx.wait();
-
-      // should be the ContractCreated event (= event signature)
-      expect(receipt.logs[0].topics[0]).to.equal(
-        EventSignatures.ERC725X["ContractCreated"]
-      );
-
-      // operation type
-      expect(receipt.logs[0].topics[1]).to.equal(
-        ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE, 32)
-      );
-
-      // address of contract created
-      expect(receipt.logs[0].topics[2]).to.equal(
-        ethers.utils.hexZeroPad(expectedContractAddress, 32)
-      );
-
-      // value
-      expect(receipt.logs[0].topics[3]).to.equal(
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(0), 32)
-      );
+      await expect(context.keyManager.connect(context.owner).execute(payload))
+        .to.emit(context.universalProfile, "ContractCreated")
+        .withArgs(
+          OPERATION_TYPES.CREATE,
+          ethers.utils.getAddress(expectedContractAddress),
+          0
+        );
     });
 
     it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
@@ -113,22 +98,13 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy
       ).toLowerCase();
 
-      let tx = await context.keyManager.connect(context.owner).execute(payload);
-
-      let receipt = await tx.wait();
-
-      expect(receipt.logs[0].topics[0]).to.equal(
-        EventSignatures.ERC725X["ContractCreated"]
-      );
-      expect(receipt.logs[0].topics[1]).to.equal(
-        ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE2, 32)
-      );
-      expect(receipt.logs[0].topics[2]).to.equal(
-        ethers.utils.hexZeroPad(preComputedAddress, 32)
-      );
-      expect(receipt.logs[0].topics[3]).to.equal(
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(0), 32)
-      );
+      await expect(context.keyManager.connect(context.owner).execute(payload))
+        .to.emit(context.universalProfile, "ContractCreated")
+        .withArgs(
+          OPERATION_TYPES.CREATE2,
+          ethers.utils.getAddress(preComputedAddress),
+          0
+        );
     });
   });
 
@@ -150,21 +126,13 @@ export const shouldBehaveLikePermissionDeploy = (
         .connect(addressCanDeploy)
         .callStatic.execute(payload);
 
-      let tx = await context.keyManager.connect(context.owner).execute(payload);
-      let receipt = await tx.wait();
-
-      expect(receipt.logs[0].topics[0]).to.equal(
-        EventSignatures.ERC725X["ContractCreated"]
-      );
-      expect(receipt.logs[0].topics[1]).to.equal(
-        ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE, 32)
-      );
-      expect(receipt.logs[0].topics[2]).to.equal(
-        ethers.utils.hexZeroPad(expectedContractAddress, 32)
-      );
-      expect(receipt.logs[0].topics[3]).to.equal(
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(0), 32)
-      );
+      await expect(context.keyManager.connect(context.owner).execute(payload))
+        .to.emit(context.universalProfile, "ContractCreated")
+        .withArgs(
+          OPERATION_TYPES.CREATE,
+          ethers.utils.getAddress(expectedContractAddress),
+          0
+        );
     });
 
     it("should be allowed to deploy a contract TargetContract via CREATE2", async () => {
@@ -188,24 +156,15 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy
       ).toLowerCase();
 
-      let tx = await context.keyManager
-        .connect(addressCanDeploy)
-        .execute(payload);
-
-      let receipt = await tx.wait();
-
-      expect(receipt.logs[0].topics[0]).to.equal(
-        EventSignatures.ERC725X["ContractCreated"]
-      );
-      expect(receipt.logs[0].topics[1]).to.equal(
-        ethers.utils.hexZeroPad(OPERATION_TYPES.CREATE2, 32)
-      );
-      expect(receipt.logs[0].topics[2]).to.equal(
-        ethers.utils.hexZeroPad(preComputedAddress, 32)
-      );
-      expect(receipt.logs[0].topics[3]).to.equal(
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(0), 32)
-      );
+      await expect(
+        context.keyManager.connect(addressCanDeploy).execute(payload)
+      )
+        .to.emit(context.universalProfile, "ContractCreated")
+        .withArgs(
+          OPERATION_TYPES.CREATE2,
+          ethers.utils.getAddress(preComputedAddress),
+          0
+        );
     });
   });
 
