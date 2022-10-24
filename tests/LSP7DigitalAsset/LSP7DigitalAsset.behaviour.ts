@@ -92,10 +92,15 @@ export const shouldBehaveLikeLSP7 = (
           context.lsp7
             .connect(context.accounts.anyone)
             .mint(txParams.to, txParams.amount, txParams.force, txParams.data)
-        ).to.be.revertedWithCustomError(context.lsp7, "LSP7MintAmountIsZero");
+        )
+          .to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7NotifyTokenReceiverIsEOA"
+          )
+          .withArgs(txParams.to);
       });
 
-      it("should revert if `force == true`", async () => {
+      it("should pass if `force == true`", async () => {
         const txParams = {
           to: context.accounts.anotherTokenReceiver.address,
           amount: 0,
@@ -107,9 +112,19 @@ export const shouldBehaveLikeLSP7 = (
           context.lsp7
             .connect(context.accounts.anyone)
             .mint(txParams.to, txParams.amount, txParams.force, txParams.data)
-        ).to.be.revertedWithCustomError(context.lsp7, "LSP7MintAmountIsZero");
+        )
+          .to.emit(context.lsp7, "Transfer")
+          .withArgs(
+            context.accounts.anyone.address,
+            ethers.constants.AddressZero,
+            txParams.to,
+            txParams.amount,
+            txParams.force,
+            txParams.data
+          );
       });
     });
+
     describe("when `to` is the zero address", () => {
       it("should revert", async () => {
         const txParams = {
@@ -734,15 +749,15 @@ export const shouldBehaveLikeLSP7 = (
                 force: false,
                 data: "0x",
               };
-              const expectedError = "LSP7TransferAmountIsZero";
+              const expectedError = "LSP7NotifyTokenReceiverIsEOA";
 
               await transferFailScenario(txParams, caller, {
                 error: expectedError,
-                args: [],
+                args: [txParams.to],
               });
             });
 
-            it("should revert with `force == true`", async () => {
+            it("should pass with `force == true`", async () => {
               const caller = context.accounts.anyone;
 
               const txParams = {
@@ -752,12 +767,8 @@ export const shouldBehaveLikeLSP7 = (
                 force: true,
                 data: "0x",
               };
-              const expectedError = "LSP7TransferAmountIsZero";
 
-              await transferFailScenario(txParams, caller, {
-                error: expectedError,
-                args: [],
-              });
+              await transferSuccessScenario(txParams, caller);
             });
           });
 
@@ -1341,15 +1352,26 @@ export const shouldBehaveLikeLSP7 = (
 
   describe("burn", () => {
     describe("when `amount == 0`", () => {
-      it("should revert", async () => {
+      it("should pass", async () => {
         const caller = context.accounts.anyone;
-        const amount = 0;
+        const amount = 1;
+
+        await context.lsp7
+          .connect(context.accounts.anyone)
+          .mint(caller.address, amount, true, "0x");
 
         await expect(
-          context.lsp7
-            .connect(caller)
-            .burn(ethers.constants.AddressZero, amount, "0x")
-        ).to.be.revertedWithCustomError(context.lsp7, "LSP7BurnAmountIsZero");
+          context.lsp7.connect(caller).burn(caller.address, amount, "0x")
+        )
+          .to.emit(context.lsp7, "Transfer")
+          .withArgs(
+            caller.address,
+            caller.address,
+            ethers.constants.AddressZero,
+            amount,
+            false,
+            "0x"
+          );
       });
     });
     describe("when caller is the `from` address", () => {
@@ -1721,7 +1743,7 @@ export const shouldBehaveLikeLSP7 = (
       });
     });
   });
-  
+
   describe("transferOwnership", () => {
     let oldOwner: SignerWithAddress;
     let newOwner: SignerWithAddress;
