@@ -202,10 +202,7 @@ library LSP2Utils {
     function isEncodedArray(bytes memory data) internal pure returns (bool) {
         uint256 nbOfBytes = data.length;
 
-        // 1) there must be at least 32 bytes to store the offset
-        if (nbOfBytes < 32) return false;
-
-        // 2) there must be at least 32 x length bytes after offset
+        // there must be at least 32 x length bytes after offset
         uint256 offset = uint256(bytes32(data));
         if (nbOfBytes < offset + 32) return false;
         uint256 arrayLength = data.toUint256(offset);
