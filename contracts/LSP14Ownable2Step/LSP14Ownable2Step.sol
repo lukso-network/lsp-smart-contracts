@@ -99,16 +99,17 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
      */
     function _transferOwnership(address newOwner) internal virtual {
         if (newOwner == address(this)) revert CannotTransferOwnershipToSelf();
+        
         _pendingOwner = newOwner;
-
         address currentOwner = owner();
-        _notifyUniversalReceiver(newOwner, _TYPEID_LSP14_OwnershipTransferStarted, "");
+        emit OwnershipTransferStarted(currentOwner, newOwner);
+        
+        _notifyUniversalReceiver(newOwner, _TYPEID_LSP14_OwnershipTransferStarted, "");  
         require(
             currentOwner == owner(),
             "LSP14: newOwner MUST accept ownership in a separate transaction"
         );
 
-        emit OwnershipTransferStarted(currentOwner, newOwner);
     }
 
     /**
