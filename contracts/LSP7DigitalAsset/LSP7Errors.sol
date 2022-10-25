@@ -25,21 +25,6 @@ error LSP7AmountExceedsAuthorizedAmount(
 error LSP7CannotUseAddressZeroAsOperator();
 
 /**
- * @dev reverts when one tries to mint 0 tokens.
- */
-error LSP7MintAmountIsZero();
-
-/**
- * @dev reverts when one tries to burn 0 tokens.
- */
-error LSP7BurnAmountIsZero();
-
-/**
- * @dev reverts when one tries to transfer 0 tokens.
- */
-error LSP7TransferAmountIsZero();
-
-/**
  * @dev reverts when one tries to send tokens to or from the zero address.
  */
 error LSP7CannotSendWithAddressZero();
