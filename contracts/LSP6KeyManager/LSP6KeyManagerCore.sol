@@ -249,12 +249,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if `_from` has the required permissions to set some keys
-     * on the linked ERC725Account
-     * @param from the address who want to set the keys
+     * @dev verify if `_from` has the required permissions to set some dataKeys
+     * on the linked target
+     * @param from the address who want to set the dataKeys
      * @param permissions the permissions
-     * @param inputKeys the data keys being set
-     * containing a list of keys-value pairs
+     * @param inputKeys the dataKeys being set
+     * containing a list of key-value pairs
      */
     function _verifyCanSetData(
         address from,
@@ -269,28 +269,35 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyAllowedERC725YKeys(from, inputKeys);
     }
 
+    /**
+     * @dev verify if `_from` is authorised to set some permissions for an address on the linked target
+     * @param dataKey the dataKey whose dataValue will be updated
+     * @param dataValue the updated dataValue for the dataKey
+     * @param from the address who want to set the dataKeys
+     * @param permissions the permissions of 'from' for checking if authorised to set permissions related dataKeys.
+     */
     function _verifyCanSetPermissions(
-        bytes32 key,
-        bytes memory value,
+        bytes32 dataKey,
+        bytes memory dataValue,
         address from,
         bytes32 permissions
     ) internal view virtual {
         // prettier-ignore
-        if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
+        if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
 
-            // key = AddressPermissions:Permissions:<address>
-            _verifyCanSetBytes32Permissions(key, from, permissions);
+            // dataKey = AddressPermissions:Permissions:<address>
+            _verifyCanSetBytes32Permissions(dataKey, from, permissions);
 
-        } else if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
+        } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
 
-            bool isClearingArray = value.length == 0;
+            bool isClearingArray = dataValue.length == 0;
 
             // AddressPermissions:AllowedAddresses:<address>
-            if (!isClearingArray && !LSP2Utils.isEncodedArrayOfAddresses(value)) {
-                revert InvalidABIEncodedArray(value, "address");
+            if (!isClearingArray && !LSP2Utils.isEncodedArrayOfAddresses(dataValue)) {
+                revert InvalidABIEncodedArray(dataValue, "address");
             }
 
-            bytes memory storedAllowedAddresses = ERC725Y(target).getData(key);
+            bytes memory storedAllowedAddresses = ERC725Y(target).getData(dataKey);
 
             if (storedAllowedAddresses.length == 0) {
 
@@ -303,18 +310,18 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             }
 
         } else if (
-            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX ||
-            bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX
+            bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX ||
+            bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX
         ) {
-            bool isClearingArray = value.length == 0;
+            bool isClearingArray = dataValue.length == 0;
 
             // AddressPermissions:AllowedFunctions:<address>
             // AddressPermissions:AllowedStandards:<address>
-            if (!isClearingArray && !LSP2Utils.isBytes4EncodedArray(value)) {
-                revert InvalidABIEncodedArray(value, "bytes4");
+            if (!isClearingArray && !LSP2Utils.isBytes4EncodedArray(dataValue)) {
+                revert InvalidABIEncodedArray(dataValue, "bytes4");
             }
 
-            bytes memory storedAllowedBytes4 = ERC725Y(target).getData(key);
+            bytes memory storedAllowedBytes4 = ERC725Y(target).getData(dataKey);
 
             if (storedAllowedBytes4.length == 0) {
 
@@ -326,16 +333,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             }
 
-        } else if (bytes12(key) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
+        } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
 
-            bool isClearingArray = value.length == 0;
+            bool isClearingArray = dataValue.length == 0;
 
             // AddressPermissions:AllowedERC725YKeys:<address>
-            if (!isClearingArray && !LSP2Utils.isEncodedArray(value)) {
-                revert InvalidABIEncodedArray(value, "bytes32");
+            if (!isClearingArray && !LSP2Utils.isEncodedArray(dataValue)) {
+                revert InvalidABIEncodedArray(dataValue, "bytes32");
             }
 
-            bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(key);
+            bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(dataKey);
 
             if (storedAllowedERC725YKeys.length == 0) {
 
@@ -348,52 +355,67 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             }
         } else {
             /**
-             * if bytes6(key) != bytes6(keccak256("AddressPermissions"))
-             * this is not a standard permission key according to LSP6
+             * if bytes6(dataKey) != bytes6(keccak256("AddressPermissions"))
+             * this is not a standard permission dataKey according to LSP6
              * so we revert execution
              * 
-             * @dev to implement custom permissions keys, consider overriding 
+             * @dev to implement custom permissions dataKeys, consider overriding 
              * this function and implement specific checks
              * 
              *      // AddressPermissions:MyCustomPermissions:<address>
              *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
              *
-             *      if (bytes12(key) == CUSTOM_PERMISSION_PREFIX) {
+             *      if (bytes12(dataKey) == CUSTOM_PERMISSION_PREFIX) {
              *          // custom logic
              *      }
              *      super._verifyCanSetPermissions(...)
              */
-            revert NotRecognisedPermissionKey(key);
+            revert NotRecognisedPermissionKey(dataKey);
         }
     }
 
+    /**
+     * @dev verify if `_from` has the required permissions to either
+     * add or change permissions of another address
+     * @param dataKey the dataKey whose value will be updated
+     * @param from the address who want to set the dataKeys
+     * @param callerPermissions the caller's permission's BitArray
+     */
     function _verifyCanSetBytes32Permissions(
-        bytes32 key,
+        bytes32 dataKey,
         address from,
         bytes32 callerPermissions
     ) internal view {
-        if (bytes32(ERC725Y(target).getData(key)) == bytes32(0)) {
-            // if there is nothing stored under this data key,
+        if (bytes32(ERC725Y(target).getData(dataKey)) == bytes32(0)) {
+            // if there is nothing stored under this data dataKey,
             // we are trying to ADD permissions for a NEW address
             _requirePermissions(from, callerPermissions, _PERMISSION_ADDPERMISSIONS);
         } else {
-            // if there are already some permissions stored under this data key,
+            // if there are already some permissions stored under this data dataKey,
             // we are trying to CHANGE the permissions of an address
             // (that has already some EXISTING permissions set)
             _requirePermissions(from, callerPermissions, _PERMISSION_CHANGEPERMISSIONS);
         }
     }
 
+    /**
+     * @dev verify if `_from` has the required permissions to update the
+     * permissions array
+     * @param dataKey the dataKey whose dataValue will be updated
+     * @param dataValue the updated dataValue for the dataKey
+     * @param from the address who want to set the dataKeys
+     * @param permissions the permissions
+     */
     function _verifyCanSetPermissionsArray(
-        bytes32 key,
-        bytes memory value,
+        bytes32 dataKey,
+        bytes memory dataValue,
         address from,
         bytes32 permissions
     ) internal view {
-        // key = AddressPermissions[] -> array length
-        if (key == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
-            uint256 arrayLength = uint256(bytes32(ERC725Y(target).getData(key)));
-            uint256 newLength = uint256(bytes32(value));
+        // dataKey = AddressPermissions[] -> array length
+        if (dataKey == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
+            uint256 arrayLength = uint256(bytes32(ERC725Y(target).getData(dataKey)));
+            uint256 newLength = uint256(bytes32(dataValue));
 
             if (newLength > arrayLength) {
                 _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
@@ -404,8 +426,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             return;
         }
         
-        // key = AddressPermissions[index] -> array index
-        bytes memory valueAtIndex = ERC725Y(target).getData(key);
+        // dataKey = AddressPermissions[index] -> array index
+        bytes memory valueAtIndex = ERC725Y(target).getData(dataKey);
 
         if (valueAtIndex.length == 0) {
             _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
@@ -413,11 +435,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
         }
         
-        if (value.length != 20) {
-            revert AddressPermissionArrayIndexValueNotAnAddress(key, value);
+        if (dataValue.length != 20) {
+            revert AddressPermissionArrayIndexValueNotAnAddress(dataKey, dataValue);
         }
     }
 
+    /**
+     * @dev verify if `from` is allowed to change the `inputKey`
+     * @param from the address who want to set the dataKeys
+     * @param inputKeys the dataKey that is verified
+     */
     function _verifyAllowedERC725YKeys(address from, bytes32[] memory inputKeys) internal view {
         bytes memory allowedERC725YKeysEncoded = ERC725Y(target).getAllowedERC725YKeysFor(from);
 
@@ -471,7 +498,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
     /**
      * @dev verify if `from` has the required permissions to make an external call
-     * via the linked ERC725Account
+     * via the linked target
      * @param from the address who want to run the execute function on the ERC725Account
      * @param permissions the permissions of the caller
      * @param payload the ABI encoded payload `target.execute(...)`
@@ -554,6 +581,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_DELEGATECALL;
     }
 
+    /**
+     * @dev returns the `superPermission` needed for a specific `operationType` of the `execute(..)`
+     */
     function _extractSuperPermissionFromOperation(uint256 operationType)
         internal
         pure
@@ -565,7 +595,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if `from` is authorised to interact with address `to` via the linked ERC725Account
+     * @dev verify if `from` is authorised to interact with address `to` via the linked target
      * @param from the caller address
      * @param to the address to interact with
      */
@@ -614,7 +644,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if `from` is authorised to use the linked ERC725Account
+     * @dev verify if `from` is authorised to use the linked target
      * to run a specific function `functionSelector` at a target contract
      * @param from the caller address
      * @param functionSelector the bytes4 function selector of the function to run
@@ -639,6 +669,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         revert NotAllowedFunction(from, functionSelector);
     }
 
+    /**
+     * @dev return the number of zero bytes (0x00) appended at the end of `dataKey`.
+     * e.g: for `dataKey` = 0xffffffffffffffff000000000000000000000000000000000000000000000000
+     *      the function will return 24
+     * @return the number of trailing zero bytes
+     */
     function _countTrailingZeroBytes(bytes32 dataKey) internal pure returns (uint256) {
         uint256 nByte = 32;
 
@@ -649,18 +685,27 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         return 32 - nByte;
     }
 
+    /**
+     * @dev revert if `from`'s `addressPermissions` doesn't contain `permissionsRequired`
+     * @param from the caller address
+     * @param addressPermissions the caller's permissions BitArray
+     * @param permissionRequired the required permission
+     */
     function _requirePermissions(
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
     ) internal pure {
         if (!addressPermissions.hasPermission(permissionRequired)) {
-            string memory permissionErrorString = _getPermissionErrorString(permissionRequired);
+            string memory permissionErrorString = _getPermissionName(permissionRequired);
             revert NotAuthorised(from, permissionErrorString);
         }
     }
 
-    function _getPermissionErrorString(bytes32 permission)
+    /**
+     * @dev returns the name of the permission as a string
+     */
+    function _getPermissionName(bytes32 permission)
         internal
         pure
         returns (string memory errorMessage)
