@@ -51,7 +51,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
       let channelId = ethers.BigNumber.from(2).pow(129);
 
       await expect(context.keyManager.getNonce(signer.address, channelId)).to.be
-        .reverted;
+        .revertedWithPanic;
     });
   });
 
