@@ -163,7 +163,16 @@ export const shouldBehaveLikeLSP1Delegate = (
             lsp7TokenA
               .connect(context.accounts.random)
               .mint(context.universalProfile1.address, 0, false, "0x")
-          ).to.be.revertedWithCustomError(lsp7TokenA, "LSP7MintAmountIsZero");
+          )
+            .to.emit(lsp7TokenA, "Transfer")
+            .withArgs(
+              context.accounts.random.address,
+              ethers.constants.AddressZero,
+              context.universalProfile1.address,
+              0,
+              false,
+              "0x"
+            );
 
           const result = await context.universalProfile1["getData(bytes32)"](
             ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length
@@ -307,7 +316,16 @@ export const shouldBehaveLikeLSP1Delegate = (
               .execute(
                 callPayload(context.universalProfile1, lsp7TokenA.address, abi)
               )
-          ).to.be.revertedWithCustomError(lsp7TokenA, "LSP7BurnAmountIsZero");
+          )
+            .to.emit(lsp7TokenA, "Transfer")
+            .withArgs(
+              context.universalProfile1.address,
+              context.universalProfile1.address,
+              ethers.constants.AddressZero,
+              "0",
+              false,
+              "0x"
+            );
 
           // CHECK that LSP5ReceivedAssets[] has not changed
           expect(
@@ -467,10 +485,16 @@ export const shouldBehaveLikeLSP1Delegate = (
                 false,
                 "0x"
               )
-          ).to.be.revertedWithCustomError(
-            lsp7TokenA,
-            "LSP7TransferAmountIsZero"
-          );
+          )
+            .to.emit(lsp7TokenA, "Transfer")
+            .withArgs(
+              context.accounts.random.address,
+              context.accounts.random.address,
+              context.universalProfile1.address,
+              0,
+              false,
+              "0x"
+            );
 
           // CHECK that LSP5ReceivedAssets[] has not changed
           expect(

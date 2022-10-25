@@ -97,6 +97,10 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiverDelega
     ) internal returns (bytes memory result) {
         // if it's a token transfer (LSP7/LSP8)
         if (typeId != _TYPEID_LSP14_OwnershipTransferred_RecipientNotification) {
+            // if the amount sent is 0, then do not update the keys
+            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
+            if (balance == 0) return "LSP1: balance not updated";
+
             (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
                 .generateReceivedAssetKeys(msg.sender, notifier, notifierMapKey, interfaceID);
 
