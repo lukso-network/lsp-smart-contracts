@@ -9,6 +9,9 @@ import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 // constants
 import "../LSP14Ownable2Step/LSP14Constants.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UPWithInstantAcceptOwnership is LSP0ERC725AccountCore {
     /**
      * @notice Sets the owner of the contract

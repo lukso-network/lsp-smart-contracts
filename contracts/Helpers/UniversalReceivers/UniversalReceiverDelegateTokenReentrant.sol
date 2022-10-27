@@ -23,6 +23,9 @@ import {
 
 import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);

@@ -13,6 +13,9 @@ import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165S
 // constants
 import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UniversalReceiverDelegateVaultSetter is ERC165Storage {
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
