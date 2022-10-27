@@ -18,6 +18,7 @@ import {
 import {
   ERC725YKeys,
   ALL_PERMISSIONS,
+  LSP6_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
 } from "../../../constants";
@@ -328,13 +329,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           const HARDHAT_CHAINID = 31337;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              0,
-              executeRelayCallPayload,
-            ]
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, 0, executeRelayCallPayload]
           );
 
           // ethereum signed message prefix
@@ -365,13 +361,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           const HARDHAT_CHAINID = 31337;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              0,
-              executeRelayCallPayload,
-            ]
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, 0, executeRelayCallPayload]
           );
 
           // lsp6 signed message prefixed

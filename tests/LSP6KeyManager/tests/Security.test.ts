@@ -15,6 +15,7 @@ import {
   ALL_PERMISSIONS,
   ERC725YKeys,
   OPERATION_TYPES,
+  LSP6_VERSION,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -122,8 +123,8 @@ export const testSecurityScenarios = (
         context.universalProfile.interface.getSighash("renounceOwnership");
 
       let encodedMessage = ethers.utils.solidityPack(
-        ["uint256", "address", "uint256", "bytes"],
-        [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+        ["uint256", "uint256", "uint256", "bytes"],
+        [LSP6_VERSION, HARDHAT_CHAINID, nonce, payload]
       );
 
       const eip191Signer = new EIP191Signer();
@@ -213,13 +214,8 @@ export const testSecurityScenarios = (
         const HARDHAT_CHAINID = 31337;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "address", "uint256", "bytes"],
-          [
-            HARDHAT_CHAINID,
-            context.keyManager.address,
-            nonce,
-            executeRelayCallPayload,
-          ]
+          ["uint256", "uint256", "uint256", "bytes"],
+          [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
         );
 
         const eip191Signer = new EIP191Signer();

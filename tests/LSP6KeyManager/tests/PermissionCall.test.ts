@@ -10,6 +10,7 @@ import {
   ERC725YKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
+  LSP6_VERSION,
   OPERATION_TYPES,
 } from "../../../constants";
 
@@ -218,13 +219,8 @@ export const shouldBehaveLikePermissionCall = (
           const HARDHAT_CHAINID = 31337;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              nonce,
-              executeRelayCallPayload,
-            ]
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
           );
 
           const eip191Signer = new EIP191Signer();
@@ -271,13 +267,8 @@ export const shouldBehaveLikePermissionCall = (
           const eip191Signer = new EIP191Signer();
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              nonce,
-              executeRelayCallPayload,
-            ]
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
           );
 
           const signature = await context.owner.signMessage(encodedMessage);
@@ -329,13 +320,8 @@ export const shouldBehaveLikePermissionCall = (
           const HARDHAT_CHAINID = 31337;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              nonce,
-              executeRelayCallPayload,
-            ]
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
           );
 
           const eip191Signer = new EIP191Signer();
@@ -379,13 +365,8 @@ export const shouldBehaveLikePermissionCall = (
           const HARDHAT_CHAINID = 31337;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              nonce,
-              executeRelayCallPayload,
-            ]
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
           );
 
           let signature = await addressCanMakeCall.signMessage(encodedMessage);
@@ -440,13 +421,8 @@ export const shouldBehaveLikePermissionCall = (
           const HARDHAT_CHAINID = 31337;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              nonce,
-              executeRelayCallPayload,
-            ]
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
           );
 
           const eip191Signer = new EIP191Signer();
@@ -498,13 +474,8 @@ export const shouldBehaveLikePermissionCall = (
           const HARDHAT_CHAINID = 31337;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              nonce,
-              executeRelayCallPayload,
-            ]
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
           );
 
           const ethereumSignature = await addressCannotMakeCall.signMessage(

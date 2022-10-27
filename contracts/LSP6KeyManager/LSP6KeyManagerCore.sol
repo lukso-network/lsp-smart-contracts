@@ -114,8 +114,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes calldata payload
     ) public payable returns (bytes memory) {
         bytes memory encodedMessage = abi.encodePacked(
+            LSP6_VERSION,
             block.chainid,
-            address(this), // needs to be signed for this keyManager
             nonce,
             payload
         );

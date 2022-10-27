@@ -1,18 +1,24 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
-import { ERC725YKeys, OPERATION_TYPES, PERMISSIONS } from "../../../constants";
+import {
+  ERC725YKeys,
+  OPERATION_TYPES,
+  LSP6_VERSION,
+  PERMISSIONS,
+} from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder } from "../../utils/helpers";
+import { abiCoder, LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -218,22 +224,21 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hash = ethers.utils.solidityKeccak256(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              nonce,
-              executeRelayCallPayload,
-            ]
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
           );
 
-          let signature = await addressCanCallOnlyOneFunction.signMessage(
-            ethers.utils.arrayify(hash)
+          let eip191Signer = new EIP191Signer();
+
+          let signature = await eip191Signer.signDataWithIntendedValidator(
+            context.keyManager.address,
+            encodedMessage,
+            LOCAL_PRIVATE_KEYS.ACCOUNT2
           );
 
           await context.keyManager.executeRelayCall(
-            signature,
+            signature.signature,
             nonce,
             executeRelayCallPayload
           );
@@ -261,23 +266,22 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hash = ethers.utils.solidityKeccak256(
-            ["uint256", "address", "uint256", "bytes"],
-            [
-              HARDHAT_CHAINID,
-              context.keyManager.address,
-              nonce,
-              executeRelayCallPayload,
-            ]
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "bytes"],
+            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
           );
 
-          let signature = await addressCanCallOnlyOneFunction.signMessage(
-            ethers.utils.arrayify(hash)
+          let eip191Signer = new EIP191Signer();
+
+          let signature = await eip191Signer.signDataWithIntendedValidator(
+            context.keyManager.address,
+            encodedMessage,
+            LOCAL_PRIVATE_KEYS.ACCOUNT2
           );
 
           await expect(
             context.keyManager.executeRelayCall(
-              signature,
+              signature.signature,
               nonce,
               executeRelayCallPayload
             )
