@@ -31,6 +31,11 @@ contract TargetContract {
         name = _name;
     }
 
+    function setNamePayable(string memory _name) public payable {
+        require(msg.value >= 50, "Not enough value provided");
+        name = _name;
+    }
+
     function revertCall() public pure {
         revert("TargetContract:revertCall: this function has reverted!");
     }
