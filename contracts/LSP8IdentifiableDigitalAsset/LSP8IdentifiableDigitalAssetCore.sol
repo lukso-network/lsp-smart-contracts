@@ -195,17 +195,20 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         address[] memory from,
         address[] memory to,
         bytes32[] memory tokenId,
-        bool force,
+        bool[] memory force,
         bytes[] memory data
     ) public virtual {
         if (
-            from.length != to.length || from.length != tokenId.length || from.length != data.length
+            from.length != to.length ||
+            from.length != tokenId.length ||
+            from.length != force.length ||
+            from.length != data.length
         ) {
             revert LSP8InvalidTransferBatch();
         }
 
         for (uint256 i = 0; i < from.length; i = GasLib.uncheckedIncrement(i)) {
-            transfer(from[i], to[i], tokenId[i], force, data[i]);
+            transfer(from[i], to[i], tokenId[i], force[i], data[i]);
         }
     }
 

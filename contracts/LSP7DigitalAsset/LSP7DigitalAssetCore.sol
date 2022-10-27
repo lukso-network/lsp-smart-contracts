@@ -142,18 +142,21 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address[] memory from,
         address[] memory to,
         uint256[] memory amount,
-        bool force,
+        bool[] memory force,
         bytes[] memory data
     ) public virtual {
         if (
-            from.length != to.length || from.length != amount.length || from.length != data.length
+            from.length != to.length ||
+            from.length != amount.length ||
+            from.length != force.length ||
+            from.length != data.length
         ) {
             revert LSP7InvalidTransferBatch();
         }
 
         for (uint256 i = 0; i < from.length; i = GasLib.uncheckedIncrement(i)) {
             // using the public transfer function to handle updates to operator authorized amounts
-            transfer(from[i], to[i], amount[i], force, data[i]);
+            transfer(from[i], to[i], amount[i], force[i], data[i]);
         }
     }
 

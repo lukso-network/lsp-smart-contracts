@@ -208,7 +208,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address[] memory from,
         address[] memory to,
         bytes32[] memory tokenId,
-        bool force,
+        bool[] memory force,
         bytes[] memory data
     ) external;
 }
