@@ -86,13 +86,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             latestNonce,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -102,7 +104,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
         await context.keyManager.executeRelayCall(
           signature,
           latestNonce,
-          executeRelayCallPayload
+          executeRelayCallPayload,
+          { value: valueToSend }
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -146,13 +149,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonceBefore,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -161,7 +166,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload);
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -195,13 +202,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonceBefore,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -210,7 +219,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload);
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -249,13 +260,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonceBefore,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -264,7 +277,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload);
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -298,13 +313,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonceBefore,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -313,7 +330,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload);
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -352,13 +371,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonceBefore,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -367,7 +388,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload);
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -401,13 +424,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonceBefore,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -416,7 +441,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload);
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -451,13 +478,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonceBefore,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -466,7 +495,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload);
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
