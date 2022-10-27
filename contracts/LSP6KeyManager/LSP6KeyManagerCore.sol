@@ -115,6 +115,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             block.chainid,
             address(this), // needs to be signed for this keyManager
             nonce,
+            msg.value,
             payload
         );
 
