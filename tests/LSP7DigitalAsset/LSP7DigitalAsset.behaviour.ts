@@ -18,6 +18,7 @@ import {
 import {
   ERC725YKeys,
   INTERFACE_IDS,
+  LSP1_TYPE_IDS,
   SupportedStandards,
 } from "../../constants";
 
@@ -78,6 +79,52 @@ export const shouldBehaveLikeLSP7 = (
   });
 
   describe("when minting tokens", () => {
+    describe("when `amount == 0`", () => {
+      it("should revert if `force == false`", async () => {
+        const txParams = {
+          to: context.accounts.anotherTokenReceiver.address,
+          amount: 0,
+          force: false,
+          data: "0x",
+        };
+
+        await expect(
+          context.lsp7
+            .connect(context.accounts.anyone)
+            .mint(txParams.to, txParams.amount, txParams.force, txParams.data)
+        )
+          .to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7NotifyTokenReceiverIsEOA"
+          )
+          .withArgs(txParams.to);
+      });
+
+      it("should pass if `force == true`", async () => {
+        const txParams = {
+          to: context.accounts.anotherTokenReceiver.address,
+          amount: 0,
+          force: true,
+          data: "0x",
+        };
+
+        await expect(
+          context.lsp7
+            .connect(context.accounts.anyone)
+            .mint(txParams.to, txParams.amount, txParams.force, txParams.data)
+        )
+          .to.emit(context.lsp7, "Transfer")
+          .withArgs(
+            context.accounts.anyone.address,
+            ethers.constants.AddressZero,
+            txParams.to,
+            txParams.amount,
+            txParams.force,
+            txParams.data
+          );
+      });
+    });
+
     describe("when `to` is the zero address", () => {
       it("should revert", async () => {
         const txParams = {
@@ -506,8 +553,7 @@ export const shouldBehaveLikeLSP7 = (
 
                   const tx = await transferSuccessScenario(txParams, operator);
 
-                  const typeId =
-                    "0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f";
+                  const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "uint256", "bytes"],
                     [txParams.from, txParams.to, txParams.amount, txParams.data]
@@ -575,8 +621,7 @@ export const shouldBehaveLikeLSP7 = (
 
                   const tx = await transferSuccessScenario(txParams, operator);
 
-                  const typeId =
-                    "0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f";
+                  const typeId = LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification;
                   const packedData = ethers.utils.solidityPack(
                     ["address", "address", "uint256", "bytes"],
                     [txParams.from, txParams.to, txParams.amount, txParams.data]
@@ -690,6 +735,40 @@ export const shouldBehaveLikeLSP7 = (
                   context.accounts.owner.address
                 );
               expect(postOperatorAllowance).to.equal(preOperatorAllowance);
+            });
+          });
+
+          describe("when `amount == 0`", () => {
+            it("should revert with `force == false`", async () => {
+              const caller = context.accounts.anyone;
+
+              const txParams = {
+                from: context.accounts.anyone.address,
+                to: context.accounts.anotherTokenReceiver.address,
+                amount: ethers.BigNumber.from(0),
+                force: false,
+                data: "0x",
+              };
+              const expectedError = "LSP7NotifyTokenReceiverIsEOA";
+
+              await transferFailScenario(txParams, caller, {
+                error: expectedError,
+                args: [txParams.to],
+              });
+            });
+
+            it("should pass with `force == true`", async () => {
+              const caller = context.accounts.anyone;
+
+              const txParams = {
+                from: context.accounts.anyone.address,
+                to: context.accounts.anotherTokenReceiver.address,
+                amount: ethers.BigNumber.from(0),
+                force: true,
+                data: "0x",
+              };
+
+              await transferSuccessScenario(txParams, caller);
             });
           });
 
@@ -1272,6 +1351,29 @@ export const shouldBehaveLikeLSP7 = (
   });
 
   describe("burn", () => {
+    describe("when `amount == 0`", () => {
+      it("should pass", async () => {
+        const caller = context.accounts.anyone;
+        const amount = 1;
+
+        await context.lsp7
+          .connect(context.accounts.anyone)
+          .mint(caller.address, amount, true, "0x");
+
+        await expect(
+          context.lsp7.connect(caller).burn(caller.address, amount, "0x")
+        )
+          .to.emit(context.lsp7, "Transfer")
+          .withArgs(
+            caller.address,
+            caller.address,
+            ethers.constants.AddressZero,
+            amount,
+            false,
+            "0x"
+          );
+      });
+    });
     describe("when caller is the `from` address", () => {
       describe("when using address(0) as `from` address", () => {
         it("should revert", async () => {
@@ -1638,6 +1740,84 @@ export const shouldBehaveLikeLSP7 = (
               amount
             );
         });
+      });
+    });
+  });
+
+  describe("transferOwnership", () => {
+    let oldOwner: SignerWithAddress;
+    let newOwner: SignerWithAddress;
+
+    before(async () => {
+      context = await buildContext();
+      oldOwner = context.accounts.owner;
+      newOwner = context.accounts.anyone;
+    });
+
+    it("should transfer ownership of the contract", async () => {
+      await context.lsp7.connect(oldOwner).transferOwnership(newOwner.address);
+      expect(await context.lsp7.owner()).to.equal(newOwner.address);
+    });
+
+    it("should not allow non-owners to transfer ownership", async () => {
+      const newOwner = context.accounts.anyone;
+      await expect(
+        context.lsp7.connect(newOwner).transferOwnership(newOwner.address)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+    });
+
+    describe("after transferring ownership of the contract", () => {
+      beforeEach(async () => {
+        await context.lsp7
+          .connect(oldOwner)
+          .transferOwnership(newOwner.address);
+      });
+
+      it("old owner should not be allowed to use `transferOwnership(..)`", async () => {
+        const randomAddress = context.accounts.anyone.address;
+        await expect(
+          context.lsp7.connect(oldOwner).transferOwnership(randomAddress)
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("old owner should not be allowed to use `renounceOwnership(..)`", async () => {
+        await expect(
+          context.lsp7.connect(oldOwner).renounceOwnership()
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("old owner should not be allowed to use `setData(..)`", async () => {
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
+        const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
+        await expect(
+          context.lsp7.connect(oldOwner)["setData(bytes32,bytes)"](key, value)
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("new owner should be allowed to use `transferOwnership(..)`", async () => {
+        const randomAddress = context.accounts.anyone.address;
+
+        await context.lsp7.connect(newOwner).transferOwnership(randomAddress);
+
+        expect(await context.lsp7.owner()).to.equal(randomAddress);
+      });
+
+      it("new owner should be allowed to use `renounceOwnership(..)`", async () => {
+        await context.lsp7.connect(newOwner).renounceOwnership();
+
+        expect(await context.lsp7.owner()).to.equal(
+          ethers.constants.AddressZero
+        );
+      });
+
+      it("new owner should be allowed to use `setData(..)`", async () => {
+        const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key"));
+        const value = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("value"));
+        await context.lsp7
+          .connect(newOwner)
+          ["setData(bytes32,bytes)"](key, value);
+
+        expect(await context.lsp7["getData(bytes32)"](key)).to.equal(value);
       });
     });
   });

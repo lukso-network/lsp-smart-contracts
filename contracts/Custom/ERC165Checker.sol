@@ -123,8 +123,24 @@ library ERC165Checker {
             IERC165.supportsInterface.selector,
             interfaceId
         );
-        (bool success, bytes memory result) = account.staticcall{gas: 30000}(encodedParams);
-        if (result.length < 32) return false;
-        return success && abi.decode(result, (uint256)) > 0;
+
+        bool success;
+        uint256 returnSize;
+        uint256 returnValue;
+
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            success := staticcall(
+                30000,
+                account,
+                add(encodedParams, 0x20),
+                mload(encodedParams),
+                0x00,
+                0x20
+            )
+            returnSize := returndatasize()
+            returnValue := mload(0x00)
+        }
+        return success && returnSize >= 0x20 && returnValue > 0;
     }
 }
