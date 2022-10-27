@@ -80,7 +80,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               chainId: 31337, // HARDHAT_CHAINID
               address: context.keyManager.address,
               nonce: latestNonce,
-              Msgvalue: valueToSign,
+              msgValue: valueToSign,
               payload: executeRelayCallPayload,
             };
 
@@ -92,7 +92,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 signedMessageParams.chainId,
                 signedMessageParams.address,
                 signedMessageParams.nonce,
-                signedMessageParams.Msgvalue,
+                signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
             );
@@ -135,7 +135,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               chainId: 31337, // HARDHAT_CHAINID
               address: context.keyManager.address,
               nonce: latestNonce,
-              Msgvalue: valueToSign,
+              msgValue: valueToSign,
               payload: executeRelayCallPayload,
             };
 
@@ -147,7 +147,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 signedMessageParams.chainId,
                 signedMessageParams.address,
                 signedMessageParams.nonce,
-                signedMessageParams.Msgvalue,
+                signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
             );
@@ -192,7 +192,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               chainId: 31337, // HARDHAT_CHAINID
               address: context.keyManager.address,
               nonce: latestNonce,
-              Msgvalue: valueToSendFromRelayer,
+              msgValue: valueToSendFromRelayer,
               payload: executeRelayCallPayload,
             };
 
@@ -202,7 +202,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 signedMessageParams.chainId,
                 signedMessageParams.address,
                 signedMessageParams.nonce,
-                signedMessageParams.Msgvalue,
+                signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
             );
@@ -234,7 +234,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           });
         });
         describe("When UP have 0 value and interacting with contract that require value", () => {
-          describe("When interacting without sending any value from KeyManager but with sending from UP", () => {
+          describe("When relayer don't fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it("should revert", async () => {
               let nameToSet = "Alice";
               let targetContractPayload =
@@ -266,7 +266,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 chainId: 31337, // HARDHAT_CHAINID
                 address: context.keyManager.address,
                 nonce: latestNonce,
-                Msgvalue: valueToSendFromRelayer,
+                msgValue: valueToSendFromRelayer,
                 payload: executeRelayCallPayload,
               };
 
@@ -276,7 +276,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.chainId,
                   signedMessageParams.address,
                   signedMessageParams.nonce,
-                  signedMessageParams.Msgvalue,
+                  signedMessageParams.msgValue,
                   signedMessageParams.payload,
                 ]
               );
@@ -297,7 +297,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               ).to.be.revertedWith("ERC725X: insufficient balance");
             });
           });
-          describe("When interacting with execution cost from KeyManager with sending from UP", () => {
+          describe("When relayer fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it("should pass", async () => {
               let nameToSet = "Alice";
               let targetContractPayload =
@@ -329,7 +329,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 chainId: 31337, // HARDHAT_CHAINID
                 address: context.keyManager.address,
                 nonce: latestNonce,
-                Msgvalue: valueToSendFromRelayer,
+                msgValue: valueToSendFromRelayer,
                 payload: executeRelayCallPayload,
               };
 
@@ -339,7 +339,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   signedMessageParams.chainId,
                   signedMessageParams.address,
                   signedMessageParams.nonce,
-                  signedMessageParams.Msgvalue,
+                  signedMessageParams.msgValue,
                   signedMessageParams.payload,
                 ]
               );
