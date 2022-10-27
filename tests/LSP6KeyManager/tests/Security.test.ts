@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { LSP6Signer } from "@lukso/lsp6-signer.js";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import {
   Reentrancy,
@@ -121,15 +121,16 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      let hashedMessage = ethers.utils.solidityKeccak256(
+      let encodedMessage = ethers.utils.solidityPack(
         ["uint256", "address", "uint256", "bytes"],
         [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
       );
 
-      const lsp6Signer = new LSP6Signer();
+      const eip191Signer = new EIP191Signer();
 
-      let lsp6Signature = await lsp6Signer.sign(
-        hashedMessage,
+      let lsp6Signature = await eip191Signer.signDataWithIntendedValidator(
+        context.keyManager.address,
+        encodedMessage,
         LOCAL_PRIVATE_KEYS.ACCOUNT0
       );
 
@@ -211,7 +212,7 @@ export const testSecurityScenarios = (
 
         const HARDHAT_CHAINID = 31337;
 
-        let hashedMessage = ethers.utils.solidityKeccak256(
+        let encodedMessage = ethers.utils.solidityPack(
           ["uint256", "address", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
@@ -221,9 +222,11 @@ export const testSecurityScenarios = (
           ]
         );
 
-        const lsp6Signer = new LSP6Signer();
-        const lsp6Signature = await lsp6Signer.sign(
-          hashedMessage,
+        const eip191Signer = new EIP191Signer();
+
+        const lsp6Signature = await eip191Signer.signDataWithIntendedValidator(
+          context.keyManager.address,
+          encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
 

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { LSP6Signer } from "@lukso/lsp6-signer.js";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import {
   Executor,
@@ -327,7 +327,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hash = ethers.utils.solidityKeccak256(
+          let encodedMessage = ethers.utils.solidityPack(
             ["uint256", "address", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
@@ -338,9 +338,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
 
           // ethereum signed message prefix
-          let signature = await context.owner.signMessage(
-            ethers.utils.arrayify(hash)
-          );
+          let signature = await context.owner.signMessage(encodedMessage);
 
           await expect(
             context.keyManager.executeRelayCall(
@@ -351,8 +349,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           ).to.be.reverted;
         });
 
-        it("should pass if tx was signed with LSP6 Signer '\x19LSP6 ExecuteRelayCall' prefix", async () => {
-          const lsp6Signer = new LSP6Signer();
+        it("should pass if tx was signed with EIP191Signer '\\x19\\x00' prefix", async () => {
+          const eip191Signer = new EIP191Signer();
 
           const amount = ethers.utils.parseEther("3");
 
@@ -366,7 +364,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hash = ethers.utils.solidityKeccak256(
+          let encodedMessage = ethers.utils.solidityPack(
             ["uint256", "address", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
@@ -377,8 +375,9 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
 
           // lsp6 signed message prefixed
-          let signedMessage = await lsp6Signer.sign(
-            hash,
+          let signedMessage = await eip191Signer.signDataWithIntendedValidator(
+            context.keyManager.address,
+            encodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT0
           );
 

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { LSP6Signer } from "@lukso/lsp6-signer.js";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
 
@@ -196,7 +196,7 @@ export const shouldBehaveLikePermissionCall = (
     const channelId = 0;
 
     describe("when signer has ALL PERMISSIONS", () => {
-      describe("when signing tx with LSP6 Signer `\x19LSP6 ExecuteRelayCall` prefix", () => {
+      describe("when signing tx with EIP191Signer `\\x19\\x00` prefix", () => {
         it("should execute successfully", async () => {
           let newName = "New Name";
 
@@ -217,7 +217,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hashedMessage = ethers.utils.solidityKeccak256(
+          let encodedMessage = ethers.utils.solidityPack(
             ["uint256", "address", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
@@ -227,11 +227,14 @@ export const shouldBehaveLikePermissionCall = (
             ]
           );
 
-          const lsp6Signer = new LSP6Signer();
-          const lsp6Signature = await lsp6Signer.sign(
-            hashedMessage,
-            LOCAL_PRIVATE_KEYS.ACCOUNT0
-          );
+          const eip191Signer = new EIP191Signer();
+
+          const lsp6Signature =
+            await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT0
+            );
 
           await context.keyManager.executeRelayCall(
             lsp6Signature.signature,
@@ -265,7 +268,9 @@ export const shouldBehaveLikePermissionCall = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hashedMessage = ethers.utils.solidityKeccak256(
+          const eip191Signer = new EIP191Signer();
+
+          let encodedMessage = ethers.utils.solidityPack(
             ["uint256", "address", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
@@ -275,11 +280,13 @@ export const shouldBehaveLikePermissionCall = (
             ]
           );
 
-          const signature = await context.owner.signMessage(hashedMessage);
+          const signature = await context.owner.signMessage(encodedMessage);
 
-          const lsp6Signer = new LSP6Signer();
-          const incorrectSignerAddress = lsp6Signer.recover(
-            hashedMessage,
+          const incorrectSignerAddress = eip191Signer.recover(
+            eip191Signer.hashDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage
+            ),
             signature
           );
 
@@ -300,7 +307,7 @@ export const shouldBehaveLikePermissionCall = (
     });
 
     describe("when signer has permission CALL", () => {
-      describe("when signing tx with LSP6 Signer `\x19LSP6 ExecuteRelayCall` prefix", () => {
+      describe("when signing tx with EIP191Signer `\\x19\\x00` prefix", () => {
         it("should execute successfully", async () => {
           let newName = "Another name";
 
@@ -321,7 +328,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hash = ethers.utils.solidityKeccak256(
+          let encodedMessage = ethers.utils.solidityPack(
             ["uint256", "address", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
@@ -331,11 +338,13 @@ export const shouldBehaveLikePermissionCall = (
             ]
           );
 
-          const lsp6Signer = new LSP6Signer();
-          const lsp6Signature = await lsp6Signer.sign(
-            hash,
-            LOCAL_PRIVATE_KEYS.ACCOUNT1
-          );
+          const eip191Signer = new EIP191Signer();
+          const lsp6Signature =
+            await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT1
+            );
 
           await context.keyManager.executeRelayCall(
             lsp6Signature.signature,
@@ -369,7 +378,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hash = ethers.utils.solidityKeccak256(
+          let encodedMessage = ethers.utils.solidityPack(
             ["uint256", "address", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
@@ -379,10 +388,16 @@ export const shouldBehaveLikePermissionCall = (
             ]
           );
 
-          let signature = await addressCanMakeCall.signMessage(hash);
+          let signature = await addressCanMakeCall.signMessage(encodedMessage);
 
-          const lsp6Signer = new LSP6Signer();
-          const incorrectSignerAddress = lsp6Signer.recover(hash, signature);
+          const eip191Signer = new EIP191Signer();
+          const incorrectSignerAddress = eip191Signer.recover(
+            eip191Signer.hashDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage
+            ),
+            signature
+          );
 
           await expect(
             context.keyManager.executeRelayCall(
@@ -401,7 +416,7 @@ export const shouldBehaveLikePermissionCall = (
     });
 
     describe("when signer does not have permission CALL", () => {
-      describe("when signing tx with LSP6 Signer `\x19LSP6 ExecuteRelayCall` prefix", () => {
+      describe("when signing tx with EIP191Signer `\\x19\\x00` prefix", () => {
         it("should revert with `NotAuthorised` and permission CALL error", async () => {
           const initialName = await targetContract.callStatic.getName();
 
@@ -424,7 +439,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hashedMessage = ethers.utils.solidityKeccak256(
+          let encodedMessage = ethers.utils.solidityPack(
             ["uint256", "address", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
@@ -434,11 +449,14 @@ export const shouldBehaveLikePermissionCall = (
             ]
           );
 
-          const lsp6Signer = new LSP6Signer();
-          const lsp6Signature = await lsp6Signer.sign(
-            hashedMessage,
-            LOCAL_PRIVATE_KEYS.ACCOUNT2
-          );
+          const eip191Signer = new EIP191Signer();
+
+          const lsp6Signature =
+            await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT2
+            );
 
           await expect(
             context.keyManager.executeRelayCall(
@@ -479,7 +497,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const HARDHAT_CHAINID = 31337;
 
-          let hashedMessage = ethers.utils.solidityKeccak256(
+          let encodedMessage = ethers.utils.solidityPack(
             ["uint256", "address", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
@@ -490,12 +508,16 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           const ethereumSignature = await addressCannotMakeCall.signMessage(
-            hashedMessage
+            encodedMessage
           );
 
-          const lsp6Signer = new LSP6Signer();
-          const incorrectSignerAddress = await lsp6Signer.recover(
-            hashedMessage,
+          const eip191Signer = new EIP191Signer();
+
+          const incorrectSignerAddress = await eip191Signer.recover(
+            eip191Signer.hashDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage
+            ),
             ethereumSignature
           );
 
@@ -511,6 +533,11 @@ export const shouldBehaveLikePermissionCall = (
               "NoPermissionsSet"
             )
             .withArgs(incorrectSignerAddress);
+
+          // ensure state at target contract has not changed
+          expect(await targetContract.callStatic.getName()).to.equal(
+            initialName
+          );
         });
       });
     });

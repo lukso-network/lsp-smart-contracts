@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { LSP6Signer } from "@lukso/lsp6-signer.js";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 // constants
 import {
@@ -66,9 +66,10 @@ export const shouldBehaveLikePermissionSign = (
         expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
       });
 
-      it("e.g: with LSP6Signer '\x19LSP6 ExecuteRelayCall\n'", async () => {
-        const lsp6Signer = new LSP6Signer();
-        const signedMessage = await lsp6Signer.sign(
+      it("e.g: with EIP191Signer '\\x19\\x00'", async () => {
+        const lsp6Signer = new EIP191Signer();
+        const signedMessage = await lsp6Signer.signDataWithIntendedValidator(
+          context.keyManager.address,
           dataToSign,
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -94,9 +95,10 @@ export const shouldBehaveLikePermissionSign = (
         expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
       });
 
-      it("e.g: with LSP6Signer '\x19LSP6 ExecuteRelayCall\n'", async () => {
-        const lsp6Signer = new LSP6Signer();
-        const signedMessage = await lsp6Signer.sign(
+      it("e.g: with EIP191Signer '\\x19\\x00'", async () => {
+        const lsp6Signer = new EIP191Signer();
+        const signedMessage = await lsp6Signer.signDataWithIntendedValidator(
+          context.keyManager.address,
           dataToSign,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
@@ -123,9 +125,10 @@ export const shouldBehaveLikePermissionSign = (
         expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
       });
 
-      it("e.g: with LSP6Signer '\x19LSP6 ExecuteRelayCall\n'", async () => {
-        const lsp6Signer = new LSP6Signer();
-        const signedMessage = await lsp6Signer.sign(
+      it("e.g: with EIP191Signer '\\x19\\x00'", async () => {
+        const lsp6Signer = new EIP191Signer();
+        const signedMessage = await lsp6Signer.signDataWithIntendedValidator(
+          context.keyManager.address,
           dataToSign,
           LOCAL_PRIVATE_KEYS.ACCOUNT2
         );

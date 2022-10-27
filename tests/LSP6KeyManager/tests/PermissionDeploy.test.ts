@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { calculateCreate2 } from "eth-create2-calculator";
-import { LSP6Signer } from "@lukso/lsp6-signer.js";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import { TargetContract__factory } from "../../../types";
 
@@ -12,7 +12,6 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
-  EventSignatures,
 } from "../../../constants";
 
 // setup
@@ -239,18 +238,22 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const HARDHAT_CHAINID = 31337;
 
-            let hashedMessage = ethers.utils.solidityKeccak256(
+            let encodedMessage = ethers.utils.solidityPack(
               ["uint256", "address", "uint256", "bytes"],
               [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
             );
 
             let ethereumSignature = await addressCannotDeploy.signMessage(
-              ethers.utils.arrayify(hashedMessage)
+              encodedMessage
             );
 
-            const lsp6Signer = new LSP6Signer();
-            const incorrectSignerAddress = lsp6Signer.recover(
-              hashedMessage,
+            const eip191Signer = new EIP191Signer();
+
+            const incorrectSignerAddress = eip191Signer.recover(
+              eip191Signer.hashDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage
+              ),
               ethereumSignature
             );
 
@@ -267,7 +270,7 @@ export const shouldBehaveLikePermissionDeploy = (
           });
         });
 
-        describe("when signing with LSP6Signer '\x19LSP6 ExecuteRelayCall\n'", () => {
+        describe("when signing with EIP191Signer '\\x19\\x00'", () => {
           it("should revert with `NotAuthorised` with correct signer address but missing permission DEPLOY", async () => {
             let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
@@ -288,14 +291,16 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const HARDHAT_CHAINID = 31337;
 
-            let hashedMessage = ethers.utils.solidityKeccak256(
+            let encodedMessage = ethers.utils.solidityPack(
               ["uint256", "address", "uint256", "bytes"],
               [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
             );
 
-            const lsp6Signer = new LSP6Signer();
-            const lsp6Signature = lsp6Signer.sign(
-              hashedMessage,
+            const eip191Signer = new EIP191Signer();
+
+            const lsp6Signature = eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT2
             );
 
@@ -337,18 +342,21 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const HARDHAT_CHAINID = 31337;
 
-            let hashedMessage = ethers.utils.solidityKeccak256(
+            let encodedMessage = ethers.utils.solidityPack(
               ["uint256", "address", "uint256", "bytes"],
               [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
             );
 
             let ethereumSignature = await addressCannotDeploy.signMessage(
-              ethers.utils.arrayify(hashedMessage)
+              encodedMessage
             );
 
-            const lsp6Signer = new LSP6Signer();
-            const incorrectSignerAddress = lsp6Signer.recover(
-              hashedMessage,
+            const eip191Signer = new EIP191Signer();
+            const incorrectSignerAddress = eip191Signer.recover(
+              eip191Signer.hashDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage
+              ),
               ethereumSignature
             );
 
@@ -365,7 +373,7 @@ export const shouldBehaveLikePermissionDeploy = (
           });
         });
 
-        describe("when signing with LSP6Signer '\x19LSP6 ExecuteRelayCall\n'", () => {
+        describe("when signing with EIP191Signer '\\x19\\x00'", () => {
           it("should revert with `NotAuthorised` with correct signer address but missing permission DEPLOY", async () => {
             let contractBytecodeToDeploy = TargetContract__factory.bytecode;
             let salt =
@@ -388,14 +396,15 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const HARDHAT_CHAINID = 31337;
 
-            let hashedMessage = ethers.utils.solidityKeccak256(
+            let encodedMessage = ethers.utils.solidityPack(
               ["uint256", "address", "uint256", "bytes"],
               [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
             );
 
-            const lsp6Signer = new LSP6Signer();
-            const lsp6signature = lsp6Signer.sign(
-              hashedMessage,
+            const lsp6Signer = new EIP191Signer();
+            const lsp6signature = lsp6Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT2
             );
 
