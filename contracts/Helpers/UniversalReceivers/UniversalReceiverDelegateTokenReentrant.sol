@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// This contract is used only for testing purposes.
-
 // interfaces
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
@@ -25,6 +23,9 @@ import {
 
 import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);

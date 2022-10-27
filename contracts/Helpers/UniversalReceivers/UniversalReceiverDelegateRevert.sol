@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// This contract is used only for testing purposes.
-
 // interfaces
 import {
     ILSP1UniversalReceiverDelegate
@@ -10,6 +8,9 @@ import {
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UniversalReceiverDelegateRevert is ERC165, ILSP1UniversalReceiverDelegate {
     /**
      * @inheritdoc ILSP1UniversalReceiverDelegate

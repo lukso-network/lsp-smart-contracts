@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// This contract is used only for testing purposes.
-
 // modules
 import {LSP0ERC725AccountCore} from "../LSP0ERC725Account/LSP0ERC725AccountCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
@@ -11,6 +9,9 @@ import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 // constants
 import "../LSP14Ownable2Step/LSP14Constants.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UPWithInstantAcceptOwnership is LSP0ERC725AccountCore {
     /**
      * @notice Sets the owner of the contract
