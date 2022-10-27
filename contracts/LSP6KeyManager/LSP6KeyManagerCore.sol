@@ -399,8 +399,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if `_from` has the required permissions to update the
-     * permissions array
+     * @dev verify if `_from` has the required permissions to update the permissions array
      * @param dataKey the dataKey whose dataValue will be updated
      * @param dataValue the updated dataValue for the dataKey
      * @param from the address who want to set the dataKeys
@@ -435,7 +434,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
         }
         
-        if (dataValue.length != 20) {
+        if (dataValue.length != 0 && dataValue.length != 20) {
             revert AddressPermissionArrayIndexValueNotAnAddress(dataKey, dataValue);
         }
     }
