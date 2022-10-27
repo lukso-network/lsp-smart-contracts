@@ -216,13 +216,15 @@ export const shouldBehaveLikePermissionCall = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonce,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -234,7 +236,8 @@ export const shouldBehaveLikePermissionCall = (
         await context.keyManager.executeRelayCall(
           signature,
           nonce,
-          executeRelayCallPayload
+          executeRelayCallPayload,
+          { value: valueToSend }
         );
 
         const result = await targetContract.callStatic.getName();
@@ -264,13 +267,15 @@ export const shouldBehaveLikePermissionCall = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonce,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -282,7 +287,8 @@ export const shouldBehaveLikePermissionCall = (
         await context.keyManager.executeRelayCall(
           signature,
           nonce,
-          executeRelayCallPayload
+          executeRelayCallPayload,
+          { value: valueToSend }
         );
 
         const result = await targetContract.callStatic.getName();
@@ -312,13 +318,15 @@ export const shouldBehaveLikePermissionCall = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonce,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -331,7 +339,8 @@ export const shouldBehaveLikePermissionCall = (
           context.keyManager.executeRelayCall(
             signature,
             nonce,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            { value: valueToSend }
           )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")

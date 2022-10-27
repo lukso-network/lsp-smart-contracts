@@ -114,14 +114,22 @@ export const testSecurityScenarios = (
 
     it("via `executeRelayCall()`", async () => {
       const HARDHAT_CHAINID = 31337;
+      let valueToSend = 0;
+
       let nonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
       let hash = ethers.utils.solidityKeccak256(
-        ["uint256", "address", "uint256", "bytes"],
-        [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+        ["uint256", "address", "uint256", "uint256", "bytes"],
+        [
+          HARDHAT_CHAINID,
+          context.keyManager.address,
+          nonce,
+          valueToSend,
+          payload,
+        ]
       );
 
       let signature = await context.owner.signMessage(
@@ -131,7 +139,7 @@ export const testSecurityScenarios = (
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(signature, nonce, payload)
+          .executeRelayCall(signature, nonce, payload, { value: valueToSend })
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -205,13 +213,15 @@ export const testSecurityScenarios = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+          ["uint256", "address", "uint256", "uint256", "bytes"],
           [
             HARDHAT_CHAINID,
             context.keyManager.address,
             nonce,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
@@ -221,7 +231,9 @@ export const testSecurityScenarios = (
         // first call
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonce, executeRelayCallPayload);
+          .executeRelayCall(signature, nonce, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         // 2nd call = replay attack
         await expect(

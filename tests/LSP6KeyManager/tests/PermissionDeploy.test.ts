@@ -233,10 +233,17 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
-          [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+          ["uint256", "address", "uint256", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            valueToSend,
+            payload,
+          ]
         );
 
         let signature = await addressCannotDeploy.signMessage(
@@ -246,7 +253,7 @@ export const shouldBehaveLikePermissionDeploy = (
         await expect(
           context.keyManager
             .connect(addressCannotDeploy)
-            .executeRelayCall(signature, nonce, payload)
+            .executeRelayCall(signature, nonce, payload, { value: valueToSend })
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -274,10 +281,17 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
-          [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+          ["uint256", "address", "uint256", "uint256", "bytes"],
+          [
+            HARDHAT_CHAINID,
+            context.keyManager.address,
+            nonce,
+            valueToSend,
+            payload,
+          ]
         );
 
         let signature = await addressCannotDeploy.signMessage(
@@ -287,7 +301,7 @@ export const shouldBehaveLikePermissionDeploy = (
         await expect(
           context.keyManager
             .connect(addressCannotDeploy)
-            .executeRelayCall(signature, nonce, payload)
+            .executeRelayCall(signature, nonce, payload, { value: valueToSend })
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");

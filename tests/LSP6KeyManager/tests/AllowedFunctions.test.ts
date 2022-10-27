@@ -217,13 +217,15 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
 
           const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
 
           let hash = ethers.utils.solidityKeccak256(
-            ["uint256", "address", "uint256", "bytes"],
+            ["uint256", "address", "uint256", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
               context.keyManager.address,
               nonce,
+              valueToSend,
               executeRelayCallPayload,
             ]
           );
@@ -235,7 +237,8 @@ export const shouldBehaveLikeAllowedFunctions = (
           await context.keyManager.executeRelayCall(
             signature,
             nonce,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            { value: valueToSend }
           );
           let endResult = await targetContract.callStatic.getName();
           expect(endResult).to.equal(newName);
@@ -260,13 +263,15 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
 
           const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
 
           let hash = ethers.utils.solidityKeccak256(
-            ["uint256", "address", "uint256", "bytes"],
+            ["uint256", "address", "uint256", "uint256", "bytes"],
             [
               HARDHAT_CHAINID,
               context.keyManager.address,
               nonce,
+              valueToSend,
               executeRelayCallPayload,
             ]
           );
@@ -279,7 +284,8 @@ export const shouldBehaveLikeAllowedFunctions = (
             context.keyManager.executeRelayCall(
               signature,
               nonce,
-              executeRelayCallPayload
+              executeRelayCallPayload,
+              { value: valueToSend }
             )
           )
             .to.be.revertedWithCustomError(
