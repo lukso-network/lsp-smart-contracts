@@ -21,8 +21,8 @@ const INTERFACE_IDS = {
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
 	LSP6KeyManager: '0xf9150d55',
-	LSP7DigitalAsset: '0x5fcaac27',
-	LSP8IdentifiableDigitalAsset: '0x49399145',
+	LSP7DigitalAsset: '0xda1f85e4',
+	LSP8IdentifiableDigitalAsset: '0x622e7a01',
 	LSP9Vault: '0xca86ec0f',
 	LSP14Ownable2Step: '0x94be5999',
 };
