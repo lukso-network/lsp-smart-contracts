@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+// This contract is used only for testing purposes.
+
 // interfaces
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
