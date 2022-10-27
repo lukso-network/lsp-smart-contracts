@@ -20,7 +20,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
-import {LSP6Signer} from "./LSP6Signer.sol";
+import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
 import "./LSP6Errors.sol";
@@ -56,7 +56,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using Address for address;
     using ECDSA for bytes32;
     using ERC165Checker for address;
-    using LSP6Signer for bytes32;
+    using EIP191Signer for address;
 
     address public target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
@@ -113,14 +113,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 nonce,
         bytes calldata payload
     ) public payable returns (bytes memory) {
-        bytes memory blob = abi.encodePacked(
+        bytes memory encodedMessage = abi.encodePacked(
             block.chainid,
             address(this), // needs to be signed for this keyManager
             nonce,
             payload
         );
 
-        address signer = keccak256(blob).toLSP6SignedMessageHash().recover(signature);
+        address signer = address(this).toDataWithIntendedValidator(encodedMessage).recover(signature);
 
         if (!_isValidNonce(signer, nonce)) {
             revert InvalidRelayNonce(signer, nonce, signature);
