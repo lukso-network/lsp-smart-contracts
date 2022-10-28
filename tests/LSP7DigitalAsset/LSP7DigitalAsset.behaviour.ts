@@ -962,7 +962,7 @@ export const shouldBehaveLikeLSP7 = (
             operator = getOperator();
           });
 
-          describe("when using force=true", () => {
+          describe("when force=true", () => {
             const data = ethers.utils.hexlify(
               ethers.utils.toUtf8Bytes("doing a transfer with force")
             );
@@ -1175,6 +1175,93 @@ export const shouldBehaveLikeLSP7 = (
                     error: expectedError,
                     args: [txParams.to[0]],
                   });
+                });
+              });
+            });
+          });
+
+          describe("when force is mixed(true/false) respectively", () => {
+            const data = ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("doing a transfer without force")
+            );
+
+            describe("when `to` is an EOA", () => {
+              it("should revert", async () => {
+                const txParams = {
+                  from: [
+                    context.accounts.owner.address,
+                    context.accounts.owner.address,
+                  ],
+                  to: [
+                    context.accounts.tokenReceiver.address,
+                    context.accounts.anotherTokenReceiver.address,
+                  ],
+                  amount: [
+                    context.initialSupply.sub(1),
+                    ethers.BigNumber.from("1"),
+                  ],
+                  force: [true, false],
+                  data: [data, data],
+                };
+                const expectedError = "LSP7NotifyTokenReceiverIsEOA";
+
+                await transferBatchFailScenario(txParams, operator, {
+                  error: expectedError,
+                  args: [txParams.to[1]],
+                });
+              });
+            });
+
+            describe("when `to` is a contract", () => {
+              describe("when first receiving contract support LSP1 but the second doesn't", () => {
+                it("should allow transfering", async () => {
+                  const txParams = {
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
+                    to: [
+                      helperContracts.tokenReceiverWithLSP1.address,
+                      helperContracts.tokenReceiverWithoutLSP1.address,
+                    ],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
+                    force: [true, false],
+                    data: [data, data],
+                  };
+
+                  const expectedError =
+                    "LSP7NotifyTokenReceiverContractMissingLSP1Interface";
+
+                  await transferBatchFailScenario(txParams, operator, {
+                    error: expectedError,
+                    args: [txParams.to[1]],
+                  });
+                });
+              });
+
+              describe("when receiving contract both support LSP1", () => {
+                it("should pass regardless of force params", async () => {
+                  const txParams = {
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
+                    to: [
+                      helperContracts.tokenReceiverWithLSP1.address,
+                      helperContracts.tokenReceiverWithLSP1.address,
+                    ],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
+                    force: [true, false],
+                    data: [data, data],
+                  };
+
+                  await transferBatchSuccessScenario(txParams, operator);
                 });
               });
             });
