@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import {
   Reentrancy,
@@ -14,6 +15,7 @@ import {
   ALL_PERMISSIONS,
   ERC725YKeys,
   OPERATION_TYPES,
+  LSP6_VERSION,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -26,6 +28,7 @@ import {
   provider,
   combinePermissions,
   EMPTY_PAYLOAD,
+  LOCAL_PRIVATE_KEYS,
 } from "../../utils/helpers";
 
 export const testSecurityScenarios = (
@@ -121,25 +124,25 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      let hash = ethers.utils.solidityKeccak256(
-        ["uint256", "address", "uint256", "uint256", "bytes"],
-        [
-          HARDHAT_CHAINID,
-          context.keyManager.address,
-          nonce,
-          valueToSend,
-          payload,
-        ]
+      let encodedMessage = ethers.utils.solidityPack(
+        ["uint256", "uint256", "uint256", "uint256", "bytes"],
+        [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
       );
 
-      let signature = await context.owner.signMessage(
-        ethers.utils.arrayify(hash)
+      const eip191Signer = new EIP191Signer();
+
+      let { signature } = await eip191Signer.signDataWithIntendedValidator(
+        context.keyManager.address,
+        encodedMessage,
+        LOCAL_PRIVATE_KEYS.ACCOUNT0
       );
 
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(signature, nonce, payload, { value: valueToSend })
+          .executeRelayCall(signature, nonce, payload, {
+            value: valueToSend,
+          })
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -215,18 +218,24 @@ export const testSecurityScenarios = (
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "uint256", "bytes"],
+        let encodedMessage = ethers.utils.solidityPack(
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
           [
+            LSP6_VERSION,
             HARDHAT_CHAINID,
-            context.keyManager.address,
             nonce,
             valueToSend,
             executeRelayCallPayload,
           ]
         );
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        const eip191Signer = new EIP191Signer();
+
+        const { signature } = await eip191Signer.signDataWithIntendedValidator(
+          context.keyManager.address,
+          encodedMessage,
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
 
         // first call
         await context.keyManager

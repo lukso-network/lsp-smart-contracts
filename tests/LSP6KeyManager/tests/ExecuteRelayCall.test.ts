@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
 
@@ -9,6 +10,7 @@ import {
   ALL_PERMISSIONS,
   ERC725YKeys,
   OPERATION_TYPES,
+  LSP6_VERSION,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -18,7 +20,7 @@ import { combinePermissions } from "../../utils/helpers";
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import { provider } from "../../utils/helpers";
+import { provider, LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
 
 export const shouldBehaveLikeExecuteRelayCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -77,8 +79,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
             let valueToSign = 5;
 
             const signedMessageParams = {
+              lsp6Version: LSP6_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
-              address: context.keyManager.address,
               nonce: latestNonce,
               msgValue: valueToSign,
               payload: executeRelayCallPayload,
@@ -86,20 +88,25 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let valueToSendFromRelayer = 10;
 
-            let hash = ethers.utils.solidityKeccak256(
-              ["uint256", "address", "uint256", "uint256", "bytes"],
+            let encodedMessage = ethers.utils.solidityPack(
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
               [
+                signedMessageParams.lsp6Version,
                 signedMessageParams.chainId,
-                signedMessageParams.address,
                 signedMessageParams.nonce,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
             );
 
-            let signature = await signer.signMessage(
-              ethers.utils.arrayify(hash)
-            );
+            let eip191Signer = new EIP191Signer();
+
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await expect(
               context.keyManager.executeRelayCall(
@@ -132,8 +139,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
             let valueToSign = 5;
 
             const signedMessageParams = {
+              lsp6Version: LSP6_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
-              address: context.keyManager.address,
               nonce: latestNonce,
               msgValue: valueToSign,
               payload: executeRelayCallPayload,
@@ -141,20 +148,25 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let valueToSendFromRelayer = 0;
 
-            let hash = ethers.utils.solidityKeccak256(
-              ["uint256", "address", "uint256", "uint256", "bytes"],
+            let encodedMessage = ethers.utils.solidityPack(
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
               [
+                signedMessageParams.lsp6Version,
                 signedMessageParams.chainId,
-                signedMessageParams.address,
                 signedMessageParams.nonce,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
               ]
             );
 
-            let signature = await signer.signMessage(
-              ethers.utils.arrayify(hash)
-            );
+            let eip191Signer = new EIP191Signer();
+
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await expect(
               context.keyManager
@@ -189,18 +201,18 @@ export const shouldBehaveLikeExecuteRelayCall = (
             let valueToSendFromRelayer = 10;
 
             const signedMessageParams = {
+              lsp6Version: LSP6_VERSION,
               chainId: 31337, // HARDHAT_CHAINID
-              address: context.keyManager.address,
               nonce: latestNonce,
               msgValue: valueToSendFromRelayer,
               payload: executeRelayCallPayload,
             };
 
-            let hash = ethers.utils.solidityKeccak256(
-              ["uint256", "address", "uint256", "uint256", "bytes"],
+            let encodedMessage = ethers.utils.solidityPack(
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
               [
+                signedMessageParams.lsp6Version,
                 signedMessageParams.chainId,
-                signedMessageParams.address,
                 signedMessageParams.nonce,
                 signedMessageParams.msgValue,
                 signedMessageParams.payload,
@@ -211,9 +223,14 @@ export const shouldBehaveLikeExecuteRelayCall = (
               context.universalProfile.address
             );
 
-            let signature = await signer.signMessage(
-              ethers.utils.arrayify(hash)
-            );
+            let eip191Signer = new EIP191Signer();
+
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await context.keyManager
               .connect(relayer)
@@ -263,27 +280,32 @@ export const shouldBehaveLikeExecuteRelayCall = (
               let valueToSendFromRelayer = 0;
 
               const signedMessageParams = {
+                lsp6Version: LSP6_VERSION,
                 chainId: 31337, // HARDHAT_CHAINID
-                address: context.keyManager.address,
                 nonce: latestNonce,
                 msgValue: valueToSendFromRelayer,
                 payload: executeRelayCallPayload,
               };
 
-              let hash = ethers.utils.solidityKeccak256(
-                ["uint256", "address", "uint256", "uint256", "bytes"],
+              let encodedMessage = ethers.utils.solidityPack(
+                ["uint256", "uint256", "uint256", "uint256", "bytes"],
                 [
+                  signedMessageParams.lsp6Version,
                   signedMessageParams.chainId,
-                  signedMessageParams.address,
                   signedMessageParams.nonce,
                   signedMessageParams.msgValue,
                   signedMessageParams.payload,
                 ]
               );
 
-              let signature = await signer.signMessage(
-                ethers.utils.arrayify(hash)
-              );
+              let eip191Signer = new EIP191Signer();
+
+              let { signature } =
+                await eip191Signer.signDataWithIntendedValidator(
+                  context.keyManager.address,
+                  encodedMessage,
+                  LOCAL_PRIVATE_KEYS.ACCOUNT1
+                );
 
               await expect(
                 context.keyManager
@@ -297,6 +319,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               ).to.be.revertedWith("ERC725X: insufficient balance");
             });
           });
+
           describe("When relayer fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it("should pass", async () => {
               let nameToSet = "Alice";
@@ -326,27 +349,32 @@ export const shouldBehaveLikeExecuteRelayCall = (
               let valueToSendFromRelayer = 51;
 
               const signedMessageParams = {
+                lsp6Version: LSP6_VERSION,
                 chainId: 31337, // HARDHAT_CHAINID
-                address: context.keyManager.address,
                 nonce: latestNonce,
                 msgValue: valueToSendFromRelayer,
                 payload: executeRelayCallPayload,
               };
 
-              let hash = ethers.utils.solidityKeccak256(
-                ["uint256", "address", "uint256", "uint256", "bytes"],
+              let encodedMessage = ethers.utils.solidityPack(
+                ["uint256", "uint256", "uint256", "uint256", "bytes"],
                 [
+                  signedMessageParams.lsp6Version,
                   signedMessageParams.chainId,
-                  signedMessageParams.address,
                   signedMessageParams.nonce,
                   signedMessageParams.msgValue,
                   signedMessageParams.payload,
                 ]
               );
 
-              let signature = await signer.signMessage(
-                ethers.utils.arrayify(hash)
-              );
+              let eip191Signer = new EIP191Signer();
+
+              let { signature } =
+                await eip191Signer.signDataWithIntendedValidator(
+                  context.keyManager.address,
+                  encodedMessage,
+                  LOCAL_PRIVATE_KEYS.ACCOUNT1
+                );
 
               await context.keyManager
                 .connect(relayer)
@@ -356,6 +384,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   executeRelayCallPayload,
                   { value: valueToSendFromRelayer }
                 );
+
               const result = await targetContract.callStatic.getName();
               expect(result).to.equal(nameToSet);
             });

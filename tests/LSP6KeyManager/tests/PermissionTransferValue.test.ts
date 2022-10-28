@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import {
   Executor,
@@ -17,6 +18,7 @@ import {
 import {
   ERC725YKeys,
   ALL_PERMISSIONS,
+  LSP6_VERSION,
   PERMISSIONS,
   OPERATION_TYPES,
 } from "../../../constants";
@@ -26,7 +28,12 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { provider, abiCoder, combinePermissions } from "../../utils/helpers";
+import {
+  provider,
+  abiCoder,
+  combinePermissions,
+  LOCAL_PRIVATE_KEYS,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionTransferValue = (
   buildContext: () => Promise<LSP6TestContext>
@@ -78,221 +85,317 @@ export const shouldBehaveLikePermissionTransferValue = (
         recipient = context.accounts[3].address;
       });
 
-      describe("when transferring value without bytes `_data`", () => {
-        const data = "0x";
+      describe("when transferring value via `execute(...)`", () => {
+        describe("when transferring value without bytes `_data`", () => {
+          const data = "0x";
 
-        it("should pass when caller has ALL PERMISSIONS", async () => {
-          const amount = ethers.utils.parseEther("3");
+          it("should pass when caller has ALL PERMISSIONS", async () => {
+            const amount = ethers.utils.parseEther("3");
 
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              amount,
-              data,
-            ]);
+            let transferPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                recipient,
+                amount,
+                data,
+              ]);
 
-          /**
-           * verify that balances have been updated
-           * @see https://hardhat.org/hardhat-chai-matchers/docs/reference#.changeetherbalances
-           */
-          await expect(() =>
-            context.keyManager.connect(context.owner).execute(transferPayload)
-          ).to.changeEtherBalances(
-            [context.universalProfile.address, recipient],
-            [`-${amount}`, amount]
-          );
+            /**
+             * verify that balances have been updated
+             * @see https://hardhat.org/hardhat-chai-matchers/docs/reference#.changeetherbalances
+             */
+            await expect(() =>
+              context.keyManager.connect(context.owner).execute(transferPayload)
+            ).to.changeEtherBalances(
+              [context.universalProfile.address, recipient],
+              [`-${amount}`, amount]
+            );
+          });
+
+          it("should pass when caller has permission TRANSFERVALUE only", async () => {
+            const amount = ethers.utils.parseEther("3");
+
+            let transferPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                recipient,
+                amount,
+                data,
+              ]);
+
+            await expect(() =>
+              context.keyManager
+                .connect(canTransferValue)
+                .execute(transferPayload)
+            ).to.changeEtherBalances(
+              [context.universalProfile.address, recipient],
+              [`-${amount}`, amount]
+            );
+          });
+
+          it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
+            const amount = ethers.utils.parseEther("3");
+
+            let transferPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                recipient,
+                amount,
+                data,
+              ]);
+
+            await expect(() =>
+              context.keyManager
+                .connect(canTransferValueAndCall)
+                .execute(transferPayload)
+            ).to.changeEtherBalances(
+              [context.universalProfile.address, recipient],
+              [`-${amount}`, amount]
+            );
+          });
+
+          it("should fail when caller does not have permission TRANSFERVALUE", async () => {
+            let initialBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            let initialBalanceRecipient = await provider.getBalance(recipient);
+
+            let transferPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                recipient,
+                ethers.utils.parseEther("3"),
+                data,
+              ]);
+
+            await expect(
+              context.keyManager
+                .connect(cannotTransferValue)
+                .execute(transferPayload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(cannotTransferValue.address, "TRANSFERVALUE");
+
+            let newBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            let newBalanceRecipient = await provider.getBalance(recipient);
+
+            // verify that native token balances have not changed
+            expect(newBalanceUP).to.equal(initialBalanceUP);
+            expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          });
         });
 
-        it("should pass when caller has permission TRANSFERVALUE only", async () => {
-          const amount = ethers.utils.parseEther("3");
+        describe("when transferring value with bytes `_data`", () => {
+          const data = "0xaabbccdd";
 
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              amount,
-              data,
-            ]);
+          it("should pass when caller has ALL PERMISSIONS", async () => {
+            let initialBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
 
-          await expect(() =>
-            context.keyManager
-              .connect(canTransferValue)
-              .execute(transferPayload)
-          ).to.changeEtherBalances(
-            [context.universalProfile.address, recipient],
-            [`-${amount}`, amount]
-          );
-        });
+            let initialBalanceRecipient = await provider.getBalance(recipient);
 
-        it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
-          const amount = ethers.utils.parseEther("3");
+            let transferPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                recipient,
+                ethers.utils.parseEther("3"),
+                data,
+              ]);
 
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              amount,
-              data,
-            ]);
+            await context.keyManager
+              .connect(context.owner)
+              .execute(transferPayload);
 
-          await expect(() =>
-            context.keyManager
-              .connect(canTransferValueAndCall)
-              .execute(transferPayload)
-          ).to.changeEtherBalances(
-            [context.universalProfile.address, recipient],
-            [`-${amount}`, amount]
-          );
-        });
+            let newBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
-        it("should fail when caller does not have permission TRANSFERVALUE", async () => {
-          let initialBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          let initialBalanceRecipient = await provider.getBalance(recipient);
+            let newBalanceRecipient = await provider.getBalance(recipient);
+            expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
+          });
 
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              ethers.utils.parseEther("3"),
-              data,
-            ]);
+          it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
+            const amount = ethers.utils.parseEther("3");
 
-          await expect(
-            context.keyManager
-              .connect(cannotTransferValue)
-              .execute(transferPayload)
-          )
-            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(cannotTransferValue.address, "TRANSFERVALUE");
+            let transferPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                recipient,
+                amount,
+                data,
+              ]);
 
-          let newBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          let newBalanceRecipient = await provider.getBalance(recipient);
+            await expect(() =>
+              context.keyManager
+                .connect(canTransferValueAndCall)
+                .execute(transferPayload)
+            ).to.changeEtherBalances(
+              [context.universalProfile.address, recipient],
+              [`-${amount}`, amount]
+            );
+          });
 
-          // verify that native token balances have not changed
-          expect(newBalanceUP).to.equal(initialBalanceUP);
-          expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          it("should fail when caller has permission TRANSFERVALUE only", async () => {
+            let initialBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            let initialBalanceRecipient = await provider.getBalance(recipient);
+
+            let transferPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                recipient,
+                ethers.utils.parseEther("3"),
+                data,
+              ]);
+
+            await expect(
+              context.keyManager
+                .connect(canTransferValue)
+                .execute(transferPayload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(canTransferValue.address, "CALL");
+
+            let newBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            let newBalanceRecipient = await provider.getBalance(recipient);
+
+            // verify that native token balances have not changed
+            expect(newBalanceUP).to.equal(initialBalanceUP);
+            expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          });
+
+          it("should fail when caller does not have permission TRANSFERVALUE", async () => {
+            let initialBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            let initialBalanceRecipient = await provider.getBalance(recipient);
+
+            let transferPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                recipient,
+                ethers.utils.parseEther("3"),
+                data,
+              ]);
+
+            await expect(
+              context.keyManager
+                .connect(cannotTransferValue)
+                .execute(transferPayload)
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAuthorised"
+              )
+              .withArgs(cannotTransferValue.address, "TRANSFERVALUE");
+
+            let newBalanceUP = await provider.getBalance(
+              context.universalProfile.address
+            );
+            let newBalanceRecipient = await provider.getBalance(recipient);
+
+            // verify that native token balances have not changed
+            expect(newBalanceUP).to.equal(initialBalanceUP);
+            expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
+          });
         });
       });
 
-      describe("when transferring value with bytes `_data`", () => {
-        const data = "0xaabbccdd";
-
-        it("should pass when caller has ALL PERMISSIONS", async () => {
-          let initialBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-
-          let initialBalanceRecipient = await provider.getBalance(recipient);
-
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              ethers.utils.parseEther("3"),
-              data,
-            ]);
-
-          await context.keyManager
-            .connect(context.owner)
-            .execute(transferPayload);
-
-          let newBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          expect(newBalanceUP).to.be.lt(initialBalanceUP);
-
-          let newBalanceRecipient = await provider.getBalance(recipient);
-          expect(newBalanceRecipient).to.be.gt(initialBalanceRecipient);
-        });
-
-        it("should pass when caller has permission TRANSFERVALUE + CALL", async () => {
+      describe("when transferring value via `executeRelayCall(...)`", () => {
+        it("should revert if tx was signed with Eth Signed Message", async () => {
           const amount = ethers.utils.parseEther("3");
 
-          let transferPayload =
+          let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData("execute", [
               OPERATION_TYPES.CALL,
               recipient,
               amount,
-              data,
+              "0x",
             ]);
 
-          await expect(() =>
+          const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
+
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              0,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
+          );
+
+          // ethereum signed message prefix
+          let signature = await context.owner.signMessage(encodedMessage);
+
+          await expect(
+            context.keyManager.executeRelayCall(
+              signature,
+              0,
+              executeRelayCallPayload,
+              { value: valueToSend }
+            )
+          ).to.be.reverted;
+        });
+
+        it("should pass if tx was signed with EIP191Signer '\\x19\\x00' prefix", async () => {
+          const eip191Signer = new EIP191Signer();
+
+          const amount = ethers.utils.parseEther("3");
+
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              recipient,
+              amount,
+              "0x",
+            ]);
+
+          const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
+
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              0,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
+          );
+
+          let { signature } = await eip191Signer.signDataWithIntendedValidator(
+            context.keyManager.address,
+            encodedMessage,
+            LOCAL_PRIVATE_KEYS.ACCOUNT0
+          );
+
+          await expect(
             context.keyManager
-              .connect(canTransferValueAndCall)
-              .execute(transferPayload)
+              .connect(context.owner)
+              .executeRelayCall(signature, 0, executeRelayCallPayload, {
+                value: valueToSend,
+              })
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient],
             [`-${amount}`, amount]
           );
-        });
-
-        it("should fail when caller has permission TRANSFERVALUE only", async () => {
-          let initialBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          let initialBalanceRecipient = await provider.getBalance(recipient);
-
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              ethers.utils.parseEther("3"),
-              data,
-            ]);
-
-          await expect(
-            context.keyManager
-              .connect(canTransferValue)
-              .execute(transferPayload)
-          )
-            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canTransferValue.address, "CALL");
-
-          let newBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          let newBalanceRecipient = await provider.getBalance(recipient);
-
-          // verify that native token balances have not changed
-          expect(newBalanceUP).to.equal(initialBalanceUP);
-          expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
-        });
-
-        it("should fail when caller does not have permission TRANSFERVALUE", async () => {
-          let initialBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          let initialBalanceRecipient = await provider.getBalance(recipient);
-
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              ethers.utils.parseEther("3"),
-              data,
-            ]);
-
-          await expect(
-            context.keyManager
-              .connect(cannotTransferValue)
-              .execute(transferPayload)
-          )
-            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(cannotTransferValue.address, "TRANSFERVALUE");
-
-          let newBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          let newBalanceRecipient = await provider.getBalance(recipient);
-
-          // verify that native token balances have not changed
-          expect(newBalanceUP).to.equal(initialBalanceUP);
-          expect(initialBalanceRecipient).to.equal(newBalanceRecipient);
         });
       });
     });

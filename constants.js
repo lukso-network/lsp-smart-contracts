@@ -175,6 +175,8 @@ const BasicUPSetup_Schema = [
 // LSP6
 // ----------
 
+const LSP6_VERSION = 6;
+
 // All Permissions currently exclude DELEGATECALL and SUPER_DELEGATECALL for security
 const ALL_PERMISSIONS = '0x00000000000000000000000000000000000000000000000000000000000fcfff';
 
@@ -612,6 +614,7 @@ module.exports = {
 	SupportedStandards,
 	ERC725YKeys,
 	BasicUPSetup_Schema,
+	LSP6_VERSION,
 	ALL_PERMISSIONS,
 	PERMISSIONS,
 	LSP1_TYPE_IDS,

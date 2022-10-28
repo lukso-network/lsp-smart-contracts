@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
 
@@ -9,6 +10,7 @@ import {
   ERC725YKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
+  LSP6_VERSION,
   OPERATION_TYPES,
 } from "../../../constants";
 
@@ -17,7 +19,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder } from "../../utils/helpers";
+import { abiCoder, LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -195,160 +197,368 @@ export const shouldBehaveLikePermissionCall = (
     const channelId = 0;
 
     describe("when signer has ALL PERMISSIONS", () => {
-      it("should execute successfully", async () => {
-        let newName = "New Name";
+      describe("when signing tx with EIP191Signer `\\x19\\x00` prefix", () => {
+        it("should execute successfully", async () => {
+          let newName = "New Name";
 
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
-        );
-        let nonce = await context.keyManager.callStatic.getNonce(
-          context.owner.address,
-          channelId
-        );
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [newName]);
+          let nonce = await context.keyManager.callStatic.getNonce(
+            context.owner.address,
+            channelId
+          );
 
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
 
-        const HARDHAT_CHAINID = 31337;
-        let valueToSend = 0;
+          const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "uint256", "bytes"],
-          [
-            HARDHAT_CHAINID,
-            context.keyManager.address,
-            nonce,
-            valueToSend,
-            executeRelayCallPayload,
-          ]
-        );
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              nonce,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
+          );
 
-        let signature = await context.owner.signMessage(
-          ethers.utils.arrayify(hash)
-        );
+          const eip191Signer = new EIP191Signer();
 
-        await context.keyManager.executeRelayCall(
-          signature,
-          nonce,
-          executeRelayCallPayload,
-          { value: valueToSend }
-        );
+          const { signature } =
+            await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT0
+            );
 
-        const result = await targetContract.callStatic.getName();
-        expect(result).to.equal(newName);
-      });
-    });
-
-    describe("when signer has permission CALL", () => {
-      it("should execute successfully", async () => {
-        let newName = "Another name";
-
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [newName]
-        );
-        let nonce = await context.keyManager.callStatic.getNonce(
-          addressCanMakeCall.address,
-          channelId
-        );
-
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
-
-        const HARDHAT_CHAINID = 31337;
-        let valueToSend = 0;
-
-        let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "uint256", "bytes"],
-          [
-            HARDHAT_CHAINID,
-            context.keyManager.address,
-            nonce,
-            valueToSend,
-            executeRelayCallPayload,
-          ]
-        );
-
-        let signature = await addressCanMakeCall.signMessage(
-          ethers.utils.arrayify(hash)
-        );
-
-        await context.keyManager.executeRelayCall(
-          signature,
-          nonce,
-          executeRelayCallPayload,
-          { value: valueToSend }
-        );
-
-        const result = await targetContract.callStatic.getName();
-        expect(result).to.equal(newName);
-      });
-    });
-
-    describe("when signer does not have permission CALL", () => {
-      it("should fail", async () => {
-        const initialName = await targetContract.callStatic.getName();
-
-        let targetContractPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          ["Random name"]
-        );
-        let nonce = await context.keyManager.callStatic.getNonce(
-          addressCannotMakeCall.address,
-          channelId
-        );
-
-        let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
-
-        const HARDHAT_CHAINID = 31337;
-        let valueToSend = 0;
-
-        let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "uint256", "bytes"],
-          [
-            HARDHAT_CHAINID,
-            context.keyManager.address,
-            nonce,
-            valueToSend,
-            executeRelayCallPayload,
-          ]
-        );
-
-        let signature = await addressCannotMakeCall.signMessage(
-          ethers.utils.arrayify(hash)
-        );
-
-        await expect(
-          context.keyManager.executeRelayCall(
+          await context.keyManager.executeRelayCall(
             signature,
             nonce,
             executeRelayCallPayload,
             { value: valueToSend }
-          )
-        )
-          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCannotMakeCall.address, "CALL");
+          );
 
-        // ensure no state change at the target contract
-        const result = await targetContract.callStatic.getName();
-        expect(result).to.equal(initialName);
+          const result = await targetContract.callStatic.getName();
+          expect(result).to.equal(newName);
+        });
+      });
+
+      describe("when signing with Ethereum Signed Message prefix", () => {
+        it("should retrieve the incorrect signer address and revert with `NoPermissionsSet` error", async () => {
+          let newName = "New Name";
+
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [newName]);
+          let nonce = await context.keyManager.callStatic.getNonce(
+            context.owner.address,
+            channelId
+          );
+
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
+
+          const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
+
+          const eip191Signer = new EIP191Signer();
+
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              nonce,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
+          );
+
+          const signature = await context.owner.signMessage(encodedMessage);
+
+          const incorrectSignerAddress = eip191Signer.recover(
+            eip191Signer.hashDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage
+            ),
+            signature
+          );
+
+          await expect(
+            context.keyManager.executeRelayCall(
+              signature,
+              nonce,
+              executeRelayCallPayload,
+              { value: valueToSend }
+            )
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoPermissionsSet"
+            )
+            .withArgs(incorrectSignerAddress);
+        });
+      });
+    });
+
+    describe("when signer has permission CALL", () => {
+      describe("when signing tx with EIP191Signer `\\x19\\x00` prefix", () => {
+        it("should execute successfully", async () => {
+          let newName = "Another name";
+
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [newName]);
+          let nonce = await context.keyManager.callStatic.getNonce(
+            addressCanMakeCall.address,
+            channelId
+          );
+
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
+
+          const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
+
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              nonce,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
+          );
+
+          const eip191Signer = new EIP191Signer();
+
+          const { signature } =
+            await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT1
+            );
+
+          await context.keyManager.executeRelayCall(
+            signature,
+            nonce,
+            executeRelayCallPayload,
+            { value: valueToSend }
+          );
+
+          const result = await targetContract.callStatic.getName();
+          expect(result).to.equal(newName);
+        });
+      });
+
+      describe("when signing tx with Ethereum Signed Message prefix", () => {
+        it("should retrieve the incorrect signer address and revert with `NoPermissionsSet` error", async () => {
+          let newName = "Another name";
+
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [newName]);
+          let nonce = await context.keyManager.callStatic.getNonce(
+            addressCanMakeCall.address,
+            channelId
+          );
+
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
+
+          const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
+
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              nonce,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
+          );
+
+          let signature = await addressCanMakeCall.signMessage(encodedMessage);
+
+          const eip191Signer = new EIP191Signer();
+          const incorrectSignerAddress = eip191Signer.recover(
+            eip191Signer.hashDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage
+            ),
+            signature
+          );
+
+          await expect(
+            context.keyManager.executeRelayCall(
+              signature,
+              nonce,
+              executeRelayCallPayload,
+              { value: valueToSend }
+            )
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoPermissionsSet"
+            )
+            .withArgs(incorrectSignerAddress);
+        });
+      });
+    });
+
+    describe("when signer does not have permission CALL", () => {
+      describe("when signing tx with EIP191Signer `\\x19\\x00` prefix", () => {
+        it("should revert with `NotAuthorised` and permission CALL error", async () => {
+          const initialName = await targetContract.callStatic.getName();
+
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [
+              "Random name",
+            ]);
+          let nonce = await context.keyManager.callStatic.getNonce(
+            addressCannotMakeCall.address,
+            channelId
+          );
+
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
+
+          const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
+
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              nonce,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
+          );
+
+          const eip191Signer = new EIP191Signer();
+
+          const { signature } =
+            await eip191Signer.signDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage,
+              LOCAL_PRIVATE_KEYS.ACCOUNT2
+            );
+
+          await expect(
+            context.keyManager.executeRelayCall(
+              signature,
+              nonce,
+              executeRelayCallPayload,
+              { value: valueToSend }
+            )
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+            .withArgs(addressCannotMakeCall.address, "CALL");
+
+          // ensure no state change at the target contract
+          const result = await targetContract.callStatic.getName();
+          expect(result).to.equal(initialName);
+        });
+      });
+
+      describe("when signing tx with Ethereum Signed Message prefix", () => {
+        it("should retrieve the incorrect signer address and revert with `NoPermissionSet`", async () => {
+          const initialName = await targetContract.callStatic.getName();
+
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [
+              "Random name",
+            ]);
+          let nonce = await context.keyManager.callStatic.getNonce(
+            addressCannotMakeCall.address,
+            channelId
+          );
+
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
+
+          const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
+
+          let encodedMessage = ethers.utils.solidityPack(
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              nonce,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
+          );
+
+          const ethereumSignature = await addressCannotMakeCall.signMessage(
+            encodedMessage
+          );
+
+          const eip191Signer = new EIP191Signer();
+
+          const incorrectSignerAddress = await eip191Signer.recover(
+            eip191Signer.hashDataWithIntendedValidator(
+              context.keyManager.address,
+              encodedMessage
+            ),
+            ethereumSignature
+          );
+
+          await expect(
+            context.keyManager.executeRelayCall(
+              ethereumSignature,
+              nonce,
+              executeRelayCallPayload,
+              { value: valueToSend }
+            )
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoPermissionsSet"
+            )
+            .withArgs(incorrectSignerAddress);
+
+          // ensure state at target contract has not changed
+          expect(await targetContract.callStatic.getName()).to.equal(
+            initialName
+          );
+        });
       });
     });
   });
