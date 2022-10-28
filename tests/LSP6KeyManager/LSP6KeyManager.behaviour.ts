@@ -68,7 +68,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionSign(buildContext);
   });
 
-  describe("ALLOWEDADDRESSES", () => {
+  describe.only("ALLOWEDADDRESSES", () => {
     shouldBehaveLikeAllowedAddresses(buildContext);
   });
 
@@ -76,7 +76,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedFunctions(buildContext);
   });
 
-  describe("ALLOWEDSTANDARDS", () => {
+  describe.only("ALLOWEDSTANDARDS", () => {
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 

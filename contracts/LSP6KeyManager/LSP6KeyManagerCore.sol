@@ -44,6 +44,8 @@ import {
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)

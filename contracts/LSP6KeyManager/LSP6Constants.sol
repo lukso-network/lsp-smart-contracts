@@ -28,6 +28,9 @@ bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX = 0x4b807
 // bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedCalls'))
 bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX = 0x4b80742de2bf393a64c7; // AddressPermissions:AllowedCalls:<address>
 
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedCalls'))
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX = 0x4b80742de2bf393a64c7; // AddressPermissions:AllowedCalls:<address>
+
 // DEFAULT PERMISSIONS VALUES
 // NB: the SUPER PERMISSIONS allow to not check for:
 //  - AddressPermissions:AllowedERC725YKeys:...
