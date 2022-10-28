@@ -60,23 +60,28 @@ export const shouldBehaveLikeAllowedAddresses = (
         context.owner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         canCallOnlyTwoAddresses.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
         canCallOnlyTwoAddresses.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        invalidAbiEncodedAddresses.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-        invalidAbiEncodedAddresses.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          invalidAbiEncodedAddresses.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          invalidAbiEncodedAddresses.address.substring(2),
     ];
+
+    const encodedAllowedCalls = (
+      "0x1cffffffff" +
+      allowedEOA.address.substring(2) +
+      "ffffffff"
+    ).concat(
+      "1cffffffff" + allowedTargetContract.address.substring(2) + "ffffffff"
+    );
 
     let permissionsValues = [
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
-      abiCoder.encode(
-        ["address[]"],
-        [[allowedEOA.address, allowedTargetContract.address]]
-      ),
-      combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
-      "0xbadbadbadbad",
+      encodedAllowedCalls,
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        "0xbadbadbadbad",
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -200,9 +205,7 @@ export const shouldBehaveLikeAllowedAddresses = (
         context.keyManager
           .connect(canCallOnlyTwoAddresses)
           .execute(transferPayload)
-      )
-        .to.be.revertedWithCustomError(context.keyManager, "NotAllowedAddress")
-        .withArgs(canCallOnlyTwoAddresses.address, notAllowedEOA.address);
+      ).to.be.revertedWith("not allowed call");
 
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
@@ -235,12 +238,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await expect(
         context.keyManager.connect(canCallOnlyTwoAddresses).execute(payload)
-      )
-        .to.be.revertedWithCustomError(context.keyManager, "NotAllowedAddress")
-        .withArgs(
-          canCallOnlyTwoAddresses.address,
-          notAllowedTargetContract.address
-        );
+      ).to.be.revertedWith("not allowed call");
     });
   });
 

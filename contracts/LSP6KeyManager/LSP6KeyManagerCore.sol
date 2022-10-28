@@ -45,6 +45,8 @@ import {
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
@@ -553,18 +555,39 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // Skip if both SUPER permissions are present
         if (hasSuperOperation && hasSuperTransferValue) return;
 
-        // CHECK for ALLOWED ADDRESSES
+        // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
-        _verifyAllowedAddress(from, to);
+        bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
 
-        if (to.code.length != 0) {
-            // CHECK for ALLOWED STANDARDS
-            _verifyAllowedStandard(from, to);
+        // TODO: change behaviour to disallow if nothing is set
+        // if nothing set, whitelist everything
+        if (allowedCalls.length == 0) return;
+        // if not properly encoded, whitelist everything
+        if ((allowedCalls.length % 29) != 0) return;
 
-            // CHECK for ALLOWED FUNCTIONS
-            // extract bytes4 function selector from payload passed to ERC725X.execute(...)
-            if (payload.length >= 168) _verifyAllowedFunction(from, bytes4(payload[164:168]));
+
+
+
+        for (uint256 ii = 0; ii < allowedCalls.length; ii += 29) {
+            bool isAllowedAddress;
+            bool isAllowedStandard;
+
+            bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
+
+            bytes4 allowedStandard = bytes4(chunk);
+            address allowedAddress = address(bytes20(bytes28(chunk) << 32));
+            bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);
+
+            isAllowedAddress = (to == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF) || (to == allowedAddress);
+            isAllowedStandard = (allowedStandard == 0xffffffff) || (to.supportsERC165Interface(allowedStandard));
+
+            if (isAllowedAddress && isAllowedStandard) return;
+
         }
+
+        revert("not allowed call");
+
+
     }
 
     /**

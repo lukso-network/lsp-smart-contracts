@@ -32,6 +32,20 @@ library LSP6Utils {
         return bytes32(permissions);
     }
 
+    function getAllowedCallsFor(IERC725Y target, address from)
+        internal
+        view
+        returns (bytes memory)
+    {
+        return
+            target.getData(
+                LSP2Utils.generateMappingWithGroupingKey(
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX,
+                    bytes20(from)
+                )
+            );
+    }
+
     /**
      * @dev read the allowed addresses of a `caller` on an ERC725Y `target` contract.
      * @param target an `IERC725Y` contract where to read the permissions.

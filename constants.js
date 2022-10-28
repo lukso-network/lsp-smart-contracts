@@ -124,6 +124,8 @@ const ERC725YKeys = {
 		'AddressPermissions:AllowedStandards': '0x4b80742de2bf3efa94a30000',
 		// AddressPermissions:AllowedERC725YKeys:<address>
 		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
+		// AddressPermissions:AllowedCalls:<address>
+		'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
 	},
 	LSP9: {
 		SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
