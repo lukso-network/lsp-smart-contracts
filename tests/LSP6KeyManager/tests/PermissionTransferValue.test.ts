@@ -327,10 +327,17 @@ export const shouldBehaveLikePermissionTransferValue = (
             ]);
 
           const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "bytes"],
-            [LSP6_VERSION, HARDHAT_CHAINID, 0, executeRelayCallPayload]
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              0,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
           );
 
           // ethereum signed message prefix
@@ -340,7 +347,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             context.keyManager.executeRelayCall(
               signature,
               0,
-              executeRelayCallPayload
+              executeRelayCallPayload,
+              { value: valueToSend }
             )
           ).to.be.reverted;
         });
@@ -359,10 +367,17 @@ export const shouldBehaveLikePermissionTransferValue = (
             ]);
 
           const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "bytes"],
-            [LSP6_VERSION, HARDHAT_CHAINID, 0, executeRelayCallPayload]
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              0,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
           );
 
           // lsp6 signed message prefixed
@@ -378,7 +393,8 @@ export const shouldBehaveLikePermissionTransferValue = (
               .executeRelayCall(
                 signedMessage.signature,
                 0,
-                executeRelayCallPayload
+                executeRelayCallPayload,
+                { value: valueToSend }
               )
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient],

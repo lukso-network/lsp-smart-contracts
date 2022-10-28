@@ -238,10 +238,11 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             const HARDHAT_CHAINID = 31337;
+            let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, payload]
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
             );
 
             let ethereumSignature = await addressCannotDeploy.signMessage(
@@ -261,7 +262,9 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(ethereumSignature, nonce, payload)
+                .executeRelayCall(ethereumSignature, nonce, payload, {
+                  value: valueToSend,
+                })
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -291,10 +294,11 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             const HARDHAT_CHAINID = 31337;
+            let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, payload]
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
             );
 
             const eip191Signer = new EIP191Signer();
@@ -308,7 +312,9 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(lsp6Signature.signature, nonce, payload)
+                .executeRelayCall(lsp6Signature.signature, nonce, payload, {
+                  value: valueToSend,
+                })
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -342,10 +348,11 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             const HARDHAT_CHAINID = 31337;
+            let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, payload]
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
             );
 
             let ethereumSignature = await addressCannotDeploy.signMessage(
@@ -364,7 +371,9 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(ethereumSignature, nonce, payload)
+                .executeRelayCall(ethereumSignature, nonce, payload, {
+                  value: valueToSend,
+                })
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -396,10 +405,11 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             const HARDHAT_CHAINID = 31337;
+            let valueToSend = 0;
 
             let encodedMessage = ethers.utils.solidityPack(
-              ["uint256", "uint256", "uint256", "bytes"],
-              [LSP6_VERSION, HARDHAT_CHAINID, nonce, payload]
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
             );
 
             const lsp6Signer = new EIP191Signer();
@@ -412,7 +422,9 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(lsp6signature.signature, nonce, payload)
+                .executeRelayCall(lsp6signature.signature, nonce, payload, {
+                  value: valueToSend,
+                })
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,

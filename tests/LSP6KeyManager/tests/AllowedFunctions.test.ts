@@ -223,10 +223,17 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
 
           const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "bytes"],
-            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              nonce,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
           );
 
           let eip191Signer = new EIP191Signer();
@@ -240,7 +247,8 @@ export const shouldBehaveLikeAllowedFunctions = (
           await context.keyManager.executeRelayCall(
             signature.signature,
             nonce,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            { value: valueToSend }
           );
           let endResult = await targetContract.callStatic.getName();
           expect(endResult).to.equal(newName);
@@ -265,10 +273,17 @@ export const shouldBehaveLikeAllowedFunctions = (
             ]);
 
           const HARDHAT_CHAINID = 31337;
+          let valueToSend = 0;
 
           let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "bytes"],
-            [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
+            ["uint256", "uint256", "uint256", "uint256", "bytes"],
+            [
+              LSP6_VERSION,
+              HARDHAT_CHAINID,
+              nonce,
+              valueToSend,
+              executeRelayCallPayload,
+            ]
           );
 
           let eip191Signer = new EIP191Signer();
@@ -283,7 +298,8 @@ export const shouldBehaveLikeAllowedFunctions = (
             context.keyManager.executeRelayCall(
               signature.signature,
               nonce,
-              executeRelayCallPayload
+              executeRelayCallPayload,
+              { value: valueToSend }
             )
           )
             .to.be.revertedWithCustomError(

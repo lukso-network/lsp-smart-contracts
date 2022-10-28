@@ -8,6 +8,9 @@ import {
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UniversalReceiverDelegateRevert is ERC165, ILSP1UniversalReceiverDelegate {
     /**
      * @inheritdoc ILSP1UniversalReceiverDelegate

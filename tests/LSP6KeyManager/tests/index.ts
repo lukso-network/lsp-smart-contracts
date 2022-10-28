@@ -15,3 +15,4 @@ export * from "./MultiChannelNonce.test";
 export * from "./OtherScenarios.test";
 export * from "./Security.test";
 export * from "./LSP6ControlledToken.test";
+export * from "./ExecuteRelayCall.test";

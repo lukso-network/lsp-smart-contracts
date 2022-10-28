@@ -89,10 +89,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, latestNonce, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            latestNonce,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         let eip191Signer = new EIP191Signer();
@@ -106,7 +113,8 @@ export const shouldBehaveLikeMultiChannelNonce = (
         await context.keyManager.executeRelayCall(
           signature.signature,
           latestNonce,
-          executeRelayCallPayload
+          executeRelayCallPayload,
+          { value: valueToSend }
         );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -150,10 +158,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonceBefore, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonceBefore,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         let eip191Signer = new EIP191Signer();
@@ -169,7 +184,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           .executeRelayCall(
             signature.signature,
             nonceBefore,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
           );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -204,10 +222,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonceBefore, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonceBefore,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         let eip191Signer = new EIP191Signer();
@@ -223,7 +248,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           .executeRelayCall(
             signature.signature,
             nonceBefore,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
           );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -263,10 +291,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonceBefore, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonceBefore,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         let eip191Signer = new EIP191Signer();
@@ -282,7 +317,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           .executeRelayCall(
             signature.signature,
             nonceBefore,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
           );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -317,10 +355,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonceBefore, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonceBefore,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         let eip191Signer = new EIP191Signer();
@@ -336,7 +381,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           .executeRelayCall(
             signature.signature,
             nonceBefore,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
           );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -376,10 +424,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonceBefore, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonceBefore,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         let eip191Signer = new EIP191Signer();
@@ -395,7 +450,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           .executeRelayCall(
             signature.signature,
             nonceBefore,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
           );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -430,10 +488,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonceBefore, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonceBefore,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         let eip191Signer = new EIP191Signer();
@@ -449,7 +514,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           .executeRelayCall(
             signature.signature,
             nonceBefore,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
           );
 
         let fetchedName = await targetContract.callStatic.getName();
@@ -485,10 +553,17 @@ export const shouldBehaveLikeMultiChannelNonce = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonceBefore, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonceBefore,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         let eip191Signer = new EIP191Signer();
@@ -504,7 +579,10 @@ export const shouldBehaveLikeMultiChannelNonce = (
           .executeRelayCall(
             signature.signature,
             nonceBefore,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
           );
 
         let fetchedName = await targetContract.callStatic.getName();

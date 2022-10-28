@@ -18,6 +18,7 @@ import {
   shouldBehaveLikeAllowedStandards,
   shouldBehaveLikeAllowedERC725YKeys,
   shouldBehaveLikeMultiChannelNonce,
+  shouldBehaveLikeExecuteRelayCall,
   testSecurityScenarios,
   otherTestScenarios,
 } from "./tests";
@@ -86,6 +87,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("Multi Channel nonces", () => {
     shouldBehaveLikeMultiChannelNonce(buildContext);
+  });
+
+  describe("Execute Relay Call", () => {
+    shouldBehaveLikeExecuteRelayCall(buildContext);
   });
 
   describe("miscellaneous", () => {

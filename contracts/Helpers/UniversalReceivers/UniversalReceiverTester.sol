@@ -4,6 +4,9 @@ pragma solidity ^0.8.0;
 // interfaces
 import {ILSP1UniversalReceiver} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UniversalReceiverTester {
     function callImplementationAndReturn(address target, bytes32 typeId)
         external

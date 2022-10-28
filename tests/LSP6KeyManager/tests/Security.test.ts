@@ -117,14 +117,16 @@ export const testSecurityScenarios = (
 
     it("via `executeRelayCall()`", async () => {
       const HARDHAT_CHAINID = 31337;
+      let valueToSend = 0;
+
       let nonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
       let encodedMessage = ethers.utils.solidityPack(
-        ["uint256", "uint256", "uint256", "bytes"],
-        [LSP6_VERSION, HARDHAT_CHAINID, nonce, payload]
+        ["uint256", "uint256", "uint256", "uint256", "bytes"],
+        [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
       );
 
       const eip191Signer = new EIP191Signer();
@@ -138,7 +140,9 @@ export const testSecurityScenarios = (
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(lsp6Signature.signature, nonce, payload)
+          .executeRelayCall(lsp6Signature.signature, nonce, payload, {
+            value: valueToSend,
+          })
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -212,10 +216,17 @@ export const testSecurityScenarios = (
           ]);
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
         let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "bytes"],
-          [LSP6_VERSION, HARDHAT_CHAINID, nonce, executeRelayCallPayload]
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
+          [
+            LSP6_VERSION,
+            HARDHAT_CHAINID,
+            nonce,
+            valueToSend,
+            executeRelayCallPayload,
+          ]
         );
 
         const eip191Signer = new EIP191Signer();
@@ -232,7 +243,10 @@ export const testSecurityScenarios = (
           .executeRelayCall(
             lsp6Signature.signature,
             nonce,
-            executeRelayCallPayload
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
           );
 
         // 2nd call = replay attack
