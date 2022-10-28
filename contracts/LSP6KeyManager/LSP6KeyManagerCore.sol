@@ -565,12 +565,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // if not properly encoded, whitelist everything
         if ((allowedCalls.length % 29) != 0) return;
 
-
-
-
         for (uint256 ii = 0; ii < allowedCalls.length; ii += 29) {
-            bool isAllowedAddress;
-            bool isAllowedStandard;
 
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
 
@@ -578,15 +573,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             address allowedAddress = address(bytes20(bytes28(chunk) << 32));
             bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);
 
-            isAllowedAddress = (to == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF) || (to == allowedAddress);
-            isAllowedStandard = (allowedStandard == 0xffffffff) || (to.supportsERC165Interface(allowedStandard));
-
-            if (isAllowedAddress && isAllowedStandard) return;
+            if (to == allowedAddress) return;
 
         }
 
         revert("not allowed call");
-
 
     }
 

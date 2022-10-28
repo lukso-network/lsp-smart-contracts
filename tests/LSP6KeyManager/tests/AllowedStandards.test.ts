@@ -152,8 +152,8 @@ export const shouldBehaveLikeAllowedStandards = (
     });
   });
 
-  describe.only("when caller has only ERC1271 interface ID set for ALLOWED STANDARDS", () => {
-    describe.only("when interacting with a contract that implements + register ERC1271 interface", () => {
+  describe("when caller has only ERC1271 interface ID set for ALLOWED STANDARDS", () => {
+    describe("when interacting with a contract that implements + register ERC1271 interface", () => {
       it("should pass", async () => {
         let sampleHash = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("Sample Message")
@@ -179,7 +179,7 @@ export const shouldBehaveLikeAllowedStandards = (
       });
     });
 
-    describe.only("when trying to interact an ERC725Account (LSP0)", () => {
+    describe("when trying to interact an ERC725Account (LSP0)", () => {
       it("should allow to transfer LYX", async () => {
         let initialAccountBalance = await provider.getBalance(
           otherUniversalProfile.address
@@ -204,7 +204,7 @@ export const shouldBehaveLikeAllowedStandards = (
       });
     });
 
-    describe.only("when interacting with contract that does not implement ERC1271", () => {
+    describe("when interacting with contract that does not implement ERC1271", () => {
       it("should fail", async () => {
         let targetPayload = targetContract.interface.encodeFunctionData(
           "setName",
