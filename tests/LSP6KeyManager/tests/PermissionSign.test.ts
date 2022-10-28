@@ -68,11 +68,13 @@ export const shouldBehaveLikePermissionSign = (
 
       it("e.g: with EIP191Signer '\\x19\\x00'", async () => {
         const lsp6Signer = new EIP191Signer();
+
         const signedMessage = await lsp6Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           dataToSign,
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
+
         const result = await context.keyManager.callStatic.isValidSignature(
           signedMessage.messageHash,
           signedMessage.signature

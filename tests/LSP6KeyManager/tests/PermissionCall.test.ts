@@ -232,7 +232,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const eip191Signer = new EIP191Signer();
 
-          const lsp6Signature =
+          const { signature } =
             await eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
@@ -240,7 +240,7 @@ export const shouldBehaveLikePermissionCall = (
             );
 
           await context.keyManager.executeRelayCall(
-            lsp6Signature.signature,
+            signature,
             nonce,
             executeRelayCallPayload,
             { value: valueToSend }
@@ -348,7 +348,8 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           const eip191Signer = new EIP191Signer();
-          const lsp6Signature =
+
+          const { signature } =
             await eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
@@ -356,7 +357,7 @@ export const shouldBehaveLikePermissionCall = (
             );
 
           await context.keyManager.executeRelayCall(
-            lsp6Signature.signature,
+            signature,
             nonce,
             executeRelayCallPayload,
             { value: valueToSend }
@@ -466,7 +467,7 @@ export const shouldBehaveLikePermissionCall = (
 
           const eip191Signer = new EIP191Signer();
 
-          const lsp6Signature =
+          const { signature } =
             await eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
@@ -475,7 +476,7 @@ export const shouldBehaveLikePermissionCall = (
 
           await expect(
             context.keyManager.executeRelayCall(
-              lsp6Signature.signature,
+              signature,
               nonce,
               executeRelayCallPayload,
               { value: valueToSend }

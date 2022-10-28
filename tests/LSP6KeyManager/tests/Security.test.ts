@@ -131,7 +131,7 @@ export const testSecurityScenarios = (
 
       const eip191Signer = new EIP191Signer();
 
-      let lsp6Signature = await eip191Signer.signDataWithIntendedValidator(
+      let { signature } = await eip191Signer.signDataWithIntendedValidator(
         context.keyManager.address,
         encodedMessage,
         LOCAL_PRIVATE_KEYS.ACCOUNT0
@@ -140,7 +140,7 @@ export const testSecurityScenarios = (
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(lsp6Signature.signature, nonce, payload, {
+          .executeRelayCall(signature, nonce, payload, {
             value: valueToSend,
           })
       )
@@ -231,7 +231,7 @@ export const testSecurityScenarios = (
 
         const eip191Signer = new EIP191Signer();
 
-        const lsp6Signature = await eip191Signer.signDataWithIntendedValidator(
+        const { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -240,30 +240,21 @@ export const testSecurityScenarios = (
         // first call
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            lsp6Signature.signature,
-            nonce,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonce, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         // 2nd call = replay attack
         await expect(
           context.keyManager
             .connect(relayer)
-            .executeRelayCall(
-              lsp6Signature.signature,
-              nonce,
-              executeRelayCallPayload
-            )
+            .executeRelayCall(signature, nonce, executeRelayCallPayload)
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
             "InvalidRelayNonce"
           )
-          .withArgs(signer.address, nonce, lsp6Signature.signature);
+          .withArgs(signer.address, nonce, signature);
       });
     });
   });

@@ -238,14 +238,14 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let eip191Signer = new EIP191Signer();
 
-          let signature = await eip191Signer.signDataWithIntendedValidator(
+          let { signature } = await eip191Signer.signDataWithIntendedValidator(
             context.keyManager.address,
             encodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT2
           );
 
           await context.keyManager.executeRelayCall(
-            signature.signature,
+            signature,
             nonce,
             executeRelayCallPayload,
             { value: valueToSend }
@@ -288,7 +288,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           let eip191Signer = new EIP191Signer();
 
-          let signature = await eip191Signer.signDataWithIntendedValidator(
+          let { signature } = await eip191Signer.signDataWithIntendedValidator(
             context.keyManager.address,
             encodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT2
@@ -296,7 +296,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           await expect(
             context.keyManager.executeRelayCall(
-              signature.signature,
+              signature,
               nonce,
               executeRelayCallPayload,
               { value: valueToSend }

@@ -104,14 +104,14 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         let eip191Signer = new EIP191Signer();
 
-        let signature = await eip191Signer.signDataWithIntendedValidator(
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
 
         await context.keyManager.executeRelayCall(
-          signature.signature,
+          signature,
           latestNonce,
           executeRelayCallPayload,
           { value: valueToSend }
@@ -173,7 +173,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         let eip191Signer = new EIP191Signer();
 
-        let signature = await eip191Signer.signDataWithIntendedValidator(
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -181,14 +181,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature.signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -237,7 +232,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         let eip191Signer = new EIP191Signer();
 
-        let signature = await eip191Signer.signDataWithIntendedValidator(
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -245,14 +240,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature.signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -306,7 +296,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         let eip191Signer = new EIP191Signer();
 
-        let signature = await eip191Signer.signDataWithIntendedValidator(
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -314,14 +304,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature.signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -370,7 +355,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         let eip191Signer = new EIP191Signer();
 
-        let signature = await eip191Signer.signDataWithIntendedValidator(
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -378,14 +363,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature.signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -439,7 +419,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         let eip191Signer = new EIP191Signer();
 
-        let signature = await eip191Signer.signDataWithIntendedValidator(
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -447,14 +427,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature.signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -503,7 +478,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         let eip191Signer = new EIP191Signer();
 
-        let signature = await eip191Signer.signDataWithIntendedValidator(
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -511,14 +486,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature.signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(
@@ -568,7 +538,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         let eip191Signer = new EIP191Signer();
 
-        let signature = await eip191Signer.signDataWithIntendedValidator(
+        let { signature } = await eip191Signer.signDataWithIntendedValidator(
           context.keyManager.address,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
@@ -576,14 +546,9 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(
-            signature.signature,
-            nonceBefore,
-            executeRelayCallPayload,
-            {
-              value: valueToSend,
-            }
-          );
+          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         let fetchedName = await targetContract.callStatic.getName();
         let nonceAfter = await context.keyManager.callStatic.getNonce(

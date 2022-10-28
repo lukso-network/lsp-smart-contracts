@@ -303,7 +303,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const eip191Signer = new EIP191Signer();
 
-            const lsp6Signature = eip191Signer.signDataWithIntendedValidator(
+            const { signature } = eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT2
@@ -312,7 +312,7 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(lsp6Signature.signature, nonce, payload, {
+                .executeRelayCall(signature, nonce, payload, {
                   value: valueToSend,
                 })
             )
@@ -413,7 +413,8 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             const lsp6Signer = new EIP191Signer();
-            const lsp6signature = lsp6Signer.signDataWithIntendedValidator(
+
+            const { signature } = lsp6Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT2
@@ -422,7 +423,7 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(lsp6signature.signature, nonce, payload, {
+                .executeRelayCall(signature, nonce, payload, {
                   value: valueToSend,
                 })
             )

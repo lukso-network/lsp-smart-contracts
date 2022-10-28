@@ -380,8 +380,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             ]
           );
 
-          // lsp6 signed message prefixed
-          let signedMessage = await eip191Signer.signDataWithIntendedValidator(
+          let { signature } = await eip191Signer.signDataWithIntendedValidator(
             context.keyManager.address,
             encodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT0
@@ -390,12 +389,9 @@ export const shouldBehaveLikePermissionTransferValue = (
           await expect(
             context.keyManager
               .connect(context.owner)
-              .executeRelayCall(
-                signedMessage.signature,
-                0,
-                executeRelayCallPayload,
-                { value: valueToSend }
-              )
+              .executeRelayCall(signature, 0, executeRelayCallPayload, {
+                value: valueToSend,
+              })
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient],
             [`-${amount}`, amount]

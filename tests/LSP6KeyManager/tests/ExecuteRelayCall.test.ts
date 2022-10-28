@@ -101,15 +101,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let eip191Signer = new EIP191Signer();
 
-            let signature = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
-              encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT1
-            );
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await expect(
               context.keyManager.executeRelayCall(
-                signature.signature,
+                signature,
                 signedMessageParams.nonce,
                 signedMessageParams.payload,
                 { value: valueToSendFromRelayer }
@@ -160,17 +161,18 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let eip191Signer = new EIP191Signer();
 
-            let signature = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
-              encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT1
-            );
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await expect(
               context.keyManager
                 .connect(relayer)
                 .executeRelayCall(
-                  signature.signature,
+                  signature,
                   signedMessageParams.nonce,
                   signedMessageParams.payload,
                   { value: valueToSendFromRelayer }
@@ -223,16 +225,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let eip191Signer = new EIP191Signer();
 
-            let signature = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
-              encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT1
-            );
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await context.keyManager
               .connect(relayer)
               .executeRelayCall(
-                signature.signature,
+                signature,
                 signedMessageParams.nonce,
                 signedMessageParams.payload,
                 { value: valueToSendFromRelayer }
@@ -297,17 +300,18 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let eip191Signer = new EIP191Signer();
 
-              let signature = await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT1
-              );
+              let { signature } =
+                await eip191Signer.signDataWithIntendedValidator(
+                  context.keyManager.address,
+                  encodedMessage,
+                  LOCAL_PRIVATE_KEYS.ACCOUNT1
+                );
 
               await expect(
                 context.keyManager
                   .connect(relayer)
                   .executeRelayCall(
-                    signature.signature,
+                    signature,
                     latestNonce,
                     executeRelayCallPayload,
                     { value: valueToSendFromRelayer }
@@ -365,16 +369,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let eip191Signer = new EIP191Signer();
 
-              let signature = await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT1
-              );
+              let { signature } =
+                await eip191Signer.signDataWithIntendedValidator(
+                  context.keyManager.address,
+                  encodedMessage,
+                  LOCAL_PRIVATE_KEYS.ACCOUNT1
+                );
 
               await context.keyManager
                 .connect(relayer)
                 .executeRelayCall(
-                  signature.signature,
+                  signature,
                   latestNonce,
                   executeRelayCallPayload,
                   { value: valueToSendFromRelayer }
