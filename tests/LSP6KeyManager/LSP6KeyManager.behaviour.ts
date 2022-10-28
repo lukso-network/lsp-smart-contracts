@@ -69,11 +69,11 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionSign(buildContext);
   });
 
-  describe.only("ALLOWEDADDRESSES", () => {
+  describe("ALLOWEDADDRESSES", () => {
     shouldBehaveLikeAllowedAddresses(buildContext);
   });
 
-  describe("ALLOWEDFUNCTIONS", () => {
+  describe.only("ALLOWEDFUNCTIONS", () => {
     shouldBehaveLikeAllowedFunctions(buildContext);
   });
 

@@ -221,20 +221,7 @@ export const shouldBehaveLikeAllowedStandards = (
             .connect(addressCanInteractOnlyWithERC1271)
             .execute(upPayload)
         )
-          .to.be.reverted;
-        // await expect(
-        //   context.keyManager
-        //     .connect(addressCanInteractOnlyWithERC1271)
-        //     .execute(upPayload)
-        // )
-        //   .to.be.revertedWithCustomError(
-        //     context.keyManager,
-        //     "NotAllowedStandard"
-        //   )
-        //   .withArgs(
-        //     addressCanInteractOnlyWithERC1271.address,
-        //     targetContract.address
-        //   );
+          .to.be.revertedWith("not allowed call");
       });
     });
   });
@@ -264,14 +251,7 @@ export const shouldBehaveLikeAllowedStandards = (
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(upPayload)
         )
-          .to.be.revertedWithCustomError(
-            context.keyManager,
-            "NotAllowedStandard"
-          )
-          .withArgs(
-            addressCanInteractOnlyWithLSP7.address,
-            signatureValidatorContract.address
-          );
+          .to.be.revertedWith("not allowed call")
       });
     });
 
@@ -290,14 +270,7 @@ export const shouldBehaveLikeAllowedStandards = (
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(transferLyxPayload)
         )
-          .to.be.revertedWithCustomError(
-            context.keyManager,
-            "NotAllowedStandard"
-          )
-          .withArgs(
-            addressCanInteractOnlyWithLSP7.address,
-            otherUniversalProfile.address
-          );
+          .to.be.revertedWith("not allowed call")
       });
     });
   });
