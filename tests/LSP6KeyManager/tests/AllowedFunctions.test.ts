@@ -3,7 +3,12 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { EIP191Signer } from "@lukso/eip191-signer.js";
 
-import { LSP8Mintable, LSP8Mintable__factory, TargetContract, TargetContract__factory } from "../../../types";
+import {
+  LSP8Mintable,
+  LSP8Mintable__factory,
+  TargetContract,
+  TargetContract__factory,
+} from "../../../types";
 
 // constants
 import {
@@ -53,14 +58,17 @@ export const shouldBehaveLikeAllowedFunctions = (
     let permissionsValues = [
       PERMISSIONS.CALL,
       PERMISSIONS.CALL,
-      "0x1c" + "ffffffff" + "ffffffffffffffffffffffffffffffffffffffff" + targetContract.interface.getSighash("setName").substring(2)
+      "0x1c" +
+        "ffffffff" +
+        "ffffffffffffffffffffffffffffffffffffffff" +
+        targetContract.interface.getSighash("setName").substring(2),
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
   });
 
   describe("when interacting via `execute(...)`", () => {
-    describe("when caller has nothing listed under AllowedFunctions", () => {
+    describe("when caller has nothing listed under when interacting via `execute(...)`", () => {
       describe("when calling a contract", () => {
         it("should pass when calling any function (eg: `setName(...)`)", async () => {
           let initialName = await targetContract.callStatic.getName();
@@ -159,8 +167,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             context.keyManager
               .connect(addressCanCallOnlyOneFunction)
               .execute(executePayload)
-          )
-            .to.be.revertedWith("not allowed call")
+          ).to.be.revertedWith("not allowed call");
 
           let result = await targetContract.callStatic.getNumber();
           expect(result).to.not.equal(newNumber);
@@ -181,8 +188,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           context.keyManager
             .connect(addressCanCallOnlyOneFunction)
             .execute(payload)
-        )
-          .to.be.revertedWith("not allowed call");
+        ).to.be.revertedWith("not allowed call");
       });
     });
   });
@@ -289,8 +295,7 @@ export const shouldBehaveLikeAllowedFunctions = (
               executeRelayCallPayload,
               { value: valueToSend }
             )
-          )
-            .to.be.revertedWith("not allowed call")
+          ).to.be.revertedWith("not allowed call");
 
           let endResult = await targetContract.callStatic.getNumber();
           expect(endResult.toString()).to.equal(currentNumber.toString());
@@ -300,24 +305,23 @@ export const shouldBehaveLikeAllowedFunctions = (
   });
 
   describe("allowed to call only `mint(...)` function on LSP8 contracts", () => {
-
     let addressCanCallOnlyMintOnLSP8: SignerWithAddress;
-    let lsp8Contract: LSP8Mintable
+    let lsp8Contract: LSP8Mintable;
 
-    const tokenId = "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef"
+    const tokenId =
+      "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
     beforeEach(async () => {
       context = await buildContext();
 
-      addressCanCallOnlyMintOnLSP8 = context.accounts[1]
+      addressCanCallOnlyMintOnLSP8 = context.accounts[1];
 
-      lsp8Contract = await new LSP8Mintable__factory(context.accounts[0]).deploy("LSP8 NFT", "NFT", context.accounts[0].address)
-      await lsp8Contract.connect(context.accounts[0]).mint(
-        context.universalProfile.address,
-        tokenId,
-        true,
-        "0x"
-      )
+      lsp8Contract = await new LSP8Mintable__factory(
+        context.accounts[0]
+      ).deploy("LSP8 NFT", "NFT", context.accounts[0].address);
+      await lsp8Contract
+        .connect(context.accounts[0])
+        .mint(context.universalProfile.address, tokenId, true, "0x");
 
       let permissionsKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -325,46 +329,46 @@ export const shouldBehaveLikeAllowedFunctions = (
         ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
           addressCanCallOnlyMintOnLSP8.address.substring(2),
       ];
-  
+
       let permissionsValues = [
         PERMISSIONS.CALL,
-        "0x1c" + INTERFACE_IDS.LSP8IdentifiableDigitalAsset.substring(2) + "ffffffffffffffffffffffffffffffffffffffff" + lsp8Contract.interface.getSighash("transfer").substring(2)
+        "0x1c" +
+          INTERFACE_IDS.LSP8IdentifiableDigitalAsset.substring(2) +
+          "ffffffffffffffffffffffffffffffffffffffff" +
+          lsp8Contract.interface.getSighash("transfer").substring(2),
       ];
-  
+
       await setupKeyManager(context, permissionsKeys, permissionsValues);
-    })
+    });
 
     it("allow to call transfer(...)", async () => {
-      console.log(lsp8Contract.interface)
+      let transferPayload = lsp8Contract.interface.encodeFunctionData(
+        "transfer",
+        [
+          // address from,
+          context.universalProfile.address,
+          // address to,
+          context.accounts[5].address,
+          // bytes32 tokenId,
+          "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+          // bool force,
+          true,
+          // bytes memory data
+          "0x",
+        ]
+      );
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          lsp8Contract.address,
+          0,
+          transferPayload,
+        ]);
+      await context.keyManager
+        .connect(addressCanCallAnyFunctions)
+        .execute(executePayload);
+    });
 
-      // let mintPayload = lsp8Contract.interface.encodeFunctionData("transfer(address,address,bytes32,bool,bytes)", [
-      //   // address from,
-      //   context.universalProfile.address,
-      //   // address to,
-      //   context.accounts[5],
-      //   // bytes32 tokenId,
-      //   "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
-      //   // bool force,
-      //   true,
-      //   // bytes memory data
-      //   "0x"
-      // ])
-
-      //   let executePayload =
-      //       context.universalProfile.interface.encodeFunctionData("execute", [
-      //         OPERATION_TYPES.CALL,
-      //         lsp8Contract.address,
-      //         0,
-      //         mintPayload,
-      //       ]);
-
-          // await context.keyManager
-          //   .connect(addressCanCallAnyFunctions)
-          //   .execute(executePayload);
-    })
-
-    it("should not allow to call transfer(...)", async () => {
-
-    })
-  })
+    // it("should not allow to call transfer(...)", async () => {});
+  });
 };

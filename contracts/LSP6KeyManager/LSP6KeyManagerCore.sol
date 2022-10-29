@@ -223,7 +223,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 if (bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
                     // CHECK if key = AddressPermissions[] or AddressPermissions[index]
                     _verifyCanSetPermissionsArray(key, value, from, permissions);
-                    
+
                     // "nullify" permission keys to not check them against allowed ERC725Y keys
                     inputKeys[ii] = bytes32(0);
 
@@ -364,10 +364,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              * if bytes6(dataKey) != bytes6(keccak256("AddressPermissions"))
              * this is not a standard permission dataKey according to LSP6
              * so we revert execution
-             * 
-             * @dev to implement custom permissions dataKeys, consider overriding 
+             *
+             * @dev to implement custom permissions dataKeys, consider overriding
              * this function and implement specific checks
-             * 
+             *
              *      // AddressPermissions:MyCustomPermissions:<address>
              *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
              *
@@ -430,7 +430,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             return;
         }
-        
+
         // dataKey = AddressPermissions[index] -> array index
         bytes memory valueAtIndex = ERC725Y(target).getData(dataKey);
 
@@ -439,7 +439,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else {
             _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
         }
-        
+
         if (dataValue.length != 0 && dataValue.length != 20) {
             revert AddressPermissionArrayIndexValueNotAnAddress(dataKey, dataValue);
         }
@@ -482,7 +482,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             //        & input key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000011223344
             //
             mask = bytes32(type(uint256).max) << (8 * zeroBytesCount);
-            
+
             // loop through each keys given as input
             for (uint256 jj = 0; jj < inputKeys.length; jj = GasLib.uncheckedIncrement(jj)) {
                 // skip permissions keys that have been previously checked and "nulled"
@@ -564,7 +564,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         if (containsFunctionCall) {
             selector = bytes4(payload[164:168]);
-        }
+        } // migth want to return or revert if not a function call
 
         // TODO: change behaviour to disallow if nothing is set
         // if nothing set, whitelist everything
@@ -573,6 +573,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if ((allowedCalls.length % 29) != 0) return;
 
         for (uint256 ii = 0; ii < allowedCalls.length; ii += 29) {
+            bool isAllowedStandard;
+            bool isAllowedAddress;
+            bool isAllowedFunction;
 
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
 
@@ -580,10 +583,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             address allowedAddress = address(bytes20(bytes28(chunk) << 32));
             bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);
 
-            if (to.supportsERC165Interface(allowedStandard)) return;
-            if (to == allowedAddress) return;
-            if (containsFunctionCall && (selector == allowedFunction)) return;
-            
+            isAllowedStandard = allowedStandard == bytes4(type(uint32).max) || to.supportsERC165Interface(allowedStandard);
+            isAllowedAddress = allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
+            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction);
+
+            if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
         }
 
         revert("not allowed call");
