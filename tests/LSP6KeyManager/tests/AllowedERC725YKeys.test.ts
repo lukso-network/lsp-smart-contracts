@@ -8,9 +8,13 @@ import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
+import { encodeCompactedBytes, decodeCompactBytes } from "../../utils/helpers";
 
 // helpers
 import { abiCoder, getRandomString } from "../../utils/helpers";
+
+// types
+import { BytesLike } from "ethers";
 
 export const shouldBehaveLikeAllowedERC725YKeys = (
   buildContext: () => Promise<LSP6TestContext>
@@ -57,8 +61,10 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[customKey1]]),
-        abiCoder.encode(["bytes32[]"], [[customKey2, customKey3, customKey4]]),
+        encodeCompactedBytes([customKey1]),
+        encodeCompactedBytes([customKey2, customKey3, customKey4]),
+        //abiCoder.encode(["bytes32[]"], [[customKey1]]),
+        //abiCoder.encode(["bytes32[]"], [[customKey2, customKey3, customKey4]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -70,7 +76,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetOneKey.address.substring(2)
         );
-        let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        //let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.have.lengthOf(1);
       });
@@ -80,7 +87,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetManyKeys.address.substring(2)
         );
-        let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        //let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.have.lengthOf(3);
       });
@@ -90,7 +98,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetOneKey.address.substring(2)
         );
-        let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        //let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.include(customKey1);
       });
@@ -100,7 +109,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetManyKeys.address.substring(2)
         );
-        let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        //let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.contain(customKey2);
         expect(decodedResult).to.contain(customKey3);
@@ -1044,8 +1054,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
     let controllerCanSetMappingKeys: SignerWithAddress;
 
     // all mapping keys starting with: SupportedStandards:...
-    const supportedStandardKey =
-      "0xeafec4d89fa9619884b6b8913562645500000000000000000000000000000000";
+    const supportedStandardKey = "0xeafec4d89fa9619884b6b89135626455";
 
     // SupportedStandards:LSPX
     const LSPXKey =
@@ -1076,7 +1085,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[supportedStandardKey]]),
+        encodeCompactedBytes([supportedStandardKey]),
+        //abiCoder.encode(["bytes32[]"], [[supportedStandardKey]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1430,8 +1440,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
   describe("keyType: Array", () => {
     let controllerCanSetArrayKeys: SignerWithAddress;
 
-    const allowedArrayKey =
-      "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000000";
+    const allowedArrayKey = "0x868affce801d08a5948eebc349a5c8ff";
 
     // keccak256("MyArray[]")
     const arrayKeyLength =
@@ -1465,7 +1474,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[allowedArrayKey]]),
+        encodeCompactedBytes([allowedArrayKey]),
+        //abiCoder.encode(["bytes32[]"], [[allowedArrayKey]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1692,7 +1702,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[customKey1, customKey2, zeroKey]]),
+        encodeCompactedBytes([customKey1, customKey2, zeroKey]),
+        //abiCoder.encode(["bytes32[]"], [[customKey1, customKey2, zeroKey]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1751,7 +1762,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         ),
       },
     ].forEach((testCase) => {
-      it(`should pass when trying to set any random data key (e.g: ${testCase.datakeyToSet})`, async () => {
+      it(`should revert when trying to set any random data key (e.g: ${testCase.datakeyToSet})`, async () => {
         const key = testCase.datakeyToSet;
         const value = ethers.utils.hexlify(
           ethers.utils.toUtf8Bytes("some value for " + key)
@@ -1763,12 +1774,19 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             [key, value]
           );
 
-        await context.keyManager
-          .connect(controllerCanSetSomeKeys)
-          .execute(setDataPayload);
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedERC725YKey"
+          )
+          .withArgs(controllerCanSetSomeKeys.address, testCase.datakeyToSet);
 
-        const result = await context.universalProfile["getData(bytes32)"](key);
-        expect(result).to.equal(value);
+        //const result = await context.universalProfile["getData(bytes32)"](key);
+        //expect(result).to.equal(value);
       });
     });
   });
@@ -1776,8 +1794,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
   describe("one single byte as an allowed data key (e.g: 0xaa0000...0000", () => {
     let controllerCanSetSomeKeys: SignerWithAddress;
 
-    const allowedDataKey =
-      "0xaa00000000000000000000000000000000000000000000000000000000000000";
+    const allowedDataKey = "0xaa";
 
     before(async () => {
       context = await buildContext();
@@ -1796,7 +1813,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[allowedDataKey]]),
+        encodeCompactedBytes([allowedDataKey]),
+        //abiCoder.encode(["bytes32[]"], [[allowedDataKey]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);

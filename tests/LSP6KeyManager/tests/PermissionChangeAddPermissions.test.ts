@@ -15,7 +15,11 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, combinePermissions } from "../../utils/helpers";
+import {
+  abiCoder,
+  combinePermissions,
+  encodeCompactedBytes,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -2332,7 +2336,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     });
   });
 
-  describe("setting Allowed ERC725YKeys", () => {
+  describe.only("setting Allowed ERC725YKeys", () => {
     let canOnlyAddPermissions: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;
 
@@ -2370,16 +2374,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       let permissionValues = [
         PERMISSIONS.ADDPERMISSIONS,
         PERMISSIONS.CHANGEPERMISSIONS,
-        abiCoder.encode(
-          ["bytes32[]"],
-          [
-            [
-              ERC725YKeys.LSP3["LSP3Profile"],
-              // prettier-ignore
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
-            ],
-          ]
-        ),
+        encodeCompactedBytes([
+          ERC725YKeys.LSP3["LSP3Profile"],
+          // prettier-ignore
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
+        ]),
         "0x11223344",
         "0x0000000000000000000000000000000000000000000000000000000000000000",
         "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000",
@@ -2395,18 +2394,13 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
 
-          let value = abiCoder.encode(
-            ["bytes32[]"],
-            [
-              [
-                ERC725YKeys.LSP3["LSP3Profile"],
-                // prettier-ignore
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
-                // prettier-ignore
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
-              ],
-            ]
-          );
+          let value = encodeCompactedBytes([
+            ERC725YKeys.LSP3["LSP3Profile"],
+            // prettier-ignore
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
+            // prettier-ignore
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
+          ]);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2425,10 +2419,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
 
-          let value = abiCoder.encode(
-            ["bytes32[]"],
-            [[ERC725YKeys.LSP3["LSP3Profile"]]]
-          );
+          let value = encodeCompactedBytes([ERC725YKeys.LSP3["LSP3Profile"]]);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2492,17 +2483,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             newController.address.substr(2);
 
-          let value = abiCoder.encode(
-            ["bytes32[]"],
-            [
-              [
-                // prettier-ignore
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 1")),
-                // prettier-ignore
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 2")),
-              ],
-            ]
-          );
+          let value = encodeCompactedBytes([
+            // prettier-ignore
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 1")),
+            // prettier-ignore
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 2")),
+          ]);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2534,12 +2520,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidABIEncodedArray"
-            )
-            .withArgs(value, "bytes32");
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "InvalidCompactedAllowedERC725YDataKeys"
+          );
         });
       });
     });
@@ -2551,18 +2535,13 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
 
-          let value = abiCoder.encode(
-            ["bytes32[]"],
-            [
-              [
-                ERC725YKeys.LSP3["LSP3Profile"],
-                // prettier-ignore
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
-                // prettier-ignore
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
-              ],
-            ]
-          );
+          let value = encodeCompactedBytes([
+            ERC725YKeys.LSP3["LSP3Profile"],
+            // prettier-ignore
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
+            // prettier-ignore
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Another Custom Data Key")),
+          ]);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2583,10 +2562,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
 
-          let value = abiCoder.encode(
-            ["bytes32[]"],
-            [[ERC725YKeys.LSP3["LSP3Profile"]]]
-          );
+          let value = encodeCompactedBytes([ERC725YKeys.LSP3["LSP3Profile"]]);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2656,19 +2632,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             newController.address.substr(2);
 
-          let value = abiCoder.encode(
-            ["bytes32[]"],
-            [
-              [
-                ethers.utils.keccak256(
-                  ethers.utils.toUtf8Bytes("My Custom Key 1")
-                ),
-                ethers.utils.keccak256(
-                  ethers.utils.toUtf8Bytes("My Custom Key 2")
-                ),
-              ],
-            ]
-          );
+          let value = encodeCompactedBytes([
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Key 1")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Key 2")),
+          ]);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2860,7 +2827,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       });
 
       describe("when caller is an address with permission SETDATA + ADDPERMISSIONS", () => {
-        it("(should pass): 2 x keys + add 2 x new permissions + increment AddressPermissions[].length by +2", async () => {
+        it("(should fail): 2 x keys + add 2 x new permissions + increment AddressPermissions[].length by +2", async () => {
           let newControllerKeyOne = ethers.Wallet.createRandom();
           let newControllerKeyTwo = ethers.Wallet.createRandom();
 
@@ -2889,13 +2856,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          await context.keyManager
-            .connect(canSetDataAndAddPermissions)
-            .execute(payload);
-
-          // prettier-ignore
-          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.deep.equal(values);
+          await expect(
+            context.keyManager
+              .connect(canSetDataAndAddPermissions)
+              .execute(payload)
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "NoERC725YDataKeysAllowed"
+          );
         });
 
         it("(should fail): 2 x keys + add 2 x new permissions + decrement AddressPermissions[].length by -1", async () => {
@@ -3006,7 +2974,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       });
 
       describe("when caller is an address with permission SETDATA + CHANGEPERMISSIONS", () => {
-        it("(should pass): 2 x keys + remove 2 x addresses with permissions + decrement AddressPermissions[].length by -2", async () => {
+        it("(should fail): 2 x keys + remove 2 x addresses with permissions + decrement AddressPermissions[].length by -2", async () => {
           let keys = [
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
             ethers.utils.keccak256(
@@ -3032,16 +3000,17 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          await context.keyManager
-            .connect(canSetDataAndChangePermissions)
-            .execute(payload);
-
-          // prettier-ignore
-          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.deep.equal(values);
+          await expect(
+            context.keyManager
+              .connect(canSetDataAndChangePermissions)
+              .execute(payload)
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "NoERC725YDataKeysAllowed"
+          );
         });
 
-        it("(should pass): 2 x keys + change 2 x existing permissions", async () => {
+        it("(should fail): 2 x keys + change 2 x existing permissions", async () => {
           let keys = [
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
             ethers.utils.keccak256(
@@ -3065,13 +3034,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             [keys, values]
           );
 
-          await context.keyManager
-            .connect(canSetDataAndChangePermissions)
-            .execute(payload);
-
-          // prettier-ignore
-          const fetchedResult = await context.universalProfile["getData(bytes32[])"](keys);
-          expect(fetchedResult).to.deep.equal(values);
+          await expect(
+            context.keyManager
+              .connect(canSetDataAndChangePermissions)
+              .execute(payload)
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "NoERC725YDataKeysAllowed"
+          );
         });
 
         it("(should fail): 2 x keys + add 2 x new permissions", async () => {
