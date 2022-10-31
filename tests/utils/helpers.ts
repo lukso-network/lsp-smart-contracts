@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, BytesLike } from "ethers";
 import { ethers } from "hardhat";
 
 export const abiCoder = ethers.utils.defaultAbiCoder;
@@ -126,4 +126,35 @@ export function combinePermissions(..._permissions: string[]) {
   });
 
   return ethers.utils.hexZeroPad(result.toHexString(), 32);
+}
+
+export function encodeCompactedBytes(inputKeys: BytesLike[]) {
+  let compactBytesArray = "0x";
+  for (let i = 0; i < inputKeys.length; i++) {
+    compactBytesArray +=
+      ethers.utils
+        .hexlify([inputKeys[i].toString().substring(2).length / 2])
+        .substring(2) + inputKeys[i].toString().substring(2);
+  }
+  return compactBytesArray;
+}
+
+export function decodeCompactBytes(compactBytesArray: BytesLike) {
+  let pointer: number = 2;
+  let keysToExport: BytesLike[] = [];
+  while (pointer < compactBytesArray.length) {
+    const length = ethers.BigNumber.from(
+      "0x" + compactBytesArray.toString().substring(pointer, pointer + 2)
+    ).toNumber();
+
+    keysToExport.push(
+      "0x" +
+        compactBytesArray
+          .toString()
+          .substring(pointer + 2, pointer + 2 * (length + 1))
+    );
+
+    pointer += 2 * (length + 1);
+  }
+  return keysToExport;
 }
