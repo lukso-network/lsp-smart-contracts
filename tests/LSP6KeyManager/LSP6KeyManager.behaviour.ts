@@ -73,7 +73,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedAddresses(buildContext);
   });
 
-  describe.only("ALLOWEDFUNCTIONS", () => {
+  describe("ALLOWEDFUNCTIONS", () => {
     shouldBehaveLikeAllowedFunctions(buildContext);
   });
 

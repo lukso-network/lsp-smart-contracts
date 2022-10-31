@@ -555,6 +555,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // Skip if both SUPER permissions are present
         if (hasSuperOperation && hasSuperTransferValue) return;
 
+        _verifyAllowedCalls(payload, from);
+
+    }
+
+    function _verifyAllowedCalls(bytes calldata payload, address from) internal view {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
         bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
@@ -562,20 +567,19 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bool containsFunctionCall = payload.length >= 168;
         bytes4 selector;
 
-        if (containsFunctionCall) {
-            selector = bytes4(payload[164:168]);
-        } // migth want to return or revert if not a function call
+        if (containsFunctionCall) selector = bytes4(payload[164:168]);
+
+        uint256 allowedCallsLength = allowedCalls.length;
 
         // TODO: change behaviour to disallow if nothing is set
-        // if nothing set, whitelist everything
-        if (allowedCalls.length == 0) return;
-        // if not properly encoded, whitelist everything
-        if ((allowedCalls.length % 29) != 0) return;
+        // if nothing set or not properly , whitelist everything
+        if (allowedCallsLength == 0 || (allowedCallsLength % 29) != 0) return;
 
-        for (uint256 ii = 0; ii < allowedCalls.length; ii += 29) {
-            bool isAllowedStandard;
-            bool isAllowedAddress;
-            bool isAllowedFunction;
+        bool isAllowedStandard;
+        bool isAllowedAddress;
+        bool isAllowedFunction;
+
+        for (uint256 ii = 0; ii < allowedCallsLength; ii += 29) {
 
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
 
@@ -585,13 +589,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             isAllowedStandard = allowedStandard == bytes4(type(uint32).max) || to.supportsERC165Interface(allowedStandard);
             isAllowedAddress = allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
-            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction);
+            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction); 
 
             if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
         }
 
-        revert("not allowed call");
-
+        revert NotAllowedCall(from, to, selector);
     }
 
     /**

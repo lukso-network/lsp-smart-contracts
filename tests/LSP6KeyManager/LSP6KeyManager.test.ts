@@ -66,17 +66,16 @@ describe("LSP6KeyManager", () => {
         const universalProfile = await new UniversalProfile__factory(
           owner
         ).deploy(owner.address);
-        const keyManagerInternalTester =
-          await new KeyManagerInternalTester__factory(owner).deploy(
-            universalProfile.address
-          );
+        const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
+          owner
+        ).deploy(universalProfile.address);
 
         return { owner, accounts, universalProfile, keyManagerInternalTester };
       });
     });
   });
 
-  describe("when using LSP6KeyManager with proxy", () => {
+  describe.skip("when using LSP6KeyManager with proxy", () => {
     const buildTestContext = async (): Promise<LSP6TestContext> => {
       const accounts = await ethers.getSigners();
       const owner = accounts[0];
