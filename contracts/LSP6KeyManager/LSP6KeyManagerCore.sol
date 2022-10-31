@@ -57,6 +57,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using ECDSA for bytes32;
     using ERC165Checker for address;
     using EIP191Signer for address;
+    using BytesLib for bytes;
 
     address public target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
@@ -199,11 +200,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 // CHECK for permission keys
                 _verifyCanSetPermissions(inputKey, inputValue, from, permissions);
 
-            } else {
-                bytes32[] memory wrappedInputKey = new bytes32[](1);
-                wrappedInputKey[0] = inputKey;
-
-                _verifyCanSetData(from, permissions, wrappedInputKey);
+            } else {    
+                _verifyCanSetData(from, permissions, inputKey);
             }
         } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
             (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
@@ -250,6 +248,28 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else {
             revert InvalidERC725Function(erc725Function);
         }
+    }
+
+    /**
+     * @dev verify if `_from` has the required permissions to set some dataKeys
+     * on the linked target
+     * @param from the address who want to set the dataKeys
+     * @param permissions the permissions
+     * @param inputKey the dataKeys being set
+     * containing a list of key-value pairs
+     */
+    function _verifyCanSetData(
+        address from,
+        bytes32 permissions,
+        bytes32 inputKey
+    ) internal view {
+        // Skip if caller has SUPER permissions
+        if (permissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
+
+        _requirePermissions(from, permissions, _PERMISSION_SETDATA);
+
+        bytes memory allowedERC725YKeysCompacted = ERC725Y(target).getAllowedERC725YKeysFor(from);
+        _verifyAllowedERC725YSingleKey(from, inputKey, allowedERC725YKeysCompacted);
     }
 
     /**
@@ -342,8 +362,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bool isClearingArray = dataValue.length == 0;
 
             // AddressPermissions:AllowedERC725YKeys:<address>
-            if (!isClearingArray && !LSP2Utils.isEncodedArray(dataValue)) {
-                revert InvalidABIEncodedArray(dataValue, "bytes32");
+            if (!isClearingArray && !_checkValidCompactBytesArray(dataValue)) {
+                revert InvalidCompactedAllowedERC725YDataKeys();
             }
 
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(dataKey);
@@ -443,60 +463,138 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
     }
 
+
+
+    function _checkValidCompactBytesArray(bytes memory compactBytesArray)
+        public
+        pure
+        returns (bool isValid)
+    {
+        /**
+         * Pointer will always land on these values:
+         *
+         * ↓↓
+         * 03 a00000
+         * 05 fff83a0011
+         * 20 aa0000000000000000000000000000000000000000000000000000000000cafe
+         * 12 bb000000000000000000000000000000beef
+         * 19 cc00000000000000000000000000000000000000000000deed
+         * ↑↑
+         *
+         * The pointer can only land on the length of the following bytes value.
+         */
+        uint256 pointer = 0;
+
+        /**
+         * Check each length byte and make sure that when you reach the last length byte.
+         * Make sure that the last length describes exactly the last bytes value and you do not get out of bounds.
+         */
+        while (pointer < compactBytesArray.length) {
+            uint256 elementLength = uint256(uint8(bytes1(compactBytesArray[pointer])));
+            pointer += elementLength + 1;
+        }
+        if (pointer == compactBytesArray.length) isValid = true;
+    }
+
+    error NoERC725YDataKeysAllowed();
+    error InvalidCompactedAllowedERC725YDataKeys();
+
+    function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YKeysCompacted) internal pure {
+        if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed();
+        if (!_checkValidCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidCompactedAllowedERC725YDataKeys();
+        
+        bool foundAllowedKey;
+
+        /**
+         * pointer will always land on these values:
+         *
+         * ↓↓
+         * 03 a00000
+         * 05 fff83a0011
+         * 20 aa0000000000000000000000000000000000000000000000000000000000cafe
+         * 12 bb000000000000000000000000000000beef
+         * 19 cc00000000000000000000000000000000000000000000deed
+         * ↑↑
+         *
+         * the pointer can only land on the length of the following bytes value.
+         */
+        uint256 pointer = 0;
+
+        /**
+         * iterate over each key by saving in the `pointer` variable the index for
+         * the length of the following key until the `pointer` reaches an undefined value
+         *
+         * 0x 03 a00000 03 fff83a 20 aa00...00cafe
+         *    ↑↑        ↑↑        ↑↑
+         *  first  |  second  |  third
+         *  length |  length  |  length
+         */
+        while (!foundAllowedKey && pointer < allowedERC725YKeysCompacted.length) {
+            /**
+             * save the length of the following allowed key
+             * which is saved in `allowedERC725YKeys[pointer]`
+             */
+            uint256 length = uint256(uint8(bytes1(allowedERC725YKeysCompacted[pointer])));
+
+            /**
+             * if `length` is zero, skip everything an move to next key
+             */
+            if (length == 0) {
+                pointer += length + 1;
+                continue;
+            }
+
+            /*
+             * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
+             * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
+             */
+            //bytes32 allowedKey = bytes32(allowedERC725YKeysCompacted[pointer + 1:pointer + 1 + length]);
+            bytes32 allowedKey = bytes32(allowedERC725YKeysCompacted.slice(
+                pointer + 1,
+                length
+            ));
+
+            /**
+             * the bitmask discard the last `32 - length` bytes of the input key via ANDing &
+             * so to compare only the relevant parts of each ERC725Y keys
+             *
+             * E.g.:
+             *
+             * allowed key = 0xa00000
+             *
+             *      &     compare this part
+             *                 vvvvvv
+             * checked key = 0xa00000cafecafecafecafecafecafecafe000000000000000000000011223344
+             *
+             *                                              discard this part
+             *                       vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+             *        mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
+             */
+            bytes32 mask = bytes32(
+                0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            ) << (8 * (32 - length));
+
+            if (allowedKey == (inputKey & mask)) {
+                // voila you found the key ;)
+                foundAllowedKey = true;
+            } else {
+                // move the pointer to the first index of the first fixed key
+                pointer += length + 1;
+            }
+        }
+
+        if (!foundAllowedKey) revert NotAllowedERC725YKey(from, inputKey);
+    }
+
     /**
      * @dev verify if `from` is allowed to change the `inputKey`
      * @param from the address who want to set the dataKeys
      * @param inputKeys the dataKey that is verified
      */
     function _verifyAllowedERC725YKeys(address from, bytes32[] memory inputKeys) internal view {
-        bytes memory allowedERC725YKeysEncoded = ERC725Y(target).getAllowedERC725YKeysFor(from);
-
-        // whitelist any ERC725Y key
-        if (
-            // if nothing in the list
-            allowedERC725YKeysEncoded.length == 0 ||
-            // if not correctly abi-encoded array
-            !LSP2Utils.isEncodedArray(allowedERC725YKeysEncoded)
-        ) return;
-
-        bytes32[] memory allowedERC725YKeys = abi.decode(allowedERC725YKeysEncoded, (bytes32[]));
-
-        uint256 zeroBytesCount;
-        bytes32 mask;
-
-        // loop through each allowed ERC725Y key retrieved from storage
-        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii = GasLib.uncheckedIncrement(ii)) {
-            // required to know which part of the input key to compare against the allowed key
-            zeroBytesCount = _countTrailingZeroBytes(allowedERC725YKeys[ii]);
-
-            // use a bitmask to discard the last `n` bytes of the input key (where `n` = `zeroBytesCount`)
-            // and compare only the relevant parts of each ERC725Y keys
-            //
-            // for an allowed key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000000000000
-            //
-            //                        |------compare this part-------|------discard this part--------|
-            //                        v                              v                               v
-            //               mask = 0xffffffffffffffffffffffffffffffff00000000000000000000000000000000
-            //        & input key = 0xcafecafecafecafecafecafecafecafe00000000000000000000000011223344
-            //
-            mask = bytes32(type(uint256).max) << (8 * zeroBytesCount);
-            
-            // loop through each keys given as input
-            for (uint256 jj = 0; jj < inputKeys.length; jj = GasLib.uncheckedIncrement(jj)) {
-                // skip permissions keys that have been previously checked and "nulled"
-                if (inputKeys[jj] == bytes32(0)) continue;
-
-
-                if (allowedERC725YKeys[ii] == (inputKeys[jj] & mask)) {
-                    // if the input key matches the allowed key
-                    // make it null to mark it as allowed
-                    inputKeys[jj] = bytes32(0);
-                }
-            }
-        }
-
-        for (uint256 ii = 0; ii < inputKeys.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (inputKeys[ii] != bytes32(0)) revert NotAllowedERC725YKey(from, inputKeys[ii]);
+        bytes memory allowedERC725YKeysCompacted = ERC725Y(target).getAllowedERC725YKeysFor(from);
+        for (uint256 i = 0; i < inputKeys.length; i++) {
+            _verifyAllowedERC725YSingleKey(from, inputKeys[i], allowedERC725YKeysCompacted);
         }
     }
 
