@@ -25,6 +25,16 @@ error NotAuthorised(address from, string permission);
 error NotAllowedCall(address from, address to, bytes4 selector);
 
 /**
+ * @dev reverts when `from` is not authorised to interact with `to` address, because of a
+ * not allowed standard, address or function.
+ * @param from address making the request
+ * @param to the address of an EOA or contract that `from` is trying to interact with
+ * @param selector if `to` is a contract, the bytes4 selector of the function that `from` is trying to call.
+ * If no function is called (e.g: a native token transfer), selector = 0x00000000
+ */
+error NotAllowedCall(address from, address to, bytes4 selector);
+
+/**
  * @dev reverts when address `from` is not authorised to set the key `disallowedKey` on the linked account
  * @param from address making the request
  * @param disallowedKey a bytes32 key that `from` is not authorised to set on the ERC725Y storage

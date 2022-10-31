@@ -60,19 +60,16 @@ export const shouldBehaveLikePermissionStaticCall = (
     it("should pass and return data", async () => {
       let expectedName = await targetContract.callStatic.getName();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "getName"
-      );
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getName");
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATION_TYPES.STATICCALL,
           targetContract.address,
           0,
           targetContractPayload,
-        ]
-      );
+        ]);
 
       let result = await context.keyManager
         .connect(context.owner)
@@ -87,19 +84,16 @@ export const shouldBehaveLikePermissionStaticCall = (
     it("should pass and return data", async () => {
       let expectedName = await targetContract.callStatic.getName();
 
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "getName"
-      );
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getName");
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATION_TYPES.STATICCALL,
           targetContract.address,
           0,
           targetContractPayload,
-        ]
-      );
+        ]);
 
       let result = await context.keyManager
         .connect(addressCanMakeStaticCall)
@@ -117,15 +111,13 @@ export const shouldBehaveLikePermissionStaticCall = (
         ["modified name"]
       );
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATION_TYPES.STATICCALL,
           targetContract.address,
           0,
           targetContractPayload,
-        ]
-      );
+        ]);
 
       await expect(
         context.keyManager
@@ -144,10 +136,13 @@ export const shouldBehaveLikePermissionStaticCall = (
         ["modified name"]
       );
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload]
-      );
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.CALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
 
       await expect(
         context.keyManager
@@ -161,19 +156,16 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe("when caller does not have permission STATICCALL", () => {
     it("should revert", async () => {
-      let targetContractPayload = targetContract.interface.encodeFunctionData(
-        "getName"
-      );
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getName");
 
-      let executePayload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
           OPERATION_TYPES.STATICCALL,
           targetContract.address,
           0,
           targetContractPayload,
-        ]
-      );
+        ]);
 
       await expect(
         context.keyManager
@@ -206,6 +198,7 @@ export const shouldBehaveLikePermissionStaticCall = (
           caller.address.substring(2),
       ];
 
+      // prettier-ignore
       const permissionValues = [
         PERMISSIONS.STATICCALL,
         combineAllowedCalls(

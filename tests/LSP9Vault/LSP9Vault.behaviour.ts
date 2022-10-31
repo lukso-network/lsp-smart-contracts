@@ -89,10 +89,9 @@ export const shouldBehaveLikeLSP9 = (
 
     it("UniversalReceiverDelegate should be able to setData", async () => {
       // setting UniversalReceiverDelegate that setData
-      const lsp1UniversalReceiverDelegateVaultSetter =
-        await new UniversalReceiverDelegateVaultSetter__factory(
-          context.accounts.anyone
-        ).deploy();
+      const lsp1UniversalReceiverDelegateVaultSetter = await new UniversalReceiverDelegateVaultSetter__factory(
+        context.accounts.anyone
+      ).deploy();
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
@@ -180,16 +179,19 @@ export const shouldBehaveLikeLSP9 = (
           .connect(context.accounts.owner)
           .transferOwnership(context.universalProfile.address);
 
-        let acceptOwnershipSelector =
-          context.universalProfile.interface.getSighash("acceptOwnership");
+        let acceptOwnershipSelector = context.universalProfile.interface.getSighash(
+          "acceptOwnership"
+        );
 
-        let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
+        let executePayload = context.universalProfile.interface.encodeFunctionData(
+          "execute",
+          [
             OPERATION_TYPES.CALL,
             context.lsp9Vault.address,
             0,
             acceptOwnershipSelector,
-          ]);
+          ]
+        );
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)

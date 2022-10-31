@@ -570,6 +570,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     function _verifyAllowedCall(address from, bytes calldata payload) internal view {
+        _verifyAllowedCalls(payload, from);
+
+    }
+
+    function _verifyAllowedCalls(bytes calldata payload, address from) internal view {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
         bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
@@ -597,17 +602,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             address allowedAddress = address(bytes20(bytes28(chunk) << 32));
             bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);
 
-            isAllowedAddress = (to == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF) || (to == allowedAddress);
-            isAllowedStandard = (allowedStandard == 0xffffffff) || (to.supportsERC165Interface(allowedStandard));
-
-            if (isAllowedAddress && isAllowedStandard) return;
+            isAllowedStandard = allowedStandard == bytes4(type(uint32).max) || to.supportsERC165Interface(allowedStandard);
+            isAllowedAddress = allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
+            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction); 
 
             if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
         }
 
-        revert("not allowed call");
-
-
+        revert NotAllowedCall(from, to, selector);
     }
 
     /**

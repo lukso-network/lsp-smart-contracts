@@ -75,7 +75,7 @@ describe("LSP6KeyManager", () => {
     });
   });
 
-  describe("when using LSP6KeyManager with proxy", () => {
+  describe.skip("when using LSP6KeyManager with proxy", () => {
     const buildTestContext = async (): Promise<LSP6TestContext> => {
       const accounts = await ethers.getSigners();
       const owner = accounts[0];
