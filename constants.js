@@ -256,6 +256,11 @@ const Errors = {
 			error: 'NotAuthorised(address,string)',
 			message: 'LSP6: Not authorized (missing permission).',
 		},
+		'0x45147bce': {
+			error: 'NotAllowedCall(address,address,bytes4)',
+			message:
+				'LSP6: not authorised to interact with `to` with the provided data payload (standard, address or function of `to` not authorised).',
+		},
 		'0x3003e7ae': {
 			error: 'NotAllowedERC725YKey(address,bytes32)',
 			message: 'LSP6: not allowed to set the ERC725Y data key.',
@@ -275,6 +280,10 @@ const Errors = {
 		'0x2ba8851c': {
 			error: 'InvalidERC725Function(bytes4)',
 			message: 'LSP6: unknown or invalid ERC725 function selector',
+		},
+		'0x8f4afa38': {
+			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
+			message: 'LSP6: value provided for AddressPermission[index] not an address.',
 		},
 	},
 	LSP7: {
