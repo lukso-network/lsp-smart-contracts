@@ -116,12 +116,6 @@ const ERC725YKeys = {
 		},
 		// AddressPermissions:Permissions:<address>
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
-		// AddressPermissions:AllowedAddresses:<address>
-		'AddressPermissions:AllowedAddresses': '0x4b80742de2bfc6dd6b3c0000',
-		// AddressPermissions:AllowedFunctions:<address>
-		'AddressPermissions:AllowedFunctions': '0x4b80742de2bf8efea1e80000',
-		// AddressPermissions:AllowedStandards:<address>
-		'AddressPermissions:AllowedStandards': '0x4b80742de2bf3efa94a30000',
 		// AddressPermissions:AllowedERC725YKeys:<address>
 		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
 		// AddressPermissions:AllowedCalls:<address>
@@ -261,19 +255,6 @@ const Errors = {
 		'0x3bdad6e6': {
 			error: 'NotAuthorised(address,string)',
 			message: 'LSP6: Not authorized (missing permission).',
-		},
-		'0x2879b128': {
-			error: 'NotAllowedAddress(address,address)',
-			message: 'LSP6: not allowed to interact with address.',
-		},
-		'0x42013ee4': {
-			error: 'NotAllowedStandard(address,address)',
-			message:
-				'LSP6: cannot interact with a contract that does not implement an allowed standard.',
-		},
-		'0x84135110': {
-			error: 'NotAllowedFunction(address,bytes4)',
-			message: 'LSP6: not allowed to run the function.',
 		},
 		'0x3003e7ae': {
 			error: 'NotAllowedERC725YKey(address,bytes32)',

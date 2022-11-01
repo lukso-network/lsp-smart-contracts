@@ -24,7 +24,7 @@ import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
 import "./LSP6Errors.sol";
-import {InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
+import {InvalidCompactFixedSizeBytesArray, InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 
 // constants
 import {
@@ -294,42 +294,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             // dataKey = AddressPermissions:Permissions:<address>
             _verifyCanSetBytes32Permissions(dataKey, from, permissions);
 
-        } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
+        } else if (bytes10(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
 
             bool isClearingArray = dataValue.length == 0;
 
-            // AddressPermissions:AllowedAddresses:<address>
-            if (!isClearingArray && !LSP2Utils.isEncodedArrayOfAddresses(dataValue)) {
-                revert InvalidABIEncodedArray(dataValue, "address");
+            if (!isClearingArray && !LSP2Utils.checkValidCompactFixedSizeBytesArray(dataValue,28)) {
+                revert InvalidCompactFixedSizeBytesArray(dataValue, 28);
             }
 
-            bytes memory storedAllowedAddresses = ERC725Y(target).getData(dataKey);
+            bytes memory storedAllowedCalls = ERC725Y(target).getData(dataKey);
 
-            if (storedAllowedAddresses.length == 0) {
-
-                _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
-
-            } else {
-
-                _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
-
-            }
-
-        } else if (
-            bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX ||
-            bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX
-        ) {
-            bool isClearingArray = dataValue.length == 0;
-
-            // AddressPermissions:AllowedFunctions:<address>
-            // AddressPermissions:AllowedStandards:<address>
-            if (!isClearingArray && !LSP2Utils.isBytes4EncodedArray(dataValue)) {
-                revert InvalidABIEncodedArray(dataValue, "bytes4");
-            }
-
-            bytes memory storedAllowedBytes4 = ERC725Y(target).getData(dataKey);
-
-            if (storedAllowedBytes4.length == 0) {
+            if (storedAllowedCalls.length == 0) {
 
                 _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
 
@@ -589,7 +564,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             isAllowedStandard = allowedStandard == bytes4(type(uint32).max) || to.supportsERC165Interface(allowedStandard);
             isAllowedAddress = allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
-            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction); 
+            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction);
 
             if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
         }
@@ -628,80 +603,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
-    /**
-     * @dev verify if `from` is authorised to interact with address `to` via the linked target
-     * @param from the caller address
-     * @param to the address to interact with
-     */
-    function _verifyAllowedAddress(address from, address to) internal view {
-        bytes memory allowedAddresses = ERC725Y(target).getAllowedAddressesFor(from);
 
-        // whitelist any address
-        if (
-            // if nothing in the list
-            allowedAddresses.length == 0 ||
-            // if not correctly abi-encoded array of address[]
-            !LSP2Utils.isEncodedArrayOfAddresses(allowedAddresses)
-        ) return;
-
-        address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
-
-        for (uint256 ii = 0; ii < allowedAddressesList.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (to == allowedAddressesList[ii]) return;
-        }
-        revert NotAllowedAddress(from, to);
-    }
-
-    /**
-     * @dev if `from` is restricted to interact with contracts that implement a specific interface,
-     * verify that `to` implements one of these interface.
-     * @param from the caller address
-     * @param to the address of the contract to interact with
-     */
-    function _verifyAllowedStandard(address from, address to) internal view {
-        bytes memory allowedStandards = ERC725Y(target).getAllowedStandardsFor(from);
-
-        // whitelist any standard interface (ERC165)
-        if (
-            // if nothing in the list
-            allowedStandards.length == 0 ||
-            // if not correctly abi-encoded array of bytes4[]
-            !LSP2Utils.isBytes4EncodedArray(allowedStandards)
-        ) return;
-
-        bytes4[] memory allowedStandardsList = abi.decode(allowedStandards, (bytes4[]));
-
-        for (uint256 ii = 0; ii < allowedStandardsList.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (to.supportsERC165Interface(allowedStandardsList[ii])) return;
-        }
-        revert NotAllowedStandard(from, to);
-    }
-
-    /**
-     * @dev verify if `from` is authorised to use the linked target
-     * to run a specific function `functionSelector` at a target contract
-     * @param from the caller address
-     * @param functionSelector the bytes4 function selector of the function to run
-     * at the target contract
-     */
-    function _verifyAllowedFunction(address from, bytes4 functionSelector) internal view {
-        bytes memory allowedFunctions = ERC725Y(target).getAllowedFunctionsFor(from);
-
-        // whitelist any function
-        if (
-            // if nothing in the list
-            allowedFunctions.length == 0 ||
-            // if not correctly abi-encoded array of bytes4[]
-            !LSP2Utils.isBytes4EncodedArray(allowedFunctions)
-        ) return;
-
-        bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
-
-        for (uint256 ii = 0; ii < allowedFunctionsList.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (functionSelector == allowedFunctionsList[ii]) return;
-        }
-        revert NotAllowedFunction(from, functionSelector);
-    }
 
     /**
      * @dev return the number of zero bytes (0x00) appended at the end of `dataKey`.

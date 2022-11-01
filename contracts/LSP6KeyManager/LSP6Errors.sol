@@ -16,29 +16,6 @@ error NoPermissionsSet(address from);
 error NotAuthorised(address from, string permission);
 
 /**
- * @dev reverts when address `from` is not authorised to interact with `disallowedAddress` via the linked account
- * @param from address making the request
- * @param disallowedAddress address that `from` is not authorised to call
- */
-error NotAllowedAddress(address from, address disallowedAddress);
-
-/**
- * @dev reverts when address `from` is restricted to interact only with smart contracts implementing specific standard interface(s)
- *      and try to call an address `addressNotImplementingAllowedStandard` that does not implement one of this restricted standard interfaces.
- * @param from address making the request
- * @param addressNotImplementingAllowedStandard the address of the smart contract that `from` is trying to interact with,
- *                                              and that does not implement an allowed interface.
- */
-error NotAllowedStandard(address from, address addressNotImplementingAllowedStandard);
-
-/**
- * @dev reverts when address `from` is not authorised to run `disallowedFunction` via the linked account
- * @param from address making the request
- * @param disallowedFunction bytes4 function selector that `from` is not authorised to run
- */
-error NotAllowedFunction(address from, bytes4 disallowedFunction);
-
-/**
  * @dev reverts when `from` is not authorised to interact with `to` address, because of a
  * not allowed standard, address or function.
  * @param from address making the request
