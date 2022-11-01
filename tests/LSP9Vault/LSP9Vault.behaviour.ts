@@ -16,6 +16,7 @@ import {
   ARRAY_LENGTH,
   generateKeysAndValues,
   abiCoder,
+  combineAllowedCalls,
 } from "../utils/helpers";
 
 // fixtures
@@ -88,9 +89,10 @@ export const shouldBehaveLikeLSP9 = (
 
     it("UniversalReceiverDelegate should be able to setData", async () => {
       // setting UniversalReceiverDelegate that setData
-      const lsp1UniversalReceiverDelegateVaultSetter = await new UniversalReceiverDelegateVaultSetter__factory(
-        context.accounts.anyone
-      ).deploy();
+      const lsp1UniversalReceiverDelegateVaultSetter =
+        await new UniversalReceiverDelegateVaultSetter__factory(
+          context.accounts.anyone
+        ).deploy();
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
@@ -178,19 +180,16 @@ export const shouldBehaveLikeLSP9 = (
           .connect(context.accounts.owner)
           .transferOwnership(context.universalProfile.address);
 
-        let acceptOwnershipSelector = context.universalProfile.interface.getSighash(
-          "acceptOwnership"
-        );
+        let acceptOwnershipSelector =
+          context.universalProfile.interface.getSighash("acceptOwnership");
 
-        let executePayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
+        let executePayload =
+          context.universalProfile.interface.encodeFunctionData("execute", [
             OPERATION_TYPES.CALL,
             context.lsp9Vault.address,
             0,
             acceptOwnershipSelector,
-          ]
-        );
+          ]);
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
@@ -214,13 +213,17 @@ export const shouldBehaveLikeLSP9 = (
           [
             [
               ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-                context.accounts.friend.address.substr(2),
-              ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-                context.accounts.friend.address.substr(2),
+                context.accounts.friend.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                context.accounts.friend.address.substring(2),
             ],
             [
               friendPermissions,
-              abiCoder.encode(["address[]"], [[context.lsp9Vault.address]]),
+              combineAllowedCalls(
+                ["0xffffffff"],
+                [context.lsp9Vault.address],
+                ["0xffffffff"]
+              ),
             ],
           ]
         );
