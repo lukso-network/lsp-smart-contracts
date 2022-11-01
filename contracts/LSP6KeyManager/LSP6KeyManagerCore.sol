@@ -298,7 +298,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             bool isClearingArray = dataValue.length == 0;
 
-            if (!isClearingArray && !LSP2Utils.checkValidCompactFixedSizeBytesArray(dataValue,28)) {
+            if (!isClearingArray && !LSP2Utils.checkValidCompactFixedSizeBytesArray(dataValue, 28)) {
                 revert InvalidCompactFixedSizeBytesArray(dataValue, 28);
             }
 
@@ -530,11 +530,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // Skip if both SUPER permissions are present
         if (hasSuperOperation && hasSuperTransferValue) return;
 
-        _verifyAllowedCalls(payload, from);
+        _verifyAllowedCall(from, payload);
 
     }
 
-    function _verifyAllowedCalls(bytes calldata payload, address from) internal view {
+    function _verifyAllowedCall(address from, bytes calldata payload) internal view {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
         bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);

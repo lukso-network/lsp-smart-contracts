@@ -24,6 +24,7 @@ import {
 } from "./tests";
 
 import {
+  testAllowedCallsInternals,
   testAllowedERC725YKeysInternals,
   testReadingPermissionsInternals,
 } from "./internals";
@@ -141,6 +142,7 @@ export const shouldInitializeLikeLSP6 = (
 export const testLSP6InternalFunctions = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {
+  testAllowedCallsInternals(buildContext);
   testAllowedERC725YKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
 };

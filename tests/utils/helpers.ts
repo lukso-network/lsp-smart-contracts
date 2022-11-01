@@ -138,7 +138,7 @@ export function combineAllowedCalls(
   for (let ii = 0; ii < _allowedStandards.length; ii++) {
     // remove "0x" prefix
     let allowedStandard = _allowedStandards[ii].substring(2);
-    let allowedAddress = _allowedAddresses[ii].substring(2);
+    let allowedAddress = _allowedAddresses[ii].substring(2).toLowerCase();
     let allowedFunction = _allowedFunctions[ii].substring(2);
 
     result = result + allowedStandard + allowedAddress + allowedFunction;

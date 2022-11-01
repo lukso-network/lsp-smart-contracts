@@ -284,6 +284,6 @@ library LSP2Utils {
         bytes memory compactFixedSizeBytesArray,
         uint256 fixedSize
     ) internal pure returns (bool isValid) {
-        if (compactFixedSizeBytesArray.length % (fixedSize + 1) == 0) isValid = true;
+        if (compactFixedSizeBytesArray.length % (fixedSize + 1) == 0) return true;
     }
 }
