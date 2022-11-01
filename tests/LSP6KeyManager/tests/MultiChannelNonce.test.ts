@@ -42,9 +42,18 @@ export const shouldBehaveLikeMultiChannelNonce = (
         context.owner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         signer.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        signer.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        signer.address.substring(2),
     ];
 
-    const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.CALL];
+    const permissionsValues = [
+      ALL_PERMISSIONS,
+      PERMISSIONS.CALL,
+      "0x1c" + "ffffffff" + targetContract.address.substring(2) + "ffffffff",
+      "0x1c" + "ffffffff" + targetContract.address.substring(2) + "ffffffff",
+    ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
