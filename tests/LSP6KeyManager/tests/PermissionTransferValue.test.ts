@@ -647,7 +647,6 @@ export const shouldBehaveLikePermissionTransferValue = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionsValues = [
         combinePermissions(PERMISSIONS.SUPER_TRANSFERVALUE, PERMISSIONS.CALL),
         // restriction = only a specific address (e.g: an LSP7 contract)
@@ -868,7 +867,6 @@ export const shouldBehaveLikePermissionTransferValue = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionsValues = [
         combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.SUPER_CALL),
         combineAllowedCalls(
@@ -1104,7 +1102,6 @@ export const shouldBehaveLikePermissionTransferValue = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionsValues = [
         combinePermissions(
           PERMISSIONS.SUPER_TRANSFERVALUE,

@@ -198,7 +198,6 @@ export const shouldBehaveLikePermissionStaticCall = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionValues = [
         PERMISSIONS.STATICCALL,
         combineAllowedCalls(

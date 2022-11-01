@@ -199,7 +199,6 @@ export const shouldBehaveLikePermissionDelegateCall = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionValues = [
         PERMISSIONS.SUPER_DELEGATECALL,
         combineAllowedCalls(
