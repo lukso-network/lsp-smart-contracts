@@ -604,7 +604,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             isAllowedStandard = allowedStandard == bytes4(type(uint32).max) || to.supportsERC165Interface(allowedStandard);
             isAllowedAddress = allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
-            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction); 
+            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction);
 
             if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
         }
