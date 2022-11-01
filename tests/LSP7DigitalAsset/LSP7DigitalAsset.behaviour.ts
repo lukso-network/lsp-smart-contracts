@@ -856,7 +856,7 @@ export const shouldBehaveLikeLSP7 = (
           from: string[];
           to: string[];
           amount: BigNumber[];
-          force: boolean;
+          force: boolean[];
           data: string[];
         };
 
@@ -886,7 +886,7 @@ export const shouldBehaveLikeLSP7 = (
                   from[index],
                   to[index],
                   amount[index],
-                  force,
+                  force[index],
                   data[index]
                 );
             })
@@ -962,8 +962,7 @@ export const shouldBehaveLikeLSP7 = (
             operator = getOperator();
           });
 
-          describe("when using force=true", () => {
-            const force = true;
+          describe("when force=true", () => {
             const data = ethers.utils.hexlify(
               ethers.utils.toUtf8Bytes("doing a transfer with force")
             );
@@ -984,7 +983,7 @@ export const shouldBehaveLikeLSP7 = (
                       context.initialSupply.sub(1),
                       ethers.BigNumber.from("1"),
                     ],
-                    force,
+                    force: [true, true],
                     data: [data, data],
                   };
                   const expectedError = "LSP7CannotSendWithAddressZero";
@@ -1011,7 +1010,7 @@ export const shouldBehaveLikeLSP7 = (
                       context.initialSupply.sub(1),
                       ethers.BigNumber.from("1"),
                     ],
-                    force,
+                    force: [true, true],
                     data: [data, data],
                   };
 
@@ -1036,7 +1035,7 @@ export const shouldBehaveLikeLSP7 = (
                       context.initialSupply.sub(1),
                       ethers.BigNumber.from("1"),
                     ],
-                    force,
+                    force: [true, true],
                     data: [data, data],
                   };
 
@@ -1085,7 +1084,7 @@ export const shouldBehaveLikeLSP7 = (
                       context.initialSupply.sub(1),
                       ethers.BigNumber.from("1"),
                     ],
-                    force,
+                    force: [true, true],
                     data: [data, data],
                   };
 
@@ -1096,7 +1095,6 @@ export const shouldBehaveLikeLSP7 = (
           });
 
           describe("when force=false", () => {
-            const force = false;
             const data = ethers.utils.hexlify(
               ethers.utils.toUtf8Bytes("doing a transfer without force")
             );
@@ -1116,7 +1114,7 @@ export const shouldBehaveLikeLSP7 = (
                     context.initialSupply.sub(1),
                     ethers.BigNumber.from("1"),
                   ],
-                  force,
+                  force: [false, false],
                   data: [data, data],
                 };
                 const expectedError = "LSP7NotifyTokenReceiverIsEOA";
@@ -1144,7 +1142,7 @@ export const shouldBehaveLikeLSP7 = (
                       context.initialSupply.sub(1),
                       ethers.BigNumber.from("1"),
                     ],
-                    force,
+                    force: [false, false],
                     data: [data, data],
                   };
 
@@ -1167,7 +1165,7 @@ export const shouldBehaveLikeLSP7 = (
                       context.initialSupply.sub(1),
                       ethers.BigNumber.from("1"),
                     ],
-                    force,
+                    force: [false, false],
                     data: [data, data],
                   };
                   const expectedError =
@@ -1182,13 +1180,100 @@ export const shouldBehaveLikeLSP7 = (
             });
           });
 
+          describe("when force is mixed(true/false) respectively", () => {
+            const data = ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("doing a transfer without force")
+            );
+
+            describe("when `to` is an EOA", () => {
+              it("should revert", async () => {
+                const txParams = {
+                  from: [
+                    context.accounts.owner.address,
+                    context.accounts.owner.address,
+                  ],
+                  to: [
+                    context.accounts.tokenReceiver.address,
+                    context.accounts.anotherTokenReceiver.address,
+                  ],
+                  amount: [
+                    context.initialSupply.sub(1),
+                    ethers.BigNumber.from("1"),
+                  ],
+                  force: [true, false],
+                  data: [data, data],
+                };
+                const expectedError = "LSP7NotifyTokenReceiverIsEOA";
+
+                await transferBatchFailScenario(txParams, operator, {
+                  error: expectedError,
+                  args: [txParams.to[1]],
+                });
+              });
+            });
+
+            describe("when `to` is a contract", () => {
+              describe("when first receiving contract support LSP1 but the second doesn't", () => {
+                it("should allow transfering", async () => {
+                  const txParams = {
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
+                    to: [
+                      helperContracts.tokenReceiverWithLSP1.address,
+                      helperContracts.tokenReceiverWithoutLSP1.address,
+                    ],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
+                    force: [true, false],
+                    data: [data, data],
+                  };
+
+                  const expectedError =
+                    "LSP7NotifyTokenReceiverContractMissingLSP1Interface";
+
+                  await transferBatchFailScenario(txParams, operator, {
+                    error: expectedError,
+                    args: [txParams.to[1]],
+                  });
+                });
+              });
+
+              describe("when receiving contract both support LSP1", () => {
+                it("should pass regardless of force params", async () => {
+                  const txParams = {
+                    from: [
+                      context.accounts.owner.address,
+                      context.accounts.owner.address,
+                    ],
+                    to: [
+                      helperContracts.tokenReceiverWithLSP1.address,
+                      helperContracts.tokenReceiverWithLSP1.address,
+                    ],
+                    amount: [
+                      context.initialSupply.sub(1),
+                      ethers.BigNumber.from("1"),
+                    ],
+                    force: [true, false],
+                    data: [data, data],
+                  };
+
+                  await transferBatchSuccessScenario(txParams, operator);
+                });
+              });
+            });
+          });
+
           describe("when the given amount is more than balance of tokenOwner", () => {
             it("should revert", async () => {
               const txParams = {
                 from: [context.accounts.owner.address],
                 to: [context.accounts.tokenReceiver.address],
                 amount: [context.initialSupply.add(1)],
-                force: true,
+                force: [true],
                 data: ["0x"],
               };
               const expectedError = "LSP7AmountExceedsBalance";
@@ -1232,7 +1317,7 @@ export const shouldBehaveLikeLSP7 = (
                   context.initialSupply.sub(1),
                   ethers.BigNumber.from("1"),
                 ],
-                force: true,
+                force: [true, true],
                 data: ["0x", "0x"],
               };
 
@@ -1278,7 +1363,7 @@ export const shouldBehaveLikeLSP7 = (
                   context.initialSupply.sub(1),
                   ethers.BigNumber.from("1"),
                 ],
-                force: true,
+                force: [true, true],
                 data: ["0x", "0x"],
               };
               const expectedError = "LSP7CannotSendToSelf";
@@ -1297,7 +1382,7 @@ export const shouldBehaveLikeLSP7 = (
                 from: [context.accounts.owner.address],
                 to: [context.accounts.tokenReceiver.address],
                 amount: [context.initialSupply],
-                force: true,
+                force: [true],
                 data: ["0x"],
               };
               const expectedError = "LSP7AmountExceedsAuthorizedAmount";
@@ -1325,7 +1410,7 @@ export const shouldBehaveLikeLSP7 = (
                 from: [context.accounts.owner.address],
                 to: [context.accounts.tokenReceiver.address],
                 amount: [context.initialSupply],
-                force: true,
+                force: [true],
                 data: ["0x"],
               };
               const expectedError = "LSP7AmountExceedsAuthorizedAmount";

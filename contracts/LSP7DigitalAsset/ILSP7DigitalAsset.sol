@@ -188,7 +188,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address[] memory from,
         address[] memory to,
         uint256[] memory amount,
-        bool force,
+        bool[] memory force,
         bytes[] memory data
     ) external;
 }

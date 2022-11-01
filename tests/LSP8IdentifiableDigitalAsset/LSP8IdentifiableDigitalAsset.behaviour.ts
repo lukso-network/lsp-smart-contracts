@@ -926,7 +926,7 @@ export const shouldBehaveLikeLSP8 = (
         from: string[];
         to: string[];
         tokenId: BytesLike[];
-        force: boolean;
+        force: boolean[];
         data: string[];
       };
 
@@ -966,7 +966,7 @@ export const shouldBehaveLikeLSP8 = (
                 from[index],
                 to[index],
                 tokenId[index],
-                force,
+                force[index],
                 data[index]
               );
             await expect(tx)
@@ -1045,8 +1045,7 @@ export const shouldBehaveLikeLSP8 = (
           operator = getOperator();
         });
 
-        describe("when using force=true", () => {
-          const force = true;
+        describe("when force=true", () => {
           const data = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("doing a transfer with force")
           );
@@ -1064,7 +1063,7 @@ export const shouldBehaveLikeLSP8 = (
                     ethers.constants.AddressZero,
                   ],
                   tokenId: [mintedTokenId, anotherMintedTokenId],
-                  force,
+                  force: [true, true],
                   data: [data, data],
                 };
                 const expectedError = "LSP8CannotSendToAddressZero";
@@ -1087,7 +1086,7 @@ export const shouldBehaveLikeLSP8 = (
                   context.accounts.tokenReceiver.address,
                 ],
                 tokenId: [mintedTokenId, anotherMintedTokenId],
-                force,
+                force: [true, true],
                 data: [data, data],
               };
 
@@ -1108,7 +1107,7 @@ export const shouldBehaveLikeLSP8 = (
                     helperContracts.tokenReceiverWithLSP1.address,
                   ],
                   tokenId: [mintedTokenId, anotherMintedTokenId],
-                  force,
+                  force: [true, true],
                   data: [data, data],
                 };
 
@@ -1154,7 +1153,7 @@ export const shouldBehaveLikeLSP8 = (
                     helperContracts.tokenReceiverWithoutLSP1.address,
                   ],
                   tokenId: [mintedTokenId, anotherMintedTokenId],
-                  force,
+                  force: [true, true],
                   data: [data, data],
                 };
 
@@ -1165,7 +1164,6 @@ export const shouldBehaveLikeLSP8 = (
         });
 
         describe("when force=false", () => {
-          const force = false;
           const data = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("doing a transfer without force")
           );
@@ -1182,7 +1180,7 @@ export const shouldBehaveLikeLSP8 = (
                   helperContracts.tokenReceiverWithLSP1.address,
                 ],
                 tokenId: [mintedTokenId, anotherMintedTokenId],
-                force,
+                force: [false, false],
                 data: [data, data],
               };
               const expectedError = "LSP8NotifyTokenReceiverIsEOA";
@@ -1207,7 +1205,7 @@ export const shouldBehaveLikeLSP8 = (
                     helperContracts.tokenReceiverWithLSP1.address,
                   ],
                   tokenId: [mintedTokenId, anotherMintedTokenId],
-                  force,
+                  force: [false, false],
                   data: [data, data],
                 };
 
@@ -1227,7 +1225,7 @@ export const shouldBehaveLikeLSP8 = (
                     helperContracts.tokenReceiverWithLSP1.address,
                   ],
                   tokenId: [mintedTokenId, anotherMintedTokenId],
-                  force,
+                  force: [false, false],
                   data: [data, data],
                 };
                 const expectedError =
@@ -1242,13 +1240,91 @@ export const shouldBehaveLikeLSP8 = (
           });
         });
 
+        describe("when force is mixed(true/false) respectively", () => {
+          const data = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("doing a transfer without force")
+          );
+
+          describe("when `to` is an EOA", () => {
+            it("should revert", async () => {
+              const txParams = {
+                from: [
+                  context.accounts.owner.address,
+                  context.accounts.owner.address,
+                ],
+                to: [
+                  context.accounts.tokenReceiver.address,
+                  context.accounts.tokenReceiver.address,
+                ],
+                tokenId: [mintedTokenId, anotherMintedTokenId],
+                force: [true, false],
+                data: [data, data],
+              };
+              const expectedError = "LSP8NotifyTokenReceiverIsEOA";
+
+              await transferBatchFailScenario(txParams, operator, {
+                error: expectedError,
+                args: [txParams.to[1]],
+              });
+            });
+          });
+
+          describe("when `to` is a contract", () => {
+            describe("when first receiving contract support LSP1 but the second doesn't", () => {
+              it("should allow transfering", async () => {
+                const txParams = {
+                  from: [
+                    context.accounts.owner.address,
+                    context.accounts.owner.address,
+                  ],
+                  to: [
+                    helperContracts.tokenReceiverWithLSP1.address,
+                    helperContracts.tokenReceiverWithoutLSP1.address,
+                  ],
+                  tokenId: [mintedTokenId, anotherMintedTokenId],
+                  force: [true, false],
+                  data: [data, data],
+                };
+
+                const expectedError =
+                  "LSP8NotifyTokenReceiverContractMissingLSP1Interface";
+
+                await transferBatchFailScenario(txParams, operator, {
+                  error: expectedError,
+                  args: [txParams.to[1]],
+                });
+              });
+            });
+
+            describe("when receiving contract both support LSP1", () => {
+              it("should pass regardless of force params", async () => {
+                const txParams = {
+                  from: [
+                    context.accounts.owner.address,
+                    context.accounts.owner.address,
+                  ],
+                  to: [
+                    helperContracts.tokenReceiverWithLSP1.address,
+                    helperContracts.tokenReceiverWithLSP1.address,
+                  ],
+                  tokenId: [mintedTokenId, anotherMintedTokenId],
+                  force: [true, false],
+                  data: [data, data],
+                };
+
+                await transferBatchSuccessScenario(txParams, operator);
+              });
+            });
+          });
+        });
+
         describe("when the from address is incorrect", () => {
           it("should revert", async () => {
             const txParams = {
               to: [context.accounts.anyone.address],
               from: [context.accounts.tokenReceiver.address],
               tokenId: [mintedTokenId],
-              force: true,
+              force: [true],
               data: ["0x"],
             };
             const expectedError = "LSP8NotTokenOwner";
@@ -1270,7 +1346,7 @@ export const shouldBehaveLikeLSP8 = (
               to: [context.accounts.anyone.address],
               from: [context.accounts.tokenReceiver.address],
               tokenId: [neverMintedTokenId],
-              force: true,
+              force: [true],
               data: ["0x"],
             };
             const expectedError = "LSP8NonExistentTokenId";
@@ -1294,7 +1370,7 @@ export const shouldBehaveLikeLSP8 = (
                 context.accounts.tokenReceiver.address,
               ],
               tokenId: [mintedTokenId, anotherMintedTokenId],
-              force: true,
+              force: [true],
               data: ["0x", "0x"],
             };
 
@@ -1331,7 +1407,7 @@ export const shouldBehaveLikeLSP8 = (
               to: [context.accounts.owner.address],
               from: [context.accounts.tokenReceiver.address],
               tokenId: [mintedTokenId],
-              force: true,
+              force: [true],
               data: ["0x"],
             };
             const expectedError = "LSP8NotTokenOperator";
