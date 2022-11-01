@@ -34,7 +34,7 @@ describe("LSP6KeyManager", () => {
       return { accounts, owner, universalProfile, keyManager };
     };
 
-    describe("when deploying the contract", () => {
+    describe.skip("when deploying the contract", () => {
       let context: LSP6TestContext;
 
       beforeEach(async () => {
@@ -54,11 +54,11 @@ describe("LSP6KeyManager", () => {
       });
     });
 
-    describe("when testing deployed contract", () => {
+    describe.skip("when testing deployed contract", () => {
       shouldBehaveLikeLSP6(buildTestContext);
     });
 
-    describe("testing internal functions", () => {
+    describe.only("testing internal functions", () => {
       testLSP6InternalFunctions(async () => {
         const accounts = await ethers.getSigners();
         const owner = accounts[0];

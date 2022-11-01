@@ -444,6 +444,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          */
         uint256 pointer;
 
+        bytes32[] memory allowedERC725YKeys = abi.decode(allowedERC725YKeysEncoded, (bytes32[]));
+
+        uint256 zeroBytesCount;
+        bytes32 mask;
+
+        // loop through each allowed ERC725Y key retrieved from storage
+        for (uint256 ii = 0; ii < allowedERC725YKeys.length; ii = GasLib.uncheckedIncrement(ii)) {
+            // required to know which part of the input key to compare against the allowed key
+            zeroBytesCount = _countTrailingZeroBytes(allowedERC725YKeys[ii]);
+
         /**
          * iterate over each key by saving in the `pointer` variable the index for
          * the length of the following key until the `pointer` reaches an undefined value
@@ -574,7 +584,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
     }
 
-    function _verifyAllowedCalls(bytes calldata payload, address from) internal view {
+    function _verifyAllowedCall(address from, bytes calldata payload) internal view {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
         bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
