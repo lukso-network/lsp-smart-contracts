@@ -266,6 +266,16 @@ library LSP2Utils {
     }
 
     /**
+     * @dev Will return unchecked incremented uint256
+     *      can be used to save gas when iterating over loops
+     */
+    function uncheckedIncrement(uint256 i) internal pure returns (uint256) {
+        unchecked {
+            return i + 1;
+        }
+    }
+
+    /**
      * @dev Verify the validity of the `compactBytesArray` according to LSP2
      */
     function isCompactBytesArray(bytes memory compactBytesArray) internal pure returns (bool) {
@@ -295,15 +305,5 @@ library LSP2Utils {
             pointer += elementLength + 1;
         }
         if (pointer == compactBytesArray.length) return true;
-    }
-
-    /**
-     * @dev Will return unchecked incremented uint256
-     *      can be used to save gas when iterating over loops
-     */
-    function uncheckedIncrement(uint256 i) internal pure returns (uint256) {
-        unchecked {
-            return i + 1;
-        }
     }
 }
