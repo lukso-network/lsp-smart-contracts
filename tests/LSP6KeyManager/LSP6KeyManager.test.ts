@@ -54,11 +54,11 @@ describe("LSP6KeyManager", () => {
       });
     });
 
-    describe.skip("when testing deployed contract", () => {
+    describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP6(buildTestContext);
     });
 
-    describe.only("testing internal functions", () => {
+    describe("testing internal functions", () => {
       testLSP6InternalFunctions(async () => {
         const accounts = await ethers.getSigners();
         const owner = accounts[0];
@@ -66,16 +66,17 @@ describe("LSP6KeyManager", () => {
         const universalProfile = await new UniversalProfile__factory(
           owner
         ).deploy(owner.address);
-        const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
-          owner
-        ).deploy(universalProfile.address);
+        const keyManagerInternalTester =
+          await new KeyManagerInternalTester__factory(owner).deploy(
+            universalProfile.address
+          );
 
         return { owner, accounts, universalProfile, keyManagerInternalTester };
       });
     });
   });
 
-  describe.skip("when using LSP6KeyManager with proxy", () => {
+  describe("when using LSP6KeyManager with proxy", () => {
     const buildTestContext = async (): Promise<LSP6TestContext> => {
       const accounts = await ethers.getSigners();
       const owner = accounts[0];

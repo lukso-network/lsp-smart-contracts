@@ -205,10 +205,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, randomValue]
-            );
+            let setupPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, randomValue]
+              );
 
             await expect(
               context.keyManager.connect(context.owner).execute(setupPayload)
@@ -228,10 +229,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, randomValue]
-            );
+            let setupPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, randomValue]
+              );
 
             await expect(
               context.keyManager.connect(context.owner).execute(setupPayload)
@@ -273,10 +275,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, randomValue]
-            );
+            let setupPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, randomValue]
+              );
 
             await expect(
               context.keyManager.connect(context.owner).execute(setupPayload)
@@ -296,10 +299,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, randomValue]
-            );
+            let setupPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, randomValue]
+              );
 
             await expect(
               context.keyManager.connect(context.owner).execute(setupPayload)
@@ -474,10 +478,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, randomValue]
-            );
+            let setupPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, randomValue]
+              );
 
             await expect(
               context.keyManager
@@ -499,10 +504,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, randomValue]
-            );
+            let setupPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, randomValue]
+              );
 
             await expect(
               context.keyManager
@@ -759,10 +765,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, randomValue]
-            );
+            let setupPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, randomValue]
+              );
 
             await expect(
               context.keyManager
@@ -784,10 +791,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, randomValue]
-            );
+            let setupPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, randomValue]
+              );
 
             await expect(
               context.keyManager
@@ -1102,10 +1110,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           beneficiary.address.substring(2);
         const dataValue = "0x";
 
-        const setDataPayload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [dataKey, dataValue]
-        );
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [dataKey, dataValue]
+          );
 
         await expect(
           context.keyManager
@@ -1124,10 +1133,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           beneficiary.address.substring(2);
         const dataValue = "0x";
 
-        const setDataPayload = context.universalProfile.interface.encodeFunctionData(
-          "setData(bytes32,bytes)",
-          [dataKey, dataValue]
-        );
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [dataKey, dataValue]
+          );
 
         await context.keyManager
           .connect(canOnlyChangePermissions)
