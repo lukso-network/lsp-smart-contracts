@@ -4,7 +4,7 @@
  */
 
 // ERC165
-// ----------
+// ---------
 
 const INTERFACE_IDS = {
 	ERC165: '0x01ffc9a7',
