@@ -23,6 +23,7 @@ import {
   EMPTY_PAYLOAD,
   getRandomAddresses,
   combinePermissions,
+  combineAllowedCalls,
 } from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedAddresses = (
@@ -68,12 +69,10 @@ export const shouldBehaveLikeAllowedAddresses = (
         invalidAbiEncodedAddresses.address.substring(2),
     ];
 
-    const encodedAllowedCalls = (
-      "0x1cffffffff" +
-      allowedEOA.address.substring(2) +
-      "ffffffff"
-    ).concat(
-      "1cffffffff" + allowedTargetContract.address.substring(2) + "ffffffff"
+    const encodedAllowedCalls = combineAllowedCalls(
+      ["0xffffffff", "0xffffffff"],
+      [allowedEOA.address, allowedTargetContract.address],
+      ["0xffffffff", "0xffffffff"]
     );
 
     let permissionsValues = [

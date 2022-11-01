@@ -30,8 +30,8 @@ import { setupKeyManager } from "../../utils/fixtures";
 // helpers
 import {
   provider,
-  abiCoder,
   combinePermissions,
+  combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
 } from "../../utils/helpers";
 
@@ -641,12 +641,14 @@ export const shouldBehaveLikePermissionTransferValue = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionsValues = [
         combinePermissions(PERMISSIONS.SUPER_TRANSFERVALUE, PERMISSIONS.CALL),
         // restriction = only a specific address (e.g: an LSP7 contract)
-        "0x1c" + "ffffffff" + lsp7Token.address.substring(2) + "ffffffff" +
-          "1c" + "ffffffff" + targetContract.address.substring(2) + "ffffffff"
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff"],
+          [lsp7Token.address, targetContract.address],
+          ["0xffffffff", "0xffffffff"]
+        ),
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -849,11 +851,13 @@ export const shouldBehaveLikePermissionTransferValue = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionsValues = [
         combinePermissions(PERMISSIONS.TRANSFERVALUE, PERMISSIONS.SUPER_CALL),
-        // restriction = only a specific address
-        "0x1c" + "ffffffff" + allowedAddress.address.substring(2) + "ffffffff"
+        combineAllowedCalls(
+          ["0xffffffff"],
+          [allowedAddress.address],
+          ["0xffffffff"]
+        ),
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -1070,14 +1074,16 @@ export const shouldBehaveLikePermissionTransferValue = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionsValues = [
         combinePermissions(
           PERMISSIONS.SUPER_TRANSFERVALUE,
           PERMISSIONS.SUPER_CALL
         ),
-        // restriction = only a specific address
-        "0x1c" + "ffffffff" + allowedAddress.address.substring(2) + "ffffffff"
+        combineAllowedCalls(
+          ["0xffffffff"],
+          [allowedAddress.address],
+          ["0xffffffff"]
+        ),
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);

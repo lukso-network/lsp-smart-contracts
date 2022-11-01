@@ -19,7 +19,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder } from "../../utils/helpers";
+import { combineAllowedCalls } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionDelegateCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -202,11 +202,16 @@ export const shouldBehaveLikePermissionDelegateCall = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionValues = [
         PERMISSIONS.SUPER_DELEGATECALL,
-        "0x1c" + "ffffffff" + allowedDelegateCallContracts[0].address.substring(2) + "ffffffff" +
-          "1c" + "ffffffff" + allowedDelegateCallContracts[1].address.substring(2) + "ffffffff"
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff"],
+          [
+            allowedDelegateCallContracts[0].address,
+            allowedDelegateCallContracts[1].address,
+          ],
+          ["0xffffffff", "0xffffffff"]
+        ),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);

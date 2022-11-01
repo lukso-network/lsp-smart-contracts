@@ -28,8 +28,12 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, provider, combinePermissions } from "../../utils/helpers";
-import { token } from "../../../types/@openzeppelin/contracts";
+import {
+  abiCoder,
+  provider,
+  combinePermissions,
+  combineAllowedCalls,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedStandards = (
   buildContext: () => Promise<LSP6TestContext>
@@ -78,14 +82,16 @@ export const shouldBehaveLikeAllowedStandards = (
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
-      "0x1c" +
-        INTERFACE_IDS.ERC1271.substring(2) +
-        "ffffffffffffffffffffffffffffffffffffffff" +
-        "ffffffff",
-      "0x1c" +
-        INTERFACE_IDS.LSP7DigitalAsset.substring(2) +
-        "ffffffffffffffffffffffffffffffffffffffff" +
-        "ffffffff",
+      combineAllowedCalls(
+        [INTERFACE_IDS.ERC1271],
+        ["0xffffffffffffffffffffffffffffffffffffffff"],
+        ["0xffffffff"]
+      ),
+      combineAllowedCalls(
+        [INTERFACE_IDS.LSP7DigitalAsset],
+        ["0xffffffffffffffffffffffffffffffffffffffff"],
+        ["0xffffffff"]
+      ),
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);

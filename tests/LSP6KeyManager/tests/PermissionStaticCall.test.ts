@@ -16,7 +16,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder } from "../../utils/helpers";
+import { abiCoder, combineAllowedCalls } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -206,11 +206,16 @@ export const shouldBehaveLikePermissionStaticCall = (
           caller.address.substring(2),
       ];
 
-      // prettier-ignore
       const permissionValues = [
         PERMISSIONS.STATICCALL,
-        "0x1c" + "ffffffff" + allowedTargetContracts[0].address.substring(2) + "ffffffff" +
-          "1c" + "ffffffff" + allowedTargetContracts[1].address.substring(2) + "ffffffff"
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff"],
+          [
+            allowedTargetContracts[0].address,
+            allowedTargetContracts[1].address,
+          ],
+          ["0xffffffff", "0xffffffff"]
+        ),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -432,14 +437,14 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       const permissionValues = [
         PERMISSIONS.SUPER_STATICCALL,
-        "0x1c" +
-          "ffffffff" +
-          allowedTargetContracts[0].address.substring(2) +
-          "ffffffff" +
-          "1c" +
-          "ffffffff" +
-          allowedTargetContracts[1].address.substring(2) +
-          "ffffffff",
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff"],
+          [
+            allowedTargetContracts[0].address,
+            allowedTargetContracts[1].address,
+          ],
+          ["0xffffffff", "0xffffffff"]
+        ),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);

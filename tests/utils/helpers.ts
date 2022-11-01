@@ -127,3 +127,26 @@ export function combinePermissions(..._permissions: string[]) {
 
   return ethers.utils.hexZeroPad(result.toHexString(), 32);
 }
+
+export function combineAllowedCalls(
+  _allowedStandards: string[],
+  _allowedAddresses: string[],
+  _allowedFunctions: string[]
+) {
+  let result: string = "0x1c";
+
+  for (let ii = 0; ii < _allowedStandards.length; ii++) {
+    // remove "0x" prefix
+    let allowedStandard = _allowedStandards[ii].substring(2);
+    let allowedAddress = _allowedAddresses[ii].substring(2);
+    let allowedFunction = _allowedFunctions[ii].substring(2);
+
+    result = result + allowedStandard + allowedAddress + allowedFunction;
+
+    if (ii != _allowedStandards.length - 1) {
+      result = result + "1c";
+    }
+  }
+
+  return result;
+}

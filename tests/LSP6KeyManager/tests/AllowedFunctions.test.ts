@@ -26,8 +26,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
-import { tokenIdAsBytes32 } from "../../utils/tokens";
+import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedFunctions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -61,10 +60,11 @@ export const shouldBehaveLikeAllowedFunctions = (
     let permissionsValues = [
       PERMISSIONS.CALL,
       PERMISSIONS.CALL,
-      "0x1c" +
-        "ffffffff" +
-        "ffffffffffffffffffffffffffffffffffffffff" +
-        targetContract.interface.getSighash("setName").substring(2),
+      combineAllowedCalls(
+        ["0xffffffff"],
+        ["0xffffffffffffffffffffffffffffffffffffffff"],
+        [targetContract.interface.getSighash("setName")]
+      ),
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -400,21 +400,24 @@ export const shouldBehaveLikeAllowedFunctions = (
       let permissionsValues = [
         PERMISSIONS.CALL,
         // LSP8:ANY:transfer(…)
-        "0x1c" +
-          INTERFACE_IDS.LSP8IdentifiableDigitalAsset.substring(2) +
-          "ffffffffffffffffffffffffffffffffffffffff" +
-          lsp8Contract.interface.getSighash("transfer").substring(2),
+        combineAllowedCalls(
+          [INTERFACE_IDS.LSP8IdentifiableDigitalAsset],
+          ["0xffffffffffffffffffffffffffffffffffffffff"],
+          [lsp8Contract.interface.getSighash("transfer")]
+        ),
         PERMISSIONS.CALL,
         // LSP7:ANY:ANY + LSP8:ANY: authorizeOperator(…)
-        // prettier-ignore
-        "0x1c" +
-          INTERFACE_IDS.LSP7DigitalAsset.substring(2) +
-          "ffffffffffffffffffffffffffffffffffffffff" +
-          "ffffffff" +
-        "1c" +  
-          INTERFACE_IDS.LSP8IdentifiableDigitalAsset.substring(2) +
-          "ffffffffffffffffffffffffffffffffffffffff" +
-          lsp8Contract.interface.getSighash("authorizeOperator").substring(2),
+        combineAllowedCalls(
+          [
+            INTERFACE_IDS.LSP7DigitalAsset,
+            INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
+          ],
+          [
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+          ],
+          ["0xffffffff", lsp8Contract.interface.getSighash("authorizeOperator")]
+        ),
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
