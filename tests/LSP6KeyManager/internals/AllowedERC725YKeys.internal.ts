@@ -12,7 +12,7 @@ export type DataKey = {
 export const testAllowedERC725YKeysInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {
-  describe.only("Testing CheckAllowedERC725YKeys", () => {
+  describe("Testing CheckAllowedERC725YKeys", () => {
     let context: LSP6InternalsTestContext;
     let dataKeys: {
       firstDynamicKey: DataKey;
