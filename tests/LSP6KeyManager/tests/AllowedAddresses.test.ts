@@ -18,7 +18,6 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
-  abiCoder,
   provider,
   EMPTY_PAYLOAD,
   getRandomAddresses,
@@ -32,7 +31,7 @@ export const shouldBehaveLikeAllowedAddresses = (
   let context: LSP6TestContext;
 
   let canCallOnlyTwoAddresses: SignerWithAddress,
-    invalidAbiEncodedAddresses: SignerWithAddress;
+    invalidEncodedAllowedCalls: SignerWithAddress;
 
   let allowedEOA: SignerWithAddress,
     notAllowedEOA: SignerWithAddress,
@@ -43,7 +42,7 @@ export const shouldBehaveLikeAllowedAddresses = (
     context = await buildContext();
 
     canCallOnlyTwoAddresses = context.accounts[1];
-    invalidAbiEncodedAddresses = context.accounts[2];
+    invalidEncodedAllowedCalls = context.accounts[2];
 
     allowedEOA = context.accounts[3];
     notAllowedEOA = context.accounts[4];
@@ -64,9 +63,9 @@ export const shouldBehaveLikeAllowedAddresses = (
       ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
         canCallOnlyTwoAddresses.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        invalidAbiEncodedAddresses.address.substring(2),
+        invalidEncodedAllowedCalls.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
-        invalidAbiEncodedAddresses.address.substring(2),
+        invalidEncodedAllowedCalls.address.substring(2),
     ];
 
     const encodedAllowedCalls = combineAllowedCalls(
@@ -91,7 +90,7 @@ export const shouldBehaveLikeAllowedAddresses = (
     });
   });
 
-  describe("when caller has no ALLOWED ADDRESSES set", () => {
+  describe("when caller has ALL_DEFAULT_PERMISSIONS + no ALLOWED ADDRESSES set", () => {
     describe("it should be allowed to interact with any address", () => {
       const randomAddresses = getRandomAddresses(5);
 
@@ -125,7 +124,7 @@ export const shouldBehaveLikeAllowedAddresses = (
     });
   });
 
-  describe("when caller has 2 x ALLOWED ADDRESSES set", () => {
+  describe("when caller has 2 x addresses set under `AllowedCalls`", () => {
     it("should be allowed to send LYX to an allowed address (= EOA)", async () => {
       let initialBalanceUP = await provider.getBalance(
         context.universalProfile.address
@@ -250,11 +249,11 @@ export const shouldBehaveLikeAllowedAddresses = (
   });
 
   describe("when caller has an invalid abi-encoded array set for ALLOWED ADDRESSES", () => {
-    describe("it should be allowed to interact with any address", () => {
+    describe("it should not allow to interact with any address", () => {
       const randomAddresses = getRandomAddresses(5);
 
       randomAddresses.forEach((recipient) => {
-        it(`sending 1 LYX to EOA ${recipient}`, async () => {
+        it(`-> should revert when sending 1 LYX to EOA ${recipient}`, async () => {
           let initialBalanceUP = await provider.getBalance(
             context.universalProfile.address
           );
@@ -267,17 +266,16 @@ export const shouldBehaveLikeAllowedAddresses = (
             [OPERATION_TYPES.CALL, recipient, amount, EMPTY_PAYLOAD]
           );
 
-          await context.keyManager
-            .connect(invalidAbiEncodedAddresses)
-            .execute(transferPayload);
-
-          let newBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          expect(newBalanceUP).to.be.lt(initialBalanceUP);
-
-          let newBalanceEOA = await provider.getBalance(recipient);
-          expect(newBalanceEOA).to.be.gt(initialBalanceEOA);
+          await expect(
+            context.keyManager
+              .connect(invalidEncodedAllowedCalls)
+              .execute(transferPayload)
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidCompactBytes28Array"
+            )
+            .withArgs("0xbadbadbadbad");
         });
       });
     });
