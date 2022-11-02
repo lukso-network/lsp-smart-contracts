@@ -79,3 +79,13 @@ error InvalidERC725Function(bytes4 invalidFunction);
  * @param invalidValue the invalid value that was attempted to be set under AddressPermissions[index]
  */
 error AddressPermissionArrayIndexValueNotAnAddress(bytes32 dataKey, bytes invalidValue);
+
+/**
+ * @dev reverts if there are no AllowedERC725YDataKeys set for the caller
+ */
+error NoERC725YDataKeysAllowed();
+
+/**
+ * @dev reverts when the AllowedERC725YDataKeys are not encoded properly using the CompactBytesArray
+ */
+error InvalidCompactedAllowedERC725YDataKeys();
