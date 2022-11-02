@@ -468,7 +468,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev Verify the validity of the `compactBytesArray` according to LSP2
      */
     function _checkValidCompactBytesArray(bytes memory compactBytesArray)
-        public
+        internal
         pure
         returns (bool isValid)
     {
