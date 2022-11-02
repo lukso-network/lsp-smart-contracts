@@ -41,8 +41,30 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         super._verifyAllowedFunction(_sender, _function);
     }
 
-    function verifyAllowedERC725YKeys(address _from, bytes32[] memory _inputKeys) public view {
-        super._verifyAllowedERC725YKeys(_from, _inputKeys);
+    function checkValidCompactBytesArray(bytes memory compactBytesArray)
+        public
+        pure
+        returns (bool)
+    {
+        return super._checkValidCompactBytesArray(compactBytesArray);
+    }
+
+    function verifyAllowedERC725YSingleKey(
+        address _from,
+        bytes32 inputKey,
+        bytes memory allowedERC725YKeysFor
+    ) public pure returns (bool) {
+        super._verifyAllowedERC725YSingleKey(_from, inputKey, allowedERC725YKeysFor);
+        return true;
+    }
+
+    function verifyAllowedERC725YKeys(
+        address _from,
+        bytes32[] memory _inputKeys,
+        bytes memory allowedERC725YKeysCompacted
+    ) public view returns (bool) {
+        super._verifyAllowedERC725YKeys(_from, _inputKeys, allowedERC725YKeysCompacted);
+        return true;
     }
 
     function hasPermission(bytes32 _addressPermission, bytes32 _permissions)
