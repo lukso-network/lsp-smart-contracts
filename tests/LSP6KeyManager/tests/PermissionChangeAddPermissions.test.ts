@@ -205,11 +205,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
+            let setupPayload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, randomValue]
+            );
 
             await expect(
               context.keyManager.connect(context.owner).execute(setupPayload)
@@ -229,11 +228,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
+            let setupPayload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, randomValue]
+            );
 
             await expect(
               context.keyManager.connect(context.owner).execute(setupPayload)
@@ -275,11 +273,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
+            let setupPayload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, randomValue]
+            );
 
             await expect(
               context.keyManager.connect(context.owner).execute(setupPayload)
@@ -299,11 +296,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
+            let setupPayload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, randomValue]
+            );
 
             await expect(
               context.keyManager.connect(context.owner).execute(setupPayload)
@@ -478,11 +474,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
+            let setupPayload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, randomValue]
+            );
 
             await expect(
               context.keyManager
@@ -504,11 +499,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
+            let setupPayload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, randomValue]
+            );
 
             await expect(
               context.keyManager
@@ -765,11 +759,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             let randomValue = "0xcafecafecafecafecafe";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
+            let setupPayload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, randomValue]
+            );
 
             await expect(
               context.keyManager
@@ -791,11 +784,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
             // set some random bytes under AddressPermissions[7]
-            let setupPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [key, randomValue]
-              );
+            let setupPayload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, randomValue]
+            );
 
             await expect(
               context.keyManager
@@ -1279,9 +1271,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
 
         it("should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing the first length bytes)", async () => {
@@ -1304,9 +1296,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
       });
     });
@@ -1478,9 +1470,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
 
         it("should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing the first length byte)", async () => {
@@ -1503,9 +1495,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
       });
     });
@@ -1726,9 +1718,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
 
         it("should fail when setting an invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)", async () => {
@@ -1751,9 +1743,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
       });
     });
@@ -1925,9 +1917,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
 
         it("should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)", async () => {
@@ -1950,9 +1942,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
       });
     });
@@ -2208,9 +2200,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
 
         it("should fail when setting an invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)", async () => {
@@ -2233,9 +2225,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
       });
     });
@@ -2414,9 +2406,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
 
         it("should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)", async () => {
@@ -2439,9 +2431,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactFixedSizeBytesArray"
+              "InvalidCompactBytes28Array"
             )
-            .withArgs(value, 28);
+            .withArgs(value);
         });
       });
     });
