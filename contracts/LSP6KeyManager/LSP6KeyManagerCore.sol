@@ -570,13 +570,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _verifyAllowedCall(address from, bytes calldata payload) internal view {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
-        bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
 
         bool containsFunctionCall = payload.length >= 168;
         bytes4 selector;
-
         if (containsFunctionCall) selector = bytes4(payload[164:168]);
 
+        bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
         uint256 allowedCallsLength = allowedCalls.length;
 
         // TODO: change behaviour to disallow if nothing is set
