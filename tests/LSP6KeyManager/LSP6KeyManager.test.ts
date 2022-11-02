@@ -34,7 +34,7 @@ describe("LSP6KeyManager", () => {
       return { accounts, owner, universalProfile, keyManager };
     };
 
-    describe.skip("when deploying the contract", () => {
+    describe("when deploying the contract", () => {
       let context: LSP6TestContext;
 
       beforeEach(async () => {
@@ -66,10 +66,9 @@ describe("LSP6KeyManager", () => {
         const universalProfile = await new UniversalProfile__factory(
           owner
         ).deploy(owner.address);
-        const keyManagerInternalTester =
-          await new KeyManagerInternalTester__factory(owner).deploy(
-            universalProfile.address
-          );
+        const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
+          owner
+        ).deploy(universalProfile.address);
 
         return { owner, accounts, universalProfile, keyManagerInternalTester };
       });
