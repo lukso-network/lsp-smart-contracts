@@ -16,8 +16,7 @@ error NoPermissionsSet(address from);
 error NotAuthorised(address from, string permission);
 
 /**
- * @dev reverts when `from` is not authorised to interact with `to` address, because of a
- * not allowed standard, address or function.
+ * @dev reverts when `from` is not authorised to make the call because of a not allowed standard, address or function.
  * @param from address making the request
  * @param to the address of an EOA or contract that `from` is trying to interact with
  * @param selector if `to` is a contract, the bytes4 selector of the function that `from` is trying to call.

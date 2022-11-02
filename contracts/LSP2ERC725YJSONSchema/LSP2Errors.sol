@@ -9,8 +9,7 @@ pragma solidity ^0.8.0;
 error InvalidABIEncodedArray(bytes value, string valueType);
 
 /**
- * @dev reverts when `value` is not a properly encoded
+ * @dev reverts when `value` is not a properly encoded CompactBytesArray of bytes28 entries.
  * @param value the value to check for a compact fixed size bytes array
- * @param fixedSize the fixed size of the bytes array
  */
-error InvalidCompactFixedSizeBytesArray(bytes value, uint256 fixedSize);
+error InvalidCompactBytes28Array(bytes value);

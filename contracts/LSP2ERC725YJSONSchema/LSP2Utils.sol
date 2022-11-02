@@ -274,16 +274,4 @@ library LSP2Utils {
             return i + 1;
         }
     }
-
-    /**
-     * @dev verify that `data` a valid CompactFixedSizeBytesArray
-     * @param compactFixedSizeBytesArray The value that is to be verified
-     * @param fixedSize The size of each element in bytes
-     */
-    function checkValidCompactFixedSizeBytesArray(
-        bytes memory compactFixedSizeBytesArray,
-        uint256 fixedSize
-    ) internal pure returns (bool isValid) {
-        if (compactFixedSizeBytesArray.length % (fixedSize + 1) == 0) return true;
-    }
 }

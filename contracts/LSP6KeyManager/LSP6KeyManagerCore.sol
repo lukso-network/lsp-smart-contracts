@@ -24,7 +24,7 @@ import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
 import "./LSP6Errors.sol";
-import {InvalidCompactFixedSizeBytesArray, InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
+import {InvalidCompactBytes28Array, InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 
 // constants
 import {
@@ -44,8 +44,6 @@ import {
     _ERC1271_FAILVALUE
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import "./LSP6Constants.sol";
-
-import "hardhat/console.sol";
 
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -288,19 +286,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         address from,
         bytes32 permissions
     ) internal view virtual {
-        // prettier-ignore
         if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
 
             // dataKey = AddressPermissions:Permissions:<address>
             _verifyCanSetBytes32Permissions(dataKey, from, permissions);
 
-        } else if (bytes10(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
+        } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
 
-            bool isClearingArray = dataValue.length == 0;
-
-            if (!isClearingArray && !LSP2Utils.checkValidCompactFixedSizeBytesArray(dataValue, 28)) {
-                revert InvalidCompactFixedSizeBytesArray(dataValue, 28);
-            }
+            if (dataValue.length % 29 != 0) revert InvalidCompactBytes28Array(dataValue);
 
             bytes memory storedAllowedCalls = ERC725Y(target).getData(dataKey);
 
