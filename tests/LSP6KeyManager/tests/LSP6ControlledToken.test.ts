@@ -19,7 +19,7 @@ import {
   PERMISSIONS,
   ERC1271_VALUES,
 } from "../../../constants";
-import { abiCoder, ARRAY_LENGTH } from "../../utils/helpers";
+import { ARRAY_LENGTH, encodeCompactedBytes } from "../../utils/helpers";
 import { BytesLike } from "ethers";
 
 export type LSP6ControlledToken = {
@@ -612,7 +612,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
       });
 
-      it("should allow second controller to use setData", async () => {
+      it("should not allow second controller to use setData without AllowedERC725YKeys", async () => {
         const key = firstRandomSringKey;
         const value = secondRandomSringKey;
         const payload = context.token.interface.encodeFunctionData(
@@ -620,19 +620,21 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [key, value]
         );
 
-        await context.keyManager.connect(addressCanSetData).execute(payload);
-
-        expect(await context.token["getData(bytes32)"](key)).to.equal(value);
+        await expect(
+          context.keyManager.connect(addressCanSetData).execute(payload)
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "NoERC725YDataKeysAllowed"
+        );
       });
 
       it("should restrict second controller with AllowedERC725YKeys", async () => {
         const key =
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
           addressCanSetData.address.substring(2);
-        const value = abiCoder.encode(
-          ["bytes32[]"],
-          [[firstRandomSringKey.substring(0, 34)]]
-        );
+        const value = encodeCompactedBytes([
+          firstRandomSringKey.substring(0, 34),
+        ]);
         const payload = context.token.interface.encodeFunctionData(
           "setData(bytes32,bytes)",
           [key, value]

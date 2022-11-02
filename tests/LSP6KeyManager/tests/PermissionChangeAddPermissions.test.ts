@@ -2336,7 +2336,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     });
   });
 
-  describe.only("setting Allowed ERC725YKeys", () => {
+  describe("setting Allowed ERC725YKeys", () => {
     let canOnlyAddPermissions: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;
 
@@ -2433,7 +2433,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
-        it("should fail when trying to clear the array completely", async () => {
+        it("should fail when trying to clear the CompactedBytesArray completely", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
@@ -2452,7 +2452,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
         });
 
-        it("should fail when setting an invalid abi-encoded array of bytes32[]", async () => {
+        it("should fail when setting an invalid CompactedBytesArray", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
@@ -2466,17 +2466,15 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidABIEncodedArray"
-            )
-            .withArgs(value, "bytes32");
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "InvalidCompactedAllowedERC725YDataKeys"
+          );
         });
       });
 
       describe("when beneficiary had no ERC725Y data keys set under AddressPermissions:AllowedERC725YKeys:...", () => {
-        it("should pass when setting a valid abi-encoded array of bytes32[]", async () => {
+        it("should pass when setting a valid CompactedBytesArray", async () => {
           let newController = ethers.Wallet.createRandom();
 
           let key =
@@ -2504,7 +2502,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           expect(result).to.equal(value);
         });
 
-        it("should fail when setting an invalid abi-encoded array of bytes32[] (random bytes)", async () => {
+        it("should fail when setting an invalid CompactedBytesArray (random bytes)", async () => {
           let newController = ethers.Wallet.createRandom();
 
           let key =
@@ -2578,7 +2576,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           expect(result).to.equal(value);
         });
 
-        it("should pass when trying to clear the array completely", async () => {
+        it("should pass when trying to clear the CompactedBytesArray completely", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
@@ -2599,7 +2597,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           expect(result).to.equal(value);
         });
 
-        it("should fail when setting an invalid abi-encoded array of bytes32[]", async () => {
+        it("should fail when setting an invalid CompactedBytesArray", async () => {
           let key =
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
@@ -2615,12 +2613,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidABIEncodedArray"
-            )
-            .withArgs(value, "bytes32");
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "InvalidCompactedAllowedERC725YDataKeys"
+          );
         });
       });
 
@@ -2651,7 +2647,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
         });
 
-        it("should fail when setting an invalid abi-encoded array of bytes32[]", async () => {
+        it("should fail when setting an invalid CompactedBytesArray", async () => {
           let newController = ethers.Wallet.createRandom();
 
           let key =
@@ -2669,12 +2665,10 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canOnlyChangePermissions)
               .execute(payload)
-          )
-            .to.be.revertedWithCustomError(
-              context.keyManager,
-              "InvalidABIEncodedArray"
-            )
-            .withArgs(value, "bytes32");
+          ).to.be.revertedWithCustomError(
+            context.keyManager,
+            "InvalidCompactedAllowedERC725YDataKeys"
+          );
         });
       });
     });

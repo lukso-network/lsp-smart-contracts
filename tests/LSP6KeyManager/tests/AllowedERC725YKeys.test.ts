@@ -8,13 +8,13 @@ import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import { encodeCompactedBytes, decodeCompactBytes } from "../../utils/helpers";
 
 // helpers
-import { abiCoder, getRandomString } from "../../utils/helpers";
-
-// types
-import { BytesLike } from "ethers";
+import {
+  encodeCompactedBytes,
+  decodeCompactBytes,
+  getRandomString,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedERC725YKeys = (
   buildContext: () => Promise<LSP6TestContext>
