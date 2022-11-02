@@ -255,8 +255,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * on the linked target
      * @param from the address who want to set the dataKeys
      * @param permissions the permissions
-     * @param inputKey the dataKeys being set
-     * containing a list of key-value pairs
+     * @param inputKey the dataKey being set
      */
     function _verifyCanSetData(
         address from,
@@ -290,7 +289,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         _requirePermissions(from, permissions, _PERMISSION_SETDATA);
 
-        _verifyAllowedERC725YKeys(from, inputKeys);
+        bytes memory allowedERC725YKeysCompacted = ERC725Y(target).getAllowedERC725YKeysFor(from);
+        
+        _verifyAllowedERC725YKeys(from, inputKeys, allowedERC725YKeysCompacted);
     }
 
     /**
@@ -463,8 +464,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
     }
 
-
-
+    /**
+     * @dev Verify the validity of the `compactBytesArray` according to LSP2
+     */
     function _checkValidCompactBytesArray(bytes memory compactBytesArray)
         public
         pure
@@ -496,9 +498,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (pointer == compactBytesArray.length) isValid = true;
     }
 
-    error NoERC725YDataKeysAllowed();
-    error InvalidCompactedAllowedERC725YDataKeys();
-
+    /**
+     * @dev Verify if the `inputKey` is present in `alloedERC725KeysCompacted` stored on the `from`'s ERC725Y contract
+     */
     function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YKeysCompacted) internal pure {
         if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed();
         if (!_checkValidCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidCompactedAllowedERC725YDataKeys();
@@ -591,8 +593,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param from the address who want to set the dataKeys
      * @param inputKeys the dataKey that is verified
      */
-    function _verifyAllowedERC725YKeys(address from, bytes32[] memory inputKeys) internal view {
-        bytes memory allowedERC725YKeysCompacted = ERC725Y(target).getAllowedERC725YKeysFor(from);
+    function _verifyAllowedERC725YKeys(address from, bytes32[] memory inputKeys, bytes memory allowedERC725YKeysCompacted) internal pure {
         for (uint256 i = 0; i < inputKeys.length; i++) {
             _verifyAllowedERC725YSingleKey(from, inputKeys[i], allowedERC725YKeysCompacted);
         }
