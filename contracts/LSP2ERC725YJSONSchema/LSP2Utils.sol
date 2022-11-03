@@ -273,6 +273,7 @@ library LSP2Utils {
         pure
         returns (bool isValid)
     {
+        if (compactBytesArray.length == 0) return false;
         /**
          * Pointer will always land on these values:
          *
@@ -294,10 +295,10 @@ library LSP2Utils {
          */
         while (pointer < compactBytesArray.length) {
             uint256 elementLength = uint256(uint8(bytes1(compactBytesArray[pointer])));
-            if (elementLength == 0) pointer = compactBytesArray.length + 1;
+            if (elementLength == 0) return false;
             pointer += elementLength + 1;
         }
-        if (pointer == compactBytesArray.length && compactBytesArray.length != 0) isValid = true;
+        if (pointer == compactBytesArray.length) isValid = true;
     }
 
     /**

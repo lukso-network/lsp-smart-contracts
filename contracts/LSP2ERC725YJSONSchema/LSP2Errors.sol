@@ -9,6 +9,7 @@ pragma solidity ^0.8.0;
 error InvalidABIEncodedArray(bytes value, string valueType);
 
 /**
- * @dev reverts when the AllowedERC725YDataKeys are not encoded properly using the CompactBytesArray
+ * @dev reverts when `value` is not encoded properly using the CompactBytesArray
+ * @param value the value to check for an CompactBytesArray
  */
 error InvalidCompactBytesArray(bytes value);
