@@ -63,8 +63,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         PERMISSIONS.SETDATA,
         encodeCompactedBytes([customKey1]),
         encodeCompactedBytes([customKey2, customKey3, customKey4]),
-        //abiCoder.encode(["bytes32[]"], [[customKey1]]),
-        //abiCoder.encode(["bytes32[]"], [[customKey2, customKey3, customKey4]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -76,7 +74,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetOneKey.address.substring(2)
         );
-        //let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
         let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.have.lengthOf(1);
@@ -87,7 +84,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetManyKeys.address.substring(2)
         );
-        //let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
         let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.have.lengthOf(3);
@@ -98,7 +94,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetOneKey.address.substring(2)
         );
-        //let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
         let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.include(customKey1);
@@ -109,7 +104,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetManyKeys.address.substring(2)
         );
-        //let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
         let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.contain(customKey2);
@@ -1086,7 +1080,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         encodeCompactedBytes([supportedStandardKey]),
-        //abiCoder.encode(["bytes32[]"], [[supportedStandardKey]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1475,7 +1468,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         encodeCompactedBytes([allowedArrayKey]),
-        //abiCoder.encode(["bytes32[]"], [[allowedArrayKey]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1703,7 +1695,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         encodeCompactedBytes([customKey1, customKey2, zeroKey]),
-        //abiCoder.encode(["bytes32[]"], [[customKey1, customKey2, zeroKey]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1784,9 +1775,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             "NotAllowedERC725YKey"
           )
           .withArgs(controllerCanSetSomeKeys.address, testCase.datakeyToSet);
-
-        //const result = await context.universalProfile["getData(bytes32)"](key);
-        //expect(result).to.equal(value);
       });
     });
   });
@@ -1814,7 +1802,6 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         encodeCompactedBytes([allowedDataKey]),
-        //abiCoder.encode(["bytes32[]"], [[allowedDataKey]]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);

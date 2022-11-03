@@ -2468,7 +2468,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
           ).to.be.revertedWithCustomError(
             context.keyManager,
-            "InvalidCompactedAllowedERC725YDataKeys"
+            "InvalidCompactBytesArray"
           );
         });
       });
@@ -2520,7 +2520,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager.connect(canOnlyAddPermissions).execute(payload)
           ).to.be.revertedWithCustomError(
             context.keyManager,
-            "InvalidCompactedAllowedERC725YDataKeys"
+            "InvalidCompactBytesArray"
           );
         });
       });
@@ -2615,7 +2615,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               .execute(payload)
           ).to.be.revertedWithCustomError(
             context.keyManager,
-            "InvalidCompactedAllowedERC725YDataKeys"
+            "InvalidCompactBytesArray"
           );
         });
       });
@@ -2667,7 +2667,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               .execute(payload)
           ).to.be.revertedWithCustomError(
             context.keyManager,
-            "InvalidCompactedAllowedERC725YDataKeys"
+            "InvalidCompactBytesArray"
           );
         });
       });
