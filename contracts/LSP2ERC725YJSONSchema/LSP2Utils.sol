@@ -294,6 +294,7 @@ library LSP2Utils {
          */
         while (pointer < compactBytesArray.length) {
             uint256 elementLength = uint256(uint8(bytes1(compactBytesArray[pointer])));
+            if (elementLength == 0) pointer = compactBytesArray.length + 1;
             pointer += elementLength + 1;
         }
         if (pointer == compactBytesArray.length && compactBytesArray.length != 0) isValid = true;
