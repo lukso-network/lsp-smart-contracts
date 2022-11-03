@@ -23,8 +23,8 @@ import {LSP6Utils} from "./LSP6Utils.sol";
 import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
+import "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 import "./LSP6Errors.sol";
-import {InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 
 // constants
 import {
@@ -363,8 +363,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bool isClearingArray = dataValue.length == 0;
 
             // AddressPermissions:AllowedERC725YKeys:<address>
-            if (!isClearingArray && !_checkValidCompactBytesArray(dataValue)) {
-                revert InvalidCompactedAllowedERC725YDataKeys();
+            if (!isClearingArray && !LSP2Utils.isValidCompactBytesArray(dataValue)) {
+                revert InvalidCompactBytesArray(dataValue);
             }
 
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(dataKey);
@@ -465,45 +465,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev Verify the validity of the `compactBytesArray` according to LSP2
-     */
-    function _checkValidCompactBytesArray(bytes memory compactBytesArray)
-        internal
-        pure
-        returns (bool isValid)
-    {
-        /**
-         * Pointer will always land on these values:
-         *
-         * ↓↓
-         * 03 a00000
-         * 05 fff83a0011
-         * 20 aa0000000000000000000000000000000000000000000000000000000000cafe
-         * 12 bb000000000000000000000000000000beef
-         * 19 cc00000000000000000000000000000000000000000000deed
-         * ↑↑
-         *
-         * The pointer can only land on the length of the following bytes value.
-         */
-        uint256 pointer = 0;
-
-        /**
-         * Check each length byte and make sure that when you reach the last length byte.
-         * Make sure that the last length describes exactly the last bytes value and you do not get out of bounds.
-         */
-        while (pointer < compactBytesArray.length) {
-            uint256 elementLength = uint256(uint8(bytes1(compactBytesArray[pointer])));
-            pointer += elementLength + 1;
-        }
-        if (pointer == compactBytesArray.length) isValid = true;
-    }
-
-    /**
      * @dev Verify if the `inputKey` is present in `alloedERC725KeysCompacted` stored on the `from`'s ERC725Y contract
      */
     function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YKeysCompacted) internal pure {
         if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed();
-        if (!_checkValidCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidCompactedAllowedERC725YDataKeys();
+        if (!LSP2Utils.isValidCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidCompactBytesArray(allowedERC725YKeysCompacted);
         
         bool foundAllowedKey;
 
@@ -520,7 +486,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          *
          * the pointer can only land on the length of the following bytes value.
          */
-        uint256 pointer = 0;
+        uint256 pointer;
 
         /**
          * iterate over each key by saving in the `pointer` variable the index for
