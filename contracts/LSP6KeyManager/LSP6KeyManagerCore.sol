@@ -312,7 +312,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
 
-            if (dataValue.length % 29 != 0) revert InvalidEncodedAllowedCalls(dataValue);
+            if (!LSP2Utils.isCompactBytesArray(dataValue)) revert InvalidEncodedAllowedCalls(dataValue);
 
             bytes memory storedAllowedCalls = ERC725Y(target).getData(dataKey);
 
@@ -593,7 +593,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         // TODO: change behaviour to disallow if nothing is set
         // if nothing set or not properly , whitelist everything
-        if (allowedCallsLength == 0 || (allowedCallsLength % 29) != 0) return;
+        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) return;
 
         bool isAllowedStandard;
         bool isAllowedAddress;
