@@ -293,8 +293,8 @@ const Errors = {
 			error: 'InvalidERC725Function(bytes4)',
 			message: 'LSP6: unknown or invalid ERC725 function selector',
 		},
-		'0x7f8cf29e': {
-			error: 'NoERC725YDataKeysAllowed()',
+		'0xed7fa509': {
+			error: 'NoERC725YDataKeysAllowed(address)',
 			message: 'LSP6: caller has no AllowedERC725YDataKeys',
 		},
 		'0x7231ac57': {

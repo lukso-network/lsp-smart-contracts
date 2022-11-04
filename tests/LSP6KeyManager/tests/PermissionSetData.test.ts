@@ -143,10 +143,12 @@ export const shouldBehaveLikePermissionSetData = (
             context.keyManager
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
               .execute(payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "NoERC725YDataKeysAllowed"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoERC725YDataKeysAllowed"
+            )
+            .withArgs(canSetDataWithoutAllowedERC725YDataKeys.address);
         });
       });
 
@@ -396,10 +398,12 @@ export const shouldBehaveLikePermissionSetData = (
             context.keyManager
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
               .execute(payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "NoERC725YDataKeysAllowed"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoERC725YDataKeysAllowed"
+            )
+            .withArgs(canSetDataWithoutAllowedERC725YDataKeys.address);
         });
 
         it("(should revert): adding 10 LSP12IssuedAssets", async () => {
@@ -427,10 +431,12 @@ export const shouldBehaveLikePermissionSetData = (
             context.keyManager
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
               .execute(payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "NoERC725YDataKeysAllowed"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoERC725YDataKeysAllowed"
+            )
+            .withArgs(canSetDataWithoutAllowedERC725YDataKeys.address);
         });
 
         it("(should revert): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
@@ -468,10 +474,12 @@ export const shouldBehaveLikePermissionSetData = (
             context.keyManager
               .connect(canSetDataWithoutAllowedERC725YDataKeys)
               .execute(payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "NoERC725YDataKeysAllowed"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoERC725YDataKeysAllowed"
+            )
+            .withArgs(canSetDataWithoutAllowedERC725YDataKeys.address);
         });
       });
 
@@ -831,10 +839,12 @@ export const shouldBehaveLikePermissionSetData = (
         aliceContext.keyManager
           .connect(alice)
           .execute(aliceUniversalProfilePayload)
-      ).to.be.revertedWithCustomError(
-        bobContext.keyManager,
-        "NoERC725YDataKeysAllowed"
-      );
+      )
+        .to.be.revertedWithCustomError(
+          bobContext.keyManager,
+          "NoERC725YDataKeysAllowed"
+        )
+        .withArgs(alice.address);
     });
 
     it("Alice's UP should be able to `setData(...)` on Bob's UP when it has AllowedERC725YDataKeys", async () => {

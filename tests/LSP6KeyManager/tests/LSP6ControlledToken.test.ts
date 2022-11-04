@@ -622,10 +622,12 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         await expect(
           context.keyManager.connect(addressCanSetData).execute(payload)
-        ).to.be.revertedWithCustomError(
-          context.keyManager,
-          "NoERC725YDataKeysAllowed"
-        );
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NoERC725YDataKeysAllowed"
+          )
+          .withArgs(addressCanSetData.address);
       });
 
       it("should restrict second controller with AllowedERC725YKeys", async () => {

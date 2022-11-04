@@ -82,8 +82,9 @@ error AddressPermissionArrayIndexValueNotAnAddress(bytes32 dataKey, bytes invali
 
 /**
  * @dev reverts if there are no AllowedERC725YDataKeys set for the caller
+ * @param from the address that has no AllowedERC725YDataKeys
  */
-error NoERC725YDataKeysAllowed();
+error NoERC725YDataKeysAllowed(address from);
 
 /**
  * @dev reverts when `value` is not encoded properly using the CompactBytesArray

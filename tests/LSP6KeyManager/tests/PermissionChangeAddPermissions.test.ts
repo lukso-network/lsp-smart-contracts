@@ -2858,10 +2858,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndAddPermissions)
               .execute(payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "NoERC725YDataKeysAllowed"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoERC725YDataKeysAllowed"
+            )
+            .withArgs(canSetDataAndAddPermissions.address);
         });
 
         it("(should fail): 2 x keys + add 2 x new permissions + decrement AddressPermissions[].length by -1", async () => {
@@ -3002,10 +3004,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndChangePermissions)
               .execute(payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "NoERC725YDataKeysAllowed"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoERC725YDataKeysAllowed"
+            )
+            .withArgs(canSetDataAndChangePermissions.address);
         });
 
         it("(should fail): 2 x keys + change 2 x existing permissions", async () => {
@@ -3036,10 +3040,12 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             context.keyManager
               .connect(canSetDataAndChangePermissions)
               .execute(payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "NoERC725YDataKeysAllowed"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NoERC725YDataKeysAllowed"
+            )
+            .withArgs(canSetDataAndChangePermissions.address);
         });
 
         it("(should fail): 2 x keys + add 2 x new permissions", async () => {
