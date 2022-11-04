@@ -171,11 +171,11 @@ library LSP2Utils {
         string memory hashFunction,
         string memory json,
         string memory url
-    ) internal pure returns (bytes memory key) {
+    ) internal pure returns (bytes memory) {
         bytes32 hashFunctionDigest = keccak256(bytes(hashFunction));
         bytes32 jsonDigest = keccak256(bytes(json));
 
-        key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
+        return abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
     /**
@@ -188,11 +188,11 @@ library LSP2Utils {
         string memory hashFunction,
         string memory assetBytes,
         string memory url
-    ) internal pure returns (bytes memory key) {
+    ) internal pure returns (bytes memory) {
         bytes32 hashFunctionDigest = keccak256(bytes(hashFunction));
         bytes32 jsonDigest = keccak256(bytes(assetBytes));
 
-        key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
+        return abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
     /**
@@ -263,6 +263,38 @@ library LSP2Utils {
         }
 
         return true;
+    }
+
+    /**
+     * @dev Verify the validity of the `compactBytesArray` according to LSP2
+     */
+    function isCompactBytesArray(bytes memory compactBytesArray) internal pure returns (bool) {
+        if (compactBytesArray.length == 0) return false;
+        /**
+         * Pointer will always land on these values:
+         *
+         * ↓↓
+         * 03 a00000
+         * 05 fff83a0011
+         * 20 aa0000000000000000000000000000000000000000000000000000000000cafe
+         * 12 bb000000000000000000000000000000beef
+         * 19 cc00000000000000000000000000000000000000000000deed
+         * ↑↑
+         *
+         * The pointer can only land on the length of the following bytes value.
+         */
+        uint256 pointer;
+
+        /**
+         * Check each length byte and make sure that when you reach the last length byte.
+         * Make sure that the last length describes exactly the last bytes value and you do not get out of bounds.
+         */
+        while (pointer < compactBytesArray.length) {
+            uint256 elementLength = uint256(uint8(bytes1(compactBytesArray[pointer])));
+            if (elementLength == 0) return false;
+            pointer += elementLength + 1;
+        }
+        if (pointer == compactBytesArray.length) return true;
     }
 
     /**

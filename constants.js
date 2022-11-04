@@ -4,7 +4,7 @@
  */
 
 // ERC165
-// ----------
+// ---------
 
 const INTERFACE_IDS = {
 	ERC165: '0x01ffc9a7',
@@ -21,8 +21,8 @@ const INTERFACE_IDS = {
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
 	LSP6KeyManager: '0xf9150d55',
-	LSP7DigitalAsset: '0x5fcaac27',
-	LSP8IdentifiableDigitalAsset: '0x49399145',
+	LSP7DigitalAsset: '0xda1f85e4',
+	LSP8IdentifiableDigitalAsset: '0x622e7a01',
 	LSP9Vault: '0xca86ec0f',
 	LSP14Ownable2Step: '0x94be5999',
 };
@@ -284,6 +284,14 @@ const Errors = {
 		'0x2ba8851c': {
 			error: 'InvalidERC725Function(bytes4)',
 			message: 'LSP6: unknown or invalid ERC725 function selector',
+		},
+		'0xed7fa509': {
+			error: 'NoERC725YDataKeysAllowed(address)',
+			message: 'LSP6: caller has no AllowedERC725YDataKeys',
+		},
+		'0x7231ac57': {
+			error: 'InvalidEncodedAllowedERC725YKeys(bytes)',
+			message: 'LSP2Utils: Invalid Compact Bytes Array',
 		},
 		'0x8f4afa38': {
 			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',

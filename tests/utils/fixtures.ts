@@ -137,7 +137,7 @@ export async function setupProfileWithKeyManagerWithURD(
         EOA.address,
         lsp1universalReceiverDelegateUP.address,
         ALL_PERMISSIONS,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SUPER_SETDATA, 32),
         lsp1universalReceiverDelegateUP.address,
       ]
     );

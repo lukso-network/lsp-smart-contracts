@@ -22,8 +22,8 @@ bytes6 constant _LSP6KEY_ADDRESSPERMISSIONS_PREFIX = 0x4b80742de2bf;
 // bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('Permissions'))
 bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX = 0x4b80742de2bf82acb363; // AddressPermissions:Permissions:<address> --> bytes32
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YKeys'))
-bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX = 0x4b80742de2bf90b8b485; // AddressPermissions:AllowedERC725YKeys:<address> --> bytes32[]
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YKeys')) 
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX = 0x4b80742de2bf90b8b485; // AddressPermissions:AllowedERC725YKeys:<address> --> bytes[CompactBytesArray]
 
 // bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedCalls'))
 bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX = 0x4b80742de2bf393a64c7; // AddressPermissions:AllowedCalls:<address>
