@@ -1271,7 +1271,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -1296,7 +1296,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -1470,7 +1470,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -1495,7 +1495,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -1718,7 +1718,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -1743,7 +1743,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -1917,7 +1917,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -1942,7 +1942,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -2200,7 +2200,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -2225,7 +2225,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -2406,7 +2406,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });
@@ -2431,7 +2431,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "InvalidCompactBytes28Array"
+              "InvalidEncodedAllowedCalls"
             )
             .withArgs(value);
         });

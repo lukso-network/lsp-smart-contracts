@@ -177,7 +177,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify the permissions of the _from abddress that want to interact with the `target`
+     * @dev verify the permissions of the _from address that want to interact with the `target`
      * @param from the address making the request
      * @param payload the payload that will be run on `target`
      */
@@ -200,7 +200,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 // CHECK for permission keys
                 _verifyCanSetPermissions(inputKey, inputValue, from, permissions);
 
-            } else {    
+            } else {
                 _verifyCanSetData(from, permissions, inputKey);
             }
         } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
