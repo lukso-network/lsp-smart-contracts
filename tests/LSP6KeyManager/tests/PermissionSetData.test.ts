@@ -606,8 +606,11 @@ export const shouldBehaveLikePermissionSetData = (
           contractCanSetData.address.substring(2),
       ];
 
+      const hardcodedDataKey =
+        "0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1";
+
       const compactedAllowedERC725YDataKeys = encodeCompactBytesArray([
-        "0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1",
+        hardcodedDataKey,
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Key")),
       ]);
 
@@ -810,7 +813,7 @@ export const shouldBehaveLikePermissionSetData = (
       expect(result).to.equal(PERMISSIONS.SETDATA);
     });
 
-    it.only("Alice's UP should't be able to `setData(...)` on Bob's UP when it doesn't have any AllowedERC725YDataKeys", async () => {
+    it("Alice's UP should't be able to `setData(...)` on Bob's UP when it doesn't have any AllowedERC725YDataKeys", async () => {
       let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Alice's Key"));
       let value = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes("Alice's Value")

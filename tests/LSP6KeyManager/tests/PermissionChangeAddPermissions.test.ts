@@ -2973,7 +2973,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
       });
 
-      describe("when caller is an address with permission SETDATA + CHANGEPERMISSIONS", () => {
+      describe("when caller is an address with permission SETDATA + CHANGEPERMISSIONS + no Allowed ERC725Y Keys", () => {
         it("(should fail): 2 x keys + remove 2 x addresses with permissions + decrement AddressPermissions[].length by -2", async () => {
           let keys = [
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
