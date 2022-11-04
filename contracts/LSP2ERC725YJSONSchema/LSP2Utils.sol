@@ -171,11 +171,11 @@ library LSP2Utils {
         string memory hashFunction,
         string memory json,
         string memory url
-    ) internal pure returns (bytes memory key) {
+    ) internal pure returns (bytes memory) {
         bytes32 hashFunctionDigest = keccak256(bytes(hashFunction));
         bytes32 jsonDigest = keccak256(bytes(json));
 
-        key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
+        return abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
     /**
@@ -188,11 +188,11 @@ library LSP2Utils {
         string memory hashFunction,
         string memory assetBytes,
         string memory url
-    ) internal pure returns (bytes memory key) {
+    ) internal pure returns (bytes memory) {
         bytes32 hashFunctionDigest = keccak256(bytes(hashFunction));
         bytes32 jsonDigest = keccak256(bytes(assetBytes));
 
-        key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
+        return abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
     /**
