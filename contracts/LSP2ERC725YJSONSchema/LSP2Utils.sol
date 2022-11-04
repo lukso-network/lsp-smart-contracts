@@ -268,7 +268,7 @@ library LSP2Utils {
     /**
      * @dev Verify the validity of the `compactBytesArray` according to LSP2
      */
-    function isValidCompactBytesArray(bytes memory compactBytesArray)
+    function isCompactBytesArray(bytes memory compactBytesArray)
         internal
         pure
         returns (bool isValid)

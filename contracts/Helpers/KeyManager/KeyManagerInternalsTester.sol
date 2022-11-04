@@ -42,12 +42,8 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         super._verifyAllowedFunction(_sender, _function);
     }
 
-    function checkValidCompactBytesArray(bytes memory compactBytesArray)
-        public
-        pure
-        returns (bool)
-    {
-        return LSP2Utils.isValidCompactBytesArray(compactBytesArray);
+    function isCompactBytesArray(bytes memory compactBytesArray) public pure returns (bool) {
+        return LSP2Utils.isCompactBytesArray(compactBytesArray);
     }
 
     function verifyAllowedERC725YSingleKey(
