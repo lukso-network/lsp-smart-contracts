@@ -128,7 +128,7 @@ export function combinePermissions(..._permissions: string[]) {
   return ethers.utils.hexZeroPad(result.toHexString(), 32);
 }
 
-export function encodeCompactedBytes(inputKeys: BytesLike[]) {
+export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   let compactBytesArray = "0x";
   for (let i = 0; i < inputKeys.length; i++) {
     compactBytesArray +=

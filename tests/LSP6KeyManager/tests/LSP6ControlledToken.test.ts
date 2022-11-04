@@ -19,7 +19,7 @@ import {
   PERMISSIONS,
   ERC1271_VALUES,
 } from "../../../constants";
-import { ARRAY_LENGTH, encodeCompactedBytes } from "../../utils/helpers";
+import { ARRAY_LENGTH, encodeCompactBytesArray } from "../../utils/helpers";
 import { BytesLike } from "ethers";
 
 export type LSP6ControlledToken = {
@@ -632,7 +632,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         const key =
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
           addressCanSetData.address.substring(2);
-        const value = encodeCompactedBytes([
+        const value = encodeCompactBytesArray([
           firstRandomSringKey.substring(0, 34),
         ]);
         const payload = context.token.interface.encodeFunctionData(

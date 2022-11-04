@@ -251,8 +251,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if `_from` has the required permissions to set some dataKeys
-     * on the linked target
+     * @dev verify if `_from` has the required permissions to set some dataKeys on the linked target
      * @param from the address who want to set the dataKeys
      * @param permissions the permissions
      * @param inputKey the dataKey being set
@@ -290,7 +289,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _requirePermissions(from, permissions, _PERMISSION_SETDATA);
 
         bytes memory allowedERC725YKeysCompacted = ERC725Y(target).getAllowedERC725YKeysFor(from);
-        
         _verifyAllowedERC725YKeys(from, inputKeys, allowedERC725YKeysCompacted);
     }
 
@@ -465,7 +463,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev Verify if the `inputKey` is present in `alloedERC725KeysCompacted` stored on the `from`'s ERC725Y contract
+     * @dev Verify if the `inputKey` is present in `allowedERC725KeysCompacted` stored on the `from`'s ERC725Y contract
      */
     function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YKeysCompacted) internal pure {
         if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed();
@@ -502,19 +500,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              */
             uint256 length = uint256(uint8(bytes1(allowedERC725YKeysCompacted[pointer])));
 
-            /**
-             * if `length` is zero, skip everything an move to next key
-             */
-            if (length == 0) {
-                pointer += length + 1;
-                continue;
-            }
-
             /*
              * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
              * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
              */
-            //bytes32 allowedKey = bytes32(allowedERC725YKeysCompacted[pointer + 1:pointer + 1 + length]);
             bytes32 allowedKey = bytes32(allowedERC725YKeysCompacted.slice(
                 pointer + 1,
                 length

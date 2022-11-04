@@ -23,7 +23,7 @@ import {
   generateKeysAndValues,
   getRandomAddresses,
   combinePermissions,
-  encodeCompactedBytes,
+  encodeCompactBytesArray,
   abiCoder,
 } from "../../utils/helpers";
 
@@ -60,7 +60,7 @@ export const shouldBehaveLikePermissionSetData = (
       const permissionsValues = [
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.CALL),
-        encodeCompactedBytes([
+        encodeCompactBytesArray([
           ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
           ERC725YKeys.LSP3.LSP3Profile,
           ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index,
@@ -271,7 +271,7 @@ export const shouldBehaveLikePermissionSetData = (
         });
       });
 
-      describe("For address that has permission SETDATA with AlloedERC725YDataKeys", () => {
+      describe("For address that has permission SETDATA with AllowedERC725YDataKeys", () => {
         it("(should pass): adding 5 singleton keys", async () => {
           let elements = {
             MyFirstKey: "aaaaaaaaaa",
@@ -375,7 +375,7 @@ export const shouldBehaveLikePermissionSetData = (
         });
       });
 
-      describe("For address that has permission SETDATA without AlloedERC725YDataKeys", () => {
+      describe("For address that has permission SETDATA without AllowedERC725YDataKeys", () => {
         it("(should revert): adding 5 singleton keys", async () => {
           let elements = {
             MyFirstKey: "aaaaaaaaaa",
@@ -598,7 +598,7 @@ export const shouldBehaveLikePermissionSetData = (
           contractCanSetData.address.substring(2),
       ];
 
-      const compactedAllowedERC725YDataKeys = encodeCompactedBytes([
+      const compactedAllowedERC725YDataKeys = encodeCompactBytesArray([
         "0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1",
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Key")),
       ]);
@@ -843,17 +843,16 @@ export const shouldBehaveLikePermissionSetData = (
         ethers.utils.toUtf8Bytes("Alice's Value")
       );
 
-      // Adding `key` to AlloedERC725YDataKeys for Alice
+      // Adding `key` to AllowedERC725YDataKeys for Alice
       const payload = bobContext.universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             aliceContext.universalProfile.address.substring(2),
-          encodeCompactedBytes([key]),
+          encodeCompactBytesArray([key]),
         ]
       );
       await bobContext.keyManager.connect(bob).execute(payload);
-      // move on with the test
 
       let finalSetDataPayload =
         bobContext.universalProfile.interface.encodeFunctionData(
@@ -908,7 +907,7 @@ export const shouldBehaveLikePermissionSetData = (
 
       const permissionValues = [
         PERMISSIONS.SUPER_SETDATA,
-        encodeCompactedBytes(allowedERC725YKeys),
+        encodeCompactBytesArray(allowedERC725YKeys),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);

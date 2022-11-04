@@ -11,7 +11,7 @@ import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
 import {
-  encodeCompactedBytes,
+  encodeCompactBytesArray,
   decodeCompactBytes,
   getRandomString,
 } from "../../utils/helpers";
@@ -61,8 +61,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         PERMISSIONS.SETDATA,
-        encodeCompactedBytes([customKey1]),
-        encodeCompactedBytes([customKey2, customKey3, customKey4]),
+        encodeCompactBytesArray([customKey1]),
+        encodeCompactBytesArray([customKey2, customKey3, customKey4]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1079,7 +1079,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        encodeCompactedBytes([supportedStandardKey]),
+        encodeCompactBytesArray([supportedStandardKey]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1467,7 +1467,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        encodeCompactedBytes([allowedArrayKey]),
+        encodeCompactBytesArray([allowedArrayKey]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1694,7 +1694,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        encodeCompactedBytes([customKey1, customKey2, zeroKey]),
+        encodeCompactBytesArray([customKey1, customKey2, zeroKey]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1801,7 +1801,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        encodeCompactedBytes([allowedDataKey]),
+        encodeCompactBytesArray([allowedDataKey]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);

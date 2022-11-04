@@ -18,7 +18,7 @@ import { setupKeyManager } from "../../utils/fixtures";
 import {
   abiCoder,
   combinePermissions,
-  encodeCompactedBytes,
+  encodeCompactBytesArray,
 } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOrAddPermissions = (
@@ -2374,7 +2374,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       let permissionValues = [
         PERMISSIONS.ADDPERMISSIONS,
         PERMISSIONS.CHANGEPERMISSIONS,
-        encodeCompactedBytes([
+        encodeCompactBytesArray([
           ERC725YKeys.LSP3["LSP3Profile"],
           // prettier-ignore
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
@@ -2394,7 +2394,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactedBytes([
+          let value = encodeCompactBytesArray([
             ERC725YKeys.LSP3["LSP3Profile"],
             // prettier-ignore
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
@@ -2419,7 +2419,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactedBytes([ERC725YKeys.LSP3["LSP3Profile"]]);
+          let value = encodeCompactBytesArray([
+            ERC725YKeys.LSP3["LSP3Profile"],
+          ]);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2481,7 +2483,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             newController.address.substr(2);
 
-          let value = encodeCompactedBytes([
+          let value = encodeCompactBytesArray([
             // prettier-ignore
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Profile Key 1")),
             // prettier-ignore
@@ -2533,7 +2535,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactedBytes([
+          let value = encodeCompactBytesArray([
             ERC725YKeys.LSP3["LSP3Profile"],
             // prettier-ignore
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Custom Profile Data Key")),
@@ -2560,7 +2562,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             beneficiary.address.substring(2);
 
-          let value = encodeCompactedBytes([ERC725YKeys.LSP3["LSP3Profile"]]);
+          let value = encodeCompactBytesArray([
+            ERC725YKeys.LSP3["LSP3Profile"],
+          ]);
 
           let payload = context.universalProfile.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
@@ -2628,7 +2632,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             newController.address.substr(2);
 
-          let value = encodeCompactedBytes([
+          let value = encodeCompactBytesArray([
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Key 1")),
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Custom Key 2")),
           ]);
