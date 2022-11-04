@@ -268,11 +268,7 @@ library LSP2Utils {
     /**
      * @dev Verify the validity of the `compactBytesArray` according to LSP2
      */
-    function isCompactBytesArray(bytes memory compactBytesArray)
-        internal
-        pure
-        returns (bool isValid)
-    {
+    function isCompactBytesArray(bytes memory compactBytesArray) internal pure returns (bool) {
         if (compactBytesArray.length == 0) return false;
         /**
          * Pointer will always land on these values:
@@ -298,7 +294,7 @@ library LSP2Utils {
             if (elementLength == 0) return false;
             pointer += elementLength + 1;
         }
-        if (pointer == compactBytesArray.length) isValid = true;
+        if (pointer == compactBytesArray.length) return true;
     }
 
     /**
