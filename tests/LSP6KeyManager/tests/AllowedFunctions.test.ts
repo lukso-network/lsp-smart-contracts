@@ -33,7 +33,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 ) => {
   let context: LSP6TestContext;
 
-  let addressCanCallAnyFunctions: SignerWithAddress,
+  let addressWithNoAllowedFunctions: SignerWithAddress,
     addressCanCallOnlyOneFunction: SignerWithAddress;
 
   let targetContract: TargetContract;
@@ -41,7 +41,7 @@ export const shouldBehaveLikeAllowedFunctions = (
   beforeEach(async () => {
     context = await buildContext();
 
-    addressCanCallAnyFunctions = context.accounts[1];
+    addressWithNoAllowedFunctions = context.accounts[1];
     addressCanCallOnlyOneFunction = context.accounts[2];
 
     targetContract = await new TargetContract__factory(
@@ -50,7 +50,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
     let permissionsKeys = [
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanCallAnyFunctions.address.substring(2),
+        addressWithNoAllowedFunctions.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanCallOnlyOneFunction.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -71,9 +71,9 @@ export const shouldBehaveLikeAllowedFunctions = (
   });
 
   describe("when interacting via `execute(...)`", () => {
-    describe("when caller has nothing listed under when interacting via `execute(...)`", () => {
+    describe("when caller has nothing listed under allowedCalls", () => {
       describe("when calling a contract", () => {
-        it("should pass when calling any function (eg: `setName(...)`)", async () => {
+        it("should revert when calling any function (eg: `setName(...)`)", async () => {
           let initialName = await targetContract.callStatic.getName();
           let newName = "Updated Name";
 
@@ -88,17 +88,20 @@ export const shouldBehaveLikeAllowedFunctions = (
               targetContractPayload,
             ]);
 
-          await context.keyManager
-            .connect(addressCanCallAnyFunctions)
-            .execute(executePayload);
-
-          let result = await targetContract.callStatic.getName();
-          expect(result).to.not.equal(initialName);
-          expect(result).to.equal(newName);
+          await expect(
+            context.keyManager
+              .connect(addressWithNoAllowedFunctions)
+              .execute(executePayload)
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
+            .withArgs(
+              addressWithNoAllowedFunctions.address,
+              targetContract.address,
+              targetContract.interface.getSighash("setName")
+            );
         });
 
-        it("should pass when calling any function (eg: `setNumber(...)`)", async () => {
-          let initialNumber = await targetContract.callStatic.getNumber();
+        it("should revert when calling any function (eg: `setNumber(...)`)", async () => {
           let newNumber = 18;
 
           let targetContractPayload =
@@ -113,13 +116,17 @@ export const shouldBehaveLikeAllowedFunctions = (
               targetContractPayload,
             ]);
 
-          await context.keyManager
-            .connect(addressCanCallAnyFunctions)
-            .execute(executePayload);
-
-          let result = await targetContract.callStatic.getNumber();
-          expect(result).to.not.equal(initialNumber);
-          expect(result).to.equal(newNumber);
+          await expect(
+            context.keyManager
+              .connect(addressWithNoAllowedFunctions)
+              .execute(executePayload)
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
+            .withArgs(
+              addressWithNoAllowedFunctions.address,
+              targetContract.address,
+              targetContract.interface.getSighash("setNumber")
+            );
         });
       });
     });
