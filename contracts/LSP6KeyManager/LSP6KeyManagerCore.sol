@@ -23,7 +23,6 @@ import {LSP6Utils} from "./LSP6Utils.sol";
 import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
-import "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 import "./LSP6Errors.sol";
 
 // constants

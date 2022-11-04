@@ -225,16 +225,6 @@ const LSP1_TYPE_IDS = {
 };
 
 const Errors = {
-	LSP2: {
-		'0xb614e91e': {
-			error: 'InvalidABIEncodedArray(bytes,string)',
-			message: 'LSP2Utils: Invalid ABI encoded array',
-		},
-		'0x774b3dfa': {
-			error: 'InvalidCompactBytes28Array(bytes)',
-			message: 'LSP2Utils: Invalid CompactBytesArray of bytes28 elements.',
-		},
-	},
 	LSP4: {
 		'0x85c169bd': {
 			error: 'LSP4TokenNameNotEditable()',
