@@ -810,7 +810,7 @@ export const shouldBehaveLikePermissionSetData = (
       expect(result).to.equal(PERMISSIONS.SETDATA);
     });
 
-    it("Alice's UP should't be able to `setData(...)` on Bob's UP when it doesn't have any AllowedERC725YDataKeys", async () => {
+    it.only("Alice's UP should't be able to `setData(...)` on Bob's UP when it doesn't have any AllowedERC725YDataKeys", async () => {
       let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Alice's Key"));
       let value = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes("Alice's Value")
@@ -844,7 +844,7 @@ export const shouldBehaveLikePermissionSetData = (
           bobContext.keyManager,
           "NoERC725YDataKeysAllowed"
         )
-        .withArgs(alice.address);
+        .withArgs(aliceContext.universalProfile.address);
     });
 
     it("Alice's UP should be able to `setData(...)` on Bob's UP when it has AllowedERC725YDataKeys", async () => {
