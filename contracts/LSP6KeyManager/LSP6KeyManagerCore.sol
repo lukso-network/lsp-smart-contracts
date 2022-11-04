@@ -177,7 +177,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify the permissions of the _from address that want to interact with the `target`
+     * @dev verify the permissions of the _from abddress that want to interact with the `target`
      * @param from the address making the request
      * @param payload the payload that will be run on `target`
      */
@@ -470,8 +470,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YKeysCompacted) internal pure {
         if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed();
         if (!LSP2Utils.isValidCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidCompactBytesArray(allowedERC725YKeysCompacted);
-        
-        bool foundAllowedKey;
 
         /**
          * pointer will always land on these values:
@@ -497,7 +495,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          *  first  |  second  |  third
          *  length |  length  |  length
          */
-        while (!foundAllowedKey && pointer < allowedERC725YKeysCompacted.length) {
+        while (pointer < allowedERC725YKeysCompacted.length) {
             /**
              * save the length of the following allowed key
              * which is saved in `allowedERC725YKeys[pointer]`
@@ -544,14 +542,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             if (allowedKey == (inputKey & mask)) {
                 // voila you found the key ;)
-                foundAllowedKey = true;
+                return;
             } else {
                 // move the pointer to the first index of the first fixed key
                 pointer += length + 1;
             }
         }
 
-        if (!foundAllowedKey) revert NotAllowedERC725YKey(from, inputKey);
+        revert NotAllowedERC725YKey(from, inputKey);
     }
 
     /**
