@@ -1056,6 +1056,91 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     });
   });
 
+  describe("deleting AllowedCalls", () => {
+    let canOnlyAddPermissions: SignerWithAddress,
+      canOnlyChangePermissions: SignerWithAddress;
+
+    let beneficiary: SignerWithAddress;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      canOnlyAddPermissions = context.accounts[1];
+      canOnlyChangePermissions = context.accounts[2];
+
+      beneficiary = context.accounts[3];
+
+      let permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyAddPermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          canOnlyChangePermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          beneficiary.address.substring(2),
+      ];
+
+      let permissionValues = [
+        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.CHANGEPERMISSIONS,
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff"],
+          [
+            "0xcafecafecafecafecafecafecafecafecafecafe",
+            "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+          ],
+          ["0xffffffff", "0xffffffff"]
+        ),
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionValues);
+    });
+
+    describe("when caller has ADD permission", () => {
+      it("should revert and not be allowed to clear the list of allowed calls for an address", async () => {
+        const dataKey =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          beneficiary.address.substring(2);
+        const dataValue = "0x";
+
+        const setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32,bytes)",
+          [dataKey, dataValue]
+        );
+
+        await expect(
+          context.keyManager
+            .connect(canOnlyAddPermissions)
+            .execute(setDataPayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+      });
+    });
+
+    describe("when caller has CHANGE permission", () => {
+      it("should allow to clear the list of allowed calls for an address", async () => {
+        const dataKey =
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          beneficiary.address.substring(2);
+        const dataValue = "0x";
+
+        const setDataPayload = context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32,bytes)",
+          [dataKey, dataValue]
+        );
+
+        await context.keyManager
+          .connect(canOnlyChangePermissions)
+          .execute(setDataPayload);
+
+        const result = await context.universalProfile["getData(bytes32)"](
+          dataKey
+        );
+        expect(result).to.equal(dataValue);
+      });
+    });
+  });
+
   describe("setting Allowed Calls -> Addresses", () => {
     let canOnlyAddPermissions: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;

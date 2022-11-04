@@ -306,12 +306,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     ) internal view virtual {
         if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
 
-            // dataKey = AddressPermissions:Permissions:<address>
+            // AddressPermissions:Permissions:<address>
             _verifyCanSetBytes32Permissions(dataKey, from, permissions);
 
         } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
 
-            if (!LSP2Utils.isCompactBytesArray(dataValue)) revert InvalidEncodedAllowedCalls(dataValue);
+            bool isClearingArray = dataValue.length == 0;
+            
+            // AddressPermissions:AllowedCalls:<address>
+            if (!isClearingArray && !LSP2Utils.isCompactBytesArray(dataValue)) {
+                revert InvalidEncodedAllowedCalls(dataValue);
+            }
 
             bytes memory storedAllowedCalls = ERC725Y(target).getData(dataKey);
 
