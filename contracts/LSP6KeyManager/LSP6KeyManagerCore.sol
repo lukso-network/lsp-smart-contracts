@@ -364,7 +364,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             // AddressPermissions:AllowedERC725YKeys:<address>
             if (!isClearingArray && !LSP2Utils.isValidCompactBytesArray(dataValue)) {
-                revert InvalidCompactBytesArray(dataValue);
+                revert InvalidEncodedAllowedERC725YKeys(dataValue);
             }
 
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(dataKey);
@@ -469,7 +469,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      */
     function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YKeysCompacted) internal pure {
         if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed();
-        if (!LSP2Utils.isValidCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidCompactBytesArray(allowedERC725YKeysCompacted);
+        if (!LSP2Utils.isValidCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidEncodedAllowedERC725YKeys(allowedERC725YKeysCompacted);
 
         /**
          * pointer will always land on these values:

@@ -234,10 +234,6 @@ const Errors = {
 			error: 'InvalidABIEncodedArray(bytes,string)',
 			message: 'LSP2Utils: Invalid ABI encoded array',
 		},
-		'0x3d330f3e': {
-			error: 'InvalidCompactBytesArray(bytes)',
-			message: 'LSP2Utils: Invalid Compact Bytes Array',
-		},
 	},
 	LSP4: {
 		'0x85c169bd': {
@@ -300,6 +296,10 @@ const Errors = {
 		'0x7f8cf29e': {
 			error: 'NoERC725YDataKeysAllowed()',
 			message: 'LSP6: caller has no AllowedERC725YDataKeys',
+		},
+		'0x7231ac57': {
+			error: 'InvalidEncodedAllowedERC725YKeys(bytes)',
+			message: 'LSP2Utils: Invalid Compact Bytes Array',
 		},
 	},
 	LSP7: {
