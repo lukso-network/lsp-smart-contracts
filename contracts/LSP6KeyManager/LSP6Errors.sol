@@ -60,6 +60,13 @@ error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
 error InvalidERC725Function(bytes4 invalidFunction);
 
 /**
+ * @dev reverts when `allowedCallsValue` is not properly encoded as a bytes28[CompactBytesArray]
+ * (CompactBytesArray of bytes28 entries). See LSP2 value type `CompactBytesArray` for details.
+ * @param allowedCallsValue the list of allowedCalls
+ */
+error InvalidEncodedAllowedCalls(bytes allowedCallsValue);
+
+/**
  * @dev reverts when trying to set a value that is not 20 bytes long under AddressPermissions[index]
  * @param dataKey the AddressPermissions[index] data key
  * @param invalidValue the invalid value that was attempted to be set under AddressPermissions[index]

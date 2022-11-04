@@ -24,7 +24,7 @@ import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
 import "./LSP6Errors.sol";
-import {InvalidCompactBytes28Array, InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
+import {InvalidABIEncodedArray} from "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 
 // constants
 import {
@@ -293,7 +293,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
 
-            if (dataValue.length % 29 != 0) revert InvalidCompactBytes28Array(dataValue);
+            if (dataValue.length % 29 != 0) revert InvalidEncodedAllowedCalls(dataValue);
 
             bytes memory storedAllowedCalls = ERC725Y(target).getData(dataKey);
 
