@@ -321,13 +321,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bytes memory storedAllowedCalls = ERC725Y(target).getData(dataKey);
 
             if (storedAllowedCalls.length == 0) {
-
                 _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
-
             } else {
-
                 _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
-
             }
 
         } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
@@ -342,13 +338,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(dataKey);
 
             if (storedAllowedERC725YKeys.length == 0) {
-
                 _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
-
             } else {
-
                 _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
-
             }
         } else {
             /**
