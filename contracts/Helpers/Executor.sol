@@ -13,8 +13,6 @@ import {
 } from "@erc725/smart-contracts/contracts/constants.sol";
 
 contract Executor {
-    uint256 internal constant OPERATION_0_CALL = 0;
-
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
     LSP6KeyManager private _keyManager;
