@@ -32,7 +32,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
     random: SignerWithAddress;
   let targetContract: TargetContract;
 
-  before(async () => {
+  beforeEach(async () => {
     context = await buildContext();
 
     signer = context.accounts[1];
@@ -119,6 +119,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             );
           });
         });
+
         describe("When sending 0 while msg.value signed > 0", () => {
           it("should revert by recovering a non permissioned address", async () => {
             let executeRelayCallPayload =
@@ -179,6 +180,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             );
           });
         });
+
         describe("When sending exact msg.value like the one that is signed", () => {
           it("should pass", async () => {
             let executeRelayCallPayload =
@@ -244,6 +246,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             );
           });
         });
+
         describe("When UP has 0 value and interacting with contract that require value", () => {
           describe("When relayer don't fund the UP so it's balance is less than the value param of execute(..)", () => {
             it("should revert", async () => {
