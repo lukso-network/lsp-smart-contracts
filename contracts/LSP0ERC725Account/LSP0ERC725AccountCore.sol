@@ -144,16 +144,16 @@ abstract contract LSP0ERC725AccountCore is
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
 
         // CALL
-        if (operation == OPERATION_CALL) return _executeCall(to, value, data);
+        if (operation == OPERATION_0_CALL) return _executeCall(to, value, data);
 
         // Deploy with CREATE
-        if (operation == OPERATION_CREATE) return _deployCreate(to, value, data);
+        if (operation == OPERATION_1_CREATE) return _deployCreate(to, value, data);
 
         // Deploy with CREATE2
-        if (operation == OPERATION_CREATE2) return _deployCreate2(to, value, data);
+        if (operation == OPERATION_2_CREATE2) return _deployCreate2(to, value, data);
 
         // STATICCALL
-        if (operation == OPERATION_STATICCALL) return _executeStaticCall(to, value, data);
+        if (operation == OPERATION_3_STATICCALL) return _executeStaticCall(to, value, data);
 
         // DELEGATECALL
         //
@@ -167,7 +167,7 @@ abstract contract LSP0ERC725AccountCore is
         // - update the contract owner
         // - run selfdestruct in the context of this contract
         //
-        if (operation == OPERATION_DELEGATECALL) return _executeDelegateCall(to, value, data);
+        if (operation == OPERATION_4_DELEGATECALL) return _executeDelegateCall(to, value, data);
 
         revert("ERC725X: Unknown operation type");
     }
@@ -252,7 +252,7 @@ abstract contract LSP0ERC725AccountCore is
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
      */
     function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
-        store[dataKey] = dataValue;
+        _store[dataKey] = dataValue;
         emit DataChanged(
             dataKey,
             dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)

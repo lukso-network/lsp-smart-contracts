@@ -23,10 +23,10 @@ import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 import {
-    OPERATION_CALL,
-    OPERATION_STATICCALL,
-    OPERATION_CREATE,
-    OPERATION_CREATE2
+    OPERATION_0_CALL,
+    OPERATION_1_CREATE,
+    OPERATION_2_CREATE2,
+    OPERATION_3_STATICCALL
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
@@ -125,16 +125,16 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
 
         // CALL
-        if (operation == OPERATION_CALL) return _executeCall(to, value, data);
+        if (operation == OPERATION_0_CALL) return _executeCall(to, value, data);
 
         // Deploy with CREATE
-        if (operation == OPERATION_CREATE) return _deployCreate(to, value, data);
+        if (operation == OPERATION_1_CREATE) return _deployCreate(to, value, data);
 
         // Deploy with CREATE2
-        if (operation == OPERATION_CREATE2) return _deployCreate2(to, value, data);
+        if (operation == OPERATION_2_CREATE2) return _deployCreate2(to, value, data);
 
         // STATICCALL
-        if (operation == OPERATION_STATICCALL) return _executeStaticCall(to, value, data);
+        if (operation == OPERATION_3_STATICCALL) return _executeStaticCall(to, value, data);
 
         revert("ERC725X: Unknown operation type");
     }
@@ -251,7 +251,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
      */
     function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
-        store[dataKey] = dataValue;
+        _store[dataKey] = dataValue;
         emit DataChanged(
             dataKey,
             dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
