@@ -247,7 +247,9 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     }
 
     /**
-     * @dev disable operation type DELEGATECALL
+     * @dev disable operation type DELEGATECALL (4).
+     * NB: providing operation type DELEGATECALL (4) as argument will result
+     * in custom error ERC725X_UnknownOperationType(4)
      */
     function _execute(
         uint256 operationType,
