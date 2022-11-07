@@ -77,17 +77,19 @@ export const testAllowedCallsInternals = (
 
     describe("`getAllowedCallsFor(...)`", () => {
       it("should return the list of allowed calls", async () => {
-        let bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
-          canCallOnlyTwoAddresses.address
-        );
+        let bytesResult =
+          await context.keyManagerInternalTester.getAllowedCallsFor(
+            canCallOnlyTwoAddresses.address
+          );
 
         expect(bytesResult).to.equal(encodedAllowedCalls);
       });
 
       it("should return no bytes when no allowed calls were set", async () => {
-        let bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
-          context.owner.address
-        );
+        let bytesResult =
+          await context.keyManagerInternalTester.getAllowedCallsFor(
+            context.owner.address
+          );
         expect(bytesResult).to.equal("0x");
 
         let resultFromAccount = await context.universalProfile[
@@ -180,9 +182,9 @@ export const testAllowedCallsInternals = (
         )
           .to.be.revertedWithCustomError(
             context.keyManagerInternalTester,
-            "NotAllowedCall"
+            "NoCallsAllowed"
           )
-          .withArgs(canCallNoAllowedCalls.address, randomAddress, "0x00000000");
+          .withArgs(canCallNoAllowedCalls.address);
       });
     });
   });
