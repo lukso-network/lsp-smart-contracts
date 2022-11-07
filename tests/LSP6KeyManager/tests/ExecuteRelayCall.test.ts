@@ -76,10 +76,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
       describe("When testing msg.value", () => {
         describe("When sending more than the signed msg.value", () => {
           it("should revert by recovering a non permissioned address", async () => {
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-              "execute",
-              [OPERATION_TYPES.CALL, random.address, 0, "0x"]
-            );
+            let executeRelayCallPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                random.address,
+                0,
+                "0x",
+              ]);
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signer.address,
@@ -111,13 +114,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let eip191Signer = new EIP191Signer();
 
-            let {
-              signature,
-            } = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
-              encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT1
-            );
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await expect(
               context.keyManager.executeRelayCall(
@@ -135,10 +137,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         describe("When sending 0 while msg.value signed > 0", () => {
           it("should revert by recovering a non permissioned address", async () => {
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-              "execute",
-              [OPERATION_TYPES.CALL, random.address, 0, "0x"]
-            );
+            let executeRelayCallPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                random.address,
+                0,
+                "0x",
+              ]);
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signer.address,
@@ -170,13 +175,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let eip191Signer = new EIP191Signer();
 
-            let {
-              signature,
-            } = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
-              encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT1
-            );
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await expect(
               context.keyManager
@@ -196,10 +200,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
         describe("When sending exact msg.value like the one that is signed", () => {
           it("should pass if signer has the `to` address in its allowed calls", async () => {
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-              "execute",
-              [OPERATION_TYPES.CALL, random.address, 0, "0x"]
-            );
+            let executeRelayCallPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                random.address,
+                0,
+                "0x",
+              ]);
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signer.address,
@@ -233,13 +240,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let eip191Signer = new EIP191Signer();
 
-            let {
-              signature,
-            } = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
-              encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT1
-            );
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
 
             await context.keyManager
               .connect(relayer)
@@ -260,10 +266,13 @@ export const shouldBehaveLikeExecuteRelayCall = (
           });
 
           it("should fail if signer has nothing listed in its allowed calls", async () => {
-            let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-              "execute",
-              [OPERATION_TYPES.CALL, random.address, 0, "0x"]
-            );
+            let executeRelayCallPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                random.address,
+                0,
+                "0x",
+              ]);
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signerNoAllowedCalls.address,
@@ -293,13 +302,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             let eip191Signer = new EIP191Signer();
 
-            let {
-              signature,
-            } = await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
-              encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT3
-            );
+            let { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT3
+              );
 
             await expect(
               context.keyManager
@@ -313,13 +321,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
-                "NotAllowedCall"
+                "NoCallsAllowed"
               )
-              .withArgs(
-                signerNoAllowedCalls.address,
-                random.address,
-                "0x00000000"
-              );
+              .withArgs(signerNoAllowedCalls.address);
           });
         });
 
@@ -327,10 +331,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
           describe("When relayer don't fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it("should revert", async () => {
               let nameToSet = "Alice";
-              let targetContractPayload = targetContract.interface.encodeFunctionData(
-                "setNamePayable",
-                [nameToSet]
-              );
+              let targetContractPayload =
+                targetContract.interface.encodeFunctionData("setNamePayable", [
+                  nameToSet,
+                ]);
 
               let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
@@ -339,15 +343,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
-              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  requiredValueForExecution,
-                  targetContractPayload,
-                ]
-              );
+              let executeRelayCallPayload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute",
+                  [
+                    OPERATION_TYPES.CALL,
+                    targetContract.address,
+                    requiredValueForExecution,
+                    targetContractPayload,
+                  ]
+                );
 
               let valueToSendFromRelayer = 0;
 
@@ -372,13 +377,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let eip191Signer = new EIP191Signer();
 
-              let {
-                signature,
-              } = await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT1
-              );
+              let { signature } =
+                await eip191Signer.signDataWithIntendedValidator(
+                  context.keyManager.address,
+                  encodedMessage,
+                  LOCAL_PRIVATE_KEYS.ACCOUNT1
+                );
 
               await expect(
                 context.keyManager
@@ -396,10 +400,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
           describe("When relayer fund the UP so it's balance is greater than the value param of execute(..)", () => {
             it("should pass if signer has the target contract address in its list of allowed calls", async () => {
               let nameToSet = "Alice";
-              let targetContractPayload = targetContract.interface.encodeFunctionData(
-                "setNamePayable",
-                [nameToSet]
-              );
+              let targetContractPayload =
+                targetContract.interface.encodeFunctionData("setNamePayable", [
+                  nameToSet,
+                ]);
 
               let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
@@ -408,15 +412,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
-              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  requiredValueForExecution,
-                  targetContractPayload,
-                ]
-              );
+              let executeRelayCallPayload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute",
+                  [
+                    OPERATION_TYPES.CALL,
+                    targetContract.address,
+                    requiredValueForExecution,
+                    targetContractPayload,
+                  ]
+                );
 
               let valueToSendFromRelayer = 51;
 
@@ -441,13 +446,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let eip191Signer = new EIP191Signer();
 
-              let {
-                signature,
-              } = await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT1
-              );
+              let { signature } =
+                await eip191Signer.signDataWithIntendedValidator(
+                  context.keyManager.address,
+                  encodedMessage,
+                  LOCAL_PRIVATE_KEYS.ACCOUNT1
+                );
 
               await context.keyManager
                 .connect(relayer)
@@ -464,10 +468,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             it("should revert with 'NotAllowedCall' error if signer does not have any listed under its allowed calls", async () => {
               let nameToSet = "Alice";
-              let targetContractPayload = targetContract.interface.encodeFunctionData(
-                "setNamePayable",
-                [nameToSet]
-              );
+              let targetContractPayload =
+                targetContract.interface.encodeFunctionData("setNamePayable", [
+                  nameToSet,
+                ]);
 
               let requiredValueForExecution = 51; // specified in `setNamePayable(..)`
 
@@ -476,15 +480,16 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 0
               );
 
-              let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-                "execute",
-                [
-                  OPERATION_TYPES.CALL,
-                  targetContract.address,
-                  requiredValueForExecution,
-                  targetContractPayload,
-                ]
-              );
+              let executeRelayCallPayload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "execute",
+                  [
+                    OPERATION_TYPES.CALL,
+                    targetContract.address,
+                    requiredValueForExecution,
+                    targetContractPayload,
+                  ]
+                );
 
               let valueToSendFromRelayer = 51;
 
@@ -509,13 +514,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let eip191Signer = new EIP191Signer();
 
-              let {
-                signature,
-              } = await eip191Signer.signDataWithIntendedValidator(
-                context.keyManager.address,
-                encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT3
-              );
+              let { signature } =
+                await eip191Signer.signDataWithIntendedValidator(
+                  context.keyManager.address,
+                  encodedMessage,
+                  LOCAL_PRIVATE_KEYS.ACCOUNT3
+                );
 
               await expect(
                 context.keyManager
@@ -529,13 +533,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
               )
                 .to.be.revertedWithCustomError(
                   context.keyManager,
-                  "NotAllowedCall"
+                  "NoCallsAllowed"
                 )
-                .withArgs(
-                  signerNoAllowedCalls.address,
-                  targetContract.address,
-                  targetContract.interface.getSighash("setNamePayable")
-                );
+                .withArgs(signerNoAllowedCalls.address);
             });
           });
         });

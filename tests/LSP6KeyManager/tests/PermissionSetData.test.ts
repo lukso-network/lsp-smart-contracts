@@ -237,8 +237,7 @@ export const shouldBehaveLikePermissionSetData = (
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
-              hash:
-                "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
               url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
             },
             "LSP12IssuedAssets[]": [
@@ -340,8 +339,7 @@ export const shouldBehaveLikePermissionSetData = (
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
-              hash:
-                "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
               url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
             },
             "LSP12IssuedAssets[]": [
@@ -445,8 +443,7 @@ export const shouldBehaveLikePermissionSetData = (
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
-              hash:
-                "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
               url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
             },
             "LSP12IssuedAssets[]": [
@@ -542,8 +539,7 @@ export const shouldBehaveLikePermissionSetData = (
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
-              hash:
-                "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
+              hash: "0x820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361",
               url: "ifps://QmYr1VJLwerg6pEoscdhVGugo39pa6rycEZLjtRPDfW84UAx",
             },
             "LSP12IssuedAssets[]": [
@@ -823,25 +819,24 @@ export const shouldBehaveLikePermissionSetData = (
         ethers.utils.toUtf8Bytes("Alice's Value")
       );
 
-      let finalSetDataPayload = bobContext.universalProfile.interface.encodeFunctionData(
-        "setData(bytes32,bytes)",
-        [key, value]
-      );
+      let finalSetDataPayload =
+        bobContext.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32,bytes)",
+          [key, value]
+        );
 
-      let bobKeyManagerPayload = bobContext.keyManager.interface.encodeFunctionData(
-        "execute",
-        [finalSetDataPayload]
-      );
+      let bobKeyManagerPayload =
+        bobContext.keyManager.interface.encodeFunctionData("execute", [
+          finalSetDataPayload,
+        ]);
 
-      let aliceUniversalProfilePayload = aliceContext.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
+      let aliceUniversalProfilePayload =
+        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
           OPERATION_TYPES.CALL,
           bobContext.keyManager.address,
           0,
           bobKeyManagerPayload,
-        ]
-      );
+        ]);
 
       await expect(
         aliceContext.keyManager
@@ -861,25 +856,35 @@ export const shouldBehaveLikePermissionSetData = (
         ethers.utils.toUtf8Bytes("Alice's Value")
       );
 
-      let finalSetDataPayload = bobContext.universalProfile.interface.encodeFunctionData(
+      // Adding `key` to AllowedERC725YDataKeys for Alice
+      const payload = bobContext.universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
-        [key, value]
-      );
-
-      let bobKeyManagerPayload = bobContext.keyManager.interface.encodeFunctionData(
-        "execute",
-        [finalSetDataPayload]
-      );
-
-      let aliceUniversalProfilePayload = aliceContext.universalProfile.interface.encodeFunctionData(
-        "execute",
         [
+          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+            aliceContext.universalProfile.address.substring(2),
+          encodeCompactBytesArray([key]),
+        ]
+      );
+      await bobContext.keyManager.connect(bob).execute(payload);
+
+      let finalSetDataPayload =
+        bobContext.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32,bytes)",
+          [key, value]
+        );
+
+      let bobKeyManagerPayload =
+        bobContext.keyManager.interface.encodeFunctionData("execute", [
+          finalSetDataPayload,
+        ]);
+
+      let aliceUniversalProfilePayload =
+        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
           OPERATION_TYPES.CALL,
           bobContext.keyManager.address,
           0,
           bobKeyManagerPayload,
-        ]
-      );
+        ]);
 
       await aliceContext.keyManager
         .connect(alice)

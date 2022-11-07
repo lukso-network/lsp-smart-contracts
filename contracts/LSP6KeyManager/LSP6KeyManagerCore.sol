@@ -578,9 +578,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
         uint256 allowedCallsLength = allowedCalls.length;
 
-        // TODO: change behaviour to disallow if nothing is set
-        // if nothing set or not properly , whitelist everything
-        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) return;
+        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) {
+            revert NoCallsAllowed(from);
+        }
 
         bool isAllowedStandard;
         bool isAllowedAddress;
