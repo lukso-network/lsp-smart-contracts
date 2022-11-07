@@ -15,15 +15,15 @@ const INTERFACE_IDS = {
 	ERC721Metadata: '0x5b5e139f',
 	ERC777: '0xe58e113c',
 	ERC1155: '0xd9b67a26',
-	ERC725X: '0x44c028fe',
+	ERC725X: '0x570ef073',
 	ERC725Y: '0x714df77c',
-	LSP0ERC725Account: '0xdca05671',
+	LSP0ERC725Account: '0xcf6e8efc',
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
 	LSP6KeyManager: '0xf9150d55',
 	LSP7DigitalAsset: '0xda1f85e4',
 	LSP8IdentifiableDigitalAsset: '0x622e7a01',
-	LSP9Vault: '0xca86ec0f',
+	LSP9Vault: '0xd9483482',
 	LSP14Ownable2Step: '0x94be5999',
 };
 
