@@ -491,7 +491,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 // voila you found the key ;)
                 return;
             } else {
-                // move the pointer to the first index of the first fixed key
+                // move the pointer to the index of the next key
                 pointer += length + 1;
             }
         }
@@ -505,8 +505,103 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param inputKeys the dataKey that is verified
      */
     function _verifyAllowedERC725YKeys(address from, bytes32[] memory inputKeys, bytes memory allowedERC725YKeysCompacted) internal pure {
+        if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed(from);
+        if (!LSP2Utils.isCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidEncodedAllowedERC725YKeys(allowedERC725YKeysCompacted);
+
+        uint256 allowedKeysFound;
+
+        /**
+         * pointer will always land on these values:
+         *
+         * ↓↓
+         * 03 a00000
+         * 05 fff83a0011
+         * 20 aa0000000000000000000000000000000000000000000000000000000000cafe
+         * 12 bb000000000000000000000000000000beef
+         * 19 cc00000000000000000000000000000000000000000000deed
+         * ↑↑
+         *
+         * the pointer can only land on the length of the following bytes value.
+         */
+        uint256 pointer;
+
+        /**
+         * iterate over each key by saving in the `pointer` variable the index for
+         * the length of the following key until the `pointer` reaches an undefined value
+         *
+         * 0x 03 a00000 03 fff83a 20 aa00...00cafe
+         *    ↑↑        ↑↑        ↑↑
+         *  first  |  second  |  third
+         *  length |  length  |  length
+         */
+        while (allowedKeysFound < inputKeys.length && pointer < allowedERC725YKeysCompacted.length) {
+            /**
+             * save the length of the following allowed key
+             * which is saved in `allowedERC725YKeys[pointer]`
+             */
+            uint256 length = uint256(uint8(bytes1(allowedERC725YKeysCompacted[pointer])));
+
+            /*
+             * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
+             * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
+             */
+            bytes32 allowedKey = bytes32(allowedERC725YKeysCompacted.slice(
+                pointer + 1,
+                length
+            ));
+
+            /**
+             * the bitmask discard the last `32 - length` bytes of the input key via ANDing &
+             * so to compare only the relevant parts of each ERC725Y keys
+             *
+             * E.g.:
+             *
+             * allowed key = 0xa00000
+             *
+             *      &     compare this part
+             *                 vvvvvv
+             * checked key = 0xa00000cafecafecafecafecafecafecafe000000000000000000000011223344
+             *
+             *                                              discard this part
+             *                       vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+             *        mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
+             */
+            bytes32 mask = bytes32(
+                0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            ) << (8 * (32 - length));
+
+            /**
+             * Iterate over the `inputKeys`
+             * If the key is allowed, nullify it and increment `allowedKeysFound`,
+             * If the key is not allowed, continue searching
+             */
+            for (uint256 i = 0; i < inputKeys.length; i++) {
+                if (inputKeys[i] == bytes32(0)) continue;
+
+                if (allowedKey == (inputKeys[i] & mask)) {
+                    inputKeys[i] = bytes32(0);
+                    allowedKeysFound ++;
+                }
+            }
+
+            /**
+             * Check wether all the `inputKeys` were found and return
+             * Otherwise move to the next AllowedERC725YKey
+             */
+            if (allowedKeysFound == inputKeys.length) {
+                // voila you found the keys ;)
+                return;
+            } else {
+                // move the pointer to the index of the next key
+                pointer += length + 1;
+            }
+        }
+
+        /**
+         * Iterate over the `inputKeys` in order to find first not allowed ERC725Y key and revert
+         */
         for (uint256 i = 0; i < inputKeys.length; i++) {
-            _verifyAllowedERC725YSingleKey(from, inputKeys[i], allowedERC725YKeysCompacted);
+            if (inputKeys[i] != bytes32(0)) revert NotAllowedERC725YKey(from, inputKeys[i]);
         }
     }
 
