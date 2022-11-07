@@ -47,11 +47,21 @@ describe("LSP1UniversalReceiverDelegateVault", () => {
 
       await universalProfile
         .connect(accounts.owner1)
-        .execute(OPERATION_TYPES.CALL, lsp9Vault1.address, 0, abi);
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp9Vault1.address,
+          0,
+          abi
+        );
 
       await universalProfile
         .connect(accounts.owner1)
-        .execute(OPERATION_TYPES.CALL, lsp9Vault2.address, 0, abi);
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp9Vault2.address,
+          0,
+          abi
+        );
 
       return {
         accounts,
