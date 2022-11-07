@@ -160,15 +160,20 @@ export const shouldBehaveLikeLSP9 = (
 
   describe("when testing setting execute", () => {
     describe("when executing operation (4) DELEGATECALL", () => {
-      it("should revert with unknow operation type string error", async () => {
+      it("should revert with unknow operation type custom error", async () => {
         await expect(
-          context.lsp9Vault.execute(
+          context.lsp9Vault["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.DELEGATECALL,
             context.accounts.random.address,
             0,
             "0x"
           )
-        ).to.be.revertedWith("ERC725X: Unknown operation type");
+        )
+          .to.be.revertedWithCustomError(
+            context.universalProfile,
+            "ERC725X_UnknownOperationType"
+          )
+          .withArgs(OPERATION_TYPES.DELEGATECALL);
       });
     });
   });
@@ -184,12 +189,15 @@ export const shouldBehaveLikeLSP9 = (
           context.universalProfile.interface.getSighash("acceptOwnership");
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            context.lsp9Vault.address,
-            0,
-            acceptOwnershipSelector,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              context.lsp9Vault.address,
+              0,
+              acceptOwnershipSelector,
+            ]
+          );
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
