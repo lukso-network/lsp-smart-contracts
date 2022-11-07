@@ -19,27 +19,19 @@ bytes16 constant _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX = 0xdf30dba06db6a30e65
 // AddressPermissions:...
 bytes6 constant _LSP6KEY_ADDRESSPERMISSIONS_PREFIX = 0x4b80742de2bf;
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('Permissions')) 
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('Permissions'))
 bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX = 0x4b80742de2bf82acb363; // AddressPermissions:Permissions:<address> --> bytes32
-
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedAddresses')) 
-bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX = 0x4b80742de2bfc6dd6b3c; // AddressPermissions:AllowedAddresses:<address> --> address[]
-
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedFunctions')) 
-bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX = 0x4b80742de2bf8efea1e8; // AddressPermissions:AllowedFunctions:<address> --> bytes4[]
-
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedStandards')) 
-bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX = 0x4b80742de2bf3efa94a3; // AddressPermissions:AllowedStandards:<address> --> bytes4[]
 
 // bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YKeys')) 
 bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX = 0x4b80742de2bf90b8b485; // AddressPermissions:AllowedERC725YKeys:<address> --> bytes[CompactBytesArray]
 
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedCalls'))
+bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX = 0x4b80742de2bf393a64c7; // AddressPermissions:AllowedCalls:<address>
+
 // DEFAULT PERMISSIONS VALUES
 // NB: the SUPER PERMISSIONS allow to not check for:
 //  - AddressPermissions:AllowedERC725YKeys:...
-//  - AddressPermissions:AllowedAddress:...
-//  - AddressPermissions:AllowedStandards:...
-//  - AddressPermissions:AllowedFunctions:...
+//  - AddressPermissions:AllowedCalls
 bytes32 constant _PERMISSION_CHANGEOWNER                      = 0x0000000000000000000000000000000000000000000000000000000000000001;
 bytes32 constant _PERMISSION_ADDPERMISSIONS                   = 0x0000000000000000000000000000000000000000000000000000000000000002;
 bytes32 constant _PERMISSION_CHANGEPERMISSIONS                = 0x0000000000000000000000000000000000000000000000000000000000000004;

@@ -22,24 +22,16 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return ERC725Y(target).getPermissionsFor(_address);
     }
 
-    function getAllowedAddressesFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedAddressesFor(_address);
-    }
-
-    function getAllowedFunctionsFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedFunctionsFor(_address);
+    function getAllowedCallsFor(address _address) public view returns (bytes memory) {
+        return ERC725Y(target).getAllowedCallsFor(_address);
     }
 
     function getAllowedERC725YKeysFor(address _address) public view returns (bytes memory) {
         return ERC725Y(target).getAllowedERC725YKeysFor(_address);
     }
 
-    function verifyAllowedAddress(address _sender, address _recipient) public view {
-        super._verifyAllowedAddress(_sender, _recipient);
-    }
-
-    function verifyAllowedFunction(address _sender, bytes4 _function) public view {
-        super._verifyAllowedFunction(_sender, _function);
+    function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
+        super._verifyAllowedCall(_sender, _payload);
     }
 
     function isCompactBytesArray(bytes memory compactBytesArray) public pure returns (bool) {

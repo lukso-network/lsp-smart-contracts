@@ -66,10 +66,9 @@ describe("LSP6KeyManager", () => {
         const universalProfile = await new UniversalProfile__factory(
           owner
         ).deploy(owner.address);
-        const keyManagerInternalTester =
-          await new KeyManagerInternalTester__factory(owner).deploy(
-            universalProfile.address
-          );
+        const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
+          owner
+        ).deploy(universalProfile.address);
 
         return { owner, accounts, universalProfile, keyManagerInternalTester };
       });

@@ -16,6 +16,7 @@ import {
   ARRAY_LENGTH,
   generateKeysAndValues,
   abiCoder,
+  combineAllowedCalls,
 } from "../utils/helpers";
 
 // fixtures
@@ -212,13 +213,17 @@ export const shouldBehaveLikeLSP9 = (
           [
             [
               ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-                context.accounts.friend.address.substr(2),
-              ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-                context.accounts.friend.address.substr(2),
+                context.accounts.friend.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                context.accounts.friend.address.substring(2),
             ],
             [
               friendPermissions,
-              abiCoder.encode(["address[]"], [[context.lsp9Vault.address]]),
+              combineAllowedCalls(
+                ["0xffffffff"],
+                [context.lsp9Vault.address],
+                ["0xffffffff"]
+              ),
             ],
           ]
         );
@@ -250,7 +255,7 @@ export const shouldBehaveLikeLSP9 = (
         expect(res).to.equal(values[0]);
       });
 
-      it("should fail when friend is interfacting with other contracts", async () => {
+      it("should fail when friend is interacting with other contracts", async () => {
         const [keys, values] = generateKeysAndValues("any string");
         const payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32,bytes)",
@@ -274,9 +279,15 @@ export const shouldBehaveLikeLSP9 = (
         )
           .to.be.revertedWithCustomError(
             context.lsp6KeyManager,
-            "NotAllowedAddress"
+            "NotAllowedCall"
           )
-          .withArgs(context.accounts.friend.address, disallowedAddress);
+          .withArgs(
+            context.accounts.friend.address,
+            disallowedAddress,
+            context.universalProfile.interface.getSighash(
+              "setData(bytes32,bytes)"
+            )
+          );
       });
     });
 

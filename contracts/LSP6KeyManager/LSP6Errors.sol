@@ -16,27 +16,13 @@ error NoPermissionsSet(address from);
 error NotAuthorised(address from, string permission);
 
 /**
- * @dev reverts when address `from` is not authorised to interact with `disallowedAddress` via the linked account
+ * @dev reverts when `from` is not authorised to make the call because of a not allowed standard, address or function.
  * @param from address making the request
- * @param disallowedAddress address that `from` is not authorised to call
+ * @param to the address of an EOA or contract that `from` is trying to interact with
+ * @param selector if `to` is a contract, the bytes4 selector of the function that `from` is trying to call.
+ * If no function is called (e.g: a native token transfer), selector = 0x00000000
  */
-error NotAllowedAddress(address from, address disallowedAddress);
-
-/**
- * @dev reverts when address `from` is restricted to interact only with smart contracts implementing specific standard interface(s)
- *      and try to call an address `addressNotImplementingAllowedStandard` that does not implement one of this restricted standard interfaces.
- * @param from address making the request
- * @param addressNotImplementingAllowedStandard the address of the smart contract that `from` is trying to interact with,
- *                                              and that does not implement an allowed interface.
- */
-error NotAllowedStandard(address from, address addressNotImplementingAllowedStandard);
-
-/**
- * @dev reverts when address `from` is not authorised to run `disallowedFunction` via the linked account
- * @param from address making the request
- * @param disallowedFunction bytes4 function selector that `from` is not authorised to run
- */
-error NotAllowedFunction(address from, bytes4 disallowedFunction);
+error NotAllowedCall(address from, address to, bytes4 selector);
 
 /**
  * @dev reverts when address `from` is not authorised to set the key `disallowedKey` on the linked account
@@ -72,6 +58,13 @@ error InvalidRelayNonce(address signer, uint256 invalidNonce, bytes signature);
  * @param invalidFunction the bytes4 selector of the invalid function
  */
 error InvalidERC725Function(bytes4 invalidFunction);
+
+/**
+ * @dev reverts when `allowedCallsValue` is not properly encoded as a bytes28[CompactBytesArray]
+ * (CompactBytesArray of bytes28 entries). See LSP2 value type `CompactBytesArray` for details.
+ * @param allowedCallsValue the list of allowedCalls
+ */
+error InvalidEncodedAllowedCalls(bytes allowedCallsValue);
 
 /**
  * @dev reverts when trying to set a value that is not 20 bytes long under AddressPermissions[index]

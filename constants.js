@@ -116,14 +116,10 @@ const ERC725YKeys = {
 		},
 		// AddressPermissions:Permissions:<address>
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
-		// AddressPermissions:AllowedAddresses:<address>
-		'AddressPermissions:AllowedAddresses': '0x4b80742de2bfc6dd6b3c0000',
-		// AddressPermissions:AllowedFunctions:<address>
-		'AddressPermissions:AllowedFunctions': '0x4b80742de2bf8efea1e80000',
-		// AddressPermissions:AllowedStandards:<address>
-		'AddressPermissions:AllowedStandards': '0x4b80742de2bf3efa94a30000',
 		// AddressPermissions:AllowedERC725YKeys:<address>
 		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
+		// AddressPermissions:AllowedCalls:<address>
+		'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
 	},
 	LSP9: {
 		SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
@@ -229,12 +225,6 @@ const LSP1_TYPE_IDS = {
 };
 
 const Errors = {
-	LSP2: {
-		'0xb614e91e': {
-			error: 'InvalidABIEncodedArray(bytes,string)',
-			message: 'LSP2Utils: Invalid ABI encoded array',
-		},
-	},
 	LSP4: {
 		'0x85c169bd': {
 			error: 'LSP4TokenNameNotEditable()',
@@ -260,18 +250,10 @@ const Errors = {
 			error: 'NotAuthorised(address,string)',
 			message: 'LSP6: Not authorized (missing permission).',
 		},
-		'0x2879b128': {
-			error: 'NotAllowedAddress(address,address)',
-			message: 'LSP6: not allowed to interact with address.',
-		},
-		'0x42013ee4': {
-			error: 'NotAllowedStandard(address,address)',
+		'0x45147bce': {
+			error: 'NotAllowedCall(address,address,bytes4)',
 			message:
-				'LSP6: cannot interact with a contract that does not implement an allowed standard.',
-		},
-		'0x84135110': {
-			error: 'NotAllowedFunction(address,bytes4)',
-			message: 'LSP6: not allowed to run the function.',
+				'LSP6: not authorised to interact with `to` with the provided data payload (standard, address or function of `to` not authorised).',
 		},
 		'0x3003e7ae': {
 			error: 'NotAllowedERC725YKey(address,bytes32)',
@@ -300,6 +282,10 @@ const Errors = {
 		'0x7231ac57': {
 			error: 'InvalidEncodedAllowedERC725YKeys(bytes)',
 			message: 'LSP2Utils: Invalid Compact Bytes Array',
+		},
+		'0x8f4afa38': {
+			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
+			message: 'LSP6: value provided for AddressPermission[index] not an address.',
 		},
 	},
 	LSP7: {
