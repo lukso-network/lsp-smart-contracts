@@ -22,6 +22,7 @@ import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 // constants
 import "@erc725/smart-contracts/contracts/constants.sol";
+import "@erc725/smart-contracts/contracts/errors.sol";
 import {
     _INTERFACEID_LSP0,
     _INTERFACEID_ERC1271,
@@ -123,8 +124,8 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @param operation The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3 DELEGATECALL = 4
-     * @param to The smart contract or address to interact with, `to` will be unused if a contract is created (operation 1 and 2)
+     * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3 DELEGATECALL = 4
+     * @param target The smart contract or address to interact with, `to` will be unused if a contract is created (operation 1 and 2)
      * @param value The amount of native tokens to transfer (in Wei).
      * @param data The call data, or the bytecode of the contract to deploy
      * @dev Executes any other smart contract.
@@ -135,41 +136,17 @@ abstract contract LSP0ERC725AccountCore is
      * Emits a {ValueReceived} event, when receives native token
      */
     function execute(
-        uint256 operation,
-        address to,
+        uint256 operationType,
+        address target,
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        require(address(this).balance >= value, "ERC725X: insufficient balance");
+        if (address(this).balance < value) {
+            revert ERC725X_InsufficientBalance(address(this).balance, value);
+        }
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
 
-        // CALL
-        if (operation == OPERATION_0_CALL) return _executeCall(to, value, data);
-
-        // Deploy with CREATE
-        if (operation == OPERATION_1_CREATE) return _deployCreate(to, value, data);
-
-        // Deploy with CREATE2
-        if (operation == OPERATION_2_CREATE2) return _deployCreate2(to, value, data);
-
-        // STATICCALL
-        if (operation == OPERATION_3_STATICCALL) return _executeStaticCall(to, value, data);
-
-        // DELEGATECALL
-        //
-        // WARNING! delegatecall is a dangerous operation type! use with EXTRA CAUTION
-        //
-        // delegate allows to call another deployed contract and use its functions
-        // to update the state of the current calling contract.
-        //
-        // this can lead to unexpected behaviour on the contract storage, such as:
-        // - updating any state variables (even if these are protected)
-        // - update the contract owner
-        // - run selfdestruct in the context of this contract
-        //
-        if (operation == OPERATION_4_DELEGATECALL) return _executeDelegateCall(to, value, data);
-
-        revert("ERC725X: Unknown operation type");
+        return _execute(operationType, target, value, data);
     }
 
     /**
