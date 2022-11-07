@@ -64,12 +64,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
         describe("When sending more than the signed msg.value", () => {
           it("should revert by recovering a non permissioned address", async () => {
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                random.address,
-                0,
-                "0x",
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, random.address, 0, "0x"]
+              );
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signer.address,
@@ -124,12 +122,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
         describe("When sending 0 while msg.value signed > 0", () => {
           it("should revert by recovering a non permissioned address", async () => {
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                random.address,
-                0,
-                "0x",
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, random.address, 0, "0x"]
+              );
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signer.address,
@@ -186,12 +182,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
         describe("When sending exact msg.value like the one that is signed", () => {
           it("should pass", async () => {
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                random.address,
-                0,
-                "0x",
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, random.address, 0, "0x"]
+              );
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signer.address,
@@ -250,8 +244,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
             );
           });
         });
-        describe("When UP have 0 value and interacting with contract that require value", () => {
-          describe("When relayer don't fund the UP so it's balance is greater than the value param of execute(..)", () => {
+        describe("When UP has 0 value and interacting with contract that require value", () => {
+          describe("When relayer don't fund the UP so it's balance is less than the value param of execute(..)", () => {
             it("should revert", async () => {
               let nameToSet = "Alice";
               let targetContractPayload =
@@ -268,7 +262,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
-                  "execute",
+                  "execute(uint256,address,uint256,bytes)",
                   [
                     OPERATION_TYPES.CALL,
                     targetContract.address,
@@ -316,7 +310,12 @@ export const shouldBehaveLikeExecuteRelayCall = (
                     executeRelayCallPayload,
                     { value: valueToSendFromRelayer }
                   )
-              ).to.be.revertedWith("ERC725X: insufficient balance");
+              )
+                .to.be.revertedWithCustomError(
+                  context.universalProfile,
+                  "ERC725X_InsufficientBalance"
+                )
+                .withArgs(0, requiredValueForExecution);
             });
           });
 
@@ -337,7 +336,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
-                  "execute",
+                  "execute(uint256,address,uint256,bytes)",
                   [
                     OPERATION_TYPES.CALL,
                     targetContract.address,

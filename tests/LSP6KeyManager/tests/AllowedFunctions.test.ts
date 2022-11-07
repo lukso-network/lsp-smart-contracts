@@ -77,20 +77,19 @@ export const shouldBehaveLikeAllowedFunctions = (
           let initialName = await targetContract.callStatic.getName();
           let newName = "Updated Name";
 
-          let targetContractPayload = targetContract.interface.encodeFunctionData(
-            "setName",
-            [newName]
-          );
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [newName]);
 
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           await context.keyManager
             .connect(addressCanCallAnyFunctions)
@@ -105,19 +104,20 @@ export const shouldBehaveLikeAllowedFunctions = (
           let initialNumber = await targetContract.callStatic.getNumber();
           let newNumber = 18;
 
-          let targetContractPayload = targetContract.interface.encodeFunctionData(
-            "setNumber",
-            [newNumber]
-          );
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setNumber", [
+              newNumber,
+            ]);
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           await context.keyManager
             .connect(addressCanCallAnyFunctions)
@@ -136,20 +136,19 @@ export const shouldBehaveLikeAllowedFunctions = (
           let initialName = await targetContract.callStatic.getName();
           let newName = "Updated Name";
 
-          let targetContractPayload = targetContract.interface.encodeFunctionData(
-            "setName",
-            [newName]
-          );
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [newName]);
 
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           await context.keyManager
             .connect(addressCanCallOnlyOneFunction)
@@ -164,19 +163,20 @@ export const shouldBehaveLikeAllowedFunctions = (
           let initialNumber = await targetContract.callStatic.getNumber();
           let newNumber = 18;
 
-          let targetContractPayload = targetContract.interface.encodeFunctionData(
-            "setNumber",
-            [newNumber]
-          );
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setNumber", [
+              newNumber,
+            ]);
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           await expect(
             context.keyManager
@@ -201,7 +201,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           "0xbaadca110000000000000000000000000000000000000000000000000000000123456789";
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, targetContract.address, 0, randomPayload]
         );
 
@@ -228,24 +228,23 @@ export const shouldBehaveLikeAllowedFunctions = (
         it("`setName(...)` - should pass when the bytes4 selector of the function called is listed in its AllowedFunctions", async () => {
           let newName = "Dagobah";
 
-          let targetContractPayload = targetContract.interface.encodeFunctionData(
-            "setName",
-            [newName]
-          );
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setName", [newName]);
           let nonce = await context.keyManager.callStatic.getNonce(
             addressCanCallOnlyOneFunction.address,
             channelId
           );
 
-          let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -286,20 +285,19 @@ export const shouldBehaveLikeAllowedFunctions = (
             addressCanCallOnlyOneFunction.address,
             channelId
           );
-          let targetContractPayload = targetContract.interface.encodeFunctionData(
-            "setNumber",
-            [2354]
-          );
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("setNumber", [2354]);
 
-          let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          let executeRelayCallPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -432,10 +430,11 @@ export const shouldBehaveLikeAllowedFunctions = (
           [context.universalProfile.address, recipient, tokenId, true, "0x"]
         );
 
-        let executePayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload]
-        );
+        let executePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload]
+          );
 
         await context.keyManager
           .connect(addressCanCallOnlyTransferOnLSP8)
@@ -447,20 +446,22 @@ export const shouldBehaveLikeAllowedFunctions = (
       it("should revert when calling `authorizeOperator(...)` on LSP8 contract", async () => {
         const operator = context.accounts[8].address;
 
-        const authorizeOperatorPayload = lsp8Contract.interface.encodeFunctionData(
-          "authorizeOperator",
-          [operator, tokenId]
-        );
+        const authorizeOperatorPayload =
+          lsp8Contract.interface.encodeFunctionData("authorizeOperator", [
+            operator,
+            tokenId,
+          ]);
 
-        let executePayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CALL,
-            lsp8Contract.address,
-            0,
-            authorizeOperatorPayload,
-          ]
-        );
+        let executePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              lsp8Contract.address,
+              0,
+              authorizeOperatorPayload,
+            ]
+          );
 
         await expect(
           context.keyManager
@@ -489,10 +490,11 @@ export const shouldBehaveLikeAllowedFunctions = (
             "0x",
           ]);
 
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [OPERATION_TYPES.CALL, lsp7Contract.address, 0, mintPayload]
-          );
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, lsp7Contract.address, 0, mintPayload]
+            );
 
           await context.keyManager
             .connect(
@@ -512,10 +514,11 @@ export const shouldBehaveLikeAllowedFunctions = (
             [context.universalProfile.address, recipient, amount, true, "0x"]
           );
 
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [OPERATION_TYPES.CALL, lsp7Contract.address, 0, transferPayload]
-          );
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, lsp7Contract.address, 0, transferPayload]
+            );
 
           let tx = await context.keyManager
             .connect(
@@ -536,20 +539,22 @@ export const shouldBehaveLikeAllowedFunctions = (
           let operator = context.accounts[6].address;
           const amount = 10;
 
-          let authorizeOperatorPayload = lsp7Contract.interface.encodeFunctionData(
-            "authorizeOperator",
-            [operator, amount]
-          );
+          let authorizeOperatorPayload =
+            lsp7Contract.interface.encodeFunctionData("authorizeOperator", [
+              operator,
+              amount,
+            ]);
 
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              lsp7Contract.address,
-              0,
-              authorizeOperatorPayload,
-            ]
-          );
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp7Contract.address,
+                0,
+                authorizeOperatorPayload,
+              ]
+            );
 
           await context.keyManager
             .connect(
@@ -578,7 +583,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
+            "execute(uint256,address,uint256,bytes)",
             [OPERATION_TYPES.CALL, lsp7Contract.address, 0, setDataPayload]
           );
 
@@ -598,20 +603,22 @@ export const shouldBehaveLikeAllowedFunctions = (
         it("should pass when calling `authorizeOperator(...)`", async () => {
           let recipient = context.accounts[4].address;
 
-          let authorizeOperatorPayload = lsp8Contract.interface.encodeFunctionData(
-            "authorizeOperator",
-            [recipient, tokenId]
-          );
+          let authorizeOperatorPayload =
+            lsp8Contract.interface.encodeFunctionData("authorizeOperator", [
+              recipient,
+              tokenId,
+            ]);
 
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [
-              OPERATION_TYPES.CALL,
-              lsp8Contract.address,
-              0,
-              authorizeOperatorPayload,
-            ]
-          );
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp8Contract.address,
+                0,
+                authorizeOperatorPayload,
+              ]
+            );
 
           await context.keyManager
             .connect(
@@ -631,10 +638,11 @@ export const shouldBehaveLikeAllowedFunctions = (
             [context.universalProfile.address, recipient, tokenId, true, "0x"]
           );
 
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload]
-          );
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, lsp8Contract.address, 0, transferPayload]
+            );
 
           await expect(
             context.keyManager
@@ -660,10 +668,11 @@ export const shouldBehaveLikeAllowedFunctions = (
             "0x",
           ]);
 
-          let executePayload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
-            [OPERATION_TYPES.CALL, lsp8Contract.address, 0, mintPayload]
-          );
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, lsp8Contract.address, 0, mintPayload]
+            );
 
           await expect(
             context.keyManager

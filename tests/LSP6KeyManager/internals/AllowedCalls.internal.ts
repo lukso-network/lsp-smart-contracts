@@ -75,17 +75,19 @@ export const testAllowedCallsInternals = (
 
     describe("`getAllowedCallsFor(...)`", () => {
       it("should return the list of allowed calls", async () => {
-        let bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
-          canCallOnlyTwoAddresses.address
-        );
+        let bytesResult =
+          await context.keyManagerInternalTester.getAllowedCallsFor(
+            canCallOnlyTwoAddresses.address
+          );
 
         expect(bytesResult).to.equal(encodedAllowedCalls);
       });
 
       it("should return no bytes when no allowed calls were set", async () => {
-        let bytesResult = await context.keyManagerInternalTester.getAllowedCallsFor(
-          context.owner.address
-        );
+        let bytesResult =
+          await context.keyManagerInternalTester.getAllowedCallsFor(
+            context.owner.address
+          );
         expect(bytesResult).to.equal("0x");
 
         let resultFromAccount = await context.universalProfile[
@@ -101,7 +103,7 @@ export const testAllowedCallsInternals = (
     describe("`verifyAllowedCall(...)`", () => {
       it("should not revert when payload = send 1 LYX to an address listed in allowed calls list", async () => {
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             allowedEOA.address,
@@ -131,7 +133,7 @@ export const testAllowedCallsInternals = (
         );
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             disallowedAddress,
@@ -161,7 +163,7 @@ export const testAllowedCallsInternals = (
         let randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             randomAddress,
@@ -255,7 +257,7 @@ export const testAllowedCallsInternals = (
 
       beforeEach(async () => {
         payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             randomAddress,
@@ -403,7 +405,7 @@ export const testAllowedCallsInternals = (
       context = await buildContext();
 
       payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [
           OPERATION_TYPES.CALL,
           randomAddress,
