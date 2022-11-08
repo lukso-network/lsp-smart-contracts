@@ -4,6 +4,7 @@ import { expect } from "chai";
 import {
   LSP8CompatibleERC721Tester__factory,
   LSP8CompatibleERC721InitTester__factory,
+  LSP8CompatibleERC721MintableInit__factory,
 } from "../../../types";
 
 import {
@@ -130,13 +131,12 @@ describe("LSP8CompatibleERC721", () => {
     };
 
     describe("when deploying the base implementation contract", () => {
-      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+      it("LSP8CompatibleERC721Init: prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
-        const lsp8CompatibilityForERC721TesterInit =
-          await new LSP8CompatibleERC721InitTester__factory(
-            accounts[0]
-          ).deploy();
+        const lsp8CompatibilityForERC721TesterInit = await new LSP8CompatibleERC721InitTester__factory(
+          accounts[0]
+        ).deploy();
 
         const randomCaller = accounts[1];
 
@@ -144,6 +144,24 @@ describe("LSP8CompatibleERC721", () => {
           lsp8CompatibilityForERC721TesterInit[
             "initialize(string,string,address,bytes)"
           ]("XXXXXXXXXXX", "XXX", randomCaller.address, "0x")
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+      });
+
+      it("LSP8CompatibleERC721MintableInit: prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp8CompatibleERC721MintableInit = await new LSP8CompatibleERC721MintableInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp8CompatibleERC721MintableInit["initialize(string,string,address)"](
+            "XXXXXXXXXXX",
+            "XXX",
+            randomCaller.address
+          )
         ).to.be.revertedWith("Initializable: contract is already initialized");
       });
     });
@@ -188,6 +206,5 @@ describe("LSP8CompatibleERC721", () => {
         })
       );
     });
-
   });
 });
