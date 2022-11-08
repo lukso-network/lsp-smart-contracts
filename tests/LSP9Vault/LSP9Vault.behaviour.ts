@@ -143,7 +143,7 @@ export const shouldBehaveLikeLSP9 = (
       });
     });
 
-    describe.only("when calling the contract without any value or data", () => {
+    describe("when calling the contract without any value or data", () => {
       it("should pass and not emit the ValueReceived event", async () => {
         const sender = context.accounts.anyone;
         const amount = 0;
