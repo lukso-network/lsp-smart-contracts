@@ -121,7 +121,9 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        require(address(this).balance >= value, "ERC725X: insufficient balance");
+        if (address(this).balance < value) {
+            revert ERC725X_InsufficientBalance(address(this).balance, value);
+        }
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
 
         return _execute(operationType, target, value, data);
@@ -153,7 +155,10 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         override
         onlyAllowed
     {
-        require(dataKeys.length == dataValues.length, "Keys length not equal to values length");
+        if (dataKeys.length != dataValues.length) {
+            revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
+        }
+
         for (uint256 i = 0; i < dataKeys.length; i = GasLib.uncheckedIncrement(i)) {
             _setData(dataKeys[i], dataValues[i]);
         }
