@@ -249,6 +249,22 @@ export const shouldBehaveLikeLSP3 = (
     });
   });
 
+  describe.only("when calling the contract without any value or data", () => {
+    it("should pass and not emit the ValueReceived event", async () => {
+      const sender = context.accounts[0];
+      const amount = 0;
+
+      // prettier-ignore
+      await expect(
+          sender.sendTransaction({
+            to: context.universalProfile.address,
+            value: amount,
+          })
+        ).to.not.be.reverted
+         .to.not.emit(context.universalProfile, "ValueReceived");
+    });
+  });
+
   describe("when sending native tokens to the contract", () => {
     it("should emit the right ValueReceived event", async () => {
       const sender = context.accounts[0];

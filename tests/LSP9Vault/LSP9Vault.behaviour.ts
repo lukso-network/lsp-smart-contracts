@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 import { expect } from "chai";
@@ -140,6 +140,22 @@ export const shouldBehaveLikeLSP9 = (
 
         const result = await context.lsp9Vault["getData(bytes32)"](key);
         expect(result).to.equal(value);
+      });
+    });
+
+    describe.only("when calling the contract without any value or data", () => {
+      it("should pass and not emit the ValueReceived event", async () => {
+        const sender = context.accounts.anyone;
+        const amount = 0;
+
+        // prettier-ignore
+        await expect(
+          sender.sendTransaction({
+            to: context.lsp9Vault.address,
+            value: amount,
+          })
+        ).to.not.be.reverted
+         .to.not.emit(context.lsp9Vault, "ValueReceived");
       });
     });
 
