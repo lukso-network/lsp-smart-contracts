@@ -182,7 +182,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param payload the payload that will be run on `target`
      */
     function _verifyPermissions(address from, bytes calldata payload) internal view {
-        bytes4 erc725Function = bytes4(payload[:4]);
+        bytes4 erc725Function = bytes4(payload);
 
         // get the permissions of the caller
         bytes32 permissions = ERC725Y(target).getPermissionsFor(from);
@@ -318,7 +318,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         ) {
 
             bool isClearingArray = dataValue.length == 0;
-            
+
             if (!isClearingArray && !LSP2Utils.isCompactBytesArray(dataValue)) {
                 if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
                     revert InvalidEncodedAllowedCalls(dataValue);
