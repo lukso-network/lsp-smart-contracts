@@ -270,15 +270,6 @@ export const shouldBehaveLikeAllowedAddresses = (
               [OPERATION_TYPES.CALL, recipient, amount, EMPTY_PAYLOAD]
             );
 
-          await context.keyManager
-            .connect(invalidEncodedAllowedCalls)
-            .execute(transferPayload);
-
-          let newBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          expect(newBalanceUP).to.be.lt(initialBalanceUP);
-
           await expect(
             context.keyManager
               .connect(invalidEncodedAllowedCalls)

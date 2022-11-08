@@ -108,7 +108,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             let transferPayload =
               context.universalProfile.interface.encodeFunctionData(
                 "execute(uint256,address,uint256,bytes)",
-                [OPERATION_TYPES.CALL, recipient, amount, data]
+                [OPERATION_TYPES.CALL, recipient.address, amount, data]
               );
 
             /**
@@ -129,7 +129,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             let transferPayload =
               context.universalProfile.interface.encodeFunctionData(
                 "execute(uint256,address,uint256,bytes)",
-                [OPERATION_TYPES.CALL, recipient, amount, data]
+                [OPERATION_TYPES.CALL, recipient.address, amount, data]
               );
 
             await expect(() =>
@@ -148,7 +148,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             let transferPayload =
               context.universalProfile.interface.encodeFunctionData(
                 "execute(uint256,address,uint256,bytes)",
-                [OPERATION_TYPES.CALL, recipient, amount, data]
+                [OPERATION_TYPES.CALL, recipient.address, amount, data]
               );
 
             await expect(() =>
@@ -174,7 +174,7 @@ export const shouldBehaveLikePermissionTransferValue = (
                 "execute(uint256,address,uint256,bytes)",
                 [
                   OPERATION_TYPES.CALL,
-                  recipient,
+                  recipient.address,
                   ethers.utils.parseEther("3"),
                   data,
                 ]
@@ -221,7 +221,7 @@ export const shouldBehaveLikePermissionTransferValue = (
                 "execute(uint256,address,uint256,bytes)",
                 [
                   OPERATION_TYPES.CALL,
-                  recipient,
+                  recipient.address,
                   ethers.utils.parseEther("3"),
                   data,
                 ]
@@ -248,7 +248,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             let transferPayload =
               context.universalProfile.interface.encodeFunctionData(
                 "execute(uint256,address,uint256,bytes)",
-                [OPERATION_TYPES.CALL, recipient, amount, data]
+                [OPERATION_TYPES.CALL, recipient.address, amount, data]
               );
 
             await expect(() =>
@@ -274,7 +274,7 @@ export const shouldBehaveLikePermissionTransferValue = (
                 "execute(uint256,address,uint256,bytes)",
                 [
                   OPERATION_TYPES.CALL,
-                  recipient,
+                  recipient.address,
                   ethers.utils.parseEther("3"),
                   data,
                 ]
@@ -316,7 +316,7 @@ export const shouldBehaveLikePermissionTransferValue = (
                 "execute(uint256,address,uint256,bytes)",
                 [
                   OPERATION_TYPES.CALL,
-                  recipient,
+                  recipient.address,
                   ethers.utils.parseEther("3"),
                   data,
                 ]
@@ -354,7 +354,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData(
               "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, recipient, amount, "0x"]
+              [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
             );
 
           const HARDHAT_CHAINID = 31337;
@@ -392,7 +392,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           let executeRelayCallPayload =
             context.universalProfile.interface.encodeFunctionData(
               "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, recipient, amount, "0x"]
+              [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
             );
 
           const HARDHAT_CHAINID = 31337;
@@ -643,10 +643,9 @@ export const shouldBehaveLikePermissionTransferValue = (
         );
 
       let bobKeyManagerPayload =
-        bobContext.keyManager.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [finalTransferLyxPayload]
-        );
+        bobContext.keyManager.interface.encodeFunctionData("execute", [
+          finalTransferLyxPayload,
+        ]);
 
       let aliceUniversalProfilePayload =
         aliceContext.universalProfile.interface.encodeFunctionData(

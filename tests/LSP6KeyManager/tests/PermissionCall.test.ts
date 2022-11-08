@@ -377,6 +377,7 @@ export const shouldBehaveLikePermissionCall = (
 
             let targetContractPayload =
               targetContract.interface.encodeFunctionData("setName", [newName]);
+
             let nonce = await context.keyManager.callStatic.getNonce(
               addressCanMakeCallWithAllowedCalls.address,
               channelId
@@ -413,7 +414,7 @@ export const shouldBehaveLikePermissionCall = (
               await eip191Signer.signDataWithIntendedValidator(
                 context.keyManager.address,
                 encodedMessage,
-                LOCAL_PRIVATE_KEYS.ACCOUNT1
+                LOCAL_PRIVATE_KEYS.ACCOUNT2
               );
 
             await context.keyManager.executeRelayCall(
@@ -601,7 +602,7 @@ export const shouldBehaveLikePermissionCall = (
             await eip191Signer.signDataWithIntendedValidator(
               context.keyManager.address,
               encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT2
+              LOCAL_PRIVATE_KEYS.ACCOUNT3
             );
 
           await expect(
