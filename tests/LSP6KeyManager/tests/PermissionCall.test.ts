@@ -19,14 +19,19 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
+import {
+  abiCoder,
+  combineAllowedCalls,
+  LOCAL_PRIVATE_KEYS,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
 
-  let addressCanMakeCall: SignerWithAddress,
+  let addressCanMakeCallNoAllowedCalls: SignerWithAddress,
+    addressCanMakeCallWithAllowedCalls: SignerWithAddress,
     addressCannotMakeCall: SignerWithAddress;
 
   let targetContract: TargetContract;
@@ -34,8 +39,9 @@ export const shouldBehaveLikePermissionCall = (
   beforeEach(async () => {
     context = await buildContext();
 
-    addressCanMakeCall = context.accounts[1];
-    addressCannotMakeCall = context.accounts[2];
+    addressCanMakeCallNoAllowedCalls = context.accounts[1];
+    addressCanMakeCallWithAllowedCalls = context.accounts[2];
+    addressCannotMakeCall = context.accounts[3];
 
     targetContract = await new TargetContract__factory(
       context.accounts[0]
@@ -45,15 +51,25 @@ export const shouldBehaveLikePermissionCall = (
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanMakeCall.address.substring(2),
+        addressCanMakeCallNoAllowedCalls.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        addressCanMakeCallWithAllowedCalls.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         addressCannotMakeCall.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        addressCanMakeCallWithAllowedCalls.address.substring(2),
     ];
 
     const permissionsValues = [
       ALL_PERMISSIONS,
       PERMISSIONS.CALL,
+      PERMISSIONS.CALL,
       PERMISSIONS.SETDATA,
+      combineAllowedCalls(
+        ["0xffffffff"],
+        [targetContract.address],
+        ["0xffffffff"]
+      ),
     ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
@@ -82,23 +98,51 @@ export const shouldBehaveLikePermissionCall = (
     });
 
     describe("when caller has permission CALL", () => {
-      it("should pass and change state at the target contract", async () => {
-        let argument = "another name";
+      describe("when caller has no allowed calls set", () => {
+        it("should revert with `NotAllowedCall(...)` error", async () => {
+          let argument = "another name";
 
-        let targetPayload = targetContract.interface.encodeFunctionData(
-          "setName",
-          [argument]
-        );
+          let targetPayload = targetContract.interface.encodeFunctionData(
+            "setName",
+            [argument]
+          );
 
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
-        );
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "execute",
+            [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
+          );
 
-        await context.keyManager.connect(addressCanMakeCall).execute(payload);
+          await expect(
+            context.keyManager
+              .connect(addressCanMakeCallNoAllowedCalls)
+              .execute(payload)
+          )
+            .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
+            .withArgs(addressCanMakeCallNoAllowedCalls.address);
+        });
+      });
 
-        const result = await targetContract.callStatic.getName();
-        expect(result).to.equal(argument);
+      describe("when caller has some allowed calls set", () => {
+        it("should pass and change state at the target contract", async () => {
+          let argument = "another name";
+
+          let targetPayload = targetContract.interface.encodeFunctionData(
+            "setName",
+            [argument]
+          );
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
+          );
+
+          await context.keyManager
+            .connect(addressCanMakeCallWithAllowedCalls)
+            .execute(payload);
+
+          const result = await targetContract.callStatic.getName();
+          expect(result).to.equal(argument);
+        });
       });
     });
 
@@ -132,15 +176,12 @@ export const shouldBehaveLikePermissionCall = (
           targetContract.interface.encodeFunctionData("getName");
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let result = await context.keyManager
           .connect(context.owner)
@@ -157,15 +198,12 @@ export const shouldBehaveLikePermissionCall = (
           targetContract.interface.encodeFunctionData("getNumber");
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
+          context.universalProfile.interface.encodeFunctionData("execute", [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]);
 
         let result = await context.keyManager
           .connect(context.owner)
@@ -215,15 +253,12 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetContractPayload,
-              ]
-            );
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -272,15 +307,12 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetContractPayload,
-              ]
-            );
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -327,59 +359,116 @@ export const shouldBehaveLikePermissionCall = (
 
     describe("when signer has permission CALL", () => {
       describe("when signing tx with EIP191Signer `\\x19\\x00` prefix", () => {
-        it("should execute successfully", async () => {
-          let newName = "Another name";
+        describe("when caller has some allowed calls set", () => {
+          it("should execute successfully", async () => {
+            let newName = "Another name";
 
-          let targetContractPayload =
-            targetContract.interface.encodeFunctionData("setName", [newName]);
-          let nonce = await context.keyManager.callStatic.getNonce(
-            addressCanMakeCall.address,
-            channelId
-          );
+            let targetContractPayload =
+              targetContract.interface.encodeFunctionData("setName", [newName]);
+            let nonce = await context.keyManager.callStatic.getNonce(
+              addressCanMakeCall.address,
+              channelId
+            );
 
-          let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
+            let executeRelayCallPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
                 OPERATION_TYPES.CALL,
                 targetContract.address,
                 0,
                 targetContractPayload,
+              ]);
+
+            const HARDHAT_CHAINID = 31337;
+            let valueToSend = 0;
+
+            let encodedMessage = ethers.utils.solidityPack(
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                valueToSend,
+                executeRelayCallPayload,
               ]
             );
 
-          const HARDHAT_CHAINID = 31337;
-          let valueToSend = 0;
+            const eip191Signer = new EIP191Signer();
 
-          let encodedMessage = ethers.utils.solidityPack(
-            ["uint256", "uint256", "uint256", "uint256", "bytes"],
-            [
-              LSP6_VERSION,
-              HARDHAT_CHAINID,
+            const { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
+
+            await context.keyManager.executeRelayCall(
+              signature,
               nonce,
-              valueToSend,
               executeRelayCallPayload,
-            ]
-          );
-
-          const eip191Signer = new EIP191Signer();
-
-          const { signature } =
-            await eip191Signer.signDataWithIntendedValidator(
-              context.keyManager.address,
-              encodedMessage,
-              LOCAL_PRIVATE_KEYS.ACCOUNT1
+              { value: valueToSend }
             );
 
-          await context.keyManager.executeRelayCall(
-            signature,
-            nonce,
-            executeRelayCallPayload,
-            { value: valueToSend }
-          );
+            const result = await targetContract.callStatic.getName();
+            expect(result).to.equal(newName);
+          });
+        });
 
-          const result = await targetContract.callStatic.getName();
-          expect(result).to.equal(newName);
+        describe("when caller has no allowed calls set", () => {
+          it("should revert with `NotAllowedCall(...)` error", async () => {
+            let newName = "Another name";
+
+            let targetContractPayload =
+              targetContract.interface.encodeFunctionData("setName", [newName]);
+            let nonce = await context.keyManager.callStatic.getNonce(
+              addressCanMakeCallNoAllowedCalls.address,
+              channelId
+            );
+
+            let executeRelayCallPayload =
+              context.universalProfile.interface.encodeFunctionData("execute", [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]);
+
+            const HARDHAT_CHAINID = 31337;
+            let valueToSend = 0;
+
+            let encodedMessage = ethers.utils.solidityPack(
+              ["uint256", "uint256", "uint256", "uint256", "bytes"],
+              [
+                LSP6_VERSION,
+                HARDHAT_CHAINID,
+                nonce,
+                valueToSend,
+                executeRelayCallPayload,
+              ]
+            );
+
+            const eip191Signer = new EIP191Signer();
+
+            const { signature } =
+              await eip191Signer.signDataWithIntendedValidator(
+                context.keyManager.address,
+                encodedMessage,
+                LOCAL_PRIVATE_KEYS.ACCOUNT1
+              );
+
+            await expect(
+              context.keyManager.executeRelayCall(
+                signature,
+                nonce,
+                executeRelayCallPayload,
+                { value: valueToSend }
+              )
+            )
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NoCallsAllowed"
+              )
+              .withArgs(addressCanMakeCallNoAllowedCalls.address);
+          });
         });
       });
 
@@ -390,20 +479,17 @@ export const shouldBehaveLikePermissionCall = (
           let targetContractPayload =
             targetContract.interface.encodeFunctionData("setName", [newName]);
           let nonce = await context.keyManager.callStatic.getNonce(
-            addressCanMakeCall.address,
+            addressCanMakeCallWithAllowedCalls.address,
             channelId
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetContractPayload,
-              ]
-            );
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -419,7 +505,9 @@ export const shouldBehaveLikePermissionCall = (
             ]
           );
 
-          let signature = await addressCanMakeCall.signMessage(encodedMessage);
+          let signature = await addressCanMakeCallWithAllowedCalls.signMessage(
+            encodedMessage
+          );
 
           const eip191Signer = new EIP191Signer();
           const incorrectSignerAddress = eip191Signer.recover(
@@ -462,15 +550,12 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetContractPayload,
-              ]
-            );
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -526,15 +611,12 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetContractPayload,
-              ]
-            );
+            context.universalProfile.interface.encodeFunctionData("execute", [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]);
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;

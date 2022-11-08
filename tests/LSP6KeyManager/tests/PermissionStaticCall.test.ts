@@ -24,7 +24,8 @@ export const shouldBehaveLikePermissionStaticCall = (
   let context: LSP6TestContext;
 
   let addressCanMakeStaticCall: SignerWithAddress,
-    addressCannotMakeStaticCall: SignerWithAddress;
+    addressCannotMakeStaticCall: SignerWithAddress,
+    addressCanMakeStaticCallNoAllowedCalls: SignerWithAddress;
 
   let targetContract: TargetContract;
 
@@ -33,6 +34,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
     addressCanMakeStaticCall = context.accounts[1];
     addressCannotMakeStaticCall = context.accounts[2];
+    addressCanMakeStaticCallNoAllowedCalls = context.accounts[3];
 
     targetContract = await new TargetContract__factory(
       context.accounts[0]
@@ -43,14 +45,24 @@ export const shouldBehaveLikePermissionStaticCall = (
         context.owner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanMakeStaticCall.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        addressCanMakeStaticCall.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         addressCannotMakeStaticCall.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
     ];
 
     const permissionsValues = [
       ALL_PERMISSIONS,
       PERMISSIONS.STATICCALL,
+      combineAllowedCalls(
+        ["0xffffffff"],
+        [targetContract.address],
+        ["0xffffffff"]
+      ),
       PERMISSIONS.SETDATA,
+      PERMISSIONS.STATICCALL,
     ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
@@ -83,7 +95,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     });
   });
 
-  describe("when caller has permission STATICCALL", () => {
+  describe("when caller has permission STATICCALL + some allowed calls", () => {
     it("should pass and return data", async () => {
       let expectedName = await targetContract.callStatic.getName();
 
@@ -163,6 +175,29 @@ export const shouldBehaveLikePermissionStaticCall = (
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(addressCanMakeStaticCall.address, "CALL");
+    });
+  });
+
+  describe("when caller has permission STATICCALL + no allowed calls", () => {
+    it("should revert with `NotAllowedCall` error", async () => {
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getName");
+
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData("execute", [
+          OPERATION_TYPES.STATICCALL,
+          targetContract.address,
+          0,
+          targetContractPayload,
+        ]);
+
+      await expect(
+        context.keyManager
+          .connect(addressCanMakeStaticCallNoAllowedCalls)
+          .callStatic.execute(executePayload)
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
+        .withArgs(addressCanMakeStaticCallNoAllowedCalls.address);
     });
   });
 

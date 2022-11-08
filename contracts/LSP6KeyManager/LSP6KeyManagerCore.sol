@@ -571,18 +571,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _verifyAllowedCall(address from, bytes calldata payload) internal view {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
-        bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
 
         bool containsFunctionCall = payload.length >= 168;
         bytes4 selector;
-
         if (containsFunctionCall) selector = bytes4(payload[164:168]);
 
+        bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
         uint256 allowedCallsLength = allowedCalls.length;
 
-        // TODO: change behaviour to disallow if nothing is set
-        // if nothing set or not properly , whitelist everything
-        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) return;
+        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) {
+            revert NoCallsAllowed(from);
+        }
 
         bool isAllowedStandard;
         bool isAllowedAddress;
@@ -592,13 +591,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
 
+            if (bytes28(chunk) == 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff) {
+                revert InvalidWhitelistedCall(from);
+            }
+
             bytes4 allowedStandard = bytes4(chunk);
             address allowedAddress = address(bytes20(bytes28(chunk) << 32));
             bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);
 
-            isAllowedStandard = allowedStandard == bytes4(type(uint32).max) || to.supportsERC165Interface(allowedStandard);
-            isAllowedAddress = allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
-            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction);
+            isAllowedStandard = allowedStandard == 0xffffffff || to.supportsERC165Interface(allowedStandard);
+            isAllowedAddress = allowedAddress == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF || to == allowedAddress;
+            isAllowedFunction = allowedFunction == 0xffffffff || containsFunctionCall && (selector == allowedFunction);
 
             if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
         }
