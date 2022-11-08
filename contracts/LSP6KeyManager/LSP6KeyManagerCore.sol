@@ -590,6 +590,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
 
+            if (bytes28(chunk) == bytes28(type(uint224).max)) revert InvalidWhitelistedCall(from);
+
             bytes4 allowedStandard = bytes4(chunk);
             address allowedAddress = address(bytes20(bytes28(chunk) << 32));
             bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);

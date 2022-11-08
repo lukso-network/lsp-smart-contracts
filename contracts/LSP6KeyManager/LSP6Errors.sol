@@ -90,3 +90,12 @@ error NoCallsAllowed(address from);
  * @param value the value to check for an CompactBytesArray
  */
 error InvalidEncodedAllowedERC725YKeys(bytes value);
+
+/**
+ * @dev a `from` address is not allowed to have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ * in its list of AddressPermissions:AllowedCalls:<address>, as this allows any STANDARD:ADDRESS:FUNCTION.
+ * This is equivalent to granting the SUPER permission and should never be valid.
+ *
+ * @param from the address that has any allowed calls whitelisted.
+ */
+error InvalidWhitelistedCall(address from);

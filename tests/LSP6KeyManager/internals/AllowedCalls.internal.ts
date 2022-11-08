@@ -500,4 +500,62 @@ export const testAllowedCallsInternals = (
       });
     });
   });
+
+  describe("when caller as `0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff` in its allowed calls", () => {
+    let anyAllowedCalls: SignerWithAddress;
+
+    before(async () => {
+      context = await buildContext();
+
+      anyAllowedCalls = context.accounts[1];
+
+      let permissionsKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          anyAllowedCalls.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          anyAllowedCalls.address.substring(2),
+      ];
+
+      let permissionsValues = [
+        ALL_PERMISSIONS,
+        combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+        combineAllowedCalls(
+          ["0xffffffff"],
+          ["0xffffffffffffffffffffffffffffffffffffffff"],
+          ["0xffffffff"]
+        ),
+      ];
+
+      await setupKeyManagerHelper(context, permissionsKeys, permissionsValues);
+    });
+
+    it("should revert", async () => {
+      const randomData = "0xaabbccdd";
+      const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
+
+      const payload = context.universalProfile.interface.encodeFunctionData(
+        "execute",
+        [
+          OPERATION_TYPES.CALL,
+          randomAddress,
+          ethers.utils.parseEther("1"),
+          randomData,
+        ]
+      );
+
+      await expect(
+        context.keyManagerInternalTester.verifyAllowedCall(
+          anyAllowedCalls.address,
+          payload
+        )
+      )
+        .to.be.revertedWithCustomError(
+          context.keyManagerInternalTester,
+          "InvalidWhitelistedCall"
+        )
+        .withArgs(anyAllowedCalls.address);
+    });
+  });
 };
