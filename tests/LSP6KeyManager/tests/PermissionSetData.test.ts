@@ -694,7 +694,7 @@ export const shouldBehaveLikePermissionSetData = (
 
         // make the executor call
         await contractCanSetData.setHardcodedKeyRawCall({
-          //   gasLimit: GAS_PROVIDED,
+          gasLimit: GAS_PROVIDED,
         });
 
         // check that store[key] is now set to value
