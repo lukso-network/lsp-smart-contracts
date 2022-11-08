@@ -1783,16 +1783,33 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
               [key, value]
             );
 
-          await expect(
-            context.keyManager
-              .connect(controllerCanSetSomeKeys)
-              .execute(setDataPayload)
-          )
-            .to.be.revertedWithCustomError(
+          if (
+            key ==
+            "0x0000000000000000000000000000000000000000000000000000000000000000"
+          ) {
+            await expect(
+              context.keyManager
+                .connect(controllerCanSetSomeKeys)
+                .execute(setDataPayload)
+            ).to.be.revertedWithCustomError(
               context.keyManager,
-              "NotAllowedERC725YKey"
+              "ZeroDataKeyNotAllowed"
+            );
+          } else {
+            await expect(
+              context.keyManager
+                .connect(controllerCanSetSomeKeys)
+                .execute(setDataPayload)
             )
-            .withArgs(controllerCanSetSomeKeys.address, testCase.datakeyToSet);
+              .to.be.revertedWithCustomError(
+                context.keyManager,
+                "NotAllowedERC725YKey"
+              )
+              .withArgs(
+                controllerCanSetSomeKeys.address,
+                testCase.datakeyToSet
+              );
+          }
         });
       });
 
@@ -1820,12 +1837,10 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           context.keyManager
             .connect(controllerCanSetSomeKeys)
             .execute(setDataPayload)
-        )
-          .to.be.revertedWithCustomError(
-            context.keyManager,
-            "NotAllowedERC725YKey"
-          )
-          .withArgs(controllerCanSetSomeKeys.address, zeroKey);
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "ZeroDataKeyNotAllowed"
+        );
       });
     });
 
@@ -1869,12 +1884,10 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           context.keyManager
             .connect(controllerCanSetSomeKeys)
             .execute(setDataPayload)
-        )
-          .to.be.revertedWithCustomError(
-            context.keyManager,
-            "NotAllowedERC725YKey"
-          )
-          .withArgs(controllerCanSetSomeKeys.address, zeroKey);
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "ZeroDataKeyNotAllowed"
+        );
       });
 
       it("should pass when trying to set an array of data keys including bytes32(0)", async () => {
@@ -1901,12 +1914,10 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           context.keyManager
             .connect(controllerCanSetSomeKeys)
             .execute(setDataPayload)
-        )
-          .to.revertedWithCustomError(
-            context.keyManager,
-            "NotAllowedERC725YKey"
-          )
-          .withArgs(controllerCanSetSomeKeys.address, zeroKey);
+        ).to.revertedWithCustomError(
+          context.keyManager,
+          "ZeroDataKeyNotAllowed"
+        );
       });
     });
   });

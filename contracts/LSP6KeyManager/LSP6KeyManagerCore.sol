@@ -191,6 +191,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (erc725Function == SETDATA_SELECTOR) {
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(payload[4:], (bytes32, bytes));
 
+            // We don't allow the datakey: "0x0000000000000000000000000000000000000000000000000000000000000000" to be set
+            if (inputKey == bytes32(0)) revert ZeroDataKeyNotAllowed();
+
             if (bytes16(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
                 // CHECK if key = AddressPermissions[] or AddressPermissions[index]
                 _verifyCanSetPermissionsArray(inputKey, inputValue, from, permissions);
@@ -214,6 +217,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             for (uint256 ii = 0; ii < inputKeys.length; ii = GasLib.uncheckedIncrement(ii)) {
                 bytes32 key = inputKeys[ii];
                 bytes memory value = inputValues[ii];
+
+                // We don't allow the datakey: "0x0000000000000000000000000000000000000000000000000000000000000000" to be set
+                if (key == bytes32(0)) revert ZeroDataKeyNotAllowed();
 
                 if (bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
                     // CHECK if key = AddressPermissions[] or AddressPermissions[index]
@@ -424,7 +430,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev Verify if the `inputKey` is present in `allowedERC725KeysCompacted` stored on the `from`'s ERC725Y contract
      */
     function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YKeysCompacted) internal pure {
-        if (inputKey == bytes32(0)) revert NotAllowedERC725YKey(from, bytes32(0)); 
         if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed(from);
         if (!LSP2Utils.isCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidEncodedAllowedERC725YKeys(allowedERC725YKeysCompacted);
 
@@ -604,13 +609,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         for (uint256 i = 0; i < inputKeys.length; i++) {
             if (inputKeys[i] != bytes32(0)) revert NotAllowedERC725YKey(from, inputKeys[i]);
         }
-
-        /**
-         * If you got to this point, it means that `allowedKeysFound` is smaller than 
-         * the number of `inputKeys` and all of the `inputKeys` are bytes32(0).
-         * From that we can derive that one of the `inputKeys` was bytes32(0) from the start.
-         */
-        revert NotAllowedERC725YKey(from, bytes32(0));
     }
 
     /**

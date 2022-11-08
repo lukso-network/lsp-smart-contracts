@@ -84,3 +84,9 @@ error NoERC725YDataKeysAllowed(address from);
  * @param value the value to check for an CompactBytesArray
  */
 error InvalidEncodedAllowedERC725YKeys(bytes value);
+
+/**
+ * @dev reverts when trying to set the following data key:
+ * "0x0000000000000000000000000000000000000000000000000000000000000000"
+ */
+error ZeroDataKeyNotAllowed();
