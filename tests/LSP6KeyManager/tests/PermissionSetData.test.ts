@@ -886,11 +886,9 @@ export const shouldBehaveLikePermissionSetData = (
           bobKeyManagerPayload,
         ]);
 
-      let tx = await aliceContext.keyManager
+      await aliceContext.keyManager
         .connect(alice)
         .execute(aliceUniversalProfilePayload);
-      let receipt = await tx.wait();
-      console.log("gas used: ", receipt.gasUsed.toNumber());
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).to.equal(value);
