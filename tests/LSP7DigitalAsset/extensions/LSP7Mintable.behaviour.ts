@@ -154,7 +154,7 @@ export const shouldBehaveLikeLSP7Mintable = (
       );
 
       const executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [OPERATION_TYPES.CALL, context.lsp7Mintable.address, 0, mintPayload]
       );
 

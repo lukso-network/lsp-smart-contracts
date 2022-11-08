@@ -86,7 +86,7 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
@@ -108,7 +108,7 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
+            "execute(uint256,address,uint256,bytes)",
             [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
           );
 
@@ -132,7 +132,7 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
+            "execute(uint256,address,uint256,bytes)",
             [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
           );
 
@@ -156,7 +156,7 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
@@ -176,12 +176,15 @@ export const shouldBehaveLikePermissionCall = (
           targetContract.interface.encodeFunctionData("getName");
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         let result = await context.keyManager
           .connect(context.owner)
@@ -198,12 +201,15 @@ export const shouldBehaveLikePermissionCall = (
           targetContract.interface.encodeFunctionData("getNumber");
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         let result = await context.keyManager
           .connect(context.owner)
@@ -220,7 +226,7 @@ export const shouldBehaveLikePermissionCall = (
           targetContract.interface.encodeFunctionData("revertCall");
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             targetContract.address,
@@ -253,12 +259,15 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -307,12 +316,15 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -365,18 +377,22 @@ export const shouldBehaveLikePermissionCall = (
 
             let targetContractPayload =
               targetContract.interface.encodeFunctionData("setName", [newName]);
+
             let nonce = await context.keyManager.callStatic.getNonce(
               addressCanMakeCallWithAllowedCalls.address,
               channelId
             );
 
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetContractPayload,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.CALL,
+                  targetContract.address,
+                  0,
+                  targetContractPayload,
+                ]
+              );
 
             const HARDHAT_CHAINID = 31337;
             let valueToSend = 0;
@@ -425,12 +441,15 @@ export const shouldBehaveLikePermissionCall = (
             );
 
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                targetContractPayload,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.CALL,
+                  targetContract.address,
+                  0,
+                  targetContractPayload,
+                ]
+              );
 
             const HARDHAT_CHAINID = 31337;
             let valueToSend = 0;
@@ -484,12 +503,15 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -550,12 +572,15 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -611,12 +636,15 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;

@@ -6,11 +6,13 @@ import {UniversalProfile} from "../UniversalProfile.sol";
 import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // constants
-import {SETDATA_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
+import {
+    SETDATA_SELECTOR,
+    EXECUTE_SELECTOR,
+    OPERATION_0_CALL
+} from "@erc725/smart-contracts/contracts/constants.sol";
 
 contract Executor {
-    uint256 internal constant _OPERATION_CALL = 0;
-
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
     LSP6KeyManager private _keyManager;
@@ -57,8 +59,8 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.execute.selector,
-            _OPERATION_CALL,
+            EXECUTE_SELECTOR,
+            OPERATION_0_CALL,
             _DUMMY_RECIPIENT,
             amount,
             ""
@@ -71,8 +73,8 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.execute.selector,
-            _OPERATION_CALL,
+            EXECUTE_SELECTOR,
+            OPERATION_0_CALL,
             _recipient,
             amount,
             ""
@@ -136,8 +138,8 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.execute.selector,
-            _OPERATION_CALL,
+            EXECUTE_SELECTOR,
+            OPERATION_0_CALL,
             _DUMMY_RECIPIENT,
             amount,
             ""
@@ -157,8 +159,8 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.execute.selector,
-            _OPERATION_CALL,
+            EXECUTE_SELECTOR,
+            OPERATION_0_CALL,
             _recipient,
             amount,
             ""

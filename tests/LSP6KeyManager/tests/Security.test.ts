@@ -97,7 +97,7 @@ export const testSecurityScenarios = (
     );
 
     let executePayload = context.universalProfile.interface.encodeFunctionData(
-      "execute",
+      "execute(uint256,address,uint256,bytes)",
       [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload]
     );
 
@@ -112,9 +112,8 @@ export const testSecurityScenarios = (
 
   describe("should revert when admin with ALL PERMISSIONS try to call `renounceOwnership(...)`", () => {
     it("via `execute(...)`", async () => {
-      let payload = context.universalProfile.interface.getSighash(
-        "renounceOwnership"
-      );
+      let payload =
+        context.universalProfile.interface.getSighash("renounceOwnership");
 
       await expect(context.keyManager.connect(context.owner).execute(payload))
         .to.be.revertedWithCustomError(
@@ -130,9 +129,8 @@ export const testSecurityScenarios = (
 
       let nonce = await context.keyManager.getNonce(context.owner.address, 0);
 
-      let payload = context.universalProfile.interface.getSighash(
-        "renounceOwnership"
-      );
+      let payload =
+        context.universalProfile.interface.getSighash("renounceOwnership");
 
       let encodedMessage = ethers.utils.solidityPack(
         ["uint256", "uint256", "uint256", "uint256", "bytes"],
@@ -167,15 +165,16 @@ export const testSecurityScenarios = (
       // the Universal Profile wants to send 1 x LYX from its UP to another smart contract
       // we assume the UP owner is not aware that some malicious code is present
       // in the fallback function of the target (= recipient) contract
-      let transferPayload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
-        [
-          OPERATION_TYPES.CALL,
-          maliciousContract.address,
-          ethers.utils.parseEther("1"),
-          EMPTY_PAYLOAD,
-        ]
-      );
+      let transferPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            maliciousContract.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]
+        );
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
         "execute",
@@ -219,15 +218,16 @@ export const testSecurityScenarios = (
           channelId
         );
 
-        let executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
-          [
-            OPERATION_TYPES.CALL,
-            signer.address,
-            ethers.utils.parseEther("1"),
-            EMPTY_PAYLOAD,
-          ]
-        );
+        let executeRelayCallPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              signer.address,
+              ethers.utils.parseEther("1"),
+              EMPTY_PAYLOAD,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;

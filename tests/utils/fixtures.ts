@@ -160,7 +160,10 @@ export async function setupProfileWithKeyManagerWithURD(
  * Returns the payload of Call operation with 0 value
  */
 export function callPayload(from: any, to: string, abi: string) {
-  let payload = from.interface.encodeFunctionData("execute", [0, to, 0, abi]);
+  let payload = from.interface.encodeFunctionData(
+    "execute(uint256,address,uint256,bytes)",
+    [0, to, 0, abi]
+  );
   return payload;
 }
 

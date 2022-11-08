@@ -831,12 +831,15 @@ export const shouldBehaveLikePermissionSetData = (
         ]);
 
       let aliceUniversalProfilePayload =
-        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          bobContext.keyManager.address,
-          0,
-          bobKeyManagerPayload,
-        ]);
+        aliceContext.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            bobContext.keyManager.address,
+            0,
+            bobKeyManagerPayload,
+          ]
+        );
 
       await expect(
         aliceContext.keyManager
@@ -879,12 +882,15 @@ export const shouldBehaveLikePermissionSetData = (
         ]);
 
       let aliceUniversalProfilePayload =
-        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          bobContext.keyManager.address,
-          0,
-          bobKeyManagerPayload,
-        ]);
+        aliceContext.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            bobContext.keyManager.address,
+            0,
+            bobKeyManagerPayload,
+          ]
+        );
 
       await aliceContext.keyManager
         .connect(alice)

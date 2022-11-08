@@ -105,7 +105,7 @@ export const testAllowedCallsInternals = (
     describe("`verifyAllowedCall(...)`", () => {
       it("should not revert when payload = send 1 LYX to an address listed in allowed calls list", async () => {
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             allowedEOA.address,
@@ -135,7 +135,7 @@ export const testAllowedCallsInternals = (
         );
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             disallowedAddress,
@@ -165,7 +165,7 @@ export const testAllowedCallsInternals = (
         let randomAddress = ethers.Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             randomAddress,
@@ -264,7 +264,7 @@ export const testAllowedCallsInternals = (
 
       beforeEach(async () => {
         payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CALL,
             randomAddress,
@@ -412,7 +412,7 @@ export const testAllowedCallsInternals = (
       context = await buildContext();
 
       payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [
           OPERATION_TYPES.CALL,
           randomAddress,
@@ -536,7 +536,7 @@ export const testAllowedCallsInternals = (
       const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [
           OPERATION_TYPES.CALL,
           randomAddress,

@@ -28,14 +28,15 @@ import "./LSP6Errors.sol";
 // constants
 import {
     // ERC725X
-    OPERATION_CALL,
-    OPERATION_CREATE,
-    OPERATION_CREATE2,
-    OPERATION_STATICCALL,
-    OPERATION_DELEGATECALL,
+    OPERATION_0_CALL,
+    OPERATION_1_CREATE,
+    OPERATION_2_CREATE2,
+    OPERATION_3_STATICCALL,
+    OPERATION_4_DELEGATECALL,
     // ERC725Y
     SETDATA_SELECTOR,
-    SETDATA_ARRAY_SELECTOR
+    SETDATA_ARRAY_SELECTOR,
+    EXECUTE_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_ERC1271,
@@ -237,7 +238,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             if (isSettingERC725YKeys) {
                 _verifyCanSetData(from, permissions, inputKeys);
             }
-        } else if (erc725Function == IERC725X.execute.selector) {
+        } else if (erc725Function == EXECUTE_SELECTOR) {
             _verifyCanExecute(from, permissions, payload);
         } else if (
             erc725Function == OwnableUnset.transferOwnership.selector ||
@@ -526,14 +527,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         require(operationType < 5, "LSP6KeyManager: invalid operation type");
 
         require(
-            operationType != OPERATION_DELEGATECALL,
+            operationType != OPERATION_4_DELEGATECALL,
             "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
         );
 
         uint256 value = uint256(bytes32(payload[68:100]));
 
         // prettier-ignore
-        bool isContractCreation = operationType == OPERATION_CREATE || operationType == OPERATION_CREATE2;
+        bool isContractCreation = operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2;
         bool isCallDataPresent = payload.length > 164;
 
         // SUPER operation only applies to contract call, not contract creation
@@ -619,11 +620,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         pure
         returns (bytes32 permissionsRequired)
     {
-        if (operationType == OPERATION_CALL) return _PERMISSION_CALL;
-        else if (operationType == OPERATION_CREATE) return _PERMISSION_DEPLOY;
-        else if (operationType == OPERATION_CREATE2) return _PERMISSION_DEPLOY;
-        else if (operationType == OPERATION_STATICCALL) return _PERMISSION_STATICCALL;
-        else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_DELEGATECALL;
+        if (operationType == OPERATION_0_CALL) return _PERMISSION_CALL;
+        else if (operationType == OPERATION_1_CREATE) return _PERMISSION_DEPLOY;
+        else if (operationType == OPERATION_2_CREATE2) return _PERMISSION_DEPLOY;
+        else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_STATICCALL;
+        else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_DELEGATECALL;
     }
 
     /**
@@ -634,9 +635,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         pure
         returns (bytes32 superPermission)
     {
-        if (operationType == OPERATION_CALL) return _PERMISSION_SUPER_CALL;
-        else if (operationType == OPERATION_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
-        else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
+        if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
+        else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
+        else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
 

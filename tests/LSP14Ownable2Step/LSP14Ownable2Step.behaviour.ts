@@ -117,7 +117,12 @@ export const shouldBehaveLikeLSP14 = (
 
         await context.contract
           .connect(context.deployParams.owner)
-          .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x");
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CALL,
+            recipient.address,
+            amount,
+            "0x"
+          );
 
         const recipientBalanceAfter = await provider.getBalance(
           recipient.address
@@ -253,7 +258,12 @@ export const shouldBehaveLikeLSP14 = (
           await expect(
             context.contract
               .connect(previousOwner)
-              .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                recipient.address,
+                amount,
+                "0x"
+              )
           ).to.be.revertedWith("Ownable: caller is not the owner");
         });
 
@@ -285,7 +295,12 @@ export const shouldBehaveLikeLSP14 = (
           await expect(() =>
             context.contract
               .connect(newOwner)
-              .execute(OPERATION_TYPES.CALL, recipient.address, amount, "0x")
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                recipient.address,
+                amount,
+                "0x"
+              )
           ).to.changeEtherBalances(
             [context.contract.address, recipient.address],
             [
@@ -396,7 +411,12 @@ export const shouldBehaveLikeLSP14 = (
           await expect(() =>
             context.contract
               .connect(context.deployParams.owner)
-              .execute(OPERATION_TYPES.CALL, recipient, amount, "0x")
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                recipient,
+                amount,
+                "0x"
+              )
           ).to.changeEtherBalances(
             [context.contract.address, recipient],
             [`-${amount}`, amount]
@@ -568,7 +588,12 @@ export const shouldBehaveLikeLSP14 = (
             await expect(
               context.contract
                 .connect(context.deployParams.owner)
-                .execute(OPERATION_TYPES.CALL, recipient, amount, "0x")
+                ["execute(uint256,address,uint256,bytes)"](
+                  OPERATION_TYPES.CALL,
+                  recipient,
+                  amount,
+                  "0x"
+                )
             ).to.be.revertedWith("Ownable: caller is not the owner");
           });
         });

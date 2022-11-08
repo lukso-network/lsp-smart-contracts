@@ -192,7 +192,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
+            "execute(uint256,address,uint256,bytes)",
             [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
           );
 
@@ -397,7 +397,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         let amount = ethers.utils.parseEther("3");
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 
@@ -436,7 +436,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         );
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
         );
 

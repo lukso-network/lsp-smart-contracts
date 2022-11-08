@@ -106,12 +106,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             const amount = ethers.utils.parseEther("3");
 
             let transferPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                amount,
-                data,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, recipient.address, amount, data]
+              );
 
             /**
              * verify that balances have been updated
@@ -129,12 +127,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             const amount = ethers.utils.parseEther("3");
 
             let transferPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                amount,
-                data,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, recipient.address, amount, data]
+              );
 
             await expect(() =>
               context.keyManager
@@ -150,12 +146,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             const amount = ethers.utils.parseEther("3");
 
             let transferPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                amount,
-                data,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, recipient.address, amount, data]
+              );
 
             await expect(() =>
               context.keyManager
@@ -176,12 +170,15 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
             let transferPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                ethers.utils.parseEther("3"),
-                data,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.CALL,
+                  recipient.address,
+                  ethers.utils.parseEther("3"),
+                  data,
+                ]
+              );
 
             await expect(
               context.keyManager
@@ -220,12 +217,15 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
             let transferPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                ethers.utils.parseEther("3"),
-                data,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.CALL,
+                  recipient.address,
+                  ethers.utils.parseEther("3"),
+                  data,
+                ]
+              );
 
             await context.keyManager
               .connect(context.owner)
@@ -246,12 +246,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             const amount = ethers.utils.parseEther("3");
 
             let transferPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                amount,
-                data,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, recipient.address, amount, data]
+              );
 
             await expect(() =>
               context.keyManager
@@ -272,12 +270,15 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
             let transferPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                ethers.utils.parseEther("3"),
-                data,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.CALL,
+                  recipient.address,
+                  ethers.utils.parseEther("3"),
+                  data,
+                ]
+              );
 
             await expect(
               context.keyManager
@@ -311,12 +312,15 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
             let transferPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                recipient.address,
-                ethers.utils.parseEther("3"),
-                data,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.CALL,
+                  recipient.address,
+                  ethers.utils.parseEther("3"),
+                  data,
+                ]
+              );
 
             await expect(
               context.keyManager
@@ -348,12 +352,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           const amount = ethers.utils.parseEther("3");
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient.address,
-              amount,
-              "0x",
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -388,12 +390,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           const amount = ethers.utils.parseEther("3");
 
           let executeRelayCallPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient.address,
-              amount,
-              "0x",
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
+            );
 
           const HARDHAT_CHAINID = 31337;
           let valueToSend = 0;
@@ -632,12 +632,15 @@ export const shouldBehaveLikePermissionTransferValue = (
       const amount = ethers.utils.parseEther("5");
 
       let finalTransferLyxPayload =
-        bobContext.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          aliceContext.universalProfile.address,
-          amount,
-          "0x",
-        ]);
+        bobContext.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            aliceContext.universalProfile.address,
+            amount,
+            "0x",
+          ]
+        );
 
       let bobKeyManagerPayload =
         bobContext.keyManager.interface.encodeFunctionData("execute", [
@@ -645,12 +648,15 @@ export const shouldBehaveLikePermissionTransferValue = (
         ]);
 
       let aliceUniversalProfilePayload =
-        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          bobContext.keyManager.address,
-          0,
-          bobKeyManagerPayload,
-        ]);
+        aliceContext.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            bobContext.keyManager.address,
+            0,
+            bobKeyManagerPayload,
+          ]
+        );
 
       await expect(() =>
         aliceContext.keyManager
@@ -730,12 +736,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           const amount = ethers.utils.parseEther("1");
 
           let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              amount,
-              "0x",
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipient, amount, "0x"]
+            );
 
           await expect(() =>
             context.keyManager.connect(caller).execute(transferPayload)
@@ -757,12 +761,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           const amount = ethers.utils.parseEther("1");
 
           let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient.address,
-              amount,
-              "0x",
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
+            );
 
           await expect(() =>
             context.keyManager.connect(caller).execute(transferPayload)
@@ -791,12 +793,10 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          newLSP7Token.address,
-          5,
-          lsp7TransferPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, newLSP7Token.address, 5, lsp7TransferPayload]
+        );
 
       await expect(context.keyManager.connect(caller).execute(executePayload))
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
@@ -829,12 +829,10 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          lsp7Token.address,
-          0,
-          lsp7TransferPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, lsp7Token.address, 0, lsp7TransferPayload]
+        );
 
       await context.keyManager.connect(caller).execute(executePayload);
 
@@ -862,7 +860,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
       );
 
@@ -882,12 +880,15 @@ export const shouldBehaveLikePermissionTransferValue = (
       );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          targetContract.address,
-          lyxAmount,
-          targetContractPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            lyxAmount,
+            targetContractPayload,
+          ]
+        );
 
       await expect(() =>
         context.keyManager.connect(caller).execute(executePayload)
@@ -946,12 +947,10 @@ export const shouldBehaveLikePermissionTransferValue = (
       let initialBalanceRecipient = await provider.getBalance(recipient);
 
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          recipient,
-          amount,
-          "0x",
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, recipient, amount, "0x"]
+        );
 
       await expect(context.keyManager.connect(caller).execute(transferPayload))
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
@@ -970,12 +969,10 @@ export const shouldBehaveLikePermissionTransferValue = (
       const amount = ethers.utils.parseEther("1");
 
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          allowedAddress.address,
-          amount,
-          "0x",
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, allowedAddress.address, amount, "0x"]
+        );
 
       await expect(() =>
         context.keyManager.connect(caller).execute(transferPayload)
@@ -1001,12 +998,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
             let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                payload,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, targetContract.address, 0, payload]
+              );
 
             await context.keyManager.connect(caller).execute(executePayload);
 
@@ -1055,12 +1050,15 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
             let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                lsp7Token.address,
-                0,
-                tokenTransferPayload,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.CALL,
+                  lsp7Token.address,
+                  0,
+                  tokenTransferPayload,
+                ]
+              );
 
             await context.keyManager.connect(caller).execute(executePayload);
 
@@ -1104,7 +1102,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
 
           let payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
+            "execute(uint256,address,uint256,bytes)",
             [
               OPERATION_TYPES.CALL,
               targetContract.address,
@@ -1187,12 +1185,10 @@ export const shouldBehaveLikePermissionTransferValue = (
           const amount = ethers.utils.parseEther("1");
 
           let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              amount,
-              "0x",
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipient, amount, "0x"]
+            );
 
           await expect(() =>
             context.keyManager.connect(caller).execute(transferPayload)
@@ -1220,12 +1216,10 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
             let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                targetContract.address,
-                0,
-                payload,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, targetContract.address, 0, payload]
+              );
 
             await context.keyManager.connect(caller).execute(executePayload);
 
@@ -1274,12 +1268,15 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
             let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                lsp7Token.address,
-                0,
-                tokenTransferPayload,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.CALL,
+                  lsp7Token.address,
+                  0,
+                  tokenTransferPayload,
+                ]
+              );
 
             await context.keyManager.connect(caller).execute(executePayload);
 

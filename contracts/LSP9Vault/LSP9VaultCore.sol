@@ -20,13 +20,12 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 // constants
-import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
-
+import "@erc725/smart-contracts/contracts/errors.sol";
 import {
-    OPERATION_CALL,
-    OPERATION_STATICCALL,
-    OPERATION_CREATE,
-    OPERATION_CREATE2
+    OPERATION_0_CALL,
+    OPERATION_1_CREATE,
+    OPERATION_2_CREATE2,
+    OPERATION_3_STATICCALL
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
@@ -35,6 +34,7 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
+import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -107,7 +107,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
 
     /**
      * @inheritdoc IERC725X
-     * @param operation The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3
+     * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3
      * @dev Executes any other smart contract.
      * SHOULD only be callable by the owner of the contract set via ERC173
      *
@@ -116,27 +116,15 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      * Emits a {ValueReceived} event, when receives native token
      */
     function execute(
-        uint256 operation,
-        address to,
+        uint256 operationType,
+        address target,
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
         require(address(this).balance >= value, "ERC725X: insufficient balance");
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
 
-        // CALL
-        if (operation == OPERATION_CALL) return _executeCall(to, value, data);
-
-        // Deploy with CREATE
-        if (operation == OPERATION_CREATE) return _deployCreate(to, value, data);
-
-        // Deploy with CREATE2
-        if (operation == OPERATION_CREATE2) return _deployCreate2(to, value, data);
-
-        // STATICCALL
-        if (operation == OPERATION_STATICCALL) return _executeStaticCall(to, value, data);
-
-        revert("ERC725X: Unknown operation type");
+        return _execute(operationType, target, value, data);
     }
 
     /**
@@ -251,10 +239,47 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
      */
     function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
-        store[dataKey] = dataValue;
+        _store[dataKey] = dataValue;
         emit DataChanged(
             dataKey,
             dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
         );
+    }
+
+    /**
+     * @dev disable operation type DELEGATECALL (4).
+     * NB: providing operation type DELEGATECALL (4) as argument will result
+     * in custom error ERC725X_UnknownOperationType(4)
+     */
+    function _execute(
+        uint256 operationType,
+        address target,
+        uint256 value,
+        bytes memory data
+    ) internal virtual override returns (bytes memory) {
+        // CALL
+        if (operationType == OPERATION_0_CALL) {
+            return _executeCall(target, value, data);
+        }
+
+        // Deploy with CREATE
+        if (operationType == uint256(OPERATION_1_CREATE)) {
+            if (target != address(0)) revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            return _deployCreate(value, data);
+        }
+
+        // Deploy with CREATE2
+        if (operationType == uint256(OPERATION_2_CREATE2)) {
+            if (target != address(0)) revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            return _deployCreate2(value, data);
+        }
+
+        // STATICCALL
+        if (operationType == uint256(OPERATION_3_STATICCALL)) {
+            if (value != 0) revert ERC725X_MsgValueDisallowedInStaticCall();
+            return _executeStaticCall(target, data);
+        }
+
+        revert ERC725X_UnknownOperationType(operationType);
     }
 }
