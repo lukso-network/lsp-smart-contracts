@@ -677,7 +677,7 @@ export const shouldBehaveLikePermissionSetData = (
     });
 
     describe("> Low-level calls", () => {
-      it.only("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
+      it("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
         // check that nothing is set at store[key]
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
