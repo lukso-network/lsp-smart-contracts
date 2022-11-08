@@ -184,12 +184,15 @@ export const shouldBehaveLikePermissionStaticCall = (
         targetContract.interface.encodeFunctionData("getName");
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.STATICCALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
+        );
 
       await expect(
         context.keyManager

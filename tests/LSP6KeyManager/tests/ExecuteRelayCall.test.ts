@@ -260,12 +260,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           it("should fail if signer has nothing listed in its allowed calls", async () => {
             let executeRelayCallPayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.CALL,
-                random.address,
-                0,
-                "0x",
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, random.address, 0, "0x"]
+              );
 
             let latestNonce = await context.keyManager.callStatic.getNonce(
               signerNoAllowedCalls.address,
@@ -480,7 +478,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               let executeRelayCallPayload =
                 context.universalProfile.interface.encodeFunctionData(
-                  "execute",
+                  "execute(uint256,address,uint256,bytes)",
                   [
                     OPERATION_TYPES.CALL,
                     targetContract.address,

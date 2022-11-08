@@ -135,12 +135,10 @@ export const shouldBehaveLikeAllowedAddresses = (
       let amount = ethers.utils.parseEther("1");
 
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          allowedEOA.address,
-          amount,
-          EMPTY_PAYLOAD,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, allowedEOA.address, amount, EMPTY_PAYLOAD]
+        );
 
       await context.keyManager
         .connect(canCallOnlyTwoAddresses)
@@ -190,12 +188,15 @@ export const shouldBehaveLikeAllowedAddresses = (
       );
 
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          notAllowedEOA.address,
-          ethers.utils.parseEther("1"),
-          EMPTY_PAYLOAD,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            notAllowedEOA.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]
+        );
 
       await expect(
         context.keyManager
@@ -264,15 +265,13 @@ export const shouldBehaveLikeAllowedAddresses = (
           let amount = ethers.utils.parseEther("1");
 
           let transferPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              recipient,
-              amount,
-              EMPTY_PAYLOAD,
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipient, amount, EMPTY_PAYLOAD]
+            );
 
           await context.keyManager
-            .connect(invalidAbiEncodedAddresses)
+            .connect(invalidEncodedAllowedCalls)
             .execute(transferPayload);
 
           let newBalanceUP = await provider.getBalance(

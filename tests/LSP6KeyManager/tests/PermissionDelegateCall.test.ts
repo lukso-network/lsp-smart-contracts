@@ -119,12 +119,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.DELEGATECALL,
-          erc725YDelegateCallContract.address,
-          0,
-          delegateCallPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            erc725YDelegateCallContract.address,
+            0,
+            delegateCallPayload,
+          ]
+        );
 
       await expect(
         context.keyManager
@@ -156,12 +159,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.DELEGATECALL,
-          erc725YDelegateCallContract.address,
-          0,
-          delegateCallPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            erc725YDelegateCallContract.address,
+            0,
+            delegateCallPayload,
+          ]
+        );
 
       await expect(
         context.keyManager
@@ -260,12 +266,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
               ]);
 
             let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.DELEGATECALL,
-                randomContracts[ii].address,
-                0,
-                delegateCallPayload,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.DELEGATECALL,
+                  randomContracts[ii].address,
+                  0,
+                  delegateCallPayload,
+                ]
+              );
 
             await expect(
               context.keyManager.connect(caller).execute(executePayload)
@@ -301,12 +310,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
           ]);
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.DELEGATECALL,
-            allowedDelegateCallContracts[0].address,
-            0,
-            delegateCallPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.DELEGATECALL,
+              allowedDelegateCallContracts[0].address,
+              0,
+              delegateCallPayload,
+            ]
+          );
 
         await expect(
           context.keyManager.connect(caller).execute(executePayload)
@@ -336,12 +348,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
           ]);
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.DELEGATECALL,
-            allowedDelegateCallContracts[1].address,
-            0,
-            delegateCallPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.DELEGATECALL,
+              allowedDelegateCallContracts[1].address,
+              0,
+              delegateCallPayload,
+            ]
+          );
 
         await expect(
           context.keyManager.connect(caller).execute(executePayload)
