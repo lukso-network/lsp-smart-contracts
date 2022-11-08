@@ -677,7 +677,7 @@ export const shouldBehaveLikePermissionSetData = (
     });
 
     describe("> Low-level calls", () => {
-      it("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
+      it.only("Should allow to `setHardcodedKeyRawCall` on UP", async () => {
         // check that nothing is set at store[key]
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
@@ -694,7 +694,7 @@ export const shouldBehaveLikePermissionSetData = (
 
         // make the executor call
         await contractCanSetData.setHardcodedKeyRawCall({
-          gasLimit: GAS_PROVIDED,
+          //   gasLimit: GAS_PROVIDED,
         });
 
         // check that store[key] is now set to value
