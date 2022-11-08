@@ -745,7 +745,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         const payload =
           LSP0ERC725Account__factory.createInterface().encodeFunctionData(
-            "execute",
+            "execute(uint256,address,uint256,bytes)",
             [0, newTokenContract.address, 0, mintPayload]
           );
 

@@ -28,14 +28,15 @@ import "./LSP6Errors.sol";
 // constants
 import {
     // ERC725X
-    OPERATION_CALL,
-    OPERATION_CREATE,
-    OPERATION_CREATE2,
-    OPERATION_STATICCALL,
-    OPERATION_DELEGATECALL,
+    OPERATION_0_CALL,
+    OPERATION_1_CREATE,
+    OPERATION_2_CREATE2,
+    OPERATION_3_STATICCALL,
+    OPERATION_4_DELEGATECALL,
     // ERC725Y
     SETDATA_SELECTOR,
-    SETDATA_ARRAY_SELECTOR
+    SETDATA_ARRAY_SELECTOR,
+    EXECUTE_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_ERC1271,
@@ -243,7 +244,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             if (isSettingERC725YKeys) {
                 _verifyCanSetData(from, permissions, inputKeys);
             }
-        } else if (erc725Function == IERC725X.execute.selector) {
+        } else if (erc725Function == EXECUTE_SELECTOR) {
             _verifyCanExecute(from, permissions, payload);
         } else if (
             erc725Function == OwnableUnset.transferOwnership.selector ||
@@ -627,14 +628,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         require(operationType < 5, "LSP6KeyManager: invalid operation type");
 
         require(
-            operationType != OPERATION_DELEGATECALL,
+            operationType != OPERATION_4_DELEGATECALL,
             "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
         );
 
         uint256 value = uint256(bytes32(payload[68:100]));
 
         // prettier-ignore
-        bool isContractCreation = operationType == OPERATION_CREATE || operationType == OPERATION_CREATE2;
+        bool isContractCreation = operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2;
         bool isCallDataPresent = payload.length > 164;
 
         // SUPER operation only applies to contract call, not contract creation
@@ -671,18 +672,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _verifyAllowedCall(address from, bytes calldata payload) internal view {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
-        bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
 
         bool containsFunctionCall = payload.length >= 168;
         bytes4 selector;
-
         if (containsFunctionCall) selector = bytes4(payload[164:168]);
 
+        bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
         uint256 allowedCallsLength = allowedCalls.length;
 
-        // TODO: change behaviour to disallow if nothing is set
-        // if nothing set or not properly , whitelist everything
-        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) return;
+        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) {
+            revert NoCallsAllowed(from);
+        }
 
         bool isAllowedStandard;
         bool isAllowedAddress;
@@ -692,13 +692,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
 
+            if (bytes28(chunk) == 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff) {
+                revert InvalidWhitelistedCall(from);
+            }
+
             bytes4 allowedStandard = bytes4(chunk);
             address allowedAddress = address(bytes20(bytes28(chunk) << 32));
             bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);
 
-            isAllowedStandard = allowedStandard == bytes4(type(uint32).max) || to.supportsERC165Interface(allowedStandard);
-            isAllowedAddress = allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
-            isAllowedFunction = allowedFunction == bytes4(type(uint32).max) || containsFunctionCall && (selector == allowedFunction);
+            isAllowedStandard = allowedStandard == 0xffffffff || to.supportsERC165Interface(allowedStandard);
+            isAllowedAddress = allowedAddress == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF || to == allowedAddress;
+            isAllowedFunction = allowedFunction == 0xffffffff || containsFunctionCall && (selector == allowedFunction);
 
             if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
         }
@@ -717,11 +721,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         pure
         returns (bytes32 permissionsRequired)
     {
-        if (operationType == OPERATION_CALL) return _PERMISSION_CALL;
-        else if (operationType == OPERATION_CREATE) return _PERMISSION_DEPLOY;
-        else if (operationType == OPERATION_CREATE2) return _PERMISSION_DEPLOY;
-        else if (operationType == OPERATION_STATICCALL) return _PERMISSION_STATICCALL;
-        else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_DELEGATECALL;
+        if (operationType == OPERATION_0_CALL) return _PERMISSION_CALL;
+        else if (operationType == OPERATION_1_CREATE) return _PERMISSION_DEPLOY;
+        else if (operationType == OPERATION_2_CREATE2) return _PERMISSION_DEPLOY;
+        else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_STATICCALL;
+        else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_DELEGATECALL;
     }
 
     /**
@@ -732,9 +736,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         pure
         returns (bytes32 superPermission)
     {
-        if (operationType == OPERATION_CALL) return _PERMISSION_SUPER_CALL;
-        else if (operationType == OPERATION_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
-        else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
+        if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
+        else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
+        else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
 

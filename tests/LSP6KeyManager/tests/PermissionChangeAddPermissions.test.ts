@@ -8,6 +8,7 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   INTERFACE_IDS,
+  OPERATION_TYPES,
 } from "../../../constants";
 
 // setup
@@ -20,6 +21,7 @@ import {
   combineAllowedCalls,
   encodeCompactBytesArray,
 } from "../../utils/helpers";
+import { TargetContract__factory } from "../../../types";
 
 export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   buildContext: () => Promise<LSP6TestContext>
@@ -1061,6 +1063,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       canOnlyChangePermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress;
+    let invalidBytes: SignerWithAddress;
+    let noBytes: SignerWithAddress;
 
     beforeEach(async () => {
       context = await buildContext();
@@ -1069,19 +1073,31 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       canOnlyChangePermissions = context.accounts[2];
 
       beneficiary = context.accounts[3];
+      invalidBytes = context.accounts[4];
+      noBytes = context.accounts[5];
 
       let permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyAddPermissions.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangePermissions.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          invalidBytes.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          noBytes.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
           beneficiary.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          invalidBytes.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          noBytes.address.substring(2),
       ];
 
       let permissionValues = [
         PERMISSIONS.ADDPERMISSIONS,
         PERMISSIONS.CHANGEPERMISSIONS,
+        PERMISSIONS.CALL,
+        PERMISSIONS.CALL,
         combineAllowedCalls(
           ["0xffffffff", "0xffffffff"],
           [
@@ -1090,6 +1106,8 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           ],
           ["0xffffffff", "0xffffffff"]
         ),
+        "0xbadbadbadbad",
+        "0x",
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);

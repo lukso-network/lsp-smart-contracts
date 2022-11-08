@@ -58,7 +58,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [
           OPERATION_TYPES.CREATE, // operation type
           ethers.constants.AddressZero, // recipient
@@ -86,7 +86,7 @@ export const shouldBehaveLikePermissionDeploy = (
         "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -116,7 +116,7 @@ export const shouldBehaveLikePermissionDeploy = (
       let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [
           OPERATION_TYPES.CREATE,
           ethers.constants.AddressZero,
@@ -144,7 +144,7 @@ export const shouldBehaveLikePermissionDeploy = (
         "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [
           OPERATION_TYPES.CREATE2,
           ethers.constants.AddressZero,
@@ -177,7 +177,7 @@ export const shouldBehaveLikePermissionDeploy = (
         let contractBytecodeToDeploy = TargetContract__factory.bytecode;
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CREATE,
             ethers.constants.AddressZero,
@@ -199,7 +199,7 @@ export const shouldBehaveLikePermissionDeploy = (
           "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
 
         let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.CREATE2,
             ethers.constants.AddressZero,
@@ -228,7 +228,7 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute",
+              "execute(uint256,address,uint256,bytes)",
               [
                 OPERATION_TYPES.CREATE,
                 ethers.constants.AddressZero,
@@ -284,7 +284,7 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute",
+              "execute(uint256,address,uint256,bytes)",
               [
                 OPERATION_TYPES.CREATE,
                 ethers.constants.AddressZero,
@@ -338,7 +338,7 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute",
+              "execute(uint256,address,uint256,bytes)",
               [
                 OPERATION_TYPES.CREATE2,
                 ethers.constants.AddressZero,
@@ -395,7 +395,7 @@ export const shouldBehaveLikePermissionDeploy = (
             );
 
             let payload = context.universalProfile.interface.encodeFunctionData(
-              "execute",
+              "execute(uint256,address,uint256,bytes)",
               [
                 OPERATION_TYPES.CREATE2,
                 ethers.constants.AddressZero,

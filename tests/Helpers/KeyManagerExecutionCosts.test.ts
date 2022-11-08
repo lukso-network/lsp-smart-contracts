@@ -103,12 +103,15 @@ describe("Key Manager gas cost interactions", () => {
           );
 
           let transferLyxPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              contractImplementsERC1271.address,
-              ethers.utils.parseEther("1"),
-              "0x",
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                contractImplementsERC1271.address,
+                ethers.utils.parseEther("1"),
+                "0x",
+              ]
+            );
 
           let tx = await context.keyManager
             .connect(context.owner)
@@ -134,12 +137,15 @@ describe("Key Manager gas cost interactions", () => {
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            contractImplementsERC1271.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              contractImplementsERC1271.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddress)
@@ -164,12 +170,15 @@ describe("Key Manager gas cost interactions", () => {
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            contractImplementsERC1271.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              contractImplementsERC1271.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddressAndStandard)
