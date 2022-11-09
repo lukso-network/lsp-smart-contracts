@@ -99,3 +99,9 @@ error InvalidEncodedAllowedERC725YKeys(bytes value);
  * @param from the address that has any allowed calls whitelisted.
  */
 error InvalidWhitelistedCall(address from);
+
+/**
+ * @dev reverts when trying to set the following data key:
+ * "0x0000000000000000000000000000000000000000000000000000000000000000"
+ */
+error ZeroDataKeyNotAllowed();
