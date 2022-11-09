@@ -74,7 +74,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      * Executed when receiving native tokens with empty calldata.
      */
     receive() external payable virtual {
-        emit ValueReceived(msg.sender, msg.value);
+        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     /**

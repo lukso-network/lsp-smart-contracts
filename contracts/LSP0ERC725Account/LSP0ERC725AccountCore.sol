@@ -63,7 +63,7 @@ abstract contract LSP0ERC725AccountCore is
      * Executed when receiving native tokens with empty calldata.
      */
     receive() external payable virtual {
-        emit ValueReceived(msg.sender, msg.value);
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 
     /**
