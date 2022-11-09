@@ -531,7 +531,7 @@ export const shouldBehaveLikePermissionSetData = (
             .withArgs(cannotSetData.address, "SETDATA");
         });
 
-        it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+        it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]`)", async () => {
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
