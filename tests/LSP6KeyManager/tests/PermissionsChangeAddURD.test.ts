@@ -1296,6 +1296,57 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               .withArgs(canOnlySetData.address, "ADDUNIVERSALRECEIVERDELEGATE");
           });
         });
+
+        describe("When granting the caller ADDUniversalReceiverDelegate permission", () => {
+          before(async () => {
+            const payloadParam = {
+              dataKeys: [
+                ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                  canOnlySetData.address.substring(2),
+              ],
+              dataValues: [
+                combinePermissions(
+                  PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+                  PERMISSIONS.SETDATA
+                ),
+              ],
+            };
+
+            let payload = context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32[],bytes[])",
+              [payloadParam.dataKeys, payloadParam.dataValues]
+            );
+
+            await context.keyManager.connect(context.owner).execute(payload);
+          });
+          describe("When adding UniversalReceiverDelegate key and one of his allowedERC725Y key", () => {
+            it("should pass", async () => {
+              const payloadParam = {
+                dataKeys: [
+                  universalReceiverDelegateKey4,
+                  ethers.utils.keccak256(
+                    ethers.utils.toUtf8Bytes("MyFirstKey")
+                  ),
+                ],
+                dataValues: [universalReceiverDelegateA.address, "0xaabbccdd"],
+              };
+
+              let payload =
+                context.universalProfile.interface.encodeFunctionData(
+                  "setData(bytes32[],bytes[])",
+                  [payloadParam.dataKeys, payloadParam.dataValues]
+                );
+
+              await context.keyManager.connect(canOnlySetData).execute(payload);
+
+              const result = await context.universalProfile[
+                "getData(bytes32[])"
+              ](payloadParam.dataKeys);
+
+              expect(result).to.deep.equal(payloadParam.dataValues);
+            });
+          });
+        });
       });
     });
   });
