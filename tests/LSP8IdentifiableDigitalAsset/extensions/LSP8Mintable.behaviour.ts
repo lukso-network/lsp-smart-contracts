@@ -11,6 +11,7 @@ import {
 import { setupProfileWithKeyManagerWithURD } from "../../utils/fixtures";
 
 import { PERMISSIONS, ERC725YKeys, OPERATION_TYPES } from "../../../constants";
+import { combineAllowedCalls } from "../../utils/helpers";
 
 export type LSP8MintableTestAccounts = {
   owner: SignerWithAddress;
@@ -116,10 +117,20 @@ export const shouldBehaveLikeLSP8Mintable = (
         [
           [
             ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-              URDTokenReentrant.address.substr(2),
+              URDTokenReentrant.address.substring(2),
+            ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+              URDTokenReentrant.address.substring(2),
             ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
           ],
-          [PERMISSIONS.CALL, URDTokenReentrant.address],
+          [
+            PERMISSIONS.CALL,
+            combineAllowedCalls(
+              ["0xffffffff"],
+              [context.lsp8Mintable.address],
+              ["0xffffffff"]
+            ),
+            URDTokenReentrant.address,
+          ],
         ]
       );
 
@@ -145,7 +156,7 @@ export const shouldBehaveLikeLSP8Mintable = (
       );
 
       const executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [OPERATION_TYPES.CALL, context.lsp8Mintable.address, 0, mintPayload]
       );
 

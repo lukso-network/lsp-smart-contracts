@@ -75,7 +75,7 @@ export const otherTestScenarios = (
       const INVALID_OPERATION_TYPE = 8;
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
       );
 
@@ -93,7 +93,7 @@ export const otherTestScenarios = (
       const INVALID_OPERATION_TYPE = 8;
 
       let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [INVALID_OPERATION_TYPE, targetContract.address, 0, targetPayload]
       );
 

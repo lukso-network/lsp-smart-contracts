@@ -9,6 +9,8 @@ import {
   TargetContract__factory,
   UniversalProfile,
   UniversalProfile__factory,
+  LSP7Mintable,
+  LSP7Mintable__factory,
 } from "../../../types";
 
 // constants
@@ -26,7 +28,12 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, provider, combinePermissions } from "../../utils/helpers";
+import {
+  abiCoder,
+  provider,
+  combinePermissions,
+  combineAllowedCalls,
+} from "../../utils/helpers";
 
 export const shouldBehaveLikeAllowedStandards = (
   buildContext: () => Promise<LSP6TestContext>
@@ -65,9 +72,9 @@ export const shouldBehaveLikeAllowedStandards = (
         addressCanInteractOnlyWithERC1271.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanInteractOnlyWithLSP7.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
         addressCanInteractOnlyWithERC1271.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
         addressCanInteractOnlyWithLSP7.address.substring(2),
     ];
 
@@ -75,8 +82,16 @@ export const shouldBehaveLikeAllowedStandards = (
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
-      abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
-      abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.LSP7DigitalAsset]]), // callerTwo
+      combineAllowedCalls(
+        [INTERFACE_IDS.ERC1271],
+        ["0xffffffffffffffffffffffffffffffffffffffff"],
+        ["0xffffffff"]
+      ),
+      combineAllowedCalls(
+        [INTERFACE_IDS.LSP7DigitalAsset],
+        ["0xffffffffffffffffffffffffffffffffffffffff"],
+        ["0xffffffff"]
+      ),
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -96,7 +111,7 @@ export const shouldBehaveLikeAllowedStandards = (
       );
 
       let upPayload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
       );
 
@@ -119,7 +134,7 @@ export const shouldBehaveLikeAllowedStandards = (
         );
 
         let upPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload]
         );
 
@@ -165,7 +180,7 @@ export const shouldBehaveLikeAllowedStandards = (
         );
 
         let upPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload]
         );
 
@@ -184,12 +199,15 @@ export const shouldBehaveLikeAllowedStandards = (
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            otherUniversalProfile.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              otherUniversalProfile.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
         await context.keyManager
           .connect(addressCanInteractOnlyWithERC1271)
@@ -210,7 +228,7 @@ export const shouldBehaveLikeAllowedStandards = (
         );
 
         let upPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
@@ -219,13 +237,11 @@ export const shouldBehaveLikeAllowedStandards = (
             .connect(addressCanInteractOnlyWithERC1271)
             .execute(upPayload)
         )
-          .to.be.revertedWithCustomError(
-            context.keyManager,
-            "NotAllowedStandard"
-          )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
             addressCanInteractOnlyWithERC1271.address,
-            targetContract.address
+            targetContract.address,
+            targetContract.interface.getSighash("setName")
           );
       });
     });
@@ -247,7 +263,7 @@ export const shouldBehaveLikeAllowedStandards = (
         );
 
         let upPayload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.CALL, signatureValidatorContract.address, 0, payload]
         );
 
@@ -256,13 +272,11 @@ export const shouldBehaveLikeAllowedStandards = (
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(upPayload)
         )
-          .to.be.revertedWithCustomError(
-            context.keyManager,
-            "NotAllowedStandard"
-          )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
             addressCanInteractOnlyWithLSP7.address,
-            signatureValidatorContract.address
+            signatureValidatorContract.address,
+            signatureValidatorContract.interface.getSighash("isValidSignature")
           );
       });
     });
@@ -270,26 +284,134 @@ export const shouldBehaveLikeAllowedStandards = (
     describe("when interacting with an ERC725Account (LSP0)", () => {
       it("should fail when trying to transfer LYX", async () => {
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            otherUniversalProfile.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              otherUniversalProfile.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
         await expect(
           context.keyManager
             .connect(addressCanInteractOnlyWithLSP7)
             .execute(transferLyxPayload)
         )
-          .to.be.revertedWithCustomError(
-            context.keyManager,
-            "NotAllowedStandard"
-          )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
             addressCanInteractOnlyWithLSP7.address,
-            otherUniversalProfile.address
+            otherUniversalProfile.address,
+            "0x00000000"
           );
+      });
+    });
+
+    describe("should be allowed to interact with any LSP7 token contracts", () => {
+      let lsp7TokenA: LSP7Mintable;
+      let lsp7TokenB: LSP7Mintable;
+      let lsp7TokenC: LSP7Mintable;
+
+      beforeEach(async () => {
+        lsp7TokenA = await new LSP7Mintable__factory(
+          context.accounts[0]
+        ).deploy("LSP7 Token A", "TKNA", context.accounts[0].address, false);
+
+        lsp7TokenB = await new LSP7Mintable__factory(
+          context.accounts[0]
+        ).deploy("LSP7 Token B", "TKNB", context.accounts[0].address, false);
+
+        lsp7TokenC = await new LSP7Mintable__factory(
+          context.accounts[0]
+        ).deploy("LSP7 Token C", "TKNC", context.accounts[0].address, false);
+
+        await lsp7TokenA
+          .connect(context.accounts[0])
+          .mint(context.universalProfile.address, 100, false, "0x");
+
+        await lsp7TokenB
+          .connect(context.accounts[0])
+          .mint(context.universalProfile.address, 100, false, "0x");
+
+        await lsp7TokenC
+          .connect(context.accounts[0])
+          .mint(context.universalProfile.address, 100, false, "0x");
+      });
+
+      it("-> interacting with lsp7TokenA", async () => {
+        const recipient = context.accounts[5].address;
+        const amount = 10;
+
+        const transferPayload = lsp7TokenA.interface.encodeFunctionData(
+          "transfer",
+          [context.universalProfile.address, recipient, amount, true, "0x"]
+        );
+
+        const executePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, lsp7TokenA.address, 0, transferPayload]
+          );
+
+        await context.keyManager
+          .connect(addressCanInteractOnlyWithLSP7)
+          .execute(executePayload);
+
+        expect(await lsp7TokenA.balanceOf(recipient)).to.equal(amount);
+        expect(
+          await lsp7TokenA.balanceOf(context.universalProfile.address)
+        ).to.equal(90);
+      });
+
+      it("-> interacting with lsp7TokenB", async () => {
+        const recipient = context.accounts[5].address;
+        const amount = 10;
+
+        const transferPayload = lsp7TokenB.interface.encodeFunctionData(
+          "transfer",
+          [context.universalProfile.address, recipient, amount, true, "0x"]
+        );
+
+        const executePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, lsp7TokenB.address, 0, transferPayload]
+          );
+
+        await context.keyManager
+          .connect(addressCanInteractOnlyWithLSP7)
+          .execute(executePayload);
+
+        expect(await lsp7TokenB.balanceOf(recipient)).to.equal(amount);
+        expect(
+          await lsp7TokenB.balanceOf(context.universalProfile.address)
+        ).to.equal(90);
+      });
+
+      it("-> interacting with lsp7TokenC", async () => {
+        const recipient = context.accounts[5].address;
+        const amount = 10;
+
+        const transferPayload = lsp7TokenC.interface.encodeFunctionData(
+          "transfer",
+          [context.universalProfile.address, recipient, amount, true, "0x"]
+        );
+
+        const executePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, lsp7TokenC.address, 0, transferPayload]
+          );
+
+        await context.keyManager
+          .connect(addressCanInteractOnlyWithLSP7)
+          .execute(executePayload);
+
+        expect(await lsp7TokenC.balanceOf(recipient)).to.equal(amount);
+        expect(
+          await lsp7TokenC.balanceOf(context.universalProfile.address)
+        ).to.equal(90);
       });
     });
   });

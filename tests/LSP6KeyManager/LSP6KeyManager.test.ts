@@ -66,10 +66,9 @@ describe("LSP6KeyManager", () => {
         const universalProfile = await new UniversalProfile__factory(
           owner
         ).deploy(owner.address);
-        const keyManagerInternalTester =
-          await new KeyManagerInternalTester__factory(owner).deploy(
-            universalProfile.address
-          );
+        const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
+          owner
+        ).deploy(universalProfile.address);
 
         return { owner, accounts, universalProfile, keyManagerInternalTester };
       });
@@ -103,6 +102,20 @@ describe("LSP6KeyManager", () => {
 
       return context;
     };
+
+    describe("when deploying the base contract implementation", () => {
+      it("should prevent any address from calling the `initialize(...)` function on the base contract", async () => {
+        let context = await buildTestContext();
+
+        const baseKM = await new LSP6KeyManagerInit__factory(
+          context.accounts[0]
+        ).deploy();
+
+        await expect(
+          baseKM.initialize(context.accounts[0].address)
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+      });
+    });
 
     describe("when deploying the contract as proxy", () => {
       let context: LSP6TestContext;

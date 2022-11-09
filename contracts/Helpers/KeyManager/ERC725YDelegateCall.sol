@@ -8,6 +8,6 @@ contract ERC725YDelegateCall is ERC725Y {
     constructor(address newOwner) ERC725Y(newOwner) {}
 
     function updateStorage(bytes32 key, bytes memory value) public {
-        store[key] = value;
+        _store[key] = value;
     }
 }

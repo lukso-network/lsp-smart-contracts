@@ -23,20 +23,20 @@ import {LSP6Utils} from "./LSP6Utils.sol";
 import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
 // errors
-import "../LSP2ERC725YJSONSchema/LSP2Errors.sol";
 import "./LSP6Errors.sol";
 
 // constants
 import {
     // ERC725X
-    OPERATION_CALL,
-    OPERATION_CREATE,
-    OPERATION_CREATE2,
-    OPERATION_STATICCALL,
-    OPERATION_DELEGATECALL,
+    OPERATION_0_CALL,
+    OPERATION_1_CREATE,
+    OPERATION_2_CREATE2,
+    OPERATION_3_STATICCALL,
+    OPERATION_4_DELEGATECALL,
     // ERC725Y
     SETDATA_SELECTOR,
-    SETDATA_ARRAY_SELECTOR
+    SETDATA_ARRAY_SELECTOR,
+    EXECUTE_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_ERC1271,
@@ -181,12 +181,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify the permissions of the _from abddress that want to interact with the `target`
+     * @dev verify the permissions of the _from address that want to interact with the `target`
      * @param from the address making the request
      * @param payload the payload that will be run on `target`
      */
     function _verifyPermissions(address from, bytes calldata payload) internal view {
-        bytes4 erc725Function = bytes4(payload[:4]);
+        bytes4 erc725Function = bytes4(payload);
 
         // get the permissions of the caller
         bytes32 permissions = ERC725Y(target).getPermissionsFor(from);
@@ -205,8 +205,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 _verifyCanSetPermissions(inputKey, inputValue, from, permissions);
 
             } else if(bytes10(inputKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ) {
+                // CHECK for Universal Receiver Delegate key
                 _verifyCanSetUniversalReceiverDelegateKeys(inputKey, from, permissions);
-
+                
             } else {    
                 _verifyCanSetData(from, permissions, inputKey);
             }
@@ -226,7 +227,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 if (bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
                     // CHECK if key = AddressPermissions[] or AddressPermissions[index]
                     _verifyCanSetPermissionsArray(key, value, from, permissions);
-                    
+
                     // "nullify" permission keys to not check them against allowed ERC725Y keys
                     inputKeys[ii] = bytes32(0);
 
@@ -252,7 +253,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             if (isSettingERC725YKeys) {
                 _verifyCanSetData(from, permissions, inputKeys);
             }
-        } else if (erc725Function == IERC725X.execute.selector) {
+        } else if (erc725Function == EXECUTE_SELECTOR) {
             _verifyCanExecute(from, permissions, payload);
         } else if (
             erc725Function == OwnableUnset.transferOwnership.selector ||
@@ -319,86 +320,45 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         address from,
         bytes32 permissions
     ) internal view virtual {
-        // prettier-ignore
         if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
 
-            // dataKey = AddressPermissions:Permissions:<address>
+            // AddressPermissions:Permissions:<address>
             _verifyCanSetBytes32Permissions(dataKey, from, permissions);
 
-        } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX) {
-
-            bool isClearingArray = dataValue.length == 0;
-
-            // AddressPermissions:AllowedAddresses:<address>
-            if (!isClearingArray && !LSP2Utils.isEncodedArrayOfAddresses(dataValue)) {
-                revert InvalidABIEncodedArray(dataValue, "address");
-            }
-
-            bytes memory storedAllowedAddresses = ERC725Y(target).getData(dataKey);
-
-            if (storedAllowedAddresses.length == 0) {
-
-                _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
-
-            } else {
-
-                _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
-
-            }
-
         } else if (
-            bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX ||
-            bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX
-        ) {
-            bool isClearingArray = dataValue.length == 0;
-
-            // AddressPermissions:AllowedFunctions:<address>
-            // AddressPermissions:AllowedStandards:<address>
-            if (!isClearingArray && !LSP2Utils.isBytes4EncodedArray(dataValue)) {
-                revert InvalidABIEncodedArray(dataValue, "bytes4");
-            }
-
-            bytes memory storedAllowedBytes4 = ERC725Y(target).getData(dataKey);
-
-            if (storedAllowedBytes4.length == 0) {
-
-                _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
-
-            } else {
-
-                _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
-
-            }
-
-        } else if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX) {
-
-            bool isClearingArray = dataValue.length == 0;
-
+            // AddressPermissions:AllowedCalls:<address>
+            bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX ||
             // AddressPermissions:AllowedERC725YKeys:<address>
+            bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX
+        ) {
+
+            bool isClearingArray = dataValue.length == 0;
+
             if (!isClearingArray && !LSP2Utils.isCompactBytesArray(dataValue)) {
-                revert InvalidEncodedAllowedERC725YKeys(dataValue);
+                if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
+                    revert InvalidEncodedAllowedCalls(dataValue);
+                } else {
+                    revert InvalidEncodedAllowedERC725YKeys(dataValue);
+                }
             }
 
-            bytes memory storedAllowedERC725YKeys = ERC725Y(target).getData(dataKey);
+            bytes memory storedAllowedValues = ERC725Y(target).getData(dataKey);
 
-            if (storedAllowedERC725YKeys.length == 0) {
-
+            if (storedAllowedValues.length == 0) {
                 _requirePermissions(from, permissions, _PERMISSION_ADDPERMISSIONS);
-
             } else {
-
                 _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
-
             }
+
         } else {
             /**
              * if bytes6(dataKey) != bytes6(keccak256("AddressPermissions"))
              * this is not a standard permission dataKey according to LSP6
              * so we revert execution
-             * 
-             * @dev to implement custom permissions dataKeys, consider overriding 
+             *
+             * @dev to implement custom permissions dataKeys, consider overriding
              * this function and implement specific checks
-             * 
+             *
              *      // AddressPermissions:MyCustomPermissions:<address>
              *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
              *
@@ -461,7 +421,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             return;
         }
-        
+
         // dataKey = AddressPermissions[index] -> array index
         bytes memory valueAtIndex = ERC725Y(target).getData(dataKey);
 
@@ -470,7 +430,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else {
             _requirePermissions(from, permissions, _PERMISSION_CHANGEPERMISSIONS);
         }
-        
+
         if (dataValue.length != 0 && dataValue.length != 20) {
             revert AddressPermissionArrayIndexValueNotAnAddress(dataKey, dataValue);
         }
@@ -602,14 +562,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         require(operationType < 5, "LSP6KeyManager: invalid operation type");
 
         require(
-            operationType != OPERATION_DELEGATECALL,
+            operationType != OPERATION_4_DELEGATECALL,
             "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
         );
 
         uint256 value = uint256(bytes32(payload[68:100]));
 
         // prettier-ignore
-        bool isContractCreation = operationType == OPERATION_CREATE || operationType == OPERATION_CREATE2;
+        bool isContractCreation = operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2;
         bool isCallDataPresent = payload.length > 164;
 
         // SUPER operation only applies to contract call, not contract creation
@@ -639,18 +599,49 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // Skip if both SUPER permissions are present
         if (hasSuperOperation && hasSuperTransferValue) return;
 
-        // CHECK for ALLOWED ADDRESSES
+        _verifyAllowedCall(from, payload);
+
+    }
+
+    function _verifyAllowedCall(address from, bytes calldata payload) internal view {
+        // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
-        _verifyAllowedAddress(from, to);
 
-        if (to.code.length != 0) {
-            // CHECK for ALLOWED STANDARDS
-            _verifyAllowedStandard(from, to);
+        bool containsFunctionCall = payload.length >= 168;
+        bytes4 selector;
+        if (containsFunctionCall) selector = bytes4(payload[164:168]);
 
-            // CHECK for ALLOWED FUNCTIONS
-            // extract bytes4 function selector from payload passed to ERC725X.execute(...)
-            if (payload.length >= 168) _verifyAllowedFunction(from, bytes4(payload[164:168]));
+        bytes memory allowedCalls = ERC725Y(target).getAllowedCallsFor(from);
+        uint256 allowedCallsLength = allowedCalls.length;
+
+        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) {
+            revert NoCallsAllowed(from);
         }
+
+        bool isAllowedStandard;
+        bool isAllowedAddress;
+        bool isAllowedFunction;
+
+        for (uint256 ii = 0; ii < allowedCallsLength; ii += 29) {
+
+            bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
+
+            if (bytes28(chunk) == 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff) {
+                revert InvalidWhitelistedCall(from);
+            }
+
+            bytes4 allowedStandard = bytes4(chunk);
+            address allowedAddress = address(bytes20(bytes28(chunk) << 32));
+            bytes4 allowedFunction = bytes4(bytes28(chunk) << 192);
+
+            isAllowedStandard = allowedStandard == 0xffffffff || to.supportsERC165Interface(allowedStandard);
+            isAllowedAddress = allowedAddress == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF || to == allowedAddress;
+            isAllowedFunction = allowedFunction == 0xffffffff || containsFunctionCall && (selector == allowedFunction);
+
+            if (isAllowedStandard && isAllowedAddress && isAllowedFunction) return;
+        }
+
+        revert NotAllowedCall(from, to, selector);
     }
 
     /**
@@ -664,11 +655,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         pure
         returns (bytes32 permissionsRequired)
     {
-        if (operationType == OPERATION_CALL) return _PERMISSION_CALL;
-        else if (operationType == OPERATION_CREATE) return _PERMISSION_DEPLOY;
-        else if (operationType == OPERATION_CREATE2) return _PERMISSION_DEPLOY;
-        else if (operationType == OPERATION_STATICCALL) return _PERMISSION_STATICCALL;
-        else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_DELEGATECALL;
+        if (operationType == OPERATION_0_CALL) return _PERMISSION_CALL;
+        else if (operationType == OPERATION_1_CREATE) return _PERMISSION_DEPLOY;
+        else if (operationType == OPERATION_2_CREATE2) return _PERMISSION_DEPLOY;
+        else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_STATICCALL;
+        else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_DELEGATECALL;
     }
 
     /**
@@ -679,85 +670,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         pure
         returns (bytes32 superPermission)
     {
-        if (operationType == OPERATION_CALL) return _PERMISSION_SUPER_CALL;
-        else if (operationType == OPERATION_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
-        else if (operationType == OPERATION_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
+        if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
+        else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
+        else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
-    /**
-     * @dev verify if `from` is authorised to interact with address `to` via the linked target
-     * @param from the caller address
-     * @param to the address to interact with
-     */
-    function _verifyAllowedAddress(address from, address to) internal view {
-        bytes memory allowedAddresses = ERC725Y(target).getAllowedAddressesFor(from);
 
-        // whitelist any address
-        if (
-            // if nothing in the list
-            allowedAddresses.length == 0 ||
-            // if not correctly abi-encoded array of address[]
-            !LSP2Utils.isEncodedArrayOfAddresses(allowedAddresses)
-        ) return;
-
-        address[] memory allowedAddressesList = abi.decode(allowedAddresses, (address[]));
-
-        for (uint256 ii = 0; ii < allowedAddressesList.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (to == allowedAddressesList[ii]) return;
-        }
-        revert NotAllowedAddress(from, to);
-    }
-
-    /**
-     * @dev if `from` is restricted to interact with contracts that implement a specific interface,
-     * verify that `to` implements one of these interface.
-     * @param from the caller address
-     * @param to the address of the contract to interact with
-     */
-    function _verifyAllowedStandard(address from, address to) internal view {
-        bytes memory allowedStandards = ERC725Y(target).getAllowedStandardsFor(from);
-
-        // whitelist any standard interface (ERC165)
-        if (
-            // if nothing in the list
-            allowedStandards.length == 0 ||
-            // if not correctly abi-encoded array of bytes4[]
-            !LSP2Utils.isBytes4EncodedArray(allowedStandards)
-        ) return;
-
-        bytes4[] memory allowedStandardsList = abi.decode(allowedStandards, (bytes4[]));
-
-        for (uint256 ii = 0; ii < allowedStandardsList.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (to.supportsERC165Interface(allowedStandardsList[ii])) return;
-        }
-        revert NotAllowedStandard(from, to);
-    }
-
-    /**
-     * @dev verify if `from` is authorised to use the linked target
-     * to run a specific function `functionSelector` at a target contract
-     * @param from the caller address
-     * @param functionSelector the bytes4 function selector of the function to run
-     * at the target contract
-     */
-    function _verifyAllowedFunction(address from, bytes4 functionSelector) internal view {
-        bytes memory allowedFunctions = ERC725Y(target).getAllowedFunctionsFor(from);
-
-        // whitelist any function
-        if (
-            // if nothing in the list
-            allowedFunctions.length == 0 ||
-            // if not correctly abi-encoded array of bytes4[]
-            !LSP2Utils.isBytes4EncodedArray(allowedFunctions)
-        ) return;
-
-        bytes4[] memory allowedFunctionsList = abi.decode(allowedFunctions, (bytes4[]));
-
-        for (uint256 ii = 0; ii < allowedFunctionsList.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (functionSelector == allowedFunctionsList[ii]) return;
-        }
-        revert NotAllowedFunction(from, functionSelector);
-    }
 
     /**
      * @dev return the number of zero bytes (0x00) appended at the end of `dataKey`.

@@ -29,6 +29,7 @@ import {
   combinePermissions,
   EMPTY_PAYLOAD,
   LOCAL_PRIVATE_KEYS,
+  combineAllowedCalls,
 } from "../../utils/helpers";
 
 export const testSecurityScenarios = (
@@ -66,11 +67,18 @@ export const testSecurityScenarios = (
         context.owner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         signer.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        signer.address.substring(2),
     ];
 
     const permissionValues = [
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+      combineAllowedCalls(
+        ["0xffffffff", "0xffffffff"],
+        [signer.address, ethers.constants.AddressZero],
+        ["0xffffffff", "0xffffffff"]
+      ),
     ];
 
     await setupKeyManager(context, permissionKeys, permissionValues);
@@ -89,7 +97,7 @@ export const testSecurityScenarios = (
     );
 
     let executePayload = context.universalProfile.interface.encodeFunctionData(
-      "execute",
+      "execute(uint256,address,uint256,bytes)",
       [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload]
     );
 
@@ -158,12 +166,15 @@ export const testSecurityScenarios = (
       // we assume the UP owner is not aware that some malicious code is present
       // in the fallback function of the target (= recipient) contract
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          maliciousContract.address,
-          ethers.utils.parseEther("1"),
-          EMPTY_PAYLOAD,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            maliciousContract.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]
+        );
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
         "execute",
@@ -208,12 +219,15 @@ export const testSecurityScenarios = (
         );
 
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            signer.address,
-            ethers.utils.parseEther("1"),
-            EMPTY_PAYLOAD,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              signer.address,
+              ethers.utils.parseEther("1"),
+              EMPTY_PAYLOAD,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;

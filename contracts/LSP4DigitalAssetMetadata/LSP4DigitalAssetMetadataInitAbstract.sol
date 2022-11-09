@@ -46,7 +46,7 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
         } else if (dataKey == _LSP4_TOKEN_SYMBOL_KEY) {
             revert LSP4TokenSymbolNotEditable();
         } else {
-            store[dataKey] = dataValue;
+            _store[dataKey] = dataValue;
             emit DataChanged(
                 dataKey,
                 dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)

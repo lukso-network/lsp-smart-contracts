@@ -825,12 +825,15 @@ export const shouldBehaveLikePermissionSetData = (
         ]);
 
       let aliceUniversalProfilePayload =
-        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          bobContext.keyManager.address,
-          0,
-          bobKeyManagerPayload,
-        ]);
+        aliceContext.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            bobContext.keyManager.address,
+            0,
+            bobKeyManagerPayload,
+          ]
+        );
 
       await expect(
         aliceContext.keyManager
@@ -873,18 +876,19 @@ export const shouldBehaveLikePermissionSetData = (
         ]);
 
       let aliceUniversalProfilePayload =
-        aliceContext.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          bobContext.keyManager.address,
-          0,
-          bobKeyManagerPayload,
-        ]);
+        aliceContext.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            bobContext.keyManager.address,
+            0,
+            bobKeyManagerPayload,
+          ]
+        );
 
-      let tx = await aliceContext.keyManager
+      await aliceContext.keyManager
         .connect(alice)
         .execute(aliceUniversalProfilePayload);
-      let receipt = await tx.wait();
-      console.log("gas used: ", receipt.gasUsed.toNumber());
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
       expect(result).to.equal(value);

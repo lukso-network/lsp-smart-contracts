@@ -32,13 +32,7 @@ library LSP6Utils {
         return bytes32(permissions);
     }
 
-    /**
-     * @dev read the allowed addresses of a `caller` on an ERC725Y `target` contract.
-     * @param target an `IERC725Y` contract where to read the permissions.
-     * @param caller the controller address to read the permissions from.
-     * @return an abi-encoded array of addresses that the controller address is allowed to interact with.
-     */
-    function getAllowedAddressesFor(IERC725Y target, address caller)
+    function getAllowedCallsFor(IERC725Y target, address from)
         internal
         view
         returns (bytes memory)
@@ -46,48 +40,8 @@ library LSP6Utils {
         return
             target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
-                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX,
-                    bytes20(caller)
-                )
-            );
-    }
-
-    /**
-     * @dev read the allowed functions of a `caller` on an ERC725Y `target` contract.
-     * @param target an `IERC725Y` contract where to read the permissions.
-     * @param caller the controller address to read the permissions from.
-     * @return an abi-encoded array of functions selectors that the controller address is allowed to interact with.
-     */
-    function getAllowedFunctionsFor(IERC725Y target, address caller)
-        internal
-        view
-        returns (bytes memory)
-    {
-        return
-            target.getData(
-                LSP2Utils.generateMappingWithGroupingKey(
-                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX,
-                    bytes20(caller)
-                )
-            );
-    }
-
-    /**
-     * @dev read the allowed standards of a `caller` on an ERC725Y `target` contract.
-     * @param target an `IERC725Y` contract where to read the permissions.
-     * @param caller the controller address to read the permissions from.
-     * @return an abi-encoded array of allowed interface ids that the controller address is allowed to interact with.
-     */
-    function getAllowedStandardsFor(IERC725Y target, address caller)
-        internal
-        view
-        returns (bytes memory)
-    {
-        return
-            target.getData(
-                LSP2Utils.generateMappingWithGroupingKey(
-                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX,
-                    bytes20(caller)
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX,
+                    bytes20(from)
                 )
             );
     }

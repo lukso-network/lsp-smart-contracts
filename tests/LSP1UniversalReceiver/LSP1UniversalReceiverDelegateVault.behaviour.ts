@@ -182,7 +182,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -210,7 +210,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -238,7 +238,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -266,7 +266,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -295,7 +295,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -328,7 +328,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -371,7 +371,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -398,7 +398,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -475,7 +475,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -529,7 +529,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -568,7 +568,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -607,7 +607,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -652,7 +652,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -697,7 +697,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault2.address,
               0,
@@ -726,7 +726,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.universalProfile
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             context.lsp9Vault1.address,
             0,
@@ -741,7 +741,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.universalProfile
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             context.lsp9Vault2.address,
             0,
@@ -756,7 +756,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.universalProfile
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             context.lsp9Vault2.address,
             0,
@@ -771,7 +771,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.universalProfile
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             context.lsp9Vault2.address,
             0,
@@ -821,7 +821,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -851,7 +851,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -881,7 +881,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -911,7 +911,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -941,7 +941,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -973,7 +973,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1017,7 +1017,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1045,7 +1045,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1137,7 +1137,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1195,7 +1195,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1238,7 +1238,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1281,7 +1281,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1328,7 +1328,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1375,7 +1375,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault2.address,
               0,

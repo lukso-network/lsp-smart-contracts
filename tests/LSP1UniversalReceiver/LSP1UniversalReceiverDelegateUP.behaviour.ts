@@ -1522,12 +1522,15 @@ export const shouldBehaveLikeLSP1Delegate = (
             .transferOwnership(context.universalProfile1.address);
 
           let executePayload =
-            context.universalProfile1.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              lsp9VaultA.address,
-              0,
-              lsp9VaultA.interface.getSighash("acceptOwnership"),
-            ]);
+            context.universalProfile1.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp9VaultA.address,
+                0,
+                lsp9VaultA.interface.getSighash("acceptOwnership"),
+              ]
+            );
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
@@ -1554,12 +1557,15 @@ export const shouldBehaveLikeLSP1Delegate = (
             .transferOwnership(context.universalProfile1.address);
 
           let executePayload =
-            context.universalProfile1.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              lsp9VaultB.address,
-              0,
-              lsp9VaultB.interface.getSighash("acceptOwnership"),
-            ]);
+            context.universalProfile1.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp9VaultB.address,
+                0,
+                lsp9VaultB.interface.getSighash("acceptOwnership"),
+              ]
+            );
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
@@ -1586,12 +1592,15 @@ export const shouldBehaveLikeLSP1Delegate = (
             .transferOwnership(context.universalProfile1.address);
 
           let executePayload =
-            context.universalProfile1.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              lsp9VaultC.address,
-              0,
-              lsp9VaultC.interface.getSighash("acceptOwnership"),
-            ]);
+            context.universalProfile1.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp9VaultC.address,
+                0,
+                lsp9VaultC.interface.getSighash("acceptOwnership"),
+              ]
+            );
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
@@ -1627,12 +1636,15 @@ export const shouldBehaveLikeLSP1Delegate = (
             );
 
           let executePayload =
-            context.universalProfile2.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              lsp9VaultA.address,
-              0,
-              lsp9VaultA.interface.getSighash("acceptOwnership"),
-            ]);
+            context.universalProfile2.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp9VaultA.address,
+                0,
+                lsp9VaultA.interface.getSighash("acceptOwnership"),
+              ]
+            );
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
@@ -1678,12 +1690,15 @@ export const shouldBehaveLikeLSP1Delegate = (
             );
 
           let executePayload =
-            context.universalProfile2.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              lsp9VaultB.address,
-              0,
-              lsp9VaultB.interface.getSighash("acceptOwnership"),
-            ]);
+            context.universalProfile2.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp9VaultB.address,
+                0,
+                lsp9VaultB.interface.getSighash("acceptOwnership"),
+              ]
+            );
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
@@ -1731,12 +1746,15 @@ export const shouldBehaveLikeLSP1Delegate = (
             );
 
           let executePayload =
-            context.universalProfile2.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              lsp9VaultC.address,
-              0,
-              lsp9VaultC.interface.getSighash("acceptOwnership"),
-            ]);
+            context.universalProfile2.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp9VaultC.address,
+                0,
+                lsp9VaultC.interface.getSighash("acceptOwnership"),
+              ]
+            );
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
@@ -1784,12 +1802,15 @@ export const shouldBehaveLikeLSP1Delegate = (
             );
 
           let executePayload =
-            context.universalProfile1.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              lsp9VaultB.address,
-              0,
-              lsp9VaultB.interface.getSighash("acceptOwnership"),
-            ]);
+            context.universalProfile1.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                lsp9VaultB.address,
+                0,
+                lsp9VaultB.interface.getSighash("acceptOwnership"),
+              ]
+            );
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)

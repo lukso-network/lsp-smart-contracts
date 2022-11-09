@@ -17,7 +17,7 @@ import {
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import { LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
+import { LOCAL_PRIVATE_KEYS, combineAllowedCalls } from "../../utils/helpers";
 
 export const shouldBehaveLikeMultiChannelNonce = (
   buildContext: () => Promise<LSP6TestContext>
@@ -42,9 +42,26 @@ export const shouldBehaveLikeMultiChannelNonce = (
         context.owner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         signer.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        signer.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        signer.address.substring(2),
     ];
 
-    const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.CALL];
+    const permissionsValues = [
+      ALL_PERMISSIONS,
+      PERMISSIONS.CALL,
+      combineAllowedCalls(
+        ["0xffffffff"],
+        [targetContract.address],
+        ["0xffffffff"]
+      ),
+      combineAllowedCalls(
+        ["0xffffffff"],
+        [targetContract.address],
+        ["0xffffffff"]
+      ),
+    ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
@@ -81,12 +98,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -150,12 +170,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -209,12 +232,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -273,12 +299,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -332,12 +361,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -396,12 +428,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -455,12 +490,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
@@ -515,12 +553,15 @@ export const shouldBehaveLikeMultiChannelNonce = (
           [newName]
         );
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
         let valueToSend = 0;
