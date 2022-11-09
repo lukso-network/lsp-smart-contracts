@@ -43,6 +43,12 @@ import {
     _ERC1271_MAGICVALUE,
     _ERC1271_FAILVALUE
 } from "../LSP0ERC725Account/LSP0Constants.sol";
+
+import {
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
+} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+
 import "./LSP6Constants.sol";
 
 /**
@@ -203,7 +209,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 // CHECK for permission keys
                 _verifyCanSetPermissions(inputKey, inputValue, from, permissions);
 
-            } else {
+            } else if(
+                inputKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
+                bytes12(inputKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
+            ) {
+                // CHECK for Universal Receiver Delegate key
+                _verifyCanSetUniversalReceiverDelegateKey(inputKey, from, permissions);
+                
+            } else {    
                 _verifyCanSetData(from, permissions, inputKey);
             }
         } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
@@ -234,6 +247,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     _verifyCanSetPermissions(key, value, from, permissions);
 
                     // "nullify" permission keys to not check them against allowed ERC725Y keys
+                    inputKeys[ii] = bytes32(0);
+
+                } else if(
+                    key == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
+                    bytes12(key) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX 
+                ) {
+                    // CHECK for Universal Receiver Delegate keys
+                    _verifyCanSetUniversalReceiverDelegateKey(key, from, permissions);
+
+                    // "nullify" URD keys to not check them against allowed ERC725Y keys
                     inputKeys[ii] = bytes32(0);
                 } else {
                     // if the key is any other bytes32 key
@@ -428,12 +451,33 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
+     * @dev Verify if `from` has the required permissions to either add or change the address
+     * of a LSP1 Universal Receiver Delegate stored under a specific LSP1 data key
+     * @param lsp1DataKey the dataKey to set with `_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX` as prefix
+     * @param from the address who want to set the dataKeys
+     * @param permissions the permissions
+     */
+    function _verifyCanSetUniversalReceiverDelegateKey(
+        bytes32 lsp1DataKey,
+        address from,
+        bytes32 permissions
+    ) internal view {
+            bytes memory dataValue = ERC725Y(target).getData(lsp1DataKey);
+
+            if (dataValue.length == 0) {
+                _requirePermissions(from, permissions, _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE);
+            } else {
+                _requirePermissions(from, permissions, _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE);
+            }
+        }
+
+    /**
      * @dev Verify if the `inputKey` is present in `allowedERC725KeysCompacted` stored on the `from`'s ERC725Y contract
      */
     function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YKeysCompacted) internal pure {
         if (allowedERC725YKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed(from);
         if (!LSP2Utils.isCompactBytesArray(allowedERC725YKeysCompacted)) revert InvalidEncodedAllowedERC725YKeys(allowedERC725YKeysCompacted);
-
+            
         /**
          * pointer will always land on these values:
          *
@@ -787,6 +831,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
         if (permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
         if (permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
+        if (permission == _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE) return "ADDUNIVERSALRECEIVERDELEGATE";
+        if (permission == _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE) return "CHANGEUNIVERSALRECEIVERDELEGATE";
         if (permission == _PERMISSION_SETDATA) return "SETDATA";
         if (permission == _PERMISSION_CALL) return "CALL";
         if (permission == _PERMISSION_STATICCALL) return "STATICCALL";

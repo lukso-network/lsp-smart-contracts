@@ -335,7 +335,7 @@ export const shouldBehaveLikePermissionSetData = (
           expect(fetchedResult).to.deep.equal(values);
         });
 
-        it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+        it("(should pass): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]`)", async () => {
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
@@ -346,8 +346,6 @@ export const shouldBehaveLikePermissionSetData = (
               "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
               "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
             ],
-            LSP1UniversalReceiverDelegate:
-              "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
           };
 
           let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
@@ -439,7 +437,7 @@ export const shouldBehaveLikePermissionSetData = (
             .withArgs(canSetDataWithoutAllowedERC725YDataKeys.address);
         });
 
-        it("(should revert): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+        it("(should revert): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]`)", async () => {
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
@@ -450,8 +448,6 @@ export const shouldBehaveLikePermissionSetData = (
               "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
               "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
             ],
-            LSP1UniversalReceiverDelegate:
-              "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
           };
 
           let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);
@@ -535,7 +531,7 @@ export const shouldBehaveLikePermissionSetData = (
             .withArgs(cannotSetData.address, "SETDATA");
         });
 
-        it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`)", async () => {
+        it("(should fail): setup a basic Universal Profile (`LSP3Profile`, `LSP12IssuedAssets[]`)", async () => {
           const basicUPSetup = {
             LSP3Profile: {
               hashFunction: "keccak256(utf8)",
@@ -546,8 +542,6 @@ export const shouldBehaveLikePermissionSetData = (
               "0xD94353D9B005B3c0A9Da169b768a31C57844e490",
               "0xDaea594E385Fc724449E3118B2Db7E86dFBa1826",
             ],
-            LSP1UniversalReceiverDelegate:
-              "0x1183790f29BE3cDfD0A102862fEA1a4a30b3AdAb",
           };
 
           let encodedData = encodeData(basicUPSetup, BasicUPSetup_Schema);

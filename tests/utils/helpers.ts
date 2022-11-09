@@ -99,6 +99,16 @@ export function getRandomString() {
   return randoms.join("");
 }
 
+export function getRandomBytes32() {
+  const value =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const randoms = [];
+  for (let i = 0; i < 32; i++) {
+    randoms.push(value[Math.floor(Math.random() * value.length)]);
+  }
+  return ethers.utils.hashMessage(randoms.join(""));
+}
+
 export async function getMapAndArrayKeyValues(
   account,
   vaultMapKey: string,
