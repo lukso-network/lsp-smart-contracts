@@ -206,7 +206,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             } else if(bytes10(inputKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ) {
                 // CHECK for Universal Receiver Delegate key
-                _verifyCanSetUniversalReceiverDelegateKeys(inputKey, from, permissions);
+                _verifyCanSetUniversalReceiverDelegateKey(inputKey, from, permissions);
                 
             } else {    
                 _verifyCanSetData(from, permissions, inputKey);
@@ -240,7 +240,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
                 } else if(bytes10(key) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ) {
                     // CHECK for Universal Receiver Delegate keys
-                    _verifyCanSetUniversalReceiverDelegateKeys(key, from, permissions);
+                    _verifyCanSetUniversalReceiverDelegateKey(key, from, permissions);
 
                     // "nullify" URD keys to not check them against allowed ERC725Y keys
                     inputKeys[ii] = bytes32(0);
@@ -443,7 +443,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param from the address who want to set the dataKeys
      * @param permissions the permissions
      */
-    function _verifyCanSetUniversalReceiverDelegateKeys(
+    function _verifyCanSetUniversalReceiverDelegateKey(
         bytes32 inputKey,
         address from,
         bytes32 permissions) internal view {
