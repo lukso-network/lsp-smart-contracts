@@ -197,7 +197,9 @@ export const testSecurityScenarios = (
       // send LYX to malicious contract
       await expect(
         context.keyManager.connect(context.owner).execute(transferPayload)
-      ).to.be.revertedWithCustomError(context.keyManager, "ReentrantCall");
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(maliciousContract.address, "REENTRANCY");
       // at this point, the malicious contract fallback function
       // try to drain funds by re-entering the call
 
