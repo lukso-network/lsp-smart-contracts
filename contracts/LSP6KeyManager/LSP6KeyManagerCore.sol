@@ -68,21 +68,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     address public target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
-    // Booleans are more expensive than uint256 or any type that takes up a full
-    // word because each write operation emits an extra SLOAD to first read the
-    // slot's contents, replace the bits taken up by the boolean, and then write
-    // back. This is the compiler's defense against contract upgrades and
-    // pointer aliasing, and it cannot be disabled.
-
-    // The values being non-zero value makes deployment a bit more expensive,
-    // but in exchange the refund on every call to nonReentrant will be lower in
-    // amount. Since refunds are capped to a percentage of the total
-    // transaction's gas, it is best to keep them low in cases like this one, to
-    // increase the likelihood of the full refund coming into effect.
+    // Variables, methods and modifier which are used for ReentrancyGuard
+    // are taken from the link below and modified according to our needs.
+    // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
-
-    uint256 private _status;
+    uint256 private _reentrancyStatus;
 
     /**
      * @dev This modifier doesn't allow for reentrancy calls unless
@@ -132,7 +123,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata payload) public payable nonReentrant() returns (bytes memory) {
+    function execute(bytes calldata payload) public payable nonReentrant returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
 
         return _executePayload(payload);
@@ -145,7 +136,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory signature,
         uint256 nonce,
         bytes calldata payload
-    ) public payable nonReentrant() returns (bytes memory) {
+    ) public payable nonReentrant returns (bytes memory) {
         bytes memory encodedMessage = abi.encodePacked(
             LSP6_VERSION,
             block.chainid,
@@ -870,25 +861,25 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev Initialise _status to _NOT_ENTERED.
+     * @dev Initialise _reentrancyStatus to _NOT_ENTERED.
      */
     function _setupLSP6ReentrancyGuard() internal {
-        _status = _NOT_ENTERED;
+        _reentrancyStatus = _NOT_ENTERED;
     }
 
     /**
      * @dev Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
-     * the status is `_ENTERED` in order to revert the call unless the caller is the URD address
+     * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts
      */
     function _nonReentrantBefore() private {
-        if (_status == _ENTERED) {
-            // get and check the permissions of the caller
+        if (_reentrancyStatus == _ENTERED) {
+            // CHECK the caller has REENTRANCY permission
             bytes32 callerPermissions = ERC725Y(target).getPermissionsFor(msg.sender);
             _requirePermissions(msg.sender, callerPermissions, _PERMISSION_REENTRANCY);
         }
 
-        _status = _ENTERED;
+        _reentrancyStatus = _ENTERED;
     }
 
     /**
@@ -898,7 +889,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _nonReentrantAfter() private {
         // By storing the original value once again, a refund is triggered (see
         // https://eips.ethereum.org/EIPS/eip-2200)
-        _status = _NOT_ENTERED;
+        _reentrancyStatus = _NOT_ENTERED;
     }
 
 

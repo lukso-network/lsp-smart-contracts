@@ -195,13 +195,13 @@ export const testSecurityScenarios = (
       );
 
       // send LYX to malicious contract
+      // at this point, the malicious contract fallback function try to drain funds by re-entering the call
+      // this should not be possible since it does not have the permission `REENTRANCY`
       await expect(
         context.keyManager.connect(context.owner).execute(transferPayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(maliciousContract.address, "REENTRANCY");
-      // at this point, the malicious contract fallback function
-      // try to drain funds by re-entering the call
 
       let newAccountBalance = await provider.getBalance(
         context.universalProfile.address
@@ -309,7 +309,7 @@ export const testSecurityScenarios = (
         .withArgs(maliciousContract.address, "REENTRANCY");
     });
 
-    it("should pass when reentered by URD", async () => {
+    it("should pass when reentered by URD and the URD has REENTRANCY permission", async () => {
       const URDDummy = await new Reentrancy__factory(context.owner).deploy(
         context.keyManager.address
       );
