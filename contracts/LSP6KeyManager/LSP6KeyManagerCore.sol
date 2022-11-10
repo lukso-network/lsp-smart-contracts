@@ -51,14 +51,12 @@ import {
 
 import "./LSP6Constants.sol";
 
-import "./LSP6ReentrancyGuard.sol";
-
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyGuard {
+abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using LSP2Utils for *;
     using LSP6Utils for *;
     using Address for address;
@@ -69,6 +67,32 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
 
     address public target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
+
+    // Booleans are more expensive than uint256 or any type that takes up a full
+    // word because each write operation emits an extra SLOAD to first read the
+    // slot's contents, replace the bits taken up by the boolean, and then write
+    // back. This is the compiler's defense against contract upgrades and
+    // pointer aliasing, and it cannot be disabled.
+
+    // The values being non-zero value makes deployment a bit more expensive,
+    // but in exchange the refund on every call to nonReentrant will be lower in
+    // amount. Since refunds are capped to a percentage of the total
+    // transaction's gas, it is best to keep them low in cases like this one, to
+    // increase the likelihood of the full refund coming into effect.
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+
+    uint256 private _status;
+
+    /**
+     * @dev This modifier doesn't allow for reentrancy calls unless
+     * it's the URD of the contract that makes the call.
+     */
+    modifier nonReentrant() {
+        _nonReentrantBefore();
+        _;
+        _nonReentrantAfter();
+    }
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -108,7 +132,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata payload) public payable nonReentrant(target) returns (bytes memory) {
+    function execute(bytes calldata payload) public payable nonReentrant() returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
 
         return _executePayload(payload);
@@ -121,7 +145,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
         bytes memory signature,
         uint256 nonce,
         bytes calldata payload
-    ) public payable nonReentrant(target) returns (bytes memory) {
+    ) public payable nonReentrant() returns (bytes memory) {
         bytes memory encodedMessage = abi.encodePacked(
             LSP6_VERSION,
             block.chainid,
@@ -835,6 +859,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
         if (permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
         if (permission == _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE) return "ADDUNIVERSALRECEIVERDELEGATE";
         if (permission == _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE) return "CHANGEUNIVERSALRECEIVERDELEGATE";
+        if (permission == _PERMISSION_REENTRANCY) return "REENTRANCY";
         if (permission == _PERMISSION_SETDATA) return "SETDATA";
         if (permission == _PERMISSION_CALL) return "CALL";
         if (permission == _PERMISSION_STATICCALL) return "STATICCALL";
@@ -842,6 +867,38 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager, LSP6ReentrancyG
         if (permission == _PERMISSION_DEPLOY) return "DEPLOY";
         if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
         if (permission == _PERMISSION_SIGN) return "SIGN";
+    }
+
+    /**
+     * @dev Initialise _status to _NOT_ENTERED.
+     */
+    function _setupLSP6ReentrancyGuard() internal {
+        _status = _NOT_ENTERED;
+    }
+
+    /**
+     * @dev Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
+     * the status is `_ENTERED` in order to revert the call unless the caller is the URD address
+     * Used in the beginning of the `nonReentrant` modifier, before the method execution starts
+     */
+    function _nonReentrantBefore() private {
+        if (_status == _ENTERED) {
+            // get and check the permissions of the caller
+            bytes32 callerPermissions = ERC725Y(target).getPermissionsFor(msg.sender);
+            _requirePermissions(msg.sender, callerPermissions, _PERMISSION_REENTRANCY);
+        }
+
+        _status = _ENTERED;
+    }
+
+    /**
+     * @dev Resets the status to `_NOT_ENTERED`
+     * Used in the end of the `nonReentrant` modifier after the method execution is terminated
+     */
+    function _nonReentrantAfter() private {
+        // By storing the original value once again, a refund is triggered (see
+        // https://eips.ethereum.org/EIPS/eip-2200)
+        _status = _NOT_ENTERED;
     }
 
 
