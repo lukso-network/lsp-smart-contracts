@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
@@ -11,6 +10,7 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
+import {EXECUTE_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT
@@ -23,6 +23,9 @@ import {
 
 import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
     constructor() {
         _registerInterface(_INTERFACEID_LSP1_DELEGATE);
@@ -39,7 +42,7 @@ contract UniversalReceiverDelegateTokenReentrant is ERC165Storage {
             if (data.length > 72) {
                 bytes memory tokenPayload = BytesLib.slice(data, 72, data.length - 72);
                 bytes memory executePayload = abi.encodeWithSelector(
-                    IERC725X.execute.selector,
+                    EXECUTE_SELECTOR,
                     0, // OPERATION CALL
                     sender, // TOKEN CONTRACT
                     0, // VALUE TO BE SENT

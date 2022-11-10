@@ -103,9 +103,15 @@ describe("Address Registry contracts", () => {
 
       await account
         .connect(owner)
-        .execute(0, addressRegistryRequireERC725.address, 0, abi, {
-          gasLimit: 3_000_000,
-        });
+        ["execute(uint256,address,uint256,bytes)"](
+          0,
+          addressRegistryRequireERC725.address,
+          0,
+          abi,
+          {
+            gasLimit: 3_000_000,
+          }
+        );
       expect(await addressRegistryRequireERC725.getAddress(0)).to.equal(
         account.address
       );
@@ -128,7 +134,12 @@ describe("Address Registry contracts", () => {
 
       await account
         .connect(owner)
-        .execute(0, addressRegistryRequireERC725.address, 0, abi);
+        ["execute(uint256,address,uint256,bytes)"](
+          0,
+          addressRegistryRequireERC725.address,
+          0,
+          abi
+        );
       expect(
         await addressRegistryRequireERC725.containsAddress(account.address)
       ).to.equal(false);

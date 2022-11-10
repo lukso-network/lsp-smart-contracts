@@ -11,6 +11,7 @@ import {
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {GasLib} from "../Utils/GasLib.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
 import {ERC725XCore, IERC725X} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
@@ -19,20 +20,21 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 // constants
-import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
-
+import "@erc725/smart-contracts/contracts/errors.sol";
 import {
-    OPERATION_CALL,
-    OPERATION_STATICCALL,
-    OPERATION_CREATE,
-    OPERATION_CREATE2
+    OPERATION_0_CALL,
+    OPERATION_1_CREATE,
+    OPERATION_2_CREATE2,
+    OPERATION_3_STATICCALL
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
     _INTERFACEID_LSP1_DELEGATE,
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
+import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -41,14 +43,13 @@ import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
  */
 contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1UniversalReceiver {
     using ERC165Checker for address;
+
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
-     * @param value The amount of value sent
+     * @param value The amount of native tokens received
      */
     event ValueReceived(address indexed sender, uint256 indexed value);
-
-    // modifiers
 
     /**
      * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
@@ -67,7 +68,14 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         _;
     }
 
-    // public functions
+    /**
+     * @dev Emits an event when receiving native tokens
+     *
+     * Executed when receiving native tokens with empty calldata.
+     */
+    receive() external payable virtual {
+        if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
+    }
 
     /**
      * @dev Emits an event when receiving native tokens
@@ -81,46 +89,44 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     }
 
     /**
-     * @dev Emits an event when receiving native tokens
-     *
-     * Executed when receiving native tokens with empty calldata.
+     * @dev See {IERC165-supportsInterface}.
      */
-    receive() external payable virtual {
-        emit ValueReceived(msg.sender, msg.value);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_LSP9 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_LSP14 ||
+            super.supportsInterface(interfaceId);
     }
-
-    // ERC725
 
     /**
      * @inheritdoc IERC725X
-     * @param operation The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3
+     * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3
      * @dev Executes any other smart contract.
      * SHOULD only be callable by the owner of the contract set via ERC173
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0 and 3
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
+     * Emits a {ValueReceived} event, when receives native token
      */
     function execute(
-        uint256 operation,
-        address to,
+        uint256 operationType,
+        address target,
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        require(address(this).balance >= value, "ERC725X: insufficient balance");
+        if (address(this).balance < value) {
+            revert ERC725X_InsufficientBalance(address(this).balance, value);
+        }
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
 
-        // CALL
-        if (operation == OPERATION_CALL) return _executeCall(to, value, data);
-
-        // Deploy with CREATE
-        if (operation == OPERATION_CREATE) return _deployCreate(to, value, data);
-
-        // Deploy with CREATE2
-        if (operation == OPERATION_CREATE2) return _deployCreate2(to, value, data);
-
-        // STATICCALL
-        if (operation == OPERATION_STATICCALL) return _executeStaticCall(to, value, data);
-
-        revert("ERC725X: Unknown operation type");
+        return _execute(operationType, target, value, data);
     }
 
     /**
@@ -149,13 +155,14 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         override
         onlyAllowed
     {
-        require(dataKeys.length == dataValues.length, "Keys length not equal to values length");
+        if (dataKeys.length != dataValues.length) {
+            revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
+        }
+
         for (uint256 i = 0; i < dataKeys.length; i = GasLib.uncheckedIncrement(i)) {
             _setData(dataKeys[i], dataValues[i]);
         }
     }
-
-    // LSP1
 
     /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
@@ -173,6 +180,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         virtual
         returns (bytes memory returnedValues)
     {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         bytes memory resultDefaultDelegate;
 
@@ -185,7 +193,12 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
             }
         }
 
-        bytes memory lsp1TypeIdDelegateValue = _getData(typeId);
+        bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+            bytes20(typeId)
+        );
+
+        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
@@ -200,8 +213,6 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
-
-    // ERC173 - Modified ClaimOwnership
 
     /**
      * @dev Sets the pending owner and notify the pending owner
@@ -229,35 +240,51 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         LSP14Ownable2Step._renounceOwnership();
     }
 
-    // ERC165
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore)
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_LSP9 ||
-            interfaceId == _INTERFACEID_LSP1 ||
-            interfaceId == _INTERFACEID_LSP14 ||
-            super.supportsInterface(interfaceId);
-    }
-
-    // internal functions
-
     /**
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
      */
     function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
-        store[dataKey] = dataValue;
+        _store[dataKey] = dataValue;
         emit DataChanged(
             dataKey,
             dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
         );
+    }
+
+    /**
+     * @dev disable operation type DELEGATECALL (4).
+     * NB: providing operation type DELEGATECALL (4) as argument will result
+     * in custom error ERC725X_UnknownOperationType(4)
+     */
+    function _execute(
+        uint256 operationType,
+        address target,
+        uint256 value,
+        bytes memory data
+    ) internal virtual override returns (bytes memory) {
+        // CALL
+        if (operationType == OPERATION_0_CALL) {
+            return _executeCall(target, value, data);
+        }
+
+        // Deploy with CREATE
+        if (operationType == uint256(OPERATION_1_CREATE)) {
+            if (target != address(0)) revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            return _deployCreate(value, data);
+        }
+
+        // Deploy with CREATE2
+        if (operationType == uint256(OPERATION_2_CREATE2)) {
+            if (target != address(0)) revert ERC725X_CreateOperationsRequireEmptyRecipientAddress();
+            return _deployCreate2(value, data);
+        }
+
+        // STATICCALL
+        if (operationType == uint256(OPERATION_3_STATICCALL)) {
+            if (value != 0) revert ERC725X_MsgValueDisallowedInStaticCall();
+            return _executeStaticCall(target, data);
+        }
+
+        revert ERC725X_UnknownOperationType(operationType);
     }
 }

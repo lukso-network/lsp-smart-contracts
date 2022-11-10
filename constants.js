@@ -4,7 +4,7 @@
  */
 
 // ERC165
-// ----------
+// ---------
 
 const INTERFACE_IDS = {
 	ERC165: '0x01ffc9a7',
@@ -15,15 +15,15 @@ const INTERFACE_IDS = {
 	ERC721Metadata: '0x5b5e139f',
 	ERC777: '0xe58e113c',
 	ERC1155: '0xd9b67a26',
-	ERC725X: '0x44c028fe',
+	ERC725X: '0x570ef073',
 	ERC725Y: '0x714df77c',
-	LSP0ERC725Account: '0xdca05671',
+	LSP0ERC725Account: '0xcf6e8efc',
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
-	LSP6KeyManager: '0xc403d48f',
-	LSP7DigitalAsset: '0x5fcaac27',
-	LSP8IdentifiableDigitalAsset: '0x49399145',
-	LSP9Vault: '0xca86ec0f',
+	LSP6KeyManager: '0xf9150d55',
+	LSP7DigitalAsset: '0xda1f85e4',
+	LSP8IdentifiableDigitalAsset: '0x622e7a01',
+	LSP9Vault: '0xd9483482',
 	LSP14Ownable2Step: '0x94be5999',
 };
 
@@ -70,6 +70,8 @@ const SupportedStandards = {
  */
 const ERC725YKeys = {
 	LSP1: {
+		// bytes10(keccak256('LSP1UniversalReceiverDelegate'))
+		LSP1UniversalReceiverDelegatePrefix: '0x0cfc51aec37c55a4d0b1',
 		// keccak256('LSP1UniversalReceiverDelegate')
 		LSP1UniversalReceiverDelegate:
 			'0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',
@@ -114,14 +116,10 @@ const ERC725YKeys = {
 		},
 		// AddressPermissions:Permissions:<address>
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
-		// AddressPermissions:AllowedAddresses:<address>
-		'AddressPermissions:AllowedAddresses': '0x4b80742de2bfc6dd6b3c0000',
-		// AddressPermissions:AllowedFunctions:<address>
-		'AddressPermissions:AllowedFunctions': '0x4b80742de2bf8efea1e80000',
-		// AddressPermissions:AllowedStandards:<address>
-		'AddressPermissions:AllowedStandards': '0x4b80742de2bf3efa94a30000',
 		// AddressPermissions:AllowedERC725YKeys:<address>
 		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
+		// AddressPermissions:AllowedCalls:<address>
+		'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
 	},
 	LSP9: {
 		SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
@@ -173,58 +171,60 @@ const BasicUPSetup_Schema = [
 // LSP6
 // ----------
 
+const LSP6_VERSION = 6;
+
 // All Permissions currently exclude DELEGATECALL and SUPER_DELEGATECALL for security
-const ALL_PERMISSIONS = '0xe800000000000000000000000000000000000000000000000000000000000fbf';
+const ALL_PERMISSIONS = '0x00000000000000000000000000000000000000000000000000000000000fcfff';
 
 // prettier-ignore
 const PERMISSIONS = {
-    // right bits range
-    CHANGEOWNER:         "0x0000000000000000000000000000000000000000000000000000000000000001",
-    ADDPERMISSIONS:      "0x0000000000000000000000000000000000000000000000000000000000000002",
-    CHANGEPERMISSIONS:   "0x0000000000000000000000000000000000000000000000000000000000000004",
-    TRANSFERVALUE:       "0x0000000000000000000000000000000000000000000000000000000000000008",
-    CALL:                "0x0000000000000000000000000000000000000000000000000000000000000010",
-    STATICCALL:          "0x0000000000000000000000000000000000000000000000000000000000000020",
-    DELEGATECALL:        "0x0000000000000000000000000000000000000000000000000000000000000040",
-    DEPLOY:              "0x0000000000000000000000000000000000000000000000000000000000000080",
-    SETDATA:             "0x0000000000000000000000000000000000000000000000000000000000000100",
-    ENCRYPT:             "0x0000000000000000000000000000000000000000000000000000000000000200",
-    DECRYPT:             "0x0000000000000000000000000000000000000000000000000000000000000400",   
-    SIGN:                "0x0000000000000000000000000000000000000000000000000000000000000800",
-    // left bits range   
-    SUPER_SETDATA:       "0x0800000000000000000000000000000000000000000000000000000000000000",
-    SUPER_DELEGATECALL:  "0x1000000000000000000000000000000000000000000000000000000000000000",
-    SUPER_STATICCALL:    "0x2000000000000000000000000000000000000000000000000000000000000000",
-    SUPER_CALL:          "0x4000000000000000000000000000000000000000000000000000000000000000",
-    SUPER_TRANSFERVALUE: "0x8000000000000000000000000000000000000000000000000000000000000000",
+	CHANGEOWNER                      :"0x0000000000000000000000000000000000000000000000000000000000000001",
+	ADDPERMISSIONS                   :"0x0000000000000000000000000000000000000000000000000000000000000002",
+	CHANGEPERMISSIONS                :"0x0000000000000000000000000000000000000000000000000000000000000004",
+	ADDUNIVERSALRECEIVERDELEGATE     :"0x0000000000000000000000000000000000000000000000000000000000000008",
+	CHANGEUNIVERSALRECEIVERDELEGATE  :"0x0000000000000000000000000000000000000000000000000000000000000010",
+	REENTRANCY                       :"0x0000000000000000000000000000000000000000000000000000000000000020",
+	SUPER_TRANSFERVALUE              :"0x0000000000000000000000000000000000000000000000000000000000000040",
+	TRANSFERVALUE                    :"0x0000000000000000000000000000000000000000000000000000000000000080",
+	SUPER_CALL                       :"0x0000000000000000000000000000000000000000000000000000000000000100",
+	CALL                             :"0x0000000000000000000000000000000000000000000000000000000000000200",
+	SUPER_STATICCALL                 :"0x0000000000000000000000000000000000000000000000000000000000000400",
+	STATICCALL                       :"0x0000000000000000000000000000000000000000000000000000000000000800",
+	SUPER_DELEGATECALL               :"0x0000000000000000000000000000000000000000000000000000000000001000",
+	DELEGATECALL                     :"0x0000000000000000000000000000000000000000000000000000000000002000",
+	DEPLOY                           :"0x0000000000000000000000000000000000000000000000000000000000004000",
+	SUPER_SETDATA                    :"0x0000000000000000000000000000000000000000000000000000000000008000",
+	SETDATA                          :"0x0000000000000000000000000000000000000000000000000000000000010000",
+	ENCRYPT                          :"0x0000000000000000000000000000000000000000000000000000000000020000",
+	DECRYPT                          :"0x0000000000000000000000000000000000000000000000000000000000040000",
+	SIGN                             :"0x0000000000000000000000000000000000000000000000000000000000080000",
 }
 
 const LSP1_TYPE_IDS = {
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP7Tokens_SenderNotification'))
-	LSP7_TOKENSENDER: '0x0cfc51aec37c55a4d0b10000429ac7a06903dbc9c13dfcb3c9d11df8194581fa',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP7Tokens_RecipientNotification'))
-	LSP7_TOKENRECIPIENT: '0x0cfc51aec37c55a4d0b1000020804611b3e2ea21c480dc465142210acf4a2485',
-		// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP8Tokens_SenderNotification'))
-	LSP8_TOKENSENDER: '0x0cfc51aec37c55a4d0b10000b23eae7e6d1564b295b4c3e3be402d9a2f0776c5',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP8Tokens_RecipientNotification'))
-	LSP8_TOKENRECIPIENT: '0x0cfc51aec37c55a4d0b100000b084a55ebf70fd3c06fd755269dac2212c4d3f0',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferStarted'))
-	LSP14_OwnershipTransferStarted: '0x0cfc51aec37c55a4d0b10000ee9a7c0924f740a2ca33d59b7f0c2929821ea983',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferred_SenderNotification'))
-	LSP14_OwnershipTransferred_SenderNotification: '0x0cfc51aec37c55a4d0b10000a124442e1cc7b52d8e2ede2787d43527dc1f3ae0',
-	// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0) + bytes20(keccak256('LSP14OwnershipTransferred_RecipientNotification'))
-	LSP14_OwnershipTransferred_RecipientNotification: '0x0cfc51aec37c55a4d0b10000e32c7debcb817925ba4883fdbfc52797187f28f7',
+	// keccak256('LSP7Tokens_SenderNotification')
+	LSP7Tokens_SenderNotification:
+		'0x429ac7a06903dbc9c13dfcb3c9d11df8194581fa047c96d7a4171fc7402958ea',
+	// keccak256('LSP7Tokens_RecipientNotification')
+	LSP7Tokens_RecipientNotification:
+		'0x20804611b3e2ea21c480dc465142210acf4a2485947541770ec1fb87dee4a55c',
+	// keccak256('LSP8Tokens_SenderNotification')
+	LSP8Tokens_SenderNotification:
+		'0xb23eae7e6d1564b295b4c3e3be402d9a2f0776c57bdf365903496f6fa481ab00',
+	// keccak256('LSP8Tokens_RecipientNotification')
+	LSP8Tokens_RecipientNotification:
+		'0x0b084a55ebf70fd3c06fd755269dac2212c4d3f0f4d09079780bfa50c1b2984d',
+	// keccak256('LSP14OwnershipTransferStarted')
+	LSP14OwnershipTransferStarted:
+		'0xee9a7c0924f740a2ca33d59b7f0c2929821ea9837ce043ce91c1823e9c4e52c0',
+	// keccak256('LSP14OwnershipTransferred_SenderNotification')
+	LSP14OwnershipTransferred_SenderNotification:
+		'0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c',
+	// keccak256('LSP14OwnershipTransferred_RecipientNotification')
+	LSP14OwnershipTransferred_RecipientNotification:
+		'0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
 
-// ----------
-
 const Errors = {
-	LSP2: {
-		'0xb614e91e': {
-			error: 'InvalidABIEncodedArray(bytes,string)',
-			message: 'LSP2Utils: Invalid ABI encoded array',
-		},
-	},
 	LSP4: {
 		'0x85c169bd': {
 			error: 'LSP4TokenNameNotEditable()',
@@ -250,18 +250,10 @@ const Errors = {
 			error: 'NotAuthorised(address,string)',
 			message: 'LSP6: Not authorized (missing permission).',
 		},
-		'0x2879b128': {
-			error: 'NotAllowedAddress(address,address)',
-			message: 'LSP6: not allowed to interact with address.',
-		},
-		'0x42013ee4': {
-			error: 'NotAllowedStandard(address,address)',
+		'0x45147bce': {
+			error: 'NotAllowedCall(address,address,bytes4)',
 			message:
-				'LSP6: cannot interact with a contract that does not implement an allowed standard.',
-		},
-		'0x84135110': {
-			error: 'NotAllowedFunction(address,bytes4)',
-			message: 'LSP6: not allowed to run the function.',
+				'LSP6: not authorised to interact with `to` with the provided data payload (standard, address or function of `to` not authorised).',
 		},
 		'0x3003e7ae': {
 			error: 'NotAllowedERC725YKey(address,bytes32)',
@@ -282,6 +274,18 @@ const Errors = {
 		'0x2ba8851c': {
 			error: 'InvalidERC725Function(bytes4)',
 			message: 'LSP6: unknown or invalid ERC725 function selector',
+		},
+		'0xed7fa509': {
+			error: 'NoERC725YDataKeysAllowed(address)',
+			message: 'LSP6: caller has no AllowedERC725YDataKeys',
+		},
+		'0x7231ac57': {
+			error: 'InvalidEncodedAllowedERC725YKeys(bytes)',
+			message: 'LSP2Utils: Invalid Compact Bytes Array',
+		},
+		'0x8f4afa38': {
+			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
+			message: 'LSP6: value provided for AddressPermission[index] not an address.',
 		},
 	},
 	LSP7: {
@@ -392,8 +396,6 @@ const Errors = {
 		},
 	},
 };
-
-// ----------
 
 const EventSignatures = {
 	ERC173: {
@@ -606,6 +608,7 @@ module.exports = {
 	SupportedStandards,
 	ERC725YKeys,
 	BasicUPSetup_Schema,
+	LSP6_VERSION,
 	ALL_PERMISSIONS,
 	PERMISSIONS,
 	LSP1_TYPE_IDS,

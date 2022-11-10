@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 import { expect } from "chai";
@@ -16,6 +16,7 @@ import {
   ARRAY_LENGTH,
   generateKeysAndValues,
   abiCoder,
+  combineAllowedCalls,
 } from "../utils/helpers";
 
 // fixtures
@@ -142,6 +143,22 @@ export const shouldBehaveLikeLSP9 = (
       });
     });
 
+    describe("when calling the contract without any value or data", () => {
+      it("should pass and not emit the ValueReceived event", async () => {
+        const sender = context.accounts.anyone;
+        const amount = 0;
+
+        // prettier-ignore
+        await expect(
+          sender.sendTransaction({
+            to: context.lsp9Vault.address,
+            value: amount,
+          })
+        ).to.not.be.reverted
+         .to.not.emit(context.lsp9Vault, "ValueReceived");
+      });
+    });
+
     describe("when setting a data key with a value exactly 256 bytes long", () => {
       it("should emit DataChanged event with the whole data value", async () => {
         let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
@@ -159,15 +176,20 @@ export const shouldBehaveLikeLSP9 = (
 
   describe("when testing setting execute", () => {
     describe("when executing operation (4) DELEGATECALL", () => {
-      it("should revert with unknow operation type string error", async () => {
+      it("should revert with unknow operation type custom error", async () => {
         await expect(
-          context.lsp9Vault.execute(
+          context.lsp9Vault["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.DELEGATECALL,
             context.accounts.random.address,
             0,
             "0x"
           )
-        ).to.be.revertedWith("ERC725X: Unknown operation type");
+        )
+          .to.be.revertedWithCustomError(
+            context.universalProfile,
+            "ERC725X_UnknownOperationType"
+          )
+          .withArgs(OPERATION_TYPES.DELEGATECALL);
       });
     });
   });
@@ -183,12 +205,15 @@ export const shouldBehaveLikeLSP9 = (
           context.universalProfile.interface.getSighash("acceptOwnership");
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            context.lsp9Vault.address,
-            0,
-            acceptOwnershipSelector,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              context.lsp9Vault.address,
+              0,
+              acceptOwnershipSelector,
+            ]
+          );
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
@@ -212,13 +237,17 @@ export const shouldBehaveLikeLSP9 = (
           [
             [
               ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-                context.accounts.friend.address.substr(2),
-              ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-                context.accounts.friend.address.substr(2),
+                context.accounts.friend.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                context.accounts.friend.address.substring(2),
             ],
             [
               friendPermissions,
-              abiCoder.encode(["address[]"], [[context.lsp9Vault.address]]),
+              combineAllowedCalls(
+                ["0xffffffff"],
+                [context.lsp9Vault.address],
+                ["0xffffffff"]
+              ),
             ],
           ]
         );
@@ -250,7 +279,7 @@ export const shouldBehaveLikeLSP9 = (
         expect(res).to.equal(values[0]);
       });
 
-      it("should fail when friend is interfacting with other contracts", async () => {
+      it("should fail when friend is interacting with other contracts", async () => {
         const [keys, values] = generateKeysAndValues("any string");
         const payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32,bytes)",
@@ -274,9 +303,15 @@ export const shouldBehaveLikeLSP9 = (
         )
           .to.be.revertedWithCustomError(
             context.lsp6KeyManager,
-            "NotAllowedAddress"
+            "NotAllowedCall"
           )
-          .withArgs(context.accounts.friend.address, disallowedAddress);
+          .withArgs(
+            context.accounts.friend.address,
+            disallowedAddress,
+            context.universalProfile.interface.getSighash(
+              "setData(bytes32,bytes)"
+            )
+          );
       });
     });
 
@@ -295,7 +330,7 @@ export const shouldBehaveLikeLSP9 = (
           .withArgs(
             context.lsp9Vault.address,
             0,
-            LSP1_TYPE_IDS.LSP14_OwnershipTransferStarted,
+            LSP1_TYPE_IDS.LSP14OwnershipTransferStarted,
             "0x",
             abiCoder.encode(
               ["bytes", "bytes"],

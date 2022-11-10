@@ -137,7 +137,7 @@ export async function setupProfileWithKeyManagerWithURD(
         EOA.address,
         lsp1universalReceiverDelegateUP.address,
         ALL_PERMISSIONS,
-        ethers.utils.hexZeroPad(PERMISSIONS.SETDATA, 32),
+        ethers.utils.hexZeroPad(PERMISSIONS.SUPER_SETDATA, 32),
         lsp1universalReceiverDelegateUP.address,
       ]
     );
@@ -160,7 +160,10 @@ export async function setupProfileWithKeyManagerWithURD(
  * Returns the payload of Call operation with 0 value
  */
 export function callPayload(from: any, to: string, abi: string) {
-  let payload = from.interface.encodeFunctionData("execute", [0, to, 0, abi]);
+  let payload = from.interface.encodeFunctionData(
+    "execute(uint256,address,uint256,bytes)",
+    [0, to, 0, abi]
+  );
   return payload;
 }
 

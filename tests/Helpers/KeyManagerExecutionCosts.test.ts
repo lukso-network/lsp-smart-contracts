@@ -15,7 +15,12 @@ import {
 } from "../../constants";
 
 import { LSP6TestContext } from "../utils/context";
-import { abiCoder, provider } from "../utils/helpers";
+import {
+  abiCoder,
+  provider,
+  combinePermissions,
+  combineAllowedCalls,
+} from "../utils/helpers";
 
 import { setupKeyManager } from "../utils/fixtures";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -61,31 +66,26 @@ describe("Key Manager gas cost interactions", () => {
             restrictedToOneAddress.address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
             restrictedToOneAddressAndStandard.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
             restrictedToOneAddress.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-            restrictedToOneAddressAndStandard.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
             restrictedToOneAddressAndStandard.address.substring(2),
         ];
 
         const permissionValues = [
           ALL_PERMISSIONS,
-          ethers.utils.hexZeroPad(
-            ethers.utils.hexlify(
-              Number(PERMISSIONS.CALL) + Number(PERMISSIONS.TRANSFERVALUE)
-            ),
-            32
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+          combineAllowedCalls(
+            [INTERFACE_IDS.ERC1271],
+            [contractImplementsERC1271.address],
+            ["0xffffffff"]
           ),
-          ethers.utils.hexZeroPad(
-            ethers.utils.hexlify(
-              Number(PERMISSIONS.CALL) + Number(PERMISSIONS.TRANSFERVALUE)
-            ),
-            32
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [contractImplementsERC1271.address],
+            ["0xffffffff"]
           ),
-          abiCoder.encode(["address[]"], [[contractImplementsERC1271.address]]),
-          abiCoder.encode(["address[]"], [[contractImplementsERC1271.address]]),
-          abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
         ];
 
         await setupKeyManager(context, permissionKeys, permissionValues);
@@ -103,12 +103,15 @@ describe("Key Manager gas cost interactions", () => {
           );
 
           let transferLyxPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              contractImplementsERC1271.address,
-              ethers.utils.parseEther("1"),
-              "0x",
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                contractImplementsERC1271.address,
+                ethers.utils.parseEther("1"),
+                "0x",
+              ]
+            );
 
           let tx = await context.keyManager
             .connect(context.owner)
@@ -134,12 +137,15 @@ describe("Key Manager gas cost interactions", () => {
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            contractImplementsERC1271.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              contractImplementsERC1271.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddress)
@@ -164,12 +170,15 @@ describe("Key Manager gas cost interactions", () => {
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            contractImplementsERC1271.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              contractImplementsERC1271.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddressAndStandard)

@@ -1,5 +1,6 @@
 export * from "./PermissionChangeOwner.test";
 export * from "./PermissionChangeAddPermissions.test";
+export * from "./PermissionsChangeAddURD.test";
 export * from "./PermissionSetData.test";
 export * from "./PermissionCall.test";
 export * from "./PermissionStaticCall.test";
@@ -15,3 +16,4 @@ export * from "./MultiChannelNonce.test";
 export * from "./OtherScenarios.test";
 export * from "./Security.test";
 export * from "./LSP6ControlledToken.test";
+export * from "./ExecuteRelayCall.test";

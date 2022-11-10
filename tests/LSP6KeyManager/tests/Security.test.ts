@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 import {
   Reentrancy,
@@ -16,6 +17,7 @@ import {
   ERC725YKeys,
   LSP1_TYPE_IDS,
   OPERATION_TYPES,
+  LSP6_VERSION,
   PERMISSIONS,
 } from "../../../constants";
 
@@ -28,6 +30,8 @@ import {
   provider,
   combinePermissions,
   EMPTY_PAYLOAD,
+  LOCAL_PRIVATE_KEYS,
+  combineAllowedCalls,
 } from "../../utils/helpers";
 
 export const testSecurityScenarios = (
@@ -65,11 +69,18 @@ export const testSecurityScenarios = (
         context.owner.address.substring(2),
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         signer.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        signer.address.substring(2),
     ];
 
     const permissionValues = [
       ALL_PERMISSIONS,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+      combineAllowedCalls(
+        ["0xffffffff", "0xffffffff"],
+        [signer.address, ethers.constants.AddressZero],
+        ["0xffffffff", "0xffffffff"]
+      ),
     ];
 
     await setupKeyManager(context, permissionKeys, permissionValues);
@@ -88,7 +99,7 @@ export const testSecurityScenarios = (
     );
 
     let executePayload = context.universalProfile.interface.encodeFunctionData(
-      "execute",
+      "execute(uint256,address,uint256,bytes)",
       [OPERATION_TYPES.CALL, targetContract.address, 0, targetContractPayload]
     );
 
@@ -116,24 +127,32 @@ export const testSecurityScenarios = (
 
     it("via `executeRelayCall()`", async () => {
       const HARDHAT_CHAINID = 31337;
+      let valueToSend = 0;
+
       let nonce = await context.keyManager.getNonce(context.owner.address, 0);
 
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      let hash = ethers.utils.solidityKeccak256(
-        ["uint256", "address", "uint256", "bytes"],
-        [HARDHAT_CHAINID, context.keyManager.address, nonce, payload]
+      let encodedMessage = ethers.utils.solidityPack(
+        ["uint256", "uint256", "uint256", "uint256", "bytes"],
+        [LSP6_VERSION, HARDHAT_CHAINID, nonce, valueToSend, payload]
       );
 
-      let signature = await context.owner.signMessage(
-        ethers.utils.arrayify(hash)
+      const eip191Signer = new EIP191Signer();
+
+      let { signature } = await eip191Signer.signDataWithIntendedValidator(
+        context.keyManager.address,
+        encodedMessage,
+        LOCAL_PRIVATE_KEYS.ACCOUNT0
       );
 
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(signature, nonce, payload)
+          .executeRelayCall(signature, nonce, payload, {
+            value: valueToSend,
+          })
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -149,12 +168,15 @@ export const testSecurityScenarios = (
       // we assume the UP owner is not aware that some malicious code is present
       // in the fallback function of the target (= recipient) contract
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          maliciousContract.address,
-          ethers.utils.parseEther("1"),
-          EMPTY_PAYLOAD,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            maliciousContract.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]
+        );
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
         "execute",
@@ -201,31 +223,44 @@ export const testSecurityScenarios = (
         );
 
         let executeRelayCallPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            signer.address,
-            ethers.utils.parseEther("1"),
-            EMPTY_PAYLOAD,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              signer.address,
+              ethers.utils.parseEther("1"),
+              EMPTY_PAYLOAD,
+            ]
+          );
 
         const HARDHAT_CHAINID = 31337;
+        let valueToSend = 0;
 
-        let hash = ethers.utils.solidityKeccak256(
-          ["uint256", "address", "uint256", "bytes"],
+        let encodedMessage = ethers.utils.solidityPack(
+          ["uint256", "uint256", "uint256", "uint256", "bytes"],
           [
+            LSP6_VERSION,
             HARDHAT_CHAINID,
-            context.keyManager.address,
             nonce,
+            valueToSend,
             executeRelayCallPayload,
           ]
         );
 
-        let signature = await signer.signMessage(ethers.utils.arrayify(hash));
+        const eip191Signer = new EIP191Signer();
+
+        const { signature } = await eip191Signer.signDataWithIntendedValidator(
+          context.keyManager.address,
+          encodedMessage,
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
 
         // first call
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonce, executeRelayCallPayload);
+          .executeRelayCall(signature, nonce, executeRelayCallPayload, {
+            value: valueToSend,
+          });
 
         // 2nd call = replay attack
         await expect(

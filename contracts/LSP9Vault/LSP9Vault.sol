@@ -30,7 +30,9 @@ contract LSP9Vault is LSP9VaultCore {
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
      * @param newOwner the owner of the contract
      */
-    constructor(address newOwner) {
+    constructor(address newOwner) payable {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+
         OwnableUnset._setOwner(newOwner);
 
         // set key SupportedStandards:LSP9Vault

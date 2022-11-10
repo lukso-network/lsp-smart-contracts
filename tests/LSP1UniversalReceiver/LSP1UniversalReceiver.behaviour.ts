@@ -3,18 +3,24 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
-import { ILSP1UniversalReceiver, UniversalReceiverTester } from "../../types";
+import {
+  ILSP1UniversalReceiver,
+  UniversalProfile,
+  UniversalReceiverTester,
+  UniversalReceiverDelegateRevert__factory,
+  UniversalReceiverDelegateRevert,
+} from "../../types";
 
 // helpers
 import { abiCoder, LSP1_HOOK_PLACEHOLDER } from "../utils/helpers";
 
 // constants
-import { EventSignatures } from "../../constants";
+import { ERC725YKeys, EventSignatures } from "../../constants";
 
 export type LSP1TestContext = {
   accounts: SignerWithAddress[];
   // contract that implement the LSP1 - Universal Receiver interface
-  lsp1Implementation: ILSP1UniversalReceiver;
+  lsp1Implementation: UniversalProfile;
   // contract that call the `universalReceiver(...)` function (for testing)
   lsp1Checker: UniversalReceiverTester;
 };
@@ -114,6 +120,37 @@ export const shouldBehaveLikeLSP1 = (
        * using `lsp1Checker.callImplementationAndReturn(...)`
        *
        */
+    });
+
+    describe("to test typeId delegate feature", () => {
+      let revertableURD;
+      describe("when setting a revertable typeId", () => {
+        beforeEach(async () => {
+          revertableURD = await new UniversalReceiverDelegateRevert__factory(
+            context.accounts[1]
+          ).deploy();
+
+          await context.lsp1Implementation
+            .connect(context.accounts[0])
+            ["setData(bytes32,bytes)"](
+              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+                "0000" +
+                LSP1_HOOK_PLACEHOLDER.substr(2, 40),
+              revertableURD.address
+            );
+        });
+
+        it("should revert", async () => {
+          const caller = context.accounts[2];
+          const data = "0xaabbccdd";
+
+          await expect(
+            context.lsp1Implementation
+              .connect(caller)
+              .universalReceiver(LSP1_HOOK_PLACEHOLDER, data)
+          ).to.be.revertedWith("I Revert");
+        });
+      });
     });
   });
 

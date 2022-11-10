@@ -28,7 +28,7 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
         string memory symbol_,
         address newOwner_,
         bool isNonDivisible_
-    ) public virtual initializer {
+    ) external virtual initializer {
         LSP7MintableInitAbstract._initialize(name_, symbol_, newOwner_, isNonDivisible_);
     }
 }

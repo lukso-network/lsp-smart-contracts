@@ -10,7 +10,17 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder, getRandomString } from "../../utils/helpers";
+import {
+  encodeCompactBytesArray,
+  decodeCompactBytes,
+  getRandomString,
+} from "../../utils/helpers";
+import { BytesLike } from "ethers";
+
+export type TestCase = {
+  datakeyToSet: BytesLike;
+  allowedAccount: SignerWithAddress;
+};
 
 export const shouldBehaveLikeAllowedERC725YKeys = (
   buildContext: () => Promise<LSP6TestContext>
@@ -57,8 +67,8 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[customKey1]]),
-        abiCoder.encode(["bytes32[]"], [[customKey2, customKey3, customKey4]]),
+        encodeCompactBytesArray([customKey1]),
+        encodeCompactBytesArray([customKey2, customKey3, customKey4]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -70,7 +80,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetOneKey.address.substring(2)
         );
-        let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.have.lengthOf(1);
       });
@@ -80,7 +90,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetManyKeys.address.substring(2)
         );
-        let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.have.lengthOf(3);
       });
@@ -90,7 +100,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetOneKey.address.substring(2)
         );
-        let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.include(customKey1);
       });
@@ -100,7 +110,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             controllerCanSetManyKeys.address.substring(2)
         );
-        let [decodedResult] = abiCoder.decode(["bytes32[]"], result);
+        let decodedResult = decodeCompactBytes(result);
 
         expect(decodedResult).to.contain(customKey2);
         expect(decodedResult).to.contain(customKey3);
@@ -1044,8 +1054,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
     let controllerCanSetMappingKeys: SignerWithAddress;
 
     // all mapping keys starting with: SupportedStandards:...
-    const supportedStandardKey =
-      "0xeafec4d89fa9619884b6b8913562645500000000000000000000000000000000";
+    const supportedStandardKey = "0xeafec4d89fa9619884b6b89135626455";
 
     // SupportedStandards:LSPX
     const LSPXKey =
@@ -1076,7 +1085,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[supportedStandardKey]]),
+        encodeCompactBytesArray([supportedStandardKey]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1430,8 +1439,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
   describe("keyType: Array", () => {
     let controllerCanSetArrayKeys: SignerWithAddress;
 
-    const allowedArrayKey =
-      "0x868affce801d08a5948eebc349a5c8ff00000000000000000000000000000000";
+    const allowedArrayKey = "0x868affce801d08a5948eebc349a5c8ff";
 
     // keccak256("MyArray[]")
     const arrayKeyLength =
@@ -1465,7 +1473,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[allowedArrayKey]]),
+        encodeCompactBytesArray([allowedArrayKey]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -1662,7 +1670,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
     });
   });
 
-  describe("bytes32(0) (= zero key) as one of the allowed ERC725Y data key", () => {
+  describe("Testing bytes32(0) (= zero key) edge cases", () => {
     let controllerCanSetSomeKeys: SignerWithAddress;
 
     const customKey1 = ethers.utils.keccak256(
@@ -1675,36 +1683,377 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
     const zeroKey =
       "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-    before(async () => {
-      context = await buildContext();
+    const bytes31DynamicKeyPrefix =
+      "0x00000000000000000000000000000000000000000000000000000000000000";
 
-      controllerCanSetSomeKeys = context.accounts[1];
+    const bytes31DynamicKey =
+      "0x00000000000000000000000000000000000000000000000000000000000000ca";
 
-      const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          controllerCanSetSomeKeys.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
-          controllerCanSetSomeKeys.address.substring(2),
-      ];
+    const bytes20DynamicKeyPrefix =
+      "0x0000000000000000000000000000000000000000";
 
-      const permissionValues = [
-        ALL_PERMISSIONS,
-        PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[customKey1, customKey2, zeroKey]]),
-      ];
+    const bytes20DynamicKey =
+      "0x0000000000000000000000000000000000000000cafecafecafecafecafecafe";
 
-      await setupKeyManager(context, permissionKeys, permissionValues);
+    const bytes24DynamicKey =
+      "0x000000000000000000000000000000000000000000000000cafecafecafecafe";
+
+    const bytes19DynamicKey =
+      "0x00000000000000000000000000000000000000cafecafecafecafecafecafeca";
+
+    describe("When bytes32(0) key is part of the AllowedERC725YKeys", () => {
+      before(async () => {
+        context = await buildContext();
+
+        controllerCanSetSomeKeys = context.accounts[1];
+
+        const permissionKeys = [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            context.owner.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            controllerCanSetSomeKeys.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+            controllerCanSetSomeKeys.address.substring(2),
+        ];
+
+        const permissionValues = [
+          ALL_PERMISSIONS,
+          PERMISSIONS.SETDATA,
+          encodeCompactBytesArray([customKey1, customKey2, zeroKey]),
+        ];
+
+        await setupKeyManager(context, permissionKeys, permissionValues);
+      });
+
+      [{ allowedDataKey: customKey1 }, { allowedDataKey: customKey2 }].forEach(
+        (testCase) => {
+          it(`should pass when setting a data key listed in the allowed ERC725Y data keys: ${testCase.allowedDataKey}`, async () => {
+            const key = testCase.allowedDataKey;
+            const value = ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("some value for " + key)
+            );
+
+            const setDataPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
+
+            await context.keyManager
+              .connect(controllerCanSetSomeKeys)
+              .execute(setDataPayload);
+
+            const result = await context.universalProfile["getData(bytes32)"](
+              key
+            );
+            expect(result).to.equal(value);
+          });
+        }
+      );
+
+      [
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 1")
+          ),
+        },
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 2")
+          ),
+        },
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 3")
+          ),
+        },
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 4")
+          ),
+        },
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 5")
+          ),
+        },
+      ].forEach((testCase) => {
+        it(`should revert when trying to set any random data key (e.g: ${testCase.datakeyToSet})`, async () => {
+          const key = testCase.datakeyToSet;
+          const value = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + key)
+          );
+
+          const setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, value]
+            );
+
+          await expect(
+            context.keyManager
+              .connect(controllerCanSetSomeKeys)
+              .execute(setDataPayload)
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NotAllowedERC725YKey"
+            )
+            .withArgs(controllerCanSetSomeKeys.address, testCase.datakeyToSet);
+        });
+      });
+
+      it("should revert when trying to set bytes31(0) dynamic key, not in ALLowedERC725YKeys", async () => {
+        const key = bytes31DynamicKey;
+        const value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value for " + key)
+        );
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [key, value]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedERC725YKey"
+          )
+          .withArgs(controllerCanSetSomeKeys.address, key);
+      });
+
+      it("should revert when trying to set bytes32(0) data key, we do not allow changing the bytes32(0) data key", async () => {
+        const key =
+          "0x0000000000000000000000000000000000000000000000000000000000000000";
+        const value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value for " + key)
+        );
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [key, value]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "ZeroDataKeyNotAllowed"
+        );
+      });
+
+      it("should revert when trying to set an array of data keys including bytes32(0), we do not allow changing the bytes32(0) data key", async () => {
+        const keys = [customKey1, customKey2, zeroKey];
+        const values = [
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[0])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[1])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[2])
+          ),
+        ];
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [keys, values]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "ZeroDataKeyNotAllowed"
+        );
+      });
+
+      it("should revert when trying to set an array of data keys including a dynamic bytes31(0) data key, not in AllowedERC725YKeys", async () => {
+        const keys = [customKey1, customKey2, bytes31DynamicKey];
+        const values = [
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[0])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[1])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[2])
+          ),
+        ];
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [keys, values]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedERC725YKey"
+          )
+          .withArgs(controllerCanSetSomeKeys.address, keys[2]);
+      });
+
+      it("should revert when trying to set an array of data keys including a dynamic bytes20(0) data key, not in AllowedERC725YKeys", async () => {
+        const keys = [customKey1, customKey2, bytes20DynamicKey];
+        const values = [
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[0])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[1])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[2])
+          ),
+        ];
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [keys, values]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedERC725YKey"
+          )
+          .withArgs(controllerCanSetSomeKeys.address, keys[2]);
+      });
     });
 
-    [
-      { allowedDataKey: customKey1 },
-      { allowedDataKey: customKey2 },
-      { allowedDataKey: zeroKey },
-    ].forEach((testCase) => {
-      it(`should pass when setting a data key listed in the allowed ERC725Y data keys: ${testCase.allowedDataKey}`, async () => {
-        const key = testCase.allowedDataKey;
+    describe("When bytes32(0) key is not part of the AllowedERC725YKeys", () => {
+      before(async () => {
+        context = await buildContext();
+
+        controllerCanSetSomeKeys = context.accounts[1];
+
+        const permissionKeys = [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            context.owner.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            controllerCanSetSomeKeys.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+            controllerCanSetSomeKeys.address.substring(2),
+        ];
+
+        const permissionValues = [
+          ALL_PERMISSIONS,
+          PERMISSIONS.SETDATA,
+          encodeCompactBytesArray([
+            customKey1,
+            customKey2,
+            bytes31DynamicKeyPrefix,
+            bytes20DynamicKeyPrefix,
+          ]),
+        ];
+
+        await setupKeyManager(context, permissionKeys, permissionValues);
+      });
+
+      [{ allowedDataKey: customKey1 }, { allowedDataKey: customKey2 }].forEach(
+        (testCase) => {
+          it(`should pass when setting a data key listed in the allowed ERC725Y data keys: ${testCase.allowedDataKey}`, async () => {
+            const key = testCase.allowedDataKey;
+            const value = ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("some value for " + key)
+            );
+
+            const setDataPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
+
+            await context.keyManager
+              .connect(controllerCanSetSomeKeys)
+              .execute(setDataPayload);
+
+            const result = await context.universalProfile["getData(bytes32)"](
+              key
+            );
+            expect(result).to.equal(value);
+          });
+        }
+      );
+
+      [
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 1")
+          ),
+        },
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 2")
+          ),
+        },
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 3")
+          ),
+        },
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 4")
+          ),
+        },
+        {
+          datakeyToSet: ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("Some random data key 5")
+          ),
+        },
+      ].forEach((testCase) => {
+        it(`should revert when trying to set any random data key (e.g: ${testCase.datakeyToSet})`, async () => {
+          const key = testCase.datakeyToSet;
+          const value = ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + key)
+          );
+
+          const setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, value]
+            );
+
+          await expect(
+            context.keyManager
+              .connect(controllerCanSetSomeKeys)
+              .execute(setDataPayload)
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "NotAllowedERC725YKey"
+            )
+            .withArgs(controllerCanSetSomeKeys.address, testCase.datakeyToSet);
+        });
+      });
+
+      it("should allow setting up a key with a prefix of 31 null bytes, as bytes31(0) is part of AllowedERC725YKeys", async () => {
+        const key = bytes31DynamicKey;
         const value = ethers.utils.hexlify(
           ethers.utils.toUtf8Bytes("some value for " + key)
         );
@@ -1722,37 +2071,9 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
         const result = await context.universalProfile["getData(bytes32)"](key);
         expect(result).to.equal(value);
       });
-    });
 
-    [
-      {
-        datakeyToSet: ethers.utils.keccak256(
-          ethers.utils.toUtf8Bytes("Some random data key 1")
-        ),
-      },
-      {
-        datakeyToSet: ethers.utils.keccak256(
-          ethers.utils.toUtf8Bytes("Some random data key 2")
-        ),
-      },
-      {
-        datakeyToSet: ethers.utils.keccak256(
-          ethers.utils.toUtf8Bytes("Some random data key 3")
-        ),
-      },
-      {
-        datakeyToSet: ethers.utils.keccak256(
-          ethers.utils.toUtf8Bytes("Some random data key 4")
-        ),
-      },
-      {
-        datakeyToSet: ethers.utils.keccak256(
-          ethers.utils.toUtf8Bytes("Some random data key 5")
-        ),
-      },
-    ].forEach((testCase) => {
-      it(`should pass when trying to set any random data key (e.g: ${testCase.datakeyToSet})`, async () => {
-        const key = testCase.datakeyToSet;
+      it("should allow setting up a key with a prefix of 20 null bytes, as bytes20(0) is part of AllowedERC725YKeys", async () => {
+        const key = bytes20DynamicKey;
         const value = ethers.utils.hexlify(
           ethers.utils.toUtf8Bytes("some value for " + key)
         );
@@ -1763,12 +2084,125 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
             [key, value]
           );
 
-        await context.keyManager
+        const tx = await context.keyManager
           .connect(controllerCanSetSomeKeys)
           .execute(setDataPayload);
 
         const result = await context.universalProfile["getData(bytes32)"](key);
         expect(result).to.equal(value);
+      });
+
+      it("should revert when trying to set bytes32(0) data key, we do not allow changing the bytes32(0) data key", async () => {
+        const key = zeroKey;
+        const value = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("some value for " + key)
+        );
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [key, value]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "ZeroDataKeyNotAllowed"
+        );
+      });
+
+      it("should revert when trying to set an array of data keys including bytes32(0), we do not allow changing the bytes32(0) data key", async () => {
+        const keys = [customKey1, customKey2, zeroKey];
+        const values = [
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[0])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[1])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[2])
+          ),
+        ];
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [keys, values]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        ).to.revertedWithCustomError(
+          context.keyManager,
+          "ZeroDataKeyNotAllowed"
+        );
+      });
+
+      it("should pass when trying to set an array of data keys including a dynamic bytes24(0) data key, because bytes20(0) dynamic data ke is in AllowedERC725YKeys", async () => {
+        const keys = [customKey1, customKey2, bytes24DynamicKey];
+        const values = [
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[0])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[1])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[2])
+          ),
+        ];
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [keys, values]
+          );
+
+        await context.keyManager
+          .connect(controllerCanSetSomeKeys)
+          .execute(setDataPayload);
+
+        expect(
+          await context.universalProfile["getData(bytes32[])"](keys)
+        ).to.deep.equal(values);
+      });
+
+      it("should revert when trying to set an array of data keys including a dynamic bytes19(0) data key, not in AllowedERC725YKeys", async () => {
+        const keys = [customKey1, customKey2, bytes19DynamicKey];
+        const values = [
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[0])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[1])
+          ),
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("some value for " + keys[2])
+          ),
+        ];
+
+        const setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [keys, values]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(controllerCanSetSomeKeys)
+            .execute(setDataPayload)
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManager,
+            "NotAllowedERC725YKey"
+          )
+          .withArgs(controllerCanSetSomeKeys.address, keys[2]);
       });
     });
   });
@@ -1776,8 +2210,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
   describe("one single byte as an allowed data key (e.g: 0xaa0000...0000", () => {
     let controllerCanSetSomeKeys: SignerWithAddress;
 
-    const allowedDataKey =
-      "0xaa00000000000000000000000000000000000000000000000000000000000000";
+    const allowedDataKey = "0xaa";
 
     before(async () => {
       context = await buildContext();
@@ -1796,7 +2229,7 @@ export const shouldBehaveLikeAllowedERC725YKeys = (
       const permissionValues = [
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
-        abiCoder.encode(["bytes32[]"], [[allowedDataKey]]),
+        encodeCompactBytesArray([allowedDataKey]),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);

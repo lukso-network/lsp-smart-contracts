@@ -5,8 +5,6 @@ pragma solidity ^0.8.0;
  * @dev sample contract to test interaction + state changes:
  *      - directly from Universal Profile
  *      - via KeyManager > UniversalProfile
- *
- * also used to test permissions ALLOWEDADDRESS and ALLOWEDSTANDARDS
  */
 contract TargetContract {
     /* solhint-disable */
@@ -28,6 +26,11 @@ contract TargetContract {
     }
 
     function setName(string memory _name) public {
+        name = _name;
+    }
+
+    function setNamePayable(string memory _name) public payable {
+        require(msg.value >= 50, "Not enough value provided");
         name = _name;
     }
 

@@ -6,6 +6,7 @@ import { INTERFACE_IDS } from "../../constants";
 import {
   shouldBehaveLikePermissionChangeOwner,
   shouldBehaveLikePermissionChangeOrAddPermissions,
+  shouldBehaveLikePermissionChangeOrAddURD,
   shouldBehaveLikePermissionSetData,
   shouldBehaveLikePermissionCall,
   shouldBehaveLikePermissionStaticCall,
@@ -18,14 +19,14 @@ import {
   shouldBehaveLikeAllowedStandards,
   shouldBehaveLikeAllowedERC725YKeys,
   shouldBehaveLikeMultiChannelNonce,
+  shouldBehaveLikeExecuteRelayCall,
   testSecurityScenarios,
   otherTestScenarios,
 } from "./tests";
 
 import {
-  testAllowedAddressesInternals,
+  testAllowedCallsInternals,
   testAllowedERC725YKeysInternals,
-  testAllowedFunctionsInternals,
   testReadingPermissionsInternals,
 } from "./internals";
 
@@ -38,6 +39,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("CHANGE / ADD permissions", () => {
     shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
+  });
+
+  describe("CHANGE / ADD UniversalReceiverDelegate", () => {
+    shouldBehaveLikePermissionChangeOrAddURD(buildContext);
   });
 
   describe("SETDATA", () => {
@@ -86,6 +91,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("Multi Channel nonces", () => {
     shouldBehaveLikeMultiChannelNonce(buildContext);
+  });
+
+  describe("Execute Relay Call", () => {
+    shouldBehaveLikeExecuteRelayCall(buildContext);
   });
 
   describe("miscellaneous", () => {
@@ -138,8 +147,7 @@ export const shouldInitializeLikeLSP6 = (
 export const testLSP6InternalFunctions = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {
-  testAllowedAddressesInternals(buildContext);
-  testAllowedFunctionsInternals(buildContext);
+  testAllowedCallsInternals(buildContext);
   testAllowedERC725YKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
 };

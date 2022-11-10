@@ -137,12 +137,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function isOperatorFor(address operator, bytes32 tokenId)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function isOperatorFor(address operator, bytes32 tokenId) public view virtual returns (bool) {
         _existsOrError(tokenId);
 
         return _isOperatorOrOwner(operator, tokenId);
@@ -151,17 +146,16 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function getOperatorsOf(bytes32 tokenId)
-        public
-        view
-        virtual
-        returns (address[] memory)
-    {
+    function getOperatorsOf(bytes32 tokenId) public view virtual returns (address[] memory) {
         _existsOrError(tokenId);
 
         return _operators[tokenId].values();
     }
 
+    /**
+     * @dev verifies if the `caller` is operator or owner for the `tokenId`
+     * @return true if `caller` is either operator or owner
+     */
     function _isOperatorOrOwner(address caller, bytes32 tokenId)
         internal
         view
@@ -201,20 +195,27 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         address[] memory from,
         address[] memory to,
         bytes32[] memory tokenId,
-        bool force,
+        bool[] memory force,
         bytes[] memory data
     ) public virtual {
+        uint256 fromLength = from.length;
         if (
-            from.length != to.length || from.length != tokenId.length || from.length != data.length
+            fromLength != to.length ||
+            fromLength != tokenId.length ||
+            fromLength != force.length ||
+            fromLength != data.length
         ) {
             revert LSP8InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < from.length; i = GasLib.uncheckedIncrement(i)) {
-            transfer(from[i], to[i], tokenId[i], force, data[i]);
+        for (uint256 i = 0; i < fromLength; i = GasLib.uncheckedIncrement(i)) {
+            transfer(from[i], to[i], tokenId[i], force[i], data[i]);
         }
     }
 
+    /**
+     * @dev removes `operator` from the list of operators for the `tokenId`
+     */
     function _revokeOperator(
         address operator,
         address tokenOwner,
@@ -225,6 +226,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         emit RevokedOperator(operator, tokenOwner, tokenId);
     }
 
+    /**
+     * @dev clear all the operators for the `tokenId`
+     */
     function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
         // here is a good example of why having multiple operators will be expensive.. we
         // need to clear them on token transfer
