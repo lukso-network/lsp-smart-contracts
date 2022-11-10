@@ -278,7 +278,7 @@ export const testSecurityScenarios = (
     });
   });
 
-  describe.only("when reentering execute function", () => {
+  describe("when reentering execute function", () => {
     it("should revert if reentered from a random address", async () => {
       let transferPayload =
         context.universalProfile.interface.encodeFunctionData(
