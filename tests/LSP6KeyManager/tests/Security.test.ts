@@ -32,6 +32,7 @@ import {
   EMPTY_PAYLOAD,
   LOCAL_PRIVATE_KEYS,
   combineAllowedCalls,
+  encodeCompactBytesArray,
 } from "../../utils/helpers";
 
 export const testSecurityScenarios = (
@@ -277,15 +278,18 @@ export const testSecurityScenarios = (
     });
   });
 
-  describe("when reentering execute function", () => {
+  describe.only("when reentering execute function", () => {
     it("should revert if reentered from a random address", async () => {
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          maliciousContract.address,
-          ethers.utils.parseEther("1"),
-          EMPTY_PAYLOAD,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            maliciousContract.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]
+        );
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
         "execute",
@@ -298,10 +302,9 @@ export const testSecurityScenarios = (
         .connect(context.owner)
         .execute(transferPayload);
 
-      await expect(executeTransferPayload).to.be.revertedWithCustomError(
-        context.keyManager,
-        "ReentrantCall"
-      );
+      await expect(executeTransferPayload)
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(maliciousContract.address, "REENTRANCY");
     });
 
     it("should pass when reentered by URD", async () => {
@@ -317,20 +320,32 @@ export const testSecurityScenarios = (
               ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
                 URDDummy.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                URDDummy.address.substring(2),
             ],
-            [URDDummy.address, ALL_PERMISSIONS],
+            [
+              URDDummy.address,
+              combinePermissions(
+                PERMISSIONS.TRANSFERVALUE,
+                PERMISSIONS.REENTRANCY
+              ),
+              "0x1cffffffff" + URDDummy.address.substring(2) + "ffffffff",
+            ],
           ]
         );
 
       await context.keyManager.connect(context.owner).execute(setDataPayload);
 
       let transferPayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          URDDummy.address,
-          ethers.utils.parseEther("1"),
-          EMPTY_PAYLOAD,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            URDDummy.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]
+        );
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
         "execute",
@@ -369,6 +384,13 @@ export const testSecurityScenarios = (
           context.owner
         ).deploy();
 
+      const randomHardcodedKey = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("some random data key")
+      );
+      const randomHardcodedValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("some random text for the data value")
+      );
+
       const setDataPayload =
         context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32[],bytes[])",
@@ -377,8 +399,14 @@ export const testSecurityScenarios = (
               ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
                 universalReceiverDelegateDataUpdater.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+                universalReceiverDelegateDataUpdater.address.substring(2),
             ],
-            [universalReceiverDelegateDataUpdater.address, ALL_PERMISSIONS],
+            [
+              universalReceiverDelegateDataUpdater.address,
+              combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.REENTRANCY),
+              encodeCompactBytesArray([randomHardcodedKey]),
+            ],
           ]
         );
 
@@ -390,27 +418,23 @@ export const testSecurityScenarios = (
           [
             context.universalProfile.address,
             0,
-            LSP1_TYPE_IDS.LSP7_TOKENSENDER,
-            "0x",
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            "0xcafecafecafecafe",
           ]
         );
 
       const executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          universalReceiverDelegateDataUpdater.address,
-          ethers.utils.parseEther("0"),
-          universalReceiverDelegatePayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            universalReceiverDelegateDataUpdater.address,
+            ethers.utils.parseEther("0"),
+            universalReceiverDelegatePayload,
+          ]
+        );
 
       await context.keyManager.connect(context.owner).execute(executePayload);
-
-      const randomHardcodedKey = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes("some random data key")
-      );
-      const randomHardcodedValue = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes("some random text for the data value")
-      );
 
       expect(
         await context.universalProfile["getData(bytes32)"](randomHardcodedKey)
