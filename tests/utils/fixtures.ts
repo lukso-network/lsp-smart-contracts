@@ -10,7 +10,7 @@ import {
 import { PERMISSIONS, ERC725YKeys, ALL_PERMISSIONS } from "../../constants";
 
 // helpers
-import { ARRAY_LENGTH } from "../utils/helpers";
+import { ARRAY_LENGTH, combinePermissions } from "../utils/helpers";
 import { LSP6TestContext, LSP6InternalsTestContext } from "./context";
 
 /**
@@ -137,7 +137,7 @@ export async function setupProfileWithKeyManagerWithURD(
         EOA.address,
         lsp1universalReceiverDelegateUP.address,
         ALL_PERMISSIONS,
-        ethers.utils.hexZeroPad(PERMISSIONS.SUPER_SETDATA, 32),
+        combinePermissions(PERMISSIONS.SUPER_SETDATA, PERMISSIONS.REENTRANCY),
         lsp1universalReceiverDelegateUP.address,
       ]
     );
