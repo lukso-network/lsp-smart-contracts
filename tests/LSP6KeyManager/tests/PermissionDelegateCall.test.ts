@@ -92,7 +92,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
       await expect(
-        context.keyManager.connect(context.owner).execute(executePayload)
+        context.keyManager.connect(context.owner)["execute(bytes)"](executePayload)
       ).to.be.revertedWith(
         "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
@@ -132,7 +132,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       await expect(
         context.keyManager
           .connect(addressCanDelegateCall)
-          .execute(executePayload)
+          ["execute(bytes)"](executePayload)
       ).to.be.revertedWith(
         "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
@@ -172,7 +172,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       await expect(
         context.keyManager
           .connect(addressCannotDelegateCall)
-          .execute(executePayload)
+          ["execute(bytes)"](executePayload)
       ).to.be.revertedWith(
         "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
@@ -277,7 +277,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
               );
 
             await expect(
-              context.keyManager.connect(caller).execute(executePayload)
+              context.keyManager.connect(caller)["execute(bytes)"](executePayload)
             ).to.be.revertedWith(
               "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
             );
@@ -321,7 +321,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(executePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
         ).to.be.revertedWith(
           "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
         );
@@ -359,7 +359,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(executePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
         ).to.be.revertedWith(
           "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
         );

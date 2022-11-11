@@ -88,7 +88,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       let result = await context.keyManager
         .connect(context.owner)
-        .callStatic.execute(executePayload);
+        .callStatic["execute(bytes)"](executePayload);
 
       let [decodedResult] = abiCoder.decode(["string"], result);
       expect(decodedResult).to.equal(expectedName);
@@ -115,7 +115,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       let result = await context.keyManager
         .connect(addressCanMakeStaticCall)
-        .callStatic.execute(executePayload);
+        .callStatic["execute(bytes)"](executePayload);
 
       let [decodedResult] = abiCoder.decode(["string"], result);
       expect(decodedResult).to.equal(expectedName);
@@ -143,7 +143,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.keyManager
           .connect(addressCanMakeStaticCall)
-          .execute(executePayload)
+          ["execute(bytes)"](executePayload)
       ).to.be.reverted;
 
       // ensure state hasn't changed.
@@ -171,7 +171,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.keyManager
           .connect(addressCanMakeStaticCall)
-          .execute(executePayload)
+          ["execute(bytes)"](executePayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(addressCanMakeStaticCall.address, "CALL");
@@ -197,7 +197,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.keyManager
           .connect(addressCanMakeStaticCallNoAllowedCalls)
-          .callStatic.execute(executePayload)
+          .callStatic["execute(bytes)"](executePayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
         .withArgs(addressCanMakeStaticCallNoAllowedCalls.address);
@@ -223,7 +223,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       await expect(
         context.keyManager
           .connect(addressCannotMakeStaticCall)
-          .execute(executePayload)
+          ["execute(bytes)"](executePayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(addressCannotMakeStaticCall.address, "STATICCALL");
@@ -281,7 +281,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         ]
       );
 
-      await expect(context.keyManager.connect(caller).execute(payload))
+      await expect(context.keyManager.connect(caller)["execute(bytes)"](payload))
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
           caller.address,
@@ -308,7 +308,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.keyManager
           .connect(caller)
-          .callStatic.execute(payload);
+          .callStatic["execute(bytes)"](payload);
 
         const [decodedResult] = abiCoder.decode(["string"], result);
         expect(decodedResult).to.equal(name);
@@ -331,7 +331,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.keyManager
           .connect(caller)
-          .callStatic.execute(payload);
+          .callStatic["execute(bytes)"](payload);
 
         const [decodedResult] = abiCoder.decode(["uint256"], result);
         expect(decodedResult).to.equal(number);
@@ -351,7 +351,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic.execute(payload)
+          context.keyManager.connect(caller).callStatic["execute(bytes)"](payload)
         ).to.be.reverted;
       });
 
@@ -369,7 +369,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic.execute(payload)
+          context.keyManager.connect(caller).callStatic["execute(bytes)"](payload)
         ).to.be.reverted;
       });
     });
@@ -392,7 +392,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.keyManager
           .connect(caller)
-          .callStatic.execute(payload);
+          .callStatic["execute(bytes)"](payload);
 
         const [decodedResult] = abiCoder.decode(["string"], result);
         expect(decodedResult).to.equal(name);
@@ -415,7 +415,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.keyManager
           .connect(caller)
-          .callStatic.execute(payload);
+          .callStatic["execute(bytes)"](payload);
 
         const [decodedResult] = abiCoder.decode(["uint256"], result);
         expect(decodedResult).to.equal(number);
@@ -435,7 +435,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic.execute(payload)
+          context.keyManager.connect(caller).callStatic["execute(bytes)"](payload)
         ).to.be.reverted;
       });
 
@@ -453,7 +453,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic.execute(payload)
+          context.keyManager.connect(caller).callStatic["execute(bytes)"](payload)
         ).to.be.reverted;
       });
     });
@@ -516,7 +516,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
           const result = await context.keyManager
             .connect(caller)
-            .callStatic.execute(payload);
+            .callStatic["execute(bytes)"](payload);
 
           const [decodedResult] = abiCoder.decode(["string"], result);
           expect(decodedResult).to.equal(name);

@@ -104,7 +104,7 @@ export const testSecurityScenarios = (
     await expect(
       context.keyManager
         .connect(addressWithNoPermissions)
-        .execute(executePayload)
+        ["execute(bytes)"](executePayload)
     )
       .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
       .withArgs(addressWithNoPermissions.address);
@@ -115,7 +115,7 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      await expect(context.keyManager.connect(context.owner).execute(payload))
+      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
         .to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
@@ -148,7 +148,7 @@ export const testSecurityScenarios = (
       await expect(
         context.keyManager
           .connect(context.owner)
-          .executeRelayCall(signature, nonce, payload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, payload, {
             value: valueToSend,
           })
       )
@@ -177,7 +177,7 @@ export const testSecurityScenarios = (
         );
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
-        "execute",
+        "execute(bytes)",
         [transferPayload]
       );
       // load the malicious payload, that will be executed in the fallback function
@@ -192,7 +192,7 @@ export const testSecurityScenarios = (
       );
 
       // send LYX to malicious contract
-      await context.keyManager.connect(context.owner).execute(transferPayload);
+      await context.keyManager.connect(context.owner)["execute(bytes)"](transferPayload);
       // at this point, the malicious contract fallback function
       // try to drain funds by re-entering the call
 
@@ -254,7 +254,7 @@ export const testSecurityScenarios = (
         // first call
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonce, executeRelayCallPayload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, executeRelayCallPayload, {
             value: valueToSend,
           });
 
@@ -262,7 +262,7 @@ export const testSecurityScenarios = (
         await expect(
           context.keyManager
             .connect(relayer)
-            .executeRelayCall(signature, nonce, executeRelayCallPayload)
+            ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, executeRelayCallPayload)
         )
           .to.be.revertedWithCustomError(
             context.keyManager,

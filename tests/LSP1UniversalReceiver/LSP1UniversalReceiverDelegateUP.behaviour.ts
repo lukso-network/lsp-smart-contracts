@@ -193,7 +193,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenA.address, abi)
             );
         });
@@ -221,7 +221,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenB.address, abi)
             );
         });
@@ -250,7 +250,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenB.address, abi)
             );
         });
@@ -279,7 +279,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenC.address, abi)
             );
         });
@@ -313,7 +313,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           await expect(
             context.lsp6KeyManager1
               .connect(context.accounts.owner1)
-              .execute(
+              ["execute(bytes)"](
                 callPayload(context.universalProfile1, lsp7TokenA.address, abi)
               )
           )
@@ -346,7 +346,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenC.address, abi)
             );
         });
@@ -377,7 +377,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenA.address, abi)
             );
         });
@@ -420,7 +420,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenB.address, abi)
             );
         });
@@ -447,7 +447,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenB.address, abi)
             );
         });
@@ -566,7 +566,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenA.address, abi)
             );
         });
@@ -623,7 +623,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenB.address, abi)
             );
         });
@@ -665,7 +665,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenB.address, abi)
             );
         });
@@ -707,7 +707,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenB.address, abi)
             );
         });
@@ -752,7 +752,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp7TokenC.address, abi)
             );
         });
@@ -797,7 +797,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile2, lsp7TokenB.address, abi)
             );
         });
@@ -826,7 +826,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.lsp6KeyManager1
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(bytes)"](
             callPayload(context.universalProfile1, lsp7TokenB.address, abi1)
           );
 
@@ -838,7 +838,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.lsp6KeyManager2
           .connect(context.accounts.owner2)
-          .execute(
+          ["execute(bytes)"](
             callPayload(context.universalProfile2, lsp7TokenB.address, abi2)
           );
 
@@ -850,7 +850,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.lsp6KeyManager2
           .connect(context.accounts.owner2)
-          .execute(
+          ["execute(bytes)"](
             callPayload(context.universalProfile2, lsp7TokenA.address, abi3)
           );
 
@@ -862,7 +862,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.lsp6KeyManager2
           .connect(context.accounts.owner2)
-          .execute(
+          ["execute(bytes)"](
             callPayload(context.universalProfile2, lsp7TokenC.address, abi4)
           );
       });
@@ -909,7 +909,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenA.address, abi)
             );
         });
@@ -939,7 +939,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenB.address, abi)
             );
         });
@@ -969,7 +969,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenB.address, abi)
             );
         });
@@ -999,7 +999,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenC.address, abi)
             );
         });
@@ -1029,7 +1029,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenC.address, abi)
             );
         });
@@ -1058,7 +1058,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenA.address, abi)
             );
         });
@@ -1102,7 +1102,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenB.address, abi)
             );
         });
@@ -1130,7 +1130,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenB.address, abi)
             );
         });
@@ -1228,7 +1228,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenA.address, abi)
             );
         });
@@ -1289,7 +1289,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenB.address, abi)
             );
         });
@@ -1335,7 +1335,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenB.address, abi)
             );
         });
@@ -1381,7 +1381,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenB.address, abi)
             );
         });
@@ -1428,7 +1428,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp8TokenC.address, abi)
             );
         });
@@ -1475,7 +1475,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile2, lsp8TokenB.address, abi)
             );
         });
@@ -1534,7 +1534,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
         });
 
         it("should register lsp10key: arrayLength 1, index 0, VaultA address in UP1", async () => {
@@ -1569,7 +1569,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
         });
 
         it("should register lsp10key: arrayLength 1, index 0, VaultA address in UP1", async () => {
@@ -1604,7 +1604,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
         });
 
         it("should register lsp10key: arrayLength 1, index 0, VaultA address in UP1", async () => {
@@ -1631,7 +1631,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp9VaultA.address, abi)
             );
 
@@ -1648,7 +1648,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
         });
 
         it("should pop and swap VaultA with VaultC, lsp10keys (VaultC should become first vault) : arrayLength 2, index = 0, VaultC address in UP1", async () => {
@@ -1685,7 +1685,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp9VaultB.address, abi)
             );
 
@@ -1702,7 +1702,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
         });
 
         it("should update lsp10keys (no pop and swap as VaultB has the last index): arrayLength 1, no map, no VaultB address in UP1", async () => {
@@ -1741,7 +1741,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile1, lsp9VaultC.address, abi)
             );
 
@@ -1758,7 +1758,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
         });
 
         it("should remove all lsp10keys : arrayLength 0, no map, no VaultC address in UP1", async () => {
@@ -1797,7 +1797,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile2, lsp9VaultB.address, abi)
             );
 
@@ -1814,7 +1814,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager1
             .connect(context.accounts.owner1)
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
         });
         it("should register lsp10key (UP1 able to re-write) : arrayLength 1, index 0, VaultB address in UP1", async () => {
           const [indexInMap, interfaceId, arrayLength, elementAddress] =
@@ -1840,7 +1840,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.lsp6KeyManager2
             .connect(context.accounts.owner2)
-            .execute(
+            ["execute(bytes)"](
               callPayload(context.universalProfile2, lsp9VaultA.address, abi)
             );
 
