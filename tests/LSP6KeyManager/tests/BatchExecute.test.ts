@@ -12,8 +12,8 @@ import {
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import { abiCoder, provider } from "../../utils/helpers";
-import { LSP7Mintable, LSP7Mintable__factory } from "../../../types";
+import { abiCoder } from "../../utils/helpers";
+import { LSP7Mintable, LSP7MintableInit__factory, LSP7Mintable__factory } from "../../../types";
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: () => Promise<LSP6TestContext>
@@ -197,11 +197,76 @@ export const shouldBehaveLikeBatchExecute = (
         expect(await rLyxToken.balanceOf(recipient)).to.equal(rLyxAmount);
       });
 
-      it("should 1) deploy a LSP7 token, 2) initialize it, and 3) set the token metadata", async () => {
+      it("should 1) deploy a LSP7 Token (as minimal proxy), 2) initialize it, and 3) set the token metadata", async () => {
+        const lsp7MintableBase = await new LSP7MintableInit__factory(context.accounts[0]).deploy()
 
+        const lsp7TokenProxyBytecode =
+          String("0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3").replace(
+            "bebebebebebebebebebebebebebebebebebebebe",
+            lsp7MintableBase.address.substring(2)
+          );
+
+        const lsp7ProxyDeploymentPayload = context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
+          OPERATION_TYPES.CREATE,
+          ethers.constants.AddressZero,
+          0,
+          lsp7TokenProxyBytecode
+        ]);
+
+        const futureTokenAddress = await context.keyManager.connect(context.owner).callStatic["execute(bytes)"](lsp7ProxyDeploymentPayload)
+        let futureTokenInstance = await new LSP7MintableInit__factory(context.accounts[0]).attach(futureTokenAddress)
+
+        const lsp7InitializePayload = futureTokenInstance.interface.encodeFunctionData("initialize", [
+          "My LSP7 UP Token", "UPLSP7", context.universalProfile.address, false
+        ])
+
+        // use interface of an existing token contract
+        const initializePayload = context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
+          OPERATION_TYPES.CALL,
+          futureTokenAddress,
+          0,
+          lsp7InitializePayload
+        ])
+
+        const tokenMetadataValue = "0x6f357c6aba20e595da5f38e6c75326802bbf871b4d98b5bfab27812a5456139e3ec087f4697066733a2f2f516d6659696d3146647a645a6747314a50484c46785a3964575a7761616f68596e4b626174797871553144797869"
+
+        const lsp7SetDataPayload = futureTokenInstance.interface.encodeFunctionData("setData(bytes32,bytes)", [
+          ERC725YKeys.LSP4["LSP4Metadata"],
+          tokenMetadataValue
+        ])
+        const setTokenMetadataPayload = context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
+          OPERATION_TYPES.CALL,
+          futureTokenAddress,
+          0,
+          lsp7SetDataPayload
+        ])
+
+        const tx = await context.keyManager.connect(context.owner)["execute(bytes[])"]([
+          // Step 1 - deploy Token contract as proxy
+          lsp7ProxyDeploymentPayload, 
+          // Step 2 - initialize Token contract
+          initializePayload,
+          // Step 3 - set Token Metadata
+          setTokenMetadataPayload
+        ])
+
+        // CHECK that token contract has been deployed
+        expect(tx).to.emit(context.universalProfile, "ContractCreated").withArgs(OPERATION_TYPES.CREATE, futureTokenAddress, 0)
+        
+        // CHECK initialize parameters have been set correctly
+        const nameResult = await futureTokenInstance["getData(bytes32)"](ERC725YKeys.LSP4["LSP4TokenName"])
+        const symbolResult = await futureTokenInstance["getData(bytes32)"](ERC725YKeys.LSP4["LSP4TokenSymbol"])
+
+        expect(ethers.utils.toUtf8String(nameResult)).to.equal("My LSP7 UP Token")
+        expect(ethers.utils.toUtf8String(symbolResult)).to.equal("UPLSP7")
+        expect(await futureTokenInstance.owner()).to.equal(context.universalProfile.address)
+
+        // CHECK LSP4 token metadata has been set
+        expect(await futureTokenInstance["getData(bytes32)"](ERC725YKeys.LSP4["LSP4Metadata"])).to.equal(tokenMetadataValue)
       })
 
-      it.only("should 1) deploy a LSP7 token, 2) mint some tokens, 3) `transferBatch(...)` to multiple recipients", async () => {
+      it("should 1) deploy a LSP7 token, 2) mint some tokens, 3) `transferBatch(...)` to multiple recipients", async () => {
+        // step 1 - deploy token contract
         const lsp7ConstructorArguments = abiCoder.encode(
           ["string", "string", "address", "bool"],
           [
@@ -224,17 +289,67 @@ export const shouldBehaveLikeBatchExecute = (
             ]
           );
 
-          // use the interface
-          const lsp7MintingPayload = lyxDaiToken.interface.encodeFunctionData(
+          // we simulate deploying the token contract to know the future address of the LSP7 Token contract,
+          // so that we can then pass the token address to the `to` parameter of ERC725X.execute(...)
+          // in the 2nd and 3rd payloads of the LSP6 batch `execute(bytes[])`
+          const futureTokenAddress = await context.keyManager.connect(context.owner).callStatic["execute(bytes)"](lsp7DeploymentPayload)
+          console.log("futureTokenAddress: ", futureTokenAddress)
 
-        const payloads = [lsp7DeploymentPayload];
+          // step 2 - mint some tokens
+          // use the interface of an existing token for encoding the function call
+          const lsp7MintingPayload = lyxDaiToken.interface.encodeFunctionData("mint", [
+            context.universalProfile.address,
+            3_000,
+            false,
+            "0x"
+          ])
 
-        const results = await context.keyManager
-          .connect(context.owner)
-          .callStatic["execute(bytes[])"](payloads);
+          // step 3 - transfer batch to multiple addresses
+          const sender = context.universalProfile.address;
+          const recipients = [context.accounts[1].address, context.accounts[2].address, context.accounts[3].address]
+          const amounts = [1_000, 1_000, 1_000];
 
-        console.log("results", results);
+          const lsp7TransferBatchPayload = lyxDaiToken.interface.encodeFunctionData("transferBatch", [
+            [sender, sender, sender],  // address[] memory from,
+            recipients,  // address[] memory to,
+            amounts,  // uint256[] memory amount,
+            [true, true, true],  // bool[] memory force,
+            ["0x", "0x", "0x"]  // bytes[] memory data
+          ])
+
+        const payloads = [
+          // step 1 - deploy token contract
+          lsp7DeploymentPayload,
+          // step 2 - mint some tokens for the UP
+          context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
+            OPERATION_TYPES.CALL,
+            futureTokenAddress,
+            0,
+            lsp7MintingPayload
+          ]),
+          // step 3 - `transferBatch(...)` the tokens to multiple addresses
+          context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
+            OPERATION_TYPES.CALL,
+            futureTokenAddress,
+            0,
+            lsp7TransferBatchPayload
+          ]),
+        ];
+
+        const tx = await context.keyManager.connect(context.owner)["execute(bytes[])"](payloads);
+
+        // CHECK for `ContractCreated` event
+        expect(tx).to.emit(context.universalProfile, "ContractCreated").withArgs(OPERATION_TYPES.CREATE, ethers.utils.getAddress(futureTokenAddress), 0)
+
+        // CHECK for tokens balances of recipients
+        const createdTokenContract = await new LSP7Mintable__factory(context.accounts[0]).attach(futureTokenAddress)
+        expect([
+          await createdTokenContract.balanceOf(recipients[0]),
+          await createdTokenContract.balanceOf(recipients[1]),
+          await createdTokenContract.balanceOf(recipients[2]),
+        ]).to.deep.equal(amounts)
       });
+      
     });
   });
 };
