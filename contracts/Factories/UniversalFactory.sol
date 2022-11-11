@@ -49,7 +49,6 @@ contract UniversalFactory {
     );
 
     using BytesLib for bytes;
-    using Address for bool;
 
     // The bytecode hash of EIP-1167 Minimal Proxy
     bytes32 private constant _MINIMAL_PROXY_BYTECODE_HASH_PT1 =
@@ -128,7 +127,11 @@ contract UniversalFactory {
             (bool success, bytes memory returnData) = contractCreated.call{value: msg.value}(
                 initializeCallData
             );
-            success.verifyCallResult(returnData, "UF: could not initialize the created contract");
+            Address.verifyCallResult(
+                success,
+                returnData,
+                "UF: could not initialize the created contract"
+            );
         }
     }
 
@@ -160,7 +163,11 @@ contract UniversalFactory {
             (bool success, bytes memory returnData) = proxy.call{value: msg.value}(
                 initializeCallData
             );
-            success.verifyCallResult(returnData, "UF: could not initialize the created contract");
+            Address.verifyCallResult(
+                success,
+                returnData,
+                "UF: could not initialize the created contract"
+            );
         }
     }
 
