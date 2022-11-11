@@ -34,6 +34,8 @@ error SendingValueNotAllowed();
  * More information: https://weka.medium.com/how-to-send-ether-to-11-440-people-187e332566b7
  */
 contract UniversalFactory {
+    using BytesLib for bytes;
+    
     /**
      * @dev Emitted whenever a contract is created
      * @param contractCreated The address of the contract created
@@ -47,8 +49,6 @@ contract UniversalFactory {
         bool indexed clone,
         bytes initialCalldata
     );
-
-    using BytesLib for bytes;
 
     // The bytecode hash of EIP-1167 Minimal Proxy
     bytes32 private constant _MINIMAL_PROXY_BYTECODE_HASH_PT1 =
