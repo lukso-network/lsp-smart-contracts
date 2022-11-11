@@ -115,6 +115,19 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
+    function execute(bytes[] calldata payloads) public payable returns (bytes[] memory) {
+        bytes[] memory results = new bytes[](payloads.length);
+
+        for (uint256 ii = 0; ii <= payloads.length - 1; ii++) {
+            results[ii] = execute(payloads[ii]);
+        }
+
+        return results;
+    }
+
+    /**
+     * @inheritdoc ILSP6KeyManager
+     */
     function executeRelayCall(
         bytes memory signature,
         uint256 nonce,
@@ -140,6 +153,19 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyPermissions(signer, payload);
 
         return _executePayload(payload);
+    }
+
+    /**
+     * @inheritdoc ILSP6KeyManager
+     */
+    function executeRelayCall(
+        bytes[] calldata signatures,
+        uint256[] calldata nonces,
+        bytes[] calldata payloads
+    ) public payable returns (bytes[] memory results) {
+        for (uint256 ii; ii < payloads.length; ++ii) {
+            results[ii] = executeRelayCall(signatures[ii], nonces[ii], payloads[ii]);
+        }
     }
 
 

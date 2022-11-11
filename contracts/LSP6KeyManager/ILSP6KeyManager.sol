@@ -41,6 +41,11 @@ interface ILSP6KeyManager is
     function execute(bytes calldata payload) external payable returns (bytes memory);
 
     /**
+     * @dev batch `execute(bytes)`
+     */
+    function execute(bytes[] calldata payloads) external payable returns (bytes[] memory);
+
+    /**
      * @dev allows anybody to execute given they have a signed message from an executor
      * @param signature bytes32 ethereum signature
      * @param nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
@@ -48,8 +53,17 @@ interface ILSP6KeyManager is
      * @return the data being returned by the ERC725 Account
      */
     function executeRelayCall(
-        bytes memory signature,
+        bytes calldata signature,
         uint256 nonce,
         bytes calldata payload
     ) external payable returns (bytes memory);
+
+    /**
+     * @dev batch `executeRelayCall(...)`
+     */
+    function executeRelayCall(
+        bytes[] calldata signatures,
+        uint256[] calldata nonces,
+        bytes[] calldata payloads
+    ) external payable returns (bytes[] memory);
 }
