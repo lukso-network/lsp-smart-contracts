@@ -23,7 +23,6 @@ import { provider, AddressOffset } from "../utils/helpers";
 
 import { bytecode as UniversalProfileBytecode } from "../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json";
 import { bytecode as LSP6KeyManagerBytecode } from "../../artifacts/contracts/LSP6KeyManager/LSP6KeyManager.sol/LSP6KeyManager.json";
-import { bytecode as UniversalProfileInitBytecode } from "../../artifacts/contracts/UniversalProfileInit.sol/UniversalProfileInit.json";
 import { bytecode as PayableContractBytecode } from "../../artifacts/contracts/Helpers/PayableContract.sol/PayableContract.json";
 import { bytecode as FallbackContractBytecode } from "../../artifacts/contracts/Helpers/FallbackContract.sol/FallbackContract.json";
 import { bytecode as ImplementationTesterBytecode } from "../../artifacts/contracts/Helpers/ImplementationTester.sol/ImplementationTester.json";
@@ -286,11 +285,17 @@ describe("UniversalFactory contract", () => {
 
         await expect(
           context.universalFactory.deployCreate2(proxyBytecode, salt, "0x")
-        ).to.be.revertedWith("Minimal Proxies deployment not allowed");
+        ).to.be.revertedWithCustomError(
+          context.universalFactory,
+          "MinimalProxiesDeploymentNotAllowed"
+        );
 
         await expect(
           context.universalFactory.deployCreate2(proxyBytecode, salt, "0x")
-        ).to.be.revertedWith("Minimal Proxies deployment not allowed");
+        ).to.be.revertedWithCustomError(
+          context.universalFactory,
+          "MinimalProxiesDeploymentNotAllowed"
+        );
       });
 
       it("should revert when deploying a CREATE2 contract with the same bytecode and salt ", async () => {
@@ -366,9 +371,7 @@ describe("UniversalFactory contract", () => {
           context.universalFactory
             .connect(context.accounts.deployer2)
             .deployCreate2(PayableContractBytecode, salt, RandomCalldata)
-        ).to.be.revertedWith(
-          "UniversalFactory: could not initialize the created contract"
-        );
+        ).to.be.revertedWith("UF: could not initialize the created contract");
       });
 
       it("should pass when deploying a CREATE2 contract and passing calldata for a non-existing function where fallback function exist", async () => {
@@ -398,7 +401,13 @@ describe("UniversalFactory contract", () => {
             salt,
             "0x"
           );
-        await context.universalFactory.deployCreate2(UPBytecode, salt, "0x");
+
+        await expect(
+          context.universalFactory.deployCreate2(UPBytecode, salt, "0x")
+        )
+          .to.emit(context.universalFactory, "ContractCreated")
+          .withArgs(contractCreatedAddress, salt, false, "0x");
+
         const universalProfile = universalProfileConstructor.attach(
           contractCreatedAddress
         );
@@ -406,7 +415,7 @@ describe("UniversalFactory contract", () => {
         expect(owner).to.equal(context.accounts.deployer3.address);
       });
 
-      it("should deploy an initializable CREATE2 contract and get the owner successfully", async () => {
+      it("should deploy an initializable CREATE2 contract and emit the event and get the owner successfully", async () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["Salt"]);
 
         let initializeCallData =
@@ -421,11 +430,15 @@ describe("UniversalFactory contract", () => {
             initializeCallData
           );
 
-        await context.universalFactory.deployCreate2(
-          ImplementationTesterBytecode,
-          salt,
-          initializeCallData
-        );
+        await expect(
+          context.universalFactory.deployCreate2(
+            ImplementationTesterBytecode,
+            salt,
+            initializeCallData
+          )
+        )
+          .to.emit(context.universalFactory, "ContractCreated")
+          .withArgs(contractCreatedAddress, salt, false, initializeCallData);
 
         const factoryTesterContract = implementationTester.attach(
           contractCreatedAddress
@@ -629,8 +642,9 @@ describe("UniversalFactory contract", () => {
             .deployCreate2Proxy(universalReceiverDelegate.address, salt, "0x", {
               value: ethers.utils.parseEther("1300"),
             })
-        ).to.be.revertedWith(
-          "UniversalFactory: value cannot be sent to the factory if initializeCallData is empty"
+        ).to.be.revertedWithCustomError(
+          context.universalFactory,
+          "SendingValueNotAllowed"
         );
       });
 
@@ -651,9 +665,7 @@ describe("UniversalFactory contract", () => {
                 value: 100,
               }
             )
-        ).to.be.revertedWith(
-          "UniversalFactory: could not initialize the created contract"
-        );
+        ).to.be.revertedWith("UF: could not initialize the created contract");
       });
 
       it("should pass when deploying a proxy and sending value to a payable function in deployCreate2Proxy", async () => {
@@ -696,9 +708,7 @@ describe("UniversalFactory contract", () => {
           context.universalFactory
             .connect(context.accounts.deployer1)
             .deployCreate2Proxy(payableContract.address, salt, RandomCalldata)
-        ).to.be.revertedWith(
-          "UniversalFactory: could not initialize the created contract"
-        );
+        ).to.be.revertedWith("UF: could not initialize the created contract");
       });
 
       it("should pass when deploying a proxy and passing calldata for a non-existing function where fallback function exist", async () => {
@@ -711,7 +721,7 @@ describe("UniversalFactory contract", () => {
           .deployCreate2Proxy(fallbackContract.address, salt, RandomCalldata);
       });
 
-      it("should deploy an un-initializable CREATE2 proxy contract and get the default owner successfully", async () => {
+      it("should deploy an un-initializable CREATE2 proxy contract and emit the event and get the default owner successfully", async () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["Salt#2"]);
 
         const contractCreatedAddress =
@@ -721,11 +731,15 @@ describe("UniversalFactory contract", () => {
             "0x"
           );
 
-        await context.universalFactory.deployCreate2Proxy(
-          universalProfileBaseContract.address,
-          salt,
-          "0x"
-        );
+        await expect(
+          context.universalFactory.deployCreate2Proxy(
+            universalProfileBaseContract.address,
+            salt,
+            "0x"
+          )
+        )
+          .to.emit(context.universalFactory, "ContractCreated")
+          .withArgs(contractCreatedAddress, salt, true, "0x");
 
         const universalProfile = universalProfileBaseContract.attach(
           contractCreatedAddress
@@ -735,7 +749,7 @@ describe("UniversalFactory contract", () => {
         expect(owner).to.equal(ethers.constants.AddressZero);
       });
 
-      it("should deploy an initializable CREATE2 proxy contract and get the owner successfully", async () => {
+      it("should deploy an initializable CREATE2 proxy contract and emit the event and get the owner successfully", async () => {
         let salt = ethers.utils.solidityKeccak256(["string"], ["Salt#3"]);
 
         let initializeCallData =
@@ -751,11 +765,15 @@ describe("UniversalFactory contract", () => {
             initializeCallData
           );
 
-        await context.universalFactory.deployCreate2Proxy(
-          universalProfileBaseContract.address,
-          salt,
-          initializeCallData
-        );
+        await expect(
+          context.universalFactory.deployCreate2Proxy(
+            universalProfileBaseContract.address,
+            salt,
+            initializeCallData
+          )
+        )
+          .to.emit(context.universalFactory, "ContractCreated")
+          .withArgs(contractCreatedAddress, salt, true, initializeCallData);
 
         const universalProfile = universalProfileBaseContract.attach(
           contractCreatedAddress
