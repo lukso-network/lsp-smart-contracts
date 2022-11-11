@@ -20,7 +20,7 @@ const INTERFACE_IDS = {
 	LSP0ERC725Account: '0xcf6e8efc',
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
-	LSP6KeyManager: '0xf9150d55',
+	LSP6KeyManager: '0xf3896541',
 	LSP7DigitalAsset: '0xda1f85e4',
 	LSP8IdentifiableDigitalAsset: '0x622e7a01',
 	LSP9Vault: '0xd9483482',
