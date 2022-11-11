@@ -289,8 +289,8 @@ const Errors = {
 		},
 	},
 	LSP7: {
-		'0xc5e194ab': {
-			error: 'LSP7AmountExceedsBalance(address,address,uint256)',
+		'0x08d47949': {
+			error: 'LSP7AmountExceedsBalance(uint256,address,uint256)',
 			message: "LSP7: token amount exceeds sender's balance.",
 		},
 		'0xf3a6b691': {
