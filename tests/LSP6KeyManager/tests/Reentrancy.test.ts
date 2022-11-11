@@ -5,8 +5,12 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   ReentrancyWithAddPermission,
   ReentrancyWithAddPermission__factory,
+  ReentrancyWithAddURD,
+  ReentrancyWithAddURD__factory,
   ReentrancyWithChangePermission,
   ReentrancyWithChangePermission__factory,
+  ReentrancyWithChangeURD,
+  ReentrancyWithChangeURD__factory,
   ReentrancyWithSetData,
   ReentrancyWithSetData__factory,
   ReentrancyWithValueTransfer,
@@ -1106,186 +1110,369 @@ export const testReentrancyScenarios = (
     });
   });
 
-  /*
   describe("when reentering and adding URD", () => {
-    before(async () => {});
+    let contract_without_permissions: ReentrancyWithAddURD;
+    let contract_with_REENTRANCY_permission: ReentrancyWithAddURD;
+    let contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions: ReentrancyWithAddURD;
+    let contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions: ReentrancyWithAddURD;
+    const randomLSP1TypeId = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
+    );
+    before(async () => {
+      contract_without_permissions = await new ReentrancyWithAddURD__factory(
+        caller
+      ).deploy();
+      contract_with_REENTRANCY_permission =
+        await new ReentrancyWithAddURD__factory(caller).deploy();
+      contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions =
+        await new ReentrancyWithAddURD__factory(caller).deploy();
+      contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions =
+        await new ReentrancyWithAddURD__factory(caller).deploy();
 
-    it("should revert if caller has NO PERMISSIONS", async () => {});
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          contract_with_REENTRANCY_permission.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
+            2
+          ),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
+            2
+          ),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          caller.address.substring(2),
+      ];
 
-    it("should revert if caller has ONLY REENTRANCY permission", async () => {});
+      const permissionValues = [
+        PERMISSIONS.REENTRANCY,
+        PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+        combinePermissions(
+          PERMISSIONS.REENTRANCY,
+          PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE
+        ),
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
+          [
+            contract_without_permissions.address,
+            contract_with_REENTRANCY_permission.address,
+            contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.address,
+            contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions.address,
+          ],
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+        ),
+      ];
 
-    it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {});
+      const permissionsPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [permissionKeys, permissionValues]
+        );
+      await context.keyManager
+        .connect(context.owner)
+        .execute(permissionsPayload);
+    });
 
-    it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {});
+    it("should revert if caller has NO PERMISSIONS", async () => {
+      const reentrantContractPayload =
+        contract_without_permissions.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            randomLSP1TypeId + context.accounts[2].address.substring(2),
+          ]
+        );
+
+      const upExecutePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [0, contract_without_permissions.address, 0, reentrantContractPayload]
+        );
+
+      await expect(context.keyManager.connect(caller).execute(upExecutePayload))
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(contract_without_permissions.address, "REENTRANCY");
+    });
+
+    it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      const reentrantContractPayload =
+        contract_with_REENTRANCY_permission.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            randomLSP1TypeId + context.accounts[2].address.substring(2),
+          ]
+        );
+
+      const upExecutePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            0,
+            contract_with_REENTRANCY_permission.address,
+            0,
+            reentrantContractPayload,
+          ]
+        );
+
+      await expect(context.keyManager.connect(caller).execute(upExecutePayload))
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(
+          contract_with_REENTRANCY_permission.address,
+          "ADDUNIVERSALRECEIVERDELEGATE"
+        );
+    });
+
+    it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
+      const reentrantContractPayload =
+        contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            randomLSP1TypeId + context.accounts[2].address.substring(2),
+          ]
+        );
+
+      const upExecutePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            0,
+            contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.address,
+            0,
+            reentrantContractPayload,
+          ]
+        );
+
+      await expect(context.keyManager.connect(caller).execute(upExecutePayload))
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(
+          contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.address,
+          "REENTRANCY"
+        );
+    });
+
+    it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      const reentrantContractPayload =
+        contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            randomLSP1TypeId + context.accounts[2].address.substring(2),
+          ]
+        );
+
+      const upExecutePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            0,
+            contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions.address,
+            0,
+            reentrantContractPayload,
+          ]
+        );
+
+      await context.keyManager.connect(caller).execute(upExecutePayload);
+
+      expect(
+        await context.universalProfile["getData(bytes32)"](
+          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+            "0000" +
+            randomLSP1TypeId.substring(2, 42)
+        )
+      ).to.equal(context.accounts[2].address.toLowerCase());
+    });
   });
 
   describe("when reentering and changing URD", () => {
-    before(async () => {});
-
-    it("should revert if caller has NO PERMISSIONS", async () => {});
-
-    it("should revert if caller has ONLY REENTRANCY permission", async () => {});
-
-    it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {});
-
-    it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {});
-  });
-  */
-
-  /*describe("when reentering execute function", () => {
-    it("should revert if reentered from a random address", async () => {
-      let transferPayload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          OPERATION_TYPES.CALL,
-          maliciousContract.address,
-          ethers.utils.parseEther("1"),
-          EMPTY_PAYLOAD,
-        ]
-      );
-
-      let executePayload = context.keyManager.interface.encodeFunctionData(
-        "execute",
-        [transferPayload]
-      );
-
-      await maliciousContract.loadPayload(executePayload);
-
-      const executeTransferPayload = context.keyManager
-        .connect(context.owner)
-        .execute(transferPayload);
-
-      await expect(executeTransferPayload)
-        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-        .withArgs(maliciousContract.address, "REENTRANCY");
-    });
-
-    it("should pass when reentered by URD", async () => {
-      const URDDummy = await new Reentrancy__factory(context.owner).deploy(
-        context.keyManager.address
-      );
-
-      const setDataPayload = context.universalProfile.interface.encodeFunctionData(
-        "setData(bytes32[],bytes[])",
-        [
-          [
-            ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-              URDDummy.address.substring(2),
-            ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
-              URDDummy.address.substring(2),
-          ],
-          [
-            URDDummy.address,
-            combinePermissions(
-              PERMISSIONS.TRANSFERVALUE,
-              PERMISSIONS.REENTRANCY
-            ),
-            "0x1cffffffff" + URDDummy.address.substring(2) + "ffffffff",
-          ],
-        ]
-      );
-
-      await context.keyManager.connect(context.owner).execute(setDataPayload);
-
-      let transferPayload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          OPERATION_TYPES.CALL,
-          URDDummy.address,
-          ethers.utils.parseEther("1"),
-          EMPTY_PAYLOAD,
-        ]
-      );
-
-      let executePayload = context.keyManager.interface.encodeFunctionData(
-        "execute",
-        [transferPayload]
-      );
-
-      await URDDummy.loadPayload(executePayload);
-
-      let initialAccountBalance = await provider.getBalance(
-        context.universalProfile.address
-      );
-      let initialAttackerContractBalance = await provider.getBalance(
-        maliciousContract.address
-      );
-
-      await context.keyManager.connect(context.owner).execute(transferPayload);
-
-      let newAccountBalance = await provider.getBalance(
-        context.universalProfile.address
-      );
-      let newAttackerContractBalance = await provider.getBalance(
-        URDDummy.address
-      );
-
-      expect(newAccountBalance).to.equal(
-        initialAccountBalance.sub(ethers.utils.parseEther("2"))
-      );
-      expect(newAttackerContractBalance).to.equal(
-        initialAttackerContractBalance.add(ethers.utils.parseEther("2"))
-      );
-    });
-
-    it("should allow the URD to use `setData(..)` through the LSP6", async () => {
-      const universalReceiverDelegateDataUpdater = await new UniversalReceiverDelegateDataUpdater__factory(
-        context.owner
+    let contract_without_permissions: ReentrancyWithChangeURD;
+    let contract_with_REENTRANCY_permission: ReentrancyWithChangeURD;
+    let contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions: ReentrancyWithChangeURD;
+    let contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions: ReentrancyWithChangeURD;
+    const randomLSP1TypeId = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
+    );
+    before(async () => {
+      contract_without_permissions = await new ReentrancyWithChangeURD__factory(
+        caller
       ).deploy();
+      contract_with_REENTRANCY_permission =
+        await new ReentrancyWithChangeURD__factory(caller).deploy();
+      contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions =
+        await new ReentrancyWithChangeURD__factory(caller).deploy();
+      contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions =
+        await new ReentrancyWithChangeURD__factory(caller).deploy();
 
-      const randomHardcodedKey = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes("some random data key")
-      );
-      const randomHardcodedValue = ethers.utils.hexlify(
-        ethers.utils.toUtf8Bytes("some random text for the data value")
-      );
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          contract_with_REENTRANCY_permission.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
+            2
+          ),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
+            2
+          ),
+        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          caller.address.substring(2),
+      ];
 
-      const setDataPayload = context.universalProfile.interface.encodeFunctionData(
-        "setData(bytes32[],bytes[])",
-        [
+      const permissionValues = [
+        PERMISSIONS.REENTRANCY,
+        PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
+        combinePermissions(
+          PERMISSIONS.REENTRANCY,
+          PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE
+        ),
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"],
           [
-            ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-              universalReceiverDelegateDataUpdater.address.substring(2),
-            ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
-              universalReceiverDelegateDataUpdater.address.substring(2),
+            contract_without_permissions.address,
+            contract_with_REENTRANCY_permission.address,
+            contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address,
+            contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address,
           ],
+          ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
+        ),
+      ];
+
+      const permissionsPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [permissionKeys, permissionValues]
+        );
+      await context.keyManager
+        .connect(context.owner)
+        .execute(permissionsPayload);
+    });
+
+    it("should revert if caller has NO PERMISSIONS", async () => {
+      const reentrantContractPayload =
+        contract_without_permissions.interface.encodeFunctionData(
+          "universalReceiverDelegate",
           [
-            universalReceiverDelegateDataUpdater.address,
-            combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.REENTRANCY),
-            encodeCompactBytesArray([randomHardcodedKey]),
-          ],
-        ]
-      );
+            context.universalProfile.address,
+            0,
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            randomLSP1TypeId + context.accounts[2].address.substring(2),
+          ]
+        );
 
-      await context.keyManager.connect(context.owner).execute(setDataPayload);
+      const upExecutePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [0, contract_without_permissions.address, 0, reentrantContractPayload]
+        );
 
-      const universalReceiverDelegatePayload = universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
-        "universalReceiverDelegate",
-        [
-          context.universalProfile.address,
-          0,
-          LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
-          "0xcafecafecafecafe",
-        ]
-      );
+      await expect(context.keyManager.connect(caller).execute(upExecutePayload))
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(contract_without_permissions.address, "REENTRANCY");
+    });
 
-      const executePayload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          OPERATION_TYPES.CALL,
-          universalReceiverDelegateDataUpdater.address,
-          ethers.utils.parseEther("0"),
-          universalReceiverDelegatePayload,
-        ]
-      );
+    it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      const reentrantContractPayload =
+        contract_with_REENTRANCY_permission.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            randomLSP1TypeId + context.accounts[2].address.substring(2),
+          ]
+        );
 
-      await context.keyManager.connect(context.owner).execute(executePayload);
+      const upExecutePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            0,
+            contract_with_REENTRANCY_permission.address,
+            0,
+            reentrantContractPayload,
+          ]
+        );
+
+      await expect(context.keyManager.connect(caller).execute(upExecutePayload))
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(
+          contract_with_REENTRANCY_permission.address,
+          "CHANGEUNIVERSALRECEIVERDELEGATE"
+        );
+    });
+
+    it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
+      const reentrantContractPayload =
+        contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            randomLSP1TypeId + context.accounts[2].address.substring(2),
+          ]
+        );
+
+      const upExecutePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            0,
+            contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address,
+            0,
+            reentrantContractPayload,
+          ]
+        );
+
+      await expect(context.keyManager.connect(caller).execute(upExecutePayload))
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(
+          contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address,
+          "REENTRANCY"
+        );
+    });
+
+    it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      const reentrantContractPayload =
+        contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            randomLSP1TypeId + context.accounts[2].address.substring(2),
+          ]
+        );
+
+      const upExecutePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            0,
+            contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address,
+            0,
+            reentrantContractPayload,
+          ]
+        );
+
+      await context.keyManager.connect(caller).execute(upExecutePayload);
 
       expect(
-        await context.universalProfile["getData(bytes32)"](randomHardcodedKey)
-      ).to.equal(randomHardcodedValue);
+        await context.universalProfile["getData(bytes32)"](
+          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+            "0000" +
+            randomLSP1TypeId.substring(2, 42)
+        )
+      ).to.equal("0x");
     });
-  });*/
+  });
 };
