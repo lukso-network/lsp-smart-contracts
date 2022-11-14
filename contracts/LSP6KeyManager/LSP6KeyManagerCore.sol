@@ -39,6 +39,7 @@ import {
     EXECUTE_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
+    _LSP0_EXTENSION_HANDLER_PREFIX,
     _INTERFACEID_ERC1271,
     _ERC1271_MAGICVALUE,
     _ERC1271_FAILVALUE
@@ -216,6 +217,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 // CHECK for Universal Receiver Delegate key
                 _verifyCanSetUniversalReceiverDelegateKey(inputKey, from, permissions);
                 
+            } else if (bytes10(inputKey) == _LSP0_EXTENSION_HANDLER_PREFIX) {
+                // CHECK for Extension Handler key
+                _verifyCanSetExtensionHandlerKey(inputKey, from, permissions);
+
             } else {    
                 _verifyCanSetData(from, permissions, inputKey);
             }
@@ -257,6 +262,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     _verifyCanSetUniversalReceiverDelegateKey(key, from, permissions);
 
                     // "nullify" URD keys to not check them against allowed ERC725Y keys
+                    inputKeys[ii] = bytes32(0);
+
+                } else if (bytes12(key) == _LSP0_EXTENSION_HANDLER_PREFIX) {
+                    // CHECK for Extension Handler keys
+                    _verifyCanSetExtensionHandlerKey(key, from, permissions);
+
+                    // "nullify" extension handler keys to not check them against allowed ERC725Y keys
                     inputKeys[ii] = bytes32(0);
                 } else {
                     // if the key is any other bytes32 key
@@ -449,6 +461,28 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             revert AddressPermissionArrayIndexValueNotAnAddress(dataKey, dataValue);
         }
     }
+
+
+    /**
+     * @dev Verify if `from` has the required permissions to either add or change the address
+     * of an LSP0 Extension stored under a specific Extension Handler data key
+     * @param extensionHandlerDataKey the dataKey to set with `_LSP0_EXTENSION_HANDLER_PREFIX` as prefix
+     * @param from the address who want to set the dataKeys
+     * @param permissions the permissions
+     */
+    function _verifyCanSetExtensionHandlerKey(
+        bytes32 extensionHandlerDataKey,
+        address from,
+        bytes32 permissions
+    ) internal view {
+            bytes memory dataValue = ERC725Y(target).getData(extensionHandlerDataKey);
+
+            if (dataValue.length == 0) {
+                _requirePermissions(from, permissions, _PERMISSION_ADDEXTENSIONS);
+            } else {
+                _requirePermissions(from, permissions, _PERMISSION_CHANGEEXTENSIONS);
+            }
+        }
 
     /**
      * @dev Verify if `from` has the required permissions to either add or change the address
@@ -831,6 +865,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
         if (permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
         if (permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
+        if (permission == _PERMISSION_ADDEXTENSIONS) return "ADDEXTENSIONS";
+        if (permission == _PERMISSION_CHANGEEXTENSIONS) return "CHANGEEXTENSIONS";
         if (permission == _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE) return "ADDUNIVERSALRECEIVERDELEGATE";
         if (permission == _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE) return "CHANGEUNIVERSALRECEIVERDELEGATE";
         if (permission == _PERMISSION_SETDATA) return "SETDATA";
