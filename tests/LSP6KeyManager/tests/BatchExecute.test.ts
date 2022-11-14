@@ -6,74 +6,92 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   ALL_PERMISSIONS,
   ERC725YKeys,
+  INTERFACE_IDS,
   OPERATION_TYPES,
+  PERMISSIONS,
 } from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
-import { abiCoder } from "../../utils/helpers";
-import { LSP7Mintable, LSP7MintableInit__factory, LSP7Mintable__factory } from "../../../types";
+import {
+  abiCoder,
+  combineAllowedCalls,
+  LOCAL_PRIVATE_KEYS,
+  signLSP6ExecuteRelayCall,
+} from "../../utils/helpers";
+import {
+  LSP6KeyManager,
+  LSP7Mintable,
+  LSP7MintableInit__factory,
+  LSP7Mintable__factory,
+} from "../../../types";
+import { BigNumber } from "ethers";
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
-  let context: LSP6TestContext;
+  describe("when using batch `execute(bytes[])`", () => {
+    let context: LSP6TestContext;
 
-  // a fictional DAI token on LUKSO
-  let lyxDaiToken: LSP7Mintable,
-    // a basic sample token
-    metaCoin: LSP7Mintable,
-    // a token that can be used as credits for a LUKSO relay service.
-    // Inspired from https://github.com/lykhonis/relayer
-    rLyxToken: LSP7Mintable;
+    // a fictional DAI token on LUKSO
+    let lyxDaiToken: LSP7Mintable,
+      // a basic sample token
+      metaCoin: LSP7Mintable,
+      // a token that can be used as credits for a LUKSO relay service.
+      // Inspired from https://github.com/lykhonis/relayer
+      rLyxToken: LSP7Mintable;
 
-  beforeEach(async () => {
-    context = await buildContext();
+    beforeEach(async () => {
+      context = await buildContext();
 
-    const permissionKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
-    ];
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+      ];
 
-    const permissionsValues = [ALL_PERMISSIONS];
+      const permissionsValues = [ALL_PERMISSIONS];
 
-    await setupKeyManager(context, permissionKeys, permissionsValues);
+      await setupKeyManager(context, permissionKeys, permissionsValues);
 
-    // fund the UP with some native tokens
-    await context.owner.sendTransaction({
-      to: context.universalProfile.address,
-      value: ethers.utils.parseEther("50"),
+      // fund the UP with some native tokens
+      await context.owner.sendTransaction({
+        to: context.universalProfile.address,
+        value: ethers.utils.parseEther("50"),
+      });
+
+      // deploy some sample LSP7 tokens and mint some tokens to the UP
+      lyxDaiToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+        "LYX DAI Invented Token",
+        "LYXDAI",
+        context.accounts[0].address,
+        false
+      );
+
+      metaCoin = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+        "Meta Coin",
+        "MTC",
+        context.accounts[0].address,
+        false
+      );
+
+      rLyxToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
+        "LUKSO Relay Token",
+        "rLYX",
+        context.accounts[0].address,
+        false
+      );
+
+      await lyxDaiToken.mint(
+        context.universalProfile.address,
+        100,
+        false,
+        "0x"
+      );
+      await metaCoin.mint(context.universalProfile.address, 100, false, "0x");
+      await rLyxToken.mint(context.universalProfile.address, 100, false, "0x");
     });
 
-    // deploy some sample LSP7 tokens and mint some tokens to the UP
-    lyxDaiToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
-      "LYX DAI Invented Token",
-      "LYXDAI",
-      context.accounts[0].address,
-      false
-    );
-
-    metaCoin = await new LSP7Mintable__factory(context.accounts[0]).deploy(
-      "Meta Coin",
-      "MTC",
-      context.accounts[0].address,
-      false
-    );
-
-    rLyxToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
-      "LUKSO Relay Token",
-      "rLYX",
-      context.accounts[0].address,
-      false
-    );
-
-    await lyxDaiToken.mint(context.universalProfile.address, 100, false, "0x");
-    await metaCoin.mint(context.universalProfile.address, 100, false, "0x");
-    await rLyxToken.mint(context.universalProfile.address, 100, false, "0x");
-  });
-
-  describe("when using batch `execute(bytes[])`", () => {
     describe("when caller has ALL_PERMISSIONS", () => {
       it("should send LYX to 3x different addresses", async () => {
         const { universalProfile, owner } = context;
@@ -198,72 +216,103 @@ export const shouldBehaveLikeBatchExecute = (
       });
 
       it("should 1) deploy a LSP7 Token (as minimal proxy), 2) initialize it, and 3) set the token metadata", async () => {
-        const lsp7MintableBase = await new LSP7MintableInit__factory(context.accounts[0]).deploy()
+        const lsp7MintableBase = await new LSP7MintableInit__factory(
+          context.accounts[0]
+        ).deploy();
 
-        const lsp7TokenProxyBytecode =
-          String("0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3").replace(
-            "bebebebebebebebebebebebebebebebebebebebe",
-            lsp7MintableBase.address.substring(2)
+        const lsp7TokenProxyBytecode = String(
+          "0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3"
+        ).replace(
+          "bebebebebebebebebebebebebebebebebebebebe",
+          lsp7MintableBase.address.substring(2)
+        );
+
+        const lsp7ProxyDeploymentPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CREATE,
+              ethers.constants.AddressZero,
+              0,
+              lsp7TokenProxyBytecode,
+            ]
           );
 
-        const lsp7ProxyDeploymentPayload = context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
-          OPERATION_TYPES.CREATE,
-          ethers.constants.AddressZero,
-          0,
-          lsp7TokenProxyBytecode
-        ]);
+        const futureTokenAddress = await context.keyManager
+          .connect(context.owner)
+          .callStatic["execute(bytes)"](lsp7ProxyDeploymentPayload);
+        let futureTokenInstance = await new LSP7MintableInit__factory(
+          context.accounts[0]
+        ).attach(futureTokenAddress);
 
-        const futureTokenAddress = await context.keyManager.connect(context.owner).callStatic["execute(bytes)"](lsp7ProxyDeploymentPayload)
-        let futureTokenInstance = await new LSP7MintableInit__factory(context.accounts[0]).attach(futureTokenAddress)
-
-        const lsp7InitializePayload = futureTokenInstance.interface.encodeFunctionData("initialize", [
-          "My LSP7 UP Token", "UPLSP7", context.universalProfile.address, false
-        ])
+        const lsp7InitializePayload =
+          futureTokenInstance.interface.encodeFunctionData("initialize", [
+            "My LSP7 UP Token",
+            "UPLSP7",
+            context.universalProfile.address,
+            false,
+          ]);
 
         // use interface of an existing token contract
-        const initializePayload = context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
-          OPERATION_TYPES.CALL,
-          futureTokenAddress,
-          0,
-          lsp7InitializePayload
-        ])
+        const initializePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, futureTokenAddress, 0, lsp7InitializePayload]
+          );
 
-        const tokenMetadataValue = "0x6f357c6aba20e595da5f38e6c75326802bbf871b4d98b5bfab27812a5456139e3ec087f4697066733a2f2f516d6659696d3146647a645a6747314a50484c46785a3964575a7761616f68596e4b626174797871553144797869"
+        const tokenMetadataValue =
+          "0x6f357c6aba20e595da5f38e6c75326802bbf871b4d98b5bfab27812a5456139e3ec087f4697066733a2f2f516d6659696d3146647a645a6747314a50484c46785a3964575a7761616f68596e4b626174797871553144797869";
 
-        const lsp7SetDataPayload = futureTokenInstance.interface.encodeFunctionData("setData(bytes32,bytes)", [
-          ERC725YKeys.LSP4["LSP4Metadata"],
-          tokenMetadataValue
-        ])
-        const setTokenMetadataPayload = context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
-          OPERATION_TYPES.CALL,
-          futureTokenAddress,
-          0,
-          lsp7SetDataPayload
-        ])
+        const lsp7SetDataPayload =
+          futureTokenInstance.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [ERC725YKeys.LSP4["LSP4Metadata"], tokenMetadataValue]
+          );
+        const setTokenMetadataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, futureTokenAddress, 0, lsp7SetDataPayload]
+          );
 
-        const tx = await context.keyManager.connect(context.owner)["execute(bytes[])"]([
-          // Step 1 - deploy Token contract as proxy
-          lsp7ProxyDeploymentPayload, 
-          // Step 2 - initialize Token contract
-          initializePayload,
-          // Step 3 - set Token Metadata
-          setTokenMetadataPayload
-        ])
+        const tx = await context.keyManager
+          .connect(context.owner)
+          ["execute(bytes[])"]([
+            // Step 1 - deploy Token contract as proxy
+            lsp7ProxyDeploymentPayload,
+            // Step 2 - initialize Token contract
+            initializePayload,
+            // Step 3 - set Token Metadata
+            setTokenMetadataPayload,
+          ]);
 
         // CHECK that token contract has been deployed
-        expect(tx).to.emit(context.universalProfile, "ContractCreated").withArgs(OPERATION_TYPES.CREATE, futureTokenAddress, 0)
-        
-        // CHECK initialize parameters have been set correctly
-        const nameResult = await futureTokenInstance["getData(bytes32)"](ERC725YKeys.LSP4["LSP4TokenName"])
-        const symbolResult = await futureTokenInstance["getData(bytes32)"](ERC725YKeys.LSP4["LSP4TokenSymbol"])
+        expect(tx)
+          .to.emit(context.universalProfile, "ContractCreated")
+          .withArgs(OPERATION_TYPES.CREATE, futureTokenAddress, 0);
 
-        expect(ethers.utils.toUtf8String(nameResult)).to.equal("My LSP7 UP Token")
-        expect(ethers.utils.toUtf8String(symbolResult)).to.equal("UPLSP7")
-        expect(await futureTokenInstance.owner()).to.equal(context.universalProfile.address)
+        // CHECK initialize parameters have been set correctly
+        const nameResult = await futureTokenInstance["getData(bytes32)"](
+          ERC725YKeys.LSP4["LSP4TokenName"]
+        );
+        const symbolResult = await futureTokenInstance["getData(bytes32)"](
+          ERC725YKeys.LSP4["LSP4TokenSymbol"]
+        );
+
+        expect(ethers.utils.toUtf8String(nameResult)).to.equal(
+          "My LSP7 UP Token"
+        );
+        expect(ethers.utils.toUtf8String(symbolResult)).to.equal("UPLSP7");
+        expect(await futureTokenInstance.owner()).to.equal(
+          context.universalProfile.address
+        );
 
         // CHECK LSP4 token metadata has been set
-        expect(await futureTokenInstance["getData(bytes32)"](ERC725YKeys.LSP4["LSP4Metadata"])).to.equal(tokenMetadataValue)
-      })
+        expect(
+          await futureTokenInstance["getData(bytes32)"](
+            ERC725YKeys.LSP4["LSP4Metadata"]
+          )
+        ).to.equal(tokenMetadataValue);
+      });
 
       it("should 1) deploy a LSP7 token, 2) mint some tokens, 3) `transferBatch(...)` to multiple recipients", async () => {
         // step 1 - deploy token contract
@@ -289,67 +338,236 @@ export const shouldBehaveLikeBatchExecute = (
             ]
           );
 
-          // we simulate deploying the token contract to know the future address of the LSP7 Token contract,
-          // so that we can then pass the token address to the `to` parameter of ERC725X.execute(...)
-          // in the 2nd and 3rd payloads of the LSP6 batch `execute(bytes[])`
-          const futureTokenAddress = await context.keyManager.connect(context.owner).callStatic["execute(bytes)"](lsp7DeploymentPayload)
-          console.log("futureTokenAddress: ", futureTokenAddress)
+        // we simulate deploying the token contract to know the future address of the LSP7 Token contract,
+        // so that we can then pass the token address to the `to` parameter of ERC725X.execute(...)
+        // in the 2nd and 3rd payloads of the LSP6 batch `execute(bytes[])`
+        const futureTokenAddress = await context.keyManager
+          .connect(context.owner)
+          .callStatic["execute(bytes)"](lsp7DeploymentPayload);
+        console.log("futureTokenAddress: ", futureTokenAddress);
 
-          // step 2 - mint some tokens
-          // use the interface of an existing token for encoding the function call
-          const lsp7MintingPayload = lyxDaiToken.interface.encodeFunctionData("mint", [
-            context.universalProfile.address,
-            3_000,
-            false,
-            "0x"
-          ])
+        // step 2 - mint some tokens
+        // use the interface of an existing token for encoding the function call
+        const lsp7MintingPayload = lyxDaiToken.interface.encodeFunctionData(
+          "mint",
+          [context.universalProfile.address, 3_000, false, "0x"]
+        );
 
-          // step 3 - transfer batch to multiple addresses
-          const sender = context.universalProfile.address;
-          const recipients = [context.accounts[1].address, context.accounts[2].address, context.accounts[3].address]
-          const amounts = [1_000, 1_000, 1_000];
+        // step 3 - transfer batch to multiple addresses
+        const sender = context.universalProfile.address;
+        const recipients = [
+          context.accounts[1].address,
+          context.accounts[2].address,
+          context.accounts[3].address,
+        ];
+        const amounts = [1_000, 1_000, 1_000];
 
-          const lsp7TransferBatchPayload = lyxDaiToken.interface.encodeFunctionData("transferBatch", [
-            [sender, sender, sender],  // address[] memory from,
-            recipients,  // address[] memory to,
-            amounts,  // uint256[] memory amount,
-            [true, true, true],  // bool[] memory force,
-            ["0x", "0x", "0x"]  // bytes[] memory data
-          ])
+        const lsp7TransferBatchPayload =
+          lyxDaiToken.interface.encodeFunctionData("transferBatch", [
+            [sender, sender, sender], // address[] memory from,
+            recipients, // address[] memory to,
+            amounts, // uint256[] memory amount,
+            [true, true, true], // bool[] memory force,
+            ["0x", "0x", "0x"], // bytes[] memory data
+          ]);
 
         const payloads = [
           // step 1 - deploy token contract
           lsp7DeploymentPayload,
           // step 2 - mint some tokens for the UP
-          context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
-            OPERATION_TYPES.CALL,
-            futureTokenAddress,
-            0,
-            lsp7MintingPayload
-          ]),
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, futureTokenAddress, 0, lsp7MintingPayload]
+          ),
           // step 3 - `transferBatch(...)` the tokens to multiple addresses
-          context.universalProfile.interface.encodeFunctionData("execute(uint256,address,uint256,bytes)", [
-            OPERATION_TYPES.CALL,
-            futureTokenAddress,
-            0,
-            lsp7TransferBatchPayload
-          ]),
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              futureTokenAddress,
+              0,
+              lsp7TransferBatchPayload,
+            ]
+          ),
         ];
 
-        const tx = await context.keyManager.connect(context.owner)["execute(bytes[])"](payloads);
+        const tx = await context.keyManager
+          .connect(context.owner)
+          ["execute(bytes[])"](payloads);
 
         // CHECK for `ContractCreated` event
-        expect(tx).to.emit(context.universalProfile, "ContractCreated").withArgs(OPERATION_TYPES.CREATE, ethers.utils.getAddress(futureTokenAddress), 0)
+        expect(tx)
+          .to.emit(context.universalProfile, "ContractCreated")
+          .withArgs(
+            OPERATION_TYPES.CREATE,
+            ethers.utils.getAddress(futureTokenAddress),
+            0
+          );
 
         // CHECK for tokens balances of recipients
-        const createdTokenContract = await new LSP7Mintable__factory(context.accounts[0]).attach(futureTokenAddress)
+        const createdTokenContract = await new LSP7Mintable__factory(
+          context.accounts[0]
+        ).attach(futureTokenAddress);
         expect([
           await createdTokenContract.balanceOf(recipients[0]),
           await createdTokenContract.balanceOf(recipients[1]),
           await createdTokenContract.balanceOf(recipients[2]),
-        ]).to.deep.equal(amounts)
+        ]).to.deep.equal(amounts);
       });
-      
+    });
+  });
+
+  describe("when using batch `executeRelayCall([],[],[])", () => {
+    let context: LSP6TestContext;
+
+    let minter: SignerWithAddress;
+    let tokenRecipient: SignerWithAddress;
+
+    let tokenContract: LSP7Mintable;
+
+    beforeEach(async () => {
+      context = await buildContext();
+
+      minter = context.accounts[1];
+      tokenRecipient = context.accounts[2];
+
+      // deploy token contract
+      tokenContract = await new LSP7Mintable__factory(
+        context.accounts[0]
+      ).deploy(
+        "My LSP7 Token",
+        "LSP7",
+        context.universalProfile.address,
+        false
+      );
+
+      const permissionKeys = [
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+      ];
+
+      const permissionsValues = [ALL_PERMISSIONS];
+
+      await setupKeyManager(context, permissionKeys, permissionsValues);
+    });
+
+    it("should 1) give the permission to someone to mint, 2) let the controller mint, 3) remove the permission to the controller to mint", async () => {
+      let signatures: string[];
+      let nonces: BigNumber[];
+      let payloads: string[];
+      const tokensToMint = 1_000;
+
+      // step 1 - give minter permissions to mint
+      const giveMinterPermissionsPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [
+            [
+              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                minter.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                minter.address.substring(2),
+            ],
+            [
+              PERMISSIONS.CALL,
+              combineAllowedCalls(
+                [INTERFACE_IDS.LSP7DigitalAsset],
+                [tokenContract.address],
+                [tokenContract.interface.getSighash("mint")]
+              ),
+            ],
+          ]
+        );
+
+      const ownerNonce = await context.keyManager.getNonce(
+        context.owner.address,
+        0
+      );
+      const ownerGivePermissionsSignature = await signLSP6ExecuteRelayCall(
+        context.keyManager,
+        ownerNonce.toHexString(),
+        LOCAL_PRIVATE_KEYS.ACCOUNT0,
+        giveMinterPermissionsPayload
+      );
+
+      // Step 2 - let minter mint
+      const minterMintPayload = tokenContract.interface.encodeFunctionData(
+        "mint",
+        [tokenRecipient.address, tokensToMint, true, "0x"]
+      );
+      const executePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, tokenContract.address, 0, minterMintPayload]
+        );
+
+      const minterNonce = await context.keyManager.getNonce(minter.address, 0);
+      const minterMintSignature = await signLSP6ExecuteRelayCall(
+        context.keyManager,
+        minterNonce.toHexString(),
+        LOCAL_PRIVATE_KEYS.ACCOUNT1,
+        executePayload
+      );
+
+      // Step 3 - remove minter permissions to mint
+      const removeMinterPermissionsPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [
+            [
+              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                minter.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                minter.address.substring(2),
+            ],
+            ["0x", "0x"],
+          ]
+        );
+      const newOwnerNonce = ownerNonce.add(1);
+      const ownerRemovePermissionsSignature = await signLSP6ExecuteRelayCall(
+        context.keyManager,
+        newOwnerNonce.toHexString(),
+        LOCAL_PRIVATE_KEYS.ACCOUNT0,
+        removeMinterPermissionsPayload
+      );
+
+      await context.keyManager
+        .connect(context.owner)
+        ["executeRelayCall(bytes[],uint256[],bytes[])"](
+          [
+            ownerGivePermissionsSignature,
+            minterMintSignature,
+            ownerRemovePermissionsSignature,
+          ],
+          [ownerNonce, minterNonce, newOwnerNonce],
+          [
+            giveMinterPermissionsPayload,
+            executePayload,
+            removeMinterPermissionsPayload,
+          ]
+        );
+
+      // CHECK that the recipient received its tokens
+      expect(await tokenContract.balanceOf(tokenRecipient.address)).to.equal(
+        tokensToMint
+      );
+
+      // CHECK that the minter does not have permissions anymore
+      expect(
+        await context.universalProfile["getData(bytes32[])"]([
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            minter.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            minter.address.substring(2),
+        ])
+      ).to.deep.equal(["0x", "0x"]);
+
+      // CHECK that the minter cannot mint anymore
+      await expect(
+        context.keyManager.connect(minter)["execute(bytes)"](executePayload)
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
+        .withArgs(minter.address);
     });
   });
 };

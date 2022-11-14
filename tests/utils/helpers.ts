@@ -1,5 +1,10 @@
 import { BigNumber, BytesLike } from "ethers";
 import { ethers } from "hardhat";
+import { LSP6KeyManager } from "../../types";
+
+// constants
+import { LSP6_VERSION } from "../../constants";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 export const abiCoder = ethers.utils.defaultAbiCoder;
 export const provider = ethers.provider;
@@ -190,4 +195,40 @@ export function combineAllowedCalls(
   }
 
   return result;
+}
+
+export async function signLSP6ExecuteRelayCall(
+  _keyManager: LSP6KeyManager,
+  _signerNonce: string,
+  _signerPrivateKey: string,
+  _payload: string
+) {
+  const signedMessageParams = {
+    lsp6Version: LSP6_VERSION,
+    chainId: 31337, // HARDHAT_CHAINID
+    nonce: _signerNonce,
+    msgValue: 0,
+    payload: _payload,
+  };
+
+  let encodedMessage = ethers.utils.solidityPack(
+    ["uint256", "uint256", "uint256", "uint256", "bytes"],
+    [
+      signedMessageParams.lsp6Version,
+      signedMessageParams.chainId,
+      signedMessageParams.nonce,
+      signedMessageParams.msgValue,
+      signedMessageParams.payload,
+    ]
+  );
+
+  let eip191Signer = new EIP191Signer();
+
+  let { signature } = await eip191Signer.signDataWithIntendedValidator(
+    _keyManager.address,
+    encodedMessage,
+    _signerPrivateKey
+  );
+
+  return signature;
 }
