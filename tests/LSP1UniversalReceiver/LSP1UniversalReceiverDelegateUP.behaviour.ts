@@ -142,33 +142,36 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
   });
 
-  describe("when testing LSP0-ERC725Account", () => {
+  describe.only("when testing LSP0-ERC725Account", () => {
     describe("when accepting ownership of an LSP0", () => {
-      let acceptingUniversalProfile: LSP0ERC725Account;
       let sentUniversalProfile: LSP0ERC725Account;
       before(async () => {
-        acceptingUniversalProfile = await new LSP0ERC725Account__factory(
-          context.accounts.owner1
-        ).deploy(context.accounts.owner1.address);
         sentUniversalProfile = await new LSP0ERC725Account__factory(
           context.accounts.owner1
         ).deploy(context.accounts.owner1.address);
       });
 
-      it("should not register universal profile as received vault", async () => {
+      it.only("should not register universal profile as received vault", async () => {
+        const acceptingUniversalProfile: LSP0ERC725Account =
+          context.universalProfile1;
+        const acceptingUniversalProfileKM: LSP6KeyManager =
+          context.lsp6KeyManager1;
+
         await sentUniversalProfile
           .connect(context.accounts.owner1)
           .transferOwnership(acceptingUniversalProfile.address);
+
         const acceptOwnershipPayload =
           sentUniversalProfile.interface.encodeFunctionData("acceptOwnership");
-        await acceptingUniversalProfile
-          .connect(context.accounts.owner1)
-          ["execute(uint256,address,uint256,bytes)"](
-            0,
-            sentUniversalProfile.address,
-            0,
-            acceptOwnershipPayload
+        const payloadToExecute =
+          acceptingUniversalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, sentUniversalProfile.address, 0, acceptOwnershipPayload]
           );
+
+        await acceptingUniversalProfileKM
+          .connect(context.accounts.owner1)
+          .execute(payloadToExecute);
 
         const receivedVaultsKeys = [
           ERC725YKeys.LSP10["LSP10Vaults[]"].length,
