@@ -217,7 +217,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 // CHECK for Universal Receiver Delegate key
                 _verifyCanSetUniversalReceiverDelegateKey(inputKey, from, permissions);
                 
-            } else if (bytes10(inputKey) == _LSP0_EXTENSION_HANDLER_PREFIX) {
+            } else if (bytes12(inputKey) == _LSP0_EXTENSION_HANDLER_PREFIX) {
                 // CHECK for Extension Handler key
                 _verifyCanSetExtensionHandlerKey(inputKey, from, permissions);
 

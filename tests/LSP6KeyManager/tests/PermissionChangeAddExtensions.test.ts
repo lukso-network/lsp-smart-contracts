@@ -47,31 +47,26 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       extensionHandlerKey1 =
         ERC725YKeys.LSP0.ExtensionHandlerPrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey2 =
         ERC725YKeys.LSP0.ExtensionHandlerPrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey3 =
         ERC725YKeys.LSP0.ExtensionHandlerPrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey4 =
         ERC725YKeys.LSP0.ExtensionHandlerPrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey5 =
         ERC725YKeys.LSP0.ExtensionHandlerPrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
