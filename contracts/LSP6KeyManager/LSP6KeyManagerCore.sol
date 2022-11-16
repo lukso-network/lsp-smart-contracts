@@ -125,9 +125,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @inheritdoc ILSP6KeyManager
      */
     function execute(bytes calldata payload) public payable returns (bytes memory) {
-        _verifyPermissions(msg.sender, payload);
+        _nonReentrantBefore(msg.sender);
 
-        return _executePayload(payload);
+        _verifyPermissions(msg.sender, payload);
+        bytes memory result = _executePayload(payload);
+
+        _nonReentrantAfter();
+
+        return result;
     }
 
     /**
@@ -148,6 +153,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         address signer = address(this).toDataWithIntendedValidator(encodedMessage).recover(signature);
 
+        _nonReentrantBefore(signer);
+
         if (!_isValidNonce(signer, nonce)) {
             revert InvalidRelayNonce(signer, nonce, signature);
         }
@@ -157,7 +164,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         _verifyPermissions(signer, payload);
 
-        return _executePayload(payload);
+        bytes memory result = _executePayload(payload);
+
+        _nonReentrantAfter();
+
+        return result;
     }
 
 
@@ -205,7 +216,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param from the address making the request
      * @param payload the payload that will be run on `target`
      */
-    function _verifyPermissions(address from, bytes calldata payload) internal nonReentrant(from) {
+    function _verifyPermissions(address from, bytes calldata payload) internal {
         bytes4 erc725Function = bytes4(payload);
 
         // get the permissions of the caller
@@ -912,7 +923,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (_reentrancyStatus == _ENTERED) {
             // CHECK the caller has REENTRANCY permission
             bytes32 callerPermissions = ERC725Y(target).getPermissionsFor(from);
-            _requirePermissions(msg.sender, callerPermissions, _PERMISSION_REENTRANCY);
+            _requirePermissions(from, callerPermissions, _PERMISSION_REENTRANCY);
         }
 
         _reentrancyStatus = _ENTERED;
