@@ -16,6 +16,10 @@ import {
   ReentrancyWithSetData__factory,
   ReentrancyWithValueTransfer,
   ReentrancyWithValueTransfer__factory,
+  RelayReentrancy,
+  RelayReentrancy__factory,
+  UniversalProfile,
+  LSP6KeyManager,
 } from "../../../types";
 
 // constants
@@ -32,35 +36,134 @@ import {
   encodeCompactBytesArray,
   LOCAL_PRIVATE_KEYS,
 } from "../../utils/helpers";
+import { BigNumber, BytesLike, Wallet } from "ethers";
+
+const generateRelayCall = async (
+  keyManager: LSP6KeyManager,
+  upExecutePayload: BytesLike,
+  signerAddress: string
+) => {
+  let latestNonce = await keyManager.callStatic.getNonce(signerAddress, 0);
+
+  const signedMessageParams = {
+    lsp6Version: LSP6_VERSION,
+    chainId: 31337, // HARDHAT_CHAINID
+    nonce: latestNonce,
+    msgValue: 0,
+    payload: upExecutePayload,
+  };
+
+  let encodedMessage = ethers.utils.solidityPack(
+    ["uint256", "uint256", "uint256", "uint256", "bytes"],
+    [
+      signedMessageParams.lsp6Version,
+      signedMessageParams.chainId,
+      signedMessageParams.nonce,
+      signedMessageParams.msgValue,
+      signedMessageParams.payload,
+    ]
+  );
+
+  let eip191Signer = new EIP191Signer();
+
+  let { signature } = await eip191Signer.signDataWithIntendedValidator(
+    keyManager.address,
+    encodedMessage,
+    LOCAL_PRIVATE_KEYS.ACCOUNT0
+  );
+
+  const relayCallContext: {
+    signature: BytesLike;
+    nonce: BigNumber;
+    payload: BytesLike;
+  } = {
+    signature,
+    nonce: signedMessageParams.nonce,
+    payload: signedMessageParams.payload,
+  };
+
+  return relayCallContext;
+};
+
+const generateValueTransferPayload = async (
+  relayReentrantContract: RelayReentrancy,
+  universalProfile: UniversalProfile,
+  keyManager: LSP6KeyManager,
+  signer: Wallet
+) => {
+  const upExecutePayload = universalProfile.interface.encodeFunctionData(
+    "execute(uint256,address,uint256,bytes)",
+    [0, relayReentrantContract.address, ethers.utils.parseEther("1"), "0x"]
+  );
+
+  let latestNonce = await keyManager.callStatic.getNonce(signer.address, 1);
+
+  const signedMessageParams = {
+    lsp6Version: LSP6_VERSION,
+    chainId: 31337, // HARDHAT_CHAINID
+    nonce: latestNonce,
+    msgValue: 0,
+    payload: upExecutePayload,
+  };
+
+  let encodedMessage = ethers.utils.solidityPack(
+    ["uint256", "uint256", "uint256", "uint256", "bytes"],
+    [
+      signedMessageParams.lsp6Version,
+      signedMessageParams.chainId,
+      signedMessageParams.nonce,
+      signedMessageParams.msgValue,
+      signedMessageParams.payload,
+    ]
+  );
+
+  let eip191Signer = new EIP191Signer();
+
+  let { signature } = await eip191Signer.signDataWithIntendedValidator(
+    keyManager.address,
+    encodedMessage,
+    signer.privateKey
+  );
+
+  await relayReentrantContract.prepareRelayCall(
+    signature,
+    signedMessageParams.nonce,
+    signedMessageParams.payload
+  );
+};
 
 export const testReentrancyScenarios = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
+  let owner: SignerWithAddress;
   let caller: SignerWithAddress;
-  let callerWithSignPermission;
+  let signer: Wallet;
   before(async () => {
     context = await buildContext();
+    owner = context.owner;
     caller = context.accounts[1];
-    callerWithSignPermission = new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT1);
+    signer = new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT0);
 
     const permissionKeys = [
       ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
         caller.address.substring(2),
+      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        signer.address.substring(2),
     ];
 
-    const permissionValues = [PERMISSIONS.CALL];
+    const permissionValues = [PERMISSIONS.CALL, PERMISSIONS.CALL];
 
     await setupKeyManager(context, permissionKeys, permissionValues);
 
     // Fund Universal Profile with some LYXe
-    await context.owner.sendTransaction({
+    await owner.sendTransaction({
       to: context.universalProfile.address,
       value: ethers.utils.parseEther("10"),
     });
   });
 
-  describe.only("contract cannot reenter with ALL_PERMISSIONS without REENTRANCY permission", () => {
+  describe("contract cannot reenter with ALL_PERMISSIONS without REENTRANCY permission", () => {
     let reentrancyWithValueTransfer: ReentrancyWithValueTransfer;
     let reentrancyWithSetData: ReentrancyWithSetData;
     let reentrancyWithAddPermission: ReentrancyWithAddPermission;
@@ -111,17 +214,17 @@ export const testReentrancyScenarios = (
 
       const permissionKeys = [
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrancyWithAddPermission.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrancyWithAddURD.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrancyWithChangePermission.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrancyWithChangeURD.address.substring(2),
+          reentrancyWithValueTransfer.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
           reentrancyWithSetData.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrancyWithValueTransfer.address.substring(2),
+          reentrancyWithAddPermission.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          reentrancyWithChangePermission.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          reentrancyWithAddURD.address.substring(2),
+        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          reentrancyWithChangeURD.address.substring(2),
         ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
@@ -143,12 +246,12 @@ export const testReentrancyScenarios = (
             "0xffffffff",
           ],
           [
-            reentrancyWithAddPermission.address,
-            reentrancyWithAddURD.address,
-            reentrancyWithChangePermission.address,
-            reentrancyWithChangeURD.address,
-            reentrancyWithSetData.address,
             reentrancyWithValueTransfer.address,
+            reentrancyWithSetData.address,
+            reentrancyWithAddPermission.address,
+            reentrancyWithChangePermission.address,
+            reentrancyWithAddURD.address,
+            reentrancyWithChangeURD.address,
           ],
           [
             "0xffffffff",
@@ -166,10 +269,10 @@ export const testReentrancyScenarios = (
           "setData(bytes32[],bytes[])",
           [permissionKeys, permissionValues]
         );
-      await context.keyManager
-        .connect(context.owner)
-        .execute(permissionsPayload);
+      //await context.keyManager.connect(owner).execute(permissionsPayload);
     });
+
+    it("", async () => {});
 
     it("should revert when reentering and transferring value", async () => {
       const reentrantCallPayload =
@@ -315,7 +418,7 @@ export const testReentrancyScenarios = (
     });
   });
 
-  describe.only("first call through `execute(..)`, second call through `execute(..)`", () => {
+  describe("first call through `execute(..)`, second call through `execute(..)`", () => {
     describe("when reentering and transferring value", () => {
       let contract_without_permissions: ReentrancyWithValueTransfer;
       let contract_with_REENTRANCY_permission_no_calls: ReentrancyWithValueTransfer;
@@ -435,9 +538,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
@@ -794,9 +895,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1080,9 +1179,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1272,9 +1369,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1469,9 +1564,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1662,9 +1755,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1799,14 +1890,14 @@ export const testReentrancyScenarios = (
     });
 
     after(async () => {
-      await context.owner.sendTransaction({
+      await owner.sendTransaction({
         to: context.universalProfile.address,
         value: ethers.utils.parseEther("1"),
       });
     });
   });
 
-  describe.only("first call through `executeRelayCall(..)`, second call through `execute(..)`", () => {
+  describe("first call through `executeRelayCall(..)`, second call through `execute(..)`", () => {
     describe("when reentering and transferring value", () => {
       let contract_without_permissions: ReentrancyWithValueTransfer;
       let contract_with_REENTRANCY_permission_no_calls: ReentrancyWithValueTransfer;
@@ -1853,7 +1944,7 @@ export const testReentrancyScenarios = (
               2
             ),
           ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            caller.address.substring(2),
+            signer.address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
             contract_with_REENTRANCY_permission_with_calls.address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -1926,9 +2017,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
@@ -1949,44 +2038,14 @@ export const testReentrancyScenarios = (
             [0, contract_without_permissions.address, 0, reentrantCallPayload]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -2015,44 +2074,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2084,44 +2113,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2153,44 +2152,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2222,44 +2191,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2291,44 +2230,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
@@ -2355,36 +2264,10 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         expect(
@@ -2393,11 +2276,7 @@ export const testReentrancyScenarios = (
           )
         ).to.equal(ethers.utils.parseEther("10"));
 
-        await context.keyManager.executeRelayCall(
-          signature,
-          signedMessageParams.nonce,
-          signedMessageParams.payload
-        );
+        await context.keyManager.executeRelayCall(signature, nonce, payload);
 
         expect(
           await context.universalProfile.provider.getBalance(
@@ -2464,7 +2343,7 @@ export const testReentrancyScenarios = (
               2
             ),
           ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            caller.address.substring(2),
+            signer.address.substring(2),
           ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
             contract_with_REENTRANCY_permission_with_allowed_keys.address.substring(
               2
@@ -2537,9 +2416,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -2565,44 +2442,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -2631,44 +2478,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2700,44 +2517,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2769,44 +2556,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "NoERC725YDataKeysAllowed"
@@ -2836,44 +2593,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2905,44 +2632,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "NoERC725YDataKeysAllowed"
@@ -2972,43 +2669,13 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
-        );
-
-        await context.keyManager.executeRelayCall(
-          signature,
-          signedMessageParams.nonce,
-          signedMessageParams.payload
-        );
+        await context.keyManager.executeRelayCall(signature, nonce, payload);
 
         const hardcodedKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -3048,7 +2715,7 @@ export const testReentrancyScenarios = (
               2
             ),
           ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            caller.address.substring(2),
+            signer.address.substring(2),
         ];
 
         const permissionValues = [
@@ -3075,9 +2742,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -3103,44 +2768,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -3169,44 +2804,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3238,44 +2843,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3307,43 +2882,13 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
-        );
-
-        await context.keyManager.executeRelayCall(
-          signature,
-          signedMessageParams.nonce,
-          signedMessageParams.payload
-        );
+        await context.keyManager.executeRelayCall(signature, nonce, payload);
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -3384,7 +2929,7 @@ export const testReentrancyScenarios = (
               2
             ),
           ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            caller.address.substring(2),
+            signer.address.substring(2),
         ];
 
         const permissionValues = [
@@ -3411,9 +2956,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -3439,44 +2982,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -3505,44 +3018,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3574,44 +3057,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3643,43 +3096,13 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
-        );
-
-        await context.keyManager.executeRelayCall(
-          signature,
-          signedMessageParams.nonce,
-          signedMessageParams.payload
-        );
+        await context.keyManager.executeRelayCall(signature, nonce, payload);
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -3725,7 +3148,7 @@ export const testReentrancyScenarios = (
               2
             ),
           ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            caller.address.substring(2),
+            signer.address.substring(2),
         ];
 
         const permissionValues = [
@@ -3752,9 +3175,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -3780,44 +3201,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -3846,44 +3237,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3915,44 +3276,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3984,43 +3315,13 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
-        );
-
-        await context.keyManager.executeRelayCall(
-          signature,
-          signedMessageParams.nonce,
-          signedMessageParams.payload
-        );
+        await context.keyManager.executeRelayCall(signature, nonce, payload);
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -4062,7 +3363,7 @@ export const testReentrancyScenarios = (
               2
             ),
           ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
-            caller.address.substring(2),
+            signer.address.substring(2),
         ];
 
         const permissionValues = [
@@ -4089,9 +3390,7 @@ export const testReentrancyScenarios = (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager
-          .connect(context.owner)
-          .execute(permissionsPayload);
+        await context.keyManager.connect(owner).execute(permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -4117,44 +3416,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -4183,44 +3452,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4252,44 +3491,14 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
-        );
-
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
         await expect(
-          context.keyManager.executeRelayCall(
-            signature,
-            signedMessageParams.nonce,
-            signedMessageParams.payload
-          )
+          context.keyManager.executeRelayCall(signature, nonce, payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4321,43 +3530,13 @@ export const testReentrancyScenarios = (
             ]
           );
 
-        let latestNonce = await context.keyManager.callStatic.getNonce(
-          callerWithSignPermission.address,
-          0
+        const { signature, nonce, payload } = await generateRelayCall(
+          context.keyManager,
+          upExecutePayload,
+          signer.address
         );
 
-        const signedMessageParams = {
-          lsp6Version: LSP6_VERSION,
-          chainId: 31337, // HARDHAT_CHAINID
-          nonce: latestNonce,
-          msgValue: 0,
-          payload: upExecutePayload,
-        };
-
-        let encodedMessage = ethers.utils.solidityPack(
-          ["uint256", "uint256", "uint256", "uint256", "bytes"],
-          [
-            signedMessageParams.lsp6Version,
-            signedMessageParams.chainId,
-            signedMessageParams.nonce,
-            signedMessageParams.msgValue,
-            signedMessageParams.payload,
-          ]
-        );
-
-        let eip191Signer = new EIP191Signer();
-
-        let { signature } = await eip191Signer.signDataWithIntendedValidator(
-          context.keyManager.address,
-          encodedMessage,
-          LOCAL_PRIVATE_KEYS.ACCOUNT1
-        );
-
-        await context.keyManager.executeRelayCall(
-          signature,
-          signedMessageParams.nonce,
-          signedMessageParams.payload
-        );
+        await context.keyManager.executeRelayCall(signature, nonce, payload);
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -4370,7 +3549,365 @@ export const testReentrancyScenarios = (
     });
   });
 
-  describe("first call through `executeRelayCall(..)`, second call through `executeRelayCall(..)`", () => {});
+  describe("first call through `execute(..)`, second call through `executeRelayCall(..)`", () => {
+    describe("when reentering and transferring value", () => {
+      let relayer_contract: RelayReentrancy;
+      let signer_without_permissions: Wallet;
+      let signer_with_REENTRANCY_permission_no_calls: Wallet;
+      let signer_with_REENTRANCY_permission_with_calls: Wallet;
+      let signer_with_VALUETRANSFER_permissions_no_calls: Wallet;
+      let signer_with_VALUETRANSFER_permissions_with_calls: Wallet;
+      let signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: Wallet;
+      let signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: Wallet;
+      before(async () => {
+        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        signer_without_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+        signer_with_REENTRANCY_permission_no_calls = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
+        signer_with_REENTRANCY_permission_with_calls = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT2
+        );
+        signer_with_VALUETRANSFER_permissions_no_calls = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT3
+        );
+        signer_with_VALUETRANSFER_permissions_with_calls = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT4
+        );
+        signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT5);
+        signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT6);
 
-  describe("first call through `execute(..)`, second call through `executeRelayCall(..)`", () => {});
+        const permissionKeys = [
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission_no_calls.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission_with_calls.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_VALUETRANSFER_permissions_no_calls.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_VALUETRANSFER_permissions_with_calls.address.substring(
+              2
+            ),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls.address.substring(
+              2
+            ),
+          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls.address.substring(
+              2
+            ),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            caller.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            signer_with_REENTRANCY_permission_with_calls.address.substring(2),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            signer_with_VALUETRANSFER_permissions_with_calls.address.substring(
+              2
+            ),
+          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls.address.substring(
+              2
+            ),
+        ];
+
+        const permissionValues = [
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+          combinePermissions(
+            PERMISSIONS.CALL,
+            PERMISSIONS.REENTRANCY,
+            PERMISSIONS.TRANSFERVALUE
+          ),
+          combinePermissions(
+            PERMISSIONS.CALL,
+            PERMISSIONS.REENTRANCY,
+            PERMISSIONS.TRANSFERVALUE
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+        ];
+
+        const permissionsPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [permissionKeys, permissionValues]
+          );
+        await context.keyManager.connect(owner).execute(permissionsPayload);
+      });
+
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData(
+            "universalReceiverDelegate",
+            [
+              context.universalProfile.address,
+              0,
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+              "0x",
+            ]
+          );
+
+        const upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+
+        generateValueTransferPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_without_permissions
+        );
+
+        await expect(
+          context.keyManager.connect(caller).execute(upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(signer_without_permissions.address, "REENTRANCY");
+      });
+
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData(
+            "universalReceiverDelegate",
+            [
+              context.universalProfile.address,
+              0,
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+              "0x",
+            ]
+          );
+
+        const upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+
+        generateValueTransferPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission_no_calls
+        );
+
+        await expect(
+          context.keyManager.connect(caller).execute(upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission_no_calls.address,
+            "TRANSFERVALUE"
+          );
+      });
+
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData(
+            "universalReceiverDelegate",
+            [
+              context.universalProfile.address,
+              0,
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+              "0x",
+            ]
+          );
+
+        const upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+
+        generateValueTransferPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission_with_calls
+        );
+
+        await expect(
+          context.keyManager.connect(caller).execute(upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission_with_calls.address,
+            "TRANSFERVALUE"
+          );
+      });
+
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData(
+            "universalReceiverDelegate",
+            [
+              context.universalProfile.address,
+              0,
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+              "0x",
+            ]
+          );
+
+        const upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+
+        generateValueTransferPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_VALUETRANSFER_permissions_no_calls
+        );
+
+        await expect(
+          context.keyManager.connect(caller).execute(upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_VALUETRANSFER_permissions_no_calls.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData(
+            "universalReceiverDelegate",
+            [
+              context.universalProfile.address,
+              0,
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+              "0x",
+            ]
+          );
+
+        const upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+
+        generateValueTransferPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_VALUETRANSFER_permissions_with_calls
+        );
+
+        await expect(
+          context.keyManager.connect(caller).execute(upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_VALUETRANSFER_permissions_with_calls.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData(
+            "universalReceiverDelegate",
+            [
+              context.universalProfile.address,
+              0,
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+              "0x",
+            ]
+          );
+
+        const upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+
+        generateValueTransferPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls
+        );
+
+        await expect(
+          context.keyManager.connect(caller).execute(upExecutePayload)
+        ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
+      });
+
+      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData(
+            "universalReceiverDelegate",
+            [
+              context.universalProfile.address,
+              0,
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+              "0x",
+            ]
+          );
+
+        const upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+
+        generateValueTransferPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls
+        );
+
+        expect(
+          await context.universalProfile.provider.getBalance(
+            context.universalProfile.address
+          )
+        ).to.equal(ethers.utils.parseEther("10"));
+
+        await context.keyManager.connect(caller).execute(upExecutePayload);
+
+        expect(
+          await context.universalProfile.provider.getBalance(
+            context.universalProfile.address
+          )
+        ).to.equal(ethers.utils.parseEther("9"));
+
+        expect(
+          await context.universalProfile.provider.getBalance(
+            relayer_contract.address
+          )
+        ).to.equal(ethers.utils.parseEther("1"));
+      });
+    });
+  });
+
+  describe("first call through `executeRelayCall(..)`, second call through `executeRelayCall(..)`", () => {});
 };
