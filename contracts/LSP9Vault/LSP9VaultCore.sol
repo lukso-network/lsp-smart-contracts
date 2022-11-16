@@ -80,6 +80,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
     }
 
+    // solhint-disable
+
     /**
      * @dev Emits an event when receiving native tokens
      *
@@ -145,6 +147,8 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
             }
         }
     }
+
+    // solhint-enable
 
     /**
      * @dev See {IERC165-supportsInterface}.

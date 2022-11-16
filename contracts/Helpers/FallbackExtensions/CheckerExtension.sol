@@ -5,6 +5,8 @@ pragma solidity ^0.8.0;
  * @dev This contract is used only for testing purposes
  */
 contract CheckerExtension {
+    // solhint-disable
+
     // Checks that the msg.sender + msg.value are appended to the msg.data
     // Length should be: 4 + 32 + 32 + 20 + 32
     // 4bytes function selector + 32bytes parameter address with offset + 32bytes parameter uint256

@@ -6,6 +6,7 @@ pragma solidity ^0.8.0;
  */
 contract RevertFallbackExtension {
     fallback() external payable {
+        // solhint-disable-next-line reason-string
         revert();
     }
 }

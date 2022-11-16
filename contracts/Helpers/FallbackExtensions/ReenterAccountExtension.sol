@@ -6,6 +6,7 @@ pragma solidity ^0.8.0;
  */
 contract ReenterAccountExtension {
     function reenterAccount(bytes memory payload) public {
+        // solhint-disable
         (bool success, bytes memory result) = msg.sender.call(payload);
         require(success);
     }

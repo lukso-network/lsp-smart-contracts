@@ -8,6 +8,7 @@ contract RevertCustomExtension {
     error RevertWithAddresses(address txOrigin, address msgSender);
 
     function revertCustom() public view virtual {
+        // solhint-disable-next-line avoid-tx-origin
         revert RevertWithAddresses(tx.origin, msg.sender);
     }
 }

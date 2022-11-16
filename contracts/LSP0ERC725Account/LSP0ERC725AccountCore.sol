@@ -70,6 +70,8 @@ abstract contract LSP0ERC725AccountCore is
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 
+    // solhint-disable
+
     /**
      * @dev Emits an event when receiving native tokens
      *
@@ -135,6 +137,8 @@ abstract contract LSP0ERC725AccountCore is
             }
         }
     }
+
+    // solhint-enable
 
     /**
      * @dev See {IERC165-supportsInterface}.

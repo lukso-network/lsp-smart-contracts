@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
  * @dev This contract is used only for testing purposes
  */
 contract OnERC721ReceivedExtension {
+    // solhint-disable
     function onERC721Received(
         address operator,
         address from,
