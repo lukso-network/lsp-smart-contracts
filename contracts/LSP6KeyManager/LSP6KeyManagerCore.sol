@@ -79,8 +79,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev This modifier doesn't allow for reentrancy calls unless the caller
      * is a controller address with _PERMISSION_REENTRANCY`.
      */
-    modifier nonReentrant() {
-        _nonReentrantBefore();
+    modifier nonReentrant(address from) {
+        _nonReentrantBefore(from);
         _;
         _nonReentrantAfter();
     }
@@ -123,7 +123,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata payload) public payable nonReentrant returns (bytes memory) {
+    function execute(bytes calldata payload) public payable returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
 
         return _executePayload(payload);
@@ -136,7 +136,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory signature,
         uint256 nonce,
         bytes calldata payload
-    ) public payable nonReentrant returns (bytes memory) {
+    ) public payable returns (bytes memory) {
         bytes memory encodedMessage = abi.encodePacked(
             LSP6_VERSION,
             block.chainid,
@@ -204,7 +204,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param from the address making the request
      * @param payload the payload that will be run on `target`
      */
-    function _verifyPermissions(address from, bytes calldata payload) internal view {
+    function _verifyPermissions(address from, bytes calldata payload) internal nonReentrant(from) {
         bytes4 erc725Function = bytes4(payload);
 
         // get the permissions of the caller
@@ -872,10 +872,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts
      */
-    function _nonReentrantBefore() private {
+    function _nonReentrantBefore(address from) private {
         if (_reentrancyStatus == _ENTERED) {
             // CHECK the caller has REENTRANCY permission
-            bytes32 callerPermissions = ERC725Y(target).getPermissionsFor(msg.sender);
+            bytes32 callerPermissions = ERC725Y(target).getPermissionsFor(from);
             _requirePermissions(msg.sender, callerPermissions, _PERMISSION_REENTRANCY);
         }
 
