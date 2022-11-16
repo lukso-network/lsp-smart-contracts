@@ -21,6 +21,11 @@ import {
 } from "./LSP9Vault.behaviour";
 
 import {
+  LSP17TestContext,
+  shouldBehaveLikeLSP17,
+} from "../LSP17FallbackExtensions/LSP17FallbackExtensions.behaviour";
+
+import {
   deployProxy,
   setupProfileWithKeyManagerWithURD,
 } from "../utils/fixtures";
@@ -70,6 +75,18 @@ describe("LSP9Vault", () => {
       };
     };
 
+    const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = {
+        owner: accounts[0],
+      };
+      const contract = await new LSP9Vault__factory(accounts[0]).deploy(
+        deployParams.owner.address
+      );
+
+      return { accounts, contract, deployParams };
+    };
+
     describe("when deploying the contract", () => {
       let context: LSP9TestContext;
 
@@ -93,6 +110,7 @@ describe("LSP9Vault", () => {
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP9(buildTestContext);
       shouldBehaveLikeLSP14(buildLSP14TestContext);
+      shouldBehaveLikeLSP17(buildLSP17TestContext);
     });
   });
 
@@ -125,6 +143,26 @@ describe("LSP9Vault", () => {
         universalProfile,
         lsp6KeyManager,
       };
+    };
+
+    const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = {
+        owner: accounts[0],
+      };
+
+      const lsp9VaultInit = await new LSP9VaultInit__factory(
+        accounts[0]
+      ).deploy();
+
+      const lsp9VaultProxy = await deployProxy(
+        lsp9VaultInit.address,
+        accounts[0]
+      );
+
+      const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
+
+      return { accounts, contract: lsp9Vault, deployParams };
     };
 
     const initializeProxy = async (context: LSP9TestContext) => {
@@ -203,6 +241,16 @@ describe("LSP9Vault", () => {
           deployParams: { owner: context.accounts.owner },
           onlyOwnerRevertString,
         };
+      });
+
+      shouldBehaveLikeLSP17(async () => {
+        let fallbackExtensionContext = await buildLSP17TestContext();
+
+        await fallbackExtensionContext.contract["initialize(address)"](
+          fallbackExtensionContext.deployParams.owner.address
+        );
+
+        return fallbackExtensionContext;
       });
     });
   });
