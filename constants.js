@@ -69,10 +69,6 @@ const SupportedStandards = {
  * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
  */
 const ERC725YKeys = {
-	LSP0: {
-		// bytes10(keccak256('ExtensionHandler'))
-		ExtensionHandlerPrefix: '0x21c768241ee86a8d564b0000',
-	},
 	LSP1: {
 		// bytes10(keccak256('LSP1UniversalReceiverDelegate'))
 		LSP1UniversalReceiverDelegatePrefix: '0x0cfc51aec37c55a4d0b10000',
@@ -146,6 +142,10 @@ const ERC725YKeys = {
 			index: '0x7c8c3416d6cda87cd42c71ea1843df28',
 		},
 	},
+	LSP17: {
+		// bytes10(keccak256('LSP17FallbackExtensionsHandler'))
+		LSP17FallbackExtensionsHandler: '0x64faf305410d8680dd710000',
+	}
 };
 
 const BasicUPSetup_Schema = [
