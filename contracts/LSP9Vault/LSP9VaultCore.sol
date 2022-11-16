@@ -35,6 +35,9 @@ import {
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
+import {
+    _LSP17_FALLBACK_EXTENSIONS_HANDLER_PREFIX
+} from "../LSP17FallbackExtensions/LSP17Constants.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -80,12 +83,67 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
     /**
      * @dev Emits an event when receiving native tokens
      *
+     * Forwards the call to an extension (address) stored under a _LSP17_FALLBACK_EXTENSIONS_HANDLER_ appended
+     * to a function selector. If there is no extension stored under the data key, return.
+     *
+     * If the msg.data is shorter than 4 bytes or msg.sig is the bytes4(0), do not check for an extension and return
+     *
      * Executed when:
      * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
      * - receiving native tokens with some calldata.
      */
     fallback() external payable virtual {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+
+        // People wishing to send graffiti can prepend the data with bytes4(0)
+        // to bypass the check of a possible extension
+        if (msg.data.length < 4 || msg.sig == bytes4(0)) {
+            return;
+        }
+        // If the function selector is not bytes4(0), check for a call extension
+        else {
+            bytes32 extensionHandlerDataKey = LSP2Utils.generateMappingKey(
+                _LSP17_FALLBACK_EXTENSIONS_HANDLER_PREFIX,
+                msg.sig
+            );
+
+            // Check if there is an extension for the function selector called
+            address extension = address(bytes20(_getData(extensionHandlerDataKey)));
+
+            // if no extension was found, return
+            if (extension == address(0)) {
+                return;
+            }
+            // if the extension was found, call the extension with the msg.data
+            // appended with bytes20(address) and bytes32(msg.value)
+            else {
+                assembly {
+                    calldatacopy(0, 0, calldatasize())
+
+                    // The msg.sender address is shifted to the left by 12 bytes to remove the padding
+                    // Then the address without padding is stored right after the calldata
+                    mstore(calldatasize(), shl(96, caller()))
+
+                    // The msg.value is stored right after the calldata + msg.sender
+                    mstore(add(calldatasize(), 20), callvalue())
+
+                    // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
+                    let success := call(gas(), extension, 0, 0, add(calldatasize(), 52), 0, 0)
+
+                    // Copy the returned data
+                    returndatacopy(0, 0, returndatasize())
+
+                    switch success
+                    // call returns 0 on failed calls
+                    case 0 {
+                        revert(0, returndatasize())
+                    }
+                    default {
+                        return(0, returndatasize())
+                    }
+                }
+            }
+        }
     }
 
     /**
