@@ -201,13 +201,14 @@ export async function signLSP6ExecuteRelayCall(
   _keyManager: LSP6KeyManager,
   _signerNonce: string,
   _signerPrivateKey: string,
+  _msgValue: number | BigNumber | string,
   _payload: string
 ) {
   const signedMessageParams = {
     lsp6Version: LSP6_VERSION,
     chainId: 31337, // HARDHAT_CHAINID
     nonce: _signerNonce,
-    msgValue: 0,
+    msgValue: _msgValue,
     payload: _payload,
   };
 

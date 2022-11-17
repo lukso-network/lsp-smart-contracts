@@ -107,9 +107,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @inheritdoc ILSP6KeyManager
      */
     function execute(bytes calldata payload) public payable returns (bytes memory) {
-        _verifyPermissions(msg.sender, payload);
-
-        return _executePayload(payload);
+        return _execute(payload, msg.value);
     }
 
     /**
@@ -117,9 +115,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      */
     function execute(bytes[] calldata payloads) public payable returns (bytes[] memory) {
         bytes[] memory results = new bytes[](payloads.length);
+        bool msgValueSent;
 
         for (uint256 ii = 0; ii <= payloads.length - 1; ii++) {
-            results[ii] = execute(payloads[ii]);
+            if (!msgValueSent) {
+                results[ii] = _execute(payloads[ii], msg.value);
+                msgValueSent = true;
+            } else {
+                results[ii] = _execute(payloads[ii], 0);
+            }
         }
 
         return results;
@@ -133,6 +137,43 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 nonce,
         bytes calldata payload
     ) public payable returns (bytes memory) {
+        return _executeRelayCall(signature, nonce, payload, msg.value);
+    }
+
+    /**
+     * @inheritdoc ILSP6KeyManager
+     */
+    function executeRelayCall(
+        bytes[] memory signatures,
+        uint256[] calldata nonces,
+        bytes[] calldata payloads
+    ) public payable returns (bytes[] memory) {
+        bytes[] memory results = new bytes[](payloads.length);
+        bool msgValueSent;
+
+        for (uint256 ii; ii < payloads.length; ++ii) {
+            if (!msgValueSent) {
+                results[ii] = _executeRelayCall(signatures[ii], nonces[ii], payloads[ii], msg.value);
+                msgValueSent = true;
+            } else {
+                results[ii] = _executeRelayCall(signatures[ii], nonces[ii], payloads[ii], 0);
+            }
+        }
+
+        return results;
+    }
+
+    function _execute(bytes calldata payload, uint256 msgValue) internal returns (bytes memory) {
+        _verifyPermissions(msg.sender, payload);
+        return _executePayload(payload, msgValue);
+    }
+
+    function _executeRelayCall(
+        bytes memory signature,
+        uint256 nonce,
+        bytes calldata payload,
+        uint256 msgValue
+    ) internal returns (bytes memory) {
         bytes memory encodedMessage = abi.encodePacked(
             LSP6_VERSION,
             block.chainid,
@@ -152,24 +193,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         _verifyPermissions(signer, payload);
 
-        return _executePayload(payload);
-    }
-
-    /**
-     * @inheritdoc ILSP6KeyManager
-     */
-    function executeRelayCall(
-        bytes[] calldata signatures,
-        uint256[] calldata nonces,
-        bytes[] calldata payloads
-    ) public payable returns (bytes[] memory) {
-        bytes[] memory results = new bytes[](payloads.length);
-
-        for (uint256 ii; ii < payloads.length; ++ii) {
-            results[ii] = executeRelayCall(signatures[ii], nonces[ii], payloads[ii]);
-        }
-
-        return results;
+        return _executePayload(payload, msgValue);
     }
 
 
@@ -179,12 +203,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
       * @param payload the payload to execute
       * @return bytes the result from calling the target with `_payload`
       */
-     function _executePayload(bytes calldata payload) internal returns (bytes memory) {
+     function _executePayload(bytes calldata payload, uint256 msgValue) internal returns (bytes memory) {
 
         emit Executed(msg.value, bytes4(payload));
 
         // solhint-disable avoid-low-level-calls
-        (bool success, bytes memory returnData) = target.call{value: msg.value, gas: gasleft()}(
+        (bool success, bytes memory returnData) = target.call{value: msgValue, gas: gasleft()}(
             payload
         );
         bytes memory result = Address.verifyCallResult(

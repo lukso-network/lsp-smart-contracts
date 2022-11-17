@@ -18,10 +18,10 @@ import {
   abiCoder,
   combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
+  provider,
   signLSP6ExecuteRelayCall,
 } from "../../utils/helpers";
 import {
-  LSP6KeyManager,
   LSP7Mintable,
   LSP7MintableInit__factory,
   LSP7Mintable__factory,
@@ -119,8 +119,11 @@ export const shouldBehaveLikeBatchExecute = (
           .connect(context.owner)
           ["execute(bytes[])"](batchExecutePayloads);
 
-        expect(tx).to.changeEtherBalance(owner, ethers.utils.parseEther("-6"));
-        expect(tx).to.changeEtherBalance(recipients, amounts);
+        await expect(tx).to.changeEtherBalance(
+          context.universalProfile.address,
+          ethers.utils.parseEther("-6")
+        );
+        await expect(tx).to.changeEtherBalances(recipients, amounts);
       });
 
       it("should send LYX + some LSP7 tokens to the same address", async () => {
@@ -163,8 +166,8 @@ export const shouldBehaveLikeBatchExecute = (
           .connect(context.owner)
           ["execute(bytes[])"](payloads);
 
+        await expect(tx).to.changeEtherBalance(recipient, lyxAmount);
         expect(await lyxDaiToken.balanceOf(recipient)).to.equal(lyxDaiAmount);
-        expect(tx).to.changeEtherBalance(recipient, lyxAmount);
       });
 
       it("should send 3x different tokens to the same recipient", async () => {
@@ -286,9 +289,13 @@ export const shouldBehaveLikeBatchExecute = (
           ]);
 
         // CHECK that token contract has been deployed
-        expect(tx)
+        await expect(tx)
           .to.emit(context.universalProfile, "ContractCreated")
-          .withArgs(OPERATION_TYPES.CREATE, futureTokenAddress, 0);
+          .withArgs(
+            OPERATION_TYPES.CREATE,
+            ethers.utils.getAddress(futureTokenAddress),
+            0
+          );
 
         // CHECK initialize parameters have been set correctly
         const nameResult = await futureTokenInstance["getData(bytes32)"](
@@ -344,7 +351,6 @@ export const shouldBehaveLikeBatchExecute = (
         const futureTokenAddress = await context.keyManager
           .connect(context.owner)
           .callStatic["execute(bytes)"](lsp7DeploymentPayload);
-        console.log("futureTokenAddress: ", futureTokenAddress);
 
         // step 2 - mint some tokens
         // use the interface of an existing token for encoding the function call
@@ -396,7 +402,7 @@ export const shouldBehaveLikeBatchExecute = (
           ["execute(bytes[])"](payloads);
 
         // CHECK for `ContractCreated` event
-        expect(tx)
+        await expect(tx)
           .to.emit(context.universalProfile, "ContractCreated")
           .withArgs(
             OPERATION_TYPES.CREATE,
@@ -413,6 +419,152 @@ export const shouldBehaveLikeBatchExecute = (
           await createdTokenContract.balanceOf(recipients[1]),
           await createdTokenContract.balanceOf(recipients[2]),
         ]).to.deep.equal(amounts);
+      });
+
+      describe("when specifying msg.value", () => {
+        it("should forward msg.value only once", async () => {
+          const firstRecipient = context.accounts[1].address;
+          const secondRecipient = context.accounts[2].address;
+          const thirdRecipient = context.accounts[3].address;
+
+          const amountToFund = ethers.utils.parseEther("5");
+          const amountPerRecipient = ethers.utils.parseEther("1");
+
+          const firstLyxTransfer =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, firstRecipient, amountPerRecipient, "0x"]
+            );
+
+          const secondLyxTransfer =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, secondRecipient, amountPerRecipient, "0x"]
+            );
+
+          const thirdLyxTransfer =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, thirdRecipient, amountPerRecipient, "0x"]
+            );
+
+          let tx = await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes[])"](
+              [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+              { value: amountToFund }
+            );
+
+          await expect(tx).to.changeEtherBalance(
+            context.universalProfile.address,
+            amountToFund.sub(amountPerRecipient.mul(3))
+          );
+
+          await expect(tx).to.changeEtherBalances(
+            [firstRecipient, secondRecipient, thirdRecipient],
+            [amountPerRecipient, amountPerRecipient, amountPerRecipient]
+          );
+        });
+
+        describe("when all the payloads are setData(...)", () => {
+          it("should revert and not leave any funds locked on the Key Manager", async () => {
+            const amountToFund = ethers.utils.parseEther("5");
+
+            const dataKeys = [
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key1")),
+              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key2")),
+            ];
+            const dataValues = ["0xaaaaaaaa", "0xbbbbbbbb"];
+
+            const keyManagerBalanceBefore = await ethers.provider.getBalance(
+              context.keyManager.address
+            );
+
+            const firstSetDataPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [dataKeys[0], dataValues[0]]
+              );
+
+            const secondSetDataPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [dataKeys[1], dataValues[1]]
+              );
+
+            // this error occurs when calling `setData(...)` with msg.value,
+            // since these functions on ERC725Y are not payable
+            await expect(
+              context.keyManager
+                .connect(context.owner)
+                ["execute(bytes[])"](
+                  [firstSetDataPayload, secondSetDataPayload],
+                  { value: amountToFund }
+                )
+            ).to.be.revertedWith(
+              "LSP6: Unknown Error occured when calling the linked target contract"
+            );
+
+            const keyManagerBalanceAfter = await ethers.provider.getBalance(
+              context.keyManager.address
+            );
+
+            expect(keyManagerBalanceAfter).to.equal(keyManagerBalanceBefore);
+
+            // the Key Manager must not hold any funds and must always forward any funds sent to it.
+            // it's balance must always be 0 after any execution
+            expect(
+              await provider.getBalance(context.keyManager.address)
+            ).to.equal(0);
+          });
+        });
+
+        describe("when one payload is `setData(...)` and one payload is `execute(...)`", () => {
+          it("should forward the funds on the first call and set data on the second call", async () => {
+            const amountToFund = ethers.utils.parseEther("5");
+
+            // there are 5 functions available to call on the UP via the Key Manager:
+            // 1. `setData(bytes32,bytes)`
+            // 2. `setData(bytes32[],bytes[])`
+            // 3. `execute(uint256,address,uint256,bytes)`
+            // 4. `transferOwnership(address)`
+            // 5. `acceptOwnership()`
+            //
+            // only `execute(...)` is payable, so we will use that to forward funds (msg.value) to the UP
+            // in order to fund the UP while setting data, we will then make an empty call to address(0) on the first payload
+            const fundingPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [OPERATION_TYPES.CALL, ethers.constants.AddressZero, 0, "0x"]
+              );
+
+            const dataKey = ethers.utils.keccak256(
+              ethers.utils.toUtf8Bytes("key1")
+            );
+            const dataValue = "0xaaaaaaaa";
+
+            const setDataPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [dataKey, dataValue]
+              );
+
+            let tx = await context.keyManager
+              .connect(context.owner)
+              ["execute(bytes[])"]([fundingPayload, setDataPayload], {
+                value: amountToFund,
+              });
+
+            await expect(tx).to.changeEtherBalance(
+              context.universalProfile.address,
+              amountToFund
+            );
+
+            expect(
+              await context.universalProfile["getData(bytes32)"](dataKey)
+            ).to.equal(dataValue);
+          });
+        });
       });
     });
   });
@@ -487,6 +639,7 @@ export const shouldBehaveLikeBatchExecute = (
         context.keyManager,
         ownerNonce.toHexString(),
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
+        0,
         giveMinterPermissionsPayload
       );
 
@@ -506,6 +659,7 @@ export const shouldBehaveLikeBatchExecute = (
         context.keyManager,
         minterNonce.toHexString(),
         LOCAL_PRIVATE_KEYS.ACCOUNT1,
+        0,
         executePayload
       );
 
@@ -528,6 +682,7 @@ export const shouldBehaveLikeBatchExecute = (
         context.keyManager,
         newOwnerNonce.toHexString(),
         LOCAL_PRIVATE_KEYS.ACCOUNT0,
+        0,
         removeMinterPermissionsPayload
       );
 
@@ -568,6 +723,85 @@ export const shouldBehaveLikeBatchExecute = (
       )
         .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
         .withArgs(minter.address);
+    });
+
+    describe("when specifying msg.value", () => {
+      it("should forward msg.value only once", async () => {
+        const firstRecipient = context.accounts[1].address;
+        const secondRecipient = context.accounts[2].address;
+        const thirdRecipient = context.accounts[3].address;
+
+        const amountToFund = ethers.utils.parseEther("5");
+        const amountPerRecipient = ethers.utils.parseEther("1");
+
+        const firstLyxTransfer =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, firstRecipient, amountPerRecipient, "0x"]
+          );
+
+        const secondLyxTransfer =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, secondRecipient, amountPerRecipient, "0x"]
+          );
+
+        const thirdLyxTransfer =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, thirdRecipient, amountPerRecipient, "0x"]
+          );
+
+        const ownerNonce = await context.keyManager.getNonce(
+          context.owner.address,
+          0
+        );
+
+        const firstTransferLyxSignature = await signLSP6ExecuteRelayCall(
+          context.keyManager,
+          ownerNonce.toHexString(),
+          LOCAL_PRIVATE_KEYS.ACCOUNT0,
+          amountToFund,
+          firstLyxTransfer
+        );
+        const secondTransferLyxSignature = await signLSP6ExecuteRelayCall(
+          context.keyManager,
+          ownerNonce.add(1).toHexString(),
+          LOCAL_PRIVATE_KEYS.ACCOUNT0,
+          amountToFund,
+          secondLyxTransfer
+        );
+        const thirdTransferLyxSignature = await signLSP6ExecuteRelayCall(
+          context.keyManager,
+          ownerNonce.add(2).toHexString(),
+          LOCAL_PRIVATE_KEYS.ACCOUNT0,
+          amountToFund,
+          thirdLyxTransfer
+        );
+
+        let tx = await context.keyManager
+          .connect(context.owner)
+          ["executeRelayCall(bytes[],uint256[],bytes[])"](
+            [
+              firstTransferLyxSignature,
+              secondTransferLyxSignature,
+              thirdTransferLyxSignature,
+            ],
+            [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)],
+            [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+            { value: amountToFund }
+          );
+
+        await expect(tx).to.changeEtherBalance(
+          context.universalProfile.address,
+          amountToFund.sub(amountPerRecipient.mul(3))
+        );
+
+        await expect(tx).to.changeEtherBalances(
+          [firstRecipient, secondRecipient, thirdRecipient],
+          [amountPerRecipient, amountPerRecipient, amountPerRecipient]
+        );
+      });
     });
   });
 };

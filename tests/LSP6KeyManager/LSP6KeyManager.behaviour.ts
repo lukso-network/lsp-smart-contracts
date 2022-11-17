@@ -4,25 +4,25 @@ import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 import { INTERFACE_IDS } from "../../constants";
 
 import {
-    shouldBehaveLikePermissionChangeOwner,
-    shouldBehaveLikePermissionChangeOrAddPermissions,
-    shouldBehaveLikePermissionChangeOrAddURD,
-    shouldBehaveLikePermissionSetData,
-    shouldBehaveLikePermissionCall,
-    shouldBehaveLikePermissionStaticCall,
-    shouldBehaveLikePermissionDelegateCall,
-    shouldBehaveLikePermissionDeploy,
-    shouldBehaveLikePermissionTransferValue,
-    shouldBehaveLikePermissionSign,
-    shouldBehaveLikeAllowedAddresses,
-    shouldBehaveLikeAllowedFunctions,
-    shouldBehaveLikeAllowedStandards,
-    shouldBehaveLikeAllowedERC725YKeys,
-    shouldBehaveLikeMultiChannelNonce,
-    shouldBehaveLikeExecuteRelayCall,
-    shouldBehaveLikeBatchExecute,
-    testSecurityScenarios,
-    otherTestScenarios,
+  shouldBehaveLikePermissionChangeOwner,
+  shouldBehaveLikePermissionChangeOrAddPermissions,
+  shouldBehaveLikePermissionChangeOrAddURD,
+  shouldBehaveLikePermissionSetData,
+  shouldBehaveLikePermissionCall,
+  shouldBehaveLikePermissionStaticCall,
+  shouldBehaveLikePermissionDelegateCall,
+  shouldBehaveLikePermissionDeploy,
+  shouldBehaveLikePermissionTransferValue,
+  shouldBehaveLikePermissionSign,
+  shouldBehaveLikeAllowedAddresses,
+  shouldBehaveLikeAllowedFunctions,
+  shouldBehaveLikeAllowedStandards,
+  shouldBehaveLikeAllowedERC725YKeys,
+  shouldBehaveLikeMultiChannelNonce,
+  shouldBehaveLikeExecuteRelayCall,
+  shouldBehaveLikeBatchExecute,
+  testSecurityScenarios,
+  otherTestScenarios,
 } from "./tests";
 
 import {
@@ -34,81 +34,81 @@ import {
 export const shouldBehaveLikeLSP6 = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
-    describe("CHANGEOWNER", () => {
-      shouldBehaveLikePermissionChangeOwner(buildContext);
-    });
+  describe("CHANGEOWNER", () => {
+    shouldBehaveLikePermissionChangeOwner(buildContext);
+  });
 
-    describe("CHANGE / ADD permissions", () => {
-      shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
-    });
+  describe("CHANGE / ADD permissions", () => {
+    shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
+  });
 
-    describe("CHANGE / ADD UniversalReceiverDelegate", () => {
-      shouldBehaveLikePermissionChangeOrAddURD(buildContext);
-    });
+  describe("CHANGE / ADD UniversalReceiverDelegate", () => {
+    shouldBehaveLikePermissionChangeOrAddURD(buildContext);
+  });
 
-    describe("SETDATA", () => {
-      shouldBehaveLikePermissionSetData(buildContext);
-    });
+  describe("SETDATA", () => {
+    shouldBehaveLikePermissionSetData(buildContext);
+  });
 
-    describe("CALL", () => {
-      shouldBehaveLikePermissionCall(buildContext);
-    });
+  describe("CALL", () => {
+    shouldBehaveLikePermissionCall(buildContext);
+  });
 
-    describe("STATICCALL", () => {
-      shouldBehaveLikePermissionStaticCall(buildContext);
-    });
+  describe("STATICCALL", () => {
+    shouldBehaveLikePermissionStaticCall(buildContext);
+  });
 
-    describe("DELEGATECALL", () => {
-      shouldBehaveLikePermissionDelegateCall(buildContext);
-    });
+  describe("DELEGATECALL", () => {
+    shouldBehaveLikePermissionDelegateCall(buildContext);
+  });
 
-    describe("DEPLOY", () => {
-      shouldBehaveLikePermissionDeploy(buildContext);
-    });
+  describe("DEPLOY", () => {
+    shouldBehaveLikePermissionDeploy(buildContext);
+  });
 
-    describe("TRANSFERVALUE", () => {
-      shouldBehaveLikePermissionTransferValue(buildContext);
-    });
+  describe("TRANSFERVALUE", () => {
+    shouldBehaveLikePermissionTransferValue(buildContext);
+  });
 
-    describe("SIGN (ERC1271)", () => {
-      shouldBehaveLikePermissionSign(buildContext);
-    });
+  describe("SIGN (ERC1271)", () => {
+    shouldBehaveLikePermissionSign(buildContext);
+  });
 
-    describe("ALLOWEDADDRESSES", () => {
-      shouldBehaveLikeAllowedAddresses(buildContext);
-    });
+  describe("ALLOWEDADDRESSES", () => {
+    shouldBehaveLikeAllowedAddresses(buildContext);
+  });
 
-    describe("ALLOWEDFUNCTIONS", () => {
-      shouldBehaveLikeAllowedFunctions(buildContext);
-    });
+  describe("ALLOWEDFUNCTIONS", () => {
+    shouldBehaveLikeAllowedFunctions(buildContext);
+  });
 
-    describe("ALLOWEDSTANDARDS", () => {
-      shouldBehaveLikeAllowedStandards(buildContext);
-    });
+  describe("ALLOWEDSTANDARDS", () => {
+    shouldBehaveLikeAllowedStandards(buildContext);
+  });
 
-    describe("ALLOWEDERC725YKeys", () => {
-      shouldBehaveLikeAllowedERC725YKeys(buildContext);
-    });
+  describe("ALLOWEDERC725YKeys", () => {
+    shouldBehaveLikeAllowedERC725YKeys(buildContext);
+  });
 
-    describe("Multi Channel nonces", () => {
-      shouldBehaveLikeMultiChannelNonce(buildContext);
-    });
+  describe("Multi Channel nonces", () => {
+    shouldBehaveLikeMultiChannelNonce(buildContext);
+  });
 
-    describe("Execute Relay Call", () => {
-      shouldBehaveLikeExecuteRelayCall(buildContext);
-    });
+  describe("Execute Relay Call", () => {
+    shouldBehaveLikeExecuteRelayCall(buildContext);
+  });
 
-    describe("batch execute", () => {
-      shouldBehaveLikeBatchExecute(buildContext);
-    });
+  describe("batch execute", () => {
+    shouldBehaveLikeBatchExecute(buildContext);
+  });
 
-    describe("miscellaneous", () => {
-      otherTestScenarios(buildContext);
-    });
+  describe("miscellaneous", () => {
+    otherTestScenarios(buildContext);
+  });
 
-    describe("Security", () => {
-      testSecurityScenarios(buildContext);
-    });
+  describe("Security", () => {
+    testSecurityScenarios(buildContext);
+  });
 };
 
 export const shouldInitializeLikeLSP6 = (
