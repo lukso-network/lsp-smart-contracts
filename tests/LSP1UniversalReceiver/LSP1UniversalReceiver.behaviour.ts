@@ -134,7 +134,6 @@ export const shouldBehaveLikeLSP1 = (
             .connect(context.accounts[0])
             ["setData(bytes32,bytes)"](
               ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-                "0000" +
                 LSP1_HOOK_PLACEHOLDER.substr(2, 40),
               revertableURD.address
             );

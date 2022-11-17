@@ -49,22 +49,18 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
       universalReceiverDelegateKey1 =
         ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey2 =
         ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey3 =
         ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey4 =
         ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-        "0000" +
         ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
       [
