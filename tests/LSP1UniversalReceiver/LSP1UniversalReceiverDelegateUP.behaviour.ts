@@ -142,7 +142,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
   });
 
-  describe.only("when testing LSP0-ERC725Account", () => {
+  describe("when testing LSP0-ERC725Account", () => {
     describe("when accepting ownership of an LSP0", () => {
       let sentUniversalProfile: LSP0ERC725Account;
       before(async () => {
@@ -151,7 +151,7 @@ export const shouldBehaveLikeLSP1Delegate = (
         ).deploy(context.accounts.owner1.address);
       });
 
-      it.only("should not register universal profile as received vault", async () => {
+      it("should not register universal profile as received vault", async () => {
         const acceptingUniversalProfile: LSP0ERC725Account =
           context.universalProfile1;
         const acceptingUniversalProfileKM: LSP6KeyManager =
