@@ -105,3 +105,8 @@ error InvalidWhitelistedCall(address from);
  * "0x0000000000000000000000000000000000000000000000000000000000000000"
  */
 error ZeroDataKeyNotAllowed();
+
+/**
+ * @dev reverts when providing array parameters of different sizes to `executeRelayCall(bytes[],uint256[],bytes[])`
+ */
+error BatchExecuteRelayCallParamsLengthMismatch();

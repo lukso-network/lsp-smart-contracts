@@ -603,6 +603,30 @@ export const shouldBehaveLikeBatchExecute = (
       await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
+    it("should revert when there are not the same number of elements for each parameters", async () => {
+      // these are dummy values parameters. The aim is to check that it reverts in the first place.
+      const signatures = [
+        "0x" + "aa".repeat(65),
+        "0x" + "bb".repeat(65),
+        "0x" + "cc".repeat(65),
+      ];
+      const nonces = [0, 1, 2];
+      const payloads = ["0xcafecafe", "0xbeefbeef"];
+
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          ["executeRelayCall(bytes[],uint256[],bytes[])"](
+            signatures,
+            nonces,
+            payloads
+          )
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "BatchExecuteRelayCallParamsLengthMismatch"
+      );
+    });
+
     it("should 1) give the permission to someone to mint, 2) let the controller mint, 3) remove the permission to the controller to mint", async () => {
       let signatures: string[];
       let nonces: BigNumber[];

@@ -149,6 +149,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256[] calldata nonces,
         bytes[] calldata payloads
     ) public payable returns (bytes[] memory) {
+        if (signatures.length != nonces.length || nonces.length != payloads.length) {
+            revert BatchExecuteRelayCallParamsLengthMismatch();
+        }
+
         bytes[] memory results = new bytes[](payloads.length);
         bool msgValueSent;
 
@@ -206,7 +210,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
       */
      function _executePayload(bytes calldata payload, uint256 msgValue) internal returns (bytes memory) {
 
-        emit Executed(msg.value, bytes4(payload));
+        emit Executed(msgValue, bytes4(payload));
 
         // solhint-disable avoid-low-level-calls
         (bool success, bytes memory returnData) = target.call{value: msgValue, gas: gasleft()}(

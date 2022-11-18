@@ -287,11 +287,16 @@ const Errors = {
 		},
 		'0x7231ac57': {
 			error: 'InvalidEncodedAllowedERC725YKeys(bytes)',
-			message: 'LSP2Utils: Invalid Compact Bytes Array',
+			message: 'LSP6: Invalid Compact Bytes Array',
 		},
 		'0x8f4afa38': {
 			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
 			message: 'LSP6: value provided for AddressPermission[index] not an address.',
+		},
+		'0x8be02e75': {
+			error: 'BatchExecuteRelayCallParamsLengthMismatch()',
+			message:
+				'LSP6: different number of elements for each array parameters in batch `executeRelayCall(bytes[],uint256[],bytes[])',
 		},
 	},
 	LSP7: {
