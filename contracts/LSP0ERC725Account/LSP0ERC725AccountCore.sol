@@ -19,7 +19,7 @@ import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
-import {LSP17FallbackExtension} from "../LSP17FallbackExtensions/LSP17FallbackExtension.sol";
+import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
 // constants
 import "@erc725/smart-contracts/contracts/constants.sol";
@@ -37,9 +37,7 @@ import {
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
-import {
-    _LSP17_FALLBACK_EXTENSIONS_HANDLER_PREFIX
-} from "../LSP17FallbackExtensions/LSP17Constants.sol";
+import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 /**
  * @title Core Implementation of ERC725Account
@@ -50,7 +48,7 @@ abstract contract LSP0ERC725AccountCore is
     ERC725XCore,
     ERC725YCore,
     LSP14Ownable2Step,
-    LSP17FallbackExtension,
+    LSP17Extendable,
     IERC1271,
     ILSP1UniversalReceiver
 {
@@ -75,19 +73,19 @@ abstract contract LSP0ERC725AccountCore is
     // solhint-disable
 
     /**
-     * @dev Returns the extension stored under the `_LSP17_FALLBACK_EXTENSIONS_HANDLER_PREFIX` data key
+     * @dev Returns the extension stored under the `_LSP17_EXTENSION_PREFIX` data key
      * mapped to the functionSelector provided.
      *
      * If no extension is stored, returns the address(0)
      */
     function _getExtension(bytes4 functionSelector) internal view override returns (address) {
-        bytes32 extensionHandlerDataKey = LSP2Utils.generateMappingKey(
-            _LSP17_FALLBACK_EXTENSIONS_HANDLER_PREFIX,
+        bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
+            _LSP17_EXTENSION_PREFIX,
             functionSelector
         );
 
         // Check if there is an extension for the function selector provided
-        address extension = address(bytes20(_getData(extensionHandlerDataKey)));
+        address extension = address(bytes20(_getData(mappedExtensionDataKey)));
 
         return extension;
     }
@@ -101,7 +99,7 @@ abstract contract LSP0ERC725AccountCore is
      * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
      * Returns the return value on success and revert in case of failure.
      *
-     * If the msg.data is shorter than 4 bytes or msg.sig is the bytes4(0), do not check for an extension and return
+     * If the msg.data is shorter than 4 bytes, do not check for an extension and return
      *
      * Executed when:
      * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
@@ -109,7 +107,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     fallback() external payable virtual {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        _fallbackExtension();
+        _fallbackLSP17Extendable();
     }
 
     // solhint-enable
@@ -121,7 +119,7 @@ abstract contract LSP0ERC725AccountCore is
         public
         view
         virtual
-        override(ERC725XCore, ERC725YCore)
+        override(ERC725XCore, ERC725YCore, LSP17Extendable)
         returns (bool)
     {
         return
