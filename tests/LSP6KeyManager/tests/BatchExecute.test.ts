@@ -27,6 +27,7 @@ import {
   LSP7Mintable__factory,
 } from "../../../types";
 import { BigNumber } from "ethers";
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: () => Promise<LSP6TestContext>
@@ -92,7 +93,7 @@ export const shouldBehaveLikeBatchExecute = (
       await rLyxToken.mint(context.universalProfile.address, 100, false, "0x");
     });
 
-    describe("when caller has ALL_PERMISSIONS", () => {
+    describe("example scenarios", () => {
       it("should send LYX to 3x different addresses", async () => {
         const { universalProfile, owner } = context;
 
@@ -420,151 +421,281 @@ export const shouldBehaveLikeBatchExecute = (
           await createdTokenContract.balanceOf(recipients[2]),
         ]).to.deep.equal(amounts);
       });
+    });
 
-      describe("when specifying msg.value", () => {
-        it("should forward msg.value only once", async () => {
-          const firstRecipient = context.accounts[1].address;
-          const secondRecipient = context.accounts[2].address;
-          const thirdRecipient = context.accounts[3].address;
+    describe("when specifying msg.value", () => {
+      it("should forward msg.value only once", async () => {
+        const firstRecipient = context.accounts[1].address;
+        const secondRecipient = context.accounts[2].address;
+        const thirdRecipient = context.accounts[3].address;
 
+        const amountToFund = ethers.utils.parseEther("5");
+        const amountPerRecipient = ethers.utils.parseEther("1");
+
+        const firstLyxTransfer =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, firstRecipient, amountPerRecipient, "0x"]
+          );
+
+        const secondLyxTransfer =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, secondRecipient, amountPerRecipient, "0x"]
+          );
+
+        const thirdLyxTransfer =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, thirdRecipient, amountPerRecipient, "0x"]
+          );
+
+        let tx = await context.keyManager
+          .connect(context.owner)
+          ["execute(bytes[])"](
+            [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
+            { value: amountToFund }
+          );
+
+        await expect(tx).to.changeEtherBalance(
+          context.universalProfile.address,
+          amountToFund.sub(amountPerRecipient.mul(3))
+        );
+
+        await expect(tx).to.changeEtherBalances(
+          [firstRecipient, secondRecipient, thirdRecipient],
+          [amountPerRecipient, amountPerRecipient, amountPerRecipient]
+        );
+      });
+
+      describe("when all the payloads are setData(...)", () => {
+        it("should revert and not leave any funds locked on the Key Manager", async () => {
           const amountToFund = ethers.utils.parseEther("5");
-          const amountPerRecipient = ethers.utils.parseEther("1");
 
-          const firstLyxTransfer =
+          const dataKeys = [
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key1")),
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key2")),
+          ];
+          const dataValues = ["0xaaaaaaaa", "0xbbbbbbbb"];
+
+          const keyManagerBalanceBefore = await ethers.provider.getBalance(
+            context.keyManager.address
+          );
+
+          const firstSetDataPayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, firstRecipient, amountPerRecipient, "0x"]
+              "setData(bytes32,bytes)",
+              [dataKeys[0], dataValues[0]]
             );
 
-          const secondLyxTransfer =
+          const secondSetDataPayload =
             context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, secondRecipient, amountPerRecipient, "0x"]
+              "setData(bytes32,bytes)",
+              [dataKeys[1], dataValues[1]]
             );
 
-          const thirdLyxTransfer =
+          // this error occurs when calling `setData(...)` with msg.value,
+          // since these functions on ERC725Y are not payable
+          await expect(
+            context.keyManager
+              .connect(context.owner)
+              ["execute(bytes[])"](
+                [firstSetDataPayload, secondSetDataPayload],
+                { value: amountToFund }
+              )
+          ).to.be.revertedWith(
+            "LSP6: Unknown Error occured when calling the linked target contract"
+          );
+
+          const keyManagerBalanceAfter = await ethers.provider.getBalance(
+            context.keyManager.address
+          );
+
+          expect(keyManagerBalanceAfter).to.equal(keyManagerBalanceBefore);
+
+          // the Key Manager must not hold any funds and must always forward any funds sent to it.
+          // it's balance must always be 0 after any execution
+          expect(
+            await provider.getBalance(context.keyManager.address)
+          ).to.equal(0);
+        });
+      });
+
+      describe("when first payload is `execute(...)` and second payload is `setData(...)`", () => {
+        it("should forward the funds on the first call and set data on the second call", async () => {
+          const amountToFund = ethers.utils.parseEther("5");
+
+          // there are 5 functions available to call on the UP via the Key Manager:
+          // 1. `setData(bytes32,bytes)`
+          // 2. `setData(bytes32[],bytes[])`
+          // 3. `execute(uint256,address,uint256,bytes)`
+          // 4. `transferOwnership(address)`
+          // 5. `acceptOwnership()`
+          //
+          // only `execute(...)` is payable, so we will use that to forward funds (msg.value) to the UP
+          // in order to fund the UP while setting data, we will then make an empty call to address(0) on the first payload
+          const fundingPayload =
             context.universalProfile.interface.encodeFunctionData(
               "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, thirdRecipient, amountPerRecipient, "0x"]
+              [OPERATION_TYPES.CALL, ethers.constants.AddressZero, 0, "0x"]
+            );
+
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("key1")
+          );
+          const dataValue = "0xaaaaaaaa";
+
+          const setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [dataKey, dataValue]
             );
 
           let tx = await context.keyManager
             .connect(context.owner)
-            ["execute(bytes[])"](
-              [firstLyxTransfer, secondLyxTransfer, thirdLyxTransfer],
-              { value: amountToFund }
-            );
+            ["execute(bytes[])"]([fundingPayload, setDataPayload], {
+              value: amountToFund,
+            });
 
           await expect(tx).to.changeEtherBalance(
             context.universalProfile.address,
-            amountToFund.sub(amountPerRecipient.mul(3))
+            amountToFund
           );
 
-          await expect(tx).to.changeEtherBalances(
-            [firstRecipient, secondRecipient, thirdRecipient],
-            [amountPerRecipient, amountPerRecipient, amountPerRecipient]
+          expect(
+            await context.universalProfile["getData(bytes32)"](dataKey)
+          ).to.equal(dataValue);
+        });
+      });
+
+      describe("when first payload is `setData(...)` and second payload is `execute(...)`", () => {
+        it("should revert with default LSP6 `executePayload(...)` error message", async () => {
+          const amountToFund = ethers.utils.parseEther("5");
+
+          const recipient = context.accounts[1].address;
+          const amountForRecipient = ethers.utils.parseEther("1");
+
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("key1")
           );
-        });
+          const dataValue = "0xaaaaaaaa";
 
-        describe("when all the payloads are setData(...)", () => {
-          it("should revert and not leave any funds locked on the Key Manager", async () => {
-            const amountToFund = ethers.utils.parseEther("5");
-
-            const dataKeys = [
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key1")),
-              ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key2")),
-            ];
-            const dataValues = ["0xaaaaaaaa", "0xbbbbbbbb"];
-
-            const keyManagerBalanceBefore = await ethers.provider.getBalance(
-              context.keyManager.address
+          const setDataPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [dataKey, dataValue]
             );
 
-            const firstSetDataPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [dataKeys[0], dataValues[0]]
-              );
-
-            const secondSetDataPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [dataKeys[1], dataValues[1]]
-              );
-
-            // this error occurs when calling `setData(...)` with msg.value,
-            // since these functions on ERC725Y are not payable
-            await expect(
-              context.keyManager
-                .connect(context.owner)
-                ["execute(bytes[])"](
-                  [firstSetDataPayload, secondSetDataPayload],
-                  { value: amountToFund }
-                )
-            ).to.be.revertedWith(
-              "LSP6: Unknown Error occured when calling the linked target contract"
+          const transferLyxPayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [OPERATION_TYPES.CALL, recipient, amountForRecipient, "0x"]
             );
 
-            const keyManagerBalanceAfter = await ethers.provider.getBalance(
-              context.keyManager.address
-            );
-
-            expect(keyManagerBalanceAfter).to.equal(keyManagerBalanceBefore);
-
-            // the Key Manager must not hold any funds and must always forward any funds sent to it.
-            // it's balance must always be 0 after any execution
-            expect(
-              await provider.getBalance(context.keyManager.address)
-            ).to.equal(0);
-          });
-        });
-
-        describe("when one payload is `setData(...)` and one payload is `execute(...)`", () => {
-          it("should forward the funds on the first call and set data on the second call", async () => {
-            const amountToFund = ethers.utils.parseEther("5");
-
-            // there are 5 functions available to call on the UP via the Key Manager:
-            // 1. `setData(bytes32,bytes)`
-            // 2. `setData(bytes32[],bytes[])`
-            // 3. `execute(uint256,address,uint256,bytes)`
-            // 4. `transferOwnership(address)`
-            // 5. `acceptOwnership()`
-            //
-            // only `execute(...)` is payable, so we will use that to forward funds (msg.value) to the UP
-            // in order to fund the UP while setting data, we will then make an empty call to address(0) on the first payload
-            const fundingPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [OPERATION_TYPES.CALL, ethers.constants.AddressZero, 0, "0x"]
-              );
-
-            const dataKey = ethers.utils.keccak256(
-              ethers.utils.toUtf8Bytes("key1")
-            );
-            const dataValue = "0xaaaaaaaa";
-
-            const setDataPayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "setData(bytes32,bytes)",
-                [dataKey, dataValue]
-              );
-
-            let tx = await context.keyManager
+          await expect(
+            context.keyManager
               .connect(context.owner)
-              ["execute(bytes[])"]([fundingPayload, setDataPayload], {
-                value: amountToFund,
-              });
-
-            await expect(tx).to.changeEtherBalance(
-              context.universalProfile.address,
-              amountToFund
-            );
-
-            expect(
-              await context.universalProfile["getData(bytes32)"](dataKey)
-            ).to.equal(dataValue);
-          });
+              ["execute(bytes[])"]([setDataPayload, transferLyxPayload], {
+                value: amountForRecipient,
+              })
+            // since `setData(...)` is not payable, the Key Manager cannot infer the reason
+            // and will revert with this error by default.
+          ).to.be.revertedWith(
+            "LSP6: Unknown Error occured when calling the linked target contract"
+          );
         });
+      });
+    });
+
+    describe("when one of the payload reverts", () => {
+      it("should revert the whole transaction if first payload reverts", async () => {
+        const upBalance = await provider.getBalance(
+          context.universalProfile.address
+        );
+
+        const validAmount = ethers.utils.parseEther("1");
+        expect(validAmount).to.be.lt(upBalance); // sanity check
+
+        // make it revert by sending too much value than the actual balance
+        const invalidAmount = upBalance.add(10);
+
+        const randomRecipient = ethers.Wallet.createRandom().address;
+
+        const failingTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, invalidAmount, "0x"]
+          );
+
+        const firstTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
+          );
+
+        const secondTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(context.owner)
+            ["execute(bytes[])"]([
+              failingTransferPayload,
+              firstTransferPayload,
+              secondTransferPayload,
+            ])
+        ).to.be.revertedWithCustomError(
+          context.universalProfile,
+          "ERC725X_InsufficientBalance"
+        );
+      });
+
+      it("should revert the whole transaction if last payload reverts", async () => {
+        const upBalance = await provider.getBalance(
+          context.universalProfile.address
+        );
+
+        const validAmount = ethers.utils.parseEther("1");
+        expect(validAmount).to.be.lt(upBalance); // sanity check
+
+        // make it revert by sending too much value than the actual balance
+        const invalidAmount = upBalance.add(10);
+
+        const randomRecipient = ethers.Wallet.createRandom().address;
+
+        const failingTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, invalidAmount, "0x"]
+          );
+
+        const firstTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
+          );
+
+        const secondTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
+          );
+
+        await expect(
+          context.keyManager
+            .connect(context.owner)
+            ["execute(bytes[])"]([
+              firstTransferPayload,
+              secondTransferPayload,
+              failingTransferPayload,
+            ])
+        ).to.be.revertedWithCustomError(
+          context.universalProfile,
+          "ERC725X_InsufficientBalance"
+        );
       });
     });
   });
@@ -601,6 +732,12 @@ export const shouldBehaveLikeBatchExecute = (
       const permissionsValues = [ALL_PERMISSIONS];
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
+
+      // fund the UP with some native tokens
+      await context.owner.sendTransaction({
+        to: context.universalProfile.address,
+        value: ethers.utils.parseEther("50"),
+      });
     });
 
     it("should revert when there are not the same number of elements for each parameters", async () => {
@@ -625,6 +762,83 @@ export const shouldBehaveLikeBatchExecute = (
         context.keyManager,
         "BatchExecuteRelayCallParamsLengthMismatch"
       );
+    });
+
+    it("should revert when we are specifying the same signature twice", async () => {
+      const recipient = context.accounts[1].address;
+      const amountForRecipient = ethers.utils.parseEther("1");
+
+      const transferLyxPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, recipient, amountForRecipient, "0x"]
+        );
+
+      const ownerNonce = await context.keyManager.getNonce(
+        context.owner.address,
+        0
+      );
+
+      const transferLyxSignature = await signLSP6ExecuteRelayCall(
+        context.keyManager,
+        ownerNonce.toHexString(),
+        LOCAL_PRIVATE_KEYS.ACCOUNT0,
+        0,
+        transferLyxPayload
+      );
+
+      // these steps (before running the batch executeRelayCall([],[],[]) on the KeyManager)
+      // describe why the execution fails with `InvalidRelayNonce` error.
+      // the Key Manager recovers the address based on:
+      // - the signature provided
+      // - the encoded message generated internally using:
+      //        `abi.encodePacked(LSP6_VERSION, block.chainid,nonce, msg.value, payload);`
+      //
+      // the address is recovered as follow:
+      //    `address signer = address(this).toDataWithIntendedValidator(encodedMessage).recover(signature);`
+      //
+      // when running the second payload in the batch execution, the Key Manager will recover a different signer address, because:
+      //    - the encodedMessage generated internally includes nonce = 1
+      //    - the signature provided was for an encoded message with nonce = 0 (same signature as the first payload)
+      //
+      // because no encoded message with nonce = 1 was signed, and the signature provided was for an encoded message with nonce = 0,
+      // the KeyManager ends up recovering a random address (since the signature and the encoded message are not 'related to each other')
+      // Therefore, the Key Manager try to verify the nonce of a different address than the one that signed the message, and the nonce is invalid.
+      const eip191 = new EIP191Signer();
+
+      let encodedMessage = ethers.utils.solidityPack(
+        ["uint256", "uint256", "uint256", "uint256", "bytes"],
+        [6, 31337, ownerNonce.add(1), 0, transferLyxPayload]
+      );
+
+      const hashedDataWithIntendedValidator =
+        eip191.hashDataWithIntendedValidator(
+          context.keyManager.address,
+          encodedMessage
+        );
+
+      const incorrectRecoveredAddress = await eip191.recover(
+        hashedDataWithIntendedValidator,
+        transferLyxSignature
+      );
+
+      // the transaction will revert with InvalidNonce because it will check the nonce of
+      // the incorrectly recovered address (as explained above)
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          ["executeRelayCall(bytes[],uint256[],bytes[])"](
+            [transferLyxSignature, transferLyxSignature],
+            [ownerNonce, ownerNonce.add(1)],
+            [transferLyxPayload, transferLyxPayload]
+          )
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "InvalidRelayNonce")
+        .withArgs(
+          incorrectRecoveredAddress,
+          ownerNonce.add(1),
+          transferLyxSignature
+        );
     });
 
     it("should 1) give the permission to someone to mint, 2) let the controller mint, 3) remove the permission to the controller to mint", async () => {
@@ -824,6 +1038,132 @@ export const shouldBehaveLikeBatchExecute = (
         await expect(tx).to.changeEtherBalances(
           [firstRecipient, secondRecipient, thirdRecipient],
           [amountPerRecipient, amountPerRecipient, amountPerRecipient]
+        );
+      });
+    });
+
+    describe("when one of the payload reverts", () => {
+      it("should revert the whole transaction if first payload reverts", async () => {
+        const upBalance = await provider.getBalance(
+          context.universalProfile.address
+        );
+
+        const validAmount = ethers.utils.parseEther("1");
+        expect(validAmount).to.be.lt(upBalance); // sanity check
+
+        // make it revert by sending too much value than the actual balance
+        const invalidAmount = upBalance.add(10);
+
+        const randomRecipient = ethers.Wallet.createRandom().address;
+
+        const failingTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, invalidAmount, "0x"]
+          );
+
+        const firstTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
+          );
+
+        const secondTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
+          );
+
+        const ownerNonce = await context.keyManager.getNonce(
+          context.owner.address,
+          0
+        );
+
+        const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
+
+        // prettier-ignore
+        const signatures = [
+                signLSP6ExecuteRelayCall(context.keyManager, nonces[0].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, failingTransferPayload),
+              signLSP6ExecuteRelayCall(context.keyManager, nonces[1].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, firstTransferPayload),
+              signLSP6ExecuteRelayCall(context.keyManager, nonces[2].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, secondTransferPayload),
+            ];
+
+        // prettier-ignore
+        const payloads = [failingTransferPayload, firstTransferPayload, secondTransferPayload];
+
+        await expect(
+          context.keyManager
+            .connect(context.owner)
+            ["executeRelayCall(bytes[],uint256[],bytes[])"](
+              signatures,
+              nonces,
+              payloads
+            )
+        ).to.be.revertedWithCustomError(
+          context.universalProfile,
+          "ERC725X_InsufficientBalance"
+        );
+      });
+
+      it("should revert the whole transaction if last payload reverts", async () => {
+        const upBalance = await provider.getBalance(
+          context.universalProfile.address
+        );
+
+        const validAmount = ethers.utils.parseEther("1");
+        expect(validAmount).to.be.lt(upBalance); // sanity check
+
+        // make it revert by sending too much value than the actual balance
+        const invalidAmount = upBalance.add(10);
+
+        const randomRecipient = ethers.Wallet.createRandom().address;
+
+        const failingTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, invalidAmount, "0x"]
+          );
+
+        const firstTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
+          );
+
+        const secondTransferPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [OPERATION_TYPES.CALL, randomRecipient, validAmount, "0x"]
+          );
+
+        const ownerNonce = await context.keyManager.getNonce(
+          context.owner.address,
+          0
+        );
+
+        const nonces = [ownerNonce, ownerNonce.add(1), ownerNonce.add(2)];
+
+        // prettier-ignore
+        const signatures = [
+          signLSP6ExecuteRelayCall(context.keyManager, nonces[0].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, firstTransferPayload),
+          signLSP6ExecuteRelayCall(context.keyManager, nonces[1].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, secondTransferPayload),
+          signLSP6ExecuteRelayCall(context.keyManager, nonces[2].toHexString(), LOCAL_PRIVATE_KEYS.ACCOUNT0, 0, failingTransferPayload),
+        ];
+
+        // prettier-ignore
+        const payloads = [firstTransferPayload, secondTransferPayload, failingTransferPayload];
+
+        await expect(
+          context.keyManager
+            .connect(context.owner)
+            ["executeRelayCall(bytes[],uint256[],bytes[])"](
+              signatures,
+              nonces,
+              payloads
+            )
+        ).to.be.revertedWithCustomError(
+          context.universalProfile,
+          "ERC725X_InsufficientBalance"
         );
       });
     });
