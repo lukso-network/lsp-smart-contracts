@@ -6,6 +6,7 @@ import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {LSP14Ownable2Step} from "../../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 contract ReentrancyWithValueTransfer {
+    // solhint-disable no-empty-blocks
     receive() external payable { }
     function universalReceiverDelegate(
         address sender,

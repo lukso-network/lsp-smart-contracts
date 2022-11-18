@@ -20,6 +20,7 @@ contract RelayReentrancy {
         _payload = newPayload;
     }
 
+    // solhint-disable no-empty-blocks
     receive() external payable {}
 
     function universalReceiverDelegate(
