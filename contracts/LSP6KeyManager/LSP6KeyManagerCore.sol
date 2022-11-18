@@ -118,7 +118,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes[] memory results = new bytes[](payloads.length);
         bool msgValueSent;
 
-        for (uint256 ii = 0; ii <= payloads.length - 1; ii++) {
+        for (uint256 ii; ii < payloads.length; ii = GasLib.uncheckedIncrement(ii)) {
             if (!msgValueSent) {
                 results[ii] = _execute(payloads[ii], msg.value);
                 msgValueSent = true;
@@ -152,7 +152,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes[] memory results = new bytes[](payloads.length);
         bool msgValueSent;
 
-        for (uint256 ii; ii < payloads.length; ++ii) {
+        for (uint256 ii; ii < payloads.length; ii = GasLib.uncheckedIncrement(ii)) {
             if (!msgValueSent) {
                 results[ii] = _executeRelayCall(signatures[ii], nonces[ii], payloads[ii], msg.value);
                 msgValueSent = true;
