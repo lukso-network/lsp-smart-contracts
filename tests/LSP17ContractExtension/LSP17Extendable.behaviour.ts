@@ -29,9 +29,9 @@ import {
   RevertFallbackExtension__factory,
 } from "../../types";
 
-import { abiCoder, LSP1_HOOK_PLACEHOLDER, provider } from "../utils/helpers";
+import { abiCoder, provider } from "../utils/helpers";
 // constants
-import { ERC725YKeys, ALL_PERMISSIONS, PERMISSIONS } from "../../constants";
+import { ERC725YKeys } from "../../constants";
 
 export type LSP17TestContext = {
   accounts: SignerWithAddress[];
@@ -102,47 +102,47 @@ export const shouldBehaveLikeLSP17 = (
     onERC721ReceivedFunctionSelector = "0x150b7a02";
 
     checkMsgVariableFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       checkMsgVariableFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     nameFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       nameFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     ageFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       ageFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     transferFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       transferFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     reenterAccountFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       reenterAccountFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     revertStringFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       revertStringFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     revertCustomFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       revertCustomFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     emitEventFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       emitEventFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     onERC721ReceivedFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
       onERC721ReceivedFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
   });
@@ -348,6 +348,38 @@ export const shouldBehaveLikeLSP17 = (
                   value: value,
                 });
               });
+            });
+          });
+        });
+
+        describe("when calling an extension that reverts on any selector", () => {
+          describe("when calling with a payload that starts with bytes4(0)", () => {
+            let revertFallbackExtension: RevertFallbackExtension;
+            beforeEach(async () => {
+              revertFallbackExtension =
+                await new RevertFallbackExtension__factory(
+                  context.accounts[0]
+                ).deploy();
+
+              const bytes4ZeroExtensionHandlerKey =
+                ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+                "00000000" +
+                "00000000000000000000000000000000"; // zero padded
+
+              await context.contract
+                .connect(context.deployParams.owner)
+                ["setData(bytes32,bytes)"](
+                  bytes4ZeroExtensionHandlerKey,
+                  revertFallbackExtension.address
+                );
+            });
+            it("should forward the call to the extension and revert", async () => {
+              await expect(
+                context.accounts[0].sendTransaction({
+                  to: context.contract.address,
+                  data: "0x00000000",
+                })
+              ).to.be.reverted;
             });
           });
         });
@@ -629,34 +661,6 @@ export const shouldBehaveLikeLSP17 = (
     });
 
     describe("when calling with calldata that is not checked for extension", () => {
-      describe("when calling with a payload that starts with bytes4(0)", () => {
-        let revertFallbackExtension: RevertFallbackExtension;
-        beforeEach(async () => {
-          revertFallbackExtension = await new RevertFallbackExtension__factory(
-            context.accounts[0]
-          ).deploy();
-
-          const bytes4ZeroExtensionHandlerKey =
-            ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
-            "00000000" +
-            "00000000000000000000000000000000"; // zero padded
-
-          await context.contract
-            .connect(context.deployParams.owner)
-            ["setData(bytes32,bytes)"](
-              bytes4ZeroExtensionHandlerKey,
-              revertFallbackExtension.address
-            );
-        });
-        it("should pass even if there is an extension for it that reverts", async () => {
-          await expect(
-            context.accounts[0].sendTransaction({
-              to: context.contract.address,
-              data: "0x00000000",
-            })
-          ).to.not.be.reverted;
-        });
-      });
       describe("when calling with a payload of length less than 4bytes", () => {
         let revertFallbackExtension: RevertFallbackExtension;
         beforeEach(async () => {
@@ -665,7 +669,7 @@ export const shouldBehaveLikeLSP17 = (
           ).deploy();
 
           const bytes1ZeroPaddedExtensionHandlerKey =
-            ERC725YKeys.LSP17.LSP17FallbackExtensionsHandler +
+            ERC725YKeys.LSP17.LSP17ExtensionPrefix +
             "01000000" +
             "00000000000000000000000000000000"; // zero padded
 

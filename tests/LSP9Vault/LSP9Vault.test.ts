@@ -23,7 +23,7 @@ import {
 import {
   LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from "../LSP17FallbackExtensions/LSP17FallbackExtensions.behaviour";
+} from "../LSP17ContractExtension/LSP17Extendable.behaviour";
 
 import {
   deployProxy,
