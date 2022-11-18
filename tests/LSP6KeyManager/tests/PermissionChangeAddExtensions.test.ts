@@ -166,7 +166,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -185,7 +187,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -204,7 +208,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -227,7 +233,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await context.keyManager
             .connect(canAddAndChangeExtensions)
-            .execute(payload);
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -248,7 +254,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await context.keyManager
             .connect(canAddAndChangeExtensions)
-            .execute(payload);
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -269,7 +275,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await context.keyManager
             .connect(canAddAndChangeExtensions)
-            .execute(payload);
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -292,7 +298,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await context.keyManager
             .connect(canOnlyAddExtensions)
-            .execute(payload);
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -312,7 +318,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlyAddExtensions).execute(payload)
+            context.keyManager
+              .connect(canOnlyAddExtensions)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
@@ -330,7 +338,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlyAddExtensions).execute(payload)
+            context.keyManager
+              .connect(canOnlyAddExtensions)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
@@ -348,7 +358,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlyAddExtensions).execute(payload)
+            context.keyManager
+              .connect(canOnlyAddExtensions)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyAddExtensions.address, "CHANGEEXTENSIONS");
@@ -368,7 +380,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlyChangeExtensions).execute(payload)
+            context.keyManager
+              .connect(canOnlyChangeExtensions)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyChangeExtensions.address, "ADDEXTENSIONS");
@@ -387,7 +401,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await context.keyManager
             .connect(canOnlyChangeExtensions)
-            .execute(payload);
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -409,7 +423,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
           await context.keyManager
             .connect(canOnlyChangeExtensions)
-            .execute(payload);
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -433,7 +447,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
         });
         it("should NOT be allowed to ADD another ExtensionHandler key", async () => {
           const payloadParam = {
@@ -447,7 +463,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySuperSetData).execute(payload)
+            context.keyManager
+              .connect(canOnlySuperSetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySuperSetData.address, "ADDEXTENSIONS");
@@ -465,7 +483,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySuperSetData).execute(payload)
+            context.keyManager
+              .connect(canOnlySuperSetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySuperSetData.address, "CHANGEEXTENSIONS");
@@ -483,7 +503,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySuperSetData).execute(payload)
+            context.keyManager
+              .connect(canOnlySuperSetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySuperSetData.address, "CHANGEEXTENSIONS");
@@ -504,7 +526,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
         });
 
         it("should NOT be allowed to ADD another ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YKey", async () => {
@@ -519,7 +543,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySetData).execute(payload)
+            context.keyManager
+              .connect(canOnlySetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDEXTENSIONS");
@@ -537,7 +563,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySetData).execute(payload)
+            context.keyManager
+              .connect(canOnlySetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "CHANGEEXTENSIONS");
@@ -555,7 +583,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySetData).execute(payload)
+            context.keyManager
+              .connect(canOnlySetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "CHANGEEXTENSIONS");
@@ -576,7 +606,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
         });
 
         it("should NOT be allowed to ADD another ExtensionHandler key", async () => {
@@ -590,7 +622,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await expect(context.keyManager.connect(canOnlyCall).execute(payload))
+          await expect(
+            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+          )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "ADDEXTENSIONS");
         });
@@ -606,7 +640,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await expect(context.keyManager.connect(canOnlyCall).execute(payload))
+          await expect(
+            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+          )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "CHANGEEXTENSIONS");
         });
@@ -622,7 +658,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await expect(context.keyManager.connect(canOnlyCall).execute(payload))
+          await expect(
+            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+          )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "CHANGEEXTENSIONS");
         });
@@ -650,7 +688,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -678,7 +718,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -706,7 +748,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -740,7 +784,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.keyManager
                 .connect(canAddAndChangeExtensions)
-                .execute(payload)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -768,7 +812,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.keyManager
                 .connect(canAddAndChangeExtensions)
-                .execute(payload)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -792,7 +836,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await context.keyManager
               .connect(canAddAndChangeExtensions)
-              .execute(payload);
+              ["execute(bytes)"](payload);
 
             const [result] = await context.universalProfile[
               "getData(bytes32[])"
@@ -816,7 +860,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager.connect(context.owner).execute(payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
         });
         describe("when adding multiple ExtensionHandler keys", () => {
           it("should pass", async () => {
@@ -832,7 +878,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await context.keyManager
               .connect(canOnlyAddExtensions)
-              .execute(payload);
+              ["execute(bytes)"](payload);
 
             const result = await context.universalProfile["getData(bytes32[])"](
               payloadParam.dataKeys
@@ -855,7 +901,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlyAddExtensions).execute(payload)
+              context.keyManager
+                .connect(canOnlyAddExtensions)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -881,7 +929,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlyAddExtensions).execute(payload)
+              context.keyManager
+                .connect(canOnlyAddExtensions)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -912,7 +962,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await context.keyManager
               .connect(canOnlyChangeExtensions)
-              .execute(payload);
+              ["execute(bytes)"](payload);
 
             const result = await context.universalProfile["getData(bytes32[])"](
               payloadParam.dataKeys
@@ -943,7 +993,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.keyManager
                 .connect(canOnlyChangeExtensions)
-                .execute(payload)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -975,7 +1025,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.keyManager
                 .connect(canOnlyChangeExtensions)
-                .execute(payload)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1004,7 +1054,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
             await context.keyManager
               .connect(canOnlyChangeExtensions)
-              .execute(payload);
+              ["execute(bytes)"](payload);
 
             const result = await context.universalProfile["getData(bytes32[])"](
               payloadParam.dataKeys
@@ -1029,7 +1079,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             await expect(
               context.keyManager
                 .connect(canOnlyChangeExtensions)
-                .execute(payload)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1055,7 +1105,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlyAddExtensions).execute(payload)
+              context.keyManager
+                .connect(canOnlyAddExtensions)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1080,7 +1132,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlySuperSetData).execute(payload)
+              context.keyManager
+                .connect(canOnlySuperSetData)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1105,7 +1159,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlySuperSetData).execute(payload)
+              context.keyManager
+                .connect(canOnlySuperSetData)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1130,7 +1186,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlySetData).execute(payload)
+              context.keyManager
+                .connect(canOnlySetData)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1156,7 +1214,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlySetData).execute(payload)
+              context.keyManager
+                .connect(canOnlySetData)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1186,7 +1246,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               [payloadParam.dataKeys, payloadParam.dataValues]
             );
 
-            await context.keyManager.connect(context.owner).execute(payload);
+            await context.keyManager
+              .connect(context.owner)
+              ["execute(bytes)"](payload);
           });
           describe("When adding ExtensionHandler key and one of his allowedERC725Y key", () => {
             it("should pass", async () => {
@@ -1206,7 +1268,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
                   [payloadParam.dataKeys, payloadParam.dataValues]
                 );
 
-              await context.keyManager.connect(canOnlySetData).execute(payload);
+              await context.keyManager
+                .connect(canOnlySetData)
+                ["execute(bytes)"](payload);
 
               const result = await context.universalProfile[
                 "getData(bytes32[])"

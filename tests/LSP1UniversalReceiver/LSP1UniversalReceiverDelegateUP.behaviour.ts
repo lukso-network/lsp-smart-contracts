@@ -171,7 +171,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await acceptingUniversalProfileKM
           .connect(context.accounts.owner1)
-          .execute(payloadToExecute);
+          ["execute(bytes)"](payloadToExecute);
 
         const receivedVaultsKeys = [
           ERC725YKeys.LSP10["LSP10Vaults[]"].length,
