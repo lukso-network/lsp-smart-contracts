@@ -77,16 +77,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     uint256 private _reentrancyStatus;
 
     /**
-     * @dev This modifier doesn't allow for reentrancy calls unless the caller
-     * is a controller address with _PERMISSION_REENTRANCY`.
-     */
-    modifier nonReentrant(address from) {
-        _nonReentrantBefore(from);
-        _;
-        _nonReentrantAfter();
-    }
-
-    /**
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
