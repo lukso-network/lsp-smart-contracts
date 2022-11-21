@@ -3417,11 +3417,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canSetDataAndAddPermissions)
+              .connect(canSetDataAndChangePermissions)
               .execute(payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canSetDataAndAddPermissions.address, "CHANGEPERMISSIONS");
+            .withArgs(canSetDataAndChangePermissions.address, "ADDPERMISSIONS");
         });
 
         it("(should fail): edit permissions of 2 x existing controllers + (set 1 x allowed data key) + (set 1 x NOT allowed data key)", async () => {
