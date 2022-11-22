@@ -46,27 +46,27 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       context = await buildContext();
 
       extensionHandlerKey1 =
-        ERC725YKeys.LSP0.ExtensionHandlerPrefix +
+        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey2 =
-        ERC725YKeys.LSP0.ExtensionHandlerPrefix +
+        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey3 =
-        ERC725YKeys.LSP0.ExtensionHandlerPrefix +
+        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey4 =
-        ERC725YKeys.LSP0.ExtensionHandlerPrefix +
+        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey5 =
-        ERC725YKeys.LSP0.ExtensionHandlerPrefix +
+        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
@@ -110,7 +110,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         PERMISSIONS.SETDATA,
         encodeCompactBytesArray([
           // Adding the Extension Handler Keys as AllowedERC725Ykey to test if it break the behavior
-          ERC725YKeys.LSP0.ExtensionHandlerPrefix,
+          ERC725YKeys.LSP17.LSP17ExtensionPrefix,
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),

@@ -38,6 +38,11 @@ import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
 import {_INTERFACEID_LSP8} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
 
+import {
+    _INTERFACEID_LSP17_EXTENDABLE,
+    _INTERFACEID_LSP17_EXTENSION
+} from "../LSP17ContractExtension/LSP17Constants.sol";
+
 /**
  * @dev This contract calculates the ERC165 interface IDs of each LSP contract
  *      and ensure that these values are correctly stored as hardcoded
@@ -51,7 +56,8 @@ contract CalculateLSPInterfaces {
             type(IERC725X).interfaceId ^
             type(IERC1271).interfaceId ^
             type(ILSP1).interfaceId ^
-            calculateInterfaceLSP14();
+            calculateInterfaceLSP14() ^
+            calculateInterfaceLSP17Extendable();
 
         require(
             interfaceId == _INTERFACEID_LSP0,
@@ -117,7 +123,8 @@ contract CalculateLSPInterfaces {
             type(IERC725X).interfaceId ^
             type(IERC725Y).interfaceId ^
             type(ILSP1).interfaceId ^
-            calculateInterfaceLSP14();
+            calculateInterfaceLSP14() ^
+            calculateInterfaceLSP17Extendable();
 
         require(
             interfaceId == _INTERFACEID_LSP9,
@@ -139,6 +146,30 @@ contract CalculateLSPInterfaces {
         require(
             interfaceId == _INTERFACEID_LSP14,
             "hardcoded _INTERFACEID_LSP14 does not match XOR of the functions"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP17Extendable() public pure returns (bytes4) {
+        // prettier-ignore
+        bytes4 interfaceId = bytes4(keccak256(abi.encodePacked("LSP17Extendable")));
+
+        require(
+            interfaceId == _INTERFACEID_LSP17_EXTENDABLE,
+            "hardcoded _INTERFACEID_LSP17_EXTENDABLE does not match hash of LSP17Extendable"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP17Extension() public pure returns (bytes4) {
+        // prettier-ignore
+        bytes4 interfaceId = bytes4(keccak256(abi.encodePacked("LSP17Extension")));
+
+        require(
+            interfaceId == _INTERFACEID_LSP17_EXTENSION,
+            "hardcoded _INTERFACEID_LSP17_EXTENSION does not match hash of LSP17Extension"
         );
 
         return interfaceId;

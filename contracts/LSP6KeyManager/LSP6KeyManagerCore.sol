@@ -39,7 +39,6 @@ import {
     EXECUTE_SELECTOR
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
-    _LSP0_EXTENSION_HANDLER_PREFIX,
     _INTERFACEID_ERC1271,
     _ERC1271_MAGICVALUE,
     _ERC1271_FAILVALUE
@@ -51,6 +50,10 @@ import {
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 
 import "./LSP6Constants.sol";
+
+import {
+    _LSP17_EXTENSION_PREFIX
+} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 /**
  * @title Core implementation of a contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage
@@ -217,9 +220,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 // CHECK for Universal Receiver Delegate key
                 _verifyCanSetUniversalReceiverDelegateKey(inputKey, from, permissions);
                 
-            } else if (bytes12(inputKey) == _LSP0_EXTENSION_HANDLER_PREFIX) {
-                // CHECK for Extension Handler key
-                _verifyCanSetExtensionHandlerKey(inputKey, from, permissions);
+            } else if (bytes12(inputKey) == _LSP17_EXTENSION_PREFIX) {
+                // CHECK for LSP17Extension data keys
+                _verifyCanSetLSP17ExtensionKey(inputKey, from, permissions);
 
             } else {    
                 _verifyCanSetData(from, permissions, inputKey);
@@ -264,11 +267,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     // "nullify" URD keys to not check them against allowed ERC725Y keys
                     inputKeys[ii] = bytes32(0);
 
-                } else if (bytes12(key) == _LSP0_EXTENSION_HANDLER_PREFIX) {
-                    // CHECK for Extension Handler keys
-                    _verifyCanSetExtensionHandlerKey(key, from, permissions);
+                } else if (bytes12(key) == _LSP17_EXTENSION_PREFIX) {
+                    // CHECK for LSP17Extension data keys
+                    _verifyCanSetLSP17ExtensionKey(key, from, permissions);
 
-                    // "nullify" extension handler keys to not check them against allowed ERC725Y keys
+                    // "nullify" LSP17Extension keys to not check them against allowed ERC725Y keys
                     inputKeys[ii] = bytes32(0);
                 } else {
                     // if the key is any other bytes32 key
@@ -465,17 +468,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
     /**
      * @dev Verify if `from` has the required permissions to either add or change the address
-     * of an LSP0 Extension stored under a specific Extension Handler data key
-     * @param extensionHandlerDataKey the dataKey to set with `_LSP0_EXTENSION_HANDLER_PREFIX` as prefix
+     * of an LSP0 Extension stored under a specific LSP17Extension data key
+     * @param lsp17ExtensionDataKey the dataKey to set with `_LSP17_EXTENSION_PREFIX` as prefix
      * @param from the address who want to set the dataKeys
      * @param permissions the permissions
      */
-    function _verifyCanSetExtensionHandlerKey(
-        bytes32 extensionHandlerDataKey,
+    function _verifyCanSetLSP17ExtensionKey(
+        bytes32 lsp17ExtensionDataKey,
         address from,
         bytes32 permissions
     ) internal view {
-            bytes memory dataValue = ERC725Y(target).getData(extensionHandlerDataKey);
+            bytes memory dataValue = ERC725Y(target).getData(lsp17ExtensionDataKey);
 
             if (dataValue.length == 0) {
                 _requirePermissions(from, permissions, _PERMISSION_ADDEXTENSIONS);
