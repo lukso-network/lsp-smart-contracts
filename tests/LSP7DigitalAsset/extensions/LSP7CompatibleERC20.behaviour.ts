@@ -7,6 +7,7 @@ import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 import { INTERFACE_IDS, SupportedStandards } from "../../../constants";
 import {
+  ERC165CheckerCustomTest__factory,
   LSP7CompatibleERC20,
   LSP7CompatibleERC20Tester,
   TokenReceiverWithLSP1,
@@ -405,6 +406,27 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             "Approval(address,address,uint256)"
           )
           .withArgs(txParams.from, txParams.operator.address, postAllowance);
+      }
+
+      // if the recipient is a contract that implements LSP1,
+      // CHECK that it emitted the UniversalReceiver event on the receiver end.
+      const erc165Checker = await new ERC165CheckerCustomTest__factory(
+        context.accounts.owner
+      ).deploy();
+
+      const isLSP1Recipient = await erc165Checker.supportsERC165Interface(
+        txParams.to,
+        INTERFACE_IDS.LSP1UniversalReceiver
+      );
+
+      if (isLSP1Recipient) {
+        const receiver = await new TokenReceiverWithLSP1__factory(
+          context.accounts.owner
+        ).attach(txParams.to);
+
+        // TODO: the Helper contract TokenReceiverWithLSP1 does not emit the standard `UniversalReceiver` event.
+        // modify this behaviour to emit the UniversalReceiver event
+        await expect(tx).to.emit(receiver, "UniversalReceiverCalled");
       }
     };
 
