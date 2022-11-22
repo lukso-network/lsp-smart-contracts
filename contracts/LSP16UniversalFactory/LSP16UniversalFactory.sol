@@ -30,9 +30,9 @@ error InitializeCalldataRequired();
 error ValueNotAllowedWithNonInitializableProxies();
 
 /**
- * @dev UniversalFactory contract can be used to deploy CREATE2 contracts; normal contracts and minimal
- * proxies (EIP-1167) with the ability to deploy the same contract at the same address on different chains.
- * If the contract has a constructor, the arguments will be part of the byteCode
+ * @dev UniversalFactory contract can be used to deploy normal or minimal proxy contracts (EIP-1167) using CREATE2.
+ * This gives the ability to deploy the same contract at the same address on different chains.
+ * If the contract has a constructor, the arguments will be part of the bytecode
  * If the contract has an `initialize` function, the parameters of this function will be included in
  * the salt to ensure that the parameters of the contract should be the same on each chain.
  *
