@@ -452,7 +452,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
       describe(transferFn, () => {
         describe("when sender has enough balance", () => {
           describe("when `to` is an EOA", () => {
-            it("should allow transfering the tokenId", async () => {
+            it("should allow transfering the tokens", async () => {
               const txParams = {
                 operator: context.accounts.owner.address,
                 from: context.accounts.owner.address,
@@ -470,7 +470,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
           describe("when `to` is a contract", () => {
             describe("when receiving contract supports LSP1", () => {
-              it("should allow transfering the tokenId", async () => {
+              it("should allow transfering the tokens", async () => {
                 const txParams = {
                   operator: context.accounts.owner.address,
                   from: context.accounts.owner.address,
@@ -487,7 +487,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
             });
 
             describe("when receiving contract does not support LSP1", () => {
-              it("should allow transfering the tokenId", async () => {
+              it("should allow transfering the tokens", async () => {
                 const txParams = {
                   operator: context.accounts.owner.address,
                   from: context.accounts.owner.address,
