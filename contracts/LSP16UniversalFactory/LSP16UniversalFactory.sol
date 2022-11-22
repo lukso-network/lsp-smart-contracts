@@ -94,11 +94,13 @@ contract LSP16UniversalFactory {
     function deployCreate2(bytes calldata byteCode, bytes32 providedSalt)
         public
         payable
-        returns (address contractCreated)
+        returns (address)
     {
         bytes32 generatedSalt = _generateSalt("", providedSalt);
-        contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
+        address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, false, "");
+        
+        return contractCreated;
     }
 
     /**
@@ -122,13 +124,13 @@ contract LSP16UniversalFactory {
         bytes calldata initializeCalldata,
         uint256 constructorMsgValue,
         uint256 initializeCalldataMsgValue
-    ) public payable returns (address contractCreated) {
+    ) public payable returns (address) {
         if (initializeCalldata.length == 0) revert InitializeCalldataRequired();
         if (constructorMsgValue + initializeCalldataMsgValue != msg.value)
             revert InvalidMsgValueDistribution();
 
         bytes32 generatedSalt = _generateSalt(initializeCalldata, providedSalt);
-        contractCreated = Create2.deploy(constructorMsgValue, generatedSalt, byteCode);
+        address contractCreated = Create2.deploy(constructorMsgValue, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, true, initializeCalldata);
 
         // solhint-disable avoid-low-level-calls
@@ -136,6 +138,8 @@ contract LSP16UniversalFactory {
             value: initializeCalldataMsgValue
         }(initializeCalldata);
         _verifyCallResult(success, returndata);
+        
+        return contractCreated;
     }
 
     /**
@@ -154,11 +158,11 @@ contract LSP16UniversalFactory {
         address baseContract,
         bytes32 providedSalt,
         bytes calldata initializeCalldata
-    ) public payable returns (address proxy) {
+    ) public payable returns (address) {
         bool initializable = initializeCalldata.length > 0;
         bytes32 generatedSalt = _generateSalt(initializeCalldata, providedSalt);
 
-        proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
+        address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
         emit ContractCreated(proxy, providedSalt, initializable, initializeCalldata);
 
         if (!initializable) {
@@ -170,6 +174,8 @@ contract LSP16UniversalFactory {
             );
             _verifyCallResult(success, returndata);
         }
+        
+        return proxy;
     }
 
     /**
