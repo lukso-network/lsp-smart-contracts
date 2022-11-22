@@ -69,18 +69,6 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     // --- Overrides
 
     /**
-     * @inheritdoc ILSP7DigitalAsset
-     */
-    function authorizeOperator(address operator, uint256 amount)
-        public
-        virtual
-        override(ILSP7DigitalAsset, LSP7DigitalAssetCore)
-    {
-        super.authorizeOperator(operator, amount);
-        emit Approval(msg.sender, operator, amount);
-    }
-
-    /**
      * @inheritdoc ILSP7CompatibleERC20
      * @dev Compatible with ERC20 transfer.
      * Using force=true so that EOA and any contract may receive the tokens.
@@ -88,6 +76,19 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     function transfer(address to, uint256 amount) public virtual override returns (bool) {
         transfer(msg.sender, to, amount, true, "");
         return true;
+    }
+
+    /**
+     * @dev same behaviour as LSP7DigitalAssetCore
+     * with the addition of emitting ERC20 Approval event.
+     */
+    function _updateOperator(
+        address tokenOwner,
+        address operator,
+        uint256 amount
+    ) internal virtual override {
+        super._updateOperator(tokenOwner, operator, amount);
+        emit Approval(tokenOwner, operator, amount);
     }
 
     function _transfer(
