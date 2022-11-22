@@ -93,8 +93,10 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Emits an event when receiving native tokens
      *
-     * Forwards the call to an extension (address) stored under a _LSP17_FALLBACK_EXTENSIONS_HANDLER_ appended
-     * to a function selector. If there is no extension stored under the data key, return.
+     * Forwards the call to an extension contract (address). This address can be retrieved from
+     * the ERC725Y data key-value store using the data key below (function selector appended to the prefix):
+     *_LSP17_FALLBACK_EXTENSIONS_HANDLER_ + <function-selector>
+     * If there is no extension stored under the data key, return.
      *
      * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
      * Returns the return value on success and revert in case of failure.
