@@ -9,7 +9,7 @@ contract CheckerExtension {
 
     // Checks that the msg.sender + msg.value are appended to the msg.data
     // Length should be: 4 + 32 + 32 + 20 + 32
-    // 4bytes function selector + 32bytes parameter address with offset + 32bytes parameter uint256
+    // 4bytes function selector + 32bytes parameter address + 32bytes parameter uint256
     // + 20bytes msg.sender appended + 32bytes msg.value appended
     function checkMsgVariable(address originalMsgSender, uint256 originalMsgValue)
         public
