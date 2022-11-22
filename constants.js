@@ -72,7 +72,7 @@ const SupportedStandards = {
  */
 const ERC725YKeys = {
 	LSP1: {
-		// bytes10(keccak256('LSP1UniversalReceiverDelegate'))
+		// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0)
 		LSP1UniversalReceiverDelegatePrefix: '0x0cfc51aec37c55a4d0b10000',
 		// keccak256('LSP1UniversalReceiverDelegate')
 		LSP1UniversalReceiverDelegate:
@@ -91,7 +91,7 @@ const ERC725YKeys = {
 		LSP4TokenSymbol: '0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756',
 		// keccak256('LSP4Metadata')
 		LSP4Metadata: '0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e',
-		// LSP4CreatorsMap:<address>
+		// LSP4CreatorsMap:<address>  + bytes2(0)
 		LSP4CreatorsMap: '0x6de85eaf5d982b4e5da00000',
 		// keccak256('"LSP4Creators[]')
 		'LSP4Creators[]': {
@@ -102,7 +102,7 @@ const ERC725YKeys = {
 		},
 	},
 	LSP5: {
-		// LSP5ReceivedAssetsMap:<address>
+		// LSP5ReceivedAssetsMap:<address>  + bytes2(0)
 		LSP5ReceivedAssetsMap: '0x812c4334633eb816c80d0000',
 		// keccak256('LSP5ReceivedAssets[]')
 		'LSP5ReceivedAssets[]': {
@@ -116,18 +116,18 @@ const ERC725YKeys = {
 			length: '0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3',
 			index: '0xdf30dba06db6a30e65354d9a64c60986',
 		},
-		// AddressPermissions:Permissions:<address>
+		// AddressPermissions:Permissions:<address>  + bytes2(0)
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
-		// AddressPermissions:AllowedERC725YKeys:<address>
+		// AddressPermissions:AllowedERC725YKeys:<address>  + bytes2(0)
 		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
-		// AddressPermissions:AllowedCalls:<address>
+		// AddressPermissions:AllowedCalls:<address>  + bytes2(0)
 		'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
 	},
 	LSP9: {
 		SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
 	},
 	LSP10: {
-		// keccak256('LSP10VaultsMap')
+		// keccak256('LSP10VaultsMap') + bytes2(0)
 		LSP10VaultsMap: '0x192448c3c0f88c7f238c0000',
 		// keccak256('LSP10Vaults[]')
 		'LSP10Vaults[]': {
@@ -136,7 +136,7 @@ const ERC725YKeys = {
 		},
 	},
 	LSP12: {
-		// LSP12IssuedAssetsMap:<address>
+		// LSP12IssuedAssetsMap:<address>  + bytes2(0)
 		LSP12IssuedAssetsMap: '0x74ac2555c10b9349e78f0000',
 		// keccak256('LSP12IssuedAssets[]')
 		'LSP12IssuedAssets[]': {
@@ -145,7 +145,7 @@ const ERC725YKeys = {
 		},
 	},
 	LSP17: {
-		// bytes10(keccak256('LSP17Extension'))
+		// bytes10(keccak256('LSP17Extension')) + bytes2(0)
 		LSP17ExtensionPrefix: '0xcee78b4094da860110960000',
 	}
 };
