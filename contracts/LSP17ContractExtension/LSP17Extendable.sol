@@ -43,41 +43,36 @@ abstract contract LSP17Extendable is ERC165 {
     function _fallbackLSP17Extendable() internal virtual {
         if (msg.data.length < 4) return;
         // If there is a function selector
-        else {
-            address extension = _getExtension(msg.sig);
+        address extension = _getExtension(msg.sig);
 
-            // if no extension was found, return
-            if (extension == address(0)) {
-                return;
+        // if no extension was found, return
+        if (extension == address(0)) return;
+
+        // if the extension was found, call the extension with the msg.data
+        // appended with bytes20(address) and bytes32(msg.value)
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+
+            // The msg.sender address is shifted to the left by 12 bytes to remove the padding
+            // Then the address without padding is stored right after the calldata
+            mstore(calldatasize(), shl(96, caller()))
+
+            // The msg.value is stored right after the calldata + msg.sender
+            mstore(add(calldatasize(), 20), callvalue())
+
+            // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
+            let success := call(gas(), extension, 0, 0, add(calldatasize(), 52), 0, 0)
+
+            // Copy the returned data
+            returndatacopy(0, 0, returndatasize())
+
+            switch success
+            // call returns 0 on failed calls
+            case 0 {
+                revert(0, returndatasize())
             }
-            // if the extension was found, call the extension with the msg.data
-            // appended with bytes20(address) and bytes32(msg.value)
-            else {
-                assembly {
-                    calldatacopy(0, 0, calldatasize())
-
-                    // The msg.sender address is shifted to the left by 12 bytes to remove the padding
-                    // Then the address without padding is stored right after the calldata
-                    mstore(calldatasize(), shl(96, caller()))
-
-                    // The msg.value is stored right after the calldata + msg.sender
-                    mstore(add(calldatasize(), 20), callvalue())
-
-                    // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
-                    let success := call(gas(), extension, 0, 0, add(calldatasize(), 52), 0, 0)
-
-                    // Copy the returned data
-                    returndatacopy(0, 0, returndatasize())
-
-                    switch success
-                    // call returns 0 on failed calls
-                    case 0 {
-                        revert(0, returndatasize())
-                    }
-                    default {
-                        return(0, returndatasize())
-                    }
-                }
+            default {
+                return(0, returndatasize())
             }
         }
     }
