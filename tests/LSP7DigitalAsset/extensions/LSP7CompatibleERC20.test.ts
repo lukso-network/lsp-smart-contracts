@@ -21,7 +21,7 @@ describe("LSP7CompatibleERC20", () => {
     const buildTestContext =
       async (): Promise<LSP7CompatibleERC20TestContext> => {
         const accounts = await getNamedAccounts();
-        const initialSupply = ethers.BigNumber.from("3");
+        const initialSupply = ethers.BigNumber.from("1000");
         const deployParams = {
           name: "Compat for ERC20",
           symbol: "NFT",
@@ -72,7 +72,7 @@ describe("LSP7CompatibleERC20", () => {
     const buildTestContext =
       async (): Promise<LSP7CompatibleERC20TestContext> => {
         const accounts = await getNamedAccounts();
-        const initialSupply = ethers.BigNumber.from("3");
+        const initialSupply = ethers.BigNumber.from("1000");
         const deployParams = {
           name: "LSP7 - deployed with constructor",
           symbol: "NFT",
@@ -111,9 +111,10 @@ describe("LSP7CompatibleERC20", () => {
       it("LSP7CompatibleERC20Init: prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
-        const lsp7CompatibilityForERC20TesterInit = await new LSP7CompatibleERC20InitTester__factory(
-          accounts[0]
-        ).deploy();
+        const lsp7CompatibilityForERC20TesterInit =
+          await new LSP7CompatibleERC20InitTester__factory(
+            accounts[0]
+          ).deploy();
 
         const randomCaller = accounts[1];
 
@@ -127,9 +128,10 @@ describe("LSP7CompatibleERC20", () => {
       it("LSP7CompatibleERC20MintableInit: prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
-        const lsp7CompatibleERC20MintableInit = await new LSP7CompatibleERC20MintableInit__factory(
-          accounts[0]
-        ).deploy();
+        const lsp7CompatibleERC20MintableInit =
+          await new LSP7CompatibleERC20MintableInit__factory(
+            accounts[0]
+          ).deploy();
 
         const randomCaller = accounts[1];
 
