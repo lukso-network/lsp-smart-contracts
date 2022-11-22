@@ -57,7 +57,7 @@ analyze:
     # Factories
     # ------------------
     - contracts/Factories/Create2Factory.sol
-    - contracts/Factories/UniversalFactory.sol
+    - contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol
     # Others
     # ------------------
     - contracts/Custom/ClaimOwnership.sol
