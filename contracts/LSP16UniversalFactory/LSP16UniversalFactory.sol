@@ -21,7 +21,7 @@ error InvalidMsgValueDistribution();
 /**
  * @dev reverts when not passing any initializeCalldata to the {deployCreate2Init} function
  */
-error ZeroInitializeCalldataNotAllowed();
+error InitializeCalldataRequired();
 
 /**
  * @dev reverts when sending value to the {deployCreate2Proxy} function if the contract being created
@@ -123,7 +123,7 @@ contract LSP16UniversalFactory {
         uint256 constructorMsgValue,
         uint256 initializeCalldataMsgValue
     ) public payable returns (address contractCreated) {
-        if (initializeCalldata.length == 0) revert ZeroInitializeCalldataNotAllowed();
+        if (initializeCalldata.length == 0) revert InitializeCalldataRequired();
         if (constructorMsgValue + initializeCalldataMsgValue != msg.value)
             revert InvalidMsgValueDistribution();
 

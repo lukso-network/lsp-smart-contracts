@@ -521,7 +521,7 @@ describe("UniversalFactory contract", () => {
           )
         ).to.be.revertedWithCustomError(
           context.universalFactory,
-          "ZeroInitializeCalldataNotAllowed"
+          "InitializeCalldataRequired"
         );
       });
 
