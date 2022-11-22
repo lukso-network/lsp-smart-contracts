@@ -131,6 +131,7 @@ contract LSP16UniversalFactory {
         contractCreated = Create2.deploy(constructorMsgValue, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, true, initializeCalldata);
 
+        // solhint-disable avoid-low-level-calls
         (bool success, bytes memory returndata) = contractCreated.call{
             value: initializeCalldataMsgValue
         }(initializeCalldata);
@@ -163,6 +164,7 @@ contract LSP16UniversalFactory {
         if (!initializable) {
             if (msg.value > 0) revert ValueNotAllowedWithNonInitializableProxies();
         } else {
+            // solhint-disable avoid-low-level-calls
             (bool success, bytes memory returndata) = proxy.call{value: msg.value}(
                 initializeCalldata
             );
