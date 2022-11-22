@@ -159,14 +159,14 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bytes calldata initializeCalldata
     ) public payable returns (address) {
-        bool initializable = initializeCalldata.length > 0;
+        bool initializable = initializeCalldata.length != 0;
         bytes32 generatedSalt = _generateSalt(initializeCalldata, providedSalt);
 
         address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
         emit ContractCreated(proxy, providedSalt, initializable, initializeCalldata);
 
         if (!initializable) {
-            if (msg.value > 0) revert ValueNotAllowedWithNonInitializableProxies();
+            if (msg.value != 0) revert ValueNotAllowedWithNonInitializableProxies();
         } else {
             // solhint-disable avoid-low-level-calls
             (bool success, bytes memory returndata) = proxy.call{value: msg.value}(
@@ -208,7 +208,7 @@ contract LSP16UniversalFactory {
     function _verifyCallResult(bool success, bytes memory returndata) internal pure {
         if (!success) {
             // Look for revert reason and bubble it up if present
-            if (returndata.length > 0) {
+            if (returndata.length != 0) {
                 // The easiest way to bubble the revert reason is using memory via assembly
                 // solhint-disable
                 /// @solidity memory-safe-assembly
