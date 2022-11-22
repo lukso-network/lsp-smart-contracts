@@ -11,11 +11,9 @@ import {_INTERFACEID_LSP17_EXTENDABLE} from "./LSP17Constants.sol";
  * @title Implementation of the fallback logic according to LSP17ContractExtension
  * @dev Module to be inherited used to extend the functionality of the parent contract when
  * calling a function that doesn't exist on the parent contract via forwarding the call
- * to an extension mapped to the function selector being called, set originaly by the parent contract
+ * to an extension mapped to the function selector being called, set originally by the parent contract
  */
 abstract contract LSP17Extendable is ERC165 {
-    // solhint-disable
-
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -48,6 +46,7 @@ abstract contract LSP17Extendable is ERC165 {
         // if no extension was found, return
         if (extension == address(0)) return;
 
+        // solhint-disable no-inline-assembly
         // if the extension was found, call the extension with the msg.data
         // appended with bytes20(address) and bytes32(msg.value)
         assembly {
