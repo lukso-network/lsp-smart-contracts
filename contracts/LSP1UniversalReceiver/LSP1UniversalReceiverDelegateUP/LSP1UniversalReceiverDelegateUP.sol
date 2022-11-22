@@ -23,6 +23,7 @@ import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
 import "../LSP1Constants.sol";
 import "../../LSP6KeyManager/LSP6Constants.sol";
 import "../../LSP9Vault/LSP9Constants.sol";
+import "../../LSP10ReceivedVaults/LSP10Constants.sol";
 import "../../LSP14Ownable2Step/LSP14Constants.sol";
 
 // errors
@@ -62,6 +63,14 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiverDelega
 
         (address keyManager, bool ownerIsKeyManager) = _validateCallerViaKeyManager();
         if (!ownerIsKeyManager) return "LSP1: account owner is not a LSP6KeyManager";
+
+        // if the contract being transferred doesn't support LSP9, do not register it as a received vault
+        if (mapPrefix == _LSP10_VAULTS_MAP_KEY_PREFIX) {
+            if (notifier.code.length != 0) {
+                if (!notifier.supportsERC165Interface(_INTERFACEID_LSP9))
+                    return "LSP1: not an LSP9Vault ownership transfer";
+            }
+        }
 
         bytes32 notifierMapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(notifier));
         bytes memory notifierMapValue = IERC725Y(msg.sender).getData(notifierMapKey);
