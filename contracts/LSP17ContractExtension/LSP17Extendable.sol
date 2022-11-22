@@ -26,13 +26,10 @@ abstract contract LSP17Extendable is ERC165 {
     /**
      * @dev Returns the extension mapped to a specific function selector
      * If no extension was found, return the address(0)
+     * To be overrided.
+     * Up to the implementor contract to return an extension based on a function selector
      */
-    function _getExtension(bytes4 functionSelector) internal view virtual returns (address) {
-        // To be overrided
-        // Up to the implementor contract to return an extension based on a function selector
-        // revert was added to make sure that the dev override this function in his code, otherwise revert
-        revert();
-    }
+    function _getExtension(bytes4 functionSelector) internal view virtual returns (address);
 
     /**
      * Forwards the call to an extension mapped to a function selector. If the address of
