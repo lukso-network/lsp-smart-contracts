@@ -231,6 +231,7 @@ contract LSP9VaultCore is
                     msg.sender,
                     msg.value
                 );
+                // solhint-disable avoid-low-level-calls
                 (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
                 _verifyCallResult(success, result);
                 resultDefaultDelegate = result.length != 0 ? abi.decode(result, (bytes)) : result;
@@ -254,6 +255,7 @@ contract LSP9VaultCore is
                     msg.sender,
                     msg.value
                 );
+                // solhint-disable avoid-low-level-calls
                 (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
                 _verifyCallResult(success, result);
                 resultTypeIdDelegate = result.length != 0 ? abi.decode(result, (bytes)) : result;
@@ -349,12 +351,14 @@ contract LSP9VaultCore is
             // Look for revert reason and bubble it up if present
             if (returndata.length > 0) {
                 // The easiest way to bubble the revert reason is using memory via assembly
+                // solhint-disable no-inline-assembly
                 /// @solidity memory-safe-assembly
                 assembly {
                     let returndata_size := mload(returndata)
                     revert(add(32, returndata), returndata_size)
                 }
             } else {
+                // solhint-disable reason-string
                 revert();
             }
         }
