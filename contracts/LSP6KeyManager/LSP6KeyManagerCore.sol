@@ -157,7 +157,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256[] calldata values,
         bytes[] calldata payloads
     ) public payable returns (bytes[] memory) {
-        if (signatures.length != nonces.length || nonces.length != payloads.length) {
+        if (signatures.length != nonces.length || nonces.length != values.length || values.length != payloads.length) {
             revert BatchExecuteRelayCallParamsLengthMismatch();
         }
 
