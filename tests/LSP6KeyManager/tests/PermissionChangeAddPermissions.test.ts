@@ -3474,7 +3474,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             .withArgs(canSetDataAndChangePermissions.address, "ADDPERMISSIONS");
         });
 
-        it("{should fail): 2 x allowed data keys + increment AddressPermissions[].length by +1", async () => {
+        it("(should fail): 2 x allowed data keys + increment AddressPermissions[].length by +1", async () => {
           let keys = [
             allowedERC725YDataKeys[0],
             allowedERC725YDataKeys[1],
@@ -3527,7 +3527,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canSetDataAndAddPermissions)
+              .connect(canSetDataAndChangePermissions)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
