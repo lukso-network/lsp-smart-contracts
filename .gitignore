@@ -139,3 +139,6 @@ flat_contracts/
 
 # Mac
 .DS_Store
+
+# codespaces
+.devcontainer
