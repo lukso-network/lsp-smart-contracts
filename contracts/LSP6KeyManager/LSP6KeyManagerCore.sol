@@ -184,7 +184,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
     function _execute(uint256 msgValue, bytes calldata payload) internal returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
-        return _executePayload(payload, msgValue);
+        return _executePayload(msgValue, payload);
     }
 
     function _executeRelayCall(
@@ -212,7 +212,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         _verifyPermissions(signer, payload);
 
-        return _executePayload(payload, msgValue);
+        return _executePayload(msgValue, payload);
     }
 
 
@@ -222,7 +222,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
       * @param payload the payload to execute
       * @return bytes the result from calling the target with `_payload`
       */
-     function _executePayload(bytes calldata payload, uint256 msgValue) internal returns (bytes memory) {
+     function _executePayload(uint256 msgValue, bytes calldata payload) internal returns (bytes memory) {
 
         emit Executed(msgValue, bytes4(payload));
 
