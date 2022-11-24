@@ -2,31 +2,27 @@
 pragma solidity ^0.8.0;
 
 // interfaces
-import {
-    ILSP1UniversalReceiverDelegate
-} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiver} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes
  */
-contract UniversalReceiverDelegateRevert is ERC165, ILSP1UniversalReceiverDelegate {
+contract UniversalReceiverDelegateRevert is ERC165, ILSP1UniversalReceiver {
     /**
-     * @inheritdoc ILSP1UniversalReceiverDelegate
+     * @inheritdoc ILSP1UniversalReceiver
      * @dev Allows to register arrayKeys and Map of incoming vaults and assets and removing them after being sent
      * @return result the return value of keyManager's execute function
      */
-    function universalReceiverDelegate(
-        address notifier, // solhint-disable no-unused-vars
-        uint256 value, // solhint-disable no-unused-vars
+    function universalReceiver(
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
-    ) public virtual returns (bytes memory result) {
+    ) public payable virtual returns (bytes memory result) {
         revert("I Revert");
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == _INTERFACEID_LSP1_DELEGATE || super.supportsInterface(interfaceId);
+        return interfaceId == _INTERFACEID_LSP1 || super.supportsInterface(interfaceId);
     }
 }

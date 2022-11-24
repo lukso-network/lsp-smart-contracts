@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {ILSP1UniversalReceiverDelegate} from "../ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiver} from "../ILSP1UniversalReceiver.sol";
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
 // modules
@@ -29,18 +29,17 @@ import "../LSP1Errors.sol";
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Delegate contract of the initial universal receiver
  */
-contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiverDelegate {
+contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
     /**
-     * @inheritdoc ILSP1UniversalReceiverDelegate
+     * @inheritdoc ILSP1UniversalReceiver
      * @dev allows to register arrayKeys and Map of incoming assets and remove after being sent
      * @return result The return value
      */
-    function universalReceiverDelegate(
-        address notifier,
-        uint256 value, // solhint-disable no-unused-vars
+    function universalReceiver(
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
-    ) public virtual returns (bytes memory result) {
+    ) public payable virtual returns (bytes memory result) {
+        address notifier = address(bytes20(msg.data[msg.data.length - 52:]));
         (bool invalid, bytes10 mapPrefix, bytes4 interfaceID, bool isReceiving) = LSP1Utils
             .getTransferDetails(typeId);
 
@@ -86,6 +85,6 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiverDel
      * @inheritdoc ERC165
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == _INTERFACEID_LSP1_DELEGATE || super.supportsInterface(interfaceId);
+        return interfaceId == _INTERFACEID_LSP1 || super.supportsInterface(interfaceId);
     }
 }

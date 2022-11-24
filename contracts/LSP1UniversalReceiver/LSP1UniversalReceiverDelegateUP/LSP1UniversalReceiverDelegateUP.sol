@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {ILSP1UniversalReceiverDelegate} from "../ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiver} from "../ILSP1UniversalReceiver.sol";
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {ILSP7DigitalAsset} from "../../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 
@@ -39,20 +39,19 @@ import "../LSP1Errors.sol";
  * Owner of the UniversalProfile MUST be a KeyManager that allows (this) address to setData on the UniversalProfile
  *
  */
-contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiverDelegate {
+contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     using ERC165Checker for address;
 
     /**
-     * @inheritdoc ILSP1UniversalReceiverDelegate
+     * @inheritdoc ILSP1UniversalReceiver
      * @dev Allows to register arrayKeys and Map of incoming vaults and assets and removing them after being sent
      * @return result the return value of keyManager's execute function
      */
-    function universalReceiverDelegate(
-        address notifier,
-        uint256 value, // solhint-disable no-unused-vars
+    function universalReceiver(
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
-    ) public virtual returns (bytes memory result) {
+    ) public payable virtual returns (bytes memory result) {
+        address notifier = address(bytes20(msg.data[msg.data.length - 52:]));
         (bool invalid, bytes10 mapPrefix, bytes4 interfaceID, bool isReceiving) = LSP1Utils
             .getTransferDetails(typeId);
 
@@ -175,6 +174,6 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiverDelega
      * @inheritdoc ERC165
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == _INTERFACEID_LSP1_DELEGATE || super.supportsInterface(interfaceId);
+        return interfaceId == _INTERFACEID_LSP1 || super.supportsInterface(interfaceId);
     }
 }
