@@ -3,13 +3,12 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {
-    ILSP1UniversalReceiverDelegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {GasLib} from "../Utils/GasLib.sol";
+
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
@@ -30,7 +29,7 @@ import {
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
-    _INTERFACEID_LSP1_DELEGATE,
+    _LSP1_UNIVERSALRECEIVER_SELECTOR,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -68,7 +67,7 @@ contract LSP9VaultCore is
                 bytes20(_getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY))
             );
             require(
-                ERC165Checker.supportsERC165Interface(msg.sender, _INTERFACEID_LSP1_DELEGATE) &&
+                ERC165Checker.supportsERC165Interface(msg.sender, _INTERFACEID_LSP1) &&
                     msg.sender == universalReceiverAddress,
                 "Only Owner or Universal Receiver Delegate allowed"
             );
@@ -226,9 +225,15 @@ contract LSP9VaultCore is
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+                bytes memory callData = abi.encodePacked(
+                    abi.encodeWithSelector(_LSP1_UNIVERSALRECEIVER_SELECTOR, typeId, receivedData),
+                    msg.sender,
+                    msg.value
+                );
+                (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
+                _verifyCallResult(success, result);
+                resultDefaultDelegate = result.length != 0 ? abi.decode(result, (bytes)) : result;
             }
         }
 
@@ -241,11 +246,17 @@ contract LSP9VaultCore is
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
-            address typeIdDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
-            if (typeIdDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(typeIdDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+                bytes memory callData = abi.encodePacked(
+                    abi.encodeWithSelector(_LSP1_UNIVERSALRECEIVER_SELECTOR, typeId, receivedData),
+                    msg.sender,
+                    msg.value
+                );
+                (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
+                _verifyCallResult(success, result);
+                resultTypeIdDelegate = result.length != 0 ? abi.decode(result, (bytes)) : result;
             }
         }
 
@@ -325,5 +336,27 @@ contract LSP9VaultCore is
         }
 
         revert ERC725X_UnknownOperationType(operationType);
+    }
+
+    function _verifyCallResult(bool success, bytes memory returndata)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        if (success) {
+            return returndata;
+        } else {
+            // Look for revert reason and bubble it up if present
+            if (returndata.length > 0) {
+                // The easiest way to bubble the revert reason is using memory via assembly
+                /// @solidity memory-safe-assembly
+                assembly {
+                    let returndata_size := mload(returndata)
+                    revert(add(32, returndata), returndata_size)
+                }
+            } else {
+                revert();
+            }
+        }
     }
 }
