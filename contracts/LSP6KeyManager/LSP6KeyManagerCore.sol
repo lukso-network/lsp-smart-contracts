@@ -114,17 +114,24 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes[] calldata payloads) public payable returns (bytes[] memory) {
+    function execute(uint256[] calldata values, bytes[] calldata payloads) public payable returns (bytes[] memory) {
+        if (values.length != payloads.length) {
+            revert BatchExecuteParamsLengthMismatch();
+        }
+
         bytes[] memory results = new bytes[](payloads.length);
-        bool msgValueSent;
+        uint256 totalValues;
 
         for (uint256 ii; ii < payloads.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (!msgValueSent) {
-                results[ii] = _execute(payloads[ii], msg.value);
-                msgValueSent = true;
-            } else {
-                results[ii] = _execute(payloads[ii], 0);
+            if ((totalValues += values[ii]) > msg.value) {
+                revert LSP6BatchInsufficientMsgValue(totalValues, msg.value);
             }
+
+            results[ii] = _execute(payloads[ii], values[ii]);
+        }
+
+        if (totalValues < msg.value) {
+            revert LSP6BatchCannotLeaveFundsOnKeyManager(totalValues, msg.value);
         }
 
         return results;
@@ -147,6 +154,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function executeRelayCall(
         bytes[] memory signatures,
         uint256[] calldata nonces,
+        uint256[] calldata values,
         bytes[] calldata payloads
     ) public payable returns (bytes[] memory) {
         if (signatures.length != nonces.length || nonces.length != payloads.length) {
@@ -154,15 +162,18 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
 
         bytes[] memory results = new bytes[](payloads.length);
-        bool msgValueSent;
+        uint256 totalValues;
 
         for (uint256 ii; ii < payloads.length; ii = GasLib.uncheckedIncrement(ii)) {
-            if (!msgValueSent) {
-                results[ii] = _executeRelayCall(signatures[ii], nonces[ii], payloads[ii], msg.value);
-                msgValueSent = true;
-            } else {
-                results[ii] = _executeRelayCall(signatures[ii], nonces[ii], payloads[ii], 0);
+            if ((totalValues += values[ii]) > msg.value) {
+                revert LSP6BatchInsufficientMsgValue(totalValues, msg.value);
             }
+
+            results[ii] = _executeRelayCall(signatures[ii], nonces[ii], payloads[ii], values[ii]);
+        }
+
+        if (totalValues < msg.value) {
+            revert LSP6BatchCannotLeaveFundsOnKeyManager(totalValues, msg.value);
         }
 
         return results;
@@ -183,7 +194,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             LSP6_VERSION,
             block.chainid,
             nonce,
-            msg.value,
+            msgValue,
             payload
         );
 

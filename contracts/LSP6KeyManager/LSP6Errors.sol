@@ -110,3 +110,9 @@ error ZeroDataKeyNotAllowed();
  * @dev reverts when providing array parameters of different sizes to `executeRelayCall(bytes[],uint256[],bytes[])`
  */
 error BatchExecuteRelayCallParamsLengthMismatch();
+
+error BatchExecuteParamsLengthMismatch();
+
+error LSP6BatchInsufficientMsgValue(uint256 totalValues, uint256 msgValue);
+
+error LSP6BatchCannotLeaveFundsOnKeyManager(uint256 totalValues, uint256 msgValue);
