@@ -405,6 +405,13 @@ export const shouldInitializeLikeLSP9 = (
       expect(result).to.be.true;
     });
 
+    it("should support LSP17Extendable interface", async () => {
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.LSP17Extendable
+      );
+      expect(result).to.be.true;
+    });
+
     it("should have set expected entries with ERC725Y.setData", async () => {
       await expect(context.initializeTransaction)
         .to.emit(context.lsp9Vault, "DataChanged")

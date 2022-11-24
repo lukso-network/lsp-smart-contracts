@@ -369,6 +369,13 @@ export const shouldInitializeLikeLSP3 = (
       expect(result).to.be.true;
     });
 
+    it("should support LSP17Extendable interface", async () => {
+      const result = await context.universalProfile.supportsInterface(
+        INTERFACE_IDS.LSP17Extendable
+      );
+      expect(result).to.be.true;
+    });
+
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
       const result = await context.universalProfile["getData(bytes32)"](
         SupportedStandards.LSP3UniversalProfile.key
