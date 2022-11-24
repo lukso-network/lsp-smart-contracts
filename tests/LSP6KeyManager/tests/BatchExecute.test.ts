@@ -467,7 +467,7 @@ export const shouldBehaveLikeBatchExecute = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
-                "LSP6BatchCannotLeaveFundsOnKeyManager"
+                "LSP6BatchExcessiveValueSent"
               )
               .withArgs(0, amountToFund);
 
@@ -697,7 +697,7 @@ export const shouldBehaveLikeBatchExecute = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
-                "LSP6BatchInsufficientMsgValue"
+                "LSP6BatchInsufficientValueSent"
               )
               .withArgs(totalValues, msgValue);
           });
@@ -767,7 +767,7 @@ export const shouldBehaveLikeBatchExecute = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
-                "LSP6BatchCannotLeaveFundsOnKeyManager"
+                "LSP6BatchExcessiveValueSent"
               )
               .withArgs(totalValues, msgValue);
           });
@@ -1304,7 +1304,7 @@ export const shouldBehaveLikeBatchExecute = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "LSP6BatchInsufficientMsgValue"
+              "LSP6BatchInsufficientValueSent"
             )
             .withArgs(totalValues, amountToFund);
         });
@@ -1397,7 +1397,7 @@ export const shouldBehaveLikeBatchExecute = (
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
-              "LSP6BatchCannotLeaveFundsOnKeyManager"
+              "LSP6BatchExcessiveValueSent"
             )
             .withArgs(totalValues, amountToFund);
         });

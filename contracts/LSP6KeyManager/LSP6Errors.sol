@@ -113,6 +113,6 @@ error BatchExecuteRelayCallParamsLengthMismatch();
 
 error BatchExecuteParamsLengthMismatch();
 
-error LSP6BatchInsufficientMsgValue(uint256 totalValues, uint256 msgValue);
+error LSP6BatchInsufficientValueSent(uint256 totalValues, uint256 msgValue);
 
-error LSP6BatchCannotLeaveFundsOnKeyManager(uint256 totalValues, uint256 msgValue);
+error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);

@@ -127,14 +127,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         for (uint256 ii; ii < payloads.length; ii = GasLib.uncheckedIncrement(ii)) {
             if ((totalValues += values[ii]) > msg.value) {
-                revert LSP6BatchInsufficientMsgValue(totalValues, msg.value);
+                revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
             results[ii] = _execute(values[ii], payloads[ii]);
         }
 
         if (totalValues < msg.value) {
-            revert LSP6BatchCannotLeaveFundsOnKeyManager(totalValues, msg.value);
+            revert LSP6BatchExcessiveValueSent(totalValues, msg.value);
         }
 
         return results;
@@ -169,14 +169,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         for (uint256 ii; ii < payloads.length; ii = GasLib.uncheckedIncrement(ii)) {
             if ((totalValues += values[ii]) > msg.value) {
-                revert LSP6BatchInsufficientMsgValue(totalValues, msg.value);
+                revert LSP6BatchInsufficientValueSent(totalValues, msg.value);
             }
 
             results[ii] = _executeRelayCall(signatures[ii], nonces[ii], values[ii], payloads[ii]);
         }
 
         if (totalValues < msg.value) {
-            revert LSP6BatchCannotLeaveFundsOnKeyManager(totalValues, msg.value);
+            revert LSP6BatchExcessiveValueSent(totalValues, msg.value);
         }
 
         return results;
