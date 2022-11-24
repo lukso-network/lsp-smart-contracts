@@ -10,6 +10,7 @@ import {GasLib} from "../Utils/GasLib.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
@@ -50,6 +51,7 @@ contract LSP9VaultCore is
     ILSP1UniversalReceiver
 {
     using ERC165Checker for address;
+    using LSP1Utils for address;
 
     address private _reentrantDelegate;
 
@@ -225,15 +227,12 @@ contract LSP9VaultCore is
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
                 _reentrantDelegate = universalReceiverDelegate;
-                bytes memory callData = abi.encodePacked(
-                    abi.encodeWithSelector(_LSP1_UNIVERSALRECEIVER_SELECTOR, typeId, receivedData),
+                resultDefaultDelegate = universalReceiverDelegate.callUniversalReceiverAppended(
+                    typeId,
+                    receivedData,
                     msg.sender,
                     msg.value
                 );
-                // solhint-disable avoid-low-level-calls
-                (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
-                _verifyCallResult(success, result);
-                resultDefaultDelegate = result.length != 0 ? abi.decode(result, (bytes)) : result;
             }
         }
 
@@ -250,15 +249,12 @@ contract LSP9VaultCore is
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
                 _reentrantDelegate = universalReceiverDelegate;
-                bytes memory callData = abi.encodePacked(
-                    abi.encodeWithSelector(_LSP1_UNIVERSALRECEIVER_SELECTOR, typeId, receivedData),
+                resultTypeIdDelegate = universalReceiverDelegate.callUniversalReceiverAppended(
+                    typeId,
+                    receivedData,
                     msg.sender,
                     msg.value
                 );
-                // solhint-disable avoid-low-level-calls
-                (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
-                _verifyCallResult(success, result);
-                resultTypeIdDelegate = result.length != 0 ? abi.decode(result, (bytes)) : result;
             }
         }
 
@@ -339,29 +335,5 @@ contract LSP9VaultCore is
         }
 
         revert ERC725X_UnknownOperationType(operationType);
-    }
-
-    function _verifyCallResult(bool success, bytes memory returndata)
-        internal
-        pure
-        returns (bytes memory)
-    {
-        if (success) {
-            return returndata;
-        } else {
-            // Look for revert reason and bubble it up if present
-            if (returndata.length > 0) {
-                // The easiest way to bubble the revert reason is using memory via assembly
-                // solhint-disable no-inline-assembly
-                /// @solidity memory-safe-assembly
-                assembly {
-                    let returndata_size := mload(returndata)
-                    revert(add(32, returndata), returndata_size)
-                }
-            } else {
-                // solhint-disable reason-string
-                revert();
-            }
-        }
     }
 }
