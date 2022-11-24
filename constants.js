@@ -26,7 +26,7 @@ const INTERFACE_IDS = {
 	LSP9Vault: '0x7050cee9',
 	LSP14Ownable2Step: '0x94be5999',
 	LSP17Extendable: '0xa918fa6b',
-	LSP17Extension: '0xcee78b40'
+	LSP17Extension: '0xcee78b40',
 };
 
 // ERC1271
@@ -147,7 +147,7 @@ const ERC725YKeys = {
 	LSP17: {
 		// bytes10(keccak256('LSP17Extension')) + bytes2(0)
 		LSP17ExtensionPrefix: '0xcee78b4094da860110960000',
-	}
+	},
 };
 
 const BasicUPSetup_Schema = [
@@ -299,6 +299,14 @@ const Errors = {
 			error: 'BatchExecuteRelayCallParamsLengthMismatch()',
 			message:
 				'LSP6: different number of elements for each array parameters in batch `executeRelayCall(bytes[],uint256[],bytes[])',
+		},
+		'0x30a324ac': {
+			error: 'LSP6BatchInsufficientValueSent(uint256,uint256)',
+			message: 'LSP6: `msg.value` sent is not enough to cover all the combined `values[]`.',
+		},
+		'0xa51868b6': {
+			error: 'LSP6BatchExcessiveValueSent(uint256,uint256)',
+			message: 'LSP6: cannot send more `msg.value` than all the combined `values[]`.',
 		},
 	},
 	LSP7: {
