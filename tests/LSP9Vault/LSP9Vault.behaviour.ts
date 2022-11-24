@@ -217,7 +217,7 @@ export const shouldBehaveLikeLSP9 = (
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
-          .execute(executePayload);
+          ["execute(bytes)"](executePayload);
       });
 
       it("should register lsp10 keys of the vault on the profile", async () => {
@@ -254,7 +254,7 @@ export const shouldBehaveLikeLSP9 = (
 
         await context.lsp6KeyManager
           .connect(context.accounts.owner)
-          .execute(payload);
+          ["execute(bytes)"](payload);
       });
 
       it("should allow friend to talk to the vault", async () => {
@@ -265,7 +265,7 @@ export const shouldBehaveLikeLSP9 = (
         );
         await context.lsp6KeyManager
           .connect(context.accounts.friend)
-          .execute(
+          ["execute(bytes)"](
             callPayload(
               context.universalProfile,
               context.lsp9Vault.address,
@@ -293,7 +293,7 @@ export const shouldBehaveLikeLSP9 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.friend)
-            .execute(
+            ["execute(bytes)"](
               callPayload(
                 context.universalProfile,
                 context.universalProfile.address,
@@ -401,6 +401,13 @@ export const shouldInitializeLikeLSP9 = (
     it("should support LSP14Ownable2Step interface", async () => {
       const result = await context.lsp9Vault.supportsInterface(
         INTERFACE_IDS.LSP14Ownable2Step
+      );
+      expect(result).to.be.true;
+    });
+
+    it("should support LSP17Extendable interface", async () => {
+      const result = await context.lsp9Vault.supportsInterface(
+        INTERFACE_IDS.LSP17Extendable
       );
       expect(result).to.be.true;
     });

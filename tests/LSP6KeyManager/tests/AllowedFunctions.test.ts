@@ -94,7 +94,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.keyManager
               .connect(addressWithNoAllowedFunctions)
-              .execute(executePayload)
+              ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
             .withArgs(addressWithNoAllowedFunctions.address);
@@ -121,7 +121,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.keyManager
               .connect(addressWithNoAllowedFunctions)
-              .execute(executePayload)
+              ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
             .withArgs(addressWithNoAllowedFunctions.address);
@@ -151,7 +151,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
           await context.keyManager
             .connect(addressCanCallOnlyOneFunction)
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
 
           let result = await targetContract.callStatic.getName();
           expect(result).to.not.equal(initialName);
@@ -180,7 +180,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           await expect(
             context.keyManager
               .connect(addressCanCallOnlyOneFunction)
-              .execute(executePayload)
+              ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
             .withArgs(
@@ -207,7 +207,7 @@ export const shouldBehaveLikeAllowedFunctions = (
         await expect(
           context.keyManager
             .connect(addressCanCallOnlyOneFunction)
-            .execute(payload)
+            ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
@@ -267,7 +267,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             LOCAL_PRIVATE_KEYS.ACCOUNT2
           );
 
-          await context.keyManager.executeRelayCall(
+          await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
             signature,
             nonce,
             executeRelayCallPayload,
@@ -321,7 +321,7 @@ export const shouldBehaveLikeAllowedFunctions = (
           );
 
           await expect(
-            context.keyManager.executeRelayCall(
+            context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
               signature,
               nonce,
               executeRelayCallPayload,
@@ -437,7 +437,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
         await context.keyManager
           .connect(addressCanCallOnlyTransferOnLSP8)
-          .execute(executePayload);
+          ["execute(bytes)"](executePayload);
 
         expect(await lsp8Contract.tokenOwnerOf(tokenId)).to.equal(recipient);
       });
@@ -465,7 +465,7 @@ export const shouldBehaveLikeAllowedFunctions = (
         await expect(
           context.keyManager
             .connect(addressCanCallOnlyTransferOnLSP8)
-            .execute(executePayload)
+            ["execute(bytes)"](executePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
           .withArgs(
@@ -499,7 +499,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
 
           expect(await lsp7Contract.balanceOf(recipient)).to.equal(amount);
         });
@@ -523,7 +523,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
 
           let receipt = await tx.wait();
           console.log("gas used: ", receipt.gasUsed.toNumber());
@@ -559,7 +559,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
 
           expect(
             await lsp7Contract.authorizedAmountFor(
@@ -590,7 +590,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            .execute(payload);
+            ["execute(bytes)"](payload);
 
           expect(
             await lsp7Contract.callStatic["getData(bytes32)"](key)
@@ -623,7 +623,7 @@ export const shouldBehaveLikeAllowedFunctions = (
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
-            .execute(executePayload);
+            ["execute(bytes)"](executePayload);
 
           expect(await lsp8Contract.isOperatorFor(recipient, tokenId)).to.be
             .true;
@@ -648,7 +648,7 @@ export const shouldBehaveLikeAllowedFunctions = (
               .connect(
                 addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
               )
-              .execute(executePayload)
+              ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
             .withArgs(
@@ -678,7 +678,7 @@ export const shouldBehaveLikeAllowedFunctions = (
               .connect(
                 addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
               )
-              .execute(executePayload)
+              ["execute(bytes)"](executePayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
             .withArgs(

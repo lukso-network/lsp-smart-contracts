@@ -105,3 +105,35 @@ error InvalidWhitelistedCall(address from);
  * "0x0000000000000000000000000000000000000000000000000000000000000000"
  */
 error ZeroDataKeyNotAllowed();
+
+/**
+ * @dev reverts when providing array parameters of different sizes to `executeRelayCall(bytes[],uint256[],bytes[])`
+ */
+error BatchExecuteRelayCallParamsLengthMismatch();
+
+/**
+ * @dev there should be the same number of elements for each array parameters
+ * in the following batch functions:
+ *  - execute(uint256[],bytes[])
+ *  - executeRelayCall(bytes[],uint256[],uint256[],bytes[])
+ */
+error BatchExecuteParamsLengthMismatch();
+
+/**
+ * @dev the `msg.value` sent is not enough to cover the sum of all the values being
+ * forwarded on each payloads (`values[]` parameter) in the following batch functions:
+ *  - execute(uint256[],bytes[])
+ *  - executeRelayCall(bytes[],uint256[],uint256[],bytes[])
+ */
+error LSP6BatchInsufficientValueSent(uint256 totalValues, uint256 msgValue);
+
+/**
+ * @dev reverts to avoid the KeyManager to holds some remaining funds sent
+ * to the following batch functions:
+ *  - execute(uint256[],bytes[])
+ *  - executeRelayCall(bytes[],uint256[],uint256[],bytes[])
+ *
+ * This error occurs when `msg.value` is more than the sum of all the values being
+ * forwarded on each payloads (`values[]` parameter from the batch functions above).
+ */
+error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);

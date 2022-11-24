@@ -115,7 +115,7 @@ describe("Key Manager gas cost interactions", () => {
 
           let tx = await context.keyManager
             .connect(context.owner)
-            .execute(transferLyxPayload);
+            ["execute(bytes)"](transferLyxPayload);
 
           let receipt = await tx.wait();
 
@@ -149,7 +149,7 @@ describe("Key Manager gas cost interactions", () => {
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddress)
-          .execute(transferLyxPayload);
+          ["execute(bytes)"](transferLyxPayload);
 
         let receipt = await tx.wait();
 
@@ -182,7 +182,7 @@ describe("Key Manager gas cost interactions", () => {
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddressAndStandard)
-          .execute(transferLyxPayload);
+          ["execute(bytes)"](transferLyxPayload);
 
         let receipt = await tx.wait();
 

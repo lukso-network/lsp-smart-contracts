@@ -120,7 +120,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               );
 
             await expect(
-              context.keyManager.executeRelayCall(
+              context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
                 signature,
                 signedMessageParams.nonce,
                 signedMessageParams.payload,
@@ -180,7 +180,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             await expect(
               context.keyManager
                 .connect(relayer)
-                .executeRelayCall(
+                ["executeRelayCall(bytes,uint256,bytes)"](
                   signature,
                   signedMessageParams.nonce,
                   signedMessageParams.payload,
@@ -242,7 +242,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
             await context.keyManager
               .connect(relayer)
-              .executeRelayCall(
+              ["executeRelayCall(bytes,uint256,bytes)"](
                 signature,
                 signedMessageParams.nonce,
                 signedMessageParams.payload,
@@ -303,7 +303,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             await expect(
               context.keyManager
                 .connect(relayer)
-                .executeRelayCall(
+                ["executeRelayCall(bytes,uint256,bytes)"](
                   signature,
                   signedMessageParams.nonce,
                   signedMessageParams.payload,
@@ -378,7 +378,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
+                  ["executeRelayCall(bytes,uint256,bytes)"](
                     signature,
                     latestNonce,
                     executeRelayCallPayload,
@@ -451,7 +451,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
               await context.keyManager
                 .connect(relayer)
-                .executeRelayCall(
+                ["executeRelayCall(bytes,uint256,bytes)"](
                   signature,
                   latestNonce,
                   executeRelayCallPayload,
@@ -520,7 +520,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               await expect(
                 context.keyManager
                   .connect(relayer)
-                  .executeRelayCall(
+                  ["executeRelayCall(bytes,uint256,bytes)"](
                     signature,
                     latestNonce,
                     executeRelayCallPayload,

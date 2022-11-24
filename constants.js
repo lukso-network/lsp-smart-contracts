@@ -17,14 +17,16 @@ const INTERFACE_IDS = {
 	ERC1155: '0xd9b67a26',
 	ERC725X: '0x570ef073',
 	ERC725Y: '0x714df77c',
-	LSP0ERC725Account: '0xcf6e8efc',
+	LSP0ERC725Account: '0x66767497',
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
-	LSP6KeyManager: '0xf9150d55',
+	LSP6KeyManager: '0xfb437414',
 	LSP7DigitalAsset: '0xda1f85e4',
 	LSP8IdentifiableDigitalAsset: '0x622e7a01',
-	LSP9Vault: '0xd9483482',
+	LSP9Vault: '0x7050cee9',
 	LSP14Ownable2Step: '0x94be5999',
+	LSP17Extendable: '0xa918fa6b',
+	LSP17Extension: '0xcee78b40',
 };
 
 // ERC1271
@@ -69,12 +71,8 @@ const SupportedStandards = {
  * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
  */
 const ERC725YKeys = {
-	LSP0: {
-		// bytes10(keccak256('ExtensionHandler'))
-		ExtensionHandlerPrefix: '0x21c768241ee86a8d564b0000',
-	},
 	LSP1: {
-		// bytes10(keccak256('LSP1UniversalReceiverDelegate'))
+		// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0)
 		LSP1UniversalReceiverDelegatePrefix: '0x0cfc51aec37c55a4d0b10000',
 		// keccak256('LSP1UniversalReceiverDelegate')
 		LSP1UniversalReceiverDelegate:
@@ -93,7 +91,7 @@ const ERC725YKeys = {
 		LSP4TokenSymbol: '0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756',
 		// keccak256('LSP4Metadata')
 		LSP4Metadata: '0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e',
-		// LSP4CreatorsMap:<address>
+		// LSP4CreatorsMap:<address>  + bytes2(0)
 		LSP4CreatorsMap: '0x6de85eaf5d982b4e5da00000',
 		// keccak256('"LSP4Creators[]')
 		'LSP4Creators[]': {
@@ -104,7 +102,7 @@ const ERC725YKeys = {
 		},
 	},
 	LSP5: {
-		// LSP5ReceivedAssetsMap:<address>
+		// LSP5ReceivedAssetsMap:<address>  + bytes2(0)
 		LSP5ReceivedAssetsMap: '0x812c4334633eb816c80d0000',
 		// keccak256('LSP5ReceivedAssets[]')
 		'LSP5ReceivedAssets[]': {
@@ -118,18 +116,18 @@ const ERC725YKeys = {
 			length: '0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3',
 			index: '0xdf30dba06db6a30e65354d9a64c60986',
 		},
-		// AddressPermissions:Permissions:<address>
+		// AddressPermissions:Permissions:<address>  + bytes2(0)
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
-		// AddressPermissions:AllowedERC725YKeys:<address>
+		// AddressPermissions:AllowedERC725YKeys:<address>  + bytes2(0)
 		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
-		// AddressPermissions:AllowedCalls:<address>
+		// AddressPermissions:AllowedCalls:<address>  + bytes2(0)
 		'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
 	},
 	LSP9: {
 		SupportedStandards_LSP9: SupportedStandards.LSP9Vault.key,
 	},
 	LSP10: {
-		// keccak256('LSP10VaultsMap')
+		// keccak256('LSP10VaultsMap') + bytes2(0)
 		LSP10VaultsMap: '0x192448c3c0f88c7f238c0000',
 		// keccak256('LSP10Vaults[]')
 		'LSP10Vaults[]': {
@@ -138,13 +136,17 @@ const ERC725YKeys = {
 		},
 	},
 	LSP12: {
-		// LSP12IssuedAssetsMap:<address>
+		// LSP12IssuedAssetsMap:<address>  + bytes2(0)
 		LSP12IssuedAssetsMap: '0x74ac2555c10b9349e78f0000',
 		// keccak256('LSP12IssuedAssets[]')
 		'LSP12IssuedAssets[]': {
 			length: '0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd',
 			index: '0x7c8c3416d6cda87cd42c71ea1843df28',
 		},
+	},
+	LSP17: {
+		// bytes10(keccak256('LSP17Extension')) + bytes2(0)
+		LSP17ExtensionPrefix: '0xcee78b4094da860110960000',
 	},
 };
 
@@ -287,11 +289,24 @@ const Errors = {
 		},
 		'0x7231ac57': {
 			error: 'InvalidEncodedAllowedERC725YKeys(bytes)',
-			message: 'LSP2Utils: Invalid Compact Bytes Array',
+			message: 'LSP6: Invalid Compact Bytes Array',
 		},
 		'0x8f4afa38': {
 			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
 			message: 'LSP6: value provided for AddressPermission[index] not an address.',
+		},
+		'0x8be02e75': {
+			error: 'BatchExecuteRelayCallParamsLengthMismatch()',
+			message:
+				'LSP6: different number of elements for each array parameters in batch `executeRelayCall(bytes[],uint256[],bytes[])',
+		},
+		'0x30a324ac': {
+			error: 'LSP6BatchInsufficientValueSent(uint256,uint256)',
+			message: 'LSP6: `msg.value` sent is not enough to cover all the combined `values[]`.',
+		},
+		'0xa51868b6': {
+			error: 'LSP6BatchExcessiveValueSent(uint256,uint256)',
+			message: 'LSP6: cannot send more `msg.value` than all the combined `values[]`.',
 		},
 	},
 	LSP7: {

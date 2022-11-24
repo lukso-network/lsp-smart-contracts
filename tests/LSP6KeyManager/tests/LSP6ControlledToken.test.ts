@@ -84,7 +84,7 @@ const addControllerWithPermission = async (
     [keys, values]
   );
 
-  await context.keyManager.connect(context.owner).execute(payload);
+  await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
 };
 
 describe("When deploying LSP7 with LSP6 as owner", () => {
@@ -142,7 +142,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       ]);
 
       await expect(
-        context.keyManager.connect(context.owner).execute(mintPayload)
+        context.keyManager.connect(context.owner)["execute(bytes)"](mintPayload)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -160,7 +160,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       await expect(
         context.keyManager
           .connect(context.owner)
-          .execute(renounceOwnershipPayload)
+          ["execute(bytes)"](renounceOwnershipPayload)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -180,7 +180,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
       await context.keyManager
         .connect(context.owner)
-        .execute(transferOwnershipPayload);
+        ["execute(bytes)"](transferOwnershipPayload);
 
       expect(await context.token.owner()).to.equal(newOwner.address);
     });
@@ -198,7 +198,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       );
 
       await expect(
-        context.keyManager.connect(context.owner).execute(payload)
+        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
       ).to.be.revertedWith("Ownable: caller is not the owner");
     });
 
@@ -227,7 +227,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       ]);
 
       await expect(
-        context.keyManager.connect(context.owner).execute(mintPayload)
+        context.keyManager.connect(context.owner)["execute(bytes)"](mintPayload)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -253,7 +253,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       await expect(
         context.keyManager
           .connect(context.owner)
-          .execute(transferOwnershipPayload)
+          ["execute(bytes)"](transferOwnershipPayload)
       ).to.be.revertedWith("Ownable: caller is not the owner");
     });
 
@@ -272,7 +272,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       await expect(
         context.keyManager
           .connect(context.owner)
-          .execute(renounceOwnershipPayload)
+          ["execute(bytes)"](renounceOwnershipPayload)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -339,7 +339,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         expect(
           context.keyManager
             .connect(addressCanChangePermissions)
-            .execute(transferOwnershipPayload)
+            ["execute(bytes)"](transferOwnershipPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
           .withArgs(addressCanChangePermissions.address);
@@ -353,7 +353,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         await context.keyManager
           .connect(addressCanChangeOwner)
-          .execute(transferOwnershipPayload);
+          ["execute(bytes)"](transferOwnershipPayload);
 
         expect(await context.token.owner()).to.equal(
           addressCanChangeOwner.address
@@ -418,7 +418,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
 
         await expect(
-          context.keyManager.connect(addressCanChangeOwner).execute(payload)
+          context.keyManager.connect(addressCanChangeOwner)["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCanChangeOwner.address, "CHANGEPERMISSIONS");
@@ -436,7 +436,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         await context.keyManager
           .connect(addressCanChangePermissions)
-          .execute(payload);
+          ["execute(bytes)"](payload);
 
         expect(await context.token["getData(bytes32)"](key)).to.equal(value);
       });
@@ -453,7 +453,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         await context.keyManager
           .connect(addressCanChangePermissions)
-          .execute(payload);
+          ["execute(bytes)"](payload);
 
         expect(await context.token["getData(bytes32)"](key)).to.equal(value);
       });
@@ -516,7 +516,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         await context.keyManager
           .connect(addressCanAddPermissions)
-          .execute(payload);
+          ["execute(bytes)"](payload);
 
         expect(await context.token["getData(bytes32)"](key)).to.equal(value);
       });
@@ -532,7 +532,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
 
         await expect(
-          context.keyManager.connect(addressCanAddPermissions).execute(payload)
+          context.keyManager.connect(addressCanAddPermissions)["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCanAddPermissions.address, "CHANGEPERMISSIONS");
@@ -548,7 +548,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [key, value]
         );
 
-        await context.keyManager.connect(context.owner).execute(payload);
+        await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
       });
     });
 
@@ -621,7 +621,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
 
         await expect(
-          context.keyManager.connect(addressCanSetData).execute(payload)
+          context.keyManager.connect(addressCanSetData)["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
@@ -642,7 +642,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [key, value]
         );
 
-        await context.keyManager.connect(context.owner).execute(payload);
+        await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
 
         expect(await context.token["getData(bytes32)"](key)).to.equal(value);
       });
@@ -675,7 +675,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           [keys, values]
         );
 
-        await context.keyManager.connect(addressCanSetData).execute(payload);
+        await context.keyManager.connect(addressCanSetData)["execute(bytes)"](payload);
 
         expect(await context.token["getData(bytes32[])"](keys)).to.deep.equal(
           values
@@ -711,7 +711,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
 
         await expect(
-          context.keyManager.connect(addressCanSetData).execute(payload)
+          context.keyManager.connect(addressCanSetData)["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
@@ -750,7 +750,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           );
 
         await expect(
-          context.keyManager.connect(context.owner).execute(payload)
+          context.keyManager.connect(context.owner)["execute(bytes)"](payload)
         ).to.be.revertedWith(
           "LSP6: Unknown Error occured when calling the linked target contract"
         );

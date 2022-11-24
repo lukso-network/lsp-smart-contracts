@@ -18,6 +18,7 @@ import {ERC725XCore, IERC725X} from "@erc725/smart-contracts/contracts/ERC725XCo
 import {ERC725YCore, IERC725Y} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
 
 // constants
 import "@erc725/smart-contracts/contracts/errors.sol";
@@ -35,13 +36,20 @@ import {
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
+import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
  * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
-contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1UniversalReceiver {
+contract LSP9VaultCore is
+    ERC725XCore,
+    ERC725YCore,
+    LSP14Ownable2Step,
+    LSP17Extendable,
+    ILSP1UniversalReceiver
+{
     using ERC165Checker for address;
 
     /**
@@ -77,8 +85,36 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
     }
 
+    // solhint-disable
+
+    /**
+     * @dev Returns the extension stored under the `_LSP17_EXTENSION_PREFIX` data key
+     * mapped to the functionSelector provided.
+     *
+     * If no extension is stored, returns the address(0)
+     */
+    function _getExtension(bytes4 functionSelector) internal view override returns (address) {
+        bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
+            _LSP17_EXTENSION_PREFIX,
+            functionSelector
+        );
+
+        // Check if there is an extension for the function selector provided
+        address extension = address(bytes20(_getData(mappedExtensionDataKey)));
+
+        return extension;
+    }
+
     /**
      * @dev Emits an event when receiving native tokens
+     *
+     * Forwards the call to an extension (address) stored under a _LSP17_FALLBACK_EXTENSIONS_HANDLER_ appended
+     * to a function selector. If there is no extension stored under the data key, return.
+     *
+     * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
+     * Returns the return value on success and revert in case of failure.
+     *
+     * If the msg.data is shorter than 4 bytes, do not check for an extension and return
      *
      * Executed when:
      * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
@@ -86,7 +122,10 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
      */
     fallback() external payable virtual {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        _fallbackLSP17Extendable();
     }
+
+    // solhint-enable
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -95,7 +134,7 @@ contract LSP9VaultCore is ERC725XCore, ERC725YCore, LSP14Ownable2Step, ILSP1Univ
         public
         view
         virtual
-        override(ERC725XCore, ERC725YCore)
+        override(ERC725XCore, ERC725YCore, LSP17Extendable)
         returns (bool)
     {
         return

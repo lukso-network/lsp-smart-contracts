@@ -21,6 +21,7 @@ import {
   shouldBehaveLikeAllowedERC725YKeys,
   shouldBehaveLikeMultiChannelNonce,
   shouldBehaveLikeExecuteRelayCall,
+  shouldBehaveLikeBatchExecute,
   testSecurityScenarios,
   otherTestScenarios,
   testReentrancyScenarios,
@@ -101,6 +102,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("Execute Relay Call", () => {
     shouldBehaveLikeExecuteRelayCall(buildContext);
+  });
+
+  describe("batch execute", () => {
+    shouldBehaveLikeBatchExecute(buildContext);
   });
 
   describe("miscellaneous", () => {

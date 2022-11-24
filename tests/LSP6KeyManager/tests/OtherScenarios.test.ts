@@ -49,13 +49,13 @@ export const otherTestScenarios = (
 
   describe("payload", () => {
     it.skip("should fail when sending an empty payload to `keyManager.execute('0x')`", async () => {
-      await context.keyManager.connect(context.owner).execute("0x");
+      await context.keyManager.connect(context.owner)["execute(bytes)"]("0x");
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
-        context.keyManager.connect(addressCanMakeCall).execute(INVALID_PAYLOAD)
+        context.keyManager.connect(addressCanMakeCall)["execute(bytes)"](INVALID_PAYLOAD)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -80,7 +80,7 @@ export const otherTestScenarios = (
       );
 
       await expect(
-        context.keyManager.connect(context.owner).execute(payload)
+        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
       ).to.be.revertedWith("LSP6KeyManager: invalid operation type");
     });
 
@@ -98,7 +98,7 @@ export const otherTestScenarios = (
       );
 
       await expect(
-        context.keyManager.connect(addressCanMakeCall).execute(payload)
+        context.keyManager.connect(addressCanMakeCall)["execute(bytes)"](payload)
       ).to.be.revertedWith("LSP6KeyManager: invalid operation type");
     });
   });

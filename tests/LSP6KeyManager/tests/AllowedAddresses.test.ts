@@ -111,7 +111,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
           await context.keyManager
             .connect(context.owner)
-            .execute(transferPayload);
+            ["execute(bytes)"](transferPayload);
 
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
@@ -142,7 +142,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await context.keyManager
         .connect(canCallOnlyTwoAddresses)
-        .execute(transferPayload);
+        ["execute(bytes)"](transferPayload);
 
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
@@ -173,7 +173,7 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       await context.keyManager
         .connect(canCallOnlyTwoAddresses)
-        .execute(payload);
+        ["execute(bytes)"](payload);
 
       const result = await allowedTargetContract.callStatic.getName();
       expect(result).to.equal(argument);
@@ -201,7 +201,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       await expect(
         context.keyManager
           .connect(canCallOnlyTwoAddresses)
-          .execute(transferPayload)
+          ["execute(bytes)"](transferPayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
@@ -240,7 +240,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       );
 
       await expect(
-        context.keyManager.connect(canCallOnlyTwoAddresses).execute(payload)
+        context.keyManager.connect(canCallOnlyTwoAddresses)["execute(bytes)"](payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
@@ -273,7 +273,7 @@ export const shouldBehaveLikeAllowedAddresses = (
           await expect(
             context.keyManager
               .connect(invalidEncodedAllowedCalls)
-              .execute(transferPayload)
+              ["execute(bytes)"](transferPayload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
             .withArgs(invalidEncodedAllowedCalls.address);

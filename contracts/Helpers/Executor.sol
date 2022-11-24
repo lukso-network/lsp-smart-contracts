@@ -11,6 +11,7 @@ import {
     EXECUTE_SELECTOR,
     OPERATION_0_CALL
 } from "@erc725/smart-contracts/contracts/constants.sol";
+import {_LSP6_EXECUTE_SELECTOR} from "../LSP6KeyManager/LSP6Constants.sol";
 
 contract Executor {
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
@@ -93,7 +94,7 @@ contract Executor {
         bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 
@@ -109,7 +110,7 @@ contract Executor {
         bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 
@@ -125,7 +126,7 @@ contract Executor {
         bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, _key, _value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 
@@ -146,7 +147,7 @@ contract Executor {
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 
@@ -167,7 +168,7 @@ contract Executor {
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 

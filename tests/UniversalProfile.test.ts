@@ -20,6 +20,11 @@ import {
 } from "./LSP14Ownable2Step/LSP14Ownable2Step.behaviour";
 
 import {
+  LSP17TestContext,
+  shouldBehaveLikeLSP17,
+} from "./LSP17ContractExtension/LSP17Extendable.behaviour";
+
+import {
   LSP3TestContext,
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
@@ -73,6 +78,18 @@ describe("UniversalProfile", () => {
       return { accounts, contract, deployParams, onlyOwnerRevertString };
     };
 
+    const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = {
+        owner: accounts[0],
+      };
+      const contract = await new UniversalProfile__factory(accounts[0]).deploy(
+        deployParams.owner.address
+      );
+
+      return { accounts, contract, deployParams };
+    };
+
     [
       { initialFunding: undefined },
       { initialFunding: 0 },
@@ -112,6 +129,7 @@ describe("UniversalProfile", () => {
       shouldBehaveLikeLSP3(buildLSP3TestContext);
       shouldBehaveLikeLSP1(buildLSP1TestContext);
       shouldBehaveLikeLSP14(buildLSP14TestContext);
+      shouldBehaveLikeLSP17(buildLSP17TestContext);
     });
   });
 
@@ -198,6 +216,28 @@ describe("UniversalProfile", () => {
       };
     };
 
+    const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = {
+        owner: accounts[0],
+      };
+
+      const universalProfileInit = await new UniversalProfileInit__factory(
+        accounts[0]
+      ).deploy();
+
+      const universalProfileProxy = await deployProxy(
+        universalProfileInit.address,
+        accounts[0]
+      );
+
+      const universalProfile = universalProfileInit.attach(
+        universalProfileProxy
+      );
+
+      return { accounts, contract: universalProfile, deployParams };
+    };
+
     describe("when deploying the base implementation contract", () => {
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
@@ -277,6 +317,19 @@ describe("UniversalProfile", () => {
         });
 
         return claimOwnershipContext;
+      });
+
+      shouldBehaveLikeLSP17(async () => {
+        let fallbackExtensionContext = await buildLSP17TestContext();
+
+        await initializeProxy({
+          accounts: fallbackExtensionContext.accounts,
+          universalProfile:
+            fallbackExtensionContext.contract as LSP0ERC725Account,
+          deployParams: fallbackExtensionContext.deployParams,
+        });
+
+        return fallbackExtensionContext;
       });
     });
   });
