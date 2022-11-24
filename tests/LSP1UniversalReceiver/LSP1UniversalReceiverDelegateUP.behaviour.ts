@@ -87,7 +87,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     it("should support LSP1Delegate interface", async () => {
       const result =
         await context.lsp1universalReceiverDelegateUP.supportsInterface(
-          INTERFACE_IDS.LSP1UniversalReceiverDelegate
+          INTERFACE_IDS.LSP1UniversalReceiver
         );
       expect(result).to.be.true;
     });
@@ -1961,7 +1961,7 @@ export const shouldInitializeLikeLSP1Delegate = (
     it("should have registered the LSP1Delegate interface", async () => {
       expect(
         await context.lsp1universalReceiverDelegateUP.supportsInterface(
-          INTERFACE_IDS.LSP1UniversalReceiverDelegate
+          INTERFACE_IDS.LSP1UniversalReceiver
         )
       );
     });
