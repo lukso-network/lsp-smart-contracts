@@ -51,6 +51,8 @@ contract LSP9VaultCore is
 {
     using ERC165Checker for address;
 
+    address private _reentrantDelegate;
+
     /**
      * @notice Emitted when receiving native tokens
      * @param sender The address of the sender
@@ -71,6 +73,16 @@ contract LSP9VaultCore is
                     msg.sender == universalReceiverAddress,
                 "Only Owner or Universal Receiver Delegate allowed"
             );
+        }
+        _;
+    }
+
+    /**
+     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
+     */
+    modifier onlyAllowed2() {
+        if (msg.sender != owner()) {
+            require(msg.sender == _reentrantDelegate);
         }
         _;
     }
@@ -226,6 +238,7 @@ contract LSP9VaultCore is
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+                _reentrantDelegate = universalReceiverDelegate;
                 bytes memory callData = abi.encodePacked(
                     abi.encodeWithSelector(_LSP1_UNIVERSALRECEIVER_SELECTOR, typeId, receivedData),
                     msg.sender,
@@ -250,6 +263,7 @@ contract LSP9VaultCore is
             address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+                _reentrantDelegate = universalReceiverDelegate;
                 bytes memory callData = abi.encodePacked(
                     abi.encodeWithSelector(_LSP1_UNIVERSALRECEIVER_SELECTOR, typeId, receivedData),
                     msg.sender,
