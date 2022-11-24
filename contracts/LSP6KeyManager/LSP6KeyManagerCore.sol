@@ -190,7 +190,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     function _execute(uint256 msgValue, bytes calldata payload) internal returns (bytes memory) {
-        _nonReentrantBefore(signer);
+        _nonReentrantBefore(msg.sender);
         _verifyPermissions(msg.sender, payload);
         bytes memory result = _executePayload(msgValue, payload);
         _nonReentrantAfter();
@@ -224,7 +224,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         _verifyPermissions(signer, payload);
 
-        bytes memory result = _executePayload(payload);
+        bytes memory result = _executePayload(msgValue, payload);
 
         _nonReentrantAfter();
 

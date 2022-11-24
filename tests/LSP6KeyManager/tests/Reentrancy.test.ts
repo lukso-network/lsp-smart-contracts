@@ -239,7 +239,9 @@ export const testReentrancyScenarios = async (
 
     const acceptOwnershipPayload =
       context.universalProfile.interface.encodeFunctionData("acceptOwnership");
-    await context.keyManager.connect(owner).execute(acceptOwnershipPayload);
+    await context.keyManager
+      .connect(owner)
+      ["execute(bytes)"](acceptOwnershipPayload);
 
     // Fund Universal Profile with some LYXe
     await owner.sendTransaction({
@@ -336,7 +338,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert when reentering and transferring value", async () => {
@@ -358,7 +362,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithValueTransfer.address, "REENTRANCY");
@@ -383,7 +387,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithSetData.address, "REENTRANCY");
@@ -413,7 +417,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithAddPermission.address, "REENTRANCY");
@@ -443,7 +447,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithChangePermission.address, "REENTRANCY");
@@ -468,7 +472,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithAddURD.address, "REENTRANCY");
@@ -493,7 +497,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithChangeURD.address, "REENTRANCY");
@@ -619,7 +623,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
@@ -641,7 +647,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -671,7 +677,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -704,7 +710,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -737,7 +743,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -770,7 +776,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -803,7 +809,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
@@ -836,7 +842,9 @@ export const testReentrancyScenarios = async (
           )
         ).to.equal(ethers.utils.parseEther("10"));
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         expect(
           await context.universalProfile.provider.getBalance(
@@ -976,7 +984,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1003,7 +1013,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -1033,7 +1043,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1066,7 +1076,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1099,7 +1109,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "NoERC725YDataKeysAllowed"
@@ -1130,7 +1140,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1163,7 +1173,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "NoERC725YDataKeysAllowed"
@@ -1193,7 +1203,9 @@ export const testReentrancyScenarios = async (
             ]
           );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         const hardcodedKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -1260,7 +1272,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1287,7 +1301,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -1317,7 +1331,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1350,7 +1364,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1382,7 +1396,9 @@ export const testReentrancyScenarios = async (
             ]
           );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -1450,7 +1466,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1477,7 +1495,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -1507,7 +1525,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1540,7 +1558,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1572,7 +1590,9 @@ export const testReentrancyScenarios = async (
             ]
           );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -1645,7 +1665,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1672,7 +1694,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -1702,7 +1724,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1735,7 +1757,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1767,7 +1789,9 @@ export const testReentrancyScenarios = async (
             ]
           );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -1835,7 +1859,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -1862,7 +1888,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -1892,7 +1918,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1925,7 +1951,7 @@ export const testReentrancyScenarios = async (
           );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -1957,7 +1983,9 @@ export const testReentrancyScenarios = async (
             ]
           );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -2064,7 +2092,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert when reentering and transferring value", async () => {
@@ -2092,7 +2122,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithValueTransfer.address, "REENTRANCY");
@@ -2123,7 +2157,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithSetData.address, "REENTRANCY");
@@ -2159,7 +2197,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithAddPermission.address, "REENTRANCY");
@@ -2195,7 +2237,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithChangePermission.address, "REENTRANCY");
@@ -2226,7 +2272,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithAddURD.address, "REENTRANCY");
@@ -2257,7 +2307,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrancyWithChangeURD.address, "REENTRANCY");
@@ -2383,7 +2437,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
@@ -2411,7 +2467,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -2447,7 +2507,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2486,7 +2550,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2525,7 +2593,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2564,7 +2636,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2603,7 +2679,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
@@ -2642,7 +2722,11 @@ export const testReentrancyScenarios = async (
           )
         ).to.equal(ethers.utils.parseEther("10"));
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         expect(
           await context.universalProfile.provider.getBalance(
@@ -2782,7 +2866,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -2815,7 +2901,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -2851,7 +2941,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2890,7 +2984,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -2929,7 +3027,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "NoERC725YDataKeysAllowed"
@@ -2966,7 +3068,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3005,7 +3111,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "NoERC725YDataKeysAllowed"
@@ -3041,7 +3151,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         const hardcodedKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -3108,7 +3222,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -3141,7 +3257,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -3177,7 +3297,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3216,7 +3340,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3254,7 +3382,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -3322,7 +3454,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -3355,7 +3489,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -3391,7 +3529,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3430,7 +3572,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3468,7 +3614,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -3541,7 +3691,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -3574,7 +3726,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -3610,7 +3766,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3649,7 +3809,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3687,7 +3851,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -3755,7 +3923,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
@@ -3788,7 +3958,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(contract_without_permissions.address, "REENTRANCY");
@@ -3824,7 +3998,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3863,7 +4041,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -3901,7 +4083,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -3990,7 +4176,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -4022,7 +4210,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithValueTransfer.address, "REENTRANCY");
@@ -4039,7 +4227,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithSetData.address, "REENTRANCY");
@@ -4056,7 +4244,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithAddPermission.address, "REENTRANCY");
@@ -4073,7 +4261,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithChangePermission.address, "REENTRANCY");
@@ -4090,7 +4278,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithAddURD.address, "REENTRANCY");
@@ -4107,7 +4295,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithChangeURD.address, "REENTRANCY");
@@ -4221,7 +4409,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -4253,7 +4443,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -4270,7 +4460,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4290,7 +4480,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4310,7 +4500,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4330,7 +4520,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4350,7 +4540,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
@@ -4370,7 +4560,9 @@ export const testReentrancyScenarios = async (
           )
         ).to.equal(ethers.utils.parseEther("10"));
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         expect(
           await context.universalProfile.provider.getBalance(
@@ -4493,7 +4685,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -4525,7 +4719,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -4542,7 +4736,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4562,7 +4756,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4582,7 +4776,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4602,7 +4796,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4622,7 +4816,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "NoERC725YDataKeysAllowed"
@@ -4639,7 +4833,9 @@ export const testReentrancyScenarios = async (
           ""
         );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         const hardcodedKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -4708,7 +4904,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -4740,7 +4938,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -4757,7 +4955,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4777,7 +4975,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4796,7 +4994,9 @@ export const testReentrancyScenarios = async (
           context.accounts[9].address
         );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -4865,7 +5065,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -4897,7 +5099,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -4914,7 +5116,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4934,7 +5136,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -4953,7 +5155,9 @@ export const testReentrancyScenarios = async (
           context.accounts[9].address
         );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -5025,7 +5229,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -5057,7 +5263,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -5074,7 +5280,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -5094,7 +5300,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -5113,7 +5319,9 @@ export const testReentrancyScenarios = async (
           context.accounts[9].address
         );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -5181,7 +5389,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -5213,7 +5423,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -5230,7 +5440,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -5250,7 +5460,7 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.connect(caller).execute(upExecutePayload)
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -5269,7 +5479,9 @@ export const testReentrancyScenarios = async (
           context.accounts[9].address
         );
 
-        await context.keyManager.connect(caller).execute(upExecutePayload);
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -5358,7 +5570,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -5396,7 +5610,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithValueTransfer.address, "REENTRANCY");
@@ -5419,7 +5637,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithSetData.address, "REENTRANCY");
@@ -5442,7 +5664,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithAddPermission.address, "REENTRANCY");
@@ -5465,7 +5691,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithChangePermission.address, "REENTRANCY");
@@ -5488,7 +5718,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithAddURD.address, "REENTRANCY");
@@ -5511,7 +5745,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(reentrantSignerWithChangeURD.address, "REENTRANCY");
@@ -5625,7 +5863,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -5663,7 +5903,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -5686,7 +5930,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -5712,7 +5960,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -5738,7 +5990,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -5764,7 +6020,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -5790,7 +6050,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
@@ -5816,7 +6080,11 @@ export const testReentrancyScenarios = async (
           )
         ).to.equal(ethers.utils.parseEther("10"));
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         expect(
           await context.universalProfile.provider.getBalance(
@@ -5939,7 +6207,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -5977,7 +6247,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -6000,7 +6274,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6026,7 +6304,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6052,7 +6334,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6078,7 +6364,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6104,7 +6394,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "NoERC725YDataKeysAllowed"
@@ -6127,7 +6421,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         const hardcodedKey = ethers.utils.keccak256(
           ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -6196,7 +6494,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -6234,7 +6534,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -6257,7 +6561,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6283,7 +6591,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6308,7 +6620,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -6377,7 +6693,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -6415,7 +6733,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -6438,7 +6760,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6464,7 +6790,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6489,7 +6819,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         const hardcodedPermissionKey =
           ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
@@ -6561,7 +6895,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -6599,7 +6935,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -6622,7 +6962,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6648,7 +6992,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6673,7 +7021,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         expect(
           await context.universalProfile["getData(bytes32)"](
@@ -6741,7 +7093,9 @@ export const testReentrancyScenarios = async (
             "setData(bytes32[],bytes[])",
             [permissionKeys, permissionValues]
           );
-        await context.keyManager.connect(owner).execute(permissionsPayload);
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
 
         // save the payload
         const reentrantCallPayload =
@@ -6779,7 +7133,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(signer_without_permissions.address, "REENTRANCY");
@@ -6802,7 +7160,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6828,7 +7190,11 @@ export const testReentrancyScenarios = async (
         );
 
         await expect(
-          context.keyManager.executeRelayCall(signature, nonce, payload)
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            payload
+          )
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -6853,7 +7219,11 @@ export const testReentrancyScenarios = async (
           signer
         );
 
-        await context.keyManager.executeRelayCall(signature, nonce, payload);
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+          signature,
+          nonce,
+          payload
+        );
 
         expect(
           await context.universalProfile["getData(bytes32)"](

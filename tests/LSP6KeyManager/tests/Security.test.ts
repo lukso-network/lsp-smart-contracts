@@ -118,7 +118,9 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
+      await expect(
+        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+      )
         .to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
@@ -198,7 +200,9 @@ export const testSecurityScenarios = (
       // at this point, the malicious contract fallback function try to drain funds by re-entering the call
       // this should not be possible since it does not have the permission `REENTRANCY`
       await expect(
-        context.keyManager.connect(context.owner).execute(transferPayload)
+        context.keyManager
+          .connect(context.owner)
+          ["execute(bytes)"](transferPayload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(maliciousContract.address, "REENTRANCY");
@@ -261,15 +265,24 @@ export const testSecurityScenarios = (
         // first call
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          ["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         // 2nd call = replay attack
         await expect(
           context.keyManager
             .connect(relayer)
-            ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, executeRelayCallPayload)
+            ["executeRelayCall(bytes,uint256,bytes)"](
+              signature,
+              nonce,
+              executeRelayCallPayload
+            )
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
@@ -294,7 +307,7 @@ export const testSecurityScenarios = (
         );
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
-        "execute",
+        "execute(bytes)",
         [transferPayload]
       );
 
@@ -302,7 +315,7 @@ export const testSecurityScenarios = (
 
       const executeTransferPayload = context.keyManager
         .connect(context.owner)
-        .execute(transferPayload);
+        ["execute(bytes)"](transferPayload);
 
       await expect(executeTransferPayload)
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
@@ -336,7 +349,9 @@ export const testSecurityScenarios = (
           ]
         );
 
-      await context.keyManager.connect(context.owner).execute(setDataPayload);
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](setDataPayload);
 
       let transferPayload =
         context.universalProfile.interface.encodeFunctionData(
@@ -350,7 +365,7 @@ export const testSecurityScenarios = (
         );
 
       let executePayload = context.keyManager.interface.encodeFunctionData(
-        "execute",
+        "execute(bytes)",
         [transferPayload]
       );
 
@@ -363,7 +378,9 @@ export const testSecurityScenarios = (
         maliciousContract.address
       );
 
-      await context.keyManager.connect(context.owner).execute(transferPayload);
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferPayload);
 
       let newAccountBalance = await provider.getBalance(
         context.universalProfile.address
@@ -412,7 +429,9 @@ export const testSecurityScenarios = (
           ]
         );
 
-      await context.keyManager.connect(context.owner).execute(setDataPayload);
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](setDataPayload);
 
       const universalReceiverDelegatePayload =
         universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
@@ -436,7 +455,9 @@ export const testSecurityScenarios = (
           ]
         );
 
-      await context.keyManager.connect(context.owner).execute(executePayload);
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](executePayload);
 
       expect(
         await context.universalProfile["getData(bytes32)"](randomHardcodedKey)
