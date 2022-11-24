@@ -65,24 +65,10 @@ contract LSP9VaultCore is
      */
     modifier onlyAllowed() {
         if (msg.sender != owner()) {
-            address universalReceiverAddress = address(
-                bytes20(_getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY))
-            );
             require(
-                ERC165Checker.supportsERC165Interface(msg.sender, _INTERFACEID_LSP1) &&
-                    msg.sender == universalReceiverAddress,
+                msg.sender == _reentrantDelegate,
                 "Only Owner or Universal Receiver Delegate allowed"
             );
-        }
-        _;
-    }
-
-    /**
-     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
-     */
-    modifier onlyAllowed2() {
-        if (msg.sender != owner()) {
-            require(msg.sender == _reentrantDelegate);
         }
         _;
     }
@@ -276,6 +262,7 @@ contract LSP9VaultCore is
             }
         }
 
+        delete _reentrantDelegate;
         returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }
