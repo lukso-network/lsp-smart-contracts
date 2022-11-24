@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 uint256 constant LSP6_VERSION = 6;
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP6 = 0xf9150d55;
+bytes4 constant _INTERFACEID_LSP6 = 0xfb437414;
 
 // --- ERC725Y Keys
 
@@ -54,3 +54,9 @@ bytes32 constant _PERMISSION_SETDATA                          = 0x00000000000000
 bytes32 constant _PERMISSION_ENCRYPT                          = 0x0000000000000000000000000000000000000000000000000000000000080000;
 bytes32 constant _PERMISSION_DECRYPT                          = 0x0000000000000000000000000000000000000000000000000000000000100000;
 bytes32 constant _PERMISSION_SIGN                             = 0x0000000000000000000000000000000000000000000000000000000000200000;
+
+// LSP6 overloaded function selectors
+bytes4 constant _LSP6_EXECUTE_SELECTOR = 0x09c5eabe;
+bytes4 constant _LSP6_EXECUTE_BATCH_SELECTOR = 0xbf3e1f7b;
+bytes4 constant _LSP6_EXECUTE_RELAYCALL_SELECTOR = 0x902d5fa0;
+bytes4 constant _LSP6_EXECUTE_RELAYCALL_BATCH_SELECTOR = 0xbd68663a; 

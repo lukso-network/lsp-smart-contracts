@@ -20,13 +20,13 @@ const INTERFACE_IDS = {
 	LSP0ERC725Account: '0x66767497',
 	LSP1UniversalReceiver: '0x6bb56a14',
 	LSP1UniversalReceiverDelegate: '0xa245bbda',
-	LSP6KeyManager: '0xf9150d55',
+	LSP6KeyManager: '0xfb437414',
 	LSP7DigitalAsset: '0xda1f85e4',
 	LSP8IdentifiableDigitalAsset: '0x622e7a01',
 	LSP9Vault: '0x7050cee9',
 	LSP14Ownable2Step: '0x94be5999',
 	LSP17Extendable: '0xa918fa6b',
-	LSP17Extension: '0xcee78b40'
+	LSP17Extension: '0xcee78b40',
 };
 
 // ERC1271
@@ -147,7 +147,7 @@ const ERC725YKeys = {
 	LSP17: {
 		// bytes10(keccak256('LSP17Extension')) + bytes2(0)
 		LSP17ExtensionPrefix: '0xcee78b4094da860110960000',
-	}
+	},
 };
 
 const BasicUPSetup_Schema = [
@@ -289,11 +289,24 @@ const Errors = {
 		},
 		'0x7231ac57': {
 			error: 'InvalidEncodedAllowedERC725YKeys(bytes)',
-			message: 'LSP2Utils: Invalid Compact Bytes Array',
+			message: 'LSP6: Invalid Compact Bytes Array',
 		},
 		'0x8f4afa38': {
 			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
 			message: 'LSP6: value provided for AddressPermission[index] not an address.',
+		},
+		'0x8be02e75': {
+			error: 'BatchExecuteRelayCallParamsLengthMismatch()',
+			message:
+				'LSP6: different number of elements for each array parameters in batch `executeRelayCall(bytes[],uint256[],bytes[])',
+		},
+		'0x30a324ac': {
+			error: 'LSP6BatchInsufficientValueSent(uint256,uint256)',
+			message: 'LSP6: `msg.value` sent is not enough to cover all the combined `values[]`.',
+		},
+		'0xa51868b6': {
+			error: 'LSP6BatchExcessiveValueSent(uint256,uint256)',
+			message: 'LSP6: cannot send more `msg.value` than all the combined `values[]`.',
 		},
 	},
 	LSP7: {

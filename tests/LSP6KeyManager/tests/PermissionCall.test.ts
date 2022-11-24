@@ -90,7 +90,7 @@ export const shouldBehaveLikePermissionCall = (
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
-        await context.keyManager.connect(context.owner).execute(payload);
+        await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
 
         const result = await targetContract.callStatic.getName();
         expect(result).to.equal(argument);
@@ -115,7 +115,7 @@ export const shouldBehaveLikePermissionCall = (
           await expect(
             context.keyManager
               .connect(addressCanMakeCallNoAllowedCalls)
-              .execute(payload)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
             .withArgs(addressCanMakeCallNoAllowedCalls.address);
@@ -138,7 +138,7 @@ export const shouldBehaveLikePermissionCall = (
 
           await context.keyManager
             .connect(addressCanMakeCallWithAllowedCalls)
-            .execute(payload);
+            ["execute(bytes)"](payload);
 
           const result = await targetContract.callStatic.getName();
           expect(result).to.equal(argument);
@@ -161,7 +161,7 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         await expect(
-          context.keyManager.connect(addressCannotMakeCall).execute(payload)
+          context.keyManager.connect(addressCannotMakeCall)["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCall.address, "CALL");
@@ -188,7 +188,7 @@ export const shouldBehaveLikePermissionCall = (
 
         let result = await context.keyManager
           .connect(context.owner)
-          .callStatic.execute(executePayload);
+          .callStatic["execute(bytes)"](executePayload);
 
         let [decodedResult] = abiCoder.decode(["string"], result);
         expect(decodedResult).to.equal(expectedName);
@@ -213,7 +213,7 @@ export const shouldBehaveLikePermissionCall = (
 
         let result = await context.keyManager
           .connect(context.owner)
-          .callStatic.execute(executePayload);
+          .callStatic["execute(bytes)"](executePayload);
 
         let [decodedResult] = abiCoder.decode(["uint256"], result);
         expect(decodedResult).to.equal(expectedNumber);
@@ -235,7 +235,7 @@ export const shouldBehaveLikePermissionCall = (
           ]
         );
 
-        await expect(context.keyManager.execute(payload)).to.be.revertedWith(
+        await expect(context.keyManager["execute(bytes)"](payload)).to.be.revertedWith(
           "TargetContract:revertCall: this function has reverted!"
         );
       });
@@ -292,7 +292,7 @@ export const shouldBehaveLikePermissionCall = (
               LOCAL_PRIVATE_KEYS.ACCOUNT0
             );
 
-          await context.keyManager.executeRelayCall(
+          await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
             signature,
             nonce,
             executeRelayCallPayload,
@@ -353,7 +353,7 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           await expect(
-            context.keyManager.executeRelayCall(
+            context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
               signature,
               nonce,
               executeRelayCallPayload,
@@ -417,7 +417,7 @@ export const shouldBehaveLikePermissionCall = (
                 LOCAL_PRIVATE_KEYS.ACCOUNT2
               );
 
-            await context.keyManager.executeRelayCall(
+            await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
               signature,
               nonce,
               executeRelayCallPayload,
@@ -475,7 +475,7 @@ export const shouldBehaveLikePermissionCall = (
               );
 
             await expect(
-              context.keyManager.executeRelayCall(
+              context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
                 signature,
                 nonce,
                 executeRelayCallPayload,
@@ -541,7 +541,7 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           await expect(
-            context.keyManager.executeRelayCall(
+            context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
               signature,
               nonce,
               executeRelayCallPayload,
@@ -606,7 +606,7 @@ export const shouldBehaveLikePermissionCall = (
             );
 
           await expect(
-            context.keyManager.executeRelayCall(
+            context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
               signature,
               nonce,
               executeRelayCallPayload,
@@ -675,7 +675,7 @@ export const shouldBehaveLikePermissionCall = (
           );
 
           await expect(
-            context.keyManager.executeRelayCall(
+            context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
               ethereumSignature,
               nonce,
               executeRelayCallPayload,

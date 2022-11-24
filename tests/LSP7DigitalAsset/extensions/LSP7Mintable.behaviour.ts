@@ -133,7 +133,7 @@ export const shouldBehaveLikeLSP7Mintable = (
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-        .execute(setDataPayload);
+        ["execute(bytes)"](setDataPayload);
     });
 
     it("should pass", async () => {
@@ -160,7 +160,7 @@ export const shouldBehaveLikeLSP7Mintable = (
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-        .execute(executePayload);
+        ["execute(bytes)"](executePayload);
 
       const balanceOfUP = await context.lsp7Mintable.callStatic.balanceOf(
         universalProfile.address

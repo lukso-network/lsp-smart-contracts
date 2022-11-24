@@ -130,7 +130,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
 
-        await context.keyManager.executeRelayCall(
+        await context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
           signature,
           latestNonce,
           executeRelayCallPayload,
@@ -204,7 +204,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonceBefore, executeRelayCallPayload, {
             value: valueToSend,
           });
 
@@ -266,7 +266,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonceBefore, executeRelayCallPayload, {
             value: valueToSend,
           });
 
@@ -333,7 +333,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonceBefore, executeRelayCallPayload, {
             value: valueToSend,
           });
 
@@ -395,7 +395,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonceBefore, executeRelayCallPayload, {
             value: valueToSend,
           });
 
@@ -462,7 +462,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonceBefore, executeRelayCallPayload, {
             value: valueToSend,
           });
 
@@ -524,7 +524,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonceBefore, executeRelayCallPayload, {
             value: valueToSend,
           });
 
@@ -587,7 +587,7 @@ export const shouldBehaveLikeMultiChannelNonce = (
 
         await context.keyManager
           .connect(relayer)
-          .executeRelayCall(signature, nonceBefore, executeRelayCallPayload, {
+          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonceBefore, executeRelayCallPayload, {
             value: valueToSend,
           });
 

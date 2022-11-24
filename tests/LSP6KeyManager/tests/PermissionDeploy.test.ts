@@ -69,9 +69,9 @@ export const shouldBehaveLikePermissionDeploy = (
 
       const expectedContractAddress = await context.keyManager
         .connect(context.owner)
-        .callStatic.execute(payload);
+        .callStatic["execute(bytes)"](payload);
 
-      await expect(context.keyManager.connect(context.owner).execute(payload))
+      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -101,7 +101,7 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy
       ).toLowerCase();
 
-      await expect(context.keyManager.connect(context.owner).execute(payload))
+      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE2,
@@ -127,9 +127,9 @@ export const shouldBehaveLikePermissionDeploy = (
 
       const expectedContractAddress = await context.keyManager
         .connect(addressCanDeploy)
-        .callStatic.execute(payload);
+        .callStatic["execute(bytes)"](payload);
 
-      await expect(context.keyManager.connect(context.owner).execute(payload))
+      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -160,7 +160,7 @@ export const shouldBehaveLikePermissionDeploy = (
       ).toLowerCase();
 
       await expect(
-        context.keyManager.connect(addressCanDeploy).execute(payload)
+        context.keyManager.connect(addressCanDeploy)["execute(bytes)"](payload)
       )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
@@ -187,7 +187,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         await expect(
-          context.keyManager.connect(addressCannotDeploy).execute(payload)
+          context.keyManager.connect(addressCannotDeploy)["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -209,7 +209,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         await expect(
-          context.keyManager.connect(addressCannotDeploy).execute(payload)
+          context.keyManager.connect(addressCannotDeploy)["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -262,7 +262,7 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(ethereumSignature, nonce, payload, {
+                ["executeRelayCall(bytes,uint256,bytes)"](ethereumSignature, nonce, payload, {
                   value: valueToSend,
                 })
             )
@@ -312,7 +312,7 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(signature, nonce, payload, {
+                ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, payload, {
                   value: valueToSend,
                 })
             )
@@ -371,7 +371,7 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(ethereumSignature, nonce, payload, {
+                ["executeRelayCall(bytes,uint256,bytes)"](ethereumSignature, nonce, payload, {
                   value: valueToSend,
                 })
             )
@@ -423,7 +423,7 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                .executeRelayCall(signature, nonce, payload, {
+                ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, payload, {
                   value: valueToSend,
                 })
             )
