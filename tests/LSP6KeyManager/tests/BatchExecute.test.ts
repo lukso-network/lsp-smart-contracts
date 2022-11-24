@@ -165,7 +165,7 @@ export const shouldBehaveLikeBatchExecute = (
 
         const tx = await context.keyManager
           .connect(context.owner)
-          ["execute(uint256[],bytes[])"]([0, 0, 0], payloads);
+          ["execute(uint256[],bytes[])"]([0, 0], payloads);
 
         await expect(tx).to.changeEtherBalance(recipient, lyxAmount);
         expect(await lyxDaiToken.balanceOf(recipient)).to.equal(lyxDaiAmount);
