@@ -57,6 +57,6 @@ bytes32 constant _PERMISSION_SIGN                             = 0x00000000000000
 
 // LSP6 overloaded function selectors
 bytes4 constant _LSP6_EXECUTE_SELECTOR = 0x09c5eabe;
-bytes4 constant _LSP6_EXECUTE_BATCH_SELECTOR = 0x44471415;
+bytes4 constant _LSP6_EXECUTE_BATCH_SELECTOR = 0xbf3e1f7b;
 bytes4 constant _LSP6_EXECUTE_RELAYCALL_SELECTOR = 0x902d5fa0;
-bytes4 constant _LSP6_EXECUTE_RELAYCALL_BATCH_SELECTOR = 0x4edb7c01; 
+bytes4 constant _LSP6_EXECUTE_RELAYCALL_BATCH_SELECTOR = 0xbd68663a; 
