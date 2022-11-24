@@ -108,7 +108,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @inheritdoc ILSP6KeyManager
      */
     function execute(bytes calldata payload) public payable returns (bytes memory) {
-        return _execute(payload, msg.value);
+        return _execute(msg.value, payload);
     }
 
     /**
@@ -127,7 +127,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 revert LSP6BatchInsufficientMsgValue(totalValues, msg.value);
             }
 
-            results[ii] = _execute(payloads[ii], values[ii]);
+            results[ii] = _execute(values[ii], payloads[ii]);
         }
 
         if (totalValues < msg.value) {
@@ -145,7 +145,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 nonce,
         bytes calldata payload
     ) public payable returns (bytes memory) {
-        return _executeRelayCall(signature, nonce, payload, msg.value);
+        return _executeRelayCall(signature, nonce, msg.value, payload);
     }
 
     /**
@@ -169,7 +169,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 revert LSP6BatchInsufficientMsgValue(totalValues, msg.value);
             }
 
-            results[ii] = _executeRelayCall(signatures[ii], nonces[ii], payloads[ii], values[ii]);
+            results[ii] = _executeRelayCall(signatures[ii], nonces[ii], values[ii], payloads[ii]);
         }
 
         if (totalValues < msg.value) {
@@ -179,7 +179,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         return results;
     }
 
-    function _execute(bytes calldata payload, uint256 msgValue) internal returns (bytes memory) {
+    function _execute(uint256 msgValue, bytes calldata payload) internal returns (bytes memory) {
         _verifyPermissions(msg.sender, payload);
         return _executePayload(payload, msgValue);
     }
@@ -187,8 +187,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _executeRelayCall(
         bytes memory signature,
         uint256 nonce,
-        bytes calldata payload,
-        uint256 msgValue
+        uint256 msgValue,
+        bytes calldata payload
     ) internal returns (bytes memory) {
         bytes memory encodedMessage = abi.encodePacked(
             LSP6_VERSION,
