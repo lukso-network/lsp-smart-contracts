@@ -30,7 +30,6 @@ import {
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
-    _LSP1_UNIVERSALRECEIVER_SELECTOR,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -210,12 +209,13 @@ abstract contract LSP0ERC725AccountCore is
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
-                resultDefaultDelegate = universalReceiverDelegate.callUniversalReceiverAppended(
-                    typeId,
-                    receivedData,
-                    msg.sender,
-                    msg.value
-                );
+                resultDefaultDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
             }
         }
 
@@ -231,12 +231,13 @@ abstract contract LSP0ERC725AccountCore is
             address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
-                resultTypeIdDelegate = universalReceiverDelegate.callUniversalReceiverAppended(
-                    typeId,
-                    receivedData,
-                    msg.sender,
-                    msg.value
-                );
+                resultTypeIdDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
             }
         }
 

@@ -30,7 +30,6 @@ import {
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
-    _LSP1_UNIVERSALRECEIVER_SELECTOR,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -227,12 +226,13 @@ contract LSP9VaultCore is
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
                 _reentrantDelegate = universalReceiverDelegate;
-                resultDefaultDelegate = universalReceiverDelegate.callUniversalReceiverAppended(
-                    typeId,
-                    receivedData,
-                    msg.sender,
-                    msg.value
-                );
+                resultDefaultDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
             }
         }
 
@@ -249,12 +249,13 @@ contract LSP9VaultCore is
 
             if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
                 _reentrantDelegate = universalReceiverDelegate;
-                resultTypeIdDelegate = universalReceiverDelegate.callUniversalReceiverAppended(
-                    typeId,
-                    receivedData,
-                    msg.sender,
-                    msg.value
-                );
+                resultTypeIdDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
             }
         }
 
