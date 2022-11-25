@@ -72,6 +72,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     address public target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
+    // Variables, methods and modifier which are used for ReentrancyGuard
+    // are taken from the link below and modified according to our needs.
+    // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+    uint256 private _reentrancyStatus;
+
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -183,8 +190,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     function _execute(uint256 msgValue, bytes calldata payload) internal returns (bytes memory) {
+        _nonReentrantBefore(msg.sender);
         _verifyPermissions(msg.sender, payload);
-        return _executePayload(msgValue, payload);
+        bytes memory result = _executePayload(msgValue, payload);
+        _nonReentrantAfter();
+        return result;
     }
 
     function _executeRelayCall(
@@ -203,6 +213,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         address signer = address(this).toDataWithIntendedValidator(encodedMessage).recover(signature);
 
+        _nonReentrantBefore(signer);
+
         if (!_isValidNonce(signer, nonce)) {
             revert InvalidRelayNonce(signer, nonce, signature);
         }
@@ -212,7 +224,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         _verifyPermissions(signer, payload);
 
-        return _executePayload(msgValue, payload);
+        bytes memory result = _executePayload(msgValue, payload);
+
+        _nonReentrantAfter();
+
+        return result;
     }
 
 
@@ -941,6 +957,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (permission == _PERMISSION_CHANGEEXTENSIONS) return "CHANGEEXTENSIONS";
         if (permission == _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE) return "ADDUNIVERSALRECEIVERDELEGATE";
         if (permission == _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE) return "CHANGEUNIVERSALRECEIVERDELEGATE";
+        if (permission == _PERMISSION_REENTRANCY) return "REENTRANCY";
         if (permission == _PERMISSION_SETDATA) return "SETDATA";
         if (permission == _PERMISSION_CALL) return "CALL";
         if (permission == _PERMISSION_STATICCALL) return "STATICCALL";
@@ -948,6 +965,38 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (permission == _PERMISSION_DEPLOY) return "DEPLOY";
         if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
         if (permission == _PERMISSION_SIGN) return "SIGN";
+    }
+
+    /**
+     * @dev Initialise _reentrancyStatus to _NOT_ENTERED.
+     */
+    function _setupLSP6ReentrancyGuard() internal {
+        _reentrancyStatus = _NOT_ENTERED;
+    }
+
+    /**
+     * @dev Update the status from `_NON_ENTERED` to `_ENTERED` and checks if
+     * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
+     * Used in the beginning of the `nonReentrant` modifier, before the method execution starts
+     */
+    function _nonReentrantBefore(address from) private {
+        if (_reentrancyStatus == _ENTERED) {
+            // CHECK the caller has REENTRANCY permission
+            bytes32 callerPermissions = ERC725Y(target).getPermissionsFor(from);
+            _requirePermissions(from, callerPermissions, _PERMISSION_REENTRANCY);
+        }
+
+        _reentrancyStatus = _ENTERED;
+    }
+
+    /**
+     * @dev Resets the status to `_NOT_ENTERED`
+     * Used in the end of the `nonReentrant` modifier after the method execution is terminated
+     */
+    function _nonReentrantAfter() private {
+        // By storing the original value once again, a refund is triggered (see
+        // https://eips.ethereum.org/EIPS/eip-2200)
+        _reentrancyStatus = _NOT_ENTERED;
     }
 
 

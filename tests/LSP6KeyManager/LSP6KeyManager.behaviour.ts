@@ -24,6 +24,7 @@ import {
   shouldBehaveLikeBatchExecute,
   testSecurityScenarios,
   otherTestScenarios,
+  testReentrancyScenarios,
 } from "./tests";
 
 import {
@@ -113,6 +114,10 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("Security", () => {
     testSecurityScenarios(buildContext);
+  });
+
+  describe("Reentrancy", () => {
+    testReentrancyScenarios(buildContext);
   });
 };
 
