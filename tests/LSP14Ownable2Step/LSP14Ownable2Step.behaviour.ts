@@ -557,7 +557,7 @@ export const shouldBehaveLikeLSP14 = (
                   INTERFACE_IDS.LSP9Vault
                 )
               ) {
-                return "Only Owner or Universal Receiver Delegate allowed";
+                return "Only Owner or reentered Universal Receiver Delegate allowed";
               } else {
                 return "Ownable: caller is not the owner";
               }
