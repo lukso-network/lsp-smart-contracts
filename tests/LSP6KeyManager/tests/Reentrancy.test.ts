@@ -346,10 +346,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and transferring value", async () => {
         const reentrantCallPayload =
           reentrancyWithValueTransfer.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -371,10 +369,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and setting data", async () => {
         const reentrantContractPayload =
           reentrancyWithSetData.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -396,10 +392,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and adding permissions", async () => {
         const reentrantContractPayload =
           reentrancyWithAddPermission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -426,10 +420,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and changing permissions", async () => {
         const reentrantContractPayload =
           reentrancyWithChangePermission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -456,10 +448,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and adding URD", async () => {
         const reentrantContractPayload =
           reentrancyWithAddURD.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -481,10 +471,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and changing URD", async () => {
         const reentrantContractPayload =
           reentrancyWithChangeURD.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -631,10 +619,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const reentrantCallPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -656,10 +642,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_REENTRANCY_permission_no_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -689,10 +673,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_REENTRANCY_permission_with_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -722,10 +704,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_VALUETRANSFER_permissions_no_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -755,10 +735,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_VALUETRANSFER_permissions_with_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -788,10 +766,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_REENTRANCY_VALUETRANSFER_permissions_no_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -816,10 +792,8 @@ export const testReentrancyScenarios = async (
       it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_REENTRANCY_VALUETRANSFER_permissions_with_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -992,10 +966,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -1022,10 +994,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission_no_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -1055,10 +1025,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission_with_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -1088,10 +1056,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_SETDATA_permissions_no_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -1119,10 +1085,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_SETDATA_permissions_with_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -1152,10 +1116,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_SETDATA_permissions_no_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -1183,10 +1145,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_SETDATA_permissions_with_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -1280,10 +1240,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -1310,10 +1268,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -1343,10 +1299,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
         const reentrantContractPayload =
           contract_with_ADDPERMISSION_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -1376,10 +1330,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_ADDPERMISSION_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -1474,10 +1426,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -1504,10 +1454,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -1537,10 +1485,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
         const reentrantContractPayload =
           contract_with_CHANGEPERMISSION_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -1570,10 +1516,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_CHANGEPERMISSION_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -1673,10 +1617,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -1703,10 +1645,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -1736,10 +1676,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
         const reentrantContractPayload =
           contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -1769,10 +1707,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -1867,10 +1803,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -1897,10 +1831,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -1930,10 +1862,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
         const reentrantContractPayload =
           contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -1963,10 +1893,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -2100,10 +2028,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and transferring value", async () => {
         const reentrantCallPayload =
           reentrancyWithValueTransfer.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2135,10 +2061,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and setting data", async () => {
         const reentrantContractPayload =
           reentrancyWithSetData.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2170,10 +2094,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and adding permissions", async () => {
         const reentrantContractPayload =
           reentrancyWithAddPermission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -2210,10 +2132,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and changing permissions", async () => {
         const reentrantContractPayload =
           reentrancyWithChangePermission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -2250,10 +2170,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and adding URD", async () => {
         const reentrantContractPayload =
           reentrancyWithAddURD.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -2285,10 +2203,8 @@ export const testReentrancyScenarios = async (
       it("should revert when reentering and changing URD", async () => {
         const reentrantContractPayload =
           reentrancyWithChangeURD.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -2445,10 +2361,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const reentrantCallPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2480,10 +2394,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_REENTRANCY_permission_no_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2523,10 +2435,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_REENTRANCY_permission_with_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2566,10 +2476,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_VALUETRANSFER_permissions_no_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2609,10 +2517,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_VALUETRANSFER_permissions_with_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2652,10 +2558,8 @@ export const testReentrancyScenarios = async (
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_REENTRANCY_VALUETRANSFER_permissions_no_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2690,10 +2594,8 @@ export const testReentrancyScenarios = async (
       it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
         const reentrantCallPayload =
           contract_with_REENTRANCY_VALUETRANSFER_permissions_with_calls.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2874,10 +2776,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2914,10 +2814,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission_no_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -2957,10 +2855,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission_with_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -3000,10 +2896,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_SETDATA_permissions_no_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -3041,10 +2935,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_SETDATA_permissions_with_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -3084,10 +2976,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_SETDATA_permissions_no_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -3125,10 +3015,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_SETDATA_permissions_with_allowed_keys.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               "0x",
             ]
@@ -3230,10 +3118,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -3270,10 +3156,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -3313,10 +3197,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
         const reentrantContractPayload =
           contract_with_ADDPERMISSION_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -3356,10 +3238,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_ADDPERMISSION_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -3462,10 +3342,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -3502,10 +3380,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -3545,10 +3421,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
         const reentrantContractPayload =
           contract_with_CHANGEPERMISSION_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -3588,10 +3462,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_CHANGEPERMISSION_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               context.accounts[2].address,
             ]
@@ -3699,10 +3571,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -3739,10 +3609,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -3782,10 +3650,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
         const reentrantContractPayload =
           contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -3825,10 +3691,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -3931,10 +3795,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has NO PERMISSIONS", async () => {
         const reentrantContractPayload =
           contract_without_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -3971,10 +3833,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_permission.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -4014,10 +3874,8 @@ export const testReentrancyScenarios = async (
       it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
         const reentrantContractPayload =
           contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -4057,10 +3915,8 @@ export const testReentrancyScenarios = async (
       it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const reentrantContractPayload =
           contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.interface.encodeFunctionData(
-            "universalReceiverDelegate",
+            "universalReceiver",
             [
-              context.universalProfile.address,
-              0,
               "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
               randomLSP1TypeId + context.accounts[2].address.substring(2),
             ]
@@ -4182,15 +4038,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -4415,15 +4266,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -4691,15 +4537,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -4910,15 +4751,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -5071,15 +4907,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -5235,15 +5066,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -5395,15 +5221,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -5576,15 +5397,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -5869,15 +5685,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -6213,15 +6024,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -6500,15 +6306,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -6699,15 +6500,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -6901,15 +6697,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -7099,15 +6890,10 @@ export const testReentrancyScenarios = async (
 
         // save the payload
         const reentrantCallPayload =
-          relayer_contract.interface.encodeFunctionData(
-            "universalReceiverDelegate",
-            [
-              context.universalProfile.address,
-              0,
-              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-              "0x",
-            ]
-          );
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
 
         upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
