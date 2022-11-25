@@ -293,8 +293,8 @@ describe("UniversalProfile", () => {
     });
 
     describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP3(async () => {
-        let context = await buildLSP3TestContext();
+      shouldBehaveLikeLSP3(async (initialFunding?: number) => {
+        let context = await buildLSP3TestContext(initialFunding);
         await initializeProxy(context);
         return context;
       });

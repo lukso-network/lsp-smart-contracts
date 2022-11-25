@@ -13,6 +13,7 @@ import {
   ERC1271_VALUES,
   ERC725YKeys,
   INTERFACE_IDS,
+  OPERATION_TYPES,
   SupportedStandards,
 } from "../constants";
 
@@ -23,12 +24,12 @@ export type LSP3TestContext = {
 };
 
 export const shouldBehaveLikeLSP3 = (
-  buildContext: () => Promise<LSP3TestContext>
+  buildContext: (initialFunding?: number) => Promise<LSP3TestContext>
 ) => {
   let context: LSP3TestContext;
 
   beforeEach(async () => {
-    context = await buildContext();
+    context = await buildContext(100);
   });
 
   describe("when using `isValidSignature()` from ERC1271", () => {
@@ -306,6 +307,52 @@ export const shouldBehaveLikeLSP3 = (
 
       // check that no event was emitted
       await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
+    });
+  });
+
+  describe("when using the batch `ERC725X.execute(uint256[],address[],uint256[],bytes[])` function", () => {
+    describe("when specifying `msg.value`", () => {
+      it("should emit a `ValueReceived` event", async () => {
+        const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
+        const recipients = [
+          context.accounts[1].address,
+          context.accounts[2].address,
+          context.accounts[3].address,
+        ];
+        const values = Array(3).fill(ethers.BigNumber.from("1"));
+        const datas = Array(3).fill("0x");
+
+        const msgValue = ethers.utils.parseEther("10");
+
+        const tx = await context.universalProfile[
+          "execute(uint256[],address[],uint256[],bytes[])"
+        ](operationsType, recipients, values, datas, { value: msgValue });
+
+        await expect(tx)
+          .to.emit(context.universalProfile, "ValueReceived")
+          .withArgs(context.deployParams.owner.address, msgValue);
+      });
+    });
+
+    describe("when NOT sending any `msg.value`", () => {
+      it("should NOT emit a `ValueReceived` event", async () => {
+        const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
+        const recipients = [
+          context.accounts[1].address,
+          context.accounts[2].address,
+          context.accounts[3].address,
+        ];
+        const values = Array(3).fill(ethers.BigNumber.from("1"));
+        const datas = Array(3).fill("0x");
+
+        const msgValue = 0;
+
+        const tx = await context.universalProfile[
+          "execute(uint256[],address[],uint256[],bytes[])"
+        ](operationsType, recipients, values, datas, { value: msgValue });
+
+        await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
+      });
     });
   });
 };
