@@ -74,7 +74,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
     // Variables, methods and modifier which are used for ReentrancyGuard
     // are taken from the link below and modified according to our needs.
-    // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol
+    // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
     uint256 private _reentrancyStatus;
