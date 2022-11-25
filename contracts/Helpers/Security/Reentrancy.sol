@@ -22,7 +22,7 @@ contract Reentrancy {
         if (!switchFallback) {
             switchFallback = true;
             (bool success, bytes memory returnData) = _target.call(_payload);
-            bytes memory result = Address.verifyCallResult(success, returnData, "");
+            bytes memory result = Address.verifyCallResult(success, returnData, "Reentrancy Helper Contract: failed to re-enter contract");
         }
     }
 }
