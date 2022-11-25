@@ -29,16 +29,21 @@ import {
   deployProxy,
   setupProfileWithKeyManagerWithURD,
 } from "../utils/fixtures";
+import { provider } from "../utils/helpers";
 
 describe("LSP9Vault", () => {
   describe("when using LSP9Vault contract with constructor", () => {
-    const buildTestContext = async (): Promise<LSP9TestContext> => {
+    const buildTestContext = async (
+      initialFunding?: number
+    ): Promise<LSP9TestContext> => {
       const accounts = await getNamedAccounts();
       const deployParams = {
         newOwner: accounts.owner.address,
+        initialFunding,
       };
       const lsp9Vault = await new LSP9Vault__factory(accounts.owner).deploy(
-        deployParams.newOwner
+        deployParams.newOwner,
+        { value: initialFunding }
       );
 
       const [UP1, KM1, lsp1universalReceiverDelegateUP] =
@@ -87,6 +92,25 @@ describe("LSP9Vault", () => {
       return { accounts, contract, deployParams };
     };
 
+    [
+      { initialFunding: undefined },
+      { initialFunding: 0 },
+      { initialFunding: 5 },
+    ].forEach((testCase) => {
+      describe("when deploying the contract with or without value", () => {
+        let context: LSP9TestContext;
+
+        beforeEach(async () => {
+          context = await buildTestContext(testCase.initialFunding);
+        });
+
+        it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
+          const balance = await provider.getBalance(context.lsp9Vault.address);
+          expect(balance).to.equal(testCase.initialFunding || 0);
+        });
+      });
+    });
+
     describe("when deploying the contract", () => {
       let context: LSP9TestContext;
 
@@ -115,10 +139,13 @@ describe("LSP9Vault", () => {
   });
 
   describe("when using LSP9Vault contract with proxy", () => {
-    const buildTestContext = async (): Promise<LSP9TestContext> => {
+    const buildTestContext = async (
+      initialFunding?: number
+    ): Promise<LSP9TestContext> => {
       const accounts = await getNamedAccounts();
       const deployParams = {
         newOwner: accounts.owner.address,
+        initialFunding,
       };
 
       const lsp9VaultInit = await new LSP9VaultInit__factory(
@@ -167,7 +194,8 @@ describe("LSP9Vault", () => {
 
     const initializeProxy = async (context: LSP9TestContext) => {
       return context.lsp9Vault["initialize(address)"](
-        context.deployParams.newOwner
+        context.deployParams.newOwner,
+        { value: context.deployParams.initialFunding }
       );
     };
 

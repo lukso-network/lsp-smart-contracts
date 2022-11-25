@@ -158,12 +158,23 @@ contract LSP9VaultCore is
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        if (address(this).balance < value) {
-            revert ERC725X_InsufficientBalance(address(this).balance, value);
-        }
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        return super.execute(operationType, target, value, data);
+    }
 
-        return _execute(operationType, target, value, data);
+    /**
+     * @inheritdoc ERC725XCore
+     *
+     * @dev Emits a {ValueReceived} event when receiving native tokens.
+     */
+    function execute(
+        uint256[] memory operationsType,
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory datas
+    ) public payable virtual override onlyOwner returns (bytes[] memory) {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        return super.execute(operationsType, targets, values, datas);
     }
 
     /**

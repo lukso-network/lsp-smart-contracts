@@ -11,7 +11,7 @@ import {
 import { setupProfileWithKeyManagerWithURD } from "../../utils/fixtures";
 
 import { PERMISSIONS, ERC725YKeys, OPERATION_TYPES } from "../../../constants";
-import { combineAllowedCalls } from "../../utils/helpers";
+import { combineAllowedCalls, combinePermissions } from "../../utils/helpers";
 
 export type LSP7MintableTestAccounts = {
   owner: SignerWithAddress;
@@ -120,7 +120,7 @@ export const shouldBehaveLikeLSP7Mintable = (
             ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
           ],
           [
-            PERMISSIONS.CALL,
+            combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
             combineAllowedCalls(
               ["0xffffffff"],
               [context.lsp7Mintable.address],

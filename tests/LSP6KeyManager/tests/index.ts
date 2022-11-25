@@ -19,3 +19,4 @@ export * from "./Security.test";
 export * from "./LSP6ControlledToken.test";
 export * from "./ExecuteRelayCall.test";
 export * from "./BatchExecute.test";
+export * from "./Reentrancy.test";

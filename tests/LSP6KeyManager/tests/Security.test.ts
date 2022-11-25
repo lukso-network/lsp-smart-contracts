@@ -8,12 +8,14 @@ import {
   Reentrancy__factory,
   TargetContract,
   TargetContract__factory,
+  UniversalReceiverDelegateDataUpdater__factory,
 } from "../../../types";
 
 // constants
 import {
   ALL_PERMISSIONS,
   ERC725YKeys,
+  LSP1_TYPE_IDS,
   OPERATION_TYPES,
   LSP6_VERSION,
   PERMISSIONS,
@@ -30,6 +32,7 @@ import {
   EMPTY_PAYLOAD,
   LOCAL_PRIVATE_KEYS,
   combineAllowedCalls,
+  encodeCompactBytesArray,
 } from "../../utils/helpers";
 
 export const testSecurityScenarios = (
@@ -115,7 +118,9 @@ export const testSecurityScenarios = (
       let payload =
         context.universalProfile.interface.getSighash("renounceOwnership");
 
-      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
+      await expect(
+        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+      )
         .to.be.revertedWithCustomError(
           context.keyManager,
           "InvalidERC725Function"
@@ -192,9 +197,15 @@ export const testSecurityScenarios = (
       );
 
       // send LYX to malicious contract
-      await context.keyManager.connect(context.owner)["execute(bytes)"](transferPayload);
-      // at this point, the malicious contract fallback function
-      // try to drain funds by re-entering the call
+      // at this point, the malicious contract fallback function try to drain funds by re-entering the call
+      // this should not be possible since it does not have the permission `REENTRANCY`
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          ["execute(bytes)"](transferPayload)
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(maliciousContract.address, "REENTRANCY");
 
       let newAccountBalance = await provider.getBalance(
         context.universalProfile.address
@@ -203,10 +214,10 @@ export const testSecurityScenarios = (
         maliciousContract.address
       );
 
-      expect(newAccountBalance).to.equal(
-        initialAccountBalance.sub(ethers.utils.parseEther("1"))
+      expect(newAccountBalance).to.equal(initialAccountBalance);
+      expect(newAttackerContractBalance).to.equal(
+        initialAttackerContractBalance
       );
-      expect(newAttackerContractBalance).to.equal(ethers.utils.parseEther("1"));
     });
 
     describe("when calling via `executeRelayCall(...)`", () => {
@@ -254,15 +265,24 @@ export const testSecurityScenarios = (
         // first call
         await context.keyManager
           .connect(relayer)
-          ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, executeRelayCallPayload, {
-            value: valueToSend,
-          });
+          ["executeRelayCall(bytes,uint256,bytes)"](
+            signature,
+            nonce,
+            executeRelayCallPayload,
+            {
+              value: valueToSend,
+            }
+          );
 
         // 2nd call = replay attack
         await expect(
           context.keyManager
             .connect(relayer)
-            ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, executeRelayCallPayload)
+            ["executeRelayCall(bytes,uint256,bytes)"](
+              signature,
+              nonce,
+              executeRelayCallPayload
+            )
         )
           .to.be.revertedWithCustomError(
             context.keyManager,
@@ -270,6 +290,178 @@ export const testSecurityScenarios = (
           )
           .withArgs(signer.address, nonce, signature);
       });
+    });
+  });
+
+  describe("when reentering execute function", () => {
+    it("should revert if reentered from a random address", async () => {
+      let transferPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            maliciousContract.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]
+        );
+
+      let executePayload = context.keyManager.interface.encodeFunctionData(
+        "execute(bytes)",
+        [transferPayload]
+      );
+
+      await maliciousContract.loadPayload(executePayload);
+
+      const executeTransferPayload = context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferPayload);
+
+      await expect(executeTransferPayload)
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(maliciousContract.address, "REENTRANCY");
+    });
+
+    it("should pass when reentered by URD and the URD has REENTRANCY permission", async () => {
+      const URDDummy = await new Reentrancy__factory(context.owner).deploy(
+        context.keyManager.address
+      );
+
+      const setDataPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [
+            [
+              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                URDDummy.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+                URDDummy.address.substring(2),
+            ],
+            [
+              URDDummy.address,
+              combinePermissions(
+                PERMISSIONS.TRANSFERVALUE,
+                PERMISSIONS.REENTRANCY
+              ),
+              "0x1cffffffff" + URDDummy.address.substring(2) + "ffffffff",
+            ],
+          ]
+        );
+
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](setDataPayload);
+
+      let transferPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            URDDummy.address,
+            ethers.utils.parseEther("1"),
+            EMPTY_PAYLOAD,
+          ]
+        );
+
+      let executePayload = context.keyManager.interface.encodeFunctionData(
+        "execute(bytes)",
+        [transferPayload]
+      );
+
+      await URDDummy.loadPayload(executePayload);
+
+      let initialAccountBalance = await provider.getBalance(
+        context.universalProfile.address
+      );
+      let initialAttackerContractBalance = await provider.getBalance(
+        maliciousContract.address
+      );
+
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferPayload);
+
+      let newAccountBalance = await provider.getBalance(
+        context.universalProfile.address
+      );
+      let newAttackerContractBalance = await provider.getBalance(
+        URDDummy.address
+      );
+
+      expect(newAccountBalance).to.equal(
+        initialAccountBalance.sub(ethers.utils.parseEther("2"))
+      );
+      expect(newAttackerContractBalance).to.equal(
+        initialAttackerContractBalance.add(ethers.utils.parseEther("2"))
+      );
+    });
+
+    it("should allow the URD to use `setData(..)` through the LSP6", async () => {
+      const universalReceiverDelegateDataUpdater =
+        await new UniversalReceiverDelegateDataUpdater__factory(
+          context.owner
+        ).deploy();
+
+      const randomHardcodedKey = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("some random data key")
+      );
+      const randomHardcodedValue = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("some random text for the data value")
+      );
+
+      const setDataPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "setData(bytes32[],bytes[])",
+          [
+            [
+              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                universalReceiverDelegateDataUpdater.address.substring(2),
+              ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+                universalReceiverDelegateDataUpdater.address.substring(2),
+            ],
+            [
+              universalReceiverDelegateDataUpdater.address,
+              combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.REENTRANCY),
+              encodeCompactBytesArray([randomHardcodedKey]),
+            ],
+          ]
+        );
+
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](setDataPayload);
+
+      const universalReceiverDelegatePayload =
+        universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
+          "universalReceiverDelegate",
+          [
+            context.universalProfile.address,
+            0,
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            "0xcafecafecafecafe",
+          ]
+        );
+
+      const executePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            universalReceiverDelegateDataUpdater.address,
+            ethers.utils.parseEther("0"),
+            universalReceiverDelegatePayload,
+          ]
+        );
+
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](executePayload);
+
+      expect(
+        await context.universalProfile["getData(bytes32)"](randomHardcodedKey)
+      ).to.equal(randomHardcodedValue);
     });
   });
 };
