@@ -240,7 +240,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
       */
      function _executePayload(uint256 msgValue, bytes calldata payload) internal returns (bytes memory) {
 
-        emit Executed(msgValue, bytes4(payload));
+        emit Executed(bytes4(payload), msgValue);
 
         // solhint-disable avoid-low-level-calls
         (bool success, bytes memory returnData) = target.call{value: msgValue, gas: gasleft()}(

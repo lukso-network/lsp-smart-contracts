@@ -493,13 +493,13 @@ const EventSignatures = {
 	LSP6: {
 		/**
 		 * event Executed(
-		 *     uint256 indexed _value,
-		 *     bytes4 _data
+		 *     bytes4 indexed selector,
+		 *     uint256 indexed value
 		 * );
 		 *
-		 * signature = keccak256('Executed(uint256,bytes4)')
+		 * signature = keccak256('Executed(bytes4,uint256)')
 		 */
-		Executed: '0x6b9340454526f665e369d7ac17353d0b73774a4a80f746b959ece8130e0f1d72',
+		Executed: '0x4004d18dc05f04c061c306cbb394d4083af494786ab828142d6118ab2c43a492',
 	},
 	LSP7: {
 		/**
