@@ -160,12 +160,8 @@ contract LSP9VaultCore is
         uint256 value,
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
-        if (address(this).balance < value) {
-            revert ERC725X_InsufficientBalance(address(this).balance, value);
-        }
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-
-        return _execute(operationType, target, value, data);
+        return super.execute(operationType, target, value, data);
     }
 
     /**
