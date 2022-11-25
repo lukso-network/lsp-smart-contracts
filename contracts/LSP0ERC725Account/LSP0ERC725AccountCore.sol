@@ -187,6 +187,21 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
+     * @inheritdoc ERC725XCore
+     *
+     * @dev Emits a {ValueReceived} event when receiving native tokens.
+     */
+    function execute(
+        uint256[] memory operationsType,
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory datas
+    ) public payable virtual override onlyOwner returns (bytes[] memory) {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        return super.execute(operationsType, targets, values, datas);
+    }
+
+    /**
      * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
      * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
      * Key and the typeId Key (param) respectively. The call will be discarded if no addresses were set.

@@ -169,6 +169,21 @@ contract LSP9VaultCore is
     }
 
     /**
+     * @inheritdoc ERC725XCore
+     *
+     * @dev Emits a {ValueReceived} event when receiving native tokens.
+     */
+    function execute(
+        uint256[] memory operationsType,
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory datas
+    ) public payable virtual override onlyOwner returns (bytes[] memory) {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        return super.execute(operationsType, targets, values, datas);
+    }
+
+    /**
      * @inheritdoc IERC725Y
      * @dev Sets data as bytes in the vault storage for a single key.
      * SHOULD only be callable by the owner of the contract set via ERC173

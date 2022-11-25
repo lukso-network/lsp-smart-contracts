@@ -46,6 +46,7 @@ export const getNamedAccounts = async (): Promise<LSP9TestAccounts> => {
 
 export type LSP9DeployParams = {
   newOwner: string;
+  initialFunding?: number;
 };
 
 export type LSP9TestContext = {
@@ -57,12 +58,12 @@ export type LSP9TestContext = {
 };
 
 export const shouldBehaveLikeLSP9 = (
-  buildContext: () => Promise<LSP9TestContext>
+  buildContext: (initialFunding?: number) => Promise<LSP9TestContext>
 ) => {
   let context: LSP9TestContext;
 
   before(async () => {
-    context = await buildContext();
+    context = await buildContext(100);
   });
 
   describe("when testing setting data", () => {
@@ -174,7 +175,7 @@ export const shouldBehaveLikeLSP9 = (
     });
   });
 
-  describe("when testing setting execute", () => {
+  describe("when testing execute(...)", () => {
     describe("when executing operation (4) DELEGATECALL", () => {
       it("should revert with unknow operation type custom error", async () => {
         await expect(
@@ -342,6 +343,52 @@ export const shouldBehaveLikeLSP9 = (
               ]
             )
           );
+      });
+    });
+  });
+
+  describe("when using the batch `ERC725X.execute(uint256[],address[],uint256[],bytes[])` function", () => {
+    describe("when specifying `msg.value`", () => {
+      it("should emit a `ValueReceived` event", async () => {
+        const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
+        const recipients = [
+          context.accounts.friend.address,
+          context.accounts.random.address,
+          context.accounts.anyone.address,
+        ];
+        const values = Array(3).fill(ethers.BigNumber.from("1"));
+        const datas = Array(3).fill("0x");
+
+        const msgValue = ethers.utils.parseEther("10");
+
+        const tx = await context.lsp9Vault[
+          "execute(uint256[],address[],uint256[],bytes[])"
+        ](operationsType, recipients, values, datas, { value: msgValue });
+
+        await expect(tx)
+          .to.emit(context.lsp9Vault, "ValueReceived")
+          .withArgs(context.deployParams.newOwner, msgValue);
+      });
+    });
+
+    describe("when NOT sending any `msg.value`", () => {
+      it("should NOT emit a `ValueReceived` event", async () => {
+        const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
+        const recipients = [
+          context.accounts.friend.address,
+          context.accounts.random.address,
+          context.accounts.anyone.address,
+        ];
+        const values = Array(3).fill(ethers.BigNumber.from("1"));
+        const datas = Array(3).fill("0x");
+
+        const msgValue = 0;
+
+        const tx = await context.lsp9Vault[
+          "execute(uint256[],address[],uint256[],bytes[])"
+        ](operationsType, recipients, values, datas, { value: msgValue });
+
+        await expect(tx).to.not.emit(context.lsp9Vault, "ValueReceived");
       });
     });
   });
