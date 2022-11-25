@@ -32,7 +32,7 @@ contract UniversalReceiverDelegateDataUpdater is ERC165Storage {
             address keyManager = LSP14Ownable2Step(sender).owner();
             bytes memory setDataPayload = abi.encodeWithSignature(
                 "setData(bytes32,bytes)",
-                bytes32(keccak256(bytes("some random data key"))),
+                keccak256(bytes("some random data key")),
                 bytes("some random text for the data value")
             );
             ILSP6KeyManager(keyManager).execute(setDataPayload);
