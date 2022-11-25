@@ -48,9 +48,9 @@ contract LSP16UniversalFactory {
      * @param initializeCalldata The bytes provided as initializeCalldata
      */
     event ContractCreated(
-        address contractCreated,
-        bytes32 providedSalt,
-        bool initializable,
+        address indexed contractCreated,
+        bytes32 indexed providedSalt,
+        bool indexed initializable,
         bytes initializeCalldata
     );
 
