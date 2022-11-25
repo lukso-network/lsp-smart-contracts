@@ -9,12 +9,11 @@ import {LSP14Ownable2Step} from "../../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import "../../LSP6KeyManager/LSP6Constants.sol";
 
 contract ReentrancyWithChangePermission {
-    function universalReceiverDelegate(
-        address sender,
-        uint256 value, // solhint-disable no-unused-vars
+    function universalReceiver(
         bytes32 typeId, // solhint-disable no-unused-vars
         bytes memory data // bytes20(address(controller))
     ) public virtual returns (bytes memory result) {
+        address sender = address(bytes20(msg.data[msg.data.length - 52:]));
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(sender).owner();
 

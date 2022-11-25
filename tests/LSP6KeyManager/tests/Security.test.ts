@@ -435,13 +435,8 @@ export const testSecurityScenarios = (
 
       const universalReceiverDelegatePayload =
         universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
-          "universalReceiverDelegate",
-          [
-            context.universalProfile.address,
-            0,
-            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
-            "0xcafecafecafecafe",
-          ]
+          "universalReceiver",
+          [LSP1_TYPE_IDS.LSP7Tokens_SenderNotification, "0xcafecafecafecafe"]
         );
 
       const executePayload =

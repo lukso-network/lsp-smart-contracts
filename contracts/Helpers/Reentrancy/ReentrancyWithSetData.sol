@@ -6,12 +6,12 @@ import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {LSP14Ownable2Step} from "../../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 contract ReentrancyWithSetData {
-    function universalReceiverDelegate(
-        address sender,
-        uint256 value, // solhint-disable no-unused-vars
+    function universalReceiver(
         bytes32 typeId, // solhint-disable no-unused-vars
         bytes memory data // solhint-disable no-unused-vars
-    ) public virtual returns (bytes memory result) { // solhint-disable no-unused-vars
+    ) public virtual returns (bytes memory result) {
+        // solhint-disable no-unused-vars
+        address sender = address(bytes20(msg.data[msg.data.length - 52:]));
         address keyManager = LSP14Ownable2Step(sender).owner();
         bytes memory setDataPayload = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
