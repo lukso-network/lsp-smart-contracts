@@ -27,9 +27,8 @@ contract RelayReentrancy {
         bytes32 typeId, // solhint-disable no-unused-vars
         bytes memory data // solhint-disable no-unused-vars
     ) public virtual returns (bytes memory result) {
-        address sender = address(bytes20(msg.data[msg.data.length - 52:]));
         // solhint-disable no-unused-vars
-        address keyManager = LSP14Ownable2Step(sender).owner();
+        address keyManager = LSP14Ownable2Step(msg.sender).owner();
 
         ILSP6KeyManager(keyManager).executeRelayCall(_signature, _nonce, _payload);
     }

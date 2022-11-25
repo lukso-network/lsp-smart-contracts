@@ -11,8 +11,7 @@ contract ReentrancyWithSetData {
         bytes memory data // solhint-disable no-unused-vars
     ) public virtual returns (bytes memory result) {
         // solhint-disable no-unused-vars
-        address sender = address(bytes20(msg.data[msg.data.length - 52:]));
-        address keyManager = LSP14Ownable2Step(sender).owner();
+        address keyManager = LSP14Ownable2Step(msg.sender).owner();
         bytes memory setDataPayload = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             keccak256(bytes("SomeRandomTextUsed")),

@@ -13,9 +13,8 @@ contract ReentrancyWithChangeURD {
         bytes32 typeId, // solhint-disable no-unused-vars
         bytes calldata data // bytes32(TYPE_ID) + bytes20(address(URD))
     ) public virtual returns (bytes memory result) {
-        address sender = address(bytes20(msg.data[msg.data.length - 52:]));
         // solhint-disable no-unused-vars
-        address keyManager = LSP14Ownable2Step(sender).owner();
+        address keyManager = LSP14Ownable2Step(msg.sender).owner();
 
         bytes memory addURDPayload = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
