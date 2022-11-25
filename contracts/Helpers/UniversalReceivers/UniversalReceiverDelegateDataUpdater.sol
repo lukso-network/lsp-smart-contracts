@@ -15,21 +15,19 @@ import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165S
 // constants
 import {_TYPEID_LSP7_TOKENSSENDER} from "../../LSP7DigitalAsset/LSP7Constants.sol";
 
-import {_INTERFACEID_LSP1_DELEGATE} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 contract UniversalReceiverDelegateDataUpdater is ERC165Storage {
     constructor() {
-        _registerInterface(_INTERFACEID_LSP1_DELEGATE);
+        _registerInterface(_INTERFACEID_LSP1);
     }
 
-    function universalReceiverDelegate(
-        address sender,
-        uint256 value, // solhint-disable no-unused-vars
+    function universalReceiver(
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
     ) public virtual returns (bytes memory result) {
         if (typeId == _TYPEID_LSP7_TOKENSSENDER) {
-            address keyManager = LSP14Ownable2Step(sender).owner();
+            address keyManager = LSP14Ownable2Step(msg.sender).owner();
             bytes memory setDataPayload = abi.encodeWithSignature(
                 "setData(bytes32,bytes)",
                 keccak256(bytes("some random data key")),

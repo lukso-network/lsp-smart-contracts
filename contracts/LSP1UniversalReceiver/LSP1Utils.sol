@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+// libraries
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+
 // constants
+import "./ILSP1UniversalReceiver.sol";
 import "../LSP5ReceivedAssets/LSP5Constants.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
 import "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
@@ -10,6 +14,29 @@ import "../LSP14Ownable2Step/LSP14Constants.sol";
 import "../LSP10ReceivedVaults/LSP10Constants.sol";
 
 library LSP1Utils {
+    function callUniversalReceiverWithCallerInfos(
+        address universalReceiverDelegate,
+        bytes32 typeId,
+        bytes calldata receivedData,
+        address msgSender,
+        uint256 msgValue
+    ) internal returns (bytes memory) {
+        bytes memory callData = abi.encodePacked(
+            abi.encodeWithSelector(
+                ILSP1UniversalReceiver.universalReceiver.selector,
+                typeId,
+                receivedData
+            ),
+            msgSender,
+            msgValue
+        );
+
+        // solhint-disable avoid-low-level-calls
+        (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
+        Address.verifyCallResult(success, result, "Call to universalReceiver failed");
+        return result.length != 0 ? abi.decode(result, (bytes)) : result;
+    }
+
     /**
      * @dev Gets all the transfer details depending on the `typeId`
      * @param typeId A unique identifier for a specific action

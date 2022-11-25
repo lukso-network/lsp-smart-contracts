@@ -14,21 +14,17 @@ import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 /**
  * @dev This contract is used only for testing purposes
  */
-contract UniversalReceiverDelegateVaultSetter is ERC165Storage {
+contract UniversalReceiverDelegateVaultReentrantA is ERC165Storage {
     constructor() {
         _registerInterface(_INTERFACEID_LSP1);
     }
 
-    function universalReceiver(
-        address vaultadd,
-        bytes32 key,
-        bytes memory value
-    ) external {
+    function universalReceiver(bytes32 typeId, bytes memory data) external returns (bytes memory) {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
-        keys[0] = key;
-        values[0] = value;
-        IERC725Y(vaultadd).setData(keys, values);
+        keys[0] = bytes32(data);
+        values[0] = hex"aabbccdd";
+        IERC725Y(msg.sender).setData(keys, values);
     }
 }

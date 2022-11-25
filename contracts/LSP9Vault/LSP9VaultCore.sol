@@ -3,14 +3,14 @@ pragma solidity ^0.8.0;
 
 // interfaces
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {
-    ILSP1UniversalReceiverDelegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {GasLib} from "../Utils/GasLib.sol";
+
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
@@ -30,7 +30,6 @@ import {
 } from "@erc725/smart-contracts/contracts/constants.sol";
 import {
     _INTERFACEID_LSP1,
-    _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -51,6 +50,9 @@ contract LSP9VaultCore is
     ILSP1UniversalReceiver
 {
     using ERC165Checker for address;
+    using LSP1Utils for address;
+
+    address private _reentrantDelegate;
 
     /**
      * @notice Emitted when receiving native tokens
@@ -64,13 +66,9 @@ contract LSP9VaultCore is
      */
     modifier onlyAllowed() {
         if (msg.sender != owner()) {
-            address universalReceiverAddress = address(
-                bytes20(_getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY))
-            );
             require(
-                ERC165Checker.supportsERC165Interface(msg.sender, _INTERFACEID_LSP1_DELEGATE) &&
-                    msg.sender == universalReceiverAddress,
-                "Only Owner or Universal Receiver Delegate allowed"
+                msg.sender == _reentrantDelegate,
+                "Only Owner or reentered Universal Receiver Delegate allowed"
             );
         }
         _;
@@ -237,9 +235,15 @@ contract LSP9VaultCore is
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+                _reentrantDelegate = universalReceiverDelegate;
+                resultDefaultDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
             }
         }
 
@@ -252,14 +256,21 @@ contract LSP9VaultCore is
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
-            address typeIdDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
-            if (typeIdDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(typeIdDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+                _reentrantDelegate = universalReceiverDelegate;
+                resultTypeIdDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
             }
         }
 
+        delete _reentrantDelegate;
         returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
         emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
     }

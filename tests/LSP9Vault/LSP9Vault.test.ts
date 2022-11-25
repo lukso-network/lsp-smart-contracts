@@ -70,7 +70,7 @@ describe("LSP9Vault", () => {
       );
 
       const onlyOwnerRevertString =
-        "Only Owner or Universal Receiver Delegate allowed";
+        "Only Owner or reentered Universal Receiver Delegate allowed";
 
       return {
         accounts,
@@ -261,7 +261,7 @@ describe("LSP9Vault", () => {
         await initializeProxy(context);
 
         const onlyOwnerRevertString =
-          "Only Owner or Universal Receiver Delegate allowed";
+          "Only Owner or reentered Universal Receiver Delegate allowed";
 
         return {
           accounts: accounts,

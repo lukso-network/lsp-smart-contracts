@@ -9,6 +9,8 @@ import {
   LSP9Vault,
   UniversalProfile,
   UniversalReceiverDelegateVaultSetter__factory,
+  UniversalReceiverDelegateVaultReentrantA__factory,
+  UniversalReceiverDelegateVaultReentrantB__factory,
 } from "../../types";
 
 // helpers
@@ -85,15 +87,18 @@ export const shouldBehaveLikeLSP9 = (
         context.lsp9Vault
           .connect(context.accounts.random)
           ["setData(bytes32,bytes)"](keys[0], values[0])
-      ).to.be.revertedWith("Only Owner or Universal Receiver Delegate allowed");
+      ).to.be.revertedWith(
+        "Only Owner or reentered Universal Receiver Delegate allowed"
+      );
     });
 
-    it("UniversalReceiverDelegate should be able to setData", async () => {
+    it("UniversalReceiverDelegate shouldn't be able to setData in a call not passing by the universalReceiver", async () => {
       // setting UniversalReceiverDelegate that setData
       const lsp1UniversalReceiverDelegateVaultSetter =
         await new UniversalReceiverDelegateVaultSetter__factory(
           context.accounts.anyone
         ).deploy();
+
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
@@ -102,18 +107,86 @@ export const shouldBehaveLikeLSP9 = (
         );
 
       const [keys, values] = generateKeysAndValues("random");
-      await lsp1UniversalReceiverDelegateVaultSetter
-        .connect(context.accounts.anyone)
-        .universalReceiverDelegate(
-          context.lsp9Vault.address,
-          keys[0],
-          values[0]
+
+      await expect(
+        lsp1UniversalReceiverDelegateVaultSetter
+          .connect(context.accounts.anyone)
+          .universalReceiver(context.lsp9Vault.address, keys[0], values[0])
+      ).to.be.revertedWith(
+        "Only Owner or reentered Universal Receiver Delegate allowed"
+      );
+    });
+
+    it("Main UniversalReceiverDelegate A should be able to setData in a universalReceiver reentrant call", async () => {
+      // setting UniversalReceiverDelegate that setData
+      const lsp1UniversalReceiverDelegateVaultReentrantA =
+        await new UniversalReceiverDelegateVaultReentrantA__factory(
+          context.accounts.anyone
+        ).deploy();
+
+      await context.lsp9Vault
+        .connect(context.accounts.owner)
+        ["setData(bytes32,bytes)"](
+          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+          lsp1UniversalReceiverDelegateVaultReentrantA.address
         );
 
-      const result = await context.lsp9Vault.callStatic["getData(bytes32)"](
-        keys[0]
+      const typeId = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const data = ethers.utils.hexlify(ethers.utils.randomBytes(64));
+
+      const resultBefore = await context.lsp9Vault["getData(bytes32)"](
+        data.substring(0, 66)
       );
-      expect(result).to.equal(values[0]);
+      expect(resultBefore).to.equal("0x");
+
+      await context.lsp9Vault
+        .connect(context.accounts.anyone)
+        .universalReceiver(typeId, data);
+
+      // The universalReceiverDelegate set will set in the storage the first 32 bytes of data as dataKey
+      // and the value "aabbccdd" as data value, check the UniversalReceiverDelegateVaultReentrant A contract in helpers
+
+      const resultAfter = await context.lsp9Vault["getData(bytes32)"](
+        data.substring(0, 66)
+      );
+      expect(resultAfter).to.equal("0xaabbccdd");
+    });
+
+    it("Mapped UniversalReceiverDelegate B should be able to setData in a universalReceiver reentrant call", async () => {
+      // setting UniversalReceiverDelegate that setData
+      const lsp1UniversalReceiverDelegateVaultReentrantB =
+        await new UniversalReceiverDelegateVaultReentrantB__factory(
+          context.accounts.anyone
+        ).deploy();
+
+      const typeId = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+      const data = ethers.utils.hexlify(ethers.utils.randomBytes(64));
+
+      await context.lsp9Vault
+        .connect(context.accounts.owner)
+        ["setData(bytes32,bytes)"](
+          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+            typeId.substring(2, 42),
+          lsp1UniversalReceiverDelegateVaultReentrantB.address
+        );
+
+      const resultBefore = await context.lsp9Vault["getData(bytes32)"](
+        data.substring(0, 66)
+      );
+
+      expect(resultBefore).to.equal("0x");
+
+      await context.lsp9Vault
+        .connect(context.accounts.anyone)
+        .universalReceiver(typeId, data);
+
+      // The universalReceiverDelegate B set will set in the storage the first 32 bytes of data as dataKey
+      // and the value "ddccbbaa" as data value, check the UniversalReceiverDelegateVaultReentrant B contract in helpers
+
+      const resultAfter = await context.lsp9Vault["getData(bytes32)"](
+        data.substring(0, 66)
+      );
+      expect(resultAfter).to.equal("0xddccbbaa");
     });
 
     describe("when setting a data key with a value less than 256 bytes", () => {

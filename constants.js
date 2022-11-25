@@ -19,7 +19,6 @@ const INTERFACE_IDS = {
 	ERC725Y: '0x714df77c',
 	LSP0ERC725Account: '0x66767497',
 	LSP1UniversalReceiver: '0x6bb56a14',
-	LSP1UniversalReceiverDelegate: '0xa245bbda',
 	LSP6KeyManager: '0xfb437414',
 	LSP7DigitalAsset: '0xda1f85e4',
 	LSP8IdentifiableDigitalAsset: '0x622e7a01',

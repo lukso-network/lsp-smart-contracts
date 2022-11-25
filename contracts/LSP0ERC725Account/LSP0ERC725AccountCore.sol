@@ -4,14 +4,13 @@ pragma solidity ^0.8.0;
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {
-    ILSP1UniversalReceiverDelegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
@@ -31,7 +30,6 @@ import {
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
-    _INTERFACEID_LSP1_DELEGATE,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -53,6 +51,7 @@ abstract contract LSP0ERC725AccountCore is
     ILSP1UniversalReceiver
 {
     using ERC165Checker for address;
+    using LSP1Utils for address;
 
     /**
      * @notice Emitted when receiving native tokens
@@ -220,9 +219,14 @@ abstract contract LSP0ERC725AccountCore is
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultDefaultDelegate = ILSP1UniversalReceiverDelegate(universalReceiverDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+                resultDefaultDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
             }
         }
 
@@ -235,11 +239,16 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
-            address typeIdDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
-            if (typeIdDelegate.supportsERC165Interface(_INTERFACEID_LSP1_DELEGATE)) {
-                resultTypeIdDelegate = ILSP1UniversalReceiverDelegate(typeIdDelegate)
-                    .universalReceiverDelegate(msg.sender, msg.value, typeId, receivedData);
+            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+                resultTypeIdDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
             }
         }
 
