@@ -69,7 +69,7 @@ contract LSP9VaultCore is
         if (msg.sender != owner()) {
             require(
                 msg.sender == _reentrantDelegate,
-                "Only Owner or Universal Receiver Delegate allowed"
+                "Only Owner or reentered Universal Receiver Delegate allowed"
             );
         }
         _;

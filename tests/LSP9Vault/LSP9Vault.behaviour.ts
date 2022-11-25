@@ -87,12 +87,13 @@ export const shouldBehaveLikeLSP9 = (
       ).to.be.revertedWith("Only Owner or Universal Receiver Delegate allowed");
     });
 
-    it.skip("UniversalReceiverDelegate should be able to setData", async () => {
+    it("UniversalReceiverDelegate shouldn't be able to setData in a call not passing by the universalReceiver", async () => {
       // setting UniversalReceiverDelegate that setData
       const lsp1UniversalReceiverDelegateVaultSetter =
         await new UniversalReceiverDelegateVaultSetter__factory(
           context.accounts.anyone
         ).deploy();
+
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
@@ -101,14 +102,14 @@ export const shouldBehaveLikeLSP9 = (
         );
 
       const [keys, values] = generateKeysAndValues("random");
-      await lsp1UniversalReceiverDelegateVaultSetter
-        .connect(context.accounts.anyone)
-        .universalReceiver(context.lsp9Vault.address, keys[0], values[0]);
 
-      const result = await context.lsp9Vault.callStatic["getData(bytes32)"](
-        keys[0]
+      await expect(
+        lsp1UniversalReceiverDelegateVaultSetter
+          .connect(context.accounts.anyone)
+          .universalReceiver(context.lsp9Vault.address, keys[0], values[0])
+      ).to.be.revertedWith(
+        "Only Owner or reentered Universal Receiver Delegate allowed"
       );
-      expect(result).to.equal(values[0]);
     });
 
     describe("when setting a data key with a value less than 256 bytes", () => {
