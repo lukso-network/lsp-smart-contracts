@@ -23,12 +23,11 @@ contract RelayReentrancy {
     // solhint-disable no-empty-blocks
     receive() external payable {}
 
-    function universalReceiverDelegate(
-        address sender,
-        uint256 value, // solhint-disable no-unused-vars
+    function universalReceiver(
         bytes32 typeId, // solhint-disable no-unused-vars
         bytes memory data // solhint-disable no-unused-vars
     ) public virtual returns (bytes memory result) {
+        address sender = address(bytes20(msg.data[msg.data.length - 52:]));
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(sender).owner();
 
