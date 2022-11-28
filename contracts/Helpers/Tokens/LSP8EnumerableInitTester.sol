@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
-import {LSP8IdentifiableDigitalAssetInitAbstract} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {LSP8EnumerableInitAbstract} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8EnumerableInitAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAssetInitAbstract
+} from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    LSP8EnumerableInitAbstract
+} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8EnumerableInitAbstract.sol";
 
 contract LSP8EnumerableInitTester is LSP8EnumerableInitAbstract {
     function initialize(

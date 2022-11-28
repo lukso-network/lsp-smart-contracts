@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity 4;
 
 // ERC interfaces
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
@@ -46,7 +46,7 @@ import {
 contract CalculateLSPInterfaces {
     function calculateInterfaceLSP0() public pure returns (bytes4) {
         // prettier-ignore
-        bytes4 interfaceId = 
+        bytes4 interfaceId =
             type(IERC725Y).interfaceId ^
             type(IERC725X).interfaceId ^
             type(IERC1271).interfaceId ^
@@ -104,7 +104,7 @@ contract CalculateLSPInterfaces {
 
     function calculateInterfaceLSP9() public pure returns (bytes4) {
         // prettier-ignore
-        bytes4 interfaceId = 
+        bytes4 interfaceId =
             type(IERC725X).interfaceId ^
             type(IERC725Y).interfaceId ^
             type(ILSP1).interfaceId ^
@@ -121,7 +121,7 @@ contract CalculateLSPInterfaces {
 
     function calculateInterfaceLSP14() public pure returns (bytes4) {
         // prettier-ignore
-        bytes4 interfaceId = 
+        bytes4 interfaceId =
             OwnableUnset.owner.selector ^
             OwnableUnset.transferOwnership.selector ^
             OwnableUnset.renounceOwnership.selector ^

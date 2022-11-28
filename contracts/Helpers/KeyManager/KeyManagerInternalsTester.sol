@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // libraries
 import {LSP6Utils} from "../../LSP6KeyManager/LSP6Utils.sol";

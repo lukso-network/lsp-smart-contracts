@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
@@ -21,11 +21,7 @@ contract LSP7CompatibleERC20InitTester is LSP7CompatibleERC20InitAbstract {
         string memory symbol_,
         address newOwner_
     ) public initializer {
-        LSP7CompatibleERC20InitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_
-        );
+        LSP7CompatibleERC20InitAbstract._initialize(name_, symbol_, newOwner_);
     }
 
     function mint(

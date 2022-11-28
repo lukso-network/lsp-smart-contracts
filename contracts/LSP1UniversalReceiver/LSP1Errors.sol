@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 /**
  * @dev reverts when EOA calls the `universalReceiver(..)` function with an asset/vault typeId

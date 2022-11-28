@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // libraries
 import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
@@ -35,7 +35,7 @@ error SendingValueNotAllowed();
  */
 contract UniversalFactory {
     using BytesLib for bytes;
-    
+
     /**
      * @dev Emitted whenever a contract is created
      * @param contractCreated The address of the contract created
