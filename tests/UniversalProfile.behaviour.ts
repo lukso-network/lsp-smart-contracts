@@ -11,7 +11,7 @@ import { getRandomAddresses } from "./utils/helpers";
 // constants
 import {
   ERC1271_VALUES,
-  ERC725YKeys,
+  ERC725YDataKeys,
   INTERFACE_IDS,
   OPERATION_TYPES,
   SupportedStandards,
@@ -87,9 +87,9 @@ export const shouldBehaveLikeLSP3 = (
 
   describe("when interacting with the ERC725Y storage", () => {
     let lsp12IssuedAssetsKeys = [
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000000",
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000001",
     ];
     let lsp12IssuedAssetsValues = [
@@ -99,10 +99,10 @@ export const shouldBehaveLikeLSP3 = (
 
     it("should set the 3 x keys for a basic UP setup => `LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`", async () => {
       let keys = [
-        ERC725YKeys.LSP3.LSP3Profile,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length,
+        ERC725YDataKeys.LSP3.LSP3Profile,
+        ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ];
       let values = [
         "0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178",
@@ -132,7 +132,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -143,7 +143,7 @@ export const shouldBehaveLikeLSP3 = (
 
       let keys = [
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
+        ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
       ];
 
       let values = [
@@ -168,7 +168,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length + 1);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -178,7 +178,7 @@ export const shouldBehaveLikeLSP3 = (
 
         let keys = [
           ...lsp12IssuedAssetsKeys,
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
         ];
 
         let values = [

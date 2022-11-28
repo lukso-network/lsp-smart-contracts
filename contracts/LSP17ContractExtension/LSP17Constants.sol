@@ -9,7 +9,7 @@ bytes4 constant _INTERFACEID_LSP17_EXTENDABLE = 0xa918fa6b;
 // bytes4(keccack256("LSP17Extension"))
 bytes4 constant _INTERFACEID_LSP17_EXTENSION = 0xcee78b40;
 
-// --- ERC725Y Keys
+// --- ERC725Y Data Keys
 
 // Extension Handler Prefix
 

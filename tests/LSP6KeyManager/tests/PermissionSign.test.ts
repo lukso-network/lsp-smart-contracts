@@ -5,7 +5,7 @@ import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   ERC1271_VALUES,
@@ -36,11 +36,11 @@ export const shouldBehaveLikePermissionSign = (
     noPermissionsSet = context.accounts[3];
 
     const permissionsKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         signer.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         nonSigner.address.substring(2),
     ];
 

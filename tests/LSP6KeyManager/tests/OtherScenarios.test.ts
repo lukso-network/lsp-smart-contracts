@@ -4,7 +4,11 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { TargetContract__factory, TargetContract } from "../../../types";
 
 // constants
-import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
+import {
+  ALL_PERMISSIONS,
+  ERC725YDataKeys,
+  PERMISSIONS,
+} from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
@@ -36,9 +40,9 @@ export const otherTestScenarios = (
     ).deploy();
 
     const permissionsKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanMakeCall.address.substring(2),
     ];
 
@@ -55,7 +59,9 @@ export const otherTestScenarios = (
     it("Should revert because calling an unexisting function in ERC725", async () => {
       const INVALID_PAYLOAD = "0xbad000000000000000000000000bad";
       await expect(
-        context.keyManager.connect(addressCanMakeCall)["execute(bytes)"](INVALID_PAYLOAD)
+        context.keyManager
+          .connect(addressCanMakeCall)
+          ["execute(bytes)"](INVALID_PAYLOAD)
       )
         .to.be.revertedWithCustomError(
           context.keyManager,
@@ -98,7 +104,9 @@ export const otherTestScenarios = (
       );
 
       await expect(
-        context.keyManager.connect(addressCanMakeCall)["execute(bytes)"](payload)
+        context.keyManager
+          .connect(addressCanMakeCall)
+          ["execute(bytes)"](payload)
       ).to.be.revertedWith("LSP6KeyManager: invalid operation type");
     });
   });

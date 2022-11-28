@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-// --- ERC725Y Keys
+// --- ERC725Y Data Keys
 
 // keccak256('LSP5ReceivedAssets[]')
 bytes32 constant _LSP5_RECEIVED_ASSETS_ARRAY_KEY = 0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b;
