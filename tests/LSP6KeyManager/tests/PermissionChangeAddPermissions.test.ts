@@ -366,7 +366,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             // AddressPermissions:MyCustomPermissions:<address>
             let key =
-              "0x4b80742de2bf866c29110000" + beneficiary.address.substring(2);
+              "0x4b80742de2bf9e659ba40000" + beneficiary.address.substring(2);
 
             // the value does not matter in the case of the test here
             let value =
@@ -612,7 +612,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             // AddressPermissions:MyCustomPermissions:<address>
             let key =
-              "0x4b80742de2bf866c29110000" + beneficiary.address.substring(2);
+              "0x4b80742de2bf9e659ba40000" + beneficiary.address.substring(2);
 
             // the value does not matter in the case of the test here
             let value =
@@ -874,7 +874,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             // AddressPermissions:MyCustomPermissions:<address>
             let key =
-              "0x4b80742de2bf866c29110000" + beneficiary.address.substring(2);
+              "0x4b80742de2bf9e659ba40000" + beneficiary.address.substring(2);
 
             // the value does not matter in the case of the test here
             let value =
@@ -1084,7 +1084,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             // AddressPermissions:MyCustomPermissions:<address>
             let key =
-              "0x4b80742de2bf866c29110000" + beneficiary.address.substring(2);
+              "0x4b80742de2bf9e659ba40000" + beneficiary.address.substring(2);
 
             // the value does not matter in the case of the test here
             let value =
