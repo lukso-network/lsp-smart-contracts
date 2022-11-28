@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity 4;
+pragma solidity ^0.8.4;
 
 // ERC interfaces
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
