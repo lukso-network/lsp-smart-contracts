@@ -1977,12 +1977,10 @@ export const shouldInitializeLikeLSP1Delegate = (
             "0x",
             { value }
           )
-        )
-          .to.be.revertedWithCustomError(
-            context.lsp1universalReceiverDelegateUP,
-            "NativeTokensNotAccepted"
-          )
-          .withArgs(value);
+        ).to.be.revertedWithCustomError(
+          context.lsp1universalReceiverDelegateUP,
+          "NativeTokensNotAccepted"
+        );
       });
     });
   });
