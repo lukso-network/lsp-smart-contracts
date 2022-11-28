@@ -14,3 +14,9 @@ error CannotRegisterEOAsAsAssets(address caller);
  * @param target The address of the target linked to the KeyManager
  */
 error CallerNotLSP6LinkedTarget(address account, address target);
+
+/**
+ * @dev reverts when `universalReceiver(...)` is called with a value different than 0
+ * @param amount The amount of native tokens sent
+ */
+error NativeTokensNotAccepted(uint256 amount);
