@@ -220,6 +220,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _beforeTokenTransfer(address(0), to, amount);
 
+        // tokens being minted
+        _existingTokens += amount;
+
         _tokenOwnerBalances[to] += amount;
 
         emit Transfer(operator, address(0), to, amount, force, data);
@@ -263,6 +266,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         }
 
         _beforeTokenTransfer(from, address(0), amount);
+
+        // tokens being burned
+        _existingTokens -= amount;
 
         _tokenOwnerBalances[from] -= amount;
 
@@ -323,22 +329,13 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * transferred to `to`.
      * - When `from` is zero, `amount` tokens will be minted for `to`.
      * - When `to` is zero, ``from``'s `amount` tokens will be burned.
+     * - `from` and `to` are never both zero.
      */
     function _beforeTokenTransfer(
         address from,
         address to,
         uint256 amount
-    ) internal virtual {
-        // tokens being minted
-        if (from == address(0)) {
-            _existingTokens += amount;
-        }
-
-        // tokens being burned
-        if (to == address(0)) {
-            _existingTokens -= amount;
-        }
-    }
+    ) internal virtual {}
 
     /**
      * @dev An attempt is made to notify the token sender about the `amount` tokens changing owners using
