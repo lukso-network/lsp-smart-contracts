@@ -27,5 +27,6 @@ contract UniversalReceiverDelegateVaultReentrantA is ERC165Storage {
         keys[0] = bytes32(data);
         values[0] = hex"aabbccdd";
         IERC725Y(msg.sender).setData(keys, values);
+        return "";
     }
 }

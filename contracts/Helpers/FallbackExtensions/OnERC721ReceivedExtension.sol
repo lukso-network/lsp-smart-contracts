@@ -11,7 +11,7 @@ contract OnERC721ReceivedExtension {
         address from,
         uint256 tokenId,
         bytes calldata data
-    ) external returns (bytes4) {
+    ) external pure returns (bytes4) {
         return 0x150b7a02;
     }
 }
