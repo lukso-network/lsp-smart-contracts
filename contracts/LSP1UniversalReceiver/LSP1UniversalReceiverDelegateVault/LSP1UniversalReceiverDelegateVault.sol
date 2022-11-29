@@ -39,6 +39,7 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
     ) public payable virtual returns (bytes memory result) {
+        if (msg.value != 0) revert NativeTokensNotAccepted();
         // This contract acts like a UniversalReceiverDelegate of a Vault where we append the
         // address and the value, sent to the universalReceiver function of the LSP9, to the msg.data
         // Check https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-9-Vault.md#universalreceiver
