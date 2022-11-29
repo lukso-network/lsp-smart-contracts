@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
@@ -22,7 +22,11 @@ contract Reentrancy {
         if (!switchFallback) {
             switchFallback = true;
             (bool success, bytes memory returnData) = _target.call(_payload);
-            bytes memory result = Address.verifyCallResult(success, returnData, "Reentrancy Helper Contract: failed to re-enter contract");
+            bytes memory result = Address.verifyCallResult(
+                success,
+                returnData,
+                "Reentrancy Helper Contract: failed to re-enter contract"
+            );
         }
     }
 }

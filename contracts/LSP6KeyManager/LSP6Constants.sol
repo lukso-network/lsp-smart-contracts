@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 uint256 constant LSP6_VERSION = 6;
 
@@ -22,7 +22,7 @@ bytes6 constant _LSP6KEY_ADDRESSPERMISSIONS_PREFIX = 0x4b80742de2bf;
 // bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('Permissions'))
 bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX = 0x4b80742de2bf82acb363; // AddressPermissions:Permissions:<address> --> bytes32
 
-// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YDataKeys')) 
+// bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedERC725YDataKeys'))
 bytes10 constant _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX = 0x4b80742de2bf866c2911; // AddressPermissions:AllowedERC725YDataKeys:<address> --> bytes[CompactBytesArray]
 
 // bytes6(keccak256('AddressPermissions')) + bytes4(keccak256('AllowedCalls'))
@@ -59,4 +59,4 @@ bytes32 constant _PERMISSION_SIGN                             = 0x00000000000000
 bytes4 constant _LSP6_EXECUTE_SELECTOR = 0x09c5eabe;
 bytes4 constant _LSP6_EXECUTE_BATCH_SELECTOR = 0xbf3e1f7b;
 bytes4 constant _LSP6_EXECUTE_RELAYCALL_SELECTOR = 0x902d5fa0;
-bytes4 constant _LSP6_EXECUTE_RELAYCALL_BATCH_SELECTOR = 0xbd68663a; 
+bytes4 constant _LSP6_EXECUTE_RELAYCALL_BATCH_SELECTOR = 0xbd68663a;

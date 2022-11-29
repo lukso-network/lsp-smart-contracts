@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 /**
  * @dev reverts when trying to renounce ownership before the initial confirmation delay
