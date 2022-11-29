@@ -69,7 +69,7 @@ const SupportedStandards = {
  * For more infos on the type of each keys
  * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
  */
-const ERC725YKeys = {
+const ERC725YDataKeys = {
 	LSP1: {
 		// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0)
 		LSP1UniversalReceiverDelegatePrefix: '0x0cfc51aec37c55a4d0b10000',
@@ -117,8 +117,8 @@ const ERC725YKeys = {
 		},
 		// AddressPermissions:Permissions:<address>  + bytes2(0)
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
-		// AddressPermissions:AllowedERC725YKeys:<address>  + bytes2(0)
-		'AddressPermissions:AllowedERC725YKeys': '0x4b80742de2bf90b8b4850000',
+		// AddressPermissions:AllowedERC725YDataKeys:<address>  + bytes2(0)
+		'AddressPermissions:AllowedERC725YDataKeys': '0x4b80742de2bf866c29110000',
 		// AddressPermissions:AllowedCalls:<address>  + bytes2(0)
 		'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
 	},
@@ -152,21 +152,21 @@ const ERC725YKeys = {
 const BasicUPSetup_Schema = [
 	{
 		name: 'LSP3Profile',
-		key: ERC725YKeys.LSP3['LSP3Profile'],
+		key: ERC725YDataKeys.LSP3['LSP3Profile'],
 		keyType: 'Singleton',
 		valueContent: 'JSONURL',
 		valueType: 'bytes',
 	},
 	{
 		name: 'LSP1UniversalReceiverDelegate',
-		key: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+		key: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
 		keyType: 'Singleton',
 		valueContent: 'Address',
 		valueType: 'address',
 	},
 	{
 		name: 'LSP12IssuedAssets[]',
-		key: ERC725YKeys.LSP12['LSP12IssuedAssets[]'].length,
+		key: ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].length,
 		keyType: 'Array',
 		valueContent: 'Number',
 		valueType: 'uint256',
@@ -263,7 +263,7 @@ const Errors = {
 				'LSP6: not authorised to interact with `to` with the provided data payload (standard, address or function of `to` not authorised).',
 		},
 		'0x3003e7ae': {
-			error: 'NotAllowedERC725YKey(address,bytes32)',
+			error: 'NotAllowedERC725YDataKey(address,bytes32)',
 			message: 'LSP6: not allowed to set the ERC725Y data key.',
 		},
 		'0x0f7d735b': {
@@ -287,7 +287,7 @@ const Errors = {
 			message: 'LSP6: caller has no AllowedERC725YDataKeys',
 		},
 		'0x7231ac57': {
-			error: 'InvalidEncodedAllowedERC725YKeys(bytes)',
+			error: 'InvalidEncodedAllowedERC725YDataKeys(bytes)',
 			message: 'LSP6: Invalid Compact Bytes Array',
 		},
 		'0x8f4afa38': {
@@ -626,7 +626,7 @@ module.exports = {
 	ERC1271_VALUES,
 	OPERATION_TYPES,
 	SupportedStandards,
-	ERC725YKeys,
+	ERC725YDataKeys,
 	BasicUPSetup_Schema,
 	LSP6_VERSION,
 	ALL_PERMISSIONS,

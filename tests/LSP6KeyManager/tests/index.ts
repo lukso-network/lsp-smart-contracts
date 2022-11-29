@@ -12,7 +12,7 @@ export * from "./PermissionSign.test";
 export * from "./AllowedAddresses.test";
 export * from "./AllowedFunctions.test";
 export * from "./AllowedStandards.test";
-export * from "./AllowedERC725YKeys.test";
+export * from "./AllowedERC725YDataKeys.test";
 export * from "./MultiChannelNonce.test";
 export * from "./OtherScenarios.test";
 export * from "./Security.test";

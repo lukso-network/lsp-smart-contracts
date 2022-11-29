@@ -17,7 +17,7 @@ import {
 import {
   ALL_PERMISSIONS,
   ERC1271_VALUES,
-  ERC725YKeys,
+  ERC725YDataKeys,
   INTERFACE_IDS,
   OPERATION_TYPES,
   PERMISSIONS,
@@ -66,15 +66,15 @@ export const shouldBehaveLikeAllowedStandards = (
     ).deploy(context.accounts[3].address);
 
     let permissionsKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanInteractOnlyWithERC1271.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanInteractOnlyWithLSP7.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
         addressCanInteractOnlyWithERC1271.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
         addressCanInteractOnlyWithLSP7.address.substring(2),
     ];
 
@@ -115,7 +115,9 @@ export const shouldBehaveLikeAllowedStandards = (
         [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
       );
 
-      await context.keyManager.connect(context.owner)["execute(bytes)"](upPayload);
+      await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](upPayload);
       let result = await targetContract.callStatic.getName();
 
       expect(result).to.equal(newName);
@@ -155,7 +157,9 @@ export const shouldBehaveLikeAllowedStandards = (
             [key, value]
           );
 
-        await context.keyManager.connect(context.owner)["execute(bytes)"](setDataPayload);
+        await context.keyManager
+          .connect(context.owner)
+          ["execute(bytes)"](setDataPayload);
 
         const result = await context.universalProfile.callStatic[
           "getData(bytes32)"

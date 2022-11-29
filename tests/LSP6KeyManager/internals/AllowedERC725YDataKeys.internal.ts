@@ -9,10 +9,10 @@ export type DataKey = {
   key: BytesLike;
 };
 
-export const testAllowedERC725YKeysInternals = (
+export const testAllowedERC725YDataKeysInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {
-  describe("Testing CheckAllowedERC725YKeys", () => {
+  describe("Testing CheckAllowedERC725YDataKeys", () => {
     let context: LSP6InternalsTestContext;
     let dataKeys: {
       firstDynamicKey: DataKey;
@@ -212,7 +212,7 @@ export const testAllowedERC725YKeysInternals = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManagerInternalTester,
-                "NotAllowedERC725YKey"
+                "NotAllowedERC725YDataKey"
               )
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
@@ -259,7 +259,7 @@ export const testAllowedERC725YKeysInternals = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManagerInternalTester,
-                "NotAllowedERC725YKey"
+                "NotAllowedERC725YDataKey"
               )
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
@@ -352,7 +352,7 @@ export const testAllowedERC725YKeysInternals = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManagerInternalTester,
-                "NotAllowedERC725YKey"
+                "NotAllowedERC725YDataKey"
               )
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
@@ -504,7 +504,7 @@ export const testAllowedERC725YKeysInternals = (
             )
               .to.be.revertedWithCustomError(
                 context.keyManagerInternalTester,
-                "NotAllowedERC725YKey"
+                "NotAllowedERC725YDataKey"
               )
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
@@ -512,7 +512,7 @@ export const testAllowedERC725YKeysInternals = (
       });
     });
 
-    describe("`verifyAllowedERC725YKeys(..)`", () => {
+    describe("`verifyAllowedERC725YDataKeys(..)`", () => {
       describe("checking a CompactBytesArray containing 2 dynamic keys", () => {
         it("checking an array of valid keys: should return true", async () => {
           const checkedDataKeys = [
@@ -539,7 +539,7 @@ export const testAllowedERC725YKeysInternals = (
           ];
 
           const result =
-            await context.keyManagerInternalTester.verifyAllowedERC725YKeys(
+            await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               checkedDataKeys,
               compactBytesArray_2d
@@ -550,7 +550,7 @@ export const testAllowedERC725YKeysInternals = (
 
         it("checking an array of invalid keys: all should return false", async () => {
           await expect(
-            context.keyManagerInternalTester.verifyAllowedERC725YKeys(
+            context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               dataKeysToReturn,
               compactBytesArray_2d
@@ -558,7 +558,7 @@ export const testAllowedERC725YKeysInternals = (
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "NotAllowedERC725YKey"
+              "NotAllowedERC725YDataKey"
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
@@ -572,7 +572,7 @@ export const testAllowedERC725YKeysInternals = (
           ];
 
           const result =
-            await context.keyManagerInternalTester.verifyAllowedERC725YKeys(
+            await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               checkedDataKeys,
               compactBytesArray_2f
@@ -583,7 +583,7 @@ export const testAllowedERC725YKeysInternals = (
 
         it("checking an array of invalid keys: all should return false", async () => {
           await expect(
-            context.keyManagerInternalTester.verifyAllowedERC725YKeys(
+            context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               dataKeysToReturn,
               compactBytesArray_2f
@@ -591,7 +591,7 @@ export const testAllowedERC725YKeysInternals = (
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "NotAllowedERC725YKey"
+              "NotAllowedERC725YDataKey"
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
@@ -625,7 +625,7 @@ export const testAllowedERC725YKeysInternals = (
           ];
 
           const result =
-            await context.keyManagerInternalTester.verifyAllowedERC725YKeys(
+            await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               checkedDataKeys,
               compactBytesArray_2d_2f
@@ -636,7 +636,7 @@ export const testAllowedERC725YKeysInternals = (
 
         it("checking an array of invalid keys: all should return false", async () => {
           await expect(
-            context.keyManagerInternalTester.verifyAllowedERC725YKeys(
+            context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               dataKeysToReturn,
               compactBytesArray_2d_2f
@@ -644,7 +644,7 @@ export const testAllowedERC725YKeysInternals = (
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "NotAllowedERC725YKey"
+              "NotAllowedERC725YDataKey"
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
@@ -699,7 +699,7 @@ export const testAllowedERC725YKeysInternals = (
           ];
 
           const result =
-            await context.keyManagerInternalTester.verifyAllowedERC725YKeys(
+            await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               checkedDataKeys,
               compactBytesArray_mixed_d_f
@@ -710,7 +710,7 @@ export const testAllowedERC725YKeysInternals = (
 
         it("checking an array of invalid keys: all should return false", async () => {
           await expect(
-            context.keyManagerInternalTester.verifyAllowedERC725YKeys(
+            context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               dataKeysToReturn,
               compactBytesArray_mixed_d_f
@@ -718,7 +718,7 @@ export const testAllowedERC725YKeysInternals = (
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "NotAllowedERC725YKey"
+              "NotAllowedERC725YDataKey"
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });

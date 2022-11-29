@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 // --- ERC165 interface ids
 bytes4 constant _INTERFACEID_LSP8 = 0x622e7a01;
 
-// --- ERC725Y Keys
+// --- ERC725Y Data Keys
 
 // bytes10(keccak256('LSP8MetadataAddress')) + bytes2(0)
 bytes12 constant _LSP8_METADATA_ADDRESS_KEY_PREFIX = 0x73dcc7c3c4096cdc7f8a0000;

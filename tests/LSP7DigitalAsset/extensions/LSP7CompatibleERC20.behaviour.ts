@@ -15,7 +15,7 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../../types";
-import { ERC725YKeys } from "../../../constants.js";
+import { ERC725YDataKeys } from "../../../constants.js";
 
 type LSP7CompatibleERC20TestAccounts = {
   owner: SignerWithAddress;
@@ -1154,7 +1154,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         )
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey = ERC725YKeys.LSP4.LSP4TokenName;
+      const nameKey = ERC725YDataKeys.LSP4.LSP4TokenName;
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
@@ -1165,7 +1165,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         await context.lsp7CompatibleERC20["getData(bytes32)"](nameKey)
       ).to.equal(expectedNameValue);
 
-      const symbolKey = ERC725YKeys.LSP4.LSP4TokenSymbol;
+      const symbolKey = ERC725YDataKeys.LSP4.LSP4TokenSymbol;
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );

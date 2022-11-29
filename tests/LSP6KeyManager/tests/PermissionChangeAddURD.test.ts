@@ -3,7 +3,11 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import { ERC725YKeys, ALL_PERMISSIONS, PERMISSIONS } from "../../../constants";
+import {
+  ERC725YDataKeys,
+  ALL_PERMISSIONS,
+  PERMISSIONS,
+} from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
@@ -48,19 +52,19 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       context = await buildContext();
 
       universalReceiverDelegateKey1 =
-        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey2 =
-        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey3 =
-        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey4 =
-        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(32)).substring(2, 42);
 
       [
@@ -78,21 +82,21 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       canOnlyCall = context.accounts[6];
 
       let permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canAddAndChangeUniversalReceiverDelegate.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyAddUniversalReceiverDelegate.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangeUniversalReceiverDelegate.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlySuperSetData.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlySetData.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
           canOnlySetData.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyCall.address.substring(2),
       ];
 
@@ -107,9 +111,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
         PERMISSIONS.SUPER_SETDATA,
         PERMISSIONS.SETDATA,
         encodeCompactBytesArray([
-          // Adding the LSP1 Keys as AllowedERC725Ykey to test if it break the behavior
-          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix,
-          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+          // Adding the LSP1 Keys as AllowedERC725YDataKey to test if it break the behavior
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix,
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),
@@ -118,20 +122,20 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       ];
 
       permissionArrayKeys = [
-        ERC725YKeys.LSP6["AddressPermissions[]"].length,
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000000",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000001",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000002",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000003",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000004",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000005",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000006",
       ];
 
@@ -156,7 +160,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       describe("when caller is an address with ALL PERMISSIONS", () => {
         it("should be allowed to ADD a UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: universalReceiverDelegateA,
           };
 
@@ -165,7 +169,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -175,7 +181,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
         it("should be allowed to edit a UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: universalReceiverDelegateB,
           };
 
@@ -184,7 +190,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -194,7 +202,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
         it("should be allowed to remove a UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: "0x",
           };
 
@@ -203,7 +211,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             payloadParam.dataKey
@@ -280,7 +290,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       describe("when caller is an address with ADDUniversalReceiverDelegate permission", () => {
         it("should be allowed to ADD a UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: universalReceiverDelegateA,
           };
 
@@ -301,7 +311,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
         it("should NOT be allowed to edit the UniversalReceiverDelegate key set even if it's setting existing data", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: universalReceiverDelegateA,
           };
 
@@ -324,7 +334,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
         it("should NOT be allowed to edit the UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: universalReceiverDelegateB,
           };
 
@@ -347,7 +357,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
         it("should NOT be allowed to remove a UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: "0x",
           };
 
@@ -395,7 +405,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
         it("should be allowed to edit the UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: universalReceiverDelegateD,
           };
 
@@ -417,7 +427,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
 
         it("should be allowed to remove the UniversalReceiverDelegate key set", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: "0x",
           };
 
@@ -452,7 +462,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
         });
         it("should NOT be allowed to ADD another UniversalReceiverDelegate key", async () => {
           const payloadParam = {
@@ -466,7 +478,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySuperSetData)["execute(bytes)"](payload)
+            context.keyManager
+              .connect(canOnlySuperSetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -487,7 +501,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySuperSetData)["execute(bytes)"](payload)
+            context.keyManager
+              .connect(canOnlySuperSetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -508,7 +524,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySuperSetData)["execute(bytes)"](payload)
+            context.keyManager
+              .connect(canOnlySuperSetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -532,12 +550,14 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
         });
 
-        it("should NOT be allowed to ADD another UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to ADD another UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: universalReceiverDelegateA,
           };
 
@@ -547,13 +567,15 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySetData)["execute(bytes)"](payload)
+            context.keyManager
+              .connect(canOnlySetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlySetData.address, "ADDUNIVERSALRECEIVERDELEGATE");
         });
 
-        it("should NOT be allowed to edit UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to edit UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: universalReceiverDelegateKey2,
             dataValue: universalReceiverDelegateA,
@@ -565,7 +587,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySetData)["execute(bytes)"](payload)
+            context.keyManager
+              .connect(canOnlySetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -574,7 +598,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             );
         });
 
-        it("should NOT be allowed to remove the UniversalReceiverDelegate key set even when UniversalReceiverDelegate key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to remove the UniversalReceiverDelegate key set even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: universalReceiverDelegateKey2,
             dataValue: "0x",
@@ -586,7 +610,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           );
 
           await expect(
-            context.keyManager.connect(canOnlySetData)["execute(bytes)"](payload)
+            context.keyManager
+              .connect(canOnlySetData)
+              ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -610,12 +636,14 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
         });
 
         it("should NOT be allowed to ADD another UniversalReceiverDelegate key", async () => {
           const payloadParam = {
-            dataKey: ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            dataKey: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
             dataValue: universalReceiverDelegateA,
           };
 
@@ -624,12 +652,14 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await expect(context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload))
+          await expect(
+            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+          )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "ADDUNIVERSALRECEIVERDELEGATE");
         });
 
-        it("should NOT be allowed to edit UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to edit UniversalReceiverDelegate key even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: universalReceiverDelegateKey2,
             dataValue: universalReceiverDelegateA,
@@ -640,12 +670,14 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await expect(context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload))
+          await expect(
+            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+          )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "CHANGEUNIVERSALRECEIVERDELEGATE");
         });
 
-        it("should NOT be allowed to remove the UniversalReceiverDelegate key set even when UniversalReceiverDelegate key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to remove the UniversalReceiverDelegate key set even when UniversalReceiverDelegate key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: universalReceiverDelegateKey2,
             dataValue: "0x",
@@ -656,20 +688,22 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKey, payloadParam.dataValue]
           );
 
-          await expect(context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload))
+          await expect(
+            context.keyManager.connect(canOnlyCall)["execute(bytes)"](payload)
+          )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(canOnlyCall.address, "CHANGEUNIVERSALRECEIVERDELEGATE");
         });
       });
     });
 
-    describe("when setting mixed keys (UniversalReceiverDelegate + AddressPermission + ERC725Y key)", () => {
+    describe("when setting mixed keys (UniversalReceiverDelegate + AddressPermission + ERC725Y Data Key)", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
-        it("should be allowed to ADD a UniversalReceiverDelegate, AddressPermission and ERC725Y Key", async () => {
+        it("should be allowed to ADD a UniversalReceiverDelegate, AddressPermission and ERC725Y Data Key", async () => {
           const payloadParam = {
             dataKeys: [
-              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-              ERC725YKeys.LSP6["AddressPermissions[]"].length,
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
             ],
             dataValues: [
@@ -684,7 +718,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -693,11 +729,11 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
 
-        it("should be allowed to edit a UniversalReceiverDelegate Key already set and add new AddressPermission and ERC725Y Key ", async () => {
+        it("should be allowed to edit a UniversalReceiverDelegate Key already set and add new AddressPermission and ERC725Y Data Key ", async () => {
           const payloadParam = {
             dataKeys: [
-              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-              ERC725YKeys.LSP6["AddressPermissions[]"].length,
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
             ],
             dataValues: [
@@ -712,7 +748,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -721,11 +759,11 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
 
-        it("should be allowed to remove a UniversalReceiverDelegate Key already set and add new AddressPermission and ERC725Y Key ", async () => {
+        it("should be allowed to remove a UniversalReceiverDelegate Key already set and add new AddressPermission and ERC725Y Data Key ", async () => {
           const payloadParam = {
             dataKeys: [
-              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-              ERC725YKeys.LSP6["AddressPermissions[]"].length,
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
             ],
             dataValues: [
@@ -740,7 +778,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32[])"](
             payloadParam.dataKeys
@@ -751,12 +791,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       });
 
       describe("when caller is an address with ADD/CHANGE UniversalReceiverDelegate permission ", () => {
-        describe("when adding a UniversalReceiverDelegate, AddressPermission and ERC725Y Key", () => {
+        describe("when adding a UniversalReceiverDelegate, AddressPermission and ERC725Y Data Key", () => {
           it("should revert because of caller don't have CHANGEPERMISSIONS Permission", async () => {
             const payloadParam = {
               dataKeys: [
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-                ERC725YKeys.LSP6["AddressPermissions[]"].length,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
               ],
               dataValues: [
@@ -787,11 +827,11 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           });
         });
 
-        describe("when adding a UniversalReceiverDelegate and ERC725Y Key", () => {
+        describe("when adding a UniversalReceiverDelegate and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
               ],
               dataValues: [universalReceiverDelegateA, "0xaabbccdd"],
@@ -822,8 +862,8 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           it("should pass", async () => {
             const payloadParam = {
               dataKeys: [
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
               ],
               dataValues: [
                 universalReceiverDelegateA,
@@ -865,7 +905,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             [payloadParam.dataKeys, payloadParam.dataValues]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
         });
         describe("when adding multiple UniversalReceiverDelegate keys", () => {
           it("should pass", async () => {
@@ -931,7 +973,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           });
         });
 
-        describe("when adding a UniversalReceiverDelegate and ERC725Y Key", () => {
+        describe("when adding a UniversalReceiverDelegate and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -966,7 +1008,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             const payloadParam = {
               dataKeys: [
                 // All these keys have their values set in previous tests
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 universalReceiverDelegateKey1,
                 universalReceiverDelegateKey2,
               ],
@@ -994,12 +1036,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           });
         });
 
-        describe("when changing multiple UniversalReceiverDelegate keys with adding ERC725Y Key", () => {
+        describe("when changing multiple UniversalReceiverDelegate keys with adding ERC725Y Data Key", () => {
           it("should revert because caller don't have SETDATA permission", async () => {
             const payloadParam = {
               dataKeys: [
                 // All these keys have their values set in previous tests
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 universalReceiverDelegateKey1,
                 universalReceiverDelegateKey2,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
@@ -1038,7 +1080,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             const payloadParam = {
               dataKeys: [
                 // All these keys have their values set in previous tests
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 universalReceiverDelegateKey1,
                 universalReceiverDelegateKey2,
                 // UniversalReceiverDelegate key to ADD
@@ -1078,7 +1120,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             const payloadParam = {
               dataKeys: [
                 // All these keys have their values set in previous tests
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 universalReceiverDelegateKey1,
                 universalReceiverDelegateKey2,
               ],
@@ -1136,7 +1178,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           });
         });
 
-        describe("when adding a UniversalReceiverDelegate and ERC725Y Key", () => {
+        describe("when adding a UniversalReceiverDelegate and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -1185,7 +1227,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlySuperSetData)["execute(bytes)"](payload)
+              context.keyManager
+                .connect(canOnlySuperSetData)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1197,7 +1241,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               );
           });
         });
-        describe("when Adding multiple UniversalReceiverDelegate keys with adding ERC725Y Key", () => {
+        describe("when Adding multiple UniversalReceiverDelegate keys with adding ERC725Y Data Key", () => {
           it("should revert because caller don't have ADDUniversalReceiverDelegate permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -1213,7 +1257,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlySuperSetData)["execute(bytes)"](payload)
+              context.keyManager
+                .connect(canOnlySuperSetData)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1227,12 +1273,12 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
         });
       });
 
-      describe("when caller is an address with SETDATA permission with UniversalReceiverDelegate keys as AllowedERC725YKeys ", () => {
+      describe("when caller is an address with SETDATA permission with UniversalReceiverDelegate keys as AllowedERC725YDataKeys ", () => {
         describe("when adding UniversalReceiverDelegate keys ", () => {
-          it("should revert because caller don't have ADD UniversalReceiverDelegate permission and UniversalReceiverDelegate keys are not part of AllowedERC725YKeys", async () => {
+          it("should revert because caller don't have ADD UniversalReceiverDelegate permission and UniversalReceiverDelegate keys are not part of AllowedERC725YDataKeys", async () => {
             const payloadParam = {
               dataKeys: [
-                ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 universalReceiverDelegateKey2,
               ],
               dataValues: [
@@ -1247,7 +1293,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlySetData)["execute(bytes)"](payload)
+              context.keyManager
+                .connect(canOnlySetData)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1257,7 +1305,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           });
         });
 
-        describe("when Adding multiple UniversalReceiverDelegate keys with adding other allowedERC725YKey", () => {
+        describe("when Adding multiple UniversalReceiverDelegate keys with adding other allowedERC725YDataKey", () => {
           it("should revert because caller don't have ADDUniversalReceiverDelegate permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -1273,7 +1321,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             );
 
             await expect(
-              context.keyManager.connect(canOnlySetData)["execute(bytes)"](payload)
+              context.keyManager
+                .connect(canOnlySetData)
+                ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -1287,7 +1337,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           before(async () => {
             const payloadParam = {
               dataKeys: [
-                ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
                   canOnlySetData.address.substring(2),
               ],
               dataValues: [
@@ -1303,9 +1353,11 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               [payloadParam.dataKeys, payloadParam.dataValues]
             );
 
-            await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+            await context.keyManager
+              .connect(context.owner)
+              ["execute(bytes)"](payload);
           });
-          describe("When adding UniversalReceiverDelegate key and one of his allowedERC725Y key", () => {
+          describe("When adding UniversalReceiverDelegate key and one of his allowedERC725Y Data Key", () => {
             it("should pass", async () => {
               const payloadParam = {
                 dataKeys: [
@@ -1323,7 +1375,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
                   [payloadParam.dataKeys, payloadParam.dataValues]
                 );
 
-              await context.keyManager.connect(canOnlySetData)["execute(bytes)"](payload);
+              await context.keyManager
+                .connect(canOnlySetData)
+                ["execute(bytes)"](payload);
 
               const result = await context.universalProfile[
                 "getData(bytes32[])"

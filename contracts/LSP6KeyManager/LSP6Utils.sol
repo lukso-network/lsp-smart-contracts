@@ -47,12 +47,12 @@ library LSP6Utils {
     }
 
     /**
-     * @dev read the allowed ERC725Y keys of a `caller` on an ERC725Y `target` contract.
+     * @dev read the Allowed ERC725Y data keys of a `caller` on an ERC725Y `target` contract.
      * @param target an `IERC725Y` contract where to read the permissions.
      * @param caller the controller address to read the permissions from.
      * @return an abi-encoded array of allowed ERC725 keys that the controller address is allowed to interact with.
      */
-    function getAllowedERC725YKeysFor(IERC725Y target, address caller)
+    function getAllowedERC725YDataKeysFor(IERC725Y target, address caller)
         internal
         view
         returns (bytes memory)
@@ -60,7 +60,7 @@ library LSP6Utils {
         return
             target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
-                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX,
                     bytes20(caller)
                 )
             );

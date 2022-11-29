@@ -26,7 +26,7 @@ import { callPayload } from "../utils/fixtures";
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   INTERFACE_IDS,
   SupportedStandards,
   PERMISSIONS,
@@ -102,7 +102,7 @@ export const shouldBehaveLikeLSP9 = (
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
-          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           lsp1UniversalReceiverDelegateVaultSetter.address
         );
 
@@ -127,7 +127,7 @@ export const shouldBehaveLikeLSP9 = (
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
-          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           lsp1UniversalReceiverDelegateVaultReentrantA.address
         );
 
@@ -165,7 +165,7 @@ export const shouldBehaveLikeLSP9 = (
       await context.lsp9Vault
         .connect(context.accounts.owner)
         ["setData(bytes32,bytes)"](
-          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
             typeId.substring(2, 42),
           lsp1UniversalReceiverDelegateVaultReentrantB.address
         );
@@ -297,7 +297,7 @@ export const shouldBehaveLikeLSP9 = (
       it("should register lsp10 keys of the vault on the profile", async () => {
         const arrayLength = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](ERC725YKeys.LSP10["LSP10Vaults[]"].length);
+        ](ERC725YDataKeys.LSP10["LSP10Vaults[]"].length);
         expect(arrayLength).to.equal(ARRAY_LENGTH.ONE);
       });
     });
@@ -310,9 +310,9 @@ export const shouldBehaveLikeLSP9 = (
           "setData(bytes32[],bytes[])",
           [
             [
-              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
                 context.accounts.friend.address.substring(2),
-              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
                 context.accounts.friend.address.substring(2),
             ],
             [

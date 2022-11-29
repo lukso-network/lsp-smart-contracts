@@ -3,7 +3,11 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import { ALL_PERMISSIONS, ERC725YKeys, PERMISSIONS } from "../../../constants";
+import {
+  ALL_PERMISSIONS,
+  ERC725YDataKeys,
+  PERMISSIONS,
+} from "../../../constants";
 
 // setup
 import { LSP6InternalsTestContext } from "../../utils/context";
@@ -28,11 +32,11 @@ export const testReadingPermissionsInternals = (
       addressCanSetDataAndCall = context.accounts[2];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanSetData.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanSetDataAndCall.address.substring(2),
       ];
 
@@ -88,11 +92,11 @@ export const testReadingPermissionsInternals = (
       oneEmptyByte = context.accounts[3];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           moreThan32EmptyBytes.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           lessThan32EmptyBytes.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           oneEmptyByte.address.substring(2),
       ];
 
@@ -136,9 +140,9 @@ export const testReadingPermissionsInternals = (
       addressCanSetData = context.accounts[1];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanSetData.address.substring(2),
       ];
 
@@ -180,15 +184,15 @@ export const testReadingPermissionsInternals = (
       fourthBeneficiary = context.accounts[4];
 
       let permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           firstBeneficiary.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           secondBeneficiary.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           thirdBeneficiary.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           fourthBeneficiary.address.substring(2),
       ];
 
@@ -202,16 +206,16 @@ export const testReadingPermissionsInternals = (
 
       // set AddressPermissions array keys
       permissionArrayKeys = [
-        ERC725YKeys.LSP6["AddressPermissions[]"].length,
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000000",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000001",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000002",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000003",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000004",
       ];
 
@@ -233,7 +237,7 @@ export const testReadingPermissionsInternals = (
 
     it("Value should be 5 for key 'AddressPermissions[]'", async () => {
       let result = await context.universalProfile["getData(bytes32)"](
-        ERC725YKeys.LSP6["AddressPermissions[]"].length
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length
       );
       expect(result).to.equal("0x05");
     });

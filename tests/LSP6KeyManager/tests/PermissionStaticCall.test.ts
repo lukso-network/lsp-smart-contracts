@@ -5,7 +5,7 @@ import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
@@ -41,15 +41,15 @@ export const shouldBehaveLikePermissionStaticCall = (
     ).deploy();
 
     const permissionKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanMakeStaticCall.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
         addressCanMakeStaticCall.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCannotMakeStaticCall.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
     ];
 
@@ -245,9 +245,9 @@ export const shouldBehaveLikePermissionStaticCall = (
       ];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 
@@ -281,7 +281,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         ]
       );
 
-      await expect(context.keyManager.connect(caller)["execute(bytes)"](payload))
+      await expect(
+        context.keyManager.connect(caller)["execute(bytes)"](payload)
+      )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
           caller.address,
@@ -351,7 +353,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic["execute(bytes)"](payload)
+          context.keyManager
+            .connect(caller)
+            .callStatic["execute(bytes)"](payload)
         ).to.be.reverted;
       });
 
@@ -369,7 +373,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic["execute(bytes)"](payload)
+          context.keyManager
+            .connect(caller)
+            .callStatic["execute(bytes)"](payload)
         ).to.be.reverted;
       });
     });
@@ -435,7 +441,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic["execute(bytes)"](payload)
+          context.keyManager
+            .connect(caller)
+            .callStatic["execute(bytes)"](payload)
         ).to.be.reverted;
       });
 
@@ -453,7 +461,9 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic["execute(bytes)"](payload)
+          context.keyManager
+            .connect(caller)
+            .callStatic["execute(bytes)"](payload)
         ).to.be.reverted;
       });
     });
@@ -474,9 +484,9 @@ export const shouldBehaveLikePermissionStaticCall = (
       ];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 

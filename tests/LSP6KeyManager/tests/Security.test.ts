@@ -14,7 +14,7 @@ import {
 // constants
 import {
   ALL_PERMISSIONS,
-  ERC725YKeys,
+  ERC725YDataKeys,
   LSP1_TYPE_IDS,
   OPERATION_TYPES,
   LSP6_VERSION,
@@ -66,11 +66,11 @@ export const testSecurityScenarios = (
     );
 
     const permissionKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         signer.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
         signer.address.substring(2),
     ];
 
@@ -332,10 +332,10 @@ export const testSecurityScenarios = (
           "setData(bytes32[],bytes[])",
           [
             [
-              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
                 URDDummy.address.substring(2),
-              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
                 URDDummy.address.substring(2),
             ],
             [
@@ -415,11 +415,12 @@ export const testSecurityScenarios = (
           "setData(bytes32[],bytes[])",
           [
             [
-              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
                 universalReceiverDelegateDataUpdater.address.substring(2),
-              ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
-                universalReceiverDelegateDataUpdater.address.substring(2),
+              ERC725YDataKeys.LSP6[
+                "AddressPermissions:AllowedERC725YDataKeys"
+              ] + universalReceiverDelegateDataUpdater.address.substring(2),
             ],
             [
               universalReceiverDelegateDataUpdater.address,
