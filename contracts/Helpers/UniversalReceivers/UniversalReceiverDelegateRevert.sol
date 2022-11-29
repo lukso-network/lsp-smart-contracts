@@ -18,7 +18,7 @@ contract UniversalReceiverDelegateRevert is ERC165, ILSP1UniversalReceiver {
     function universalReceiver(
         bytes32 typeId, // solhint-disable no-unused-vars
         bytes memory data // solhint-disable no-unused-vars
-    ) public payable virtual returns (bytes memory result) {
+    ) public payable virtual returns (bytes memory) {
         revert("I Revert");
     }
 

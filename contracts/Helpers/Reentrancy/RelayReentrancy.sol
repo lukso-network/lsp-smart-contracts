@@ -26,10 +26,12 @@ contract RelayReentrancy {
     function universalReceiver(
         bytes32 typeId, // solhint-disable no-unused-vars
         bytes memory data // solhint-disable no-unused-vars
-    ) public virtual returns (bytes memory result) {
+    ) public virtual returns (bytes memory) {
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 
         ILSP6KeyManager(keyManager).executeRelayCall(_signature, _nonce, _payload);
+
+        return "";
     }
 }

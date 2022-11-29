@@ -25,7 +25,7 @@ contract UniversalReceiverDelegateDataUpdater is ERC165Storage {
     function universalReceiver(
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
-    ) public virtual returns (bytes memory result) {
+    ) public virtual returns (bytes memory) {
         if (typeId == _TYPEID_LSP7_TOKENSSENDER) {
             address keyManager = LSP14Ownable2Step(msg.sender).owner();
             bytes memory setDataPayload = abi.encodeWithSignature(
@@ -35,5 +35,6 @@ contract UniversalReceiverDelegateDataUpdater is ERC165Storage {
             );
             ILSP6KeyManager(keyManager).execute(setDataPayload);
         }
+        return "";
     }
 }
