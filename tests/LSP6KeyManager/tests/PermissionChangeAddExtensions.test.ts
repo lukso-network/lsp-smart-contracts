@@ -3,7 +3,11 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import { ERC725YKeys, ALL_PERMISSIONS, PERMISSIONS } from "../../../constants";
+import {
+  ERC725YDataKeys,
+  ALL_PERMISSIONS,
+  PERMISSIONS,
+} from "../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../utils/context";
@@ -46,27 +50,27 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       context = await buildContext();
 
       extensionHandlerKey1 =
-        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey2 =
-        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey3 =
-        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey4 =
-        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
       extensionHandlerKey5 =
-        ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+        ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
         ethers.utils.hexlify(ethers.utils.randomBytes(4)).substring(2) + // function selector
         "00000000000000000000000000000000"; // zero padded
 
@@ -80,21 +84,21 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       canOnlyCall = context.accounts[6];
 
       let permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canAddAndChangeExtensions.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyAddExtensions.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangeExtensions.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlySuperSetData.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlySetData.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
           canOnlySetData.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyCall.address.substring(2),
       ];
 
@@ -109,8 +113,8 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         PERMISSIONS.SUPER_SETDATA,
         PERMISSIONS.SETDATA,
         encodeCompactBytesArray([
-          // Adding the Extension Handler Keys as AllowedERC725Ykey to test if it break the behavior
-          ERC725YKeys.LSP17.LSP17ExtensionPrefix,
+          // Adding the Extension Handler Keys as AllowedERC725YDataKey to test if it break the behavior
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix,
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyThirdKey")),
@@ -119,20 +123,20 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       ];
 
       permissionArrayKeys = [
-        ERC725YKeys.LSP6["AddressPermissions[]"].length,
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000000",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000001",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000002",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000003",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000004",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000005",
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           "00000000000000000000000000000006",
       ];
 
@@ -531,7 +535,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ["execute(bytes)"](payload);
         });
 
-        it("should NOT be allowed to ADD another ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to ADD another ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: extensionHandlerKey5,
             dataValue: extensionA,
@@ -551,7 +555,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .withArgs(canOnlySetData.address, "ADDEXTENSIONS");
         });
 
-        it("should NOT be allowed to edit ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to edit ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: extensionHandlerKey2,
             dataValue: extensionA,
@@ -571,7 +575,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .withArgs(canOnlySetData.address, "CHANGEEXTENSIONS");
         });
 
-        it("should NOT be allowed to remove the ExtensionHandler key set even when ExtensionHandler key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to remove the ExtensionHandler key set even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: extensionHandlerKey2,
             dataValue: "0x",
@@ -629,7 +633,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .withArgs(canOnlyCall.address, "ADDEXTENSIONS");
         });
 
-        it("should NOT be allowed to edit ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to edit ExtensionHandler key even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: extensionHandlerKey2,
             dataValue: extensionA,
@@ -647,7 +651,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             .withArgs(canOnlyCall.address, "CHANGEEXTENSIONS");
         });
 
-        it("should NOT be allowed to remove the ExtensionHandler key set even when ExtensionHandler key is allowed in AllowedERC725YKey", async () => {
+        it("should NOT be allowed to remove the ExtensionHandler key set even when ExtensionHandler key is allowed in AllowedERC725YDataKey", async () => {
           const payloadParam = {
             dataKey: extensionHandlerKey2,
             dataValue: "0x",
@@ -667,13 +671,13 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       });
     });
 
-    describe("when setting mixed keys (ExtensionHandler + AddressPermission + ERC725Y key)", () => {
+    describe("when setting mixed keys (ExtensionHandler + AddressPermission + ERC725Y Data Key)", () => {
       describe("when caller is an address with ALL PERMISSIONS", () => {
-        it("should be allowed to ADD a ExtensionHandler, AddressPermission and ERC725Y Key", async () => {
+        it("should be allowed to ADD a ExtensionHandler, AddressPermission and ERC725Y Data Key", async () => {
           const payloadParam = {
             dataKeys: [
               extensionHandlerKey5,
-              ERC725YKeys.LSP6["AddressPermissions[]"].length,
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
             ],
             dataValues: [
@@ -699,11 +703,11 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
 
-        it("should be allowed to edit a ExtensionHandler key already set and add new AddressPermission and ERC725Y Key ", async () => {
+        it("should be allowed to edit a ExtensionHandler key already set and add new AddressPermission and ERC725Y Data Key ", async () => {
           const payloadParam = {
             dataKeys: [
               extensionHandlerKey5,
-              ERC725YKeys.LSP6["AddressPermissions[]"].length,
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
             ],
             dataValues: [
@@ -729,11 +733,11 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           expect(result).to.deep.equal(payloadParam.dataValues);
         });
 
-        it("should be allowed to remove a ExtensionHandler key already set and add new AddressPermission and ERC725Y Key ", async () => {
+        it("should be allowed to remove a ExtensionHandler key already set and add new AddressPermission and ERC725Y Data Key ", async () => {
           const payloadParam = {
             dataKeys: [
               extensionHandlerKey5,
-              ERC725YKeys.LSP6["AddressPermissions[]"].length,
+              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
               ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
             ],
             dataValues: [
@@ -761,12 +765,12 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       });
 
       describe("when caller is an address with ADD/CHANGE Extensions permission ", () => {
-        describe("when adding a ExtensionHandler, AddressPermission and ERC725Y Key", () => {
+        describe("when adding a ExtensionHandler, AddressPermission and ERC725Y Data Key", () => {
           it("should revert because of caller don't have CHANGEPERMISSIONS Permission", async () => {
             const payloadParam = {
               dataKeys: [
                 extensionHandlerKey5,
-                ERC725YKeys.LSP6["AddressPermissions[]"].length,
+                ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
                 ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyKey")),
               ],
               dataValues: [
@@ -794,7 +798,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           });
         });
 
-        describe("when adding a ExtensionHandler and ERC725Y Key", () => {
+        describe("when adding a ExtensionHandler and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -913,7 +917,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           });
         });
 
-        describe("when adding a ExtensionHandler and ERC725Y Key", () => {
+        describe("when adding a ExtensionHandler and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -972,7 +976,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           });
         });
 
-        describe("when changing multiple ExtensionHandler keys with adding ERC725Y Key", () => {
+        describe("when changing multiple ExtensionHandler keys with adding ERC725Y Data Key", () => {
           it("should revert because caller don't have SETDATA permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -1089,7 +1093,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           });
         });
 
-        describe("when adding a ExtensionHandler and ERC725Y Key", () => {
+        describe("when adding a ExtensionHandler and ERC725Y Data Key", () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -1143,7 +1147,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               .withArgs(canOnlySuperSetData.address, "ADDEXTENSIONS");
           });
         });
-        describe("when Adding multiple ExtensionHandler keys with adding ERC725Y Key", () => {
+        describe("when Adding multiple ExtensionHandler keys with adding ERC725Y Data Key", () => {
           it("should revert because caller don't have ADDExtensions permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -1172,9 +1176,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         });
       });
 
-      describe("when caller is an address with SETDATA permission with ExtensionHandler keys as AllowedERC725YKeys ", () => {
+      describe("when caller is an address with SETDATA permission with ExtensionHandler keys as AllowedERC725YDataKeys ", () => {
         describe("when adding ExtensionHandler keys ", () => {
-          it("should revert because caller don't have ADD Extensions permission and ExtensionHandler keys are not part of AllowedERC725YKeys", async () => {
+          it("should revert because caller don't have ADD Extensions permission and ExtensionHandler keys are not part of AllowedERC725YDataKeys", async () => {
             const payloadParam = {
               dataKeys: [extensionHandlerKey5, extensionHandlerKey2],
               dataValues: [extensionC, extensionD],
@@ -1198,7 +1202,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           });
         });
 
-        describe("when Adding multiple ExtensionHandler keys with adding other allowedERC725YKey", () => {
+        describe("when Adding multiple ExtensionHandler keys with adding other allowedERC725YDataKey", () => {
           it("should revert because caller don't have ADDExtensions permission", async () => {
             const payloadParam = {
               dataKeys: [
@@ -1230,7 +1234,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           before(async () => {
             const payloadParam = {
               dataKeys: [
-                ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
                   canOnlySetData.address.substring(2),
               ],
               dataValues: [
@@ -1250,7 +1254,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               .connect(context.owner)
               ["execute(bytes)"](payload);
           });
-          describe("When adding ExtensionHandler key and one of his allowedERC725Y key", () => {
+          describe("When adding ExtensionHandler key and one of his allowedERC725Y Data Key", () => {
             it("should pass", async () => {
               const payloadParam = {
                 dataKeys: [

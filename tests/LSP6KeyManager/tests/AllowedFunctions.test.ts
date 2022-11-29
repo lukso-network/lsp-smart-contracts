@@ -14,7 +14,7 @@ import {
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   OPERATION_TYPES,
   LSP6_VERSION,
   PERMISSIONS,
@@ -49,11 +49,11 @@ export const shouldBehaveLikeAllowedFunctions = (
     ).deploy();
 
     let permissionsKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressWithNoAllowedFunctions.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanCallOnlyOneFunction.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
         addressCanCallOnlyOneFunction.address.substring(2),
     ];
 
@@ -380,15 +380,15 @@ export const shouldBehaveLikeAllowedFunctions = (
         .transferOwnership(context.universalProfile.address);
 
       let permissionsKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanCallOnlyTransferOnLSP8.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           addressCanCallOnlyTransferOnLSP8.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
             2
           ),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8.address.substring(
             2
           ),

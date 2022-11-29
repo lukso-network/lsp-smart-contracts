@@ -18,7 +18,7 @@ import {
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
-  shouldBehaveLikeAllowedERC725YKeys,
+  shouldBehaveLikeAllowedERC725YDataKeys,
   shouldBehaveLikeMultiChannelNonce,
   shouldBehaveLikeExecuteRelayCall,
   shouldBehaveLikeBatchExecute,
@@ -29,7 +29,7 @@ import {
 
 import {
   testAllowedCallsInternals,
-  testAllowedERC725YKeysInternals,
+  testAllowedERC725YDataKeysInternals,
   testReadingPermissionsInternals,
 } from "./internals";
 
@@ -92,8 +92,8 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 
-  describe("ALLOWEDERC725YKeys", () => {
-    shouldBehaveLikeAllowedERC725YKeys(buildContext);
+  describe("AllowedERC725YDataKeys", () => {
+    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
   });
 
   describe("Multi Channel nonces", () => {
@@ -163,6 +163,6 @@ export const testLSP6InternalFunctions = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {
   testAllowedCallsInternals(buildContext);
-  testAllowedERC725YKeysInternals(buildContext);
+  testAllowedERC725YDataKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
 };

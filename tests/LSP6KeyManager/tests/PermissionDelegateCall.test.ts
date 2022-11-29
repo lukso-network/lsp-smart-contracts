@@ -8,7 +8,7 @@ import {
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
@@ -42,11 +42,11 @@ export const shouldBehaveLikePermissionDelegateCall = (
     ).deploy(context.universalProfile.address);
 
     const permissionKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanDelegateCall.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCannotDelegateCall.address.substring(2),
     ];
 
@@ -92,7 +92,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
       await expect(
-        context.keyManager.connect(context.owner)["execute(bytes)"](executePayload)
+        context.keyManager
+          .connect(context.owner)
+          ["execute(bytes)"](executePayload)
       ).to.be.revertedWith(
         "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
       );
@@ -202,9 +204,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
       ];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 
@@ -277,7 +279,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
               );
 
             await expect(
-              context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+              context.keyManager
+                .connect(caller)
+                ["execute(bytes)"](executePayload)
             ).to.be.revertedWith(
               "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
             );

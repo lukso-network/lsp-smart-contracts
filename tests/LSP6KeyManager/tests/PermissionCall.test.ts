@@ -7,7 +7,7 @@ import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   LSP6_VERSION,
@@ -48,15 +48,15 @@ export const shouldBehaveLikePermissionCall = (
     ).deploy();
 
     const permissionKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanMakeCallNoAllowedCalls.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanMakeCallWithAllowedCalls.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCannotMakeCall.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
         addressCanMakeCallWithAllowedCalls.address.substring(2),
     ];
 
@@ -90,7 +90,9 @@ export const shouldBehaveLikePermissionCall = (
           [OPERATION_TYPES.CALL, targetContract.address, 0, targetPayload]
         );
 
-        await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+        await context.keyManager
+          .connect(context.owner)
+          ["execute(bytes)"](payload);
 
         const result = await targetContract.callStatic.getName();
         expect(result).to.equal(argument);
@@ -161,7 +163,9 @@ export const shouldBehaveLikePermissionCall = (
         );
 
         await expect(
-          context.keyManager.connect(addressCannotMakeCall)["execute(bytes)"](payload)
+          context.keyManager
+            .connect(addressCannotMakeCall)
+            ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCall.address, "CALL");
@@ -235,7 +239,9 @@ export const shouldBehaveLikePermissionCall = (
           ]
         );
 
-        await expect(context.keyManager["execute(bytes)"](payload)).to.be.revertedWith(
+        await expect(
+          context.keyManager["execute(bytes)"](payload)
+        ).to.be.revertedWith(
           "TargetContract:revertCall: this function has reverted!"
         );
       });

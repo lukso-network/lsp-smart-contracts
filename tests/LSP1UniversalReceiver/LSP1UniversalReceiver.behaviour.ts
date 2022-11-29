@@ -15,7 +15,7 @@ import {
 import { abiCoder, LSP1_HOOK_PLACEHOLDER } from "../utils/helpers";
 
 // constants
-import { ERC725YKeys, EventSignatures } from "../../constants";
+import { ERC725YDataKeys, EventSignatures } from "../../constants";
 
 export type LSP1TestContext = {
   accounts: SignerWithAddress[];
@@ -133,7 +133,7 @@ export const shouldBehaveLikeLSP1 = (
           await context.lsp1Implementation
             .connect(context.accounts[0])
             ["setData(bytes32,bytes)"](
-              ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+              ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
                 LSP1_HOOK_PLACEHOLDER.substr(2, 40),
               revertableURD.address
             );

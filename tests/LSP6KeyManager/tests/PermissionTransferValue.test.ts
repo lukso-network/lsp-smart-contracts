@@ -16,7 +16,7 @@ import {
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   LSP6_VERSION,
   PERMISSIONS,
@@ -56,17 +56,17 @@ export const shouldBehaveLikePermissionTransferValue = (
       recipient = context.accounts[4];
 
       const permissionsKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canTransferValue.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           canTransferValue.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canTransferValueAndCall.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           canTransferValueAndCall.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           cannotTransferValue.address.substring(2),
       ];
 
@@ -116,7 +116,9 @@ export const shouldBehaveLikePermissionTransferValue = (
              * @see https://hardhat.org/hardhat-chai-matchers/docs/reference#.changeetherbalances
              */
             await expect(() =>
-              context.keyManager.connect(context.owner)["execute(bytes)"](transferPayload)
+              context.keyManager
+                .connect(context.owner)
+                ["execute(bytes)"](transferPayload)
             ).to.changeEtherBalances(
               [context.universalProfile.address, recipient.address],
               [`-${amount}`, amount]
@@ -418,9 +420,14 @@ export const shouldBehaveLikePermissionTransferValue = (
           await expect(
             context.keyManager
               .connect(context.owner)
-              ["executeRelayCall(bytes,uint256,bytes)"](signature, 0, executeRelayCallPayload, {
-                value: valueToSend,
-              })
+              ["executeRelayCall(bytes,uint256,bytes)"](
+                signature,
+                0,
+                executeRelayCallPayload,
+                {
+                  value: valueToSend,
+                }
+              )
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient.address],
             [`-${amount}`, amount]
@@ -459,11 +466,11 @@ export const shouldBehaveLikePermissionTransferValue = (
       ).deploy(context.universalProfile.address, context.keyManager.address);
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           contractCanTransferValue.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           contractCanTransferValue.address.substring(2),
       ];
 
@@ -562,17 +569,17 @@ export const shouldBehaveLikePermissionTransferValue = (
       bob = bobContext.accounts[1];
 
       const alicePermissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substring(2),
       ];
       const alicePermissionValues = [ALL_PERMISSIONS];
 
       const bobPermissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           aliceContext.universalProfile.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           aliceContext.universalProfile.address.substring(2),
       ];
 
@@ -602,7 +609,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
     it("Alice should have ALL PERMISSIONS in her UP", async () => {
       let key =
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         alice.address.substring(2);
 
       // prettier-ignore
@@ -612,7 +619,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
     it("Bob should have ALL PERMISSIONS in his UP", async () => {
       let key =
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         bob.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
@@ -621,7 +628,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
     it("Alice's UP should have permission TRANSFERVALUE on Bob's UP", async () => {
       let key =
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         aliceContext.universalProfile.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
@@ -698,9 +705,9 @@ export const shouldBehaveLikePermissionTransferValue = (
         .mint(context.universalProfile.address, 100, false, "0x");
 
       const permissionsKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 
@@ -742,7 +749,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
           await expect(() =>
-            context.keyManager.connect(caller)["execute(bytes)"](transferPayload)
+            context.keyManager
+              .connect(caller)
+              ["execute(bytes)"](transferPayload)
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient],
             [`-${amount}`, amount]
@@ -767,7 +776,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
           await expect(() =>
-            context.keyManager.connect(caller)["execute(bytes)"](transferPayload)
+            context.keyManager
+              .connect(caller)
+              ["execute(bytes)"](transferPayload)
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient],
             [`-${amount}`, amount]
@@ -798,7 +809,9 @@ export const shouldBehaveLikePermissionTransferValue = (
           [OPERATION_TYPES.CALL, newLSP7Token.address, 5, lsp7TransferPayload]
         );
 
-      await expect(context.keyManager.connect(caller)["execute(bytes)"](executePayload))
+      await expect(
+        context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+      )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
           caller.address,
@@ -834,7 +847,9 @@ export const shouldBehaveLikePermissionTransferValue = (
           [OPERATION_TYPES.CALL, lsp7Token.address, 0, lsp7TransferPayload]
         );
 
-      await context.keyManager.connect(caller)["execute(bytes)"](executePayload);
+      await context.keyManager
+        .connect(caller)
+        ["execute(bytes)"](executePayload);
 
       let lsp7SenderBalanceAfter = await lsp7Token.balanceOf(
         context.universalProfile.address
@@ -913,9 +928,9 @@ export const shouldBehaveLikePermissionTransferValue = (
       allowedAddress = context.accounts[2];
 
       const permissionsKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 
@@ -952,7 +967,9 @@ export const shouldBehaveLikePermissionTransferValue = (
           [OPERATION_TYPES.CALL, recipient, amount, "0x"]
         );
 
-      await expect(context.keyManager.connect(caller)["execute(bytes)"](transferPayload))
+      await expect(
+        context.keyManager.connect(caller)["execute(bytes)"](transferPayload)
+      )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(caller.address, recipient, "0x00000000");
 
@@ -1003,7 +1020,9 @@ export const shouldBehaveLikePermissionTransferValue = (
                 [OPERATION_TYPES.CALL, targetContract.address, 0, payload]
               );
 
-            await context.keyManager.connect(caller)["execute(bytes)"](executePayload);
+            await context.keyManager
+              .connect(caller)
+              ["execute(bytes)"](executePayload);
 
             const result = await targetContract.getNumber();
             expect(result).to.equal(newValue);
@@ -1060,7 +1079,9 @@ export const shouldBehaveLikePermissionTransferValue = (
                 ]
               );
 
-            await context.keyManager.connect(caller)["execute(bytes)"](executePayload);
+            await context.keyManager
+              .connect(caller)
+              ["execute(bytes)"](executePayload);
 
             const senderTokenBalanceAfter = await lsp7Token.balanceOf(
               context.universalProfile.address
@@ -1111,7 +1132,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             ]
           );
 
-          await expect(context.keyManager.connect(caller)["execute(bytes)"](payload))
+          await expect(
+            context.keyManager.connect(caller)["execute(bytes)"](payload)
+          )
             .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
             .withArgs(
               caller.address,
@@ -1145,9 +1168,9 @@ export const shouldBehaveLikePermissionTransferValue = (
       allowedAddress = context.accounts[2];
 
       const permissionsKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 
@@ -1191,7 +1214,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
 
           await expect(() =>
-            context.keyManager.connect(caller)["execute(bytes)"](transferPayload)
+            context.keyManager
+              .connect(caller)
+              ["execute(bytes)"](transferPayload)
           ).to.changeEtherBalances(
             [context.universalProfile.address, recipient],
             [`-${amount}`, amount]
@@ -1221,7 +1246,9 @@ export const shouldBehaveLikePermissionTransferValue = (
                 [OPERATION_TYPES.CALL, targetContract.address, 0, payload]
               );
 
-            await context.keyManager.connect(caller)["execute(bytes)"](executePayload);
+            await context.keyManager
+              .connect(caller)
+              ["execute(bytes)"](executePayload);
 
             const result = await targetContract.getNumber();
             expect(result).to.equal(newValue);
@@ -1278,7 +1305,9 @@ export const shouldBehaveLikePermissionTransferValue = (
                 ]
               );
 
-            await context.keyManager.connect(caller)["execute(bytes)"](executePayload);
+            await context.keyManager
+              .connect(caller)
+              ["execute(bytes)"](executePayload);
 
             const senderTokenBalanceAfter = await lsp7Token.balanceOf(
               context.universalProfile.address
