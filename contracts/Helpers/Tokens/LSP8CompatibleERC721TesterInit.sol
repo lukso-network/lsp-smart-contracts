@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {
@@ -20,7 +20,7 @@ contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
     constructor() {
         _disableInitializers();
     }
-    
+
     function initialize(
         string memory name,
         string memory symbol,

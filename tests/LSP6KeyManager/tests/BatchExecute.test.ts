@@ -5,7 +5,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 // constants
 import {
   ALL_PERMISSIONS,
-  ERC725YKeys,
+  ERC725YDataKeys,
   INTERFACE_IDS,
   OPERATION_TYPES,
   PERMISSIONS,
@@ -47,7 +47,7 @@ export const shouldBehaveLikeBatchExecute = (
       context = await buildContext();
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
       ];
 
@@ -270,7 +270,7 @@ export const shouldBehaveLikeBatchExecute = (
         const lsp7SetDataPayload =
           futureTokenInstance.interface.encodeFunctionData(
             "setData(bytes32,bytes)",
-            [ERC725YKeys.LSP4["LSP4Metadata"], tokenMetadataValue]
+            [ERC725YDataKeys.LSP4["LSP4Metadata"], tokenMetadataValue]
           );
         const setTokenMetadataPayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -303,10 +303,10 @@ export const shouldBehaveLikeBatchExecute = (
 
         // CHECK initialize parameters have been set correctly
         const nameResult = await futureTokenInstance["getData(bytes32)"](
-          ERC725YKeys.LSP4["LSP4TokenName"]
+          ERC725YDataKeys.LSP4["LSP4TokenName"]
         );
         const symbolResult = await futureTokenInstance["getData(bytes32)"](
-          ERC725YKeys.LSP4["LSP4TokenSymbol"]
+          ERC725YDataKeys.LSP4["LSP4TokenSymbol"]
         );
 
         expect(ethers.utils.toUtf8String(nameResult)).to.equal(
@@ -320,7 +320,7 @@ export const shouldBehaveLikeBatchExecute = (
         // CHECK LSP4 token metadata has been set
         expect(
           await futureTokenInstance["getData(bytes32)"](
-            ERC725YKeys.LSP4["LSP4Metadata"]
+            ERC725YDataKeys.LSP4["LSP4Metadata"]
           )
         ).to.equal(tokenMetadataValue);
       });
@@ -974,7 +974,7 @@ export const shouldBehaveLikeBatchExecute = (
       );
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
       ];
 
@@ -1105,9 +1105,9 @@ export const shouldBehaveLikeBatchExecute = (
           "setData(bytes32[],bytes[])",
           [
             [
-              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
                 minter.address.substring(2),
-              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
                 minter.address.substring(2),
             ],
             [
@@ -1159,9 +1159,9 @@ export const shouldBehaveLikeBatchExecute = (
           "setData(bytes32[],bytes[])",
           [
             [
-              ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
                 minter.address.substring(2),
-              ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+              ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
                 minter.address.substring(2),
             ],
             ["0x", "0x"],
@@ -1201,9 +1201,9 @@ export const shouldBehaveLikeBatchExecute = (
       // CHECK that the minter does not have permissions anymore
       expect(
         await context.universalProfile["getData(bytes32[])"]([
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             minter.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             minter.address.substring(2),
         ])
       ).to.deep.equal(["0x", "0x"]);

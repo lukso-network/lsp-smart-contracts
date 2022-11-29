@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // bytes10(keccak256('SupportedStandards')) + bytes2(0) + bytes20(keccak256('LSP3UniversalProfile'))
 bytes32 constant _LSP3_SUPPORTED_STANDARDS_KEY = 0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38;

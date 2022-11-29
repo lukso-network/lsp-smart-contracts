@@ -77,7 +77,7 @@ const {
     ERC1271,
     OPERATIONS,
     SupportedStandards,
-    ERC725YKeys,
+    ERC725YDataKeys,
     BasicUPSetup_Schema,
     PERMISSIONS,
     ALL_PERMISSIONS,

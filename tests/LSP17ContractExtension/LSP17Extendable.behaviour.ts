@@ -31,7 +31,7 @@ import {
 
 import { abiCoder, provider } from "../utils/helpers";
 // constants
-import { ERC725YKeys } from "../../constants";
+import { ERC725YDataKeys } from "../../constants";
 
 export type LSP17TestContext = {
   accounts: SignerWithAddress[];
@@ -102,47 +102,47 @@ export const shouldBehaveLikeLSP17 = (
     onERC721ReceivedFunctionSelector = "0x150b7a02";
 
     checkMsgVariableFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       checkMsgVariableFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     nameFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       nameFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     ageFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       ageFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     transferFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       transferFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     reenterAccountFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       reenterAccountFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     revertStringFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       revertStringFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     revertCustomFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       revertCustomFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     emitEventFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       emitEventFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
 
     onERC721ReceivedFunctionExtensionHandlerKey =
-      ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       onERC721ReceivedFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
   });
@@ -362,7 +362,7 @@ export const shouldBehaveLikeLSP17 = (
                 ).deploy();
 
               const bytes4ZeroExtensionHandlerKey =
-                ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
                 "00000000" +
                 "00000000000000000000000000000000"; // zero padded
 
@@ -669,7 +669,7 @@ export const shouldBehaveLikeLSP17 = (
           ).deploy();
 
           const bytes1ZeroPaddedExtensionHandlerKey =
-            ERC725YKeys.LSP17.LSP17ExtensionPrefix +
+            ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
             "01000000" +
             "00000000000000000000000000000000"; // zero padded
 

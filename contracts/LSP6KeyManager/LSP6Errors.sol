@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 /**
  * @dev reverts when address `from` does not have any permissions set
@@ -29,7 +29,7 @@ error NotAllowedCall(address from, address to, bytes4 selector);
  * @param from address making the request
  * @param disallowedKey a bytes32 key that `from` is not authorised to set on the ERC725Y storage
  */
-error NotAllowedERC725YKey(address from, bytes32 disallowedKey);
+error NotAllowedERC725YDataKey(address from, bytes32 disallowedKey);
 
 /**
  * @dev reverts when `dataKey` is a bytes32 that does not adhere to any of the
@@ -89,7 +89,7 @@ error NoCallsAllowed(address from);
  * @dev reverts when `value` is not encoded properly using the CompactBytesArray
  * @param value the value to check for an CompactBytesArray
  */
-error InvalidEncodedAllowedERC725YKeys(bytes value);
+error InvalidEncodedAllowedERC725YDataKeys(bytes value);
 
 /**
  * @dev a `from` address is not allowed to have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff

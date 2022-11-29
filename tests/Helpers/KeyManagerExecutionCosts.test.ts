@@ -8,7 +8,7 @@ import {
 } from "../../types";
 import {
   ALL_PERMISSIONS,
-  ERC725YKeys,
+  ERC725YDataKeys,
   OPERATION_TYPES,
   PERMISSIONS,
   INTERFACE_IDS,
@@ -60,15 +60,15 @@ describe("Key Manager gas cost interactions", () => {
         ).deploy(context.accounts[3].address);
 
         const permissionKeys = [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             context.owner.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             restrictedToOneAddress.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             restrictedToOneAddressAndStandard.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             restrictedToOneAddress.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             restrictedToOneAddressAndStandard.address.substring(2),
         ];
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (utils/introspection/ERC165Checker.sol)
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // This contract is a modified version of OpenZeppelin implementation, where we modify the visibility of
 // `supportsERC165Interface`, which check the given interfaceId, to internal and to be used in contract implementations,

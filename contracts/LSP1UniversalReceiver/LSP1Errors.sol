@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 /**
  * @dev reverts when EOA calls the `universalReceiver(..)` function with an asset/vault typeId
@@ -14,3 +14,8 @@ error CannotRegisterEOAsAsAssets(address caller);
  * @param target The address of the target linked to the KeyManager
  */
 error CallerNotLSP6LinkedTarget(address account, address target);
+
+/**
+ * @dev reverts when `universalReceiver(...)` is called with a value different than 0
+ */
+error NativeTokensNotAccepted();

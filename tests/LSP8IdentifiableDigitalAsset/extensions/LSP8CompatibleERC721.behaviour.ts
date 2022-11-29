@@ -11,7 +11,7 @@ import {
 } from "../../../types";
 import { tokenIdAsBytes32 } from "../../utils/tokens";
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   INTERFACE_IDS,
   SupportedStandards,
 } from "../../../constants";
@@ -1072,7 +1072,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
         )
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey = ERC725YKeys.LSP4["LSP4TokenName"];
+      const nameKey = ERC725YDataKeys.LSP4["LSP4TokenName"];
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
@@ -1083,7 +1083,7 @@ export const shouldInitializeLikeLSP8CompatibleERC721 = (
         await context.lsp8CompatibleERC721["getData(bytes32)"](nameKey)
       ).to.equal(expectedNameValue);
 
-      const symbolKey = ERC725YKeys.LSP4["LSP4TokenSymbol"];
+      const symbolKey = ERC725YDataKeys.LSP4["LSP4TokenSymbol"];
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );

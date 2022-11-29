@@ -10,7 +10,11 @@ import {
 
 import { setupProfileWithKeyManagerWithURD } from "../../utils/fixtures";
 
-import { PERMISSIONS, ERC725YKeys, OPERATION_TYPES } from "../../../constants";
+import {
+  PERMISSIONS,
+  ERC725YDataKeys,
+  OPERATION_TYPES,
+} from "../../../constants";
 import { combineAllowedCalls, combinePermissions } from "../../utils/helpers";
 
 export type LSP7MintableTestAccounts = {
@@ -113,11 +117,11 @@ export const shouldBehaveLikeLSP7Mintable = (
         "setData(bytes32[],bytes[])",
         [
           [
-            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
               URDTokenReentrant.address.substring(2),
-            ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
               URDTokenReentrant.address.substring(2),
-            ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ],
           [
             combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),

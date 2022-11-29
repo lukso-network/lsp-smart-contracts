@@ -3,7 +3,11 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // constants
-import { ERC725YKeys, PERMISSIONS, OPERATION_TYPES } from "../../../constants";
+import {
+  ERC725YDataKeys,
+  PERMISSIONS,
+  OPERATION_TYPES,
+} from "../../../constants";
 
 import { LSP6KeyManager, LSP6KeyManager__factory } from "../../../types";
 
@@ -31,9 +35,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
     cannotChangeOwner = context.accounts[2];
 
     permissionsKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         canChangeOwner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         cannotChangeOwner.address.substring(2),
     ];
 
@@ -172,7 +176,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
             [key, value]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const result = await context.universalProfile["getData(bytes32)"](
             key
@@ -196,7 +202,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
             [OPERATION_TYPES.CALL, recipient.address, amount, "0x"]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const recipientBalanceAfter = await provider.getBalance(
             recipient.address
@@ -373,7 +381,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
       let claimOwnershipPayload =
         context.universalProfile.interface.getSighash("acceptOwnership");
 
-      await newKeyManager.connect(context.owner)["execute(bytes)"](claimOwnershipPayload);
+      await newKeyManager
+        .connect(context.owner)
+        ["execute(bytes)"](claimOwnershipPayload);
     });
 
     describe("old KeyManager should not be allowed to call onlyOwner functions anymore", () => {

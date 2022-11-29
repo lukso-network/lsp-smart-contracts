@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
@@ -99,17 +99,16 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
      */
     function _transferOwnership(address newOwner) internal virtual {
         if (newOwner == address(this)) revert CannotTransferOwnershipToSelf();
-        
+
         _pendingOwner = newOwner;
         address currentOwner = owner();
         emit OwnershipTransferStarted(currentOwner, newOwner);
-        
-        _notifyUniversalReceiver(newOwner, _TYPEID_LSP14_OwnershipTransferStarted, "");  
+
+        _notifyUniversalReceiver(newOwner, _TYPEID_LSP14_OwnershipTransferStarted, "");
         require(
             currentOwner == owner(),
             "LSP14: newOwner MUST accept ownership in a separate transaction"
         );
-
     }
 
     /**

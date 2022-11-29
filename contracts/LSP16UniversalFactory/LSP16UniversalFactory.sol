@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // libraries
 import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
@@ -99,7 +99,7 @@ contract LSP16UniversalFactory {
         bytes32 generatedSalt = _generateSalt("", providedSalt);
         address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, false, "");
-        
+
         return contractCreated;
     }
 
@@ -138,7 +138,7 @@ contract LSP16UniversalFactory {
             value: initializeCalldataMsgValue
         }(initializeCalldata);
         _verifyCallResult(success, returndata);
-        
+
         return contractCreated;
     }
 
@@ -174,7 +174,7 @@ contract LSP16UniversalFactory {
             );
             _verifyCallResult(success, returndata);
         }
-        
+
         return proxy;
     }
 

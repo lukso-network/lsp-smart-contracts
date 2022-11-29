@@ -7,7 +7,7 @@ import { TargetContract, TargetContract__factory } from "../../../types";
 // constants
 import {
   ALL_PERMISSIONS,
-  ERC725YKeys,
+  ERC725YDataKeys,
   OPERATION_TYPES,
   PERMISSIONS,
 } from "../../../constants";
@@ -56,15 +56,15 @@ export const shouldBehaveLikeAllowedAddresses = (
     ).deploy();
 
     let permissionsKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         canCallOnlyTwoAddresses.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
         canCallOnlyTwoAddresses.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         invalidEncodedAllowedCalls.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
         invalidEncodedAllowedCalls.address.substring(2),
     ];
 
@@ -240,7 +240,9 @@ export const shouldBehaveLikeAllowedAddresses = (
       );
 
       await expect(
-        context.keyManager.connect(canCallOnlyTwoAddresses)["execute(bytes)"](payload)
+        context.keyManager
+          .connect(canCallOnlyTwoAddresses)
+          ["execute(bytes)"](payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(

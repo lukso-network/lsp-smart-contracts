@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // --- ERC165 interface ids
 bytes4 constant _INTERFACEID_LSP1 = 0x6bb56a14;
 
-// --- ERC725Y Keys
+// --- ERC725Y Data Keys
 
 // bytes10(keccak256('LSP1UniversalReceiverDelegate'))
 bytes10 constant _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX = 0x0cfc51aec37c55a4d0b1;

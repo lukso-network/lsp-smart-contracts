@@ -8,7 +8,7 @@ import { TargetContract__factory } from "../../../types";
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   LSP6_VERSION,
   PERMISSIONS,
@@ -36,11 +36,11 @@ export const shouldBehaveLikePermissionDeploy = (
     addressCannotDeploy = context.accounts[2];
 
     const permissionKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanDeploy.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCannotDeploy.address.substring(2),
     ];
 
@@ -71,7 +71,9 @@ export const shouldBehaveLikePermissionDeploy = (
         .connect(context.owner)
         .callStatic["execute(bytes)"](payload);
 
-      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
+      await expect(
+        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+      )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -101,7 +103,9 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy
       ).toLowerCase();
 
-      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
+      await expect(
+        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+      )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE2,
@@ -129,7 +133,9 @@ export const shouldBehaveLikePermissionDeploy = (
         .connect(addressCanDeploy)
         .callStatic["execute(bytes)"](payload);
 
-      await expect(context.keyManager.connect(context.owner)["execute(bytes)"](payload))
+      await expect(
+        context.keyManager.connect(context.owner)["execute(bytes)"](payload)
+      )
         .to.emit(context.universalProfile, "ContractCreated")
         .withArgs(
           OPERATION_TYPES.CREATE,
@@ -187,7 +193,9 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         await expect(
-          context.keyManager.connect(addressCannotDeploy)["execute(bytes)"](payload)
+          context.keyManager
+            .connect(addressCannotDeploy)
+            ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -209,7 +217,9 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
         await expect(
-          context.keyManager.connect(addressCannotDeploy)["execute(bytes)"](payload)
+          context.keyManager
+            .connect(addressCannotDeploy)
+            ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotDeploy.address, "DEPLOY");
@@ -262,9 +272,14 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                ["executeRelayCall(bytes,uint256,bytes)"](ethereumSignature, nonce, payload, {
-                  value: valueToSend,
-                })
+                ["executeRelayCall(bytes,uint256,bytes)"](
+                  ethereumSignature,
+                  nonce,
+                  payload,
+                  {
+                    value: valueToSend,
+                  }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -312,9 +327,14 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, payload, {
-                  value: valueToSend,
-                })
+                ["executeRelayCall(bytes,uint256,bytes)"](
+                  signature,
+                  nonce,
+                  payload,
+                  {
+                    value: valueToSend,
+                  }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -371,9 +391,14 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                ["executeRelayCall(bytes,uint256,bytes)"](ethereumSignature, nonce, payload, {
-                  value: valueToSend,
-                })
+                ["executeRelayCall(bytes,uint256,bytes)"](
+                  ethereumSignature,
+                  nonce,
+                  payload,
+                  {
+                    value: valueToSend,
+                  }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
@@ -423,9 +448,14 @@ export const shouldBehaveLikePermissionDeploy = (
             await expect(
               context.keyManager
                 .connect(addressCannotDeploy)
-                ["executeRelayCall(bytes,uint256,bytes)"](signature, nonce, payload, {
-                  value: valueToSend,
-                })
+                ["executeRelayCall(bytes,uint256,bytes)"](
+                  signature,
+                  nonce,
+                  payload,
+                  {
+                    value: valueToSend,
+                  }
+                )
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,

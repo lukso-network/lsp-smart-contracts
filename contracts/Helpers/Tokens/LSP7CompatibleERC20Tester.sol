@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {LSP7CompatibleERC20} from "../../LSP7DigitalAsset/extensions/LSP7CompatibleERC20.sol";

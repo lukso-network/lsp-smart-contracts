@@ -7,7 +7,7 @@ import { Executor, Executor__factory } from "../../../types";
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   BasicUPSetup_Schema,
@@ -45,15 +45,15 @@ export const shouldBehaveLikePermissionSetData = (
       cannotSetData = context.accounts[3];
 
       const permissionsKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canSetDataWithAllowedERC725YDataKeys.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
           canSetDataWithAllowedERC725YDataKeys.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canSetDataWithoutAllowedERC725YDataKeys.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           cannotSetData.address.substring(2),
       ];
 
@@ -61,9 +61,9 @@ export const shouldBehaveLikePermissionSetData = (
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.CALL),
         encodeCompactBytesArray([
-          ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
-          ERC725YKeys.LSP3.LSP3Profile,
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index,
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+          ERC725YDataKeys.LSP3.LSP3Profile,
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index,
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My First Key")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MyFirstKey")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MySecondKey")),
@@ -93,7 +93,9 @@ export const shouldBehaveLikePermissionSetData = (
             [key, value]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32)"
           ](key);
@@ -193,7 +195,9 @@ export const shouldBehaveLikePermissionSetData = (
             [keys, values]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
           ](keys);
@@ -225,7 +229,9 @@ export const shouldBehaveLikePermissionSetData = (
             [keys, values]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           const fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
@@ -264,7 +270,9 @@ export const shouldBehaveLikePermissionSetData = (
             [keys, values]
           );
 
-          await context.keyManager.connect(context.owner)["execute(bytes)"](payload);
+          await context.keyManager
+            .connect(context.owner)
+            ["execute(bytes)"](payload);
 
           let fetchedResult = await context.universalProfile.callStatic[
             "getData(bytes32[])"
@@ -592,11 +600,11 @@ export const shouldBehaveLikePermissionSetData = (
       );
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           contractCanSetData.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
           contractCanSetData.address.substring(2),
       ];
 
@@ -755,15 +763,15 @@ export const shouldBehaveLikePermissionSetData = (
       bob = bobContext.accounts[1];
 
       const alicePermissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           alice.address.substring(2),
       ];
       const alicePermissionValues = [ALL_PERMISSIONS];
 
       const bobPermissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           bob.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           aliceContext.universalProfile.address.substring(2),
       ];
 
@@ -780,7 +788,7 @@ export const shouldBehaveLikePermissionSetData = (
 
     it("Alice should have ALL PERMISSIONS in her UP", async () => {
       let key =
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         alice.address.substring(2);
 
       const result = await aliceContext.universalProfile["getData(bytes32)"](
@@ -791,7 +799,7 @@ export const shouldBehaveLikePermissionSetData = (
 
     it("Bob should have ALL PERMISSIONS in his UP", async () => {
       let key =
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         bob.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
@@ -800,7 +808,7 @@ export const shouldBehaveLikePermissionSetData = (
 
     it("Alice's UP should have permission SETDATA on Bob's UP", async () => {
       let key =
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         aliceContext.universalProfile.address.substring(2);
 
       const result = await bobContext.universalProfile["getData(bytes32)"](key);
@@ -857,7 +865,7 @@ export const shouldBehaveLikePermissionSetData = (
       const payload = bobContext.universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
-          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
             aliceContext.universalProfile.address.substring(2),
           encodeCompactBytesArray([key]),
         ]
@@ -895,10 +903,10 @@ export const shouldBehaveLikePermissionSetData = (
     });
   });
 
-  describe("when caller has SUPER_SETDATA + some allowed ERC725YKeys", () => {
+  describe("when caller has SUPER_SETDATA + some allowed ERC725YDataKeys", () => {
     let caller: SignerWithAddress;
 
-    const allowedERC725YKeys = [
+    const AllowedERC725YDataKeys = [
       ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My 1st allowed key")),
       ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My 2nd allowed key")),
       ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My 3rd allowed key")),
@@ -910,15 +918,15 @@ export const shouldBehaveLikePermissionSetData = (
       caller = context.accounts[1];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
           caller.address.substring(2),
       ];
 
       const permissionValues = [
         PERMISSIONS.SUPER_SETDATA,
-        encodeCompactBytesArray(allowedERC725YKeys),
+        encodeCompactBytesArray(AllowedERC725YDataKeys),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -957,13 +965,13 @@ export const shouldBehaveLikePermissionSetData = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32,bytes)",
-          [allowedERC725YKeys[0], value]
+          [AllowedERC725YDataKeys[0], value]
         );
 
         await context.keyManager.connect(caller)["execute(bytes)"](payload);
 
         const result = await context.universalProfile["getData(bytes32)"](
-          allowedERC725YKeys[0]
+          AllowedERC725YDataKeys[0]
         );
         expect(result).to.equal(value);
       });
@@ -975,13 +983,13 @@ export const shouldBehaveLikePermissionSetData = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32,bytes)",
-          [allowedERC725YKeys[1], value]
+          [AllowedERC725YDataKeys[1], value]
         );
 
         await context.keyManager.connect(caller)["execute(bytes)"](payload);
 
         const result = await context.universalProfile["getData(bytes32)"](
-          allowedERC725YKeys[1]
+          AllowedERC725YDataKeys[1]
         );
         expect(result).to.equal(value);
       });
@@ -993,13 +1001,13 @@ export const shouldBehaveLikePermissionSetData = (
 
         let payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32,bytes)",
-          [allowedERC725YKeys[2], value]
+          [AllowedERC725YDataKeys[2], value]
         );
 
         await context.keyManager.connect(caller)["execute(bytes)"](payload);
 
         const result = await context.universalProfile["getData(bytes32)"](
-          allowedERC725YKeys[2]
+          AllowedERC725YDataKeys[2]
         );
         expect(result).to.equal(value);
       });
