@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {LSP14Ownable2Step} from "../../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
-contract RelayReentrancy {
+contract RelaySingleReentrancy {
     bytes private _signature;
     uint256 private _nonce;
     bytes private _payload;
