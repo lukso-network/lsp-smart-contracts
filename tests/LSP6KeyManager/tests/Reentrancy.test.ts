@@ -6836,37 +6836,37 @@ export const testReentrancyScenarios = async (
           await new ReentrancyWithValueTransfer__factory(caller).deploy();
 
         const permissionKeys = [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_ALL_PERMISSIONS_but_REENTRANCY.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_permission_no_calls.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_permission_with_calls.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_VALUETRANSFER_permissions_no_calls.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_VALUETRANSFER_permissions_with_calls.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_VALUETRANSFER_permissions_no_calls.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_VALUETRANSFER_permissions_with_calls.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             caller.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             contract_with_REENTRANCY_permission_with_calls.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             contract_with_VALUETRANSFER_permissions_with_calls.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             contract_with_REENTRANCY_VALUETRANSFER_permissions_with_calls.address.substring(
               2
             ),
@@ -7170,43 +7170,43 @@ export const testReentrancyScenarios = async (
           await new ReentrancyWithSetData__factory(caller).deploy();
 
         const permissionKeys = [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_ALL_PERMISSIONS_but_REENTRANCY.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_permission_no_allowed_keys.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_permission_with_allowed_keys.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_SETDATA_permissions_no_allowed_keys.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_SETDATA_permissions_with_allowed_keys.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_SETDATA_permissions_no_allowed_keys.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_SETDATA_permissions_with_allowed_keys.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             caller.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
             contract_with_REENTRANCY_permission_with_allowed_keys.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
             contract_with_SETDATA_permissions_with_allowed_keys.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedERC725YKeys"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
             contract_with_REENTRANCY_SETDATA_permissions_with_allowed_keys.address.substring(
               2
             ),
@@ -7498,17 +7498,17 @@ export const testReentrancyScenarios = async (
           await new ReentrancyWithAddPermission__factory(caller).deploy();
 
         const permissionKeys = [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_ALL_PERMISSIONS_but_REENTRANCY.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_permission.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_ADDPERMISSION_permissions.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_ADDPERMISSION_permissions.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             caller.address.substring(2),
         ];
 
@@ -7674,7 +7674,7 @@ export const testReentrancyScenarios = async (
           ["execute(uint256[],bytes[])"]([0], [upExecutePayload]);
 
         const hardcodedPermissionKey =
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.accounts[2].address.substring(2);
         const hardcodedPermissionValue =
           "0x0000000000000000000000000000000000000000000000000000000000000010";
@@ -7707,17 +7707,17 @@ export const testReentrancyScenarios = async (
           await new ReentrancyWithChangePermission__factory(caller).deploy();
 
         const permissionKeys = [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_ALL_PERMISSIONS_but_REENTRANCY.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_permission.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_CHANGEPERMISSION_permissions.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_CHANGEPERMISSION_permissions.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             caller.address.substring(2),
         ];
 
@@ -7883,7 +7883,7 @@ export const testReentrancyScenarios = async (
           ["execute(uint256[],bytes[])"]([0], [upExecutePayload]);
 
         const hardcodedPermissionKey =
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.accounts[2].address.substring(2);
         const hardcodedPermissionValue = "0x";
 
@@ -7919,19 +7919,19 @@ export const testReentrancyScenarios = async (
           await new ReentrancyWithAddURD__factory(caller).deploy();
 
         const permissionKeys = [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_ALL_PERMISSIONS_but_REENTRANCY.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_permission.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             caller.address.substring(2),
         ];
 
@@ -8098,7 +8098,7 @@ export const testReentrancyScenarios = async (
 
         expect(
           await context.universalProfile["getData(bytes32)"](
-            ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
               randomLSP1TypeId.substring(2, 42)
           )
         ).to.equal(context.accounts[2].address.toLowerCase());
@@ -8128,19 +8128,19 @@ export const testReentrancyScenarios = async (
           await new ReentrancyWithChangeURD__factory(caller).deploy();
 
         const permissionKeys = [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_ALL_PERMISSIONS_but_REENTRANCY.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_permission.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             contract_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
               2
             ),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             caller.address.substring(2),
         ];
 
@@ -8307,7 +8307,7 @@ export const testReentrancyScenarios = async (
 
         expect(
           await context.universalProfile["getData(bytes32)"](
-            ERC725YKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
               randomLSP1TypeId.substring(2, 42)
           )
         ).to.equal("0x");
