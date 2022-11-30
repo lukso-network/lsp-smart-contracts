@@ -31,8 +31,6 @@ contract ReentrancyWithAddURD {
             data[32:]
         );
 
-        ILSP6KeyManager(keyManager).execute(addURDPayload);
-
-        return "";
+        return ILSP6KeyManager(keyManager).execute(addURDPayload);
     }
 }

@@ -31,8 +31,6 @@ contract ReentrancyWithAddPermission {
             bytes.concat(bytes32(uint256(16)))
         );
 
-        ILSP6KeyManager(keyManager).execute(addPermissionPayload);
-
-        return "";
+        return ILSP6KeyManager(keyManager).execute(addPermissionPayload);
     }
 }

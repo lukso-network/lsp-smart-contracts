@@ -25,8 +25,7 @@ contract ReentrancyWithValueTransfer {
             1 ether,
             ""
         );
-        ILSP6KeyManager(keyManager).execute(transferValuePayload);
 
-        return "";
+        return ILSP6KeyManager(keyManager).execute(transferValuePayload);
     }
 }

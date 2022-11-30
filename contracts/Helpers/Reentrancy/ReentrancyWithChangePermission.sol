@@ -31,8 +31,6 @@ contract ReentrancyWithChangePermission {
             ""
         );
 
-        ILSP6KeyManager(keyManager).execute(changePermissionPayload);
-
-        return "";
+        return ILSP6KeyManager(keyManager).execute(changePermissionPayload);
     }
 }

@@ -20,8 +20,7 @@ contract ReentrancyWithSetData {
             keccak256(bytes("SomeRandomTextUsed")),
             bytes("SomeRandomTextUsed")
         );
-        ILSP6KeyManager(keyManager).execute(setDataPayload);
 
-        return "";
+        return ILSP6KeyManager(keyManager).execute(setDataPayload);
     }
 }

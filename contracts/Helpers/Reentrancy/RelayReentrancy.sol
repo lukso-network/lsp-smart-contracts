@@ -33,8 +33,6 @@ contract RelayReentrancy {
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 
-        ILSP6KeyManager(keyManager).executeRelayCall(_signature, _nonce, _payload);
-
-        return "";
+        return ILSP6KeyManager(keyManager).executeRelayCall(_signature, _nonce, _payload);
     }
 }

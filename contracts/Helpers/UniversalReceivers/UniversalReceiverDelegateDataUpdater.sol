@@ -36,8 +36,9 @@ contract UniversalReceiverDelegateDataUpdater is ERC165Storage {
                 keccak256(bytes("some random data key")),
                 bytes("some random text for the data value")
             );
-            ILSP6KeyManager(keyManager).execute(setDataPayload);
+            return ILSP6KeyManager(keyManager).execute(setDataPayload);
         }
+
         return "";
     }
 }
