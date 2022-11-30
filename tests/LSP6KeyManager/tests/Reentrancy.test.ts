@@ -16,8 +16,10 @@ import {
   ReentrancyWithSetData__factory,
   ReentrancyWithValueTransfer,
   ReentrancyWithValueTransfer__factory,
-  RelayReentrancy,
-  RelayReentrancy__factory,
+  RelaySingleReentrancy,
+  RelaySingleReentrancy__factory,
+  RelayBatchReentrancy,
+  RelayBatchReentrancy__factory,
   UniversalProfile,
   LSP6KeyManager,
 } from "../../../types";
@@ -89,8 +91,8 @@ const generateRelayCall = async (
   return relayCallContext;
 };
 
-const generateValueTransferPayload = async (
-  relayReentrantContract: RelayReentrancy,
+const generateSingleRelayPayload = async (
+  relayReentrantContract: RelaySingleReentrancy,
   universalProfile: UniversalProfile,
   keyManager: LSP6KeyManager,
   signer: Wallet,
@@ -198,6 +200,119 @@ const generateValueTransferPayload = async (
     signature,
     signedMessageParams.nonce,
     signedMessageParams.payload
+  );
+};
+
+const generateBatchRelayPayload = async (
+  relayReentrantContract: RelayBatchReentrancy,
+  universalProfile: UniversalProfile,
+  keyManager: LSP6KeyManager,
+  signer: Wallet,
+  caseTested: string,
+  testedAddress: string
+) => {
+  let upExecutePayload: BytesLike;
+  switch (caseTested) {
+    case "TRANSFERVALUE":
+      upExecutePayload = universalProfile.interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [0, relayReentrantContract.address, ethers.utils.parseEther("1"), "0x"]
+      );
+      break;
+    case "SETDATA":
+      upExecutePayload = universalProfile.interface.encodeFunctionData(
+        "setData(bytes32,bytes)",
+        [
+          ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
+          ),
+          ethers.utils.hexlify(ethers.utils.toUtf8Bytes("SomeRandomTextUsed")),
+        ]
+      );
+      break;
+    case "ADDPERMISSIONS":
+      upExecutePayload = universalProfile.interface.encodeFunctionData(
+        "setData(bytes32,bytes)",
+        [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            testedAddress.substring(2),
+          ALL_PERMISSIONS,
+        ]
+      );
+      break;
+    case "CHANGEPERMISSIONS":
+      upExecutePayload = universalProfile.interface.encodeFunctionData(
+        "setData(bytes32,bytes)",
+        [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            testedAddress.substring(2),
+          "0x",
+        ]
+      );
+      break;
+    case "ADDUNIVERSALRECEIVERDELEGATE":
+      upExecutePayload = universalProfile.interface.encodeFunctionData(
+        "setData(bytes32,bytes)",
+        [
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+            ethers.utils
+              .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
+              .substring(2, 42),
+          testedAddress,
+        ]
+      );
+      break;
+    case "CHANGEUNIVERSALRECEIVERDELEGATE":
+      upExecutePayload = universalProfile.interface.encodeFunctionData(
+        "setData(bytes32,bytes)",
+        [
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+            ethers.utils
+              .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
+              .substring(2, 42),
+          "0x",
+        ]
+      );
+      break;
+    default:
+      upExecutePayload = "0x";
+      break;
+  }
+
+  let latestNonce = await keyManager.callStatic.getNonce(signer.address, 1);
+
+  const signedMessageParams = {
+    lsp6Version: LSP6_VERSION,
+    chainId: 31337, // HARDHAT_CHAINID
+    nonce: latestNonce,
+    msgValue: 0,
+    payload: upExecutePayload,
+  };
+
+  let encodedMessage = ethers.utils.solidityPack(
+    ["uint256", "uint256", "uint256", "uint256", "bytes"],
+    [
+      signedMessageParams.lsp6Version,
+      signedMessageParams.chainId,
+      signedMessageParams.nonce,
+      signedMessageParams.msgValue,
+      signedMessageParams.payload,
+    ]
+  );
+
+  let eip191Signer = new EIP191Signer();
+
+  let { signature } = await eip191Signer.signDataWithIntendedValidator(
+    keyManager.address,
+    encodedMessage,
+    signer.privateKey
+  );
+
+  await relayReentrantContract.prepareRelayCall(
+    [signature],
+    [signedMessageParams.nonce],
+    [signedMessageParams.msgValue],
+    [signedMessageParams.payload]
   );
 };
 
@@ -3749,7 +3864,7 @@ export const testReentrancyScenarios = async (
   describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
     describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let reentrantSignerWithValueTransfer: Wallet;
       let reentrantSignerWithSetData: Wallet;
       let reentrantSignerWithAddPermission: Wallet;
@@ -3757,7 +3872,9 @@ export const testReentrancyScenarios = async (
       let reentrantSignerWithAddURD: Wallet;
       let reentrantSignerWithChangeURD: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         reentrantSignerWithValueTransfer = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -3832,7 +3949,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and transferring value", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -3849,7 +3966,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and setting data", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -3866,7 +3983,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and adding permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -3883,7 +4000,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and changing permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -3900,7 +4017,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and adding URD", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -3917,7 +4034,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and changing URD", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -3936,7 +4053,7 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and transferring value", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission_no_calls: Wallet;
       let signer_with_REENTRANCY_permission_with_calls: Wallet;
@@ -3945,7 +4062,9 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: Wallet;
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -4060,7 +4179,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4077,7 +4196,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4097,7 +4216,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4117,7 +4236,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4137,7 +4256,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4157,7 +4276,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4172,7 +4291,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4207,7 +4326,7 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and setting data", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission_no_allowed_keys: Wallet;
       let signer_with_REENTRANCY_permission_with_allowed_keys: Wallet;
@@ -4216,7 +4335,9 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: Wallet;
       let signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -4331,7 +4452,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4348,7 +4469,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4368,7 +4489,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4388,7 +4509,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4408,7 +4529,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4428,7 +4549,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4446,7 +4567,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4474,13 +4595,15 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and adding permissions", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_ADDPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_ADDPERMISSION_permissions: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -4545,7 +4668,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4562,7 +4685,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4582,7 +4705,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4602,7 +4725,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4630,13 +4753,15 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and changing permissions", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_CHANGEPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_CHANGEPERMISSION_permissions: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -4701,7 +4826,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4718,7 +4843,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4738,7 +4863,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4758,7 +4883,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4786,7 +4911,7 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and adding URD", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_ADDUNIVERSALRECEIVERDELEGATE_permissions: Wallet;
@@ -4795,7 +4920,9 @@ export const testReentrancyScenarios = async (
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -4860,7 +4987,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4877,7 +5004,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4897,7 +5024,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4917,7 +5044,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -4941,7 +5068,7 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and changing URD", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions: Wallet;
@@ -4950,7 +5077,9 @@ export const testReentrancyScenarios = async (
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -5015,7 +5144,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5032,7 +5161,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5052,7 +5181,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5072,7 +5201,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5093,19 +5222,12 @@ export const testReentrancyScenarios = async (
         ).to.equal("0x");
       });
     });
-
-    after(async () => {
-      await owner.sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("1"),
-      });
-    });
   });
 
   describe("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
     describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let reentrantSignerWithValueTransfer: Wallet;
       let reentrantSignerWithSetData: Wallet;
       let reentrantSignerWithAddPermission: Wallet;
@@ -5113,7 +5235,9 @@ export const testReentrancyScenarios = async (
       let reentrantSignerWithAddURD: Wallet;
       let reentrantSignerWithChangeURD: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         reentrantSignerWithValueTransfer = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -5188,7 +5312,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and transferring value", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5215,7 +5339,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and setting data", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5242,7 +5366,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and adding permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5269,7 +5393,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and changing permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5296,7 +5420,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and adding URD", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5323,7 +5447,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert when reentering and changing URD", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5352,7 +5476,7 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and transferring value", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission_no_calls: Wallet;
       let signer_with_REENTRANCY_permission_with_calls: Wallet;
@@ -5361,7 +5485,9 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: Wallet;
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -5476,7 +5602,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5503,7 +5629,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5533,7 +5659,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5563,7 +5689,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5593,7 +5719,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5623,7 +5749,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5648,7 +5774,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5691,7 +5817,7 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and setting data", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission_no_allowed_keys: Wallet;
       let signer_with_REENTRANCY_permission_with_allowed_keys: Wallet;
@@ -5700,7 +5826,9 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: Wallet;
       let signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -5815,7 +5943,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5842,7 +5970,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5872,7 +6000,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5902,7 +6030,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5932,7 +6060,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5962,7 +6090,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -5990,7 +6118,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6026,13 +6154,15 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and adding permissions", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_ADDPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_ADDPERMISSION_permissions: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -6097,7 +6227,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6124,7 +6254,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6154,7 +6284,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6184,7 +6314,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6220,13 +6350,15 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and changing permissions", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_CHANGEPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_CHANGEPERMISSION_permissions: Wallet;
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -6291,7 +6423,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6318,7 +6450,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6348,7 +6480,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6378,7 +6510,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6414,7 +6546,7 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and adding URD", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_ADDUNIVERSALRECEIVERDELEGATE_permissions: Wallet;
@@ -6423,7 +6555,9 @@ export const testReentrancyScenarios = async (
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -6488,7 +6622,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6515,7 +6649,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6545,7 +6679,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6575,7 +6709,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6607,7 +6741,7 @@ export const testReentrancyScenarios = async (
 
     describe("when reentering and changing URD", () => {
       let upExecutePayload: BytesLike;
-      let relayer_contract: RelayReentrancy;
+      let relayer_contract: RelaySingleReentrancy;
       let signer_without_permissions: Wallet;
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions: Wallet;
@@ -6616,7 +6750,9 @@ export const testReentrancyScenarios = async (
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
       before(async () => {
-        relayer_contract = await new RelayReentrancy__factory(caller).deploy();
+        relayer_contract = await new RelaySingleReentrancy__factory(
+          caller
+        ).deploy();
         signer_without_permissions = new ethers.Wallet(
           LOCAL_PRIVATE_KEYS.ACCOUNT0
         );
@@ -6681,7 +6817,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has NO PERMISSIONS", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6708,7 +6844,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY REENTRANCY permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6738,7 +6874,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -6768,7 +6904,7 @@ export const testReentrancyScenarios = async (
       });
 
       it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
-        await generateValueTransferPayload(
+        await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
           context.keyManager,
@@ -8304,6 +8440,1376 @@ export const testReentrancyScenarios = async (
         await context.keyManager
           .connect(caller)
           ["execute(uint256[],bytes[])"]([0], [upExecutePayload]);
+
+        expect(
+          await context.universalProfile["getData(bytes32)"](
+            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+              randomLSP1TypeId.substring(2, 42)
+          )
+        ).to.equal("0x");
+      });
+    });
+
+    after(async () => {
+      await owner.sendTransaction({
+        to: context.universalProfile.address,
+        value: ethers.utils.parseEther("1"),
+      });
+    });
+  });
+
+  describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes[],uint256[],uint256[],bytes[])`", () => {
+    describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
+      let upExecutePayload: BytesLike;
+      let relayer_contract: RelayBatchReentrancy;
+      let reentrantSignerWithValueTransfer: Wallet;
+      let reentrantSignerWithSetData: Wallet;
+      let reentrantSignerWithAddPermission: Wallet;
+      let reentrantSignerWithChangePermission: Wallet;
+      let reentrantSignerWithAddURD: Wallet;
+      let reentrantSignerWithChangeURD: Wallet;
+      before(async () => {
+        relayer_contract = await new RelayBatchReentrancy__factory(
+          caller
+        ).deploy();
+        reentrantSignerWithValueTransfer = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+        reentrantSignerWithSetData = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
+        reentrantSignerWithAddPermission = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT2
+        );
+        reentrantSignerWithChangePermission = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT3
+        );
+        reentrantSignerWithAddURD = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT4
+        );
+        reentrantSignerWithChangeURD = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT5
+        );
+
+        const permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            reentrantSignerWithValueTransfer.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            reentrantSignerWithSetData.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            reentrantSignerWithAddPermission.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            reentrantSignerWithChangePermission.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            reentrantSignerWithAddURD.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            reentrantSignerWithChangeURD.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            caller.address.substring(2),
+        ];
+
+        const permissionValues = [
+          ALL_PERMISSIONS,
+          ALL_PERMISSIONS,
+          ALL_PERMISSIONS,
+          ALL_PERMISSIONS,
+          ALL_PERMISSIONS,
+          ALL_PERMISSIONS,
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+        ];
+
+        const permissionsPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [permissionKeys, permissionValues]
+          );
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
+
+        // save the payload
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
+
+        upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+      });
+
+      it("should revert when reentering and transferring value", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          reentrantSignerWithValueTransfer,
+          "TRANSFERVALUE",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(reentrantSignerWithValueTransfer.address, "REENTRANCY");
+      });
+
+      it("should revert when reentering and setting data", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          reentrantSignerWithSetData,
+          "SETDATA",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(reentrantSignerWithSetData.address, "REENTRANCY");
+      });
+
+      it("should revert when reentering and adding permissions", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          reentrantSignerWithAddPermission,
+          "ADDPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(reentrantSignerWithAddPermission.address, "REENTRANCY");
+      });
+
+      it("should revert when reentering and changing permissions", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          reentrantSignerWithChangePermission,
+          "CHANGEPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(reentrantSignerWithChangePermission.address, "REENTRANCY");
+      });
+
+      it("should revert when reentering and adding URD", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          reentrantSignerWithAddURD,
+          "ADDUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(reentrantSignerWithAddURD.address, "REENTRANCY");
+      });
+
+      it("should revert when reentering and changing URD", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          reentrantSignerWithChangeURD,
+          "CHANGEUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(reentrantSignerWithChangeURD.address, "REENTRANCY");
+      });
+    });
+
+    describe("when reentering and transferring value", () => {
+      let upExecutePayload: BytesLike;
+      let relayer_contract: RelayBatchReentrancy;
+      let signer_without_permissions: Wallet;
+      let signer_with_REENTRANCY_permission_no_calls: Wallet;
+      let signer_with_REENTRANCY_permission_with_calls: Wallet;
+      let signer_with_VALUETRANSFER_permissions_no_calls: Wallet;
+      let signer_with_VALUETRANSFER_permissions_with_calls: Wallet;
+      let signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: Wallet;
+      let signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: Wallet;
+      before(async () => {
+        relayer_contract = await new RelayBatchReentrancy__factory(
+          caller
+        ).deploy();
+        signer_without_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+        signer_with_REENTRANCY_permission_no_calls = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
+        signer_with_REENTRANCY_permission_with_calls = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT2
+        );
+        signer_with_VALUETRANSFER_permissions_no_calls = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT3
+        );
+        signer_with_VALUETRANSFER_permissions_with_calls = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT4
+        );
+        signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT5);
+        signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT6);
+
+        const permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission_no_calls.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission_with_calls.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_VALUETRANSFER_permissions_no_calls.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_VALUETRANSFER_permissions_with_calls.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            caller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            signer_with_REENTRANCY_permission_with_calls.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            signer_with_VALUETRANSFER_permissions_with_calls.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls.address.substring(
+              2
+            ),
+        ];
+
+        const permissionValues = [
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+          combinePermissions(
+            PERMISSIONS.CALL,
+            PERMISSIONS.REENTRANCY,
+            PERMISSIONS.TRANSFERVALUE
+          ),
+          combinePermissions(
+            PERMISSIONS.CALL,
+            PERMISSIONS.REENTRANCY,
+            PERMISSIONS.TRANSFERVALUE
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+        ];
+
+        const permissionsPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [permissionKeys, permissionValues]
+          );
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
+
+        // save the payload
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
+
+        upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+      });
+
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_without_permissions,
+          "TRANSFERVALUE",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(signer_without_permissions.address, "REENTRANCY");
+      });
+
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission_no_calls,
+          "TRANSFERVALUE",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission_no_calls.address,
+            "TRANSFERVALUE"
+          );
+      });
+
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission_with_calls,
+          "TRANSFERVALUE",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission_with_calls.address,
+            "TRANSFERVALUE"
+          );
+      });
+
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_VALUETRANSFER_permissions_no_calls,
+          "TRANSFERVALUE",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_VALUETRANSFER_permissions_no_calls.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_VALUETRANSFER_permissions_with_calls,
+          "TRANSFERVALUE",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_VALUETRANSFER_permissions_with_calls.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls,
+          "TRANSFERVALUE",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
+      });
+
+      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls,
+          "TRANSFERVALUE",
+          ""
+        );
+
+        expect(
+          await context.universalProfile.provider.getBalance(
+            context.universalProfile.address
+          )
+        ).to.equal(ethers.utils.parseEther("10"));
+
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
+
+        expect(
+          await context.universalProfile.provider.getBalance(
+            context.universalProfile.address
+          )
+        ).to.equal(ethers.utils.parseEther("9"));
+
+        expect(
+          await context.universalProfile.provider.getBalance(
+            relayer_contract.address
+          )
+        ).to.equal(ethers.utils.parseEther("1"));
+      });
+    });
+
+    describe("when reentering and setting data", () => {
+      let upExecutePayload: BytesLike;
+      let relayer_contract: RelayBatchReentrancy;
+      let signer_without_permissions: Wallet;
+      let signer_with_REENTRANCY_permission_no_allowed_keys: Wallet;
+      let signer_with_REENTRANCY_permission_with_allowed_keys: Wallet;
+      let signer_with_SETDATA_permissions_no_allowed_keys: Wallet;
+      let signer_with_SETDATA_permissions_with_allowed_keys: Wallet;
+      let signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: Wallet;
+      let signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: Wallet;
+      before(async () => {
+        relayer_contract = await new RelayBatchReentrancy__factory(
+          caller
+        ).deploy();
+        signer_without_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+        signer_with_REENTRANCY_permission_no_allowed_keys = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
+        signer_with_REENTRANCY_permission_with_allowed_keys = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT2
+        );
+        signer_with_SETDATA_permissions_no_allowed_keys = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT3
+        );
+        signer_with_SETDATA_permissions_with_allowed_keys = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT4
+        );
+        signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT5);
+        signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT6);
+
+        const permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission_no_allowed_keys.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission_with_allowed_keys.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_SETDATA_permissions_no_allowed_keys.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_SETDATA_permissions_with_allowed_keys.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            caller.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
+            signer_with_REENTRANCY_permission_with_allowed_keys.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
+            signer_with_SETDATA_permissions_with_allowed_keys.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
+            signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys.address.substring(
+              2
+            ),
+        ];
+
+        const permissionValues = [
+          PERMISSIONS.REENTRANCY,
+          PERMISSIONS.REENTRANCY,
+          PERMISSIONS.SETDATA,
+          PERMISSIONS.SETDATA,
+          combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.SETDATA),
+          combinePermissions(PERMISSIONS.REENTRANCY, PERMISSIONS.SETDATA),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+          encodeCompactBytesArray([
+            ethers.utils.keccak256(
+              ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
+            ),
+          ]),
+          encodeCompactBytesArray([
+            ethers.utils.keccak256(
+              ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
+            ),
+          ]),
+          encodeCompactBytesArray([
+            ethers.utils.keccak256(
+              ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
+            ),
+          ]),
+        ];
+
+        const permissionsPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [permissionKeys, permissionValues]
+          );
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
+
+        // save the payload
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
+
+        upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+      });
+
+      it("should revert if caller has NO PERMISSIONS", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_without_permissions,
+          "SETDATA",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(signer_without_permissions.address, "REENTRANCY");
+      });
+
+      it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission_no_allowed_keys,
+          "SETDATA",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission_no_allowed_keys.address,
+            "SETDATA"
+          );
+      });
+
+      it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission_with_allowed_keys,
+          "SETDATA",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission_with_allowed_keys.address,
+            "SETDATA"
+          );
+      });
+
+      it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_SETDATA_permissions_no_allowed_keys,
+          "SETDATA",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_SETDATA_permissions_no_allowed_keys.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_SETDATA_permissions_with_allowed_keys,
+          "SETDATA",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_SETDATA_permissions_with_allowed_keys.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys,
+          "SETDATA",
+          ""
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "NoERC725YDataKeysAllowed"
+        );
+      });
+
+      it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys,
+          "SETDATA",
+          ""
+        );
+
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
+
+        const hardcodedKey = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
+        );
+        const hardcodedValue = ethers.utils.hexlify(
+          ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
+        );
+
+        expect(
+          await context.universalProfile["getData(bytes32)"](hardcodedKey)
+        ).to.equal(hardcodedValue);
+      });
+    });
+
+    describe("when reentering and adding permissions", () => {
+      let upExecutePayload: BytesLike;
+      let relayer_contract: RelayBatchReentrancy;
+      let signer_without_permissions: Wallet;
+      let signer_with_REENTRANCY_permission: Wallet;
+      let signer_with_ADDPERMISSION_permissions: Wallet;
+      let signer_with_REENTRANCY_ADDPERMISSION_permissions: Wallet;
+      before(async () => {
+        relayer_contract = await new RelayBatchReentrancy__factory(
+          caller
+        ).deploy();
+        signer_without_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+        signer_with_REENTRANCY_permission = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
+        signer_with_ADDPERMISSION_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT2
+        );
+        signer_with_REENTRANCY_ADDPERMISSION_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT3
+        );
+
+        const permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_ADDPERMISSION_permissions.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_ADDPERMISSION_permissions.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            caller.address.substring(2),
+        ];
+
+        const permissionValues = [
+          PERMISSIONS.REENTRANCY,
+          PERMISSIONS.ADDPERMISSIONS,
+          combinePermissions(
+            PERMISSIONS.REENTRANCY,
+            PERMISSIONS.ADDPERMISSIONS
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+        ];
+
+        const permissionsPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [permissionKeys, permissionValues]
+          );
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
+
+        // save the payload
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
+
+        upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+      });
+
+      it("should revert if caller has NO PERMISSIONS", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_without_permissions,
+          "ADDPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(signer_without_permissions.address, "REENTRANCY");
+      });
+
+      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission,
+          "ADDPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission.address,
+            "ADDPERMISSIONS"
+          );
+      });
+
+      it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_ADDPERMISSION_permissions,
+          "ADDPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_ADDPERMISSION_permissions.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_ADDPERMISSION_permissions,
+          "ADDPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
+
+        const hardcodedPermissionKey =
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          context.accounts[9].address.substring(2);
+        const hardcodedPermissionValue = ALL_PERMISSIONS;
+
+        expect(
+          await context.universalProfile["getData(bytes32)"](
+            hardcodedPermissionKey
+          )
+        ).to.equal(hardcodedPermissionValue);
+      });
+    });
+
+    describe("when reentering and changing permissions", () => {
+      let upExecutePayload: BytesLike;
+      let relayer_contract: RelayBatchReentrancy;
+      let signer_without_permissions: Wallet;
+      let signer_with_REENTRANCY_permission: Wallet;
+      let signer_with_CHANGEPERMISSION_permissions: Wallet;
+      let signer_with_REENTRANCY_CHANGEPERMISSION_permissions: Wallet;
+      before(async () => {
+        relayer_contract = await new RelayBatchReentrancy__factory(
+          caller
+        ).deploy();
+        signer_without_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+        signer_with_REENTRANCY_permission = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
+        signer_with_CHANGEPERMISSION_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT2
+        );
+        signer_with_REENTRANCY_CHANGEPERMISSION_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT3
+        );
+
+        const permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_CHANGEPERMISSION_permissions.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_CHANGEPERMISSION_permissions.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            caller.address.substring(2),
+        ];
+
+        const permissionValues = [
+          PERMISSIONS.REENTRANCY,
+          PERMISSIONS.CHANGEPERMISSIONS,
+          combinePermissions(
+            PERMISSIONS.REENTRANCY,
+            PERMISSIONS.CHANGEPERMISSIONS
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+        ];
+
+        const permissionsPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [permissionKeys, permissionValues]
+          );
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
+
+        // save the payload
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
+
+        upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+      });
+
+      it("should revert if caller has NO PERMISSIONS", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_without_permissions,
+          "CHANGEPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(signer_without_permissions.address, "REENTRANCY");
+      });
+
+      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission,
+          "CHANGEPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission.address,
+            "CHANGEPERMISSIONS"
+          );
+      });
+
+      it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_CHANGEPERMISSION_permissions,
+          "CHANGEPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_CHANGEPERMISSION_permissions.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_CHANGEPERMISSION_permissions,
+          "CHANGEPERMISSIONS",
+          context.accounts[9].address
+        );
+
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
+
+        const hardcodedPermissionKey =
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          context.accounts[9].address.substring(2);
+        const hardcodedPermissionValue = "0x";
+
+        expect(
+          await context.universalProfile["getData(bytes32)"](
+            hardcodedPermissionKey
+          )
+        ).to.equal(hardcodedPermissionValue);
+      });
+    });
+
+    describe("when reentering and adding URD", () => {
+      let upExecutePayload: BytesLike;
+      let relayer_contract: RelayBatchReentrancy;
+      let signer_without_permissions: Wallet;
+      let signer_with_REENTRANCY_permission: Wallet;
+      let signer_with_ADDUNIVERSALRECEIVERDELEGATE_permissions: Wallet;
+      let signer_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions: Wallet;
+      const randomLSP1TypeId = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
+      );
+      before(async () => {
+        relayer_contract = await new RelayBatchReentrancy__factory(
+          caller
+        ).deploy();
+        signer_without_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+        signer_with_REENTRANCY_permission = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
+        signer_with_ADDUNIVERSALRECEIVERDELEGATE_permissions =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT2);
+        signer_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT3);
+
+        const permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            caller.address.substring(2),
+        ];
+
+        const permissionValues = [
+          PERMISSIONS.REENTRANCY,
+          PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
+          combinePermissions(
+            PERMISSIONS.REENTRANCY,
+            PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+        ];
+
+        const permissionsPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [permissionKeys, permissionValues]
+          );
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
+
+        // save the payload
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
+
+        upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+      });
+
+      it("should revert if caller has NO PERMISSIONS", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_without_permissions,
+          "ADDUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(signer_without_permissions.address, "REENTRANCY");
+      });
+
+      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission,
+          "ADDUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission.address,
+            "ADDUNIVERSALRECEIVERDELEGATE"
+          );
+      });
+
+      it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_ADDUNIVERSALRECEIVERDELEGATE_permissions,
+          "ADDUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_ADDUNIVERSALRECEIVERDELEGATE_permissions.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_ADDUNIVERSALRECEIVERDELEGATE_permissions,
+          "ADDUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
+
+        expect(
+          await context.universalProfile["getData(bytes32)"](
+            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+              randomLSP1TypeId.substring(2, 42)
+          )
+        ).to.equal(context.accounts[9].address.toLowerCase());
+      });
+    });
+
+    describe("when reentering and changing URD", () => {
+      let upExecutePayload: BytesLike;
+      let relayer_contract: RelayBatchReentrancy;
+      let signer_without_permissions: Wallet;
+      let signer_with_REENTRANCY_permission: Wallet;
+      let signer_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions: Wallet;
+      let signer_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions: Wallet;
+      const randomLSP1TypeId = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
+      );
+      before(async () => {
+        relayer_contract = await new RelayBatchReentrancy__factory(
+          caller
+        ).deploy();
+        signer_without_permissions = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT0
+        );
+        signer_with_REENTRANCY_permission = new ethers.Wallet(
+          LOCAL_PRIVATE_KEYS.ACCOUNT1
+        );
+        signer_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT2);
+        signer_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions =
+          new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT3);
+
+        const permissionKeys = [
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_permission.address.substring(2),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+            signer_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address.substring(
+              2
+            ),
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+            caller.address.substring(2),
+        ];
+
+        const permissionValues = [
+          PERMISSIONS.REENTRANCY,
+          PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
+          combinePermissions(
+            PERMISSIONS.REENTRANCY,
+            PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE
+          ),
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [relayer_contract.address],
+            ["0xffffffff"]
+          ),
+        ];
+
+        const permissionsPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32[],bytes[])",
+            [permissionKeys, permissionValues]
+          );
+        await context.keyManager
+          .connect(owner)
+          ["execute(bytes)"](permissionsPayload);
+
+        // save the payload
+        const reentrantCallPayload =
+          relayer_contract.interface.encodeFunctionData("universalReceiver", [
+            "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            "0x",
+          ]);
+
+        upExecutePayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [0, relayer_contract.address, 0, reentrantCallPayload]
+          );
+      });
+
+      it("should revert if caller has NO PERMISSIONS", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_without_permissions,
+          "CHANGEUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(signer_without_permissions.address, "REENTRANCY");
+      });
+
+      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_permission,
+          "CHANGEUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_REENTRANCY_permission.address,
+            "CHANGEUNIVERSALRECEIVERDELEGATE"
+          );
+      });
+
+      it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions,
+          "CHANGEUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](upExecutePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+          .withArgs(
+            signer_with_CHANGEUNIVERSALRECEIVERDELEGATE_permissions.address,
+            "REENTRANCY"
+          );
+      });
+
+      it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+        await generateBatchRelayPayload(
+          relayer_contract,
+          context.universalProfile,
+          context.keyManager,
+          signer_with_REENTRANCY_CHANGEUNIVERSALRECEIVERDELEGATE_permissions,
+          "CHANGEUNIVERSALRECEIVERDELEGATE",
+          context.accounts[9].address
+        );
+
+        await context.keyManager
+          .connect(caller)
+          ["execute(bytes)"](upExecutePayload);
 
         expect(
           await context.universalProfile["getData(bytes32)"](
