@@ -15,7 +15,7 @@ import { INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
 
 // helpers
 import { provider } from "../utils/helpers";
-import { lsp0Erc725Account } from "../../types/factories/contracts";
+import { BigNumber, ContractTransaction } from "ethers";
 
 export type LSP14TestContext = {
   accounts: SignerWithAddress[];
@@ -25,25 +25,20 @@ export type LSP14TestContext = {
 };
 
 export const shouldBehaveLikeLSP14 = (
-  buildContext: () => Promise<LSP14TestContext>
+  buildContext: (
+    initialFunding?: number | BigNumber
+  ) => Promise<LSP14TestContext>
 ) => {
   let context: LSP14TestContext;
   let newOwner: SignerWithAddress;
 
-  beforeEach(async () => {
-    context = await buildContext();
-
+  before(async () => {
+    context = await buildContext(ethers.utils.parseEther("50"));
     newOwner = context.accounts[1];
-
-    // fund the account
-    await context.deployParams.owner.sendTransaction({
-      to: context.contract.address,
-      value: ethers.utils.parseEther("10"),
-    });
   });
 
   describe("when owner call transferOwnership(...)", () => {
-    beforeEach(async () => {
+    before(async () => {
       await context.contract
         .connect(context.deployParams.owner)
         .transferOwnership(newOwner.address);
@@ -141,101 +136,86 @@ export const shouldBehaveLikeLSP14 = (
 
     describe("when `acceptOwnership(...)` is called in the same tx as `transferOwnership(...)`", () => {
       let upWithCustomURD: UPWithInstantAcceptOwnership;
+
       before(async () => {
-        context = await buildContext();
         upWithCustomURD = await new UPWithInstantAcceptOwnership__factory(
           context.accounts[0]
         ).deploy(context.accounts[0].address);
       });
 
       it("should revert (e.g: if `universalReceiver(...)` function of `newOwner` calls directly `acceptOwnership(...)')", async () => {
-        const ownershipTransfer = context.contract
-          .connect(context.deployParams.owner)
-          .transferOwnership(upWithCustomURD.address);
-
-        await expect(ownershipTransfer).to.be.revertedWith(
+        await expect(
+          context.contract
+            .connect(context.deployParams.owner)
+            .transferOwnership(upWithCustomURD.address)
+        ).to.be.revertedWith(
           "LSP14: newOwner MUST accept ownership in a separate transaction"
         );
       });
+    });
+
+    after(async () => {
+      await context.contract
+        .connect(context.deployParams.owner)
+        .transferOwnership(newOwner.address);
     });
   });
 
   describe("when non-owner call transferOwnership(...)", () => {
     it("should revert", async () => {
-      let newOwner = context.accounts[2];
+      let randomAddress = context.accounts[2];
 
       await expect(
         context.contract
-          .connect(context.accounts[1])
-          .transferOwnership(newOwner.address)
+          .connect(randomAddress)
+          .transferOwnership(randomAddress.address)
       ).to.be.revertedWith("Ownable: caller is not the owner");
     });
   });
 
   describe("when calling acceptOwnership(...)", () => {
     it("should revert when caller is not the pending owner", async () => {
-      let newOwner = context.accounts[1];
-
-      await context.contract
-        .connect(context.deployParams.owner)
-        .transferOwnership(newOwner.address);
-
       await expect(
         context.contract.connect(context.accounts[2]).acceptOwnership()
       ).to.be.revertedWith("LSP14: caller is not the pendingOwner");
     });
 
     describe("when caller is the pending owner", () => {
-      let newOwner: SignerWithAddress;
+      let pendingOwner: string;
+      let acceptOwnershipTx: ContractTransaction;
 
-      beforeEach(async () => {
-        newOwner = context.accounts[1];
-
-        await context.contract
-          .connect(context.deployParams.owner)
-          .transferOwnership(newOwner.address);
+      before(async () => {
+        pendingOwner = await context.contract.pendingOwner();
+        acceptOwnershipTx = await context.contract
+          .connect(newOwner)
+          .acceptOwnership();
       });
 
       it("should change the contract owner to the pendingOwner", async () => {
-        let pendingOwner = await context.contract.pendingOwner();
-
-        await context.contract.connect(newOwner).acceptOwnership();
-
         let updatedOwner = await context.contract.owner();
         expect(updatedOwner).to.equal(pendingOwner);
       });
 
       it("should have cleared the pendingOwner after transferring ownership", async () => {
-        await context.contract.connect(newOwner).acceptOwnership();
-
         let newPendingOwner = await context.contract.pendingOwner();
         expect(newPendingOwner).to.equal(ethers.constants.AddressZero);
       });
 
       it("should have emitted a OwnershipTransferred event", async () => {
-        const owner = await context.contract.owner();
-
-        await expect(await context.contract.connect(newOwner).acceptOwnership())
+        await expect(acceptOwnershipTx)
           .to.emit(context.contract, "OwnershipTransferred")
           .withArgs(
-            owner, // previous owner
+            context.deployParams.owner.address, // previous owner
             newOwner.address // new owner
           );
       });
     });
 
     describe("after pendingOwner has claimed ownership", () => {
-      let previousOwner: SignerWithAddress, newOwner: SignerWithAddress;
+      let previousOwner: SignerWithAddress;
 
-      beforeEach(async () => {
+      before(async () => {
         previousOwner = context.deployParams.owner;
-        newOwner = context.accounts[1];
-
-        await context.contract
-          .connect(context.deployParams.owner)
-          .transferOwnership(newOwner.address);
-
-        await context.contract.connect(newOwner).acceptOwnership();
       });
 
       describe("previous owner should not be allowed anymore to call onlyOwner functions", () => {
@@ -313,7 +293,7 @@ export const shouldBehaveLikeLSP14 = (
     });
   });
 
-  describe("renounceOwnership(...)", () => {
+  describe.skip("renounceOwnership(...)", () => {
     before(async () => {
       // mine 1,000 blocks
       await network.provider.send("hardhat_mine", [

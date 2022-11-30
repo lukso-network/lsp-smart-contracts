@@ -30,12 +30,12 @@ export const shouldBehaveLikeLSP1 = (
 ) => {
   let context: LSP1TestContext;
 
-  beforeEach(async () => {
-    context = await buildContext();
-  });
-
   describe("when calling the `universalReceiver(...)` function", () => {
     const valueSent = 0;
+
+    before(async () => {
+      context = await buildContext();
+    });
 
     describe("from an EOA", () => {
       it("should emit a UniversalReceiver(...) event with correct topics", async () => {
@@ -123,9 +123,12 @@ export const shouldBehaveLikeLSP1 = (
     });
 
     describe("to test typeId delegate feature", () => {
-      let revertableURD;
+      let revertableURD: UniversalReceiverDelegateRevert;
+
       describe("when setting a revertable typeId", () => {
-        beforeEach(async () => {
+        before(async () => {
+          context = await buildContext();
+
           revertableURD = await new UniversalReceiverDelegateRevert__factory(
             context.accounts[1]
           ).deploy();
@@ -155,6 +158,10 @@ export const shouldBehaveLikeLSP1 = (
 
   describe("when calling the `universalReceiver(...)` function while sending native tokens", () => {
     const valueSent = ethers.utils.parseEther("3");
+
+    before(async () => {
+      context = await buildContext();
+    });
 
     describe("from an EOA", () => {
       it("should emit a UniversalReceiver(...) event with correct topics", async () => {

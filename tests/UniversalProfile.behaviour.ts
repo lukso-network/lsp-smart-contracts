@@ -28,7 +28,7 @@ export const shouldBehaveLikeLSP3 = (
 ) => {
   let context: LSP3TestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext(100);
   });
 
@@ -92,6 +92,7 @@ export const shouldBehaveLikeLSP3 = (
       ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000001",
     ];
+
     let lsp12IssuedAssetsValues = [
       "0xd94353d9b005b3c0a9da169b768a31c57844e490",
       "0xdaea594e385fc724449e3118b2db7e86dfba1826",
@@ -362,7 +363,7 @@ export const shouldInitializeLikeLSP3 = (
 ) => {
   let context: LSP3TestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
