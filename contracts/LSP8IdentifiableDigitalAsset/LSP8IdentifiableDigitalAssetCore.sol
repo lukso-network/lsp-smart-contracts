@@ -388,6 +388,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         address to,
         bytes32 tokenId // solhint-disable no-unused-vars
     ) internal virtual {
+        // silent compiler warning (this does not push new items on the stack)
+        tokenId;
+
         // token being minted
         if (from == address(0)) {
             _existingTokens += 1;

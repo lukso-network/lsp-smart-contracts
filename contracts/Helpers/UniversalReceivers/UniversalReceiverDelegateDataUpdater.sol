@@ -26,6 +26,9 @@ contract UniversalReceiverDelegateDataUpdater is ERC165Storage {
         bytes32 typeId,
         bytes memory data // solhint-disable no-unused-vars
     ) public virtual returns (bytes memory) {
+        // silent compiler warning (this does not push new items on the stack)
+        data;
+
         if (typeId == _TYPEID_LSP7_TOKENSSENDER) {
             address keyManager = LSP14Ownable2Step(msg.sender).owner();
             bytes memory setDataPayload = abi.encodeWithSignature(

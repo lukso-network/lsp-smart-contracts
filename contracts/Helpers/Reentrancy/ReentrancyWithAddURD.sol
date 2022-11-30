@@ -13,6 +13,9 @@ contract ReentrancyWithAddURD {
         bytes32 typeId, // solhint-disable no-unused-vars
         bytes calldata data // bytes32(TYPE_ID) + bytes20(address(URD))
     ) public virtual returns (bytes memory) {
+        // silent compiler warning (this does not push new items on the stack)
+        typeId;
+
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 

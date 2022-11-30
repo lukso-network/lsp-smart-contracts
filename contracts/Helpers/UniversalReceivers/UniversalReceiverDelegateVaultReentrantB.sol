@@ -21,6 +21,9 @@ contract UniversalReceiverDelegateVaultReentrantB is ERC165Storage {
 
     // solhint-disable no-unused-vars
     function universalReceiver(bytes32 typeId, bytes memory data) external returns (bytes memory) {
+        // silent compiler warning (this does not push new items on the stack)
+        typeId;
+
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 

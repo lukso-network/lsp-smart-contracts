@@ -12,6 +12,9 @@ contract OnERC721ReceivedExtension {
         uint256 tokenId,
         bytes calldata data
     ) external pure returns (bytes4) {
+        // silent compiler warning (this does not push new items on the stack)
+        (operator, from, tokenId, data);
+
         return 0x150b7a02;
     }
 }

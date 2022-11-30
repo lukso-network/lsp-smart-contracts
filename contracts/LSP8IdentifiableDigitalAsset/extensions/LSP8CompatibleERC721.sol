@@ -77,6 +77,9 @@ abstract contract LSP8CompatibleERC721 is
     function tokenURI(
         uint256 tokenId // solhint-disable no-unused-vars
     ) public view virtual returns (string memory) {
+        // silent compiler warning (this does not push new items on the stack)
+        tokenId;
+
         bytes memory data = _getData(_LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36

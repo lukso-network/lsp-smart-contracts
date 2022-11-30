@@ -38,6 +38,9 @@ contract UniversalReceiverAddressStore is ERC165Storage, AddressRegistry {
         bytes32 typeId,
         bytes memory
     ) external onlyAccount returns (bytes memory) {
+        // silent compiler warning (this does not push new items on the stack)
+        value;
+
         // require(typeId == _TOKENS_RECIPIENT_INTERFACE_HASH, 'UniversalReceiverDelegate: Type not supported');
 
         // store tokens only if received, DO NOT revert on _TOKENS_SENDER_INTERFACE_HASH
