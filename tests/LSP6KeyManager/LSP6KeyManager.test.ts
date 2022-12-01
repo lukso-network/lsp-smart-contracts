@@ -41,7 +41,7 @@ describe("LSP6KeyManager", () => {
     describe("when deploying the contract", () => {
       let context: LSP6TestContext;
 
-      before(async () => {
+      beforeEach(async () => {
         context = await buildTestContext();
       });
 

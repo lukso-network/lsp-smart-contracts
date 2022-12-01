@@ -127,7 +127,7 @@ export const shouldInitializeLikeLSP6 = (
 ) => {
   let context: LSP6TestContext;
 
-  before(async () => {
+  beforeEach(async () => {
     context = await buildContext();
   });
 

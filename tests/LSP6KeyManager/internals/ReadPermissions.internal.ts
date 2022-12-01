@@ -25,7 +25,7 @@ export const testReadingPermissionsInternals = (
     let addressCanSetData: SignerWithAddress,
       addressCanSetDataAndCall: SignerWithAddress;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       addressCanSetData = context.accounts[1];
@@ -84,7 +84,7 @@ export const testReadingPermissionsInternals = (
       ["0x0000000000000000000000000000000000000000000000000000000000000000"]
     );
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       moreThan32EmptyBytes = context.accounts[1];
@@ -175,7 +175,7 @@ export const testReadingPermissionsInternals = (
     let permissionArrayKeys: string[] = [];
     let permissionArrayValues: string[] = [];
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       firstBeneficiary = context.accounts[1];
