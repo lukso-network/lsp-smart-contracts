@@ -22,12 +22,15 @@ contract SignatureValidator is IERC1271, ERC165Storage {
     /**
      * @notice Verifies that the signer is the owner of the signing contract.
      */
-    function isValidSignature(bytes32 _hash, bytes calldata _signature)
+    function isValidSignature(bytes32 messageHash, bytes calldata signature)
         external
         pure
         override
         returns (bytes4)
     {
+        // silent compiler warning (this does not push new items on the stack)
+        (messageHash, signature);
+
         // always return true (just for testing)
         return 0x1626ba7e;
     }

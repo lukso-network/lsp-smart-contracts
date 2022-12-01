@@ -20,12 +20,16 @@ contract UniversalReceiverDelegateVaultReentrantA is ERC165Storage {
     }
 
     // solhint-disable no-unused-vars
-    function universalReceiver(bytes32 typeId, bytes memory data) external returns (bytes memory) {
+    function universalReceiver(
+        bytes32, /* typeId */
+        bytes memory data
+    ) external returns (bytes memory) {
         bytes32[] memory keys = new bytes32[](1);
         bytes[] memory values = new bytes[](1);
 
         keys[0] = bytes32(data);
         values[0] = hex"aabbccdd";
         IERC725Y(msg.sender).setData(keys, values);
+        return "";
     }
 }

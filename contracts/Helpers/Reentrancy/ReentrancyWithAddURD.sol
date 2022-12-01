@@ -10,9 +10,9 @@ import "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 contract ReentrancyWithAddURD {
     function universalReceiver(
-        bytes32 typeId, // solhint-disable no-unused-vars
+        bytes32, /* typeId */
         bytes calldata data // bytes32(TYPE_ID) + bytes20(address(URD))
-    ) public virtual returns (bytes memory result) {
+    ) public virtual returns (bytes memory) {
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 
@@ -28,6 +28,6 @@ contract ReentrancyWithAddURD {
             data[32:]
         );
 
-        ILSP6KeyManager(keyManager).execute(addURDPayload);
+        return ILSP6KeyManager(keyManager).execute(addURDPayload);
     }
 }

@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 contract ABIEncoder {
     function encode(bytes memory a, bytes memory b)
         public
+        view
         returns (bytes memory c, uint256 gasUsed)
     {
         uint256 gasUsed1 = gasleft();

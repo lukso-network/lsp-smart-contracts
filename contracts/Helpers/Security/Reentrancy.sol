@@ -18,11 +18,11 @@ contract Reentrancy {
         _payload = _dataPayload;
     }
 
-    fallback() external payable {
+    receive() external payable {
         if (!switchFallback) {
             switchFallback = true;
             (bool success, bytes memory returnData) = _target.call(_payload);
-            bytes memory result = Address.verifyCallResult(
+            Address.verifyCallResult(
                 success,
                 returnData,
                 "Reentrancy Helper Contract: failed to re-enter contract"

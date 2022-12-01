@@ -295,6 +295,7 @@ library LSP2Utils {
             pointer += elementLength + 1;
         }
         if (pointer == compactBytesArray.length) return true;
+        return false;
     }
 
     /**
