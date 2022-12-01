@@ -27,12 +27,12 @@ contract RelayBatchReentrancy {
     receive() external payable {}
 
     function universalReceiver(
-        bytes32 typeId, // solhint-disable no-unused-vars
-        bytes memory data // solhint-disable no-unused-vars
-    ) public virtual returns (bytes memory result) {
-        // solhint-disable no-unused-vars
+        bytes32, /* typeId */
+        bytes memory /* data */
+    ) public virtual returns (bytes[] memory) {
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 
-        ILSP6KeyManager(keyManager).executeRelayCall(_signatures, _nonces, _values, _payloads);
+        return
+            ILSP6KeyManager(keyManager).executeRelayCall(_signatures, _nonces, _values, _payloads);
     }
 }
