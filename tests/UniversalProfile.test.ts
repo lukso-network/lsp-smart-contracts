@@ -129,10 +129,10 @@ describe("UniversalProfile", () => {
     });
 
     describe("when testing deployed contract", () => {
-      // shouldBehaveLikeLSP3(buildLSP3TestContext);
-      // shouldBehaveLikeLSP1(buildLSP1TestContext);
+      shouldBehaveLikeLSP3(buildLSP3TestContext);
+      shouldBehaveLikeLSP1(buildLSP1TestContext);
       shouldBehaveLikeLSP14(buildLSP14TestContext);
-      // shouldBehaveLikeLSP17(buildLSP17TestContext);
+      shouldBehaveLikeLSP17(buildLSP17TestContext);
     });
   });
 
@@ -298,19 +298,19 @@ describe("UniversalProfile", () => {
     });
 
     describe("when testing deployed contract", () => {
-      // shouldBehaveLikeLSP3(async (initialFunding?: number) => {
-      //   let context = await buildLSP3TestContext(initialFunding);
-      //   await initializeProxy(context);
-      //   return context;
-      // });
+      shouldBehaveLikeLSP3(async (initialFunding?: number) => {
+        let context = await buildLSP3TestContext(initialFunding);
+        await initializeProxy(context);
+        return context;
+      });
 
-      // shouldBehaveLikeLSP1(async () => {
-      //   let lsp3Context = await buildLSP3TestContext();
-      //   await initializeProxy(lsp3Context);
+      shouldBehaveLikeLSP1(async () => {
+        let lsp3Context = await buildLSP3TestContext();
+        await initializeProxy(lsp3Context);
 
-      //   let lsp1Context = await buildLSP1TestContext();
-      //   return lsp1Context;
-      // });
+        let lsp1Context = await buildLSP1TestContext();
+        return lsp1Context;
+      });
 
       shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
         let claimOwnershipContext = await buildLSP14TestContext(initialFunding);
@@ -324,18 +324,18 @@ describe("UniversalProfile", () => {
         return claimOwnershipContext;
       });
 
-      // shouldBehaveLikeLSP17(async () => {
-      //   let fallbackExtensionContext = await buildLSP17TestContext();
+      shouldBehaveLikeLSP17(async () => {
+        let fallbackExtensionContext = await buildLSP17TestContext();
 
-      //   await initializeProxy({
-      //     accounts: fallbackExtensionContext.accounts,
-      //     universalProfile:
-      //       fallbackExtensionContext.contract as LSP0ERC725Account,
-      //     deployParams: fallbackExtensionContext.deployParams,
-      //   });
+        await initializeProxy({
+          accounts: fallbackExtensionContext.accounts,
+          universalProfile:
+            fallbackExtensionContext.contract as LSP0ERC725Account,
+          deployParams: fallbackExtensionContext.deployParams,
+        });
 
-      //   return fallbackExtensionContext;
-      // });
+        return fallbackExtensionContext;
+      });
     });
   });
 });
