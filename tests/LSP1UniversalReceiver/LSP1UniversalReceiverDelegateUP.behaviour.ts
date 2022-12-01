@@ -1947,7 +1947,7 @@ export const shouldInitializeLikeLSP1Delegate = (
 ) => {
   let context: LSP1DelegateInitializeTestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 

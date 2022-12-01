@@ -4,7 +4,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
 import {
-  ILSP1UniversalReceiver,
   UniversalProfile,
   UniversalReceiverTester,
   UniversalReceiverDelegateRevert__factory,
@@ -15,7 +14,7 @@ import {
 import { abiCoder, LSP1_HOOK_PLACEHOLDER } from "../utils/helpers";
 
 // constants
-import { ERC725YDataKeys, EventSignatures } from "../../constants";
+import { ERC725YDataKeys } from "../../constants";
 
 export type LSP1TestContext = {
   accounts: SignerWithAddress[];
@@ -186,10 +185,10 @@ export const shouldBehaveLikeLSP1 = (
     });
 
     describe("from a Contract", () => {
-      beforeEach(async () => {
+      before(async () => {
         await context.accounts[0].sendTransaction({
           to: context.lsp1Checker.address,
-          value: ethers.utils.parseEther("5"),
+          value: ethers.utils.parseEther("50"),
         });
       });
 
