@@ -306,7 +306,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe.only("first call through `execute(bytes)`, second call through `execute(bytes)`", () => {
+  describe("first call through `execute(bytes)`, second call through `execute(bytes)`", () => {
     describe("when reentrant contract has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let reentrancyWithValueTransfer: ReentrancyWithValueTransfer;
       let reentrancyWithSetData: ReentrancyWithSetData;
@@ -1782,7 +1782,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe.only("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `execute(bytes)`", () => {
+  describe("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `execute(bytes)`", () => {
     describe("when reentrant contract has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let reentrancyWithValueTransfer: ReentrancyWithValueTransfer;
       let reentrancyWithSetData: ReentrancyWithSetData;
@@ -3606,7 +3606,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe.only("first call through `execute(bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
+  describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
     describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let upExecutePayload: BytesLike;
       let relayer_contract: RelaySingleReentrancy;
@@ -4983,7 +4983,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe.only("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
+  describe("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
     describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let upExecutePayload: BytesLike;
       let relayer_contract: RelaySingleReentrancy;
@@ -6708,7 +6708,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe.only("first call through `execute(bytes)`, second call through `execute(uint256[],bytes[])`", () => {
+  describe("first call through `execute(bytes)`, second call through `execute(uint256[],bytes[])`", () => {
     describe("when reentering and transferring value", () => {
       let contract_without_permissions: ReentrancyWithValueTransfer;
       let contract_with_ALL_PERMISSIONS_but_REENTRANCY: ReentrancyWithValueTransfer;
@@ -8230,7 +8230,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe.only("first call through `execute(bytes)`, second call through `executeRelayCall(bytes[],uint256[],uint256[],bytes[])`", () => {
+  describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes[],uint256[],uint256[],bytes[])`", () => {
     describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let upExecutePayload: BytesLike;
       let relayer_contract: RelayBatchReentrancy;
