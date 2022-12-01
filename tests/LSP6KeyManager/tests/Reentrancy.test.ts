@@ -41,41 +41,23 @@ import {
   combineAllowedCalls,
   encodeCompactBytesArray,
   LOCAL_PRIVATE_KEYS,
+  signLSP6ExecuteRelayCall,
 } from "../../utils/helpers";
 import { BigNumber, BytesLike, Wallet } from "ethers";
 
 const generateRelayCall = async (
   keyManager: LSP6KeyManager,
-  upExecutePayload: BytesLike,
+  payload: BytesLike,
   signer: Wallet
 ) => {
-  let latestNonce = await keyManager.callStatic.getNonce(signer.address, 0);
-
-  const signedMessageParams = {
-    lsp6Version: LSP6_VERSION,
-    chainId: 31337, // HARDHAT_CHAINID
-    nonce: latestNonce,
-    msgValue: 0,
-    payload: upExecutePayload,
-  };
-
-  let encodedMessage = ethers.utils.solidityPack(
-    ["uint256", "uint256", "uint256", "uint256", "bytes"],
-    [
-      signedMessageParams.lsp6Version,
-      signedMessageParams.chainId,
-      signedMessageParams.nonce,
-      signedMessageParams.msgValue,
-      signedMessageParams.payload,
-    ]
-  );
-
-  let eip191Signer = new EIP191Signer();
-
-  let { signature } = await eip191Signer.signDataWithIntendedValidator(
-    keyManager.address,
-    encodedMessage,
-    signer.privateKey
+  let nonce = await keyManager.callStatic.getNonce(signer.address, 1);
+  let msgValue = 0;
+  let signature = await signLSP6ExecuteRelayCall(
+    keyManager,
+    nonce.toString(),
+    signer.privateKey,
+    msgValue,
+    payload.toString()
   );
 
   const relayCallContext: {
@@ -84,8 +66,8 @@ const generateRelayCall = async (
     payload: BytesLike;
   } = {
     signature,
-    nonce: signedMessageParams.nonce,
-    payload: signedMessageParams.payload,
+    nonce,
+    payload,
   };
 
   return relayCallContext;
@@ -99,16 +81,16 @@ const generateSingleRelayPayload = async (
   caseTested: string,
   testedAddress: string
 ) => {
-  let upExecutePayload: BytesLike;
+  let payload: BytesLike;
   switch (caseTested) {
     case "TRANSFERVALUE":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
         [0, relayReentrantContract.address, ethers.utils.parseEther("1"), "0x"]
       );
       break;
     case "SETDATA":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ethers.utils.keccak256(
@@ -119,7 +101,7 @@ const generateSingleRelayPayload = async (
       );
       break;
     case "ADDPERMISSIONS":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -129,7 +111,7 @@ const generateSingleRelayPayload = async (
       );
       break;
     case "CHANGEPERMISSIONS":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -139,7 +121,7 @@ const generateSingleRelayPayload = async (
       );
       break;
     case "ADDUNIVERSALRECEIVERDELEGATE":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -151,7 +133,7 @@ const generateSingleRelayPayload = async (
       );
       break;
     case "CHANGEUNIVERSALRECEIVERDELEGATE":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -163,44 +145,21 @@ const generateSingleRelayPayload = async (
       );
       break;
     default:
-      upExecutePayload = "0x";
+      payload = "0x";
       break;
   }
 
-  let latestNonce = await keyManager.callStatic.getNonce(signer.address, 1);
-
-  const signedMessageParams = {
-    lsp6Version: LSP6_VERSION,
-    chainId: 31337, // HARDHAT_CHAINID
-    nonce: latestNonce,
-    msgValue: 0,
-    payload: upExecutePayload,
-  };
-
-  let encodedMessage = ethers.utils.solidityPack(
-    ["uint256", "uint256", "uint256", "uint256", "bytes"],
-    [
-      signedMessageParams.lsp6Version,
-      signedMessageParams.chainId,
-      signedMessageParams.nonce,
-      signedMessageParams.msgValue,
-      signedMessageParams.payload,
-    ]
+  let nonce = await keyManager.callStatic.getNonce(signer.address, 1);
+  let msgValue = 0;
+  let signature = await signLSP6ExecuteRelayCall(
+    keyManager,
+    nonce.toString(),
+    signer.privateKey,
+    msgValue,
+    payload
   );
 
-  let eip191Signer = new EIP191Signer();
-
-  let { signature } = await eip191Signer.signDataWithIntendedValidator(
-    keyManager.address,
-    encodedMessage,
-    signer.privateKey
-  );
-
-  await relayReentrantContract.prepareRelayCall(
-    signature,
-    signedMessageParams.nonce,
-    signedMessageParams.payload
-  );
+  await relayReentrantContract.prepareRelayCall(signature, nonce, payload);
 };
 
 const generateBatchRelayPayload = async (
@@ -211,16 +170,16 @@ const generateBatchRelayPayload = async (
   caseTested: string,
   testedAddress: string
 ) => {
-  let upExecutePayload: BytesLike;
+  let payload: BytesLike;
   switch (caseTested) {
     case "TRANSFERVALUE":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
         [0, relayReentrantContract.address, ethers.utils.parseEther("1"), "0x"]
       );
       break;
     case "SETDATA":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ethers.utils.keccak256(
@@ -231,7 +190,7 @@ const generateBatchRelayPayload = async (
       );
       break;
     case "ADDPERMISSIONS":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -241,7 +200,7 @@ const generateBatchRelayPayload = async (
       );
       break;
     case "CHANGEPERMISSIONS":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -251,7 +210,7 @@ const generateBatchRelayPayload = async (
       );
       break;
     case "ADDUNIVERSALRECEIVERDELEGATE":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -263,7 +222,7 @@ const generateBatchRelayPayload = async (
       );
       break;
     case "CHANGEUNIVERSALRECEIVERDELEGATE":
-      upExecutePayload = universalProfile.interface.encodeFunctionData(
+      payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -275,44 +234,25 @@ const generateBatchRelayPayload = async (
       );
       break;
     default:
-      upExecutePayload = "0x";
+      payload = "0x";
       break;
   }
 
-  let latestNonce = await keyManager.callStatic.getNonce(signer.address, 1);
-
-  const signedMessageParams = {
-    lsp6Version: LSP6_VERSION,
-    chainId: 31337, // HARDHAT_CHAINID
-    nonce: latestNonce,
-    msgValue: 0,
-    payload: upExecutePayload,
-  };
-
-  let encodedMessage = ethers.utils.solidityPack(
-    ["uint256", "uint256", "uint256", "uint256", "bytes"],
-    [
-      signedMessageParams.lsp6Version,
-      signedMessageParams.chainId,
-      signedMessageParams.nonce,
-      signedMessageParams.msgValue,
-      signedMessageParams.payload,
-    ]
-  );
-
-  let eip191Signer = new EIP191Signer();
-
-  let { signature } = await eip191Signer.signDataWithIntendedValidator(
-    keyManager.address,
-    encodedMessage,
-    signer.privateKey
+  let nonce = await keyManager.callStatic.getNonce(signer.address, 1);
+  let msgValue = 0;
+  let signature = await signLSP6ExecuteRelayCall(
+    keyManager,
+    nonce.toString(),
+    signer.privateKey,
+    msgValue,
+    payload
   );
 
   await relayReentrantContract.prepareRelayCall(
     [signature],
-    [signedMessageParams.nonce],
-    [signedMessageParams.msgValue],
-    [signedMessageParams.payload]
+    [nonce],
+    [msgValue],
+    [payload]
   );
 };
 
@@ -323,6 +263,7 @@ export const testReentrancyScenarios = async (
   let owner: SignerWithAddress;
   let caller: SignerWithAddress;
   let signer: Wallet;
+
   before(async () => {
     context = await buildContext();
     owner = context.accounts[7];
@@ -365,7 +306,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe("first call through `execute(bytes)`, second call through `execute(bytes)`", () => {
+  describe.only("first call through `execute(bytes)`, second call through `execute(bytes)`", () => {
     describe("when reentrant contract has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let reentrancyWithValueTransfer: ReentrancyWithValueTransfer;
       let reentrancyWithSetData: ReentrancyWithSetData;
@@ -376,6 +317,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         reentrancyWithAddPermission =
           await new ReentrancyWithAddPermission__factory(caller).deploy();
@@ -613,6 +555,7 @@ export const testReentrancyScenarios = async (
       let contract_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: ReentrancyWithValueTransfer;
       let contract_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: ReentrancyWithValueTransfer;
       let reentrantCallPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithValueTransfer__factory(caller).deploy();
@@ -902,6 +845,7 @@ export const testReentrancyScenarios = async (
       let contract_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: ReentrancyWithSetData;
       let contract_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: ReentrancyWithSetData;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions = await new ReentrancyWithSetData__factory(
           caller
@@ -1192,6 +1136,7 @@ export const testReentrancyScenarios = async (
       let contract_with_ADDPERMISSION_permissions: ReentrancyWithAddPermission;
       let contract_with_REENTRANCY_ADDPERMISSION_permissions: ReentrancyWithAddPermission;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithAddPermission__factory(caller).deploy();
@@ -1352,6 +1297,7 @@ export const testReentrancyScenarios = async (
       let contract_with_CHANGEPERMISSION_permissions: ReentrancyWithChangePermission;
       let contract_with_REENTRANCY_CHANGEPERMISSION_permissions: ReentrancyWithChangePermission;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithChangePermission__factory(caller).deploy();
@@ -1514,6 +1460,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         contract_without_permissions = await new ReentrancyWithAddURD__factory(
           caller
@@ -1675,6 +1622,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithChangeURD__factory(caller).deploy();
@@ -1834,7 +1782,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `execute(bytes)`", () => {
+  describe.only("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `execute(bytes)`", () => {
     describe("when reentrant contract has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let reentrancyWithValueTransfer: ReentrancyWithValueTransfer;
       let reentrancyWithSetData: ReentrancyWithSetData;
@@ -1845,6 +1793,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         reentrancyWithAddPermission =
           await new ReentrancyWithAddPermission__factory(caller).deploy();
@@ -2142,6 +2091,7 @@ export const testReentrancyScenarios = async (
       let contract_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: ReentrancyWithValueTransfer;
       let contract_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: ReentrancyWithValueTransfer;
       let reentrantCallPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithValueTransfer__factory(caller).deploy();
@@ -2499,6 +2449,7 @@ export const testReentrancyScenarios = async (
       let contract_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: ReentrancyWithSetData;
       let contract_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: ReentrancyWithSetData;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions = await new ReentrancyWithSetData__factory(
           caller
@@ -2857,6 +2808,7 @@ export const testReentrancyScenarios = async (
       let contract_with_ADDPERMISSION_permissions: ReentrancyWithAddPermission;
       let contract_with_REENTRANCY_ADDPERMISSION_permissions: ReentrancyWithAddPermission;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithAddPermission__factory(caller).deploy();
@@ -3055,6 +3007,7 @@ export const testReentrancyScenarios = async (
       let contract_with_CHANGEPERMISSION_permissions: ReentrancyWithChangePermission;
       let contract_with_REENTRANCY_CHANGEPERMISSION_permissions: ReentrancyWithChangePermission;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithChangePermission__factory(caller).deploy();
@@ -3255,6 +3208,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         contract_without_permissions = await new ReentrancyWithAddURD__factory(
           caller
@@ -3454,6 +3408,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithChangeURD__factory(caller).deploy();
@@ -3651,7 +3606,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
+  describe.only("first call through `execute(bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
     describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let upExecutePayload: BytesLike;
       let relayer_contract: RelaySingleReentrancy;
@@ -3661,6 +3616,7 @@ export const testReentrancyScenarios = async (
       let reentrantSignerWithChangePermission: Wallet;
       let reentrantSignerWithAddURD: Wallet;
       let reentrantSignerWithChangeURD: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -3851,6 +3807,7 @@ export const testReentrancyScenarios = async (
       let signer_with_VALUETRANSFER_permissions_with_calls: Wallet;
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: Wallet;
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -4124,6 +4081,7 @@ export const testReentrancyScenarios = async (
       let signer_with_SETDATA_permissions_with_allowed_keys: Wallet;
       let signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: Wallet;
       let signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -4390,6 +4348,7 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_ADDPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_ADDPERMISSION_permissions: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -4548,6 +4507,7 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_CHANGEPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_CHANGEPERMISSION_permissions: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -4709,6 +4669,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -4866,6 +4827,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -5021,7 +4983,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
+  describe.only("first call through `executeRelayCall(bytes,uint256,bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
     describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let upExecutePayload: BytesLike;
       let relayer_contract: RelaySingleReentrancy;
@@ -5031,6 +4993,7 @@ export const testReentrancyScenarios = async (
       let reentrantSignerWithChangePermission: Wallet;
       let reentrantSignerWithAddURD: Wallet;
       let reentrantSignerWithChangeURD: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -5281,6 +5244,7 @@ export const testReentrancyScenarios = async (
       let signer_with_VALUETRANSFER_permissions_with_calls: Wallet;
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: Wallet;
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -5622,6 +5586,7 @@ export const testReentrancyScenarios = async (
       let signer_with_SETDATA_permissions_with_allowed_keys: Wallet;
       let signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: Wallet;
       let signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -5956,6 +5921,7 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_ADDPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_ADDPERMISSION_permissions: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -6152,6 +6118,7 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_CHANGEPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_CHANGEPERMISSION_permissions: Wallet;
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -6351,6 +6318,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -6546,6 +6514,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         relayer_contract = await new RelaySingleReentrancy__factory(
           caller
@@ -6739,7 +6708,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe("first call through `execute(bytes)`, second call through `execute(uint256[],bytes[])`", () => {
+  describe.only("first call through `execute(bytes)`, second call through `execute(uint256[],bytes[])`", () => {
     describe("when reentering and transferring value", () => {
       let contract_without_permissions: ReentrancyWithValueTransfer;
       let contract_with_ALL_PERMISSIONS_but_REENTRANCY: ReentrancyWithValueTransfer;
@@ -6750,6 +6719,7 @@ export const testReentrancyScenarios = async (
       let contract_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: ReentrancyWithValueTransfer;
       let contract_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: ReentrancyWithValueTransfer;
       let reentrantCallPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithValueTransfer__factory(caller).deploy();
@@ -7083,6 +7053,7 @@ export const testReentrancyScenarios = async (
       let contract_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: ReentrancyWithSetData;
       let contract_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: ReentrancyWithSetData;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions = await new ReentrancyWithSetData__factory(
           caller
@@ -7418,6 +7389,7 @@ export const testReentrancyScenarios = async (
       let contract_with_ADDPERMISSION_permissions: ReentrancyWithAddPermission;
       let contract_with_REENTRANCY_ADDPERMISSION_permissions: ReentrancyWithAddPermission;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithAddPermission__factory(caller).deploy();
@@ -7627,6 +7599,7 @@ export const testReentrancyScenarios = async (
       let contract_with_CHANGEPERMISSION_permissions: ReentrancyWithChangePermission;
       let contract_with_REENTRANCY_CHANGEPERMISSION_permissions: ReentrancyWithChangePermission;
       let reentrantContractPayload: BytesLike;
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithChangePermission__factory(caller).deploy();
@@ -7838,6 +7811,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         contract_without_permissions = await new ReentrancyWithAddURD__factory(
           caller
@@ -8048,6 +8022,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         contract_without_permissions =
           await new ReentrancyWithChangeURD__factory(caller).deploy();
@@ -8255,7 +8230,7 @@ export const testReentrancyScenarios = async (
     });
   });
 
-  describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes[],uint256[],uint256[],bytes[])`", () => {
+  describe.only("first call through `execute(bytes)`, second call through `executeRelayCall(bytes[],uint256[],uint256[],bytes[])`", () => {
     describe("when reentrant signer has ALL_PERMISSIONS without REENTRANCY permission", () => {
       let upExecutePayload: BytesLike;
       let relayer_contract: RelayBatchReentrancy;
@@ -8265,6 +8240,7 @@ export const testReentrancyScenarios = async (
       let reentrantSignerWithChangePermission: Wallet;
       let reentrantSignerWithAddURD: Wallet;
       let reentrantSignerWithChangeURD: Wallet;
+
       before(async () => {
         relayer_contract = await new RelayBatchReentrancy__factory(
           caller
@@ -8455,6 +8431,7 @@ export const testReentrancyScenarios = async (
       let signer_with_VALUETRANSFER_permissions_with_calls: Wallet;
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_no_calls: Wallet;
       let signer_with_REENTRANCY_VALUETRANSFER_permissions_with_calls: Wallet;
+
       before(async () => {
         relayer_contract = await new RelayBatchReentrancy__factory(
           caller
@@ -8728,6 +8705,7 @@ export const testReentrancyScenarios = async (
       let signer_with_SETDATA_permissions_with_allowed_keys: Wallet;
       let signer_with_REENTRANCY_SETDATA_permissions_no_allowed_keys: Wallet;
       let signer_with_REENTRANCY_SETDATA_permissions_with_allowed_keys: Wallet;
+
       before(async () => {
         relayer_contract = await new RelayBatchReentrancy__factory(
           caller
@@ -8994,6 +8972,7 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_ADDPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_ADDPERMISSION_permissions: Wallet;
+
       before(async () => {
         relayer_contract = await new RelayBatchReentrancy__factory(
           caller
@@ -9152,6 +9131,7 @@ export const testReentrancyScenarios = async (
       let signer_with_REENTRANCY_permission: Wallet;
       let signer_with_CHANGEPERMISSION_permissions: Wallet;
       let signer_with_REENTRANCY_CHANGEPERMISSION_permissions: Wallet;
+
       before(async () => {
         relayer_contract = await new RelayBatchReentrancy__factory(
           caller
@@ -9313,6 +9293,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         relayer_contract = await new RelayBatchReentrancy__factory(
           caller
@@ -9470,6 +9451,7 @@ export const testReentrancyScenarios = async (
       const randomLSP1TypeId = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
       );
+
       before(async () => {
         relayer_contract = await new RelayBatchReentrancy__factory(
           caller
