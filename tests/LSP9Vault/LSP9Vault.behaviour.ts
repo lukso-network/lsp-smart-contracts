@@ -33,6 +33,7 @@ import {
   OPERATION_TYPES,
   LSP1_TYPE_IDS,
 } from "../../constants";
+import { BigNumber } from "ethers";
 
 export type LSP9TestAccounts = {
   owner: SignerWithAddress;
@@ -48,7 +49,7 @@ export const getNamedAccounts = async (): Promise<LSP9TestAccounts> => {
 
 export type LSP9DeployParams = {
   newOwner: string;
-  initialFunding?: number;
+  initialFunding?: number | BigNumber;
 };
 
 export type LSP9TestContext = {
@@ -390,7 +391,7 @@ export const shouldBehaveLikeLSP9 = (
     });
 
     describe("when transferring ownership of the vault", () => {
-      beforeEach(async () => {
+      before(async () => {
         context = await buildContext();
       });
 

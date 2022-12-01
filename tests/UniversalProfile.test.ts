@@ -1,7 +1,6 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import {
-  ILSP1UniversalReceiver,
   LSP0ERC725Account,
   UniversalProfileInit__factory,
   UniversalProfile__factory,
@@ -73,6 +72,7 @@ describe("UniversalProfile", () => {
         owner: accounts[0],
         initialFunding,
       };
+
       const contract = await new UniversalProfile__factory(accounts[0]).deploy(
         deployParams.owner.address,
         { value: initialFunding }
