@@ -37,7 +37,7 @@ export const shouldBehaveLikePermissionSetData = (
       canSetDataWithoutAllowedERC725YDataKeys: SignerWithAddress,
       cannotSetData: SignerWithAddress;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       canSetDataWithAllowedERC725YDataKeys = context.accounts[1];
@@ -581,8 +581,11 @@ export const shouldBehaveLikePermissionSetData = (
   describe("when caller is a contract", () => {
     let contractCanSetData: Executor;
 
-    const key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Key"));
-    const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("Some value"));
+    const hardcodedDataKey =
+      "0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1";
+    const hardcodedDataValue = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes("Some value")
+    );
 
     /**
      * @dev this is necessary when the function being called in the contract
@@ -591,7 +594,7 @@ export const shouldBehaveLikePermissionSetData = (
      */
     const GAS_PROVIDED = 500_000;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       contractCanSetData = await new Executor__factory(context.owner).deploy(
@@ -608,12 +611,9 @@ export const shouldBehaveLikePermissionSetData = (
           contractCanSetData.address.substring(2),
       ];
 
-      const hardcodedDataKey =
-        "0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1";
-
       const compactedAllowedERC725YDataKeys = encodeCompactBytesArray([
         hardcodedDataKey,
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Some Key")),
+        hardcodedDataValue,
       ]);
 
       const permissionValues = [
@@ -625,12 +625,17 @@ export const shouldBehaveLikePermissionSetData = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
+    afterEach(async () => {
+      // teardown to start always with empty storage under the hardcoded data key
+      await contractCanSetData.setComputedKeyFromParams(hardcodedDataKey, "0x");
+    });
+
     describe("> contract calls", () => {
       it("should allow to set a key hardcoded inside a function of the calling contract", async () => {
         // check that nothing is set at store[key]
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
+        ](hardcodedDataKey);
         expect(initialStorage).to.equal("0x");
 
         // make the executor call
@@ -639,15 +644,15 @@ export const shouldBehaveLikePermissionSetData = (
         // check that store[key] is now set to value
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
-        expect(newStorage).to.equal(value);
+        ](hardcodedDataKey);
+        expect(newStorage).to.equal(hardcodedDataValue);
       });
 
       it("Should allow to set a key computed inside a function of the calling contract", async () => {
         // check that nothing is set at store[key]
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
+        ](hardcodedDataKey);
         expect(initialStorage).to.equal("0x");
 
         // make the executor call
@@ -656,25 +661,28 @@ export const shouldBehaveLikePermissionSetData = (
         // check that store[key] is now set to value
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
-        expect(newStorage).to.equal(value);
+        ](hardcodedDataKey);
+        expect(newStorage).to.equal(hardcodedDataValue);
       });
 
       it("Should allow to set a key computed from parameters given to a function of the calling contract", async () => {
         // check that nothing is set at store[key]
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
+        ](hardcodedDataKey);
         expect(initialStorage).to.equal("0x");
 
         // make the executor call
-        await contractCanSetData.setComputedKeyFromParams(key, value);
+        await contractCanSetData.setComputedKeyFromParams(
+          hardcodedDataKey,
+          hardcodedDataValue
+        );
 
         // check that store[key] is now set to value
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
-        expect(newStorage).to.equal(value);
+        ](hardcodedDataKey);
+        expect(newStorage).to.equal(hardcodedDataValue);
       });
     });
 
@@ -683,7 +691,7 @@ export const shouldBehaveLikePermissionSetData = (
         // check that nothing is set at store[key]
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
+        ](hardcodedDataKey);
         expect(initialStorage).to.equal("0x");
 
         // check if low-level call succeeded
@@ -702,15 +710,15 @@ export const shouldBehaveLikePermissionSetData = (
         // check that store[key] is now set to value
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
-        expect(newStorage).to.equal(value);
+        ](hardcodedDataKey);
+        expect(newStorage).to.equal(hardcodedDataValue);
       });
 
       it("Should allow to `setComputedKeyRawCall` on UP", async () => {
         // check that nothing is set at store[key]
         const initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
+        ](hardcodedDataKey);
         expect(initialStorage).to.equal("0x");
 
         // make the executor call
@@ -721,27 +729,31 @@ export const shouldBehaveLikePermissionSetData = (
         // check that store[key] is now set to value
         const newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
-        expect(newStorage).to.equal(value);
+        ](hardcodedDataKey);
+        expect(newStorage).to.equal(hardcodedDataValue);
       });
 
       it("Should allow to `setComputedKeyFromParamsRawCall` on UP", async () => {
         // check that nothing is set at store[key]
         let initialStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
+        ](hardcodedDataKey);
         expect(initialStorage).to.equal("0x");
 
         // make the executor call
-        await contractCanSetData.setComputedKeyFromParamsRawCall(key, value, {
-          gasLimit: GAS_PROVIDED,
-        });
+        await contractCanSetData.setComputedKeyFromParamsRawCall(
+          hardcodedDataKey,
+          hardcodedDataValue,
+          {
+            gasLimit: GAS_PROVIDED,
+          }
+        );
 
         // check that store[key] is now set to value
         let newStorage = await context.universalProfile.callStatic[
           "getData(bytes32)"
-        ](key);
-        expect(newStorage).to.equal(value);
+        ](hardcodedDataKey);
+        expect(newStorage).to.equal(hardcodedDataValue);
       });
     });
   });
@@ -755,7 +767,7 @@ export const shouldBehaveLikePermissionSetData = (
     let bob: SignerWithAddress;
     let bobContext: LSP6TestContext;
 
-    beforeEach(async () => {
+    before(async () => {
       aliceContext = await buildContext();
       alice = aliceContext.accounts[0];
 
@@ -912,7 +924,7 @@ export const shouldBehaveLikePermissionSetData = (
       ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My 3rd allowed key")),
     ];
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       caller = context.accounts[1];

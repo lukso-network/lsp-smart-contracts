@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { EIP191Signer } from "@lukso/eip191-signer.js";
-
+import { BigNumber } from "ethers";
 import {
   Executor,
   Executor__factory,
@@ -36,7 +36,7 @@ import {
 } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionTransferValue = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
 
@@ -47,8 +47,8 @@ export const shouldBehaveLikePermissionTransferValue = (
 
     let recipient;
 
-    beforeEach(async () => {
-      context = await buildContext();
+    before(async () => {
+      context = await buildContext(ethers.utils.parseEther("100"));
 
       canTransferValue = context.accounts[1];
       canTransferValueAndCall = context.accounts[2];
@@ -88,16 +88,9 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
-
-      await context.owner.sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("10"),
-      });
     });
 
     describe("when recipient = EOA", () => {
-      beforeEach(async () => {});
-
       describe("when transferring value via `execute(...)`", () => {
         describe("when transferring value without bytes `_data`", () => {
           const data = "0x";
@@ -456,8 +449,8 @@ export const shouldBehaveLikePermissionTransferValue = (
      */
     const GAS_PROVIDED = 200_000;
 
-    beforeEach(async () => {
-      context = await buildContext();
+    before(async () => {
+      context = await buildContext(ethers.utils.parseEther("100"));
 
       recipient = context.accounts[1].address;
 
@@ -485,11 +478,6 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
-
-      await context.owner.sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("1"),
-      });
     });
 
     describe("> Contract calls", () => {
@@ -562,10 +550,10 @@ export const shouldBehaveLikePermissionTransferValue = (
     let bobContext: LSP6TestContext;
 
     before(async () => {
-      aliceContext = await buildContext();
+      aliceContext = await buildContext(ethers.utils.parseEther("50"));
       alice = aliceContext.accounts[0];
 
-      bobContext = await buildContext();
+      bobContext = await buildContext(ethers.utils.parseEther("50"));
       bob = bobContext.accounts[1];
 
       const alicePermissionKeys = [
@@ -599,12 +587,6 @@ export const shouldBehaveLikePermissionTransferValue = (
         alicePermissionValues
       );
       await setupKeyManager(bobContext, bobPermissionKeys, bobPermissionValues);
-
-      // fund Bob's Up with some LYX to be transfered
-      await bob.sendTransaction({
-        to: bobContext.universalProfile.address,
-        value: ethers.utils.parseEther("5"),
-      });
     });
 
     it("Alice should have ALL PERMISSIONS in her UP", async () => {
@@ -684,8 +666,8 @@ export const shouldBehaveLikePermissionTransferValue = (
     let lsp7Token: LSP7Mintable;
     let targetContract: TargetPayableContract;
 
-    beforeEach(async () => {
-      context = await buildContext();
+    before(async () => {
+      context = await buildContext(ethers.utils.parseEther("100"));
 
       caller = context.accounts[1];
 
@@ -722,11 +704,6 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
-
-      await context.owner.sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("10"),
-      });
     });
 
     describe("should be allowed to send LYX to any EOA", () => {
@@ -921,8 +898,8 @@ export const shouldBehaveLikePermissionTransferValue = (
     let caller: SignerWithAddress;
     let allowedAddress: SignerWithAddress;
 
-    beforeEach(async () => {
-      context = await buildContext();
+    before(async () => {
+      context = await buildContext(ethers.utils.parseEther("100"));
 
       caller = context.accounts[1];
       allowedAddress = context.accounts[2];
@@ -944,11 +921,6 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
-
-      await context.owner.sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("10"),
-      });
     });
 
     it("should not be allowed to do a plain LYX transfer to a non-allowed address", async () => {
@@ -1161,8 +1133,8 @@ export const shouldBehaveLikePermissionTransferValue = (
     let caller: SignerWithAddress;
     let allowedAddress: SignerWithAddress;
 
-    beforeEach(async () => {
-      context = await buildContext();
+    before(async () => {
+      context = await buildContext(ethers.utils.parseEther("100"));
 
       caller = context.accounts[1];
       allowedAddress = context.accounts[2];
@@ -1187,11 +1159,6 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       await setupKeyManager(context, permissionsKeys, permissionsValues);
-
-      await context.owner.sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("10"),
-      });
     });
 
     describe("should be allowed to send LYX to any address", () => {

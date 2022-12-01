@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 
 import {
@@ -20,18 +21,21 @@ import {
 
 describe("LSP6KeyManager", () => {
   describe("when using LSP6KeyManager with constructor", () => {
-    const buildTestContext = async (): Promise<LSP6TestContext> => {
+    const buildTestContext = async (
+      initialFunding?: BigNumber
+    ): Promise<LSP6TestContext> => {
       const accounts = await ethers.getSigners();
       const owner = accounts[0];
 
       const universalProfile = await new UniversalProfile__factory(
         owner
-      ).deploy(owner.address);
+      ).deploy(owner.address, { value: initialFunding });
+
       const keyManager = await new LSP6KeyManager__factory(owner).deploy(
         universalProfile.address
       );
 
-      return { accounts, owner, universalProfile, keyManager };
+      return { accounts, owner, universalProfile, keyManager, initialFunding };
     };
 
     describe("when deploying the contract", () => {
@@ -77,7 +81,9 @@ describe("LSP6KeyManager", () => {
   });
 
   describe("when using LSP6KeyManager with proxy", () => {
-    const buildTestContext = async (): Promise<LSP6TestContext> => {
+    const buildTestContext = async (
+      initialFunding?: BigNumber
+    ): Promise<LSP6TestContext> => {
       const accounts = await ethers.getSigners();
       const owner = accounts[0];
 
@@ -89,12 +95,13 @@ describe("LSP6KeyManager", () => {
       const kmProxy = await deployProxy(baseKM.address, owner);
       const keyManager = await baseKM.attach(kmProxy);
 
-      return { accounts, owner, universalProfile, keyManager };
+      return { accounts, owner, universalProfile, keyManager, initialFunding };
     };
 
     const initializeProxy = async (context: LSP6TestContext) => {
       await context.universalProfile["initialize(address)"](
-        context.owner.address
+        context.owner.address,
+        { value: context.initialFunding }
       );
 
       await context.keyManager["initialize(address)"](
@@ -152,7 +159,7 @@ describe("LSP6KeyManager", () => {
 
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP6(async () => {
-        let context = await buildTestContext();
+        let context = await buildTestContext(ethers.utils.parseEther("100"));
         await initializeProxy(context);
         return context;
       });
