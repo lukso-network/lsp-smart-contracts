@@ -26,11 +26,11 @@ contract UPWithInstantAcceptOwnership is LSP0ERC725AccountCore {
         payable
         virtual
         override
-        returns (bytes memory returnedValue)
+        returns (bytes memory)
     {
         if (typeId == _TYPEID_LSP14_OwnershipTransferStarted) {
             LSP14Ownable2Step(msg.sender).acceptOwnership();
         }
-        super.universalReceiver(typeId, receivedData);
+        return super.universalReceiver(typeId, receivedData);
     }
 }
