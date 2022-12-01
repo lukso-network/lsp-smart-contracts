@@ -10,12 +10,9 @@ import "../../LSP6KeyManager/LSP6Constants.sol";
 
 contract ReentrancyWithAddPermission {
     function universalReceiver(
-        bytes32 typeId, // solhint-disable no-unused-vars
+        bytes32, /* typeId */
         bytes memory data // bytes20(address(controller))
     ) public virtual returns (bytes memory) {
-        // silent compiler warning (this does not push new items on the stack)
-        typeId;
-
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 

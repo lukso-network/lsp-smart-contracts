@@ -7,14 +7,11 @@ pragma solidity ^0.8.4;
 contract OnERC721ReceivedExtension {
     // solhint-disable
     function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
+        address, /* operator */
+        address, /* from */
+        uint256, /* tokenId */
+        bytes calldata /* data */
     ) external pure returns (bytes4) {
-        // silent compiler warning (this does not push new items on the stack)
-        (operator, from, tokenId, data);
-
         return 0x150b7a02;
     }
 }

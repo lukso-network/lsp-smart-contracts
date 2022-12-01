@@ -71,11 +71,8 @@ abstract contract LSP8CompatibleERC721InitAbstract is
      * @inheritdoc ILSP8CompatibleERC721
      */
     function tokenURI(
-        uint256 tokenId // solhint-disable no-unused-vars
+        uint256 /* tokenId */
     ) public view virtual returns (string memory) {
-        // silent compiler warning (this does not push new items on the stack)
-        tokenId;
-
         bytes memory data = _getData(_LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36

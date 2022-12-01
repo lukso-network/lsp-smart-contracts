@@ -10,12 +10,9 @@ import "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 contract ReentrancyWithAddURD {
     function universalReceiver(
-        bytes32 typeId, // solhint-disable no-unused-vars
+        bytes32, /* typeId */
         bytes calldata data // bytes32(TYPE_ID) + bytes20(address(URD))
     ) public virtual returns (bytes memory) {
-        // silent compiler warning (this does not push new items on the stack)
-        typeId;
-
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 

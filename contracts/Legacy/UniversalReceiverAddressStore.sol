@@ -34,13 +34,10 @@ contract UniversalReceiverAddressStore is ERC165Storage, AddressRegistry {
     // solhint-disable no-unused-vars
     function universalReceiverDelegate(
         address sender,
-        uint256 value,
+        uint256, /* value */
         bytes32 typeId,
         bytes memory
     ) external onlyAccount returns (bytes memory) {
-        // silent compiler warning (this does not push new items on the stack)
-        value;
-
         // require(typeId == _TOKENS_RECIPIENT_INTERFACE_HASH, 'UniversalReceiverDelegate: Type not supported');
 
         // store tokens only if received, DO NOT revert on _TOKENS_SENDER_INTERFACE_HASH
