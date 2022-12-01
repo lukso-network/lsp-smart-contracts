@@ -166,7 +166,7 @@ export const testSecurityScenarios = (
   });
 
   describe("when sending LYX to a contract", () => {
-    it("Permissions should prevent ReEntrancy and stop malicious contract with a re-entrant fallback() function.", async () => {
+    it("Permissions should prevent ReEntrancy and stop malicious contract with a re-entrant receive() function.", async () => {
       // the Universal Profile wants to send 1 x LYX from its UP to another smart contract
       // we assume the UP owner is not aware that some malicious code is present
       // in the fallback function of the target (= recipient) contract
@@ -185,7 +185,7 @@ export const testSecurityScenarios = (
         "execute(bytes)",
         [transferPayload]
       );
-      // load the malicious payload, that will be executed in the fallback function
+      // load the malicious payload, that will be executed in the receive function
       // every time the contract receives LYX
       await maliciousContract.loadPayload(executePayload);
 
@@ -197,7 +197,7 @@ export const testSecurityScenarios = (
       );
 
       // send LYX to malicious contract
-      // at this point, the malicious contract fallback function try to drain funds by re-entering the call
+      // at this point, the malicious contract receive function try to drain funds by re-entering the KeyManager
       // this should not be possible since it does not have the permission `REENTRANCY`
       await expect(
         context.keyManager
@@ -313,11 +313,11 @@ export const testSecurityScenarios = (
 
       await maliciousContract.loadPayload(executePayload);
 
-      const executeTransferPayload = context.keyManager
-        .connect(context.owner)
-        ["execute(bytes)"](transferPayload);
-
-      await expect(executeTransferPayload)
+      await expect(
+        context.keyManager
+          .connect(context.owner)
+          ["execute(bytes)"](transferPayload)
+      )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(maliciousContract.address, "REENTRANCY");
     });

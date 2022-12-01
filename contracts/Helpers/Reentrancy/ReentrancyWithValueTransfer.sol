@@ -10,9 +10,9 @@ contract ReentrancyWithValueTransfer {
     receive() external payable {}
 
     function universalReceiver(
-        bytes32 typeId, // solhint-disable no-unused-vars
-        bytes memory data // solhint-disable no-unused-vars
-    ) public virtual returns (bytes memory result) {
+        bytes32, /* typeId */
+        bytes memory /* data */
+    ) public virtual returns (bytes memory) {
         // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
         bytes memory transferValuePayload = abi.encodeWithSignature(
@@ -22,6 +22,7 @@ contract ReentrancyWithValueTransfer {
             1 ether,
             ""
         );
-        ILSP6KeyManager(keyManager).execute(transferValuePayload);
+
+        return ILSP6KeyManager(keyManager).execute(transferValuePayload);
     }
 }

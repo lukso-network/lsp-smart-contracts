@@ -34,7 +34,7 @@ contract UniversalReceiverAddressStore is ERC165Storage, AddressRegistry {
     // solhint-disable no-unused-vars
     function universalReceiverDelegate(
         address sender,
-        uint256 value,
+        uint256, /* value */
         bytes32 typeId,
         bytes memory
     ) external onlyAccount returns (bytes memory) {

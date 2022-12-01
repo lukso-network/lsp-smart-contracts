@@ -49,7 +49,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
      */
     function universalReceiver(
         bytes32 typeId,
-        bytes memory data // solhint-disable no-unused-vars
+        bytes memory /* data */
     ) public payable virtual returns (bytes memory result) {
         if (msg.value != 0) revert NativeTokensNotAccepted();
 
