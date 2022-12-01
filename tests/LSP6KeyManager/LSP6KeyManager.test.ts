@@ -41,7 +41,7 @@ describe("LSP6KeyManager", () => {
     describe("when deploying the contract", () => {
       let context: LSP6TestContext;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildTestContext();
       });
 
@@ -158,8 +158,8 @@ describe("LSP6KeyManager", () => {
     });
 
     describe("when testing deployed contract", () => {
-      shouldBehaveLikeLSP6(async () => {
-        let context = await buildTestContext(ethers.utils.parseEther("100"));
+      shouldBehaveLikeLSP6(async (initialFunding?: BigNumber) => {
+        let context = await buildTestContext(initialFunding);
         await initializeProxy(context);
         return context;
       });

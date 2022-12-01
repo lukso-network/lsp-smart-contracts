@@ -208,6 +208,7 @@ export const testReentrancyScenarios = async (
   let owner: SignerWithAddress;
   let caller: SignerWithAddress;
   let signer: Wallet;
+
   before(async () => {
     context = await buildContext();
     owner = context.accounts[7];

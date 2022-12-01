@@ -38,7 +38,7 @@ export const shouldBehaveLikeAllowedFunctions = (
 
   let targetContract: TargetContract;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     addressWithNoAllowedFunctions = context.accounts[1];
@@ -519,14 +519,11 @@ export const shouldBehaveLikeAllowedFunctions = (
               [OPERATION_TYPES.CALL, lsp7Contract.address, 0, transferPayload]
             );
 
-          let tx = await context.keyManager
+          await context.keyManager
             .connect(
               addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8
             )
             ["execute(bytes)"](executePayload);
-
-          let receipt = await tx.wait();
-          console.log("gas used: ", receipt.gasUsed.toNumber());
 
           expect(await lsp7Contract.balanceOf(recipient)).to.equal(amount);
           expect(

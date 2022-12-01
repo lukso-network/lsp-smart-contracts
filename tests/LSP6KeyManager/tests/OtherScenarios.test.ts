@@ -26,7 +26,7 @@ export const otherTestScenarios = (
   let addressCanMakeCall: SignerWithAddress;
   let targetContract: TargetContract;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     superAdmin = context.accounts[1];

@@ -73,7 +73,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionDeploy(buildContext);
   });
 
-  describe.only("TRANSFERVALUE", () => {
+  describe("TRANSFERVALUE", () => {
     shouldBehaveLikePermissionTransferValue(buildContext);
   });
 

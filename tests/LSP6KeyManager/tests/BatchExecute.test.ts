@@ -30,7 +30,7 @@ import { BigNumber } from "ethers";
 import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 export const shouldBehaveLikeBatchExecute = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
   describe("when using batch `execute(bytes[])`", () => {
     let context: LSP6TestContext;
@@ -43,8 +43,8 @@ export const shouldBehaveLikeBatchExecute = (
       // Inspired from https://github.com/lykhonis/relayer
       rLyxToken: LSP7Mintable;
 
-    beforeEach(async () => {
-      context = await buildContext();
+    before(async () => {
+      context = await buildContext(ethers.utils.parseEther("50"));
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -54,12 +54,6 @@ export const shouldBehaveLikeBatchExecute = (
       const permissionsValues = [ALL_PERMISSIONS];
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
-
-      // fund the UP with some native tokens
-      await context.owner.sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("50"),
-      });
 
       // deploy some sample LSP7 tokens and mint some tokens to the UP
       lyxDaiToken = await new LSP7Mintable__factory(context.accounts[0]).deploy(
@@ -174,6 +168,14 @@ export const shouldBehaveLikeBatchExecute = (
       it("should send 3x different tokens to the same recipient", async () => {
         const recipient = context.accounts[1].address;
 
+        const recipientLyxDaiBalanceBefore = await lyxDaiToken.balanceOf(
+          recipient
+        );
+        const recipientMetaCoinBalanceBefore = await metaCoin.balanceOf(
+          recipient
+        );
+        const recipientRLyxBalanceBefore = await rLyxToken.balanceOf(recipient);
+
         const lyxDaiAmount = 25;
         const metaCoinAmount = 50;
         const rLyxAmount = 75;
@@ -214,9 +216,15 @@ export const shouldBehaveLikeBatchExecute = (
           .connect(context.owner)
           ["execute(uint256[],bytes[])"]([0, 0, 0], payloads);
 
-        expect(await lyxDaiToken.balanceOf(recipient)).to.equal(lyxDaiAmount);
-        expect(await metaCoin.balanceOf(recipient)).to.equal(metaCoinAmount);
-        expect(await rLyxToken.balanceOf(recipient)).to.equal(rLyxAmount);
+        expect(await lyxDaiToken.balanceOf(recipient)).to.equal(
+          recipientLyxDaiBalanceBefore.add(lyxDaiAmount)
+        );
+        expect(await metaCoin.balanceOf(recipient)).to.equal(
+          recipientMetaCoinBalanceBefore.add(metaCoinAmount)
+        );
+        expect(await rLyxToken.balanceOf(recipient)).to.equal(
+          recipientRLyxBalanceBefore.add(rLyxAmount)
+        );
       });
 
       it("should 1) deploy a LSP7 Token (as minimal proxy), 2) initialize it, and 3) set the token metadata", async () => {
@@ -957,8 +965,8 @@ export const shouldBehaveLikeBatchExecute = (
 
     let tokenContract: LSP7Mintable;
 
-    beforeEach(async () => {
-      context = await buildContext();
+    before(async () => {
+      context = await buildContext(ethers.utils.parseEther("100"));
 
       minter = context.accounts[1];
       tokenRecipient = context.accounts[2];
@@ -981,12 +989,6 @@ export const shouldBehaveLikeBatchExecute = (
       const permissionsValues = [ALL_PERMISSIONS];
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
-
-      // fund the UP with some native tokens
-      await context.owner.sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("50"),
-      });
     });
 
     it("should revert when there are not the same number of elements for each parameters", async () => {
