@@ -752,7 +752,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -774,7 +774,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -796,7 +796,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -818,7 +818,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -840,7 +840,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -857,7 +857,7 @@ export const testReentrancyScenarios = async (
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
-      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
+      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1032,7 +1032,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1051,7 +1051,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1073,7 +1073,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1095,7 +1095,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1115,7 +1115,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1137,7 +1137,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1157,7 +1157,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
+      it("should pass if the reentrant contract has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1253,7 +1253,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1272,7 +1272,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1294,7 +1294,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
+      it("should revert if the reentrant contract has ONLY ADDPERMISSIONS permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1316,7 +1316,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has ADDPERMISSIONS and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1413,7 +1413,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1432,7 +1432,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1454,7 +1454,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
+      it("should revert if the reentrant contract has ONLY CHANGEPERMISSIONS permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1476,7 +1476,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1578,7 +1578,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1597,7 +1597,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1619,7 +1619,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant contract has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1641,7 +1641,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1738,7 +1738,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1757,7 +1757,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1779,7 +1779,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant contract has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -1801,7 +1801,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2291,7 +2291,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2323,7 +2323,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2355,7 +2355,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2387,7 +2387,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2419,7 +2419,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2446,7 +2446,7 @@ export const testReentrancyScenarios = async (
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
-      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
+      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2629,7 +2629,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2658,7 +2658,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2690,7 +2690,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2722,7 +2722,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2752,7 +2752,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2784,7 +2784,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2814,7 +2814,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
+      it("should pass if the reentrant contract has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2918,7 +2918,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2947,7 +2947,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -2979,7 +2979,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
+      it("should revert if the reentrant contract has ONLY ADDPERMISSIONS permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3011,7 +3011,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has ADDPERMISSIONS and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3116,7 +3116,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3145,7 +3145,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3177,7 +3177,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
+      it("should revert if the reentrant contract has ONLY CHANGEPERMISSIONS permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3209,7 +3209,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3319,7 +3319,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3348,7 +3348,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3380,7 +3380,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant contract has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3412,7 +3412,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3517,7 +3517,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3546,7 +3546,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3578,7 +3578,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant contract has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3610,7 +3610,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -3968,7 +3968,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -3985,7 +3985,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with NO AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4005,7 +4005,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4025,7 +4025,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE permission with NO AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4045,7 +4045,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE permission with AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4065,7 +4065,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4080,7 +4080,7 @@ export const testReentrancyScenarios = async (
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
-      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
+      it("should pass if the reentrant signer has ONLY TRANSFERVALUE and REENTRANCY permissions with AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4241,7 +4241,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4258,7 +4258,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4278,7 +4278,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4298,7 +4298,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4318,7 +4318,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4338,7 +4338,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4356,7 +4356,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
+      it("should pass if the reentrant signer has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4457,7 +4457,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4474,7 +4474,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4494,7 +4494,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
+      it("should revert if the reentrant signer has ONLY ADDPERMISSIONS permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4514,7 +4514,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has ADDPERMISSIONS and REENTRANCY permissions", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4615,7 +4615,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4632,7 +4632,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4652,7 +4652,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
+      it("should revert if the reentrant signer has ONLY CHANGEPERMISSIONS permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4672,7 +4672,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4776,7 +4776,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4793,7 +4793,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4813,7 +4813,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant signer has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4833,7 +4833,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4933,7 +4933,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4950,7 +4950,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4970,7 +4970,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant signer has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -4990,7 +4990,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5398,7 +5398,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5425,7 +5425,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with NO AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5455,7 +5455,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5485,7 +5485,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE permission with NO AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5515,7 +5515,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE permission with AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5545,7 +5545,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5570,7 +5570,7 @@ export const testReentrancyScenarios = async (
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
-      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
+      it("should pass if the reentrant signer has ONLY TRANSFERVALUE and REENTRANCY permissions with AllowedCalls", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5739,7 +5739,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5766,7 +5766,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5796,7 +5796,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5826,7 +5826,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5856,7 +5856,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5886,7 +5886,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -5914,7 +5914,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
+      it("should pass if the reentrant signer has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6023,7 +6023,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6050,7 +6050,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6080,7 +6080,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
+      it("should revert if the reentrant signer has ONLY ADDPERMISSIONS permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6110,7 +6110,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has ADDPERMISSIONS and REENTRANCY permissions", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6219,7 +6219,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6246,7 +6246,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6276,7 +6276,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
+      it("should revert if the reentrant signer has ONLY CHANGEPERMISSIONS permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6306,7 +6306,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6418,7 +6418,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6445,7 +6445,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6475,7 +6475,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant signer has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6505,7 +6505,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6613,7 +6613,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6640,7 +6640,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6670,7 +6670,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant signer has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6700,7 +6700,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         await generateSingleRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -6898,7 +6898,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if reentrant cobtract has ALL_PERMISSIONS but REENTRANCY", async () => {
+      it("should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -6922,7 +6922,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -6946,7 +6946,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -6970,7 +6970,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -6994,7 +6994,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7018,7 +7018,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
+      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7037,7 +7037,7 @@ export const testReentrancyScenarios = async (
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
-      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
+      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AllowedCalls", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7221,7 +7221,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7242,7 +7242,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ALL_PERMISSIONS but REENTRANCY", async () => {
+      it("should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7266,7 +7266,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7290,7 +7290,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7314,7 +7314,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7336,7 +7336,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7360,7 +7360,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant contract has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7382,7 +7382,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
+      it("should pass if the reentrant contract has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7497,7 +7497,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7518,7 +7518,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ALL_PERMISSIONS but REENTRANCY", async () => {
+      it("should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7542,7 +7542,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7566,7 +7566,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
+      it("should revert if the reentrant contract has ONLY ADDPERMISSIONS permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7590,7 +7590,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has ADDPERMISSIONS and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7706,7 +7706,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7727,7 +7727,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ALL_PERMISSIONS but REENTRANCY", async () => {
+      it("should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7751,7 +7751,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7775,7 +7775,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
+      it("should revert if the reentrant contract has ONLY CHANGEPERMISSIONS permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7799,7 +7799,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7920,7 +7920,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7941,7 +7941,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ALL_PERMISSIONS but REENTRANCY", async () => {
+      it("should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7965,7 +7965,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -7989,7 +7989,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant contract has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -8013,7 +8013,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -8129,7 +8129,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -8150,7 +8150,7 @@ export const testReentrancyScenarios = async (
           .withArgs(contract_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ALL_PERMISSIONS but REENTRANCY", async () => {
+      it("should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -8174,7 +8174,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant contract has ONLY REENTRANCY permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -8198,7 +8198,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant contract has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -8222,7 +8222,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant contract has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         const upExecutePayload =
           context.universalProfile.interface.encodeFunctionData(
             "execute(uint256,address,uint256,bytes)",
@@ -8572,7 +8572,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8589,7 +8589,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with NO AllowedCalls", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8609,7 +8609,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY REENTRANCY permission with AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with AllowedCalls", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8629,7 +8629,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE permission with NO AllowedCalls", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8649,7 +8649,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE permission with AllowedCalls", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8669,7 +8669,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AlowedCalls", async () => {
+      it("should revert if the reentrant signer has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AllowedCalls", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8684,7 +8684,7 @@ export const testReentrancyScenarios = async (
         ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
       });
 
-      it("should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AlowedCalls", async () => {
+      it("should pass if the reentrant signer has ONLY TRANSFERVALUE and REENTRANCY permissions with AllowedCalls", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8845,7 +8845,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8862,7 +8862,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8882,7 +8882,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission with AllowedERC725YDataKeys", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8902,7 +8902,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY SETDATA permission with NO AllowedERC725YDataKeys", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8922,7 +8922,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has ONLY SETDATA permission with AllowedERC725YDataKeys", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8942,7 +8942,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
+      it("should revert if the reentrant signer has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -8960,7 +8960,7 @@ export const testReentrancyScenarios = async (
         );
       });
 
-      it("should pass if caller has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
+      it("should pass if the reentrant signer has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9061,7 +9061,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9078,7 +9078,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9098,7 +9098,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDPERMISSIONS permission", async () => {
+      it("should revert if the reentrant signer has ONLY ADDPERMISSIONS permission", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9118,7 +9118,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has ADDPERMISSIONS and REENTRANCY permissions", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9219,7 +9219,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9236,7 +9236,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9256,7 +9256,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEPERMISSIONS permission", async () => {
+      it("should revert if the reentrant signer has ONLY CHANGEPERMISSIONS permission", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9276,7 +9276,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has CHANGEPERMISSIONS and REENTRANCY permissions", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9380,7 +9380,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9397,7 +9397,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9417,7 +9417,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant signer has ONLY ADDUNIVERSALRECEIVERDELEGATE permission", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9437,7 +9437,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9537,7 +9537,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has NO PERMISSIONS", async () => {
+      it("should revert if the reentrant signer has NO PERMISSIONS", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9554,7 +9554,7 @@ export const testReentrancyScenarios = async (
           .withArgs(signer_without_permissions.address, "REENTRANCY");
       });
 
-      it("should revert if caller has ONLY REENTRANCY permission", async () => {
+      it("should revert if the reentrant signer has ONLY REENTRANCY permission", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9574,7 +9574,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should revert if caller has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
+      it("should revert if the reentrant signer has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
@@ -9594,7 +9594,7 @@ export const testReentrancyScenarios = async (
           );
       });
 
-      it("should pass if caller has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
+      it("should pass if the reentrant signer has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions", async () => {
         await generateBatchRelayPayload(
           relayer_contract,
           context.universalProfile,
