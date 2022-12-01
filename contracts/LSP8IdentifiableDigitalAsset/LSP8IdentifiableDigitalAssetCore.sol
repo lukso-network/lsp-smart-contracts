@@ -293,6 +293,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
 
         _beforeTokenTransfer(address(0), to, tokenId);
 
+        // token being minted
+        _existingTokens += 1;
+
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
 
@@ -315,6 +318,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         address operator = msg.sender;
 
         _beforeTokenTransfer(tokenOwner, address(0), tokenId);
+
+        // token being burned
+        _existingTokens -= 1;
 
         _clearOperators(tokenOwner, tokenId);
 
@@ -382,22 +388,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
      * transferred to `to`.
      * - When `from` is zero, `tokenId` will be minted for `to`.
      * - When `to` is zero, ``from``'s `tokenId` will be burned.
+     * - `from` and `to` are never both zero.
      */
     function _beforeTokenTransfer(
         address from,
         address to,
         bytes32 tokenId // solhint-disable no-unused-vars
-    ) internal virtual {
-        // token being minted
-        if (from == address(0)) {
-            _existingTokens += 1;
-        }
-
-        // token being burned
-        if (to == address(0)) {
-            _existingTokens -= 1;
-        }
-    }
+    ) internal virtual {} // solhint-disable no-empty-blocks
 
     /**
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using
