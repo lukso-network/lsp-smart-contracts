@@ -30,6 +30,7 @@ import {
   setupProfileWithKeyManagerWithURD,
 } from "../utils/fixtures";
 import { provider } from "../utils/helpers";
+import { BigNumber } from "ethers";
 
 describe("LSP9Vault", () => {
   describe("when using LSP9Vault contract with constructor", () => {
@@ -61,12 +62,15 @@ describe("LSP9Vault", () => {
       };
     };
 
-    const buildLSP14TestContext = async (): Promise<LSP14TestContext> => {
+    const buildLSP14TestContext = async (
+      initialFunding?: number | BigNumber
+    ): Promise<LSP14TestContext> => {
       const accounts = await ethers.getSigners();
-      const deployParams = { owner: accounts[0] };
+      const deployParams = { owner: accounts[0], initialFunding };
 
       const lsp9Vault = await new LSP9Vault__factory(accounts[0]).deploy(
-        deployParams.owner.address
+        deployParams.owner.address,
+        { value: initialFunding }
       );
 
       const onlyOwnerRevertString =
@@ -100,7 +104,7 @@ describe("LSP9Vault", () => {
       describe("when deploying the contract with or without value", () => {
         let context: LSP9TestContext;
 
-        beforeEach(async () => {
+        before(async () => {
           context = await buildTestContext(testCase.initialFunding);
         });
 
@@ -140,7 +144,7 @@ describe("LSP9Vault", () => {
 
   describe("when using LSP9Vault contract with proxy", () => {
     const buildTestContext = async (
-      initialFunding?: number
+      initialFunding?: number | BigNumber
     ): Promise<LSP9TestContext> => {
       const accounts = await getNamedAccounts();
       const deployParams = {
@@ -255,8 +259,8 @@ describe("LSP9Vault", () => {
         })
       );
 
-      shouldBehaveLikeLSP14(async () => {
-        let context = await buildTestContext();
+      shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
+        let context = await buildTestContext(initialFunding);
         let accounts = await ethers.getSigners();
         await initializeProxy(context);
 

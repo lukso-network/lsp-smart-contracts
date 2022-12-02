@@ -12,7 +12,7 @@ describe("LSP2Utils", () => {
   let accounts: SignerWithAddress[];
   let lsp2Utils: LSP2UtilsLibraryTester;
 
-  beforeEach(async () => {
+  before(async () => {
     accounts = await ethers.getSigners();
     lsp2Utils = await new LSP2UtilsLibraryTester__factory(accounts[0]).deploy();
   });

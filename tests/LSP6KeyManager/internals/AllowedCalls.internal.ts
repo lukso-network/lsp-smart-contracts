@@ -2,7 +2,11 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { TargetContract, TargetContract__factory } from "../../../types";
+import {
+  TargetContract,
+  TargetContract__factory,
+  UniversalProfile__factory,
+} from "../../../types";
 
 // constants
 import {
@@ -35,7 +39,7 @@ export const testAllowedCallsInternals = (
 
     let encodedAllowedCalls: string;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       canCallOnlyTwoAddresses = context.accounts[1];
@@ -260,19 +264,18 @@ export const testAllowedCallsInternals = (
       const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
       const randomData = "0xaabbccdd";
 
-      let payload: string;
+      const universalProfileInterface =
+        UniversalProfile__factory.createInterface();
 
-      beforeEach(async () => {
-        payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            randomAddress,
-            ethers.utils.parseEther("1"),
-            randomData,
-          ]
-        );
-      });
+      let payload: string = universalProfileInterface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          OPERATION_TYPES.CALL,
+          randomAddress,
+          ethers.utils.parseEther("1"),
+          randomData,
+        ]
+      );
 
       describe("should revert with `NoAllowedCall` error", () => {
         it(`noBytes -> ${zeroBytesValues[0]}`, async () => {

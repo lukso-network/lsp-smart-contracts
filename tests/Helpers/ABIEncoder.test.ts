@@ -13,10 +13,7 @@ describe("ABI Encoder Contract", () => {
   });
 
   const verifyResult = async (txParameterA, txParameterB) => {
-    const [c, gasUsed] = await contract.callStatic.encode(
-      txParameterA,
-      txParameterB
-    );
+    const [c] = await contract.callStatic.encode(txParameterA, txParameterB);
     const [a, b] = await contract.callStatic.decode(c);
     expect(a).to.equal(txParameterA);
     expect(b).to.equal(txParameterB);
@@ -87,6 +84,7 @@ describe("ABI Encoder Contract", () => {
 
         const result = await checkGasCost(txParams.a, txParams.b);
       });
+
       it("Encoding small amount of bytes in both param", async () => {
         const txParams = {
           a: "0xaabbccdd",
@@ -114,6 +112,7 @@ describe("ABI Encoder Contract", () => {
         const result = await checkGasCost(txParams.a, txParams.b);
       });
     });
+
     describe("LSP1 Specific Cases", () => {
       it("Encoding URD response when typeId out of scope with empty bytes", async () => {
         const txParams = {

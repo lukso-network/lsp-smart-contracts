@@ -4,7 +4,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
 import {
-  ILSP1UniversalReceiver,
   UniversalProfile,
   UniversalReceiverTester,
   UniversalReceiverDelegateRevert__factory,
@@ -15,7 +14,7 @@ import {
 import { abiCoder, LSP1_HOOK_PLACEHOLDER } from "../utils/helpers";
 
 // constants
-import { ERC725YDataKeys, EventSignatures } from "../../constants";
+import { ERC725YDataKeys } from "../../constants";
 
 export type LSP1TestContext = {
   accounts: SignerWithAddress[];
@@ -30,12 +29,12 @@ export const shouldBehaveLikeLSP1 = (
 ) => {
   let context: LSP1TestContext;
 
-  beforeEach(async () => {
-    context = await buildContext();
-  });
-
   describe("when calling the `universalReceiver(...)` function", () => {
     const valueSent = 0;
+
+    before(async () => {
+      context = await buildContext();
+    });
 
     describe("from an EOA", () => {
       it("should emit a UniversalReceiver(...) event with correct topics", async () => {
@@ -123,9 +122,12 @@ export const shouldBehaveLikeLSP1 = (
     });
 
     describe("to test typeId delegate feature", () => {
-      let revertableURD;
+      let revertableURD: UniversalReceiverDelegateRevert;
+
       describe("when setting a revertable typeId", () => {
-        beforeEach(async () => {
+        before(async () => {
+          context = await buildContext();
+
           revertableURD = await new UniversalReceiverDelegateRevert__factory(
             context.accounts[1]
           ).deploy();
@@ -156,6 +158,10 @@ export const shouldBehaveLikeLSP1 = (
   describe("when calling the `universalReceiver(...)` function while sending native tokens", () => {
     const valueSent = ethers.utils.parseEther("3");
 
+    before(async () => {
+      context = await buildContext();
+    });
+
     describe("from an EOA", () => {
       it("should emit a UniversalReceiver(...) event with correct topics", async () => {
         let caller = context.accounts[2];
@@ -179,10 +185,10 @@ export const shouldBehaveLikeLSP1 = (
     });
 
     describe("from a Contract", () => {
-      beforeEach(async () => {
+      before(async () => {
         await context.accounts[0].sendTransaction({
           to: context.lsp1Checker.address,
-          value: ethers.utils.parseEther("5"),
+          value: ethers.utils.parseEther("50"),
         });
       });
 

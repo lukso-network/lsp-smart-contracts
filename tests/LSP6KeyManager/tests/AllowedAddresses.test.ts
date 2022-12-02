@@ -38,7 +38,7 @@ export const shouldBehaveLikeAllowedAddresses = (
     allowedTargetContract: TargetContract,
     notAllowedTargetContract: TargetContract;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     canCallOnlyTwoAddresses = context.accounts[1];

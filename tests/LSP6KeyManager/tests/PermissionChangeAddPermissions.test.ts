@@ -1124,7 +1124,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     let invalidBytes: SignerWithAddress;
     let noBytes: SignerWithAddress;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       canOnlyAddPermissions = context.accounts[1];
@@ -1228,7 +1228,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       zero32Bytes: SignerWithAddress,
       zero40Bytes: SignerWithAddress;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       canOnlyAddPermissions = context.accounts[1];
@@ -1689,7 +1689,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       zero32Bytes: SignerWithAddress,
       zero40Bytes: SignerWithAddress;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       canOnlyAddPermissions = context.accounts[1];
@@ -2150,7 +2150,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       zero32Bytes: SignerWithAddress,
       zero40Bytes: SignerWithAddress;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       canOnlyAddPermissions = context.accounts[1];
@@ -2653,7 +2653,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       zero32Bytes: SignerWithAddress,
       zero40Bytes: SignerWithAddress;
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       canOnlyAddPermissions = context.accounts[1];

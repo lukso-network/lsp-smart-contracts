@@ -47,7 +47,7 @@ export const shouldBehaveLikeAllowedStandards = (
     signatureValidatorContract: SignatureValidator,
     otherUniversalProfile: UniversalProfile;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     addressCanInteractOnlyWithERC1271 = context.accounts[1];

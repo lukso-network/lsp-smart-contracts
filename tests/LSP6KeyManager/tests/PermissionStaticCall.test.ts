@@ -29,7 +29,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   let targetContract: TargetContract;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     addressCanMakeStaticCall = context.accounts[1];
@@ -234,7 +234,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     let caller: SignerWithAddress;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       caller = context.accounts[1];
@@ -473,7 +473,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     let caller: SignerWithAddress;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       caller = context.accounts[1];

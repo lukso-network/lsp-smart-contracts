@@ -48,7 +48,7 @@ export const testSecurityScenarios = (
 
   let targetContract: TargetContract, maliciousContract: Reentrancy;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     signer = context.accounts[1];

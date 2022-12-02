@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 
 import { INTERFACE_IDS } from "../../constants";
@@ -34,7 +35,7 @@ import {
 } from "./internals";
 
 export const shouldBehaveLikeLSP6 = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
   describe("CHANGEOWNER", () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
@@ -126,7 +127,7 @@ export const shouldInitializeLikeLSP6 = (
 ) => {
   let context: LSP6TestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 

@@ -1,7 +1,6 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import {
-  ILSP1UniversalReceiver,
   LSP0ERC725Account,
   UniversalProfileInit__factory,
   UniversalProfile__factory,
@@ -30,6 +29,7 @@ import {
   shouldBehaveLikeLSP3,
 } from "./UniversalProfile.behaviour";
 import { provider } from "./utils/helpers";
+import { BigNumber } from "ethers";
 
 describe("UniversalProfile", () => {
   describe("when using UniversalProfile contract with constructor", () => {
@@ -64,13 +64,18 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildLSP14TestContext = async (): Promise<LSP14TestContext> => {
+    const buildLSP14TestContext = async (
+      initialFunding?: number | BigNumber
+    ): Promise<LSP14TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
+        initialFunding,
       };
+
       const contract = await new UniversalProfile__factory(accounts[0]).deploy(
-        deployParams.owner.address
+        deployParams.owner.address,
+        { value: initialFunding }
       );
 
       const onlyOwnerRevertString = "Ownable: caller is not the owner";
@@ -98,7 +103,7 @@ describe("UniversalProfile", () => {
       describe("when deploying the contract with or without value", () => {
         let context: LSP3TestContext;
 
-        beforeEach(async () => {
+        before(async () => {
           context = await buildLSP3TestContext(testCase.initialFunding);
         });
 
@@ -114,14 +119,12 @@ describe("UniversalProfile", () => {
     describe("when deploying the contract", () => {
       let context: LSP3TestContext;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildLSP3TestContext();
       });
 
       describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP3(async () => {
-          return context;
-        });
+        shouldInitializeLikeLSP3(async () => context);
       });
     });
 
@@ -189,9 +192,14 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildLSP14TestContext = async (): Promise<LSP14TestContext> => {
+    const buildLSP14TestContext = async (
+      initialFunding?: number | BigNumber
+    ): Promise<LSP14TestContext> => {
       const accounts = await ethers.getSigners();
-      const deployParams = { owner: accounts[0] };
+      const deployParams = {
+        owner: accounts[0],
+        initialFunding: initialFunding,
+      };
 
       const universalProfileInit = await new UniversalProfileInit__factory(
         accounts[0]
@@ -262,8 +270,9 @@ describe("UniversalProfile", () => {
       describe("when deploying the proxy contract", () => {
         let context: LSP3TestContext;
 
-        beforeEach(async () => {
+        before(async () => {
           context = await buildLSP3TestContext(testCase.initialFunding);
+          await initializeProxy(context);
         });
 
         describe("when initializing the proxy contract with or without value", () => {
@@ -271,24 +280,20 @@ describe("UniversalProfile", () => {
             const balance = await provider.getBalance(
               context.universalProfile.address
             );
+            console.log("UP balance's = ", balance);
             expect(balance).to.equal(testCase.initialFunding || 0);
-          });
-
-          shouldInitializeLikeLSP3(async () => {
-            await initializeProxy(context);
-            return context;
           });
         });
 
         describe("when calling `initialize(...)` more than once", () => {
           it("should revert", async () => {
-            await initializeProxy(context);
-
             await expect(initializeProxy(context)).to.be.revertedWith(
               "Initializable: contract is already initialized"
             );
           });
         });
+
+        shouldInitializeLikeLSP3(async () => context);
       });
     });
 
@@ -307,8 +312,8 @@ describe("UniversalProfile", () => {
         return lsp1Context;
       });
 
-      shouldBehaveLikeLSP14(async () => {
-        let claimOwnershipContext = await buildLSP14TestContext();
+      shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
+        let claimOwnershipContext = await buildLSP14TestContext(initialFunding);
 
         await initializeProxy({
           accounts: claimOwnershipContext.accounts,

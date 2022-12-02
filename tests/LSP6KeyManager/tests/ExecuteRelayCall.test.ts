@@ -34,7 +34,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
   let targetContract: TargetContract;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     signer = context.accounts[1];
@@ -389,7 +389,10 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   context.universalProfile,
                   "ERC725X_InsufficientBalance"
                 )
-                .withArgs(0, requiredValueForExecution);
+                .withArgs(
+                  await provider.getBalance(context.universalProfile.address),
+                  requiredValueForExecution
+                );
             });
           });
 
