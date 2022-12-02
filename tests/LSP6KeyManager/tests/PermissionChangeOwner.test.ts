@@ -88,12 +88,6 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
 
     describe("when caller does not have have CHANGEOWNER permission", () => {
-      beforeEach(async () => {
-        await context.keyManager
-          .connect(canChangeOwner)
-          ["execute(bytes)"](transferOwnershipPayload);
-      });
-
       it("should revert", async () => {
         let transferOwnershipPayload =
           context.universalProfile.interface.encodeFunctionData(
@@ -219,10 +213,6 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
     describe("when caller has only CHANGE0OWNER permission", () => {
       beforeEach(async () => {
-        newKeyManager = await new LSP6KeyManager__factory(context.owner).deploy(
-          context.universalProfile.address
-        );
-
         let transferOwnershipPayload =
           context.universalProfile.interface.encodeFunctionData(
             "transferOwnership",
