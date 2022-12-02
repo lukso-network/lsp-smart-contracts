@@ -39,22 +39,8 @@ describe("LSP6KeyManager", () => {
     };
 
     describe("when deploying the contract", () => {
-      let context: LSP6TestContext;
-
-      beforeEach(async () => {
-        context = await buildTestContext();
-      });
-
       describe("when initializing the contract", () => {
-        shouldInitializeLikeLSP6(async () => {
-          const { accounts, owner, universalProfile, keyManager } = context;
-          return {
-            accounts,
-            owner,
-            universalProfile,
-            keyManager,
-          };
-        });
+        shouldInitializeLikeLSP6(buildTestContext);
       });
     });
 
@@ -128,26 +114,17 @@ describe("LSP6KeyManager", () => {
     describe("when deploying the contract as proxy", () => {
       let context: LSP6TestContext;
 
-      beforeEach(async () => {
-        context = await buildTestContext();
-      });
-
       describe("when initializing the contract", () => {
         shouldInitializeLikeLSP6(async () => {
-          const { accounts, owner, universalProfile, keyManager } = context;
+          context = await buildTestContext();
           await initializeProxy(context);
-
-          return {
-            accounts,
-            owner,
-            universalProfile,
-            keyManager,
-          };
+          return context;
         });
       });
 
       describe("when calling `initialize(...) more than once`", () => {
         it("should revert", async () => {
+          context = await buildTestContext();
           await initializeProxy(context);
 
           await expect(initializeProxy(context)).to.be.revertedWith(
