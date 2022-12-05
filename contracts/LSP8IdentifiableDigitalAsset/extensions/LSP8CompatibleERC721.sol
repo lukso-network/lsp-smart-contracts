@@ -62,7 +62,7 @@ abstract contract LSP8CompatibleERC721 is
         public
         view
         virtual
-        override(IERC165, LSP8IdentifiableDigitalAsset)
+        override(IERC165, ERC725YCore, LSP8IdentifiableDigitalAsset)
         returns (bool)
     {
         return
