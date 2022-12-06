@@ -223,7 +223,7 @@ describe("Test Custom implementation of ERC165Checker", () => {
     }
   });
 
-  it.skip("Calling a pre-compiled contract addresses 0x0.02, 0x0.04 and 0x0.04", async () => {
+  it("Calling a pre-compiled contract addresses 0x0.02, 0x0.04 and 0x0.04", async () => {
     const precompiledAddress = [
       "0x0000000000000000000000000000000000000002",
       "0x0000000000000000000000000000000000000003",
