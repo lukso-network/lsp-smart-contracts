@@ -1,0 +1,41 @@
+# This workflow benchmark the gas usage of Universal Profile for common interactions
+
+name: :up: :bar_chart: Universal Profile Benchmark
+
+on:
+  pull_request:
+    branches: "develop"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js '16.15.0'
+          uses: actions/setup-node@v2
+          with:
+            node-version: "16.15.0"
+            cache: "npm"
+
+        - name: :package: Install dependencies
+          run: npm ci
+
+        - name: :construction_site: Build contract artifacts
+          run: npm run build --if-present
+
+        - name: :test: Run Benchmark tests
+          run: npm run test:benchmark
+
+        - name: :pencil: Extract benchmark gas costs
+          run: BENCHMARK_REPORT=$(cat ./benchmark.md)
+
+        - name: :bar_chart: Generate Benchmark Report
+        - uses: wow-actions/auto-comment@v1
+          with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            pullRequestOpened: |
+            👋 Hello @{{ author }}
+            I am the Gas Benchmark Bot. Here is a summary of the gas usage with the code introduced by your PR.
+            $BENCHMARK_REPORT

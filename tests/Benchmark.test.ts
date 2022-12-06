@@ -1,3 +1,4 @@
+import fs from "fs";
 import { Align, getMarkdownTable, Row } from "markdown-table-ts";
 import { ethers } from "hardhat";
 import { expect } from "chai";
@@ -507,15 +508,13 @@ describe("⛽ gas costs --> setData(...) via Key Manager", () => {
 
   after(async () => {
     const markdown = `
-# 📈 Gas Usage Benchmarks
-
-## 📝 Summary
+# ⛽ Gas Usage Benchmarks
 
 This document contains the gas usage benchmarks for the UniversalProfile smart contract.
 
 ## 📊 Benchmarks
 
-### 📝 \`setData\` scenarios
+### 🗄️ \`setData\` scenarios
 
 #### 👑 unrestricted controller
 
@@ -531,7 +530,9 @@ ${restrictedControllerSetDataTable}
 - The \`setData\` scenarios are executed on a fresh UniversalProfile and LSP6KeyManager smart contracts, deployed as standard contracts (not as proxy behind a base contract implementation).
 
 `;
-    console.log(markdown);
+    const file = "benchmark.md";
+
+    fs.writeFileSync(file, markdown);
   });
 
   // a controller allowed to SETDATA and update LSP12 Issued Assets (array length + indexes)
