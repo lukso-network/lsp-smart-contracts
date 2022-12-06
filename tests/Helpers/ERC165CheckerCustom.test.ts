@@ -222,4 +222,22 @@ describe("Test Custom implementation of ERC165Checker", () => {
       }
     }
   });
+
+  it.skip("Calling a pre-compiled contract addresses 0x0.02, 0x0.04 and 0x0.04", async () => {
+    const precompiledAddress = [
+      "0x0000000000000000000000000000000000000002",
+      "0x0000000000000000000000000000000000000003",
+      "0x0000000000000000000000000000000000000004",
+    ];
+
+    for (let i = 0; i < precompiledAddress.length; i++) {
+      for (let ii = 0; ii < 1000; ii++) {
+        const result = await contract.supportsERC165Interface(
+          precompiledAddress[i],
+          ethers.utils.hexlify(ethers.utils.randomBytes(4))
+        );
+        expect(result).to.be.true;
+      }
+    }
+  });
 });
