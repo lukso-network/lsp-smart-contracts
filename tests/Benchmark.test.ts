@@ -508,11 +508,14 @@ describe("⛽ gas costs --> setData(...) via Key Manager", () => {
 
   after(async () => {
     const markdown = `
-# ⛽ Gas Usage Benchmarks
+👋 Hello
+⛽ I am the Gas Bot Reporter. I keep track of the gas costs of common interactions using Universal Profiles 🆙 !
+📊 Here is a summary of the gas cost with the code introduced by this PR.
 
-This document contains the gas usage benchmarks for the UniversalProfile smart contract.
+<details>
+  <summary>⛽ 📊 See Gas Benchmark report</summary>
 
-## 📊 Benchmarks
+This document contains the gas usage for common interactions and scenarios when using UniversalProfile smart contracts.
 
 ### 🗄️ \`setData\` scenarios
 
@@ -529,6 +532,8 @@ ${restrictedControllerSetDataTable}
 
 - The \`setData\` scenarios are executed on a fresh UniversalProfile and LSP6KeyManager smart contracts, deployed as standard contracts (not as proxy behind a base contract implementation).
 
+
+</details>
 `;
     const file = "benchmark.md";
 
