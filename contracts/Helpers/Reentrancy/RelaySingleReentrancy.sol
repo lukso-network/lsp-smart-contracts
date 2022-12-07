@@ -27,7 +27,6 @@ contract RelaySingleReentrancy {
         bytes32, /* typeId */
         bytes memory /* data */
     ) public virtual returns (bytes memory) {
-        // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 
         return ILSP6KeyManager(keyManager).executeRelayCall(_signature, _nonce, _payload);

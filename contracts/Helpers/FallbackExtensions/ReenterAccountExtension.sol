@@ -6,8 +6,9 @@ pragma solidity ^0.8.4;
  */
 contract ReenterAccountExtension {
     function reenterAccount(bytes memory payload) public {
-        // solhint-disable
+        // solhint-disable-next-line avoid-low-level-calls
         (bool success, ) = msg.sender.call(payload);
+        // solhint-disable-next-line reason-string
         require(success);
     }
 }

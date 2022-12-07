@@ -11,7 +11,6 @@ import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165S
 import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
 contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
-    /* solhint-disable no-empty-blocks */
     event UniversalReceiverCalled(bytes32 typeId, bytes data);
 
     constructor() {
@@ -29,7 +28,9 @@ contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
         return "thanks for calling";
     }
 
+    /* solhint-disable no-empty-blocks */
     receive() external payable {}
 
+    /* solhint-disable no-empty-blocks */
     fallback() external payable {}
 }

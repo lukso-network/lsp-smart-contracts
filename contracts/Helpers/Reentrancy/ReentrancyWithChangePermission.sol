@@ -13,7 +13,6 @@ contract ReentrancyWithChangePermission {
         bytes32, /* typeId */
         bytes memory data // bytes20(address(controller))
     ) public virtual returns (bytes memory) {
-        // solhint-disable no-unused-vars
         address keyManager = LSP14Ownable2Step(msg.sender).owner();
 
         bytes memory changePermissionPayload = abi.encodeWithSignature(

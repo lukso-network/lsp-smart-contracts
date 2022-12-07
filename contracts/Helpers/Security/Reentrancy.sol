@@ -3,12 +3,11 @@ pragma solidity ^0.8.4;
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
-/* solhint-disable */
 contract Reentrancy {
-    bytes _payload;
-    address _target;
+    bytes private _payload;
+    address private _target;
 
-    bool switchFallback;
+    bool private _switchFallback;
 
     constructor(address _keyManager) {
         _target = _keyManager;
@@ -19,8 +18,9 @@ contract Reentrancy {
     }
 
     receive() external payable {
-        if (!switchFallback) {
-            switchFallback = true;
+        if (!_switchFallback) {
+            _switchFallback = true;
+            // solhint-disable-next-line avoid-low-level-calls
             (bool success, bytes memory returnData) = _target.call(_payload);
             Address.verifyCallResult(
                 success,
@@ -30,4 +30,3 @@ contract Reentrancy {
         }
     }
 }
-/* solhint-enable */
