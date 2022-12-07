@@ -1,18 +1,19 @@
 import fs from "fs";
-import { Align, getMarkdownTable, Row } from "markdown-table-ts";
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { Align, getMarkdownTable, Row } from "markdown-table-ts";
 
-import { LSP6TestContext } from "./utils/context";
 import { LSP6KeyManager__factory, UniversalProfile__factory } from "../types";
+
 import { ALL_PERMISSIONS, ERC725YDataKeys, PERMISSIONS } from "../constants";
+import { LSP6TestContext } from "./utils/context";
+import { setupKeyManager } from "./utils/fixtures";
 import {
   combineAllowedCalls,
   combinePermissions,
   encodeCompactBytesArray,
 } from "./utils/helpers";
-import { setupKeyManager } from "./utils/fixtures";
 
 const buildLSP6TestContext = async (): Promise<LSP6TestContext> => {
   const accounts = await ethers.getSigners();
@@ -31,31 +32,6 @@ const buildLSP6TestContext = async (): Promise<LSP6TestContext> => {
 let mainControllerSetDataTable;
 let restrictedControllerSetDataTable;
 
-describe.skip("⛽ gas costs --> execute(...) via Key Manager", () => {
-  describe("as the main controller (this browser extension)", () => {
-    before(async () => {});
-    it("transfers some LYXes (SUPER_TRANSFERVALUE)", async () => {});
-    it("transfers some tokens (LSP7) to an EOA (SUPER_CALL)", async () => {});
-    it("transfers some tokens (LSP7) to an other UP (SUPER_CALL)", async () => {});
-    it("transfers a NFT (LSP8) to an EOA (SUPER_CALL)", async () => {});
-    it("transfers a NFT (LSP8) to an other UP (SUPER_CALL)", async () => {});
-
-    // TODO: set the LSP4 Metadata on a LSP7 token contract
-  });
-
-  describe("as a controller with some restrictions", () => {
-    before(async () => {});
-    it("transfers some LYXes but is restricted to 1 x allowed address (TRANSFERVALUE + 1x AllowedCalls)", async () => {});
-    it("transfers some tokens (LSP7) to an EOA but restricted to interact with only 2 x specific LSP7 token contracts (CALL + 2x AllowedCalls)", async () => {});
-    it("transfers some tokens (LSP7) to an other UP but restricted to interact with only 2 x specific LSP7 token contracts (CALL + 2x AllowedCalls)", async () => {});
-    it("transfers some tokens (LSP8) to an EOA but restricted to interact with only 2 x specific LSP7 token contracts (CALL + 2x AllowedCalls)", async () => {});
-    it("transfers some tokens (LSP8) to an other UP but restricted to interact with only 2 x specific LSP7 token contracts (CALL + 2x AllowedCalls)", async () => {});
-
-    // TODO: set the LSP4 Metadata on a LSP7 token contract
-  });
-});
-
-// TODO use erc725.js for this?
 describe("⛽ gas costs --> setData(...) via Key Manager", () => {
   let context: LSP6TestContext;
 
@@ -539,9 +515,4 @@ ${restrictedControllerSetDataTable}
 
     fs.writeFileSync(file, markdown);
   });
-
-  // a controller allowed to SETDATA and update LSP12 Issued Assets (array length + indexes)
-  // this controller adds 5x LSP12 Issued Assets (array length + indexes)
-
-  // Alice's UP setting data on Bob's UP (Alice is allowed to set only 1x allowed data key)
 });
