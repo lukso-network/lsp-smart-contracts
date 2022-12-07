@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // libraries
@@ -139,6 +140,7 @@ contract LSP9VaultCore is
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_LSP14 ||
+            _supportsInterfaceInERC165Extension(interfaceId) ||
             super.supportsInterface(interfaceId);
     }
 

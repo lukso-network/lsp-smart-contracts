@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // constants
 import {_INTERFACEID_LSP17_EXTENDABLE} from "./LSP17Constants.sol";
@@ -19,6 +20,26 @@ abstract contract LSP17Extendable is ERC165 {
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == _INTERFACEID_LSP17_EXTENDABLE || super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Returns whether the interfaceId being checked is supported in the extension of the
+     * {supportsInterface} selector.
+     */
+    function _supportsInterfaceInERC165Extension(bytes4 interfaceId)
+        internal
+        view
+        virtual
+        returns (bool)
+    {
+        address erc165Extension = _getExtension(ERC165.supportsInterface.selector);
+        if (erc165Extension == address(0)) return false;
+
+        if (ERC165Checker.supportsERC165Interface(erc165Extension, interfaceId)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
@@ -128,6 +129,7 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_LSP14 ||
+            _supportsInterfaceInERC165Extension(interfaceId) ||
             super.supportsInterface(interfaceId);
     }
 
