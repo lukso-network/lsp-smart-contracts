@@ -13,8 +13,6 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 library LSP2Utils {
     using BytesLib for bytes;
 
-    /* solhint-disable no-inline-assembly */
-
     /**
      * @dev Generates a data key of keyType Singleton
      * @param keyName The string to hash to generate a Singleton data key

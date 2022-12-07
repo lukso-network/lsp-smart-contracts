@@ -19,7 +19,6 @@ contract UniversalReceiverDelegateVaultReentrantA is ERC165Storage {
         _registerInterface(_INTERFACEID_LSP1);
     }
 
-    // solhint-disable no-unused-vars
     function universalReceiver(
         bytes32, /* typeId */
         bytes memory data

@@ -18,19 +18,13 @@ contract SignatureValidator is IERC1271, ERC165Storage {
         _registerInterface(type(IERC1271).interfaceId);
     }
 
-    // solhint-disable no-unused-vars
     /**
      * @notice Verifies that the signer is the owner of the signing contract.
      */
-    function isValidSignature(bytes32 messageHash, bytes calldata signature)
-        external
-        pure
-        override
-        returns (bytes4)
-    {
-        // silent compiler warning (this does not push new items on the stack)
-        (messageHash, signature);
-
+    function isValidSignature(
+        bytes32, /* messageHash */
+        bytes calldata /* signature */
+    ) external pure override returns (bytes4) {
         // always return true (just for testing)
         return 0x1626ba7e;
     }
