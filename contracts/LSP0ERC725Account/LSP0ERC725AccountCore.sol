@@ -131,8 +131,8 @@ abstract contract LSP0ERC725AccountCore is
             interfaceId == _INTERFACEID_LSP0 ||
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_LSP14 ||
-            _supportsInterfaceInERC165Extension(interfaceId) ||
-            super.supportsInterface(interfaceId);
+            super.supportsInterface(interfaceId) ||
+            _supportsInterfaceInERC165Extension(interfaceId);
     }
 
     /**

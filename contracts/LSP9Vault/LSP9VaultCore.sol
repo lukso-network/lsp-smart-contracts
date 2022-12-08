@@ -142,8 +142,8 @@ contract LSP9VaultCore is
             interfaceId == _INTERFACEID_LSP9 ||
             interfaceId == _INTERFACEID_LSP1 ||
             interfaceId == _INTERFACEID_LSP14 ||
-            _supportsInterfaceInERC165Extension(interfaceId) ||
-            super.supportsInterface(interfaceId);
+            super.supportsInterface(interfaceId) ||
+            _supportsInterfaceInERC165Extension(interfaceId);
     }
 
     /**
