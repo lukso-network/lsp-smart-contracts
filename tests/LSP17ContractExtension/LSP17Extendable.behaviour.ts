@@ -71,7 +71,7 @@ export const shouldBehaveLikeLSP17 = (
     onERC721ReceivedFunctionExtensionHandlerKey,
     supportsInterfaceFunctionExtensionHandlerKey;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
     newOwner = context.accounts[1];
 
