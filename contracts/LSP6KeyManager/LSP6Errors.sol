@@ -137,3 +137,8 @@ error LSP6BatchInsufficientValueSent(uint256 totalValues, uint256 msgValue);
  * forwarded on each payloads (`values[]` parameter from the batch functions above).
  */
 error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);
+
+/**
+ * @dev ERC725X operation type 4 (DELEGATECALL) is disallowed by default
+ */
+error DelegateCallDisallowedViaKeyManager();

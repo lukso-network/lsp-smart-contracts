@@ -256,7 +256,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory result = Address.verifyCallResult(
             success,
             returnData,
-            "LSP6: Unknown Error occured when calling the linked target contract"
+            "LSP6: fail executing payload"
         );
 
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
@@ -689,7 +689,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 return;
             } else {
                 // move the pointer to the index of the next key
-                pointer += length + 1;
+                pointer += GasLib.uncheckedIncrement(length);
             }
         }
 
@@ -777,7 +777,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             for (uint256 ii = 0; ii < inputKeysLength; ii = GasLib.uncheckedIncrement(ii)) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
-                if (validatedInputKeys[ii] == true) continue;
+                if (validatedInputKeys[ii]) continue;
 
                 // CHECK if the input data key is allowed
                 if ((bytes32(inputKeys[32 + (32 * ii):]) & mask) == allowedKey) {
@@ -795,7 +795,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 return;
             } else {
                 // move the pointer to the next AllowedERC725YKey
-                pointer += length + 1;
+                pointer += GasLib.uncheckedIncrement(length);
             }
         }
 
@@ -803,7 +803,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          * Iterate over the `inputKeys` in order to find first not allowed ERC725Y key and revert
          */
         for (uint256 jj = 0; jj < inputKeysLength; jj = GasLib.uncheckedIncrement(jj)) {
-            if (validatedInputKeys[jj] == false) {
+            if (!validatedInputKeys[jj]) {
                 revert NotAllowedERC725YDataKey(from, bytes32(inputKeys[32 + (32 * jj):]));
             }
         }
@@ -821,13 +821,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes32 permissions,
         bytes calldata payload
     ) internal view {
+        // MUST be one of the ERC725X operation types allowed
+        // except DELEGATECALL (disallowed by default on the LSP6 Key Manager)
         uint256 operationType = uint256(bytes32(payload[4:36]));
-        require(operationType < 5, "LSP6KeyManager: invalid operation type");
 
-        require(
-            operationType != OPERATION_4_DELEGATECALL,
-            "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
-        );
+        if (operationType == OPERATION_4_DELEGATECALL) {
+            revert DelegateCallDisallowedViaKeyManager();
+        }
 
         uint256 value = uint256(bytes32(payload[68:100]));
 
