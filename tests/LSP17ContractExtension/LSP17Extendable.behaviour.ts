@@ -673,16 +673,14 @@ export const shouldBehaveLikeLSP17 = (
         describe("when calling the supportsInterface of the extendable contract with `0xaabbccdd` value", () => {
           describe("when the ERC165 extension was not set", () => {
             it("should return false", async () => {
-              let result = await context.contract.supportsInterface(
-                "0xaabbccdd"
-              );
-              expect(result).to.be.false;
+              expect(await context.contract.supportsInterface("0xaabbccdd")).to
+                .be.false;
             });
           });
 
           describe("when the ERC165 extension was set", () => {
             let erc165Extension: ERC165Extension;
-            beforeEach(async () => {
+            before(async () => {
               erc165Extension = await new ERC165Extension__factory(
                 context.accounts[0]
               ).deploy();
@@ -696,10 +694,8 @@ export const shouldBehaveLikeLSP17 = (
             });
 
             it("should return true", async () => {
-              let result = await context.contract.supportsInterface(
-                "0xaabbccdd"
-              );
-              expect(result).to.be.true;
+              expect(await context.contract.supportsInterface("0xaabbccdd")).to
+                .be.true;
             });
           });
         });

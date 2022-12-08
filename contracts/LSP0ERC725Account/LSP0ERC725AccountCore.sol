@@ -69,8 +69,6 @@ abstract contract LSP0ERC725AccountCore is
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
     }
 
-    // solhint-disable
-
     /**
      * @dev Returns the extension stored under the `_LSP17_EXTENSION_PREFIX` data key
      * mapped to the functionSelector provided.
@@ -88,6 +86,8 @@ abstract contract LSP0ERC725AccountCore is
 
         return extension;
     }
+
+    // solhint-disable no-complex-fallback
 
     /**
      * @dev Emits an event when receiving native tokens
@@ -111,10 +111,13 @@ abstract contract LSP0ERC725AccountCore is
         _fallbackLSP17Extendable();
     }
 
-    // solhint-enable
-
     /**
-     * @dev See {IERC165-supportsInterface}.
+     * @dev Returns true if this contract implements the interface defined by
+     * `interfaceId`.
+     *
+     * If the contract doesn't support the `interfaceId`, it forwards the call to the
+     * `supportsInterface` extension according to LSP17, and checks if the extension
+     * implements the interface defined by `interfaceId`.
      */
     function supportsInterface(bytes4 interfaceId)
         public
