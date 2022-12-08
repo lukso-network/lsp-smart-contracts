@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ILSP7CompatibleERC20} from "./ILSP7CompatibleERC20.sol";
 import {ILSP7DigitalAsset} from "../ILSP7DigitalAsset.sol";
 
@@ -26,6 +27,19 @@ abstract contract LSP7CompatibleERC20 is ILSP7CompatibleERC20, LSP4Compatibility
         string memory symbol_,
         address newOwner_
     ) LSP7DigitalAsset(name_, symbol_, newOwner_, false) {}
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC725YCore, LSP7DigitalAsset)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
 
     /**
      * @inheritdoc ILSP7CompatibleERC20
