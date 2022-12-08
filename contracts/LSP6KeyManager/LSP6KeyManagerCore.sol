@@ -65,15 +65,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using EIP191Signer for address;
     using BytesLib for bytes;
 
-    address public target;
-    mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
-
     // Variables, methods and modifier which are used for ReentrancyGuard
     // are taken from the link below and modified according to our needs.
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
     uint256 private _reentrancyStatus;
+
+    address public target;
+    mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -393,7 +393,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         bool[] memory validatedInputDataKeys = new bool[](numberOfDataKeysValuePairs);
 
-        for (uint256 ii = 1; ii <= numberOfDataKeysValuePairs; ++ii) {
+        for (uint256 ii = 1; ii <= numberOfDataKeysValuePairs; ii = GasLib.uncheckedIncrement(ii)) {
             // for performance reasons, we do not specify the ending offset.
             // we only specify the starting offset since we only load 32 bytes words at a time
             // and the CALLDATALOAD opcode does that by default.
@@ -774,7 +774,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              * If the key is not allowed, continue searching
              */
             // iterate over the `inputKeys` to validate them
-            for (uint256 ii = 0; ii < inputKeysLength; ++ii) {
+            for (uint256 ii = 0; ii < inputKeysLength; ii = GasLib.uncheckedIncrement(ii)) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
                 if (validatedInputKeys[ii] == true) continue;
@@ -802,7 +802,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         /**
          * Iterate over the `inputKeys` in order to find first not allowed ERC725Y key and revert
          */
-        for (uint256 jj = 0; jj < inputKeysLength; ++jj) {
+        for (uint256 jj = 0; jj < inputKeysLength; jj = GasLib.uncheckedIncrement(jj)) {
             if (validatedInputKeys[jj] == false) {
                 revert NotAllowedERC725YDataKey(from, bytes32(inputKeys[32 + (32 * jj):]));
             }
