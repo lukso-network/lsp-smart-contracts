@@ -187,7 +187,7 @@ describe("Test Custom implementation of ERC165Checker", () => {
     ];
 
     for (let i = 0; i < precompiledAddress.length; i++) {
-      for (let ii = 0; ii < 1000; ii++) {
+      for (let ii = 0; ii < 100; ii++) {
         const result = await contract.supportsERC165Interface(
           precompiledAddress[i],
           ethers.utils.hexlify(ethers.utils.randomBytes(4))
@@ -205,7 +205,7 @@ describe("Test Custom implementation of ERC165Checker", () => {
     ];
 
     for (let i = 0; i < precompiledAddress.length; i++) {
-      for (let ii = 0; ii < 1000; ii++) {
+      for (let ii = 0; ii < 100; ii++) {
         const result = await contract.supportsERC165Interface(
           precompiledAddress[i],
           ethers.utils.hexlify(ethers.utils.randomBytes(4))
