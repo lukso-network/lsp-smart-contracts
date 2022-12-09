@@ -63,8 +63,4 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     {
         return _addressPermission.hasPermission(_permissions);
     }
-
-    function countTrailingZeroBytes(bytes32 _key) public pure returns (uint256 zeroBytesCount_) {
-        return super._countTrailingZeroBytes(_key);
-    }
 }

@@ -287,7 +287,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         // retrieve the permissions of the caller
         bytes32 permissions = ERC725Y(target).getPermissionsFor(from);
-
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
         // ERC725Y.setData(bytes32,bytes)
@@ -404,7 +403,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 numberOfDataKeysValuePairs = uint256(bytes32(inputDataKeys[:32]));
 
         bool isSettingERC725YKeys;
-
         bool[] memory validatedInputDataKeys = new bool[](numberOfDataKeysValuePairs);
 
         for (uint256 ii = 1; ii <= numberOfDataKeysValuePairs; ii = GasLib.uncheckedIncrement(ii)) {
@@ -640,10 +638,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         _requirePermissions(from, permissions, _PERMISSION_SETDATA);
 
-        bytes memory allowedERC725YKeysCompacted = ERC725Y(target).getAllowedERC725YDataKeysFor(
-            from
+        _verifyAllowedERC725YSingleKey(
+            from,
+            inputDataKey,
+            ERC725Y(target).getAllowedERC725YDataKeysFor(from)
         );
-        _verifyAllowedERC725YSingleKey(from, inputDataKey, allowedERC725YKeysCompacted);
     }
 
     /**
@@ -673,6 +672,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          */
         uint256 pointer;
 
+        uint256 length;
+        bytes32 allowedKey;
+        bytes32 mask;
+
         /**
          * iterate over each key by saving in the `pointer` variable the index for
          * the length of the following key until the `pointer` reaches an undefined value
@@ -687,13 +690,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              * save the length of the following allowed key
              * which is saved in `allowedERC725YKeys[pointer]`
              */
-            uint256 length = uint256(uint8(bytes1(allowedERC725YKeysCompacted[pointer])));
+            length = uint8(allowedERC725YKeysCompacted[pointer]);
 
             /*
              * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
              * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
              */
-            bytes32 allowedKey = bytes32(allowedERC725YKeysCompacted.slice(pointer + 1, length));
+            allowedKey = bytes32(allowedERC725YKeysCompacted.slice(pointer + 1, length));
 
             /**
              * the bitmask discard the last `32 - length` bytes of the input key via ANDing &
@@ -711,9 +714,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              *                       vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
              *        mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
              */
-            bytes32 mask = bytes32(
-                0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            ) << (8 * (32 - length));
+            mask =
+                bytes32(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) <<
+                (8 * (32 - length));
 
             if (allowedKey == (inputKey & mask)) {
                 // voila you found the key ;)
@@ -757,6 +760,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          */
         uint256 pointer;
 
+        // information extracted from each Allowed ERC725Y Data Key
+        uint256 length;
+        bytes32 allowedKey;
+        bytes32 mask;
+
         /**
          * iterate over each key by saving in the `pointer` variable the index for
          * the length of the following key until the `pointer` reaches an undefined value
@@ -766,18 +774,18 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          *  first  |  second  |  third
          *  length |  length  |  length
          */
-        while (allowedKeysFound < inputKeysLength && pointer < allowedERC725YKeysCompacted.length) {
+        while (pointer < allowedERC725YKeysCompacted.length) {
             /**
              * save the length of the following allowed key
              * which is saved in `allowedERC725YKeys[pointer]`
              */
-            uint256 length = uint256(uint8(bytes1(allowedERC725YKeysCompacted[pointer])));
+            length = uint8(allowedERC725YKeysCompacted[pointer]);
 
             /*
              * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
              * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
              */
-            bytes32 allowedKey = bytes32(allowedERC725YKeysCompacted.slice(pointer + 1, length));
+            allowedKey = bytes32(allowedERC725YKeysCompacted.slice(pointer + 1, length));
 
             /**
              * the bitmask discard the last `32 - length` bytes of the input key via ANDing &
@@ -795,9 +803,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              *                       vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
              *        mask = 0xffffff0000000000000000000000000000000000000000000000000000000000
              */
-            bytes32 mask = bytes32(
-                0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            ) << (8 * (32 - length));
+            mask =
+                bytes32(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) <<
+                (8 * (32 - length));
 
             /**
              * Iterate over the `inputKeys`
@@ -814,20 +822,15 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 if ((bytes32(inputKeys[32 + (32 * ii):]) & mask) == allowedKey) {
                     // if the input data key is allowed, mark it as allowed.
                     validatedInputKeys[ii] = true;
-                    allowedKeysFound++;
+                    allowedKeysFound = GasLib.uncheckedIncrement(allowedKeysFound);
+
+                    // Check wether all the `inputKeys` were found and return
+                    if (allowedKeysFound == inputKeysLength) return;
                 }
             }
 
-            /**
-             * Check wether all the `inputKeys` were found and return
-             * Otherwise move to the next AllowedERC725YKey
-             */
-            if (allowedKeysFound == inputKeysLength) {
-                return;
-            } else {
-                // move the pointer to the next AllowedERC725YKey
-                pointer += GasLib.uncheckedIncrement(length);
-            }
+            // Otherwise move the pointer to the next AllowedERC725YKey
+            pointer += GasLib.uncheckedIncrement(length);
         }
 
         /**
@@ -971,22 +974,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
         else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
         else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
-    }
-
-    /**
-     * @dev return the number of zero bytes (0x00) appended at the end of `dataKey`.
-     * e.g: for `dataKey` = 0xffffffffffffffff000000000000000000000000000000000000000000000000
-     *      the function will return 24
-     * @return the number of trailing zero bytes
-     */
-    function _countTrailingZeroBytes(bytes32 dataKey) internal pure returns (uint256) {
-        uint256 nByte = 32;
-
-        // CHECK each bytes of the data key, starting from the end (right to left)
-        // skip each empty bytes `0x00` until we find the first non-empty byte
-        while (nByte > 0 && dataKey[nByte - 1] == 0x00) nByte--;
-
-        return 32 - nByte;
     }
 
     /**
