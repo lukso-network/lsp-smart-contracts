@@ -4,12 +4,17 @@ import { ethers } from "hardhat";
 //types
 import { BytesLike } from "ethers";
 import {
+  ReentrantContract__factory,
   RelaySingleReentrancy__factory,
   UniversalProfile__factory,
 } from "../../../../types";
 
 // constants
-import { ERC725YDataKeys } from "../../../../constants";
+import {
+  ERC725YDataKeys,
+  ALL_PERMISSIONS,
+  PERMISSIONS,
+} from "../../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../../utils/context";
@@ -18,8 +23,8 @@ import { LSP6TestContext } from "../../../utils/context";
 import {
   encodeCompactBytesArray,
   combineAllowedCalls,
+  LOCAL_PRIVATE_KEYS,
 } from "../../../utils/helpers";
-
 import {
   // Types
   TransferValueTestCase,
@@ -33,6 +38,7 @@ import {
   changePermissionsTestCases,
   addUniversalReceiverDelegateTestCases,
   changeUniversalReceiverDelegateTestCases,
+  generateRelayCall,
   generateSingleRelayPayload,
 } from "./reentrancyHelpers";
 
@@ -123,10 +129,20 @@ const testNotAuthorisedErrorCase = async (
     reentrancyContext.newURDAddress
   );
 
+  const relayCallParams = await generateRelayCall(
+    context.keyManager,
+    executePayload,
+    reentrancyContext.signer
+  );
+
   await expect(
     context.keyManager
       .connect(reentrancyContext.caller)
-      ["execute(bytes)"](executePayload)
+      ["executeRelayCall(bytes,uint256,bytes)"](
+        relayCallParams.signature,
+        relayCallParams.nonce,
+        relayCallParams.payload
+      )
   )
     .to.be.revertedWithCustomError(context.keyManager, testCase.customErrorName)
     .withArgs(
@@ -152,10 +168,20 @@ const testEmptyCustomErrorCase = async (
     reentrancyContext.newURDAddress
   );
 
+  const relayCallParams = await generateRelayCall(
+    context.keyManager,
+    executePayload,
+    reentrancyContext.signer
+  );
+
   await expect(
     context.keyManager
       .connect(reentrancyContext.caller)
-      ["execute(bytes)"](executePayload)
+      ["executeRelayCall(bytes,uint256,bytes)"](
+        relayCallParams.signature,
+        relayCallParams.nonce,
+        relayCallParams.payload
+      )
   ).to.be.revertedWithCustomError(context.keyManager, testCase.customErrorName);
 };
 
@@ -175,6 +201,12 @@ const testValidCase = async (
     reentrancyContext.newURDAddress
   );
 
+  const relayCallParams = await generateRelayCall(
+    context.keyManager,
+    executePayload,
+    reentrancyContext.signer
+  );
+
   switch (payloadType) {
     case "TRANSFERVALUE": {
       expect(
@@ -185,7 +217,11 @@ const testValidCase = async (
 
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        ["executeRelayCall(bytes,uint256,bytes)"](
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       expect(
         await context.universalProfile.provider.getBalance(
@@ -203,7 +239,11 @@ const testValidCase = async (
     case "SETDATA": {
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        ["executeRelayCall(bytes,uint256,bytes)"](
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedKey = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -220,7 +260,11 @@ const testValidCase = async (
     case "ADDPERMISSIONS": {
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        ["executeRelayCall(bytes,uint256,bytes)"](
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -238,7 +282,11 @@ const testValidCase = async (
     case "CHANGEPERMISSIONS": {
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        ["executeRelayCall(bytes,uint256,bytes)"](
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -255,7 +303,11 @@ const testValidCase = async (
     case "ADDUNIVERSALRECEIVERDELEGATE": {
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        ["executeRelayCall(bytes,uint256,bytes)"](
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -271,7 +323,11 @@ const testValidCase = async (
     case "CHANGEUNIVERSALRECEIVERDELEGATE": {
       await context.keyManager
         .connect(reentrancyContext.caller)
-        ["execute(bytes)"](executePayload);
+        ["executeRelayCall(bytes,uint256,bytes)"](
+          relayCallParams.signature,
+          relayCallParams.nonce,
+          relayCallParams.payload
+        );
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -339,7 +395,7 @@ const testCasesByType = async (
     );
 };
 
-export const testSingleExecuteToSingleExecuteRelayCall = (
+export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
   buildContext: () => Promise<LSP6TestContext>,
   buildReentrancyContext: (
     context: LSP6TestContext
