@@ -682,7 +682,8 @@ export const generateBatchRelayPayload = async (
   keyManager: LSP6KeyManager,
   reentrantSigner: Wallet,
   payloadType: string,
-  testedAddress: string
+  newControllerAddress: string,
+  newURDAddress: string
 ) => {
   let payload: BytesLike;
   switch (payloadType) {
@@ -708,7 +709,7 @@ export const generateBatchRelayPayload = async (
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            testedAddress.substring(2),
+            newControllerAddress.substring(2),
           "0x0000000000000000000000000000000000000000000000000000000000000010",
         ]
       );
@@ -718,7 +719,7 @@ export const generateBatchRelayPayload = async (
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            testedAddress.substring(2),
+            newControllerAddress.substring(2),
           "0x",
         ]
       );
@@ -731,7 +732,7 @@ export const generateBatchRelayPayload = async (
             ethers.utils
               .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
               .substring(2, 42),
-          testedAddress,
+          newURDAddress,
         ]
       );
       break;
