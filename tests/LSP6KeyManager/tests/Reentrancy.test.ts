@@ -8,6 +8,9 @@ import { testSingleExecuteRelayCallToSingleExecute } from "./Reentrancy/SingleEx
 import { testSingleExecuteToSingleExecuteRelayCall } from "./Reentrancy/SingleExecuteToSingleExecuteRelayCall.test";
 import { testSingleExecuteRelayCallToSingleExecuteRelayCall } from "./Reentrancy/SingleExecuteRelayCallToSingleExecuteRelayCall.test";
 
+import { testSingleExecuteToBatchExecute } from "./Reentrancy/SingleExecuteToBatchExecute.test";
+//import { testSingleExecuteToBatchExecuteRelayCall } from "./Reentrancy/SingleExecuteToBatchExecuteRelayCall.test";
+
 export const testReentrancyScenarios = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
@@ -37,7 +40,7 @@ export const testReentrancyScenarios = (
   });
 
   describe("first call through `execute(bytes)`, second call through `execute(uint256[],bytes[])`", () => {
-    //testSingleExecuteToBatchExecute(buildContext, buildReentrancyContext);
+    testSingleExecuteToBatchExecute(buildContext, buildReentrancyContext);
   });
 
   describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes[],uint256[],uint256[],bytes[])`", () => {
