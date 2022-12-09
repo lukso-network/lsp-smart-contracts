@@ -22,7 +22,7 @@ export const testReentrancyScenarios = (
     );
   });
 
-  describe.only("first call through `execute(bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
+  describe("first call through `execute(bytes)`, second call through `executeRelayCall(bytes,uint256,bytes)`", () => {
     testSingleExecuteToSingleExecuteRelayCall(
       buildContext,
       buildReentrancyContext

@@ -10,6 +10,8 @@ import {
   UniversalProfile,
   RelayBatchReentrancy,
   RelaySingleReentrancy,
+  RelaySingleReentrancy__factory,
+  RelayBatchReentrancy__factory,
 } from "../../../../types";
 
 // constants
@@ -66,8 +68,12 @@ export type ReentrancyContext = {
   owner: SignerWithAddress;
   caller: SignerWithAddress;
   signer: Wallet;
+  newControllerAddress: string;
+  newURDAddress: string;
   reentrantContract: ReentrantContract;
   reentrantSigner: Wallet;
+  singleReentarncyRelayer: RelaySingleReentrancy;
+  batchReentarncyRelayer: RelayBatchReentrancy;
   randomLSP1TypeId: string;
 };
 
@@ -459,16 +465,23 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
   const owner = context.accounts[0];
   const caller = context.accounts[1];
   const signer = new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT2);
+  const newControllerAddress = context.accounts[3].address;
+  const newURDAddress = context.accounts[4].address;
 
-  const reentrantContract = await await new ReentrantContract__factory(
-    owner
-  ).deploy(
-    context.accounts[9].address,
+  const reentrantContract = await new ReentrantContract__factory(owner).deploy(
+    newControllerAddress,
     ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId")),
-    context.accounts[9].address
+    newURDAddress
   );
 
-  const reentrantSigner = new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT3);
+  const reentrantSigner = new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT5);
+
+  const singleReentarncyRelayer = await new RelaySingleReentrancy__factory(
+    owner
+  ).deploy();
+  const batchReentarncyRelayer = await new RelayBatchReentrancy__factory(
+    owner
+  ).deploy();
 
   const permissionKeys = [
     ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -487,15 +500,23 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     ALL_PERMISSIONS,
     PERMISSIONS.CALL,
     combineAllowedCalls(
-      ["0xffffffff"],
-      [reentrantContract.address],
-      ["0xffffffff"]
+      ["0xffffffff", "0xffffffff", "0xffffffff"],
+      [
+        reentrantContract.address,
+        singleReentarncyRelayer.address,
+        batchReentarncyRelayer.address,
+      ],
+      ["0xffffffff", "0xffffffff", "0xffffffff"]
     ),
     PERMISSIONS.CALL,
     combineAllowedCalls(
-      ["0xffffffff"],
-      [reentrantContract.address],
-      ["0xffffffff"]
+      ["0xffffffff", "0xffffffff", "0xffffffff"],
+      [
+        reentrantContract.address,
+        singleReentarncyRelayer.address,
+        batchReentarncyRelayer.address,
+      ],
+      ["0xffffffff", "0xffffffff", "0xffffffff"]
     ),
   ];
 
@@ -527,8 +548,12 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     owner,
     caller,
     signer,
+    newControllerAddress,
+    newURDAddress,
     reentrantContract,
     reentrantSigner,
+    singleReentarncyRelayer,
+    batchReentarncyRelayer,
     randomLSP1TypeId,
   };
 };
@@ -567,7 +592,8 @@ export const generateSingleRelayPayload = async (
   keyManager: LSP6KeyManager,
   reentrantSigner: Wallet,
   payloadType: string,
-  testedAddress: string
+  newControllerAddress: string,
+  newURDAddress: string
 ) => {
   let payload: BytesLike;
   switch (payloadType) {
@@ -593,8 +619,8 @@ export const generateSingleRelayPayload = async (
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            testedAddress.substring(2),
-          ALL_PERMISSIONS,
+            newControllerAddress.substring(2),
+          "0x0000000000000000000000000000000000000000000000000000000000000010",
         ]
       );
       break;
@@ -603,7 +629,7 @@ export const generateSingleRelayPayload = async (
         "setData(bytes32,bytes)",
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            testedAddress.substring(2),
+            newControllerAddress.substring(2),
           "0x",
         ]
       );
@@ -616,7 +642,7 @@ export const generateSingleRelayPayload = async (
             ethers.utils
               .keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId"))
               .substring(2, 42),
-          testedAddress,
+          newURDAddress,
         ]
       );
       break;
@@ -683,7 +709,7 @@ export const generateBatchRelayPayload = async (
         [
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             testedAddress.substring(2),
-          ALL_PERMISSIONS,
+          "0x0000000000000000000000000000000000000000000000000000000000000010",
         ]
       );
       break;

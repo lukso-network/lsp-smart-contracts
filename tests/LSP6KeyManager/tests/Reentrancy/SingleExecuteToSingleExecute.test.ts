@@ -230,7 +230,7 @@ const testValidCase = async (
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.accounts[9].address.substring(2);
+        reentrancyContext.newControllerAddress.substring(2);
       const hardcodedPermissionValue =
         "0x0000000000000000000000000000000000000000000000000000000000000010";
 
@@ -248,7 +248,7 @@ const testValidCase = async (
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        context.accounts[9].address.substring(2);
+        reentrancyContext.newControllerAddress.substring(2);
       const hardcodedPermissionValue = "0x";
 
       expect(
@@ -267,7 +267,7 @@ const testValidCase = async (
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
         reentrancyContext.randomLSP1TypeId.substring(2, 42);
 
-      const hardcodedLSP1Value = context.accounts[9].address;
+      const hardcodedLSP1Value = reentrancyContext.newURDAddress;
 
       expect(
         await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
