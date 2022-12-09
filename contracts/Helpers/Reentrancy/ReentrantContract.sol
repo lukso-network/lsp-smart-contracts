@@ -55,14 +55,22 @@ contract ReentrantContract {
         payloads["ADDUNIVERSALRECEIVERDELEGATE"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             bytes32(
-                bytes.concat(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX, bytes2(0), _URD_TYPE_ID)
+                bytes.concat(
+                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+                    bytes2(0),
+                    bytes20(_URD_TYPE_ID)
+                )
             ),
-            _URD_ADDRESS
+            bytes.concat(bytes20(_URD_ADDRESS))
         );
         payloads["CHANGEUNIVERSALRECEIVERDELEGATE"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             bytes32(
-                bytes.concat(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX, bytes2(0), _URD_TYPE_ID)
+                bytes.concat(
+                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+                    bytes2(0),
+                    bytes20(_URD_TYPE_ID)
+                )
             ),
             ""
         );
