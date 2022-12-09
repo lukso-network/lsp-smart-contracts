@@ -11,65 +11,65 @@ import "../../LSP6KeyManager/LSP6Constants.sol";
 
 contract ReentrantContract {
     event ValueReceived(uint256);
-    mapping(string => bytes) payloads;
+    mapping(string => bytes) private _payloads;
 
     constructor(
-        address _CONTROLLER_ADDRESS,
-        bytes32 _URD_TYPE_ID,
-        address _URD_ADDRESS
+        address newControllerAddress,
+        bytes32 newURDTypeId,
+        address newURDAddress
     ) {
-        payloads["TRANSFERVALUE"] = abi.encodeWithSignature(
+        _payloads["TRANSFERVALUE"] = abi.encodeWithSignature(
             "execute(uint256,address,uint256,bytes)",
             0,
             address(this),
             1 ether,
             ""
         );
-        payloads["SETDATA"] = abi.encodeWithSignature(
+        _payloads["SETDATA"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             keccak256(bytes("SomeRandomTextUsed")),
             bytes("SomeRandomTextUsed")
         );
-        payloads["ADDPERMISSIONS"] = abi.encodeWithSignature(
+        _payloads["ADDPERMISSIONS"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             bytes32(
                 bytes.concat(
                     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
                     bytes2(0),
-                    bytes20(_CONTROLLER_ADDRESS)
+                    bytes20(newControllerAddress)
                 )
             ),
             bytes.concat(bytes32(uint256(16)))
         );
-        payloads["CHANGEPERMISSIONS"] = abi.encodeWithSignature(
+        _payloads["CHANGEPERMISSIONS"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             bytes32(
                 bytes.concat(
                     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
                     bytes2(0),
-                    bytes20(_CONTROLLER_ADDRESS)
+                    bytes20(newControllerAddress)
                 )
             ),
             ""
         );
-        payloads["ADDUNIVERSALRECEIVERDELEGATE"] = abi.encodeWithSignature(
+        _payloads["ADDUNIVERSALRECEIVERDELEGATE"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             bytes32(
                 bytes.concat(
                     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
                     bytes2(0),
-                    bytes20(_URD_TYPE_ID)
+                    bytes20(newURDTypeId)
                 )
             ),
-            bytes.concat(bytes20(_URD_ADDRESS))
+            bytes.concat(bytes20(newURDAddress))
         );
-        payloads["CHANGEUNIVERSALRECEIVERDELEGATE"] = abi.encodeWithSignature(
+        _payloads["CHANGEUNIVERSALRECEIVERDELEGATE"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             bytes32(
                 bytes.concat(
                     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
                     bytes2(0),
-                    bytes20(_URD_TYPE_ID)
+                    bytes20(newURDTypeId)
                 )
             ),
             ""
@@ -82,12 +82,12 @@ contract ReentrantContract {
 
     function getPayloads() external view returns (bytes[6] memory) {
         return [
-            payloads["TRANSFERVALUE"],
-            payloads["SETDATA"],
-            payloads["ADDPERMISSIONS"],
-            payloads["CHANGEPERMISSIONS"],
-            payloads["ADDUNIVERSALRECEIVERDELEGATE"],
-            payloads["CHANGEUNIVERSALRECEIVERDELEGATE"]
+            _payloads["TRANSFERVALUE"],
+            _payloads["SETDATA"],
+            _payloads["ADDPERMISSIONS"],
+            _payloads["CHANGEPERMISSIONS"],
+            _payloads["ADDUNIVERSALRECEIVERDELEGATE"],
+            _payloads["CHANGEUNIVERSALRECEIVERDELEGATE"]
         ];
     }
 
@@ -95,6 +95,6 @@ contract ReentrantContract {
         external
         returns (bytes memory)
     {
-        return ILSP6KeyManager(keyManagerAddress).execute(payloads[payloadType]);
+        return ILSP6KeyManager(keyManagerAddress).execute(_payloads[payloadType]);
     }
 }
