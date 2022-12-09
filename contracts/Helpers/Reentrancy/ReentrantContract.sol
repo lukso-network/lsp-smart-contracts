@@ -80,17 +80,6 @@ contract ReentrantContract {
         emit ValueReceived(msg.value);
     }
 
-    function getPayloads() external view returns (bytes[6] memory) {
-        return [
-            _payloads["TRANSFERVALUE"],
-            _payloads["SETDATA"],
-            _payloads["ADDPERMISSIONS"],
-            _payloads["CHANGEPERMISSIONS"],
-            _payloads["ADDUNIVERSALRECEIVERDELEGATE"],
-            _payloads["CHANGEUNIVERSALRECEIVERDELEGATE"]
-        ];
-    }
-
     function callThatReenters(address keyManagerAddress, string memory payloadType)
         external
         returns (bytes memory)

@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 //types
 import { BytesLike } from "ethers";
 import {
-  RelaySingleReentrancy__factory,
+  SingleReentrancyRelayer__factory,
   UniversalProfile__factory,
 } from "../../../../types";
 
@@ -354,12 +354,9 @@ export const testSingleExecuteToSingleExecuteRelayCall = (
     reentrancyContext = await buildReentrancyContext(context);
 
     const reentrantCallPayload =
-      new RelaySingleReentrancy__factory().interface.encodeFunctionData(
-        "universalReceiver",
-        [
-          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-          "0x",
-        ]
+      new SingleReentrancyRelayer__factory().interface.encodeFunctionData(
+        "relayCallThatReenters",
+        [context.keyManager.address]
       );
     executePayload =
       new UniversalProfile__factory().interface.encodeFunctionData(

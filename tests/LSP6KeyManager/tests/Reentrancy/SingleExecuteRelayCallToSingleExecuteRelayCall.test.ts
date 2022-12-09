@@ -4,17 +4,12 @@ import { ethers } from "hardhat";
 //types
 import { BytesLike } from "ethers";
 import {
-  ReentrantContract__factory,
-  RelaySingleReentrancy__factory,
+  SingleReentrancyRelayer__factory,
   UniversalProfile__factory,
 } from "../../../../types";
 
 // constants
-import {
-  ERC725YDataKeys,
-  ALL_PERMISSIONS,
-  PERMISSIONS,
-} from "../../../../constants";
+import { ERC725YDataKeys } from "../../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../../utils/context";
@@ -23,7 +18,6 @@ import { LSP6TestContext } from "../../../utils/context";
 import {
   encodeCompactBytesArray,
   combineAllowedCalls,
-  LOCAL_PRIVATE_KEYS,
 } from "../../../utils/helpers";
 import {
   // Types
@@ -410,12 +404,9 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
     reentrancyContext = await buildReentrancyContext(context);
 
     const reentrantCallPayload =
-      new RelaySingleReentrancy__factory().interface.encodeFunctionData(
-        "universalReceiver",
-        [
-          "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-          "0x",
-        ]
+      new SingleReentrancyRelayer__factory().interface.encodeFunctionData(
+        "relayCallThatReenters",
+        [context.keyManager.address]
       );
     executePayload =
       new UniversalProfile__factory().interface.encodeFunctionData(

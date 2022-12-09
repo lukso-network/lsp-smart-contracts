@@ -8,10 +8,10 @@ import {
   ReentrantContract,
   LSP6KeyManager,
   UniversalProfile,
-  RelayBatchReentrancy,
-  RelaySingleReentrancy,
-  RelaySingleReentrancy__factory,
-  RelayBatchReentrancy__factory,
+  BatchReentrancyRelayer,
+  SingleReentrancyRelayer,
+  SingleReentrancyRelayer__factory,
+  BatchReentrancyRelayer__factory,
 } from "../../../../types";
 
 // constants
@@ -72,8 +72,8 @@ export type ReentrancyContext = {
   newURDAddress: string;
   reentrantContract: ReentrantContract;
   reentrantSigner: Wallet;
-  singleReentarncyRelayer: RelaySingleReentrancy;
-  batchReentarncyRelayer: RelayBatchReentrancy;
+  singleReentarncyRelayer: SingleReentrancyRelayer;
+  batchReentarncyRelayer: BatchReentrancyRelayer;
   randomLSP1TypeId: string;
 };
 
@@ -476,10 +476,10 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
 
   const reentrantSigner = new ethers.Wallet(LOCAL_PRIVATE_KEYS.ACCOUNT5);
 
-  const singleReentarncyRelayer = await new RelaySingleReentrancy__factory(
+  const singleReentarncyRelayer = await new SingleReentrancyRelayer__factory(
     owner
   ).deploy();
-  const batchReentarncyRelayer = await new RelayBatchReentrancy__factory(
+  const batchReentarncyRelayer = await new BatchReentrancyRelayer__factory(
     owner
   ).deploy();
 
@@ -587,7 +587,7 @@ export const generateRelayCall = async (
 };
 
 export const generateSingleRelayPayload = async (
-  reentrancyRelayer: RelaySingleReentrancy,
+  reentrancyRelayer: SingleReentrancyRelayer,
   universalProfile: UniversalProfile,
   keyManager: LSP6KeyManager,
   reentrantSigner: Wallet,
@@ -677,7 +677,7 @@ export const generateSingleRelayPayload = async (
 };
 
 export const generateBatchRelayPayload = async (
-  reentrancyRelayer: RelayBatchReentrancy,
+  reentrancyRelayer: BatchReentrancyRelayer,
   universalProfile: UniversalProfile,
   keyManager: LSP6KeyManager,
   reentrantSigner: Wallet,
