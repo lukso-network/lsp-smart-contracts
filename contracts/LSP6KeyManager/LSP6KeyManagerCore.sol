@@ -696,13 +696,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
              * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
              */
-            // solhint-disable-next-line no-inline-assembly
-            assembly {
-                // the first 32 bytes word in memory (where allowedERC725YKeysCompacted is stored)
-                // correspond to the length of allowedERC725YKeysCompacted (= total number of bytes)
-                let offset := add(add(pointer, 1), 32)
-                allowedKey := mload(add(allowedERC725YKeysCompacted, offset))
-            }
+            allowedKey = bytes32(allowedERC725YKeysCompacted.slice(pointer + 1, length));
 
             /**
              * the bitmask discard the last `32 - length` bytes of the input key via ANDing &
@@ -791,13 +785,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
              * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
              */
-            // solhint-disable-next-line no-inline-assembly
-            assembly {
-                // the first 32 bytes word in memory (where allowedERC725YKeysCompacted is stored)
-                // correspond to the length of allowedERC725YKeysCompacted (= total number of bytes)
-                let offset := add(add(pointer, 1), 32)
-                allowedKey := mload(add(allowedERC725YKeysCompacted, offset))
-            }
+            allowedKey = bytes32(allowedERC725YKeysCompacted.slice(pointer + 1, length));
 
             /**
              * the bitmask discard the last `32 - length` bytes of the input key via ANDing &
