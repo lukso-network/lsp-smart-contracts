@@ -3,10 +3,17 @@ import { expect } from "chai";
 
 import { BytesLike } from "ethers";
 import { LSP6InternalsTestContext } from "../../utils/context";
+import { abiCoder } from "../../utils/helpers";
 
 export type DataKey = {
   length: BytesLike;
   key: BytesLike;
+};
+
+// remove the first 32 bytes (calldata offset) from the input data
+// so to only keep [length][data]
+const removeCalldataOffset = (inputData: string) => {
+  return "0x" + inputData.slice(66);
 };
 
 export const testAllowedERC725YDataKeysInternals = (
@@ -29,6 +36,7 @@ export const testAllowedERC725YDataKeysInternals = (
     let compactBytesArray_2f: BytesLike;
     let compactBytesArray_2d_2f: BytesLike;
     let compactBytesArray_mixed_d_f: BytesLike;
+
     before(async () => {
       context = await buildContext();
       dataKeys = {
@@ -538,22 +546,34 @@ export const testAllowedERC725YDataKeysInternals = (
                 .substring(2),
           ];
 
+          const abiEncodedInputDataKeys = abiCoder.encode(
+            ["bytes32[]"],
+            [checkedDataKeys]
+          );
+
           const result =
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
-              checkedDataKeys,
-              compactBytesArray_2d
+              removeCalldataOffset(abiEncodedInputDataKeys),
+              compactBytesArray_2d,
+              [false, false]
             );
 
           expect(result).to.be.true;
         });
 
         it("checking an array of invalid keys: all should return false", async () => {
+          const abiEncodedInputDataKeys = abiCoder.encode(
+            ["bytes32[]"],
+            [dataKeysToReturn]
+          );
+
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
-              dataKeysToReturn,
-              compactBytesArray_2d
+              removeCalldataOffset(abiEncodedInputDataKeys),
+              compactBytesArray_2d,
+              Array(dataKeysToReturn.length).fill(false)
             )
           )
             .to.be.revertedWithCustomError(
@@ -571,22 +591,34 @@ export const testAllowedERC725YDataKeysInternals = (
             dataKeys.secondFixedKey.key,
           ];
 
+          const abiEncodedCheckedDataKeys = abiCoder.encode(
+            ["bytes32[]"],
+            [checkedDataKeys]
+          );
+
           const result =
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
-              checkedDataKeys,
-              compactBytesArray_2f
+              removeCalldataOffset(abiEncodedCheckedDataKeys),
+              compactBytesArray_2f,
+              Array(dataKeysToReturn.length).fill(false)
             );
 
           expect(result).to.be.true;
         });
 
         it("checking an array of invalid keys: all should return false", async () => {
+          const abiEncodedCheckedDataKeys = abiCoder.encode(
+            ["bytes32[]"],
+            [dataKeysToReturn]
+          );
+
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
-              dataKeysToReturn,
-              compactBytesArray_2f
+              removeCalldataOffset(abiEncodedCheckedDataKeys),
+              compactBytesArray_2f,
+              Array(dataKeysToReturn.length).fill(false)
             )
           )
             .to.be.revertedWithCustomError(
@@ -624,22 +656,34 @@ export const testAllowedERC725YDataKeysInternals = (
             dataKeys.secondFixedKey.key,
           ];
 
+          const abiEncodedInputDataKeys = abiCoder.encode(
+            ["bytes32[]"],
+            [checkedDataKeys]
+          );
+
           const result =
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
-              checkedDataKeys,
-              compactBytesArray_2d_2f
+              removeCalldataOffset(abiEncodedInputDataKeys),
+              compactBytesArray_2d_2f,
+              Array(checkedDataKeys.length).fill(false)
             );
 
           expect(result).to.be.true;
         });
 
         it("checking an array of invalid keys: all should return false", async () => {
+          const abiEncodedInputDataKeys = abiCoder.encode(
+            ["bytes32[]"],
+            [dataKeysToReturn]
+          );
+
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
-              dataKeysToReturn,
-              compactBytesArray_2d_2f
+              removeCalldataOffset(abiEncodedInputDataKeys),
+              compactBytesArray_2d_2f,
+              Array(dataKeysToReturn.length).fill(false)
             )
           )
             .to.be.revertedWithCustomError(
@@ -698,22 +742,34 @@ export const testAllowedERC725YDataKeysInternals = (
             dataKeys.thirdFixedKey.key,
           ];
 
+          const abiEncodedCheckedDataKeys = abiCoder.encode(
+            ["bytes32[]"],
+            [checkedDataKeys]
+          );
+
           const result =
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
-              checkedDataKeys,
-              compactBytesArray_mixed_d_f
+              removeCalldataOffset(abiEncodedCheckedDataKeys),
+              compactBytesArray_mixed_d_f,
+              Array(checkedDataKeys.length).fill(false)
             );
 
           expect(result).to.be.true;
         });
 
         it("checking an array of invalid keys: all should return false", async () => {
+          const abiEncodedInputDataKeys = abiCoder.encode(
+            ["bytes32[]"],
+            [dataKeysToReturn]
+          );
+
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
-              dataKeysToReturn,
-              compactBytesArray_mixed_d_f
+              removeCalldataOffset(abiEncodedInputDataKeys),
+              compactBytesArray_mixed_d_f,
+              Array(dataKeysToReturn.length).fill(false)
             )
           )
             .to.be.revertedWithCustomError(
