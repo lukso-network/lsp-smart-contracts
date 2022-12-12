@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {UniversalProfile} from "../UniversalProfile.sol";
 import {LSP6KeyManager} from "../LSP6KeyManager/LSP6KeyManager.sol";
 
 // constants
-import {setDataSingleSelector} from "../LSP6KeyManager/LSP6Constants.sol";
+import {
+    SETDATA_SELECTOR,
+    EXECUTE_SELECTOR,
+    OPERATION_0_CALL
+} from "@erc725/smart-contracts/contracts/constants.sol";
+import {_LSP6_EXECUTE_SELECTOR} from "../LSP6KeyManager/LSP6Constants.sol";
 
 contract Executor {
-    uint256 internal constant _OPERATION_CALL = 0;
-
     address internal constant _DUMMY_RECIPIENT = 0xCAfEcAfeCAfECaFeCaFecaFecaFECafECafeCaFe;
 
     LSP6KeyManager private _keyManager;
@@ -30,7 +33,7 @@ contract Executor {
         bytes32 key = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
         bytes memory value = "Some value";
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -39,7 +42,7 @@ contract Executor {
         bytes32 key = keccak256(abi.encodePacked("Some Key"));
         bytes memory value = abi.encodePacked("Some value");
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -48,7 +51,7 @@ contract Executor {
         public
         returns (bytes memory)
     {
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, _key, _value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, _key, _value);
 
         return _keyManager.execute(erc725Payload);
     }
@@ -57,8 +60,8 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.execute.selector,
-            _OPERATION_CALL,
+            EXECUTE_SELECTOR,
+            OPERATION_0_CALL,
             _DUMMY_RECIPIENT,
             amount,
             ""
@@ -71,8 +74,8 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.execute.selector,
-            _OPERATION_CALL,
+            EXECUTE_SELECTOR,
+            OPERATION_0_CALL,
             _recipient,
             amount,
             ""
@@ -88,10 +91,10 @@ contract Executor {
         bytes32 key = 0x562d53c1631c0c1620e183763f5f6356addcf78f26cbbd0b9eb7061d7c897ea1;
         bytes memory value = "Some value";
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 
@@ -104,10 +107,10 @@ contract Executor {
         bytes32 key = keccak256(abi.encodePacked("Some Key"));
         bytes memory value = abi.encodePacked("Some value");
 
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, key, value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, key, value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 
@@ -120,10 +123,10 @@ contract Executor {
         public
         returns (bool)
     {
-        bytes memory erc725Payload = abi.encodeWithSelector(setDataSingleSelector, _key, _value);
+        bytes memory erc725Payload = abi.encodeWithSelector(SETDATA_SELECTOR, _key, _value);
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 
@@ -136,15 +139,15 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.execute.selector,
-            _OPERATION_CALL,
+            EXECUTE_SELECTOR,
+            OPERATION_0_CALL,
             _DUMMY_RECIPIENT,
             amount,
             ""
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 
@@ -157,15 +160,15 @@ contract Executor {
         uint256 amount = 1 ether;
 
         bytes memory erc725Payload = abi.encodeWithSelector(
-            _universalProfile.execute.selector,
-            _OPERATION_CALL,
+            EXECUTE_SELECTOR,
+            OPERATION_0_CALL,
             _recipient,
             amount,
             ""
         );
 
         bytes memory keyManagerPayload = abi.encodeWithSelector(
-            _keyManager.execute.selector,
+            _LSP6_EXECUTE_SELECTOR,
             erc725Payload
         );
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 /**
  * @title The interface for LSP1UniversalReceiver
@@ -11,15 +11,15 @@ interface ILSP1UniversalReceiver {
      * @param from The address calling the universalReceiver function
      * @param value The amount sent to the universalReceiver function
      * @param typeId The hash of a specific standard or a hook
-     * @param returnedValue The return value of universalReceiver function
      * @param receivedData The arbitrary data passed to universalReceiver function
+     * @param returnedValue The value returned by the universalReceiver function
      */
     event UniversalReceiver(
         address indexed from,
-        uint256 value,
+        uint256 indexed value,
         bytes32 indexed typeId,
-        bytes indexed returnedValue,
-        bytes receivedData
+        bytes receivedData,
+        bytes returnedValue
     );
 
     /**

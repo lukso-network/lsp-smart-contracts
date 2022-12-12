@@ -1,0 +1,90 @@
+# This workflow deploys and verify the lsp-smart-contracts and verify them.
+
+name: Deploy + Verify Contracts
+
+env:
+  CONTRACT_VERIFICATION_PK: ${{ secrets.CONTRACT_VERIFICATION_PK }}
+  DEPLOYER_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js '16.15.0'
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # This will also generate the Typechain types used by the Chai tests
+      - name: Build contract artifacts
+        run: npm run build --if-present
+
+      - name: cache dependencies + build
+        uses: actions/cache@v2
+        with:
+          path: |
+            artifacts
+            node_modules 
+            types
+          key: ${{ github.run_id }}
+
+  deploy-verify:
+    runs-on: ubuntu-latest
+    needs: [build]
+    strategy:
+      # run each base contract verification one after the other to prevent submitting multiple transactions at the same time with the same nonce.
+      max-parallel: 1
+      matrix:
+        contracts: [
+            # Standard contracts
+            "UniversalProfile",
+            "LSP6KeyManager",
+            "LSP1UniversalReceiverDelegateUP",
+            "LSP1UniversalReceiverDelegateVault",
+            "LSP7Mintable",
+            "LSP8Mintable",
+            "LSP9Vault",
+            # Base contracts (for proxies)
+            "UniversalProfileInit",
+            "LSP6KeyManagerInit",
+            "LSP7MintableInit",
+            "LSP8MintableInit",
+            "LSP9VaultInit",
+          ]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: restore cache
+        uses: actions/cache@v2
+        id: "build-cache"
+        with:
+          path: |
+            artifacts
+            node_modules 
+            types
+          key: ${{ github.run_id }}
+
+      - name: Use Node.js v16
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Deploy + Verify ${{ matrix.contracts }} on L16
+        run: sh ./scripts/deploy_verify.sh -n luksoL16 -c ${{ matrix.contracts }}

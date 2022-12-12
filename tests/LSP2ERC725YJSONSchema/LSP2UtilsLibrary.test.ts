@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
@@ -5,11 +6,13 @@ import {
   LSP2UtilsLibraryTester__factory,
 } from "../../types";
 
+import { abiCoder } from "../utils/helpers";
+
 describe("LSP2Utils", () => {
   let accounts: SignerWithAddress[];
   let lsp2Utils: LSP2UtilsLibraryTester;
 
-  beforeAll(async () => {
+  before(async () => {
     accounts = await ethers.getSigners();
     lsp2Utils = await new LSP2UtilsLibraryTester__factory(accounts[0]).deploy();
   });
@@ -19,67 +22,92 @@ describe("LSP2Utils", () => {
       it("should return false for 1 x empty zero bytes", async () => {
         const data = "0x00";
         const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeFalsy();
+        expect(result).to.be.false;
       });
 
       it("should return false for 10 x empty zero bytes", async () => {
         const data = "0x00000000000000000000";
         const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeFalsy();
+        expect(result).to.be.false;
       });
 
       it("should return false for 20 x empty zero bytes", async () => {
         const data = "0x0000000000000000000000000000000000000000";
         const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeFalsy();
+        expect(result).to.be.false;
       });
 
       it("should return false for 30 x empty zero bytes", async () => {
         const data =
           "0x000000000000000000000000000000000000000000000000000000000000";
         const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeFalsy();
+        expect(result).to.be.false;
       });
 
       it("should return true for 32 x empty zero bytes", async () => {
         const data =
           "0x0000000000000000000000000000000000000000000000000000000000000000";
         const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeTruthy();
+        expect(result).to.be.true;
       });
 
       it("should return true for 40 x empty zero bytes", async () => {
         const data =
           "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000";
         const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeTruthy();
+        expect(result).to.be.true;
       });
 
       it("should return true for 64 x empty zero bytes", async () => {
         const data = "0x" + "00".repeat(64);
         const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeTruthy();
+        expect(result).to.be.true;
       });
 
       it("should return true for 100 x empty zero bytes", async () => {
         const data = "0x" + "00".repeat(100);
         const result = await lsp2Utils.isEncodedArray(data);
-        expect(result).toBeTruthy();
+        expect(result).to.be.true;
       });
     });
 
     describe("testing various non-zero bytes input", () => {
+      describe("when 32 bytes", () => {
+        it("should return false (`uint256` data = 32)", async () => {
+          const data = abiCoder.encode(["uint256"], [32]);
+          const result = await lsp2Utils.isEncodedArray(data);
+          expect(result).to.be.false;
+        });
+
+        it("should return false (`uint256` data = 12345)", async () => {
+          const data = abiCoder.encode(["uint256"], [12345]);
+          const result = await lsp2Utils.isEncodedArray(data);
+          expect(result).to.be.false;
+        });
+
+        it("should return false (`bytes32` data = 0xcafecafecafecafe...)", async () => {
+          const data = abiCoder.encode(
+            ["bytes32"],
+            [
+              "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+            ]
+          );
+          const result = await lsp2Utils.isEncodedArray(data);
+          expect(result).to.be.false;
+        });
+      });
+
       describe("when less than 32 bytes", () => {
         it("should return false with 4x random bytes", async () => {
           const data = "0xaabbccdd";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeFalsy();
+          expect(result).to.be.false;
         });
 
         it("should return false with 16x random bytes", async () => {
           const data = "0x1234567890abcdef1234567890abcdef";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeFalsy();
+          expect(result).to.be.false;
         });
       });
 
@@ -88,21 +116,21 @@ describe("LSP2Utils", () => {
           const data =
             "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeTruthy();
+          expect(result).to.be.true;
         });
 
         it("should return true with 64 bytes -> offset = 0x20, length = 0 (null) + 10x extra zero bytes", async () => {
           const data =
             "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeTruthy();
+          expect(result).to.be.true;
         });
 
         it("should return true with 64 bytes -> offset = 0x20, length = 0 (null) + 10x extra random bytes", async () => {
           const data =
             "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000aaaabbbbccccddddeeee";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeTruthy();
+          expect(result).to.be.true;
         });
       });
 
@@ -111,21 +139,21 @@ describe("LSP2Utils", () => {
           const data =
             "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a0Ee7A142d267C1f36714E4a8F75612F20a79720";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeTruthy();
+          expect(result).to.be.true;
         });
 
         it("should return true with 1x array element - offset = 0x20, length = 1, +5 custom bytes in the end", async () => {
           const data =
             "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a0Ee7A142d267C1f36714E4a8F75612F20a79720ffffffffff";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeTruthy();
+          expect(result).to.be.true;
         });
 
         it("should return true with 1x array element - offset = 0x25 (+ 5 custom bytes in between), length = 1", async () => {
           const data =
             "0x0000000000000000000000000000000000000000000000000000000000000025ffffffffff0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a0Ee7A142d267C1f36714E4a8F75612F20a79720";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeTruthy();
+          expect(result).to.be.true;
         });
       });
 
@@ -134,14 +162,14 @@ describe("LSP2Utils", () => {
           const data =
             "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a0Ee7A142d267C1f36714E4a8F75612F20a797";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeFalsy();
+          expect(result).to.be.false;
         });
 
         it("should return false with 1x array element - offset = 0x20, length = 1, but 30 bytes only", async () => {
           const data =
             "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000a0Ee7A142d267C1f36714E4a8F75612F20a7";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeFalsy();
+          expect(result).to.be.false;
         });
       });
 
@@ -150,7 +178,7 @@ describe("LSP2Utils", () => {
           const data =
             "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000002000000000000000000000000cafecafecafecafecafecafecafecafecafecafe";
           const result = await lsp2Utils.isEncodedArray(data);
-          expect(result).toBeFalsy();
+          expect(result).to.be.false;
         });
       });
     });

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {
@@ -14,6 +14,13 @@ import {
 import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 
 contract LSP8CompatibleERC721InitTester is LSP8CompatibleERC721InitAbstract {
+    /**
+     * @dev initialize (= lock) base implementation contract on deployment
+     */
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize(
         string memory name,
         string memory symbol,

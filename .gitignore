@@ -20,6 +20,7 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+coverage.json
 *.lcov
 
 # nyc test coverage
@@ -130,8 +131,14 @@ tmp/
 
 .idea
 
+# auto-generated docs
+docs/
+
 # Solidity Flattener
 flat_contracts/
 
 # Mac
 .DS_Store
+
+# codespaces
+.devcontainer

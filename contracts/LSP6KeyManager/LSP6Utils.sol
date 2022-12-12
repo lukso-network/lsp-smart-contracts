@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
@@ -9,11 +9,18 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
+import {SETDATA_ARRAY_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
 import "../LSP6KeyManager/LSP6Constants.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;
 
+    /**
+     * @dev read the permissions of a `caller` on an ERC725Y `target` contract.
+     * @param target an `IERC725Y` contract where to read the permissions.
+     * @param caller the controller address to read the permissions from.
+     * @return a `bytes32` BitArray containing the permissions of a controller address.
+     */
     function getPermissionsFor(IERC725Y target, address caller) internal view returns (bytes32) {
         bytes memory permissions = target.getData(
             LSP2Utils.generateMappingWithGroupingKey(
@@ -25,7 +32,7 @@ library LSP6Utils {
         return bytes32(permissions);
     }
 
-    function getAllowedAddressesFor(IERC725Y target, address caller)
+    function getAllowedCallsFor(IERC725Y target, address from)
         internal
         view
         returns (bytes memory)
@@ -33,13 +40,19 @@ library LSP6Utils {
         return
             target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
-                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDADDRESSES_PREFIX,
-                    bytes20(caller)
+                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX,
+                    bytes20(from)
                 )
             );
     }
 
-    function getAllowedFunctionsFor(IERC725Y target, address caller)
+    /**
+     * @dev read the Allowed ERC725Y data keys of a `caller` on an ERC725Y `target` contract.
+     * @param target an `IERC725Y` contract where to read the permissions.
+     * @param caller the controller address to read the permissions from.
+     * @return an abi-encoded array of allowed ERC725 keys that the controller address is allowed to interact with.
+     */
+    function getAllowedERC725YDataKeysFor(IERC725Y target, address caller)
         internal
         view
         returns (bytes memory)
@@ -47,35 +60,7 @@ library LSP6Utils {
         return
             target.getData(
                 LSP2Utils.generateMappingWithGroupingKey(
-                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDFUNCTIONS_PREFIX,
-                    bytes20(caller)
-                )
-            );
-    }
-
-    function getAllowedStandardsFor(IERC725Y target, address caller)
-        internal
-        view
-        returns (bytes memory)
-    {
-        return
-            target.getData(
-                LSP2Utils.generateMappingWithGroupingKey(
-                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDSTANDARDS_PREFIX,
-                    bytes20(caller)
-                )
-            );
-    }
-
-    function getAllowedERC725YKeysFor(IERC725Y target, address caller)
-        internal
-        view
-        returns (bytes memory)
-    {
-        return
-            target.getData(
-                LSP2Utils.generateMappingWithGroupingKey(
-                    _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDERC725YKEYS_PREFIX,
+                    _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX,
                     bytes20(caller)
                 )
             );
@@ -96,12 +81,18 @@ library LSP6Utils {
         return (addressPermission & permissionToCheck) == permissionToCheck;
     }
 
+    /**
+     * @dev use the `setData(bytes32[],bytes[])` via the KeyManager of the target
+     * @param keyManagerAddress the address of the KeyManager
+     * @param keys the array of data keys
+     * @param values the array of data values
+     */
     function setDataViaKeyManager(
         address keyManagerAddress,
         bytes32[] memory keys,
         bytes[] memory values
     ) internal returns (bytes memory result) {
-        bytes memory payload = abi.encodeWithSelector(hex"14a6e293", keys, values);
+        bytes memory payload = abi.encodeWithSelector(SETDATA_ARRAY_SELECTOR, keys, values);
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 

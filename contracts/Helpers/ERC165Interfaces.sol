@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // ERC interfaces
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
@@ -16,29 +16,30 @@ import {IERC223} from "./Tokens/IERC223.sol";
 
 // LSPs interfaces
 import {ILSP1UniversalReceiver as ILSP1} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {
-    ILSP1UniversalReceiverDelegate as ILSP1Delegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+
 import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
 import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.sol";
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
 } from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
-import {IClaimOwnership, _INTERFACEID_CLAIM_OWNERSHIP} from "../Custom/IClaimOwnership.sol";
+import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 import {ILSP11BasicSocialRecovery} from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
 
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
-import {
-    _INTERFACEID_LSP1,
-    _INTERFACEID_LSP1_DELEGATE
-} from "../LSP1UniversalReceiver/LSP1Constants.sol";
+import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
 import {_INTERFACEID_LSP8} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
 import {_INTERFACEID_LSP11} from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
+
+import {
+    _INTERFACEID_LSP17_EXTENDABLE,
+    _INTERFACEID_LSP17_EXTENSION
+} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 /**
  * @dev This contract calculates the ERC165 interface IDs of each LSP contract
@@ -48,14 +49,13 @@ import {_INTERFACEID_LSP11} from "../LSP11BasicSocialRecovery/LSP11Constants.sol
 contract CalculateLSPInterfaces {
     function calculateInterfaceLSP0() public pure returns (bytes4) {
         // prettier-ignore
-        bytes4 interfaceId = 
+        bytes4 interfaceId =
             type(IERC725Y).interfaceId ^
             type(IERC725X).interfaceId ^
             type(IERC1271).interfaceId ^
             type(ILSP1).interfaceId ^
-            OwnableUnset.owner.selector ^
-            OwnableUnset.transferOwnership.selector ^
-            type(IClaimOwnership).interfaceId;
+            calculateInterfaceLSP14() ^
+            calculateInterfaceLSP17Extendable();
 
         require(
             interfaceId == _INTERFACEID_LSP0,
@@ -70,16 +70,6 @@ contract CalculateLSPInterfaces {
         require(
             interfaceId == _INTERFACEID_LSP1,
             "hardcoded _INTERFACEID_LSP1 does not match type(ILSP1).interfaceId"
-        );
-
-        return interfaceId;
-    }
-
-    function calculateInterfaceLSP1Delegate() public pure returns (bytes4) {
-        bytes4 interfaceId = type(ILSP1Delegate).interfaceId;
-        require(
-            interfaceId == _INTERFACEID_LSP1_DELEGATE,
-            "hardcoded _INTERFACEID_LSP1_DELEGATE does not match type(ILSP1Delegate).interfaceId"
         );
 
         return interfaceId;
@@ -117,13 +107,12 @@ contract CalculateLSPInterfaces {
 
     function calculateInterfaceLSP9() public pure returns (bytes4) {
         // prettier-ignore
-        bytes4 interfaceId = 
+        bytes4 interfaceId =
             type(IERC725X).interfaceId ^
             type(IERC725Y).interfaceId ^
             type(ILSP1).interfaceId ^
-            OwnableUnset.owner.selector ^
-            OwnableUnset.transferOwnership.selector ^
-            type(IClaimOwnership).interfaceId;
+            calculateInterfaceLSP14() ^
+            calculateInterfaceLSP17Extendable();
 
         require(
             interfaceId == _INTERFACEID_LSP9,
@@ -133,16 +122,42 @@ contract CalculateLSPInterfaces {
         return interfaceId;
     }
 
-    function calculateInterfaceClaimOwnership() public pure returns (bytes4) {
+    function calculateInterfaceLSP14() public pure returns (bytes4) {
         // prettier-ignore
-        bytes4 interfaceId = 
+        bytes4 interfaceId =
             OwnableUnset.owner.selector ^
             OwnableUnset.transferOwnership.selector ^
-            type(IClaimOwnership).interfaceId;
+            OwnableUnset.renounceOwnership.selector ^
+            LSP14Ownable2Step.pendingOwner.selector ^
+            LSP14Ownable2Step.acceptOwnership.selector;
 
         require(
-            interfaceId == _INTERFACEID_CLAIM_OWNERSHIP,
-            "hardcoded _INTERFACEID_CLAIM_OWNERSHIP does not match XOR of the functions"
+            interfaceId == _INTERFACEID_LSP14,
+            "hardcoded _INTERFACEID_LSP14 does not match XOR of the functions"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP17Extendable() public pure returns (bytes4) {
+        // prettier-ignore
+        bytes4 interfaceId = bytes4(keccak256(abi.encodePacked("LSP17Extendable")));
+
+        require(
+            interfaceId == _INTERFACEID_LSP17_EXTENDABLE,
+            "hardcoded _INTERFACEID_LSP17_EXTENDABLE does not match hash of LSP17Extendable"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP17Extension() public pure returns (bytes4) {
+        // prettier-ignore
+        bytes4 interfaceId = bytes4(keccak256(abi.encodePacked("LSP17Extension")));
+
+        require(
+            interfaceId == _INTERFACEID_LSP17_EXTENSION,
+            "hardcoded _INTERFACEID_LSP17_EXTENSION does not match hash of LSP17Extension"
         );
 
         return interfaceId;

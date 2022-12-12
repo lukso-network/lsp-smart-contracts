@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 import {ILSP8IdentifiableDigitalAsset} from "./ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
+import {GasLib} from "../Utils/GasLib.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {ERC165Checker} from "../Custom/ERC165Checker.sol";
 
 // modules
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // errors
@@ -19,7 +19,6 @@ import "./LSP8Errors.sol";
 
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
-// import {} from "../LSP4DigitalAssetMetadata/LSP4Constants.sol";
 import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "./LSP8Constants.sol";
 
 /**
@@ -27,10 +26,9 @@ import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "./LSP8Con
  * @author Matthew Stevens
  * @dev Core Implementation of a LSP8 compliant contract.
  */
-abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8IdentifiableDigitalAsset {
+abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
-    using Address for address;
 
     // --- Storage
 
@@ -45,12 +43,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     // Mapping a `tokenId` to its authorized operator addresses.
     mapping(bytes32 => EnumerableSet.AddressSet) internal _operators;
 
+    mapping(address => EnumerableSet.Bytes32Set) internal _tokenIdsForOperator;
+
     // --- Token queries
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() public view returns (uint256) {
         return _existingTokens;
     }
 
@@ -59,14 +59,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function balanceOf(address tokenOwner) public view override returns (uint256) {
+    function balanceOf(address tokenOwner) public view returns (uint256) {
         return _ownedTokens[tokenOwner].length();
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenOwnerOf(bytes32 tokenId) public view override returns (address) {
+    function tokenOwnerOf(bytes32 tokenId) public view returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
 
         if (tokenOwner == address(0)) {
@@ -79,7 +79,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenIdsOf(address tokenOwner) public view override returns (bytes32[] memory) {
+    function tokenIdsOf(address tokenOwner) public view returns (bytes32[] memory) {
         return _ownedTokens[tokenOwner].values();
     }
 
@@ -88,9 +88,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function authorizeOperator(address operator, bytes32 tokenId) public virtual override {
+    function authorizeOperator(address operator, bytes32 tokenId) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address caller = _msgSender();
+        address caller = msg.sender;
 
         if (tokenOwner != caller) {
             revert LSP8NotTokenOwner(tokenOwner, tokenId, caller);
@@ -105,7 +105,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
             return;
         }
 
-        _operators[tokenId].add(operator);
+        bool isAdded = _operators[tokenId].add(operator);
+        if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
 
         emit AuthorizedOperator(operator, tokenOwner, tokenId);
     }
@@ -113,9 +114,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function revokeOperator(address operator, bytes32 tokenId) public virtual override {
+    function revokeOperator(address operator, bytes32 tokenId) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address caller = _msgSender();
+        address caller = msg.sender;
 
         if (tokenOwner != caller) {
             revert LSP8NotTokenOwner(tokenOwner, tokenId, caller);
@@ -136,13 +137,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function isOperatorFor(address operator, bytes32 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
+    function isOperatorFor(address operator, bytes32 tokenId) public view virtual returns (bool) {
         _existsOrError(tokenId);
 
         return _isOperatorOrOwner(operator, tokenId);
@@ -151,18 +146,16 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function getOperatorsOf(bytes32 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (address[] memory)
-    {
+    function getOperatorsOf(bytes32 tokenId) public view virtual returns (address[] memory) {
         _existsOrError(tokenId);
 
         return _operators[tokenId].values();
     }
 
+    /**
+     * @dev verifies if the `caller` is operator or owner for the `tokenId`
+     * @return true if `caller` is either operator or owner
+     */
     function _isOperatorOrOwner(address caller, bytes32 tokenId)
         internal
         view
@@ -185,8 +178,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override {
-        address operator = _msgSender();
+    ) public virtual {
+        address operator = msg.sender;
 
         if (!_isOperatorOrOwner(operator, tokenId)) {
             revert LSP8NotTokenOperator(tokenId, operator);
@@ -202,31 +195,42 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
         address[] memory from,
         address[] memory to,
         bytes32[] memory tokenId,
-        bool force,
+        bool[] memory force,
         bytes[] memory data
-    ) public virtual override {
+    ) public virtual {
+        uint256 fromLength = from.length;
         if (
-            from.length != to.length || from.length != tokenId.length || from.length != data.length
+            fromLength != to.length ||
+            fromLength != tokenId.length ||
+            fromLength != force.length ||
+            fromLength != data.length
         ) {
             revert LSP8InvalidTransferBatch();
         }
 
-        for (uint256 i = 0; i < from.length; i++) {
-            transfer(from[i], to[i], tokenId[i], force, data[i]);
+        for (uint256 i = 0; i < fromLength; i = GasLib.uncheckedIncrement(i)) {
+            transfer(from[i], to[i], tokenId[i], force[i], data[i]);
         }
     }
 
+    /**
+     * @dev removes `operator` from the list of operators for the `tokenId`
+     */
     function _revokeOperator(
         address operator,
         address tokenOwner,
         bytes32 tokenId
     ) internal virtual {
-        _operators[tokenId].remove(operator);
+        bool isRemoved = _operators[tokenId].remove(operator);
+        if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
         emit RevokedOperator(operator, tokenOwner, tokenId);
     }
 
+    /**
+     * @dev clear all the operators for the `tokenId`
+     */
     function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
-        // TODO: here is a good exmaple of why having multiple operators will be expensive.. we
+        // here is a good example of why having multiple operators will be expensive.. we
         // need to clear them on token transfer
         //
         // NOTE: this may cause a tx to fail if there is too many operators to clear, in which case
@@ -235,7 +239,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
         EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
 
         uint256 operatorListLength = operatorsForTokenId.length();
-        for (uint256 i = 0; i < operatorListLength; i++) {
+        for (uint256 i = 0; i < operatorListLength; i = GasLib.uncheckedIncrement(i)) {
             // we are emptying the list, always remove from index 0
             address operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId);
@@ -285,9 +289,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
             revert LSP8TokenIdAlreadyMinted(tokenId);
         }
 
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         _beforeTokenTransfer(address(0), to, tokenId);
+
+        // token being minted
+        _existingTokens += 1;
 
         _ownedTokens[to].add(tokenId);
         _tokenOwners[tokenId] = to;
@@ -308,9 +315,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
      */
     function _burn(bytes32 tokenId, bytes memory data) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         _beforeTokenTransfer(tokenOwner, address(0), tokenId);
+
+        // token being burned
+        _existingTokens -= 1;
 
         _clearOperators(tokenOwner, tokenId);
 
@@ -339,6 +349,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
         bool force,
         bytes memory data
     ) internal virtual {
+        if (from == to) {
+            revert LSP8CannotSendToSelf();
+        }
+
         address tokenOwner = tokenOwnerOf(tokenId);
         if (tokenOwner != from) {
             revert LSP8NotTokenOwner(tokenOwner, tokenId, from);
@@ -348,7 +362,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
             revert LSP8CannotSendToAddressZero();
         }
 
-        address operator = _msgSender();
+        address operator = msg.sender;
 
         _beforeTokenTransfer(from, to, tokenId);
 
@@ -374,25 +388,13 @@ abstract contract LSP8IdentifiableDigitalAssetCore is Context, ILSP8Identifiable
      * transferred to `to`.
      * - When `from` is zero, `tokenId` will be minted for `to`.
      * - When `to` is zero, ``from``'s `tokenId` will be burned.
+     * - `from` and `to` are never both zero.
      */
     function _beforeTokenTransfer(
         address from,
         address to,
         bytes32 tokenId
-    ) internal virtual {
-        // silence compiler warning about unused variable
-        tokenId;
-
-        // token being minted
-        if (from == address(0)) {
-            _existingTokens += 1;
-        }
-
-        // token being burned
-        if (to == address(0)) {
-            _existingTokens -= 1;
-        }
-    }
+    ) internal virtual {} // solhint-disable no-empty-blocks
 
     /**
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using

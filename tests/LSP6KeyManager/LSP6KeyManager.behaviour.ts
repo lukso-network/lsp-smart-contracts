@@ -1,3 +1,5 @@
+import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 
 import { INTERFACE_IDS } from "../../constants";
@@ -5,6 +7,8 @@ import { INTERFACE_IDS } from "../../constants";
 import {
   shouldBehaveLikePermissionChangeOwner,
   shouldBehaveLikePermissionChangeOrAddPermissions,
+  shouldBehaveLikePermissionChangeOrAddExtensions,
+  shouldBehaveLikePermissionChangeOrAddURD,
   shouldBehaveLikePermissionSetData,
   shouldBehaveLikePermissionCall,
   shouldBehaveLikePermissionStaticCall,
@@ -15,21 +19,23 @@ import {
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
-  shouldBehaveLikeAllowedERC725YKeys,
+  shouldBehaveLikeAllowedERC725YDataKeys,
   shouldBehaveLikeMultiChannelNonce,
+  shouldBehaveLikeExecuteRelayCall,
+  shouldBehaveLikeBatchExecute,
   testSecurityScenarios,
   otherTestScenarios,
+  testReentrancyScenarios,
 } from "./tests";
 
 import {
-  testAllowedAddressesInternals,
-  testAllowedERC725YKeysInternals,
-  testAllowedFunctionsInternals,
+  testAllowedCallsInternals,
+  testAllowedERC725YDataKeysInternals,
   testReadingPermissionsInternals,
 } from "./internals";
 
 export const shouldBehaveLikeLSP6 = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
   describe("CHANGEOWNER", () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
@@ -37,6 +43,14 @@ export const shouldBehaveLikeLSP6 = (
 
   describe("CHANGE / ADD permissions", () => {
     shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
+  });
+
+  describe("CHANGE / ADD extensions", () => {
+    shouldBehaveLikePermissionChangeOrAddExtensions(buildContext);
+  });
+
+  describe("CHANGE / ADD UniversalReceiverDelegate", () => {
+    shouldBehaveLikePermissionChangeOrAddURD(buildContext);
   });
 
   describe("SETDATA", () => {
@@ -79,12 +93,20 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 
-  describe("ALLOWEDERC725YKeys", () => {
-    shouldBehaveLikeAllowedERC725YKeys(buildContext);
+  describe("AllowedERC725YDataKeys", () => {
+    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
   });
 
   describe("Multi Channel nonces", () => {
     shouldBehaveLikeMultiChannelNonce(buildContext);
+  });
+
+  describe("Execute Relay Call", () => {
+    shouldBehaveLikeExecuteRelayCall(buildContext);
+  });
+
+  describe("batch execute", () => {
+    shouldBehaveLikeBatchExecute(buildContext);
   });
 
   describe("miscellaneous", () => {
@@ -94,6 +116,10 @@ export const shouldBehaveLikeLSP6 = (
   describe("Security", () => {
     testSecurityScenarios(buildContext);
   });
+
+  describe("Reentrancy", () => {
+    testReentrancyScenarios(buildContext);
+  });
 };
 
 export const shouldInitializeLikeLSP6 = (
@@ -101,7 +127,7 @@ export const shouldInitializeLikeLSP6 = (
 ) => {
   let context: LSP6TestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
@@ -110,26 +136,26 @@ export const shouldInitializeLikeLSP6 = (
       const result = await context.keyManager.supportsInterface(
         INTERFACE_IDS.ERC165
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ERC1271 interface", async () => {
       const result = await context.keyManager.supportsInterface(
         INTERFACE_IDS.ERC1271
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support LSP6 interface", async () => {
       const result = await context.keyManager.supportsInterface(
         INTERFACE_IDS.LSP6KeyManager
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should be linked to the right ERC725 account contract", async () => {
       let account = await context.keyManager.target();
-      expect(account).toEqual(context.universalProfile.address);
+      expect(account).to.equal(context.universalProfile.address);
     });
   });
 };
@@ -137,8 +163,7 @@ export const shouldInitializeLikeLSP6 = (
 export const testLSP6InternalFunctions = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {
-  testAllowedAddressesInternals(buildContext);
-  testAllowedFunctionsInternals(buildContext);
-  testAllowedERC725YKeysInternals(buildContext);
+  testAllowedCallsInternals(buildContext);
+  testAllowedERC725YDataKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
 };

@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {
     LSP8IdentifiableDigitalAsset
 } from "../../LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol";
+import {LSP8Burnable} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol";
 
-contract LSP8Tester is LSP8IdentifiableDigitalAsset {
+contract LSP8Tester is LSP8IdentifiableDigitalAsset, LSP8Burnable {
     /* solhint-disable no-empty-blocks */
     constructor(
         string memory name,
@@ -22,9 +23,5 @@ contract LSP8Tester is LSP8IdentifiableDigitalAsset {
         bytes memory data
     ) public {
         _mint(to, tokenId, force, data);
-    }
-
-    function burn(bytes32 tokenId, bytes memory data) public {
-        _burn(tokenId, data);
     }
 }

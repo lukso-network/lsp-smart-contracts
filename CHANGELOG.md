@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.7.0...v0.8.0) (2022-09-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* split between ENCRYPT/DECRYPT permissions + move SUPER permissions on the left bit range
+
+### Features
+
+- created `LSP7Burnable` and `LSP8Burnable` token extension. (commit [#bc238b5](https://github.com/lukso-network/lsp-smart-contracts/pull/312/commits/bc238b569615d741dc539977bae21fcefc88c317))
+
+### Bug Fixes
+
+*  Reset `pendingOwner` whenever `renounceOwnership(..)` is used. ([#310](https://github.com/lukso-network/lsp-smart-contracts/issues/310)) ([d0bb563](https://github.com/lukso-network/lsp-smart-contracts/commit/d0bb563dbce36353c8d9407f90c4dfb68c5d47d1))
+* add reference to `.key` member for SupportedStandards in constants ([#311](https://github.com/lukso-network/lsp-smart-contracts/issues/311)) ([550699f](https://github.com/lukso-network/lsp-smart-contracts/commit/550699fe6735bc249b6810046ae596444a683642))
+* fixed failing iOS CI ([#313](https://github.com/lukso-network/lsp-smart-contracts/issues/313)) ([25e965b](https://github.com/lukso-network/lsp-smart-contracts/commit/25e965b0f0a20979bc874853842dd1971acd6bd8))
+
+
+* split between ENCRYPT/DECRYPT permissions + move SUPER permissions on the left bit range ([dfeaec5](https://github.com/lukso-network/lsp-smart-contracts/commit/dfeaec525d5cc7997e20ea1f4554b28438cfeed5))
+
+## [0.7.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.2...v0.7.0) (2022-09-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove `LSP7Init` and `LSP8Init` + make barebone LSP7/8 contracts non deployable ([#296](https://github.com/lukso-network/lsp-smart-contracts/issues/296)) ([4dec2f1](https://github.com/lukso-network/lsp-smart-contracts/commit/4dec2f1c739bdca1eb81bf97604861fb8e388cb2))
+* Update ClaimOwnership, LSP0 and LSP9 InterfaceId ([#298](https://github.com/lukso-network/lsp-smart-contracts/issues/298)) ([24a281c](https://github.com/lukso-network/lsp-smart-contracts/commit/24a281cd683951031bbd1ab261b002e0d8e8d6a8))
+* [LSP0, LSP4, LSP9] emit only the first 256 bytes of the value in the `DataChanged` event ([#301](https://github.com/lukso-network/lsp-smart-contracts/issues/301)) ([f92f996](https://github.com/lukso-network/lsp-smart-contracts/commit/f92f996c1aa7bf8789a427ae6cfd6606009079bf))
+* use `uint8` instead of `uint256` in LSP7 decimals ([#292](https://github.com/lukso-network/lsp-smart-contracts/issues/292)) ([cc23ff5](https://github.com/lukso-network/lsp-smart-contracts/commit/cc23ff5ca985baaa3644e39b0628efd11198b94a))
+* add new permission ENCRYPT in `constants.js` (#289)
+* Change `isOperatorFor(..)` to `authorizedAmountFor(..)` in LSP7 ([#279](https://github.com/lukso-network/lsp-smart-contracts/issues/279)) ([afc5895](https://github.com/lukso-network/lsp-smart-contracts/commit/afc58954c5a877615820d5699b6be7a7857a91df))
+
+### Features
+
+* [QSP - Best Practices] Use `_uncheckedIncrement(..)` for saving gas when iterating loops ([#273](https://github.com/lukso-network/lsp-smart-contracts/issues/273)) ([4632f9c](https://github.com/lukso-network/lsp-smart-contracts/commit/4632f9ce673bbab9bee841394a85d3d0b9de8832))
+* [QSP-12] Add two step process for `renounceOwnership(...)` in `ClaimOwnership` contract ([#282](https://github.com/lukso-network/lsp-smart-contracts/issues/282)) ([b816f38](https://github.com/lukso-network/lsp-smart-contracts/commit/b816f38e44ace092722bc7be0408231eb462549a))
+* Add a hook that notifies the vault pending owner ([#295](https://github.com/lukso-network/lsp-smart-contracts/issues/295)) ([bb9d579](https://github.com/lukso-network/lsp-smart-contracts/commit/bb9d579f7ab6657ef805794166cdbf8d4c061dbd))
+* add GasLib library with unchecked increment ([#297](https://github.com/lukso-network/lsp-smart-contracts/issues/297)) ([1a7757f](https://github.com/lukso-network/lsp-smart-contracts/commit/1a7757fd85940e3dee5a7577e2410dc5d04eaad8))
+* add new permission ENCRYPT in `constants.js` ([#289](https://github.com/lukso-network/lsp-smart-contracts/issues/289)) ([259c55e](https://github.com/lukso-network/lsp-smart-contracts/commit/259c55ee19602fe521861bf4eeddf1e36d699238))
+
+
+### Bug Fixes
+
+* [QSP - Best Practices] Add ReentrancyGuard for Mintable token presets ([#280](https://github.com/lukso-network/lsp-smart-contracts/issues/280)) ([a8445cb](https://github.com/lukso-network/lsp-smart-contracts/commit/a8445cb4b51d7ae56fc0b52075ca8e5b59088817))
+* [QSP - Best Practices] clean TODO comments + add extra permission checks and support in LSP6 ([#272](https://github.com/lukso-network/lsp-smart-contracts/issues/272)) ([f5c6e3a](https://github.com/lukso-network/lsp-smart-contracts/commit/f5c6e3a14dd62a356ef24c34dcde008a07ef4739))
+* [QSP - Best Practices] refactor `deployCreate2Proxy(..)` to revert instead of refund caller ([#276](https://github.com/lukso-network/lsp-smart-contracts/issues/276)) ([cc99840](https://github.com/lukso-network/lsp-smart-contracts/commit/cc9984093ddd0a22f90c0f3e7dcf45d9ffc69f56))
+* [QSP-10] Revert when authorizing existing operators in LSP8 ([#270](https://github.com/lukso-network/lsp-smart-contracts/issues/270)) ([f7b0c36](https://github.com/lukso-network/lsp-smart-contracts/commit/f7b0c362156bbb176c2244d5b2473c80183faa09))
+* [QSP-14] Revert when revoking non-existing operators  ([#271](https://github.com/lukso-network/lsp-smart-contracts/issues/271)) ([a5d72cf](https://github.com/lukso-network/lsp-smart-contracts/commit/a5d72cff5361279da8ac298ffa8d90438348b6d4))
+* [QSP-3] Operator Could Clear Operator List in LSP8 ([#266](https://github.com/lukso-network/lsp-smart-contracts/issues/266)) ([d608479](https://github.com/lukso-network/lsp-smart-contracts/commit/d608479df753087b33897586f2fe92b90252c869))
+* [QSP-4] add requirements checks on `LSP4DigitalAssetMetadata` deployment + add tests for internal `_burn(...)` function in LSP8 ([#268](https://github.com/lukso-network/lsp-smart-contracts/issues/268)) ([b576750](https://github.com/lukso-network/lsp-smart-contracts/commit/b576750374feab64bc4abfc0e2fcf7964f5ade60))
+* [QSP-5] Missing _disableInitializers for some Contracts ([#265](https://github.com/lukso-network/lsp-smart-contracts/issues/265)) ([097c266](https://github.com/lukso-network/lsp-smart-contracts/commit/097c266712d34947a34dd3152403c652a3d269a8))
+* [QSP-6] fix incorrect index check for `_countTrailingZeroBytes(...)` in `LSP6KeyManagerCore.sol` ([#264](https://github.com/lukso-network/lsp-smart-contracts/issues/264)) ([41407aa](https://github.com/lukso-network/lsp-smart-contracts/commit/41407aa8c651039ea06d020b86fece7ad5859456))
+* add `setApprovalForAll(...)` in `LSP8CompatibleERC721` ([#239](https://github.com/lukso-network/lsp-smart-contracts/issues/239)) ([945c776](https://github.com/lukso-network/lsp-smart-contracts/commit/945c776276144e8afa0e386d023ba300bc1ebcef))
+* Add Checks to ensure contract cannot be self owned with ClaimOwnership  ([#288](https://github.com/lukso-network/lsp-smart-contracts/issues/288)) ([31a304e](https://github.com/lukso-network/lsp-smart-contracts/commit/31a304efaf4f3955298d74dfe1aacc72af8e3736))
+* Fix LSP8Constants errors ([#255](https://github.com/lukso-network/lsp-smart-contracts/issues/255)) ([c8e1533](https://github.com/lukso-network/lsp-smart-contracts/commit/c8e15337f7946f21e9f51a28beb3c5341bd2d70e))
+* Hide linter warnings ([#250](https://github.com/lukso-network/lsp-smart-contracts/issues/250)) ([b0dc655](https://github.com/lukso-network/lsp-smart-contracts/commit/b0dc65570646f7d2daa6d437e2dc7d92befe4056))
+* prevent operator allowance to decrease if `from` and `to` are the same address ([#291](https://github.com/lukso-network/lsp-smart-contracts/issues/291)) ([200a21f](https://github.com/lukso-network/lsp-smart-contracts/commit/200a21f50d34f5bfea82a885dbabd805c7de3d24))
+* remove code length check in UniversalReceiverDelegate ([#267](https://github.com/lukso-network/lsp-smart-contracts/issues/267)) ([5a92642](https://github.com/lukso-network/lsp-smart-contracts/commit/5a9264238380b65f36ae6dd9adafca5bbb0965a1))
+* replace variable silinter with `solhint-disable` ([#285](https://github.com/lukso-network/lsp-smart-contracts/issues/285)) ([07c6fa1](https://github.com/lukso-network/lsp-smart-contracts/commit/07c6fa156fced93d7517fb83ccee5176e36765a0))
+
+
+
+
 ### [0.6.2](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.1...v0.6.2) (2022-07-12)
 
 

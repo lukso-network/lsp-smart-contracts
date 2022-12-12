@@ -1,4 +1,4 @@
-import { ERC725YKeys, OPERATION_TYPES } from "../../constants";
+import { ERC725YDataKeys, OPERATION_TYPES } from "../../constants";
 import {
   LSP1UniversalReceiverDelegateVault__factory,
   UniversalProfile__factory,
@@ -40,18 +40,28 @@ describe("LSP1UniversalReceiverDelegateVault", () => {
       const abi = lsp9Vault1.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
-          ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+          ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           lsp1universalReceiverDelegateVault.address,
         ]
       );
 
       await universalProfile
         .connect(accounts.owner1)
-        .execute(OPERATION_TYPES.CALL, lsp9Vault1.address, 0, abi);
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp9Vault1.address,
+          0,
+          abi
+        );
 
       await universalProfile
         .connect(accounts.owner1)
-        .execute(OPERATION_TYPES.CALL, lsp9Vault2.address, 0, abi);
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          lsp9Vault2.address,
+          0,
+          abi
+        );
 
       return {
         accounts,

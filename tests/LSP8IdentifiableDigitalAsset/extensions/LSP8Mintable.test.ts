@@ -1,3 +1,5 @@
+import { ethers } from "hardhat";
+import { expect } from "chai";
 import {
   LSP8Mintable,
   LSP8Mintable__factory,
@@ -10,7 +12,7 @@ import {
   shouldBehaveLikeLSP8Mintable,
   LSP8MintableTestContext,
   getNamedAccounts,
-} from "./LSP8Mintable.behavior";
+} from "./LSP8Mintable.behaviour";
 
 import { deployProxy } from "../../utils/fixtures";
 
@@ -84,6 +86,27 @@ describe("LSP8Mintable", () => {
         context.deployParams.newOwner
       );
     };
+
+    describe("when deploying the base implementation contract", () => {
+      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp8Mintable = await new LSP8MintableInit__factory(
+          accounts[0]
+        ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp8Mintable["initialize(string,string,address)"](
+            "XXXXXXXXXXX",
+            "XXX",
+            randomCaller.address
+          )
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+      });
+    });
+
     describe("when deploying the contract as proxy", () => {
       let context: LSP8MintableTestContext;
 
@@ -107,7 +130,7 @@ describe("LSP8Mintable", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });

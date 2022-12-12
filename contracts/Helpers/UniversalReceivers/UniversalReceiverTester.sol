@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP1UniversalReceiver} from "../../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
+/**
+ * @dev This contract is used only for testing purposes
+ */
 contract UniversalReceiverTester {
     function callImplementationAndReturn(address target, bytes32 typeId)
         external
@@ -26,5 +29,6 @@ contract UniversalReceiverTester {
         require(success, "low-level call to `universalReceiver(...)` function failed");
     }
 
+    // solhint-disable no-empty-blocks
     receive() external payable {}
 }

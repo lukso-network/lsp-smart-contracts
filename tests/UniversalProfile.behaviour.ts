@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -10,9 +11,9 @@ import { getRandomAddresses } from "./utils/helpers";
 // constants
 import {
   ERC1271_VALUES,
-  ERC725YKeys,
-  EventSignatures,
+  ERC725YDataKeys,
   INTERFACE_IDS,
+  OPERATION_TYPES,
   SupportedStandards,
 } from "../constants";
 
@@ -23,12 +24,12 @@ export type LSP3TestContext = {
 };
 
 export const shouldBehaveLikeLSP3 = (
-  buildContext: () => Promise<LSP3TestContext>
+  buildContext: (initialFunding?: number) => Promise<LSP3TestContext>
 ) => {
   let context: LSP3TestContext;
 
-  beforeEach(async () => {
-    context = await buildContext();
+  before(async () => {
+    context = await buildContext(100);
   });
 
   describe("when using `isValidSignature()` from ERC1271", () => {
@@ -43,7 +44,7 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271_VALUES.MAGIC_VALUE);
+      expect(result).to.equal(ERC1271_VALUES.MAGIC_VALUE);
     });
 
     it("should fail when verifying signature from non-owner", async () => {
@@ -57,10 +58,10 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
 
-    /** @todo update this test for claimOwnership(...) */
+    /** @todo update this test for acceptOwnership(...) */
     it("should return failValue when the owner doesn't support ERC1271", async () => {
       const signer = context.accounts[1];
 
@@ -80,17 +81,18 @@ export const shouldBehaveLikeLSP3 = (
         messageHash,
         signature
       );
-      expect(result).toEqual(ERC1271_VALUES.FAIL_VALUE);
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
   });
 
   describe("when interacting with the ERC725Y storage", () => {
     let lsp12IssuedAssetsKeys = [
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000000",
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000001",
     ];
+
     let lsp12IssuedAssetsValues = [
       "0xd94353d9b005b3c0a9da169b768a31c57844e490",
       "0xdaea594e385fc724449e3118b2db7e86dfba1826",
@@ -98,10 +100,10 @@ export const shouldBehaveLikeLSP3 = (
 
     it("should set the 3 x keys for a basic UP setup => `LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`", async () => {
       let keys = [
-        ERC725YKeys.LSP3.LSP3Profile,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length,
+        ERC725YDataKeys.LSP3.LSP3Profile,
+        ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP0.LSP1UniversalReceiverDelegate,
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ];
       let values = [
         "0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178",
@@ -116,7 +118,7 @@ export const shouldBehaveLikeLSP3 = (
       );
 
       const result = await context.universalProfile["getData(bytes32[])"](keys);
-      expect(result).toEqual(values);
+      expect(result).to.eql(values);
     });
 
     it("should add +10 more LSP12IssuedAssets[]", async () => {
@@ -131,23 +133,26 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
         lsp12IssuedAssetsValues.push(newIssuedAssets[ii]);
       }
-      expect(lsp12IssuedAssetsKeys.length).toEqual(expectedKeysLength);
-      expect(lsp12IssuedAssetsValues.length).toEqual(expectedValuesLength);
+      expect(lsp12IssuedAssetsKeys.length).to.equal(expectedKeysLength);
+      expect(lsp12IssuedAssetsValues.length).to.equal(expectedValuesLength);
 
       let keys = [
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
+        ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
       ];
 
       let values = [
         ...lsp12IssuedAssetsValues,
-        ethers.utils.hexZeroPad(lsp12IssuedAssetsValues.length, 32),
+        ethers.utils.hexZeroPad(
+          ethers.utils.hexlify(lsp12IssuedAssetsValues.length),
+          32
+        ),
       ];
 
       await context.universalProfile["setData(bytes32[],bytes[])"](
@@ -156,7 +161,7 @@ export const shouldBehaveLikeLSP3 = (
       );
 
       const result = await context.universalProfile["getData(bytes32[])"](keys);
-      expect(result).toEqual(values);
+      expect(result).to.eql(values);
     });
 
     for (let ii = 1; ii <= 8; ii++) {
@@ -164,7 +169,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length + 1);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -174,12 +179,15 @@ export const shouldBehaveLikeLSP3 = (
 
         let keys = [
           ...lsp12IssuedAssetsKeys,
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
         ];
 
         let values = [
           ...lsp12IssuedAssetsValues,
-          ethers.utils.hexZeroPad(lsp12IssuedAssetsValues.length, 32),
+          ethers.utils.hexZeroPad(
+            ethers.utils.hexlify(lsp12IssuedAssetsValues.length),
+            32
+          ),
         ];
 
         await context.universalProfile["setData(bytes32[],bytes[])"](
@@ -190,37 +198,103 @@ export const shouldBehaveLikeLSP3 = (
         const result = await context.universalProfile["getData(bytes32[])"](
           keys
         );
-        expect(result).toEqual(values);
+        expect(result).to.eql(values);
       });
     }
+
+    describe("when setting a data key with a value less than 256 bytes", () => {
+      it("should emit DataChanged event with the whole data value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(200));
+
+        await expect(
+          context.universalProfile["setData(bytes32,bytes)"](key, value)
+        )
+          .to.emit(context.universalProfile, "DataChanged")
+          .withArgs(key, value);
+
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
+    });
+
+    describe("when setting a data key with a value more than 256 bytes", () => {
+      it("should emit DataChanged event with only the first 256 bytes of the value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+        await expect(
+          context.universalProfile["setData(bytes32,bytes)"](key, value)
+        )
+          .to.emit(context.universalProfile, "DataChanged")
+          .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
+    });
+
+    describe("when setting a data key with a value exactly 256 bytes long", () => {
+      it("should emit DataChanged event with the whole data value", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(256));
+
+        await expect(
+          context.universalProfile["setData(bytes32,bytes)"](key, value)
+        )
+          .to.emit(context.universalProfile, "DataChanged")
+          .withArgs(key, value);
+
+        const result = await context.universalProfile["getData(bytes32)"](key);
+        expect(result).to.equal(value);
+      });
+    });
+  });
+
+  describe("when calling the contract without any value or data", () => {
+    it("should pass and not emit the ValueReceived event", async () => {
+      const sender = context.accounts[0];
+      const amount = 0;
+
+      // prettier-ignore
+      await expect(
+          sender.sendTransaction({
+            to: context.universalProfile.address,
+            value: amount,
+          })
+        ).to.not.be.reverted
+         .to.not.emit(context.universalProfile, "ValueReceived");
+    });
   });
 
   describe("when sending native tokens to the contract", () => {
     it("should emit the right ValueReceived event", async () => {
-      let tx = await context.accounts[0].sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("5"),
-      });
+      const sender = context.accounts[0];
+      const amount = ethers.utils.parseEther("5");
 
-      let receipt = await tx.wait();
-
-      expect(receipt.logs[0].topics[0]).toEqual(
-        EventSignatures.LSP0.ValueReceived
-      );
+      await expect(
+        sender.sendTransaction({
+          to: context.universalProfile.address,
+          value: amount,
+        })
+      )
+        .to.emit(context.universalProfile, "ValueReceived")
+        .withArgs(sender.address, amount);
     });
 
     it("should allow to send a random payload as well, and emit the ValueReceived event", async () => {
-      let tx = await context.accounts[0].sendTransaction({
-        to: context.universalProfile.address,
-        value: ethers.utils.parseEther("5"),
-        data: "0xaabbccdd",
-      });
+      const sender = context.accounts[0];
+      const amount = ethers.utils.parseEther("5");
 
-      let receipt = await tx.wait();
-
-      expect(receipt.logs[0].topics[0]).toEqual(
-        EventSignatures.LSP0.ValueReceived
-      );
+      await expect(
+        sender.sendTransaction({
+          to: context.universalProfile.address,
+          value: amount,
+          data: "0xaabbccdd",
+        })
+      )
+        .to.emit(context.universalProfile, "ValueReceived")
+        .withArgs(sender.address, amount);
     });
   });
 
@@ -232,10 +306,54 @@ export const shouldBehaveLikeLSP3 = (
         data: "0xaabbccdd",
       });
 
-      let receipt = await tx.wait();
-
       // check that no event was emitted
-      expect(receipt.logs.length).toEqual(0);
+      await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
+    });
+  });
+
+  describe("when using the batch `ERC725X.execute(uint256[],address[],uint256[],bytes[])` function", () => {
+    describe("when specifying `msg.value`", () => {
+      it("should emit a `ValueReceived` event", async () => {
+        const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
+        const recipients = [
+          context.accounts[1].address,
+          context.accounts[2].address,
+          context.accounts[3].address,
+        ];
+        const values = Array(3).fill(ethers.BigNumber.from("1"));
+        const datas = Array(3).fill("0x");
+
+        const msgValue = ethers.utils.parseEther("10");
+
+        const tx = await context.universalProfile[
+          "execute(uint256[],address[],uint256[],bytes[])"
+        ](operationsType, recipients, values, datas, { value: msgValue });
+
+        await expect(tx)
+          .to.emit(context.universalProfile, "ValueReceived")
+          .withArgs(context.deployParams.owner.address, msgValue);
+      });
+    });
+
+    describe("when NOT sending any `msg.value`", () => {
+      it("should NOT emit a `ValueReceived` event", async () => {
+        const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
+        const recipients = [
+          context.accounts[1].address,
+          context.accounts[2].address,
+          context.accounts[3].address,
+        ];
+        const values = Array(3).fill(ethers.BigNumber.from("1"));
+        const datas = Array(3).fill("0x");
+
+        const msgValue = 0;
+
+        const tx = await context.universalProfile[
+          "execute(uint256[],address[],uint256[],bytes[])"
+        ](operationsType, recipients, values, datas, { value: msgValue });
+
+        await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
+      });
     });
   });
 };
@@ -245,7 +363,7 @@ export const shouldInitializeLikeLSP3 = (
 ) => {
   let context: LSP3TestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
@@ -254,49 +372,56 @@ export const shouldInitializeLikeLSP3 = (
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC165
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ERC1271 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC1271
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ERC725X interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC725X
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support ERC725Y interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.ERC725Y
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support LSP0 (ERC725Account) interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.LSP0ERC725Account
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
     it("should support LSP1 interface", async () => {
       const result = await context.universalProfile.supportsInterface(
         INTERFACE_IDS.LSP1UniversalReceiver
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
     });
 
-    it("should support ClaimOwnership interface", async () => {
+    it("should support LSP14Ownable2Step interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.ClaimOwnership
+        INTERFACE_IDS.LSP14Ownable2Step
       );
-      expect(result).toBeTruthy();
+      expect(result).to.be.true;
+    });
+
+    it("should support LSP17Extendable interface", async () => {
+      const result = await context.universalProfile.supportsInterface(
+        INTERFACE_IDS.LSP17Extendable
+      );
+      expect(result).to.be.true;
     });
 
     it("should have set key 'SupportedStandards:LSP3UniversalProfile'", async () => {
@@ -304,7 +429,7 @@ export const shouldInitializeLikeLSP3 = (
         SupportedStandards.LSP3UniversalProfile.key
       );
 
-      expect(result).toEqual(SupportedStandards.LSP3UniversalProfile.value);
+      expect(result).to.equal(SupportedStandards.LSP3UniversalProfile.value);
     });
   });
 };

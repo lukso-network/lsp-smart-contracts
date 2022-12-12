@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // libraries
 import {LSP6Utils} from "../../LSP6KeyManager/LSP6Utils.sol";
+import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
@@ -21,28 +22,38 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         return ERC725Y(target).getPermissionsFor(_address);
     }
 
-    function getAllowedAddressesFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedAddressesFor(_address);
+    function getAllowedCallsFor(address _address) public view returns (bytes memory) {
+        return ERC725Y(target).getAllowedCallsFor(_address);
     }
 
-    function getAllowedFunctionsFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedFunctionsFor(_address);
+    function getAllowedERC725YDataKeysFor(address _address) public view returns (bytes memory) {
+        return ERC725Y(target).getAllowedERC725YDataKeysFor(_address);
     }
 
-    function getAllowedERC725YKeysFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedERC725YKeysFor(_address);
+    function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
+        super._verifyAllowedCall(_sender, _payload);
     }
 
-    function verifyAllowedAddress(address _sender, address _recipient) public view {
-        super._verifyAllowedAddress(_sender, _recipient);
+    function isCompactBytesArray(bytes memory compactBytesArray) public pure returns (bool) {
+        return LSP2Utils.isCompactBytesArray(compactBytesArray);
     }
 
-    function verifyAllowedFunction(address _sender, bytes4 _function) public view {
-        super._verifyAllowedFunction(_sender, _function);
+    function verifyAllowedERC725YSingleKey(
+        address from,
+        bytes32 inputKey,
+        bytes memory allowedERC725YDataKeysFor
+    ) public pure returns (bool) {
+        super._verifyAllowedERC725YSingleKey(from, inputKey, allowedERC725YDataKeysFor);
+        return true;
     }
 
-    function verifyAllowedERC725YKeys(address _from, bytes32[] memory _inputKeys) public view {
-        super._verifyAllowedERC725YKeys(_from, _inputKeys);
+    function verifyAllowedERC725YDataKeys(
+        address from,
+        bytes32[] memory inputKeys,
+        bytes memory allowedERC725YDataKeysCompacted
+    ) public pure returns (bool) {
+        super._verifyAllowedERC725YDataKeys(from, inputKeys, allowedERC725YDataKeysCompacted);
+        return true;
     }
 
     function hasPermission(bytes32 _addressPermission, bytes32 _permissions)

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {LSP0ERC725AccountCore} from "./LSP0ERC725AccountCore.sol";
@@ -16,6 +16,7 @@ contract LSP0ERC725Account is LSP0ERC725AccountCore {
      * @param newOwner the owner of the contract
      */
     constructor(address newOwner) payable {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         OwnableUnset._setOwner(newOwner);
     }
 }

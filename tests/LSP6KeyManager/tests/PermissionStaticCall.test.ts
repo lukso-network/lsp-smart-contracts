@@ -1,11 +1,11 @@
-import { ethers } from "hardhat";
+import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TargetContract, TargetContract__factory } from "../../../types";
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
@@ -16,10 +16,7 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder } from "../../utils/helpers";
-
-// errors
-import { NotAllowedAddressError, NotAuthorisedError } from "../../utils/errors";
+import { abiCoder, combineAllowedCalls } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>
@@ -27,33 +24,45 @@ export const shouldBehaveLikePermissionStaticCall = (
   let context: LSP6TestContext;
 
   let addressCanMakeStaticCall: SignerWithAddress,
-    addressCannotMakeStaticCall: SignerWithAddress;
+    addressCannotMakeStaticCall: SignerWithAddress,
+    addressCanMakeStaticCallNoAllowedCalls: SignerWithAddress;
 
   let targetContract: TargetContract;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
 
     addressCanMakeStaticCall = context.accounts[1];
     addressCannotMakeStaticCall = context.accounts[2];
+    addressCanMakeStaticCallNoAllowedCalls = context.accounts[3];
 
     targetContract = await new TargetContract__factory(
       context.accounts[0]
     ).deploy();
 
     const permissionKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCanMakeStaticCall.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+      ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+        addressCanMakeStaticCall.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
         addressCannotMakeStaticCall.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+        addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
     ];
 
     const permissionsValues = [
       ALL_PERMISSIONS,
       PERMISSIONS.STATICCALL,
+      combineAllowedCalls(
+        ["0xffffffff"],
+        [targetContract.address],
+        ["0xffffffff"]
+      ),
       PERMISSIONS.SETDATA,
+      PERMISSIONS.STATICCALL,
     ];
 
     await setupKeyManager(context, permissionKeys, permissionsValues);
@@ -67,23 +76,26 @@ export const shouldBehaveLikePermissionStaticCall = (
         targetContract.interface.encodeFunctionData("getName");
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.STATICCALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
+        );
 
       let result = await context.keyManager
         .connect(context.owner)
-        .callStatic.execute(executePayload);
+        .callStatic["execute(bytes)"](executePayload);
 
       let [decodedResult] = abiCoder.decode(["string"], result);
-      expect(decodedResult).toEqual(expectedName);
+      expect(decodedResult).to.equal(expectedName);
     });
   });
 
-  describe("when caller has permission STATICCALL", () => {
+  describe("when caller has permission STATICCALL + some allowed calls", () => {
     it("should pass and return data", async () => {
       let expectedName = await targetContract.callStatic.getName();
 
@@ -91,19 +103,22 @@ export const shouldBehaveLikePermissionStaticCall = (
         targetContract.interface.encodeFunctionData("getName");
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.STATICCALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
+        );
 
       let result = await context.keyManager
         .connect(addressCanMakeStaticCall)
-        .callStatic.execute(executePayload);
+        .callStatic["execute(bytes)"](executePayload);
 
       let [decodedResult] = abiCoder.decode(["string"], result);
-      expect(decodedResult).toEqual(expectedName);
+      expect(decodedResult).to.equal(expectedName);
     });
 
     it("should revert when trying to change state at the target contract", async () => {
@@ -115,22 +130,25 @@ export const shouldBehaveLikePermissionStaticCall = (
       );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.STATICCALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
+        );
 
       await expect(
         context.keyManager
           .connect(addressCanMakeStaticCall)
-          .execute(executePayload)
-      ).toBeReverted();
+          ["execute(bytes)"](executePayload)
+      ).to.be.reverted;
 
       // ensure state hasn't changed.
       let newValue = await targetContract.callStatic.getName();
-      expect(initialValue).toEqual(newValue);
+      expect(initialValue).to.equal(newValue);
     });
 
     it("should revert when caller try to make a CALL", async () => {
@@ -140,20 +158,49 @@ export const shouldBehaveLikePermissionStaticCall = (
       );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.CALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
+        );
 
       await expect(
         context.keyManager
           .connect(addressCanMakeStaticCall)
-          .execute(executePayload)
-      ).toBeRevertedWith(
-        NotAuthorisedError(addressCanMakeStaticCall.address, "CALL")
-      );
+          ["execute(bytes)"](executePayload)
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(addressCanMakeStaticCall.address, "CALL");
+    });
+  });
+
+  describe("when caller has permission STATICCALL + no allowed calls", () => {
+    it("should revert with `NotAllowedCall` error", async () => {
+      let targetContractPayload =
+        targetContract.interface.encodeFunctionData("getName");
+
+      let executePayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
+        );
+
+      await expect(
+        context.keyManager
+          .connect(addressCanMakeStaticCallNoAllowedCalls)
+          .callStatic["execute(bytes)"](executePayload)
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
+        .withArgs(addressCanMakeStaticCallNoAllowedCalls.address);
     });
   });
 
@@ -163,20 +210,23 @@ export const shouldBehaveLikePermissionStaticCall = (
         targetContract.interface.encodeFunctionData("getName");
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.STATICCALL,
-          targetContract.address,
-          0,
-          targetContractPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.STATICCALL,
+            targetContract.address,
+            0,
+            targetContractPayload,
+          ]
+        );
 
       await expect(
         context.keyManager
           .connect(addressCannotMakeStaticCall)
-          .execute(executePayload)
-      ).toBeRevertedWith(
-        NotAuthorisedError(addressCannotMakeStaticCall.address, "STATICCALL")
-      );
+          ["execute(bytes)"](executePayload)
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
+        .withArgs(addressCannotMakeStaticCall.address, "STATICCALL");
     });
   });
 
@@ -184,7 +234,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     let caller: SignerWithAddress;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       caller = context.accounts[1];
@@ -195,22 +245,21 @@ export const shouldBehaveLikePermissionStaticCall = (
       ];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 
       const permissionValues = [
         PERMISSIONS.STATICCALL,
-        abiCoder.encode(
-          ["address[]"],
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff"],
           [
-            [
-              allowedTargetContracts[0].address,
-              allowedTargetContracts[1].address,
-            ],
-          ]
+            allowedTargetContracts[0].address,
+            allowedTargetContracts[1].address,
+          ],
+          ["0xffffffff", "0xffffffff"]
         ),
       ];
 
@@ -223,7 +272,7 @@ export const shouldBehaveLikePermissionStaticCall = (
       ).deploy();
 
       const payload = context.universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [
           OPERATION_TYPES.STATICCALL,
           targetContract.address,
@@ -233,10 +282,14 @@ export const shouldBehaveLikePermissionStaticCall = (
       );
 
       await expect(
-        context.keyManager.connect(caller).execute(payload)
-      ).toBeRevertedWith(
-        NotAllowedAddressError(caller.address, targetContract.address)
-      );
+        context.keyManager.connect(caller)["execute(bytes)"](payload)
+      )
+        .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
+        .withArgs(
+          caller.address,
+          targetContract.address,
+          targetContract.interface.getSighash("getName")
+        );
     });
 
     describe("when interacting with 1st allowed contract", () => {
@@ -246,7 +299,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         const name = await targetContract.getName();
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
@@ -257,10 +310,10 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.keyManager
           .connect(caller)
-          .callStatic.execute(payload);
+          .callStatic["execute(bytes)"](payload);
 
         const [decodedResult] = abiCoder.decode(["string"], result);
-        expect(decodedResult).toEqual(name);
+        expect(decodedResult).to.equal(name);
       });
 
       it("should allow to call view function -> getNumber()", async () => {
@@ -269,7 +322,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         const number = await targetContract.getNumber();
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
@@ -280,10 +333,10 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.keyManager
           .connect(caller)
-          .callStatic.execute(payload);
+          .callStatic["execute(bytes)"](payload);
 
         const [decodedResult] = abiCoder.decode(["uint256"], result);
-        expect(decodedResult).toEqual(number);
+        expect(decodedResult).to.equal(number);
       });
 
       it("should revert when calling state changing function -> setName(string)", async () => {
@@ -295,13 +348,15 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.STATICCALL, targetContract.address, 0, targetPayload]
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic.execute(payload)
-        ).toBeReverted();
+          context.keyManager
+            .connect(caller)
+            .callStatic["execute(bytes)"](payload)
+        ).to.be.reverted;
       });
 
       it("should revert when calling state changing function -> setNumber(uint256)", async () => {
@@ -313,13 +368,15 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.STATICCALL, targetContract.address, 0, targetPayload]
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic.execute(payload)
-        ).toBeReverted();
+          context.keyManager
+            .connect(caller)
+            .callStatic["execute(bytes)"](payload)
+        ).to.be.reverted;
       });
     });
 
@@ -330,7 +387,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         const name = await targetContract.getName();
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
@@ -341,10 +398,10 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.keyManager
           .connect(caller)
-          .callStatic.execute(payload);
+          .callStatic["execute(bytes)"](payload);
 
         const [decodedResult] = abiCoder.decode(["string"], result);
-        expect(decodedResult).toEqual(name);
+        expect(decodedResult).to.equal(name);
       });
 
       it("should allow to interact with 2nd allowed contract - getNumber()", async () => {
@@ -353,7 +410,7 @@ export const shouldBehaveLikePermissionStaticCall = (
         const number = await targetContract.getNumber();
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [
             OPERATION_TYPES.STATICCALL,
             targetContract.address,
@@ -364,10 +421,10 @@ export const shouldBehaveLikePermissionStaticCall = (
 
         const result = await context.keyManager
           .connect(caller)
-          .callStatic.execute(payload);
+          .callStatic["execute(bytes)"](payload);
 
         const [decodedResult] = abiCoder.decode(["uint256"], result);
-        expect(decodedResult).toEqual(number);
+        expect(decodedResult).to.equal(number);
       });
 
       it("should revert when calling state changing function -> setName(string)", async () => {
@@ -379,13 +436,15 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.STATICCALL, targetContract.address, 0, targetPayload]
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic.execute(payload)
-        ).toBeReverted();
+          context.keyManager
+            .connect(caller)
+            .callStatic["execute(bytes)"](payload)
+        ).to.be.reverted;
       });
 
       it("should revert when calling state changing function -> setNumber(uint256)", async () => {
@@ -397,13 +456,15 @@ export const shouldBehaveLikePermissionStaticCall = (
         );
 
         const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute",
+          "execute(uint256,address,uint256,bytes)",
           [OPERATION_TYPES.STATICCALL, targetContract.address, 0, targetPayload]
         );
 
         await expect(
-          context.keyManager.connect(caller).callStatic.execute(payload)
-        ).toBeReverted();
+          context.keyManager
+            .connect(caller)
+            .callStatic["execute(bytes)"](payload)
+        ).to.be.reverted;
       });
     });
   });
@@ -412,7 +473,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     let caller: SignerWithAddress;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       caller = context.accounts[1];
@@ -423,22 +484,21 @@ export const shouldBehaveLikePermissionStaticCall = (
       ];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 
       const permissionValues = [
         PERMISSIONS.SUPER_STATICCALL,
-        abiCoder.encode(
-          ["address[]"],
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff"],
           [
-            [
-              allowedTargetContracts[0].address,
-              allowedTargetContracts[1].address,
-            ],
-          ]
+            allowedTargetContracts[0].address,
+            allowedTargetContracts[1].address,
+          ],
+          ["0xffffffff", "0xffffffff"]
         ),
       ];
 
@@ -455,7 +515,7 @@ export const shouldBehaveLikePermissionStaticCall = (
           const name = await targetContract.getName();
 
           const payload = context.universalProfile.interface.encodeFunctionData(
-            "execute",
+            "execute(uint256,address,uint256,bytes)",
             [
               OPERATION_TYPES.STATICCALL,
               targetContract.address,
@@ -466,10 +526,10 @@ export const shouldBehaveLikePermissionStaticCall = (
 
           const result = await context.keyManager
             .connect(caller)
-            .callStatic.execute(payload);
+            .callStatic["execute(bytes)"](payload);
 
           const [decodedResult] = abiCoder.decode(["string"], result);
-          expect(decodedResult).toEqual(name);
+          expect(decodedResult).to.equal(name);
         });
       }
     });

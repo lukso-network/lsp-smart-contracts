@@ -1,19 +1,47 @@
 import { HardhatUserConfig } from "hardhat/config";
+import { NetworkUserConfig } from "hardhat/types";
+import { config as dotenvConfig } from "dotenv";
+import { resolve } from "path";
 
-import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-web3";
-import "@nomiclabs/hardhat-etherscan";
+/**
+ * this package includes:
+ *  - @nomiclabs/hardhat-ethers
+ *  - @nomicfoundation/hardhat-chai-matchers
+ *  - @nomicfoundation/hardhat-network-helpers
+ *  - @nomiclabs/hardhat-etherscan
+ *  - @typechain/hardhat
+ *  - solidity-coverage
+ */
+import "@nomicfoundation/hardhat-toolbox";
 
-import "@typechain/hardhat";
+// additional hardhat plugins
 import "hardhat-packager";
 import "hardhat-contract-sizer";
-
 import "hardhat-deploy";
+
+// Typescript types for web3.js
+import "@nomiclabs/hardhat-web3";
 
 /**
  * @dev uncomment to generate contract docs in Markdown
  */
 // import "@primitivefi/hardhat-dodoc";
+
+dotenvConfig({ path: resolve(__dirname, "./.env") });
+
+function getL16ChainConfig(): NetworkUserConfig {
+  const config = {
+    live: true,
+    url: "https://rpc.l16.lukso.network",
+    chainId: 2828,
+  };
+
+  if (process.env.CONTRACT_VERIFICATION_PK !== undefined) {
+    config['accounts'] = [process.env.CONTRACT_VERIFICATION_PK];
+  }
+
+  return config;
+}
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -29,12 +57,7 @@ const config: HardhatUserConfig = {
       chainId: 22,
       //   accounts: [privateKey1, privateKey2, ...]
     },
-    luksoL16: {
-      live: true,
-      url: "https://rpc.l16.lukso.network",
-      chainId: 2828,
-      //   accounts: [privateKey1, privateKey2, ...]
-    },
+    luksoL16: getL16ChainConfig()
   },
   namedAccounts: {
     owner: 0,
@@ -62,8 +85,16 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+  gasReporter: {
+    enabled: true,
+    currency: "USD",
+    gasPrice: 21,
+    excludeContracts: ["Helpers/"],
+    src: "./contracts",
+    showMethodSig: true,
+  },
   solidity: {
-    version: "0.8.7",
+    version: "0.8.13",
     settings: {
       optimizer: {
         enabled: true,
@@ -100,34 +131,34 @@ const config: HardhatUserConfig = {
       // ------------------
       "UniversalProfileInit",
       "LSP0ERC725AccountInit",
-      "LSP4DigitalAssetMetadataInit",
+      "LSP4DigitalAssetMetadataInitAbstract",
       "LSP6KeyManagerInit",
-      "LSP7DigitalAssetInit",
-      "LSP7CappedSupplyInit",
+      "LSP7DigitalAssetInitAbstract",
+      "LSP7CappedSupplyInitAbstract",
       "LSP7MintableInit",
-      "LSP8IdentifiableDigitalAssetInit",
-      "LSP8CappedSupplyInit",
+      "LSP8IdentifiableDigitalAssetInitAbstract",
+      "LSP8CappedSupplyInitAbstract",
       "LSP8MintableInit",
       "LSP9VaultInit",
       "LSP11BasicSocialRecoveryInit",
       // ERC Compatible tokens
       // ------------------
       "LSP4Compatibility",
-      "LSP8CompatibleERC721",
-      "LSP8CompatibleERC721Init",
-      "LSP8CompatibleERC721Mintable",
-      "LSP8CompatibleERC721MintableInit",
       "LSP7CompatibleERC20",
-      "LSP7CompatibleERC20Init",
+      "LSP7CompatibleERC20InitAbstract",
       "LSP7CompatibleERC20Mintable",
       "LSP7CompatibleERC20MintableInit",
+      "LSP8CompatibleERC721",
+      "LSP8CompatibleERC721InitAbstract",
+      "LSP8CompatibleERC721Mintable",
+      "LSP8CompatibleERC721MintableInit",
       // Legacy L14
       // ------------------
       "UniversalReceiverAddressStore",
       // Tools
       // ------------------
       "Create2Factory",
-      "UniversalFactory",
+      "LSP16UniversalFactory",
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
@@ -135,6 +166,7 @@ const config: HardhatUserConfig = {
   },
   paths: {
     artifacts: "artifacts",
+    tests: "tests",
   },
   typechain: {
     outDir: "types",

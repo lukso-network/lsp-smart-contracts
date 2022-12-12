@@ -1,14 +1,21 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import {
   ERC165CheckerCustomTest,
   ERC165CheckerCustomTest__factory,
-  TargetContract,
-  TargetContract__factory,
   ERC725,
   ERC725__factory,
-  TokenReceiverWithoutLSP1,
-  TokenReceiverWithoutLSP1__factory,
+  NoSupportsInterfaceWithoutFallback,
+  NoSupportsInterfaceWithoutFallback__factory,
+  NoSupportsInterfaceWithFallback,
+  NoSupportsInterfaceWithFallback__factory,
+  SupportsInterfaceOnlyERC165,
+  SupportsInterfaceOnlyERC165__factory,
+  SupportsInterfaceRevert,
+  SupportsInterfaceRevert__factory,
+  SupportsInterfaceOnlyLSP0,
+  SupportsInterfaceOnlyLSP0__factory,
 } from "../../types";
 
 // utils
@@ -17,66 +24,194 @@ import { INTERFACE_IDS } from "../../constants";
 describe("Test Custom implementation of ERC165Checker", () => {
   let accounts: SignerWithAddress[];
   let contract: ERC165CheckerCustomTest;
-  let targetContract: TargetContract;
   let erc725: ERC725;
-  let contractWithFallback: TokenReceiverWithoutLSP1;
+  let noSupportsInterfaceWithFallback: NoSupportsInterfaceWithFallback;
+  let noSupportsInterfaceWithoutFallback: NoSupportsInterfaceWithoutFallback;
+  let supportsInterfaceOnlyERC165: SupportsInterfaceOnlyERC165;
+  let supportsInterfaceOnlyLSP0: SupportsInterfaceOnlyLSP0;
+  let supportsInterfaceRevert: SupportsInterfaceRevert;
 
-  beforeAll(async () => {
+  before(async () => {
     accounts = await ethers.getSigners();
     contract = await new ERC165CheckerCustomTest__factory(accounts[0]).deploy();
-    targetContract = await new TargetContract__factory(accounts[0]).deploy();
-    contractWithFallback = await new TokenReceiverWithoutLSP1__factory(
+
+    noSupportsInterfaceWithFallback =
+      await new NoSupportsInterfaceWithFallback__factory(accounts[0]).deploy();
+
+    noSupportsInterfaceWithoutFallback =
+      await new NoSupportsInterfaceWithoutFallback__factory(
+        accounts[0]
+      ).deploy();
+
+    supportsInterfaceOnlyERC165 =
+      await new SupportsInterfaceOnlyERC165__factory(accounts[0]).deploy();
+
+    supportsInterfaceOnlyLSP0 = await new SupportsInterfaceOnlyLSP0__factory(
       accounts[0]
     ).deploy();
+
+    supportsInterfaceRevert = await new SupportsInterfaceRevert__factory(
+      accounts[0]
+    ).deploy();
+
     erc725 = await new ERC725__factory(accounts[0]).deploy(accounts[0].address);
   });
 
-  it("Calling an EOA", async () => {
-    const result1 = await contract.supportsERC165Interface(
-      accounts[1].address,
-      INTERFACE_IDS.ERC165
-    );
-    const result2 = await contract.supportsERC165Interface(
-      accounts[1].address,
-      INTERFACE_IDS.LSP8IdentifiableDigitalAsset
-    );
-    expect(result1).toBeFalsy();
-    expect(result2).toBeFalsy();
+  it("should return false when calling supportsInterface on an EOA", async () => {
+    expect(
+      await contract.supportsERC165Interface(
+        accounts[1].address,
+        INTERFACE_IDS.ERC165
+      )
+    ).to.be.false;
+
+    expect(
+      await contract.supportsERC165Interface(
+        accounts[1].address,
+        INTERFACE_IDS.LSP8IdentifiableDigitalAsset
+      )
+    ).to.be.false;
   });
 
-  it("Calling a contract without a fallback function that doesn't support ERC165", async () => {
-    const result = await contract.supportsERC165Interface(
-      targetContract.address,
-      INTERFACE_IDS.ERC165
-    );
-    expect(result).toBeFalsy();
+  it("should return false when calling supportsInterface on a contract without a fallback function that doesn't include `supportsInterface(..)` function", async () => {
+    expect(
+      await contract.supportsERC165Interface(
+        noSupportsInterfaceWithoutFallback.address,
+        INTERFACE_IDS.ERC165
+      )
+    ).to.be.false;
+
+    expect(
+      await contract.supportsERC165Interface(
+        noSupportsInterfaceWithoutFallback.address,
+        INTERFACE_IDS.LSP1UniversalReceiver
+      )
+    ).to.be.false;
   });
 
-  it("Calling a contract with a fallback function that doesn't support ERC165", async () => {
-    const result = await contract.supportsERC165Interface(
-      contractWithFallback.address,
-      INTERFACE_IDS.ERC165
-    );
-    expect(result).toBeFalsy();
+  it("should return false when calling supportsInterface on a contract with a fallback function that doesn't include `supportsInterface(..)` function", async () => {
+    expect(
+      await contract.supportsERC165Interface(
+        noSupportsInterfaceWithFallback.address,
+        INTERFACE_IDS.ERC165
+      )
+    ).to.be.false;
+
+    expect(
+      await contract.supportsERC165Interface(
+        noSupportsInterfaceWithFallback.address,
+        INTERFACE_IDS.LSP1UniversalReceiver
+      )
+    ).to.be.false;
   });
 
-  it("Calling a contract that support ERC165 and ERC725X but doesn't support LSP1", async () => {
-    const ERC165result = await contract.supportsERC165Interface(
-      erc725.address,
-      INTERFACE_IDS.ERC165
-    );
-    expect(ERC165result).toBeTruthy();
+  it("should return false when calling supportsInterface on a contract that include `supportsInterface(..)` function and reverts", async () => {
+    expect(
+      await contract.supportsERC165Interface(
+        supportsInterfaceRevert.address,
+        INTERFACE_IDS.ERC165
+      )
+    ).to.be.false;
 
-    const ERC725Xresult = await contract.supportsERC165Interface(
-      erc725.address,
-      INTERFACE_IDS.ERC725X
-    );
-    expect(ERC725Xresult).toBeTruthy();
+    expect(
+      await contract.supportsERC165Interface(
+        supportsInterfaceRevert.address,
+        INTERFACE_IDS.LSP1UniversalReceiver
+      )
+    ).to.be.false;
+  });
 
-    const LSP1result = await contract.supportsERC165Interface(
-      erc725.address,
-      INTERFACE_IDS.LSP1UniversalReceiver
-    );
-    expect(LSP1result).toBeFalsy();
+  it("should return true for ERC165InterfaceId and false for LSP1InterfaceId when calling supportsInterface on a contract that include `supportsInterface(..)` function and only supports ERC165", async () => {
+    expect(
+      await contract.supportsERC165Interface(
+        supportsInterfaceOnlyERC165.address,
+        INTERFACE_IDS.ERC165
+      )
+    ).to.be.true;
+
+    expect(
+      await contract.supportsERC165Interface(
+        supportsInterfaceOnlyERC165.address,
+        INTERFACE_IDS.LSP1UniversalReceiver
+      )
+    ).to.be.false;
+  });
+
+  it("should return false for ERC165InterfaceId and true for LSP0InterfaceId when calling supportsInterface on a contract that include `supportsInterface(..)` function and only supports LSP0", async () => {
+    expect(
+      await contract.supportsERC165Interface(
+        supportsInterfaceOnlyLSP0.address,
+        INTERFACE_IDS.ERC165
+      )
+    ).to.be.false;
+
+    expect(
+      await contract.supportsERC165Interface(
+        supportsInterfaceOnlyLSP0.address,
+        INTERFACE_IDS.LSP0ERC725Account
+      )
+    ).to.be.true;
+  });
+
+  it("should return true for when calling supportsInterface on a contract that include `supportsInterface(..)` function and supports ERC725 and ERC165", async () => {
+    expect(
+      await contract.supportsERC165Interface(
+        erc725.address,
+        INTERFACE_IDS.ERC165
+      )
+    ).to.be.true;
+
+    expect(
+      await contract.supportsERC165Interface(
+        erc725.address,
+        INTERFACE_IDS.ERC725X
+      )
+    ).to.be.true;
+
+    expect(
+      await contract.supportsERC165Interface(
+        erc725.address,
+        INTERFACE_IDS.ERC725Y
+      )
+    ).to.be.true;
+  });
+
+  it("should return false on pre-compiled contract addresses 0x0...01, and 0x0...05 till 0x0...09 with ANY bytes4 interface ID", async () => {
+    const precompiledAddress = [
+      "0x0000000000000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000005",
+      "0x0000000000000000000000000000000000000006",
+      "0x0000000000000000000000000000000000000007",
+      "0x0000000000000000000000000000000000000008",
+      "0x0000000000000000000000000000000000000009",
+    ];
+
+    for (let i = 0; i < precompiledAddress.length; i++) {
+      for (let ii = 0; ii < 100; ii++) {
+        const result = await contract.supportsERC165Interface(
+          precompiledAddress[i],
+          ethers.utils.hexlify(ethers.utils.randomBytes(4))
+        );
+        expect(result).to.be.false;
+      }
+    }
+  });
+
+  it("should always return true on pre-compiled contract addresses 0x0...02, 0x0...03 and 0x0...04 with ANY bytes4 interface ID", async () => {
+    const precompiledAddress = [
+      "0x0000000000000000000000000000000000000002",
+      "0x0000000000000000000000000000000000000003",
+      "0x0000000000000000000000000000000000000004",
+    ];
+
+    for (let i = 0; i < precompiledAddress.length; i++) {
+      for (let ii = 0; ii < 100; ii++) {
+        const result = await contract.supportsERC165Interface(
+          precompiledAddress[i],
+          ethers.utils.hexlify(ethers.utils.randomBytes(4))
+        );
+        expect(result).to.be.true;
+      }
+    }
   });
 });

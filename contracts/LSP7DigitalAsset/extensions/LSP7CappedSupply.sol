@@ -1,16 +1,22 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
-import {LSP7CappedSupplyCore} from "./LSP7CappedSupplyCore.sol";
 
 /**
  * @dev LSP7 extension, adds token supply cap.
  */
-abstract contract LSP7CappedSupply is LSP7DigitalAsset, LSP7CappedSupplyCore {
+abstract contract LSP7CappedSupply is LSP7DigitalAsset {
+    // --- Errors
+    error LSP7CappedSupplyRequired();
+    error LSP7CappedSupplyCannotMintOverCap();
+
+    // --- Storage
+    uint256 internal _tokenSupplyCap;
+
     /**
      * @notice Sets the token max supply
      * @param tokenSupplyCap_ The Token max supply
@@ -23,10 +29,20 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset, LSP7CappedSupplyCore {
         _tokenSupplyCap = tokenSupplyCap_;
     }
 
-    // --- Overrides
+    // --- Token queries
 
     /**
-     * @dev Mints `amount` tokens and transfers it to `to`.
+     * @dev Returns the number of tokens that can be minted
+     * @return The number of tokens that can be minted
+     */
+    function tokenSupplyCap() public view virtual returns (uint256) {
+        return _tokenSupplyCap;
+    }
+
+    // --- Transfer functionality
+
+    /**
+     * @dev Mints `amount` and transfers it to `to`.
      *
      * Requirements:
      *
@@ -40,7 +56,11 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset, LSP7CappedSupplyCore {
         uint256 amount,
         bool force,
         bytes memory data
-    ) internal virtual override(LSP7DigitalAssetCore, LSP7CappedSupplyCore) {
+    ) internal virtual override {
+        if (totalSupply() + amount > tokenSupplyCap()) {
+            revert LSP7CappedSupplyCannotMintOverCap();
+        }
+
         super._mint(to, amount, force, data);
     }
 }

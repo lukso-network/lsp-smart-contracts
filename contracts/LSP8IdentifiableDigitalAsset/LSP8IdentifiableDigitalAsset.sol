@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -17,7 +17,7 @@ import {_INTERFACEID_LSP8} from "./LSP8Constants.sol";
  * @author Matthew Stevens
  * @dev Implementation of a LSP8 compliant contract.
  */
-contract LSP8IdentifiableDigitalAsset is
+abstract contract LSP8IdentifiableDigitalAsset is
     LSP4DigitalAssetMetadata,
     LSP8IdentifiableDigitalAssetCore
 {

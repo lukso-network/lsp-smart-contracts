@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import {
   AddressRegistry,
   AddressRegistryRequiresERC725,
@@ -13,7 +14,7 @@ describe("Address Registry contracts", () => {
   let addressRegistry: AddressRegistry;
   let accounts: SignerWithAddress[];
 
-  beforeAll(async () => {
+  before(async () => {
     accounts = await ethers.getSigners();
     addressRegistry = await new AddressRegistry__factory(accounts[1]).deploy();
   });
@@ -21,44 +22,41 @@ describe("Address Registry contracts", () => {
   describe("AddressRegistry", () => {
     it("add address", async () => {
       await addressRegistry.addAddress(accounts[1].address);
-      expect(await addressRegistry.getAddress(0)).toEqual(accounts[1].address);
+      expect(await addressRegistry.getAddress(0)).to.equal(accounts[1].address);
     });
 
     it("add same address", async () => {
-      expect(await addressRegistry.containsAddress(accounts[1].address)).toBe(
-        true
-      );
+      expect(await addressRegistry.containsAddress(accounts[1].address)).to.be
+        .true;
 
       await addressRegistry.addAddress(accounts[1].address);
-      expect(await addressRegistry.getAddress(0)).toEqual(accounts[1].address);
+      expect(await addressRegistry.getAddress(0)).to.equal(accounts[1].address);
     });
 
     it("should add and remove address", async () => {
       await addressRegistry.addAddress(accounts[4].address);
-      expect(
-        await addressRegistry.containsAddress(accounts[4].address)
-      ).toBeTruthy();
+      expect(await addressRegistry.containsAddress(accounts[4].address)).to.be
+        .true;
 
       await addressRegistry.removeAddress(accounts[4].address);
-      expect(
-        await addressRegistry.containsAddress(accounts[4].address)
-      ).toBeFalsy();
+      expect(await addressRegistry.containsAddress(accounts[4].address)).to.be
+        .false;
     });
 
     it("should give the right count", async () => {
-      expect(await addressRegistry.length()).toEqBN("1");
+      expect(await addressRegistry.length()).to.equal("1");
       // add new entry
       await addressRegistry.addAddress(accounts[2].address);
-      expect(await addressRegistry.length()).toEqBN("2");
+      expect(await addressRegistry.length()).to.equal("2");
     });
 
     it("get correct index", async () => {
-      expect(await addressRegistry.getIndex(accounts[1].address)).toEqBN("0");
-      expect(await addressRegistry.getIndex(accounts[2].address)).toEqBN("1");
+      expect(await addressRegistry.getIndex(accounts[1].address)).to.equal("0");
+      expect(await addressRegistry.getIndex(accounts[2].address)).to.equal("1");
 
       await expect(
         addressRegistry.getIndex(accounts[4].address)
-      ).toBeRevertedWith("EnumerableSet: Index not found");
+      ).to.be.revertedWith("EnumerableSet: Index not found");
     });
 
     it("can list all values of the registry", async () => {
@@ -69,11 +67,11 @@ describe("Address Registry contracts", () => {
         values.push(await addressRegistry.getAddress(i));
       }
 
-      expect(values).toStrictEqual([accounts[1].address, accounts[2].address]);
+      expect(values).to.deep.equal([accounts[1].address, accounts[2].address]);
     });
 
     it("can get all raw values in one call", async () => {
-      expect(await addressRegistry.getAllRawValues()).toStrictEqual([
+      expect(await addressRegistry.getAllRawValues()).to.deep.equal([
         "0x000000000000000000000000" +
           accounts[1].address.replace("0x", "").toLowerCase(),
         "0x000000000000000000000000" +
@@ -105,10 +103,16 @@ describe("Address Registry contracts", () => {
 
       await account
         .connect(owner)
-        .execute(0, addressRegistryRequireERC725.address, 0, abi, {
-          gasLimit: 3_000_000,
-        });
-      expect(await addressRegistryRequireERC725.getAddress(0)).toEqual(
+        ["execute(uint256,address,uint256,bytes)"](
+          0,
+          addressRegistryRequireERC725.address,
+          0,
+          abi,
+          {
+            gasLimit: 3_000_000,
+          }
+        );
+      expect(await addressRegistryRequireERC725.getAddress(0)).to.equal(
         account.address
       );
     });
@@ -117,7 +121,7 @@ describe("Address Registry contracts", () => {
       await addressRegistryRequireERC725
         .connect(accounts[5])
         .addAddress(account.address);
-      expect(await addressRegistryRequireERC725.getAddress(0)).toEqual(
+      expect(await addressRegistryRequireERC725.getAddress(0)).to.equal(
         account.address
       );
     });
@@ -130,17 +134,21 @@ describe("Address Registry contracts", () => {
 
       await account
         .connect(owner)
-        .execute(0, addressRegistryRequireERC725.address, 0, abi);
+        ["execute(uint256,address,uint256,bytes)"](
+          0,
+          addressRegistryRequireERC725.address,
+          0,
+          abi
+        );
       expect(
         await addressRegistryRequireERC725.containsAddress(account.address)
-      ).toEqual(false);
+      ).to.equal(false);
     });
 
     it("should fail if called by a regular address", async () => {
-      //simply reverts as no ERC165 is detected
-      await expect(
-        addressRegistryRequireERC725.addAddress(accounts[5].address)
-      ).toBeReverted();
+      // simply reverts as no ERC165 is detected
+      await expect(addressRegistryRequireERC725.addAddress(accounts[5].address))
+        .to.be.reverted;
     });
   });
 });

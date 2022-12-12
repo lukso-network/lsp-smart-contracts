@@ -3,13 +3,13 @@ name: Create Github Release
 
 on:
   repository_dispatch:
-      types: [trigger-release]
+    types: [trigger-release]
 
 jobs:
   github-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -23,7 +23,7 @@ jobs:
           APP_VERSION="v$(node -pe "require('./package.json').version")"
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: develop
 
@@ -35,7 +35,7 @@ jobs:
       # Android artifacts
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
-        with: 
+        with:
           workflow: build-artifacts.yml
           workflow_conclusion: success
           name: upcontracts.jar
@@ -46,7 +46,7 @@ jobs:
       # iOS artifacts
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
-        with: 
+        with:
           workflow: build-artifacts.yml
           workflow_conclusion: success
           name: UPContractsAbi.swift

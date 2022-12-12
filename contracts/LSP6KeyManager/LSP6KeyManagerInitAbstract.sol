@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.6;
+pragma solidity ^0.8.5;
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
@@ -16,5 +16,6 @@ abstract contract LSP6KeyManagerInitAbstract is Initializable, LSP6KeyManagerCor
     function _initialize(address target_) internal virtual onlyInitializing {
         if (target_ == address(0)) revert InvalidLSP6Target();
         target = target_;
+        _setupLSP6ReentrancyGuard();
     }
 }

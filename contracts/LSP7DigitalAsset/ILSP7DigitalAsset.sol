@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
- * @dev Required interface of a LSP8 compliant contract.
+ * @title interface of the LSP7 - Digital Asset standard.
  */
 interface ILSP7DigitalAsset is IERC165, IERC725Y {
     // --- Events
@@ -60,7 +60,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * no way affects any of the arithmetic of the contract, including
      * {balanceOf} and {transfer}.
      */
-    function decimals() external view returns (uint256);
+    function decimals() external view returns (uint8);
 
     /**
      * @dev Returns the number of existing tokens.
@@ -84,7 +84,17 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param amount The amount of tokens operator has access to.
      * @dev Sets `amount` as the amount of tokens `operator` address has access to from callers tokens.
      *
-     * See {isOperatorFor}.
+     * To avoid front-running and Allowance Double-Spend Exploit when
+     * increasing or decreasing the authorized amount of an operator,
+     * it is advised to:
+     *     1. call {revokeOperator} first, and
+     *     2. then re-call {authorizeOperator} with the new amount
+     *
+     * for more information, see:
+     * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
+     *
+     *
+     * See {authorizedAmountFor}.
      *
      * Requirements
      *
@@ -98,7 +108,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param operator The address to revoke as an operator.
      * @dev Removes `operator` address as an operator of callers tokens.
      *
-     * See {isOperatorFor}.
+     * See {authorizedAmountFor}.
      *
      * Requirements
      *
@@ -116,7 +126,10 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * Operators can send and burn tokens on behalf of their owners. The tokenOwner is their own
      * operator.
      */
-    function isOperatorFor(address operator, address tokenOwner) external view returns (uint256);
+    function authorizedAmountFor(address operator, address tokenOwner)
+        external
+        view
+        returns (uint256);
 
     // --- Transfer functionality
 
@@ -175,7 +188,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address[] memory from,
         address[] memory to,
         uint256[] memory amount,
-        bool force,
+        bool[] memory force,
         bytes[] memory data
     ) external;
 }

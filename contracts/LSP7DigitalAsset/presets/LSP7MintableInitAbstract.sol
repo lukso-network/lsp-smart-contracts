@@ -1,34 +1,35 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
+
+// interfaces
+import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 
 // modules
-import {LSP7DigitalAssetInit} from "../LSP7DigitalAssetInit.sol";
 import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
-import {LSP7MintableCore} from "./LSP7MintableCore.sol";
 
 /**
  * @dev LSP7 extension, mintable.
  */
-abstract contract LSP7MintableInitAbstract is LSP7DigitalAssetInitAbstract, LSP7MintableCore {
+abstract contract LSP7MintableInitAbstract is LSP7DigitalAssetInitAbstract, ILSP7Mintable {
     function _initialize(
         string memory name_,
         string memory symbol_,
         address newOwner_,
-        bool isNFT_
+        bool isNonDivisible_
     ) internal virtual override onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, isNFT_);
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, isNonDivisible_);
     }
 
     /**
-     * @inheritdoc LSP7MintableCore
+     * @inheritdoc ILSP7Mintable
      */
     function mint(
         address to,
         uint256 amount,
         bool force,
         bytes memory data
-    ) public override onlyOwner {
+    ) public virtual onlyOwner {
         _mint(to, amount, force, data);
     }
 }

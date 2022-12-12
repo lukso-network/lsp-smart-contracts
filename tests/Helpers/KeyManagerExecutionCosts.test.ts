@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 
 import {
   UniversalProfile__factory,
@@ -7,14 +8,19 @@ import {
 } from "../../types";
 import {
   ALL_PERMISSIONS,
-  ERC725YKeys,
+  ERC725YDataKeys,
   OPERATION_TYPES,
   PERMISSIONS,
   INTERFACE_IDS,
 } from "../../constants";
 
 import { LSP6TestContext } from "../utils/context";
-import { abiCoder, provider } from "../utils/helpers";
+import {
+  abiCoder,
+  provider,
+  combinePermissions,
+  combineAllowedCalls,
+} from "../utils/helpers";
 
 import { setupKeyManager } from "../utils/fixtures";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -43,7 +49,7 @@ describe("Key Manager gas cost interactions", () => {
 
       let contractImplementsERC1271: UniversalProfile;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildLSP6TestContext();
 
         restrictedToOneAddress = context.accounts[1];
@@ -54,35 +60,32 @@ describe("Key Manager gas cost interactions", () => {
         ).deploy(context.accounts[3].address);
 
         const permissionKeys = [
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             context.owner.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             restrictedToOneAddress.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             restrictedToOneAddressAndStandard.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             restrictedToOneAddress.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
-            restrictedToOneAddressAndStandard.address.substring(2),
-          ERC725YKeys.LSP6["AddressPermissions:AllowedStandards"] +
+          ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
             restrictedToOneAddressAndStandard.address.substring(2),
         ];
 
         const permissionValues = [
           ALL_PERMISSIONS,
-          ethers.utils.hexZeroPad(
-            parseInt(Number(PERMISSIONS.CALL)) +
-              parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-            32
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+          combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
+          combineAllowedCalls(
+            [INTERFACE_IDS.ERC1271],
+            [contractImplementsERC1271.address],
+            ["0xffffffff"]
           ),
-          ethers.utils.hexZeroPad(
-            parseInt(Number(PERMISSIONS.CALL)) +
-              parseInt(Number(PERMISSIONS.TRANSFERVALUE)),
-            32
+          combineAllowedCalls(
+            ["0xffffffff"],
+            [contractImplementsERC1271.address],
+            ["0xffffffff"]
           ),
-          abiCoder.encode(["address[]"], [[contractImplementsERC1271.address]]),
-          abiCoder.encode(["address[]"], [[contractImplementsERC1271.address]]),
-          abiCoder.encode(["bytes4[]"], [[INTERFACE_IDS.ERC1271]]),
         ];
 
         await setupKeyManager(context, permissionKeys, permissionValues);
@@ -100,16 +103,19 @@ describe("Key Manager gas cost interactions", () => {
           );
 
           let transferLyxPayload =
-            context.universalProfile.interface.encodeFunctionData("execute", [
-              OPERATION_TYPES.CALL,
-              contractImplementsERC1271.address,
-              ethers.utils.parseEther("1"),
-              "0x",
-            ]);
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                contractImplementsERC1271.address,
+                ethers.utils.parseEther("1"),
+                "0x",
+              ]
+            );
 
           let tx = await context.keyManager
             .connect(context.owner)
-            .execute(transferLyxPayload);
+            ["execute(bytes)"](transferLyxPayload);
 
           let receipt = await tx.wait();
 
@@ -121,9 +127,7 @@ describe("Key Manager gas cost interactions", () => {
           let newAccountBalance = await provider.getBalance(
             contractImplementsERC1271.address
           );
-          expect(parseInt(newAccountBalance)).toBeGreaterThan(
-            parseInt(initialAccountBalance)
-          );
+          expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
         });
       });
 
@@ -133,16 +137,19 @@ describe("Key Manager gas cost interactions", () => {
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            contractImplementsERC1271.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              contractImplementsERC1271.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddress)
-          .execute(transferLyxPayload);
+          ["execute(bytes)"](transferLyxPayload);
 
         let receipt = await tx.wait();
 
@@ -154,9 +161,7 @@ describe("Key Manager gas cost interactions", () => {
         let newAccountBalance = await provider.getBalance(
           contractImplementsERC1271.address
         );
-        expect(parseInt(newAccountBalance)).toBeGreaterThan(
-          parseInt(initialAccountBalance)
-        );
+        expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
 
       it("when caller has only 1 x allowed address + 1 x allowed standard allowed", async () => {
@@ -165,16 +170,19 @@ describe("Key Manager gas cost interactions", () => {
         );
 
         let transferLyxPayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.CALL,
-            contractImplementsERC1271.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              contractImplementsERC1271.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
         let tx = await context.keyManager
           .connect(restrictedToOneAddressAndStandard)
-          .execute(transferLyxPayload);
+          ["execute(bytes)"](transferLyxPayload);
 
         let receipt = await tx.wait();
 
@@ -186,9 +194,7 @@ describe("Key Manager gas cost interactions", () => {
         let newAccountBalance = await provider.getBalance(
           contractImplementsERC1271.address
         );
-        expect(parseInt(newAccountBalance)).toBeGreaterThan(
-          parseInt(initialAccountBalance)
-        );
+        expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
     });
   });

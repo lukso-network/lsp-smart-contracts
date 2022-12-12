@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725AccountInitAbstract.sol";
@@ -21,7 +21,7 @@ contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
      * @notice Sets the owner of the contract
      * @param newOwner the owner of the contract
      */
-    function initialize(address newOwner) public payable virtual initializer {
+    function initialize(address newOwner) external payable virtual initializer {
         LSP0ERC725AccountInitAbstract._initialize(newOwner);
     }
 }

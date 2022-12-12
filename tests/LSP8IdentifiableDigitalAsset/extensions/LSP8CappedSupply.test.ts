@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { expect } from "chai";
 import {
   LSP8CappedSupplyTester__factory,
   LSP8CappedSupplyInitTester__factory,
@@ -115,7 +116,7 @@ describe("LSP8CappedSupply", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });
