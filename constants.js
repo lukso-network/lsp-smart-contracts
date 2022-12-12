@@ -435,7 +435,7 @@ const EventSignatures = {
 		 *     uint256 indexed _operation,
 		 *     address indexed _contractAddress,
 		 *     uint256 indexed _value
-		 * 	   bytes32 _salt
+		 *     bytes32 _salt
 		 * );
 		 *
 		 * signature = keccak256('ContractCreated(uint256,address,uint256,bytes32)')
