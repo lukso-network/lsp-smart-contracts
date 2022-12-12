@@ -78,7 +78,8 @@ export const shouldBehaveLikePermissionDeploy = (
         .withArgs(
           OPERATION_TYPES.CREATE,
           ethers.utils.getAddress(expectedContractAddress),
-          0
+          0,
+          ethers.utils.hexZeroPad("0x00", 32)
         );
     });
 
@@ -110,7 +111,8 @@ export const shouldBehaveLikePermissionDeploy = (
         .withArgs(
           OPERATION_TYPES.CREATE2,
           ethers.utils.getAddress(preComputedAddress),
-          0
+          0,
+          salt
         );
     });
   });
@@ -140,7 +142,8 @@ export const shouldBehaveLikePermissionDeploy = (
         .withArgs(
           OPERATION_TYPES.CREATE,
           ethers.utils.getAddress(expectedContractAddress),
-          0
+          0,
+          ethers.utils.hexZeroPad("0x00", 32)
         );
     });
 
@@ -172,7 +175,8 @@ export const shouldBehaveLikePermissionDeploy = (
         .withArgs(
           OPERATION_TYPES.CREATE2,
           ethers.utils.getAddress(preComputedAddress),
-          0
+          0,
+          salt
         );
     });
   });
