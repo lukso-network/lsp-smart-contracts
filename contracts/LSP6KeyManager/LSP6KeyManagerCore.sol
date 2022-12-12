@@ -370,6 +370,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 controllerPermissions,
                 inputDataKey
             );
+        } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+            // CHECK for LSP17Extension data keys
+            _verifyCanSetLSP17ExtensionKey(inputDataKey, controllerAddress, controllerPermissions);
 
             // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
             // with anything above, this is not a standard LSP6 permission data key so we revert
@@ -467,6 +470,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     inputDataKey
                 );
                 validatedInputDataKeys[ii - 1] = true;
+            } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+                // CHECK for LSP17Extension data keys
+                _verifyCanSetLSP17ExtensionKey(
+                    inputDataKey,
+                    controllerAddress,
+                    controllerPermissions
+                );
 
                 // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
                 // with anything above, this is not a standard LSP6 permission data key so we revert
