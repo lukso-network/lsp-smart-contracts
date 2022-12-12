@@ -182,7 +182,7 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory data
     ) public payable virtual override onlyOwner returns (bytes memory) {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        return super.execute(operationType, target, value, data);
+        return _execute(operationType, target, value, data);
     }
 
     /**
@@ -197,7 +197,7 @@ abstract contract LSP0ERC725AccountCore is
         bytes[] memory datas
     ) public payable virtual override onlyOwner returns (bytes[] memory) {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        return super.execute(operationsType, targets, values, datas);
+        return _execute(operationsType, targets, values, datas);
     }
 
     /**

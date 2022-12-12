@@ -306,7 +306,8 @@ export const shouldBehaveLikeBatchExecute = (
           .withArgs(
             OPERATION_TYPES.CREATE,
             ethers.utils.getAddress(futureTokenAddress),
-            0
+            0,
+            ethers.utils.hexZeroPad("0x00", 32)
           );
 
         // CHECK initialize parameters have been set correctly
@@ -419,7 +420,8 @@ export const shouldBehaveLikeBatchExecute = (
           .withArgs(
             OPERATION_TYPES.CREATE,
             ethers.utils.getAddress(futureTokenAddress),
-            0
+            0,
+            ethers.utils.hexZeroPad("0x00", 32)
           );
 
         // CHECK for tokens balances of recipients
