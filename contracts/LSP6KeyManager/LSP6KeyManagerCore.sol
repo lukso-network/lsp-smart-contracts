@@ -403,7 +403,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes calldata inputDataKeys,
         bytes calldata inputDataValues
     ) internal view {
-        uint256 numberOfDataKeysValuePairs = uint256(bytes32(inputDataKeys[:32]));
+        uint256 numberOfDataKeysValuePairs = uint256(bytes32(inputDataKeys));
 
         bool isSettingERC725YKeys;
         bool[] memory validatedInputDataKeys = new bool[](numberOfDataKeysValuePairs);
@@ -546,7 +546,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
         // bytes are always made of [length][value]
         // extract the first 32 bytes word to know the length (= number of bytes)
-        uint256 inputDataValueLength = uint256(bytes32(inputDataValue[:32]));
+        uint256 inputDataValueLength = uint256(bytes32(inputDataValue));
 
         // CHECK that we either:
         //  - ADD an address (20 bytes long)
@@ -582,7 +582,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes32 dataKey,
         bytes calldata dataValue
     ) internal view {
-        uint256 dataValueLength = uint256(bytes32(dataValue[:32]));
+        uint256 dataValueLength = uint256(bytes32(dataValue));
         bool isEmptyArray = dataValueLength == 0;
 
         if (!isEmptyArray && !LSP2Utils.isCompactBytesArray(dataValue[32:32 + dataValueLength])) {
@@ -759,7 +759,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 allowedKeysFound;
 
         // cache the input data keys from the start
-        uint256 inputKeysLength = uint256(bytes32(inputKeys[:32]));
+        uint256 inputKeysLength = uint256(bytes32(inputKeys));
 
         /**
          * pointer will always land on these values:
