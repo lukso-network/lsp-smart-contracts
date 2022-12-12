@@ -12,6 +12,7 @@ import {
   SingleReentrancyRelayer,
   SingleReentrancyRelayer__factory,
   BatchReentrancyRelayer__factory,
+  UniversalProfile__factory,
 } from "../../../../types";
 
 // constants
@@ -34,34 +35,25 @@ import {
 
 // Complex permission as it has AllowedCalls
 export type TransferValueTestCase = {
-  testDescription: string;
+  permissionsText: string;
   permissions: string;
   allowedCalls: boolean;
-  customErrorName: string;
-  customErrorArgs: {
-    permission: string;
-  };
+  missingPermission: string;
 };
 
 // Complex permission as it has AllowedERC725YDataKeys
 export type SetDataTestCase = {
-  testDescription: string;
+  permissionsText: string;
   permissions: string;
   allowedERC725YDataKeys: boolean;
-  customErrorName: string;
-  customErrorArgs: {
-    permission: string;
-  };
+  missingPermission: string;
 };
 
 //Other permissions, e.g.: ADDPERMISSIONS, CHANGEPERMISSIONS, ADDUNIVERSALRECEIVERDELEGATE, CHANGEUNIVERSALRECEIVERDELEGATE
 export type SimplePermissionTestCase = {
-  testDescription: string;
+  permissionsText: string;
   permissions: string;
-  customErrorName: string;
-  customErrorArgs: {
-    permission: string;
-  };
+  missingPermission: string;
 };
 
 export type ReentrancyContext = {
@@ -77,389 +69,255 @@ export type ReentrancyContext = {
   randomLSP1TypeId: string;
 };
 
-export const transferValueTestCases: TransferValueTestCase[] = [
-  {
-    testDescription:
-      "should revert if the reentrant contract has NO PERMISSIONS",
-    permissions: "0x",
-    allowedCalls: false,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+export const transferValueTestCases = {
+  NotAuthorised: [
+    {
+      permissionsText: "NO Permissions",
+      permissions: "0x",
+      allowedCalls: false,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY",
-    permissions: ALL_PERMISSIONS,
-    allowedCalls: false,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "ALL_PERMISSIONS constant",
+      permissions: ALL_PERMISSIONS,
+      allowedCalls: false,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY REENTRANCY permission with NO AllowedCalls",
-    permissions: PERMISSIONS.REENTRANCY,
-    allowedCalls: false,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "TRANSFERVALUE",
+    {
+      permissionsText: "REENTRANCY & NO AllowedCalls",
+      permissions: PERMISSIONS.REENTRANCY,
+      allowedCalls: false,
+      missingPermission: "TRANSFERVALUE",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY REENTRANCY permission with AllowedCalls",
-    permissions: PERMISSIONS.REENTRANCY,
-    allowedCalls: true,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "TRANSFERVALUE",
+    {
+      permissionsText: "REENTRANCY & AllowedCalls",
+      permissions: PERMISSIONS.REENTRANCY,
+      allowedCalls: true,
+      missingPermission: "TRANSFERVALUE",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY TRANSFERVALUE permission with NO AllowedCalls",
-    permissions: PERMISSIONS.TRANSFERVALUE,
-    allowedCalls: false,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "TRANSFERVALUE & NO AllowedCalls",
+      permissions: PERMISSIONS.TRANSFERVALUE,
+      allowedCalls: false,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY TRANSFERVALUE permission with AllowedCalls",
-    permissions: PERMISSIONS.TRANSFERVALUE,
-    allowedCalls: true,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "TRANSFERVALUE & AllowedCalls",
+      permissions: PERMISSIONS.TRANSFERVALUE,
+      allowedCalls: true,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with NO AllowedCalls",
+  ],
+  NoCallsAllowed: {
+    permissionsText: "REENTRANCY, TRANSFERVALUE & NO AllowedCalls",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.TRANSFERVALUE
     ),
     allowedCalls: false,
-    customErrorName: "NoCallsAllowed",
-    customErrorArgs: {
-      permission: "",
-    },
+    missingPermission: "",
   },
-  {
-    testDescription:
-      "should pass if the reentrant contract has ONLY TRANSFERVALUE and REENTRANCY permissions with AllowedCalls",
+  ValidCase: {
+    permissionsText: "REENTRANCY, TRANSFERVALUE & AllowedCalls",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.TRANSFERVALUE
     ),
     allowedCalls: true,
-    customErrorName: "",
-    customErrorArgs: {
-      permission: "",
-    },
+    missingPermission: "",
   },
-];
+};
 
-export const setDataTestCases: SetDataTestCase[] = [
-  {
-    testDescription:
-      "should revert if the reentrant contract has NO PERMISSIONS",
-    permissions: "0x",
-    allowedERC725YDataKeys: false,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+export const setDataTestCases = {
+  NotAuthorised: [
+    {
+      permissionsText: "NO Permissions",
+      permissions: "0x",
+      allowedERC725YDataKeys: false,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY",
-    permissions: ALL_PERMISSIONS,
-    allowedERC725YDataKeys: false,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "ALL_PERMISSIONS constant",
+      permissions: ALL_PERMISSIONS,
+      allowedERC725YDataKeys: false,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY REENTRANCY permission with NO AllowedERC725YDataKeys",
-    permissions: PERMISSIONS.REENTRANCY,
-    allowedERC725YDataKeys: false,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "SETDATA",
+    {
+      permissionsText: "REENTRANCY & NO AllowedERC725YDataKeys",
+      permissions: PERMISSIONS.REENTRANCY,
+      allowedERC725YDataKeys: false,
+      missingPermission: "SETDATA",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY REENTRANCY permission with AllowedERC725YDataKeys",
-    permissions: PERMISSIONS.REENTRANCY,
-    allowedERC725YDataKeys: true,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "SETDATA",
+    {
+      permissionsText: "REENTRANCY & AllowedERC725YDataKeys",
+      permissions: PERMISSIONS.REENTRANCY,
+      allowedERC725YDataKeys: true,
+      missingPermission: "SETDATA",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY SETDATA permission with NO AllowedERC725YDataKeys",
-    permissions: PERMISSIONS.SETDATA,
-    allowedERC725YDataKeys: false,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "SETDATA & NO AllowedERC725YDataKeys",
+      permissions: PERMISSIONS.SETDATA,
+      allowedERC725YDataKeys: false,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY SETDATA permission with AllowedERC725YDataKeys",
-    permissions: PERMISSIONS.SETDATA,
-    allowedERC725YDataKeys: true,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "SETDATA & AllowedERC725YDataKeys",
+      permissions: PERMISSIONS.SETDATA,
+      allowedERC725YDataKeys: true,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has SETDATA and REENTRANCY permissions with NO AllowedERC725YDataKeys",
+  ],
+  NoERC725YDataKeysAllowed: {
+    permissionsText: "REENTRANCY, SETDATA & NO AllowedERC725YDataKeys",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.SETDATA
     ),
     allowedERC725YDataKeys: false,
-    customErrorName: "NoERC725YDataKeysAllowed",
-    customErrorArgs: {
-      permission: "",
-    },
+    missingPermission: "",
   },
-  {
-    testDescription:
-      "should pass if the reentrant contract has SETDATA and REENTRANCY permissions with AllowedERC725YDataKeys",
+  ValidCase: {
+    permissionsText: "REENTRANCY, SETDATA & AllowedERC725YDataKeys",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.SETDATA
     ),
     allowedERC725YDataKeys: true,
-    customErrorName: "",
-    customErrorArgs: {
-      permission: "",
-    },
+    missingPermission: "",
   },
-];
+};
 
-export const addPermissionsTestCases: SimplePermissionTestCase[] = [
-  {
-    testDescription:
-      "should revert if the reentrant contract has NO PERMISSIONS",
-    permissions: "0x",
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+export const addPermissionsTestCases = {
+  NotAuthorised: [
+    {
+      permissionsText: "NO Permissions",
+      permissions: "0x",
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY",
-    permissions: ALL_PERMISSIONS,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "ALL_PERMISSIONS constant",
+      permissions: ALL_PERMISSIONS,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY REENTRANCY permission",
-    permissions: PERMISSIONS.REENTRANCY,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "ADDPERMISSIONS",
+    {
+      permissionsText: "REENTRANCY",
+      permissions: PERMISSIONS.REENTRANCY,
+      missingPermission: "ADDPERMISSIONS",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY ADDPERMISSIONS permission",
-    permissions: PERMISSIONS.ADDPERMISSIONS,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "ADDPERMISSIONS",
+      permissions: PERMISSIONS.ADDPERMISSIONS,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should pass if the reentrant contract has ADDPERMISSIONS and REENTRANCY permissions",
+  ],
+  ValidCase: {
+    permissionsText: "REENTRANCY, ADDPERMISSIONS",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.ADDPERMISSIONS
     ),
-    customErrorName: "",
-    customErrorArgs: {
-      permission: "",
-    },
+    missingPermission: "",
   },
-];
+};
 
-export const changePermissionsTestCases: SimplePermissionTestCase[] = [
-  {
-    testDescription:
-      "should revert if the reentrant contract has NO PERMISSIONS",
-    permissions: "0x",
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+export const changePermissionsTestCases = {
+  NotAuthorised: [
+    {
+      permissionsText: "NO Permissions",
+      permissions: "0x",
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY",
-    permissions: ALL_PERMISSIONS,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "ALL_PERMISSIONS constant",
+      permissions: ALL_PERMISSIONS,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY REENTRANCY permission",
-    permissions: PERMISSIONS.REENTRANCY,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "CHANGEPERMISSIONS",
+    {
+      permissionsText: "REENTRANCY",
+      permissions: PERMISSIONS.REENTRANCY,
+      missingPermission: "CHANGEPERMISSIONS",
     },
-  },
-  {
-    testDescription:
-      "should revert if the reentrant contract has ONLY CHANGEPERMISSIONS permission",
-    permissions: PERMISSIONS.CHANGEPERMISSIONS,
-    customErrorName: "NotAuthorised",
-    customErrorArgs: {
-      permission: "REENTRANCY",
+    {
+      permissionsText: "CHANGEPERMISSIONS",
+      permissions: PERMISSIONS.CHANGEPERMISSIONS,
+      missingPermission: "REENTRANCY",
     },
-  },
-  {
-    testDescription:
-      "should pass if the reentrant contract has CHANGEPERMISSIONS and REENTRANCY permissions",
+  ],
+  ValidCase: {
+    permissionsText: "REENTRANCY, CHANGEPERMISSIONS",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.CHANGEPERMISSIONS
     ),
-    customErrorName: "",
-    customErrorArgs: {
-      permission: "",
-    },
+    missingPermission: "",
   },
-];
+};
 
-export const addUniversalReceiverDelegateTestCases: SimplePermissionTestCase[] =
-  [
+export const addUniversalReceiverDelegateTestCases = {
+  NotAuthorised: [
     {
-      testDescription:
-        "should revert if the reentrant contract has NO PERMISSIONS",
+      permissionsText: "NO Permissions",
       permissions: "0x",
-      customErrorName: "NotAuthorised",
-      customErrorArgs: {
-        permission: "REENTRANCY",
-      },
+      missingPermission: "REENTRANCY",
     },
     {
-      testDescription:
-        "should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY",
+      permissionsText: "ALL_PERMISSIONS constant",
       permissions: ALL_PERMISSIONS,
-      customErrorName: "NotAuthorised",
-      customErrorArgs: {
-        permission: "REENTRANCY",
-      },
+      missingPermission: "REENTRANCY",
     },
     {
-      testDescription:
-        "should revert if the reentrant contract has ONLY REENTRANCY permission",
+      permissionsText: "REENTRANCY",
       permissions: PERMISSIONS.REENTRANCY,
-      customErrorName: "NotAuthorised",
-      customErrorArgs: {
-        permission: "ADDUNIVERSALRECEIVERDELEGATE",
-      },
+      missingPermission: "ADDUNIVERSALRECEIVERDELEGATE",
     },
     {
-      testDescription:
-        "should revert if the reentrant contract has ONLY ADDUNIVERSALRECEIVERDELEGATE permission",
+      permissionsText: "ADDUNIVERSALRECEIVERDELEGATE",
       permissions: PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE,
-      customErrorName: "NotAuthorised",
-      customErrorArgs: {
-        permission: "REENTRANCY",
-      },
+      missingPermission: "REENTRANCY",
     },
-    {
-      testDescription:
-        "should pass if the reentrant contract has ADDUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions",
-      permissions: combinePermissions(
-        PERMISSIONS.REENTRANCY,
-        PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE
-      ),
-      customErrorName: "",
-      customErrorArgs: {
-        permission: "",
-      },
-    },
-  ];
+  ],
+  ValidCase: {
+    permissionsText: "REENTRANCY, ADDUNIVERSALRECEIVERDELEGATE",
+    permissions: combinePermissions(
+      PERMISSIONS.REENTRANCY,
+      PERMISSIONS.ADDUNIVERSALRECEIVERDELEGATE
+    ),
+    missingPermission: "",
+  },
+};
 
-export const changeUniversalReceiverDelegateTestCases: SimplePermissionTestCase[] =
-  [
+export const changeUniversalReceiverDelegateTestCases = {
+  NotAuthorised: [
     {
-      testDescription:
-        "should revert if the reentrant contract has NO PERMISSIONS",
+      permissionsText: "NO Permissions",
       permissions: "0x",
-      customErrorName: "NotAuthorised",
-      customErrorArgs: {
-        permission: "REENTRANCY",
-      },
+      missingPermission: "REENTRANCY",
     },
     {
-      testDescription:
-        "should revert if the reentrant contract has ALL_PERMISSIONS but REENTRANCY",
+      permissionsText: "ALL_PERMISSIONS constant",
       permissions: ALL_PERMISSIONS,
-      customErrorName: "NotAuthorised",
-      customErrorArgs: {
-        permission: "REENTRANCY",
-      },
+      missingPermission: "REENTRANCY",
     },
     {
-      testDescription:
-        "should revert if the reentrant contract has ONLY REENTRANCY permission",
+      permissionsText: "REENTRANCY",
       permissions: PERMISSIONS.REENTRANCY,
-      customErrorName: "NotAuthorised",
-      customErrorArgs: {
-        permission: "CHANGEUNIVERSALRECEIVERDELEGATE",
-      },
+      missingPermission: "CHANGEUNIVERSALRECEIVERDELEGATE",
     },
     {
-      testDescription:
-        "should revert if the reentrant contract has ONLY CHANGEUNIVERSALRECEIVERDELEGATE permission",
+      permissionsText: "CHANGEUNIVERSALRECEIVERDELEGATE",
       permissions: PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE,
-      customErrorName: "NotAuthorised",
-      customErrorArgs: {
-        permission: "REENTRANCY",
-      },
+      missingPermission: "REENTRANCY",
     },
-    {
-      testDescription:
-        "should pass if the reentrant contract has CHANGEUNIVERSALRECEIVERDELEGATE and REENTRANCY permissions",
-      permissions: combinePermissions(
-        PERMISSIONS.REENTRANCY,
-        PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE
-      ),
-      customErrorName: "",
-      customErrorArgs: {
-        permission: "",
-      },
-    },
-  ];
+  ],
+  ValidCase: {
+    permissionsText: "REENTRANCY, CHANGEUNIVERSALRECEIVERDELEGATE",
+    permissions: combinePermissions(
+      PERMISSIONS.REENTRANCY,
+      PERMISSIONS.CHANGEUNIVERSALRECEIVERDELEGATE
+    ),
+    missingPermission: "",
+  },
+};
 
 export const buildReentrancyContext = async (context: LSP6TestContext) => {
   const owner = context.accounts[0];
@@ -587,11 +445,11 @@ export const generateRelayCall = async (
 };
 
 export const generateSingleRelayPayload = async (
-  reentrancyRelayer: SingleReentrancyRelayer,
   universalProfile: UniversalProfile,
   keyManager: LSP6KeyManager,
-  reentrantSigner: Wallet,
   payloadType: string,
+  reentrancyRelayer: SingleReentrancyRelayer,
+  reentrantSigner: Wallet,
   newControllerAddress: string,
   newURDAddress: string
 ) => {
@@ -677,11 +535,11 @@ export const generateSingleRelayPayload = async (
 };
 
 export const generateBatchRelayPayload = async (
-  reentrancyRelayer: BatchReentrancyRelayer,
   universalProfile: UniversalProfile,
   keyManager: LSP6KeyManager,
-  reentrantSigner: Wallet,
   payloadType: string,
+  reentrancyRelayer: BatchReentrancyRelayer,
+  reentrantSigner: Wallet,
   newControllerAddress: string,
   newURDAddress: string
 ) => {
@@ -769,4 +627,24 @@ export const generateBatchRelayPayload = async (
     [msgValue],
     [payload]
   );
+};
+
+export const generateExecutePayload = (
+  keyManagerAddress: string,
+  reentrantContractAddress: string,
+  payloadType: string
+) => {
+  const reentrantPayload =
+    new ReentrantContract__factory().interface.encodeFunctionData(
+      "callThatReenters",
+      [keyManagerAddress, payloadType]
+    );
+
+  const executePayload =
+    new UniversalProfile__factory().interface.encodeFunctionData(
+      "execute(uint256,address,uint256,bytes)",
+      [0, reentrantContractAddress, 0, reentrantPayload]
+    );
+
+  return executePayload;
 };
