@@ -256,7 +256,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory result = Address.verifyCallResult(
             success,
             returnData,
-            "LSP6: fail executing payload"
+            "LSP6: failed executing payload"
         );
 
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
