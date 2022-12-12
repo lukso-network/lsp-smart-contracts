@@ -616,7 +616,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
     }
 
-    /// TODO: implement in the logic of checking the inputDataKey prefix
     /**
      * @dev Verify if `from` has the required permissions to either add or change the address
      * of an LSP0 Extension stored under a specific LSP17Extension data key
@@ -702,12 +701,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              */
             length = uint8(allowedERC725YKeysCompacted[pointer]);
 
-            /*
-             * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
-             * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
-             */
-            allowedKey = bytes32(allowedERC725YKeysCompacted.slice(pointer + 1, length));
-
             /**
              * the bitmask discard the last `32 - length` bytes of the input key via ANDing &
              * so to compare only the relevant parts of each ERC725Y keys
@@ -727,6 +720,19 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             mask =
                 bytes32(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) <<
                 (8 * (32 - length));
+
+            /*
+             * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
+             * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
+             */
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                // the first 32 bytes word in memory (where allowedERC725YKeysCompacted is stored)
+                // correspond to the length of allowedERC725YKeysCompacted (= total number of bytes)
+                let offset := add(add(pointer, 1), 32)
+                let memoryAt := mload(add(allowedERC725YKeysCompacted, offset))
+                allowedKey := and(memoryAt, mask)
+            }
 
             if (allowedKey == (inputKey & mask)) {
                 // voila you found the key ;)
@@ -791,12 +797,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              */
             length = uint8(allowedERC725YKeysCompacted[pointer]);
 
-            /*
-             * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
-             * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
-             */
-            allowedKey = bytes32(allowedERC725YKeysCompacted.slice(pointer + 1, length));
-
             /**
              * the bitmask discard the last `32 - length` bytes of the input key via ANDing &
              * so to compare only the relevant parts of each ERC725Y keys
@@ -816,6 +816,19 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             mask =
                 bytes32(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) <<
                 (8 * (32 - length));
+
+            /*
+             * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
+             * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
+             */
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                // the first 32 bytes word in memory (where allowedERC725YKeysCompacted is stored)
+                // correspond to the length of allowedERC725YKeysCompacted (= total number of bytes)
+                let offset := add(add(pointer, 1), 32)
+                let memoryAt := mload(add(allowedERC725YKeysCompacted, offset))
+                allowedKey := and(memoryAt, mask)
+            }
 
             /**
              * Iterate over the `inputKeys`
