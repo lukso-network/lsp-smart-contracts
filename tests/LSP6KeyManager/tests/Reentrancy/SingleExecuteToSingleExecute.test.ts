@@ -51,7 +51,11 @@ export const testSingleExecuteToSingleExecute = (
     });
 
     transferValueTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permissions: ${testCase.permissionsText}`, async () => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${
+        testCase.permissionsText
+      }; MISSING - ${testCase.missingPermission}; AllowedCalls - ${
+        testCase.allowedCalls ? "YES" : "NO"
+      }`, async () => {
         await loadTestCase(
           "TRANSFERVALUE",
           testCase,
@@ -136,7 +140,11 @@ export const testSingleExecuteToSingleExecute = (
     });
 
     setDataTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permissions: ${testCase.permissionsText}`, async () => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${
+        testCase.permissionsText
+      }; MISSING - ${testCase.missingPermission}; AllowedERC725YDataKeys - ${
+        testCase.allowedERC725YDataKeys ? "YES" : "NO"
+      }`, async () => {
         await loadTestCase(
           "SETDATA",
           testCase,
@@ -217,7 +225,7 @@ export const testSingleExecuteToSingleExecute = (
     });
 
     addPermissionsTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permissions: ${testCase.permissionsText}`, async () => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
           "ADDPERMISSIONS",
           testCase,
@@ -279,7 +287,7 @@ export const testSingleExecuteToSingleExecute = (
     });
 
     changePermissionsTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permissions: ${testCase.permissionsText}`, async () => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
           "CHANGEPERMISSIONS",
           testCase,
@@ -340,7 +348,7 @@ export const testSingleExecuteToSingleExecute = (
     });
 
     addUniversalReceiverDelegateTestCases.NotAuthorised.forEach((testCase) => {
-      it(`should revert if the reentrant contract has the following permissions: ${testCase.permissionsText}`, async () => {
+      it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
           "ADDUNIVERSALRECEIVERDELEGATE",
           testCase,
@@ -401,7 +409,7 @@ export const testSingleExecuteToSingleExecute = (
 
     changeUniversalReceiverDelegateTestCases.NotAuthorised.forEach(
       (testCase) => {
-        it(`should revert if the reentrant contract has the following permissions: ${testCase.permissionsText}`, async () => {
+        it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
           await loadTestCase(
             "CHANGEUNIVERSALRECEIVERDELEGATE",
             testCase,

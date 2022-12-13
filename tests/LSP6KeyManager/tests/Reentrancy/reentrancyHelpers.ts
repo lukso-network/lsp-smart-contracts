@@ -80,38 +80,38 @@ export const transferValueTestCases = {
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "ALL_PERMISSIONS constant",
+      permissionsText: "ALL_PERMISSIONS",
       permissions: ALL_PERMISSIONS,
       allowedCalls: false,
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "REENTRANCY & NO AllowedCalls",
+      permissionsText: "REENTRANCY",
       permissions: PERMISSIONS.REENTRANCY,
       allowedCalls: false,
       missingPermission: "TRANSFERVALUE",
     },
     {
-      permissionsText: "REENTRANCY & AllowedCalls",
+      permissionsText: "REENTRANCY",
       permissions: PERMISSIONS.REENTRANCY,
       allowedCalls: true,
       missingPermission: "TRANSFERVALUE",
     },
     {
-      permissionsText: "TRANSFERVALUE & NO AllowedCalls",
+      permissionsText: "TRANSFERVALUE",
       permissions: PERMISSIONS.TRANSFERVALUE,
       allowedCalls: false,
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "TRANSFERVALUE & AllowedCalls",
+      permissionsText: "TRANSFERVALUE",
       permissions: PERMISSIONS.TRANSFERVALUE,
       allowedCalls: true,
       missingPermission: "REENTRANCY",
     },
   ],
   NoCallsAllowed: {
-    permissionsText: "REENTRANCY, TRANSFERVALUE & NO AllowedCalls",
+    permissionsText: "REENTRANCY, TRANSFERVALUE",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.TRANSFERVALUE
@@ -120,7 +120,7 @@ export const transferValueTestCases = {
     missingPermission: "",
   },
   ValidCase: {
-    permissionsText: "REENTRANCY, TRANSFERVALUE & AllowedCalls",
+    permissionsText: "REENTRANCY, TRANSFERVALUE",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.TRANSFERVALUE
@@ -139,38 +139,38 @@ export const setDataTestCases = {
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "ALL_PERMISSIONS constant",
+      permissionsText: "ALL_PERMISSIONS",
       permissions: ALL_PERMISSIONS,
       allowedERC725YDataKeys: false,
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "REENTRANCY & NO AllowedERC725YDataKeys",
+      permissionsText: "REENTRANCY",
       permissions: PERMISSIONS.REENTRANCY,
       allowedERC725YDataKeys: false,
       missingPermission: "SETDATA",
     },
     {
-      permissionsText: "REENTRANCY & AllowedERC725YDataKeys",
+      permissionsText: "REENTRANCY",
       permissions: PERMISSIONS.REENTRANCY,
       allowedERC725YDataKeys: true,
       missingPermission: "SETDATA",
     },
     {
-      permissionsText: "SETDATA & NO AllowedERC725YDataKeys",
+      permissionsText: "SETDATA",
       permissions: PERMISSIONS.SETDATA,
       allowedERC725YDataKeys: false,
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "SETDATA & AllowedERC725YDataKeys",
+      permissionsText: "SETDATA",
       permissions: PERMISSIONS.SETDATA,
       allowedERC725YDataKeys: true,
       missingPermission: "REENTRANCY",
     },
   ],
   NoERC725YDataKeysAllowed: {
-    permissionsText: "REENTRANCY, SETDATA & NO AllowedERC725YDataKeys",
+    permissionsText: "REENTRANCY, SETDATA",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.SETDATA
@@ -179,7 +179,7 @@ export const setDataTestCases = {
     missingPermission: "",
   },
   ValidCase: {
-    permissionsText: "REENTRANCY, SETDATA & AllowedERC725YDataKeys",
+    permissionsText: "REENTRANCY, SETDATA",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
       PERMISSIONS.SETDATA
@@ -197,7 +197,7 @@ export const addPermissionsTestCases = {
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "ALL_PERMISSIONS constant",
+      permissionsText: "ALL_PERMISSIONS",
       permissions: ALL_PERMISSIONS,
       missingPermission: "REENTRANCY",
     },
@@ -230,7 +230,7 @@ export const changePermissionsTestCases = {
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "ALL_PERMISSIONS constant",
+      permissionsText: "ALL_PERMISSIONS",
       permissions: ALL_PERMISSIONS,
       missingPermission: "REENTRANCY",
     },
@@ -263,7 +263,7 @@ export const addUniversalReceiverDelegateTestCases = {
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "ALL_PERMISSIONS constant",
+      permissionsText: "ALL_PERMISSIONS",
       permissions: ALL_PERMISSIONS,
       missingPermission: "REENTRANCY",
     },
@@ -296,7 +296,7 @@ export const changeUniversalReceiverDelegateTestCases = {
       missingPermission: "REENTRANCY",
     },
     {
-      permissionsText: "ALL_PERMISSIONS constant",
+      permissionsText: "ALL_PERMISSIONS",
       permissions: ALL_PERMISSIONS,
       missingPermission: "REENTRANCY",
     },
