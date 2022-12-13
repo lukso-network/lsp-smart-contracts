@@ -1,3 +1,6 @@
+// types
+import { BigNumber } from "ethers";
+
 // setup
 import { LSP6TestContext } from "../../utils/context";
 import { buildReentrancyContext } from "./Reentrancy/reentrancyHelpers";
@@ -12,7 +15,7 @@ import { testSingleExecuteToBatchExecute } from "./Reentrancy/SingleExecuteToBat
 import { testSingleExecuteToBatchExecuteRelayCall } from "./Reentrancy/SingleExecuteToBatchExecuteRelayCall.test";
 
 export const testReentrancyScenarios = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
   describe("first call through `execute(bytes)`, second call through `execute(bytes)`", () => {
     testSingleExecuteToSingleExecute(buildContext, buildReentrancyContext);

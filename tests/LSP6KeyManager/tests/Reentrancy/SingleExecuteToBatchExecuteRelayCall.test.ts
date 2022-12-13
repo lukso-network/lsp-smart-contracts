@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 
 //types
-import { BytesLike } from "ethers";
+import { BigNumber, BytesLike } from "ethers";
 import {
   SingleReentrancyRelayer__factory,
   UniversalProfile__factory,
@@ -31,7 +31,7 @@ import {
 } from "./reentrancyHelpers";
 
 export const testSingleExecuteToBatchExecuteRelayCall = (
-  buildContext: () => Promise<LSP6TestContext>,
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
   buildReentrancyContext: (
     context: LSP6TestContext
   ) => Promise<ReentrancyContext>
@@ -41,7 +41,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
   let executePayload: BytesLike;
 
   before(async () => {
-    context = await buildContext();
+    context = await buildContext(ethers.utils.parseEther("10"));
     reentrancyContext = await buildReentrancyContext(context);
 
     const reentrantCallPayload =
@@ -481,13 +481,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       expect(
         await context.universalProfile["getData(bytes32)"](hardcodedLSP1Key)
       ).to.equal(hardcodedLSP1Value.toLowerCase());
-    });
-  });
-
-  after(async () => {
-    await reentrancyContext.owner.sendTransaction({
-      to: context.universalProfile.address,
-      value: ethers.utils.parseEther("1"),
     });
   });
 };

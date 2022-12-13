@@ -382,12 +382,6 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
 
   await setupKeyManager(context, permissionKeys, permissionValues);
 
-  // Fund Universal Profile with some LYXe
-  await owner.sendTransaction({
-    to: context.universalProfile.address,
-    value: ethers.utils.parseEther("10"),
-  });
-
   const randomLSP1TypeId = ethers.utils.keccak256(
     ethers.utils.toUtf8Bytes("RandomLSP1TypeId")
   );
