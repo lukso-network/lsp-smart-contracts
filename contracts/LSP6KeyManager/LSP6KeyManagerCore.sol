@@ -408,7 +408,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bool isSettingERC725YKeys;
         bool[] memory validatedInputDataKeys = new bool[](numberOfDataKeysValuePairs);
 
-        for (uint256 ii = 1; ii <= numberOfDataKeysValuePairs; ii = GasLib.uncheckedIncrement(ii)) {
+        uint256 ii = 1;
+        do {
             // for performance reasons, we do not specify the ending offset.
             // we only specify the starting offset since we only load 32 bytes words at a time
             // and the CALLDATALOAD opcode does that by default.
@@ -499,7 +500,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             } else {
                 isSettingERC725YKeys = true;
             }
-        }
+
+            ii = GasLib.uncheckedIncrement(ii);
+        } while (ii <= numberOfDataKeysValuePairs);
 
         if (isSettingERC725YKeys) {
             // Skip if caller has SUPER permissions
@@ -739,7 +742,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 return;
             } else {
                 // move the pointer to the index of the next key
-                pointer += GasLib.uncheckedIncrement(length);
+                unchecked {
+                    pointer = pointer + (length + 1);
+                }
             }
         }
 
@@ -836,7 +841,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              * If the key is not allowed, continue searching
              */
             // iterate over the `inputKeys` to validate them
-            for (uint256 ii = 0; ii < inputKeysLength; ii = GasLib.uncheckedIncrement(ii)) {
+            uint256 ii = 0;
+            for (ii; ii < inputKeysLength; ii = GasLib.uncheckedIncrement(ii)) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
                 if (validatedInputKeys[ii]) continue;
@@ -853,13 +859,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             }
 
             // Otherwise move the pointer to the next AllowedERC725YKey
-            pointer += GasLib.uncheckedIncrement(length);
+            unchecked {
+                pointer = pointer + (length + 1);
+            }
         }
 
         /**
          * Iterate over the `inputKeys` in order to find first not allowed ERC725Y key and revert
          */
-        for (uint256 jj = 0; jj < inputKeysLength; jj = GasLib.uncheckedIncrement(jj)) {
+        uint256 jj = 0;
+        for (jj; jj < inputKeysLength; jj = GasLib.uncheckedIncrement(jj)) {
             if (!validatedInputKeys[jj]) {
                 revert NotAllowedERC725YDataKey(from, bytes32(inputKeys[32 + (32 * jj):]));
             }
@@ -941,7 +950,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bool isAllowedAddress;
         bool isAllowedFunction;
 
-        for (uint256 ii = 0; ii < allowedCallsLength; ii += 29) {
+        uint256 ii = 0;
+        for (; ii < allowedCallsLength; ii += 29) {
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
 
             if (bytes28(chunk) == 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff) {
