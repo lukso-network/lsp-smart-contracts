@@ -3,7 +3,6 @@ import { ethers } from "hardhat";
 
 //types
 import { BigNumber, BytesLike } from "ethers";
-import { UniversalProfile__factory } from "../../../../types";
 
 // constants
 import { ERC725YDataKeys } from "../../../../constants";
@@ -13,14 +12,7 @@ import { LSP6TestContext } from "../../../utils/context";
 
 // helpers
 import {
-  encodeCompactBytesArray,
-  combineAllowedCalls,
-} from "../../../utils/helpers";
-import {
   // Types
-  TransferValueTestCase,
-  SetDataTestCase,
-  SimplePermissionTestCase,
   ReentrancyContext,
   // Test cases
   transferValueTestCases,
@@ -29,79 +21,11 @@ import {
   changePermissionsTestCases,
   addUniversalReceiverDelegateTestCases,
   changeUniversalReceiverDelegateTestCases,
+  // Functions
   generateRelayCall,
   generateExecutePayload,
+  loadTestCase,
 } from "./reentrancyHelpers";
-
-const loadTestCase = async (
-  payloadType: string,
-  testCase: TransferValueTestCase | SetDataTestCase | SimplePermissionTestCase,
-  context: LSP6TestContext,
-  reentrancyContext: ReentrancyContext
-) => {
-  let permissionKeys: BytesLike[];
-  let permissionValues: BytesLike[];
-
-  switch (payloadType) {
-    case "TRANSFERVALUE": {
-      permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrancyContext.reentrantContract.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
-          reentrancyContext.reentrantContract.address.substring(2),
-      ];
-
-      permissionValues = [
-        testCase.permissions,
-        (testCase as TransferValueTestCase).allowedCalls
-          ? combineAllowedCalls(
-              ["0xffffffff"],
-              [reentrancyContext.reentrantContract.address],
-              ["0xffffffff"]
-            )
-          : "0x",
-      ];
-      break;
-    }
-    case "SETDATA": {
-      permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrancyContext.reentrantContract.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-          reentrancyContext.reentrantContract.address.substring(2),
-      ];
-
-      permissionValues = [
-        testCase.permissions,
-        (testCase as SetDataTestCase).allowedERC725YDataKeys
-          ? encodeCompactBytesArray([
-              ethers.utils.keccak256(
-                ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
-              ),
-            ])
-          : "0x",
-      ];
-      break;
-    }
-    default: {
-      permissionKeys = [
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          reentrancyContext.reentrantContract.address.substring(2),
-      ];
-
-      permissionValues = [testCase.permissions];
-    }
-  }
-
-  const permissionsPayload =
-    new UniversalProfile__factory().interface.encodeFunctionData(
-      "setData(bytes32[],bytes[])",
-      [permissionKeys, permissionValues]
-    );
-  await context.keyManager
-    .connect(reentrancyContext.owner)
-    ["execute(bytes)"](permissionsPayload);
-};
 
 export const testSingleExecuteRelayCallToSingleExecute = (
   buildContext: () => Promise<LSP6TestContext>,
@@ -143,7 +67,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "TRANSFERVALUE",
           testCase,
           context,
-          reentrancyContext
+          reentrancyContext,
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -168,7 +94,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "TRANSFERVALUE",
         transferValueTestCases.NoCallsAllowed,
         context,
-        reentrancyContext
+        reentrancyContext,
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await expect(
@@ -187,7 +115,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "TRANSFERVALUE",
         transferValueTestCases.ValidCase,
         context,
-        reentrancyContext
+        reentrancyContext,
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       expect(
@@ -240,7 +170,14 @@ export const testSingleExecuteRelayCallToSingleExecute = (
 
     setDataTestCases.NotAuthorised.forEach((testCase) => {
       it(`should revert if the reentrant contract has the following permissions: ${testCase.permissionsText}`, async () => {
-        await loadTestCase("SETDATA", testCase, context, reentrancyContext);
+        await loadTestCase(
+          "SETDATA",
+          testCase,
+          context,
+          reentrancyContext,
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
+        );
 
         await expect(
           context.keyManager
@@ -264,7 +201,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "SETDATA",
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
-        reentrancyContext
+        reentrancyContext,
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await expect(
@@ -286,7 +225,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "SETDATA",
         setDataTestCases.ValidCase,
         context,
-        reentrancyContext
+        reentrancyContext,
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.keyManager
@@ -336,7 +277,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "ADDPERMISSIONS",
           testCase,
           context,
-          reentrancyContext
+          reentrancyContext,
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -361,7 +304,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "ADDPERMISSIONS",
         addPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext
+        reentrancyContext,
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.keyManager
@@ -412,7 +357,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "CHANGEPERMISSIONS",
           testCase,
           context,
-          reentrancyContext
+          reentrancyContext,
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -437,7 +384,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "CHANGEPERMISSIONS",
         changePermissionsTestCases.ValidCase,
         context,
-        reentrancyContext
+        reentrancyContext,
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.keyManager
@@ -487,7 +436,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "ADDUNIVERSALRECEIVERDELEGATE",
           testCase,
           context,
-          reentrancyContext
+          reentrancyContext,
+          reentrancyContext.reentrantContract.address,
+          reentrancyContext.reentrantContract.address
         );
 
         await expect(
@@ -512,7 +463,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "ADDUNIVERSALRECEIVERDELEGATE",
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext
+        reentrancyContext,
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.keyManager
@@ -562,7 +515,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
             "CHANGEUNIVERSALRECEIVERDELEGATE",
             testCase,
             context,
-            reentrancyContext
+            reentrancyContext,
+            reentrancyContext.reentrantContract.address,
+            reentrancyContext.reentrantContract.address
           );
 
           await expect(
@@ -588,7 +543,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "CHANGEUNIVERSALRECEIVERDELEGATE",
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext
+        reentrancyContext,
+        reentrancyContext.reentrantContract.address,
+        reentrancyContext.reentrantContract.address
       );
 
       await context.keyManager

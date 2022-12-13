@@ -31,6 +31,7 @@ import {
   combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
   signLSP6ExecuteRelayCall,
+  encodeCompactBytesArray,
 } from "../../../utils/helpers";
 import { setupKeyManager } from "../../../utils/fixtures";
 
@@ -636,4 +637,80 @@ export const generateExecutePayload = (
     );
 
   return executePayload;
+};
+
+export const loadTestCase = async (
+  payloadType: string,
+  testCase: TransferValueTestCase | SetDataTestCase | SimplePermissionTestCase,
+  context: LSP6TestContext,
+  reentrancyContext: ReentrancyContext,
+  reentrantAddress: string,
+  valueReceiverAddress: string
+) => {
+  let permissionKeys: BytesLike[];
+  let permissionValues: BytesLike[];
+
+  switch (payloadType) {
+    case "TRANSFERVALUE": {
+      permissionKeys = [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          /* reentrancyContext.reentrantSigner.address */ reentrantAddress.substring(
+            2
+          ),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+          reentrantAddress.substring(2),
+      ];
+
+      permissionValues = [
+        testCase.permissions,
+        (testCase as TransferValueTestCase).allowedCalls
+          ? combineAllowedCalls(
+              ["0xffffffff"],
+              [
+                valueReceiverAddress /* reentrancyContext.singleReentarncyRelayer.address */,
+              ],
+              ["0xffffffff"]
+            )
+          : "0x",
+      ];
+      break;
+    }
+    case "SETDATA": {
+      permissionKeys = [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          reentrantAddress.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
+          reentrantAddress.substring(2),
+      ];
+
+      permissionValues = [
+        testCase.permissions,
+        (testCase as SetDataTestCase).allowedERC725YDataKeys
+          ? encodeCompactBytesArray([
+              ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
+              ),
+            ])
+          : "0x",
+      ];
+      break;
+    }
+    default: {
+      permissionKeys = [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          reentrantAddress.substring(2),
+      ];
+
+      permissionValues = [testCase.permissions];
+    }
+  }
+
+  const permissionsPayload =
+    new UniversalProfile__factory().interface.encodeFunctionData(
+      "setData(bytes32[],bytes[])",
+      [permissionKeys, permissionValues]
+    );
+  await context.keyManager
+    .connect(reentrancyContext.owner)
+    ["execute(bytes)"](permissionsPayload);
 };
