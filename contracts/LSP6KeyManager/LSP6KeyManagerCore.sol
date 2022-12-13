@@ -304,12 +304,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             ) {
                 // CHECK for Universal Receiver Delegate key
                 _verifyCanSetUniversalReceiverDelegateKey(inputKey, from, permissions);
-                
+
             } else if (bytes12(inputKey) == _LSP17_EXTENSION_PREFIX) {
                 // CHECK for LSP17Extension data keys
                 _verifyCanSetLSP17ExtensionKey(inputKey, from, permissions);
 
-            } else {    
+            } else {
                 _verifyCanSetData(from, permissions, inputKey);
             }
         } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
@@ -344,7 +344,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
                 } else if(
                     key == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
-                    bytes12(key) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX 
+                    bytes12(key) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
                 ) {
                     // CHECK for Universal Receiver Delegate keys
                     _verifyCanSetUniversalReceiverDelegateKey(key, from, permissions);
@@ -599,7 +599,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _verifyAllowedERC725YSingleKey(address from, bytes32 inputKey, bytes memory allowedERC725YDataKeysCompacted) internal pure {
         if (allowedERC725YDataKeysCompacted.length == 0) revert NoERC725YDataKeysAllowed(from);
         if (!LSP2Utils.isCompactBytesArray(allowedERC725YDataKeysCompacted)) revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
-            
+
         /**
          * pointer will always land on these values:
          *
@@ -984,9 +984,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             // CHECK the caller has REENTRANCY permission
             bytes32 callerPermissions = ERC725Y(target).getPermissionsFor(from);
             _requirePermissions(from, callerPermissions, _PERMISSION_REENTRANCY);
+        } else {
+          _reentrancyStatus = _ENTERED;
         }
-
-        _reentrancyStatus = _ENTERED;
     }
 
     /**
