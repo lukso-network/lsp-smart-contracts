@@ -141,4 +141,4 @@ error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);
 /**
  * @dev reverts when CompatactBytesArray length element is not valid
  */
-error InvalidCompactByteArrayLengthElement(uint256 length);
+error InvalidCompactByteArrayLengthElement(uint256 invalidLength);

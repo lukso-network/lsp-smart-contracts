@@ -3,6 +3,7 @@ import { expect } from "chai";
 
 import { BytesLike } from "ethers";
 import { LSP6InternalsTestContext } from "../../utils/context";
+import { encodeCompactBytesArray } from "../../utils/helpers";
 
 export type DataKey = {
   length: BytesLike;
@@ -724,19 +725,17 @@ export const testAllowedERC725YDataKeysInternals = (
         });
       });
     });
+
     describe("_verifyAllowedERC725YSingleKey", () => {
       it("should revert if compactBytesArray length element is superior at 32", async () => {
         const length33InHex = "0x21";
         const dynamicKeyOfLength33 = ethers.utils.hexlify(
           ethers.utils.randomBytes(33)
         );
-        const compactBytesArray_with_0_length = ethers.utils.concat([
-          dataKeys.firstDynamicKey.length,
+        const compactBytesArray_with_0_length = encodeCompactBytesArray([
           dataKeys.firstDynamicKey.key,
-          dataKeys.secondDynamicKey.length,
-          dataKeys.secondDynamicKey.key,
-          length33InHex,
           dynamicKeyOfLength33,
+          dataKeys.thirdDynamicKey.key,
         ]);
 
         await expect(
