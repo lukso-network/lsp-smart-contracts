@@ -724,5 +724,34 @@ export const testAllowedERC725YDataKeysInternals = (
         });
       });
     });
+    describe("_verifyAllowedERC725YSingleKey", () => {
+      it("should revert if compactBytesArray length element is superior at 32", async () => {
+        const length33InHex = "0x21";
+        const dynamicKeyOfLength33 = ethers.utils.hexlify(
+          ethers.utils.randomBytes(33)
+        );
+        const compactBytesArray_with_0_length = ethers.utils.concat([
+          dataKeys.firstDynamicKey.length,
+          dataKeys.firstDynamicKey.key,
+          dataKeys.secondDynamicKey.length,
+          dataKeys.secondDynamicKey.key,
+          length33InHex,
+          dynamicKeyOfLength33,
+        ]);
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+            context.universalProfile.address,
+            dataKeys.firstFixedKey.key,
+            compactBytesArray_with_0_length
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "InvalidCompactByteArrayLengthElement"
+          )
+          .withArgs(length33InHex);
+      });
+    });
   });
 };
