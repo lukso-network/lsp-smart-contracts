@@ -32,6 +32,7 @@ import {
   LOCAL_PRIVATE_KEYS,
   signLSP6ExecuteRelayCall,
 } from "../../../utils/helpers";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // Complex permission as it has AllowedCalls
 export type TransferValueTestCase = {
@@ -378,19 +379,7 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
     ),
   ];
 
-  await context.universalProfile
-    .connect(context.accounts[0])
-    ["setData(bytes32[],bytes[])"](permissionKeys, permissionValues);
-
-  await context.universalProfile
-    .connect(context.accounts[0])
-    .transferOwnership(context.keyManager.address);
-
-  const acceptOwnershipPayload =
-    context.universalProfile.interface.encodeFunctionData("acceptOwnership");
-  await context.keyManager
-    .connect(owner)
-    ["execute(bytes)"](acceptOwnershipPayload);
+  await setupKeyManager(context, permissionKeys, permissionValues);
 
   // Fund Universal Profile with some LYXe
   await owner.sendTransaction({
