@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
 import {LSP14Ownable2Step} from "../../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
-contract RelayBatchReentrancy {
+contract BatchReentrancyRelayer {
     bytes[] private _signatures;
     uint256[] private _nonces;
     uint256[] private _values;
@@ -26,13 +26,13 @@ contract RelayBatchReentrancy {
     // solhint-disable no-empty-blocks
     receive() external payable {}
 
-    function universalReceiver(
-        bytes32, /* typeId */
-        bytes memory /* data */
-    ) public virtual returns (bytes[] memory) {
-        address keyManager = LSP14Ownable2Step(msg.sender).owner();
-
+    function relayCallThatReenters(address keyManagerAddress) external returns (bytes[] memory) {
         return
-            ILSP6KeyManager(keyManager).executeRelayCall(_signatures, _nonces, _values, _payloads);
+            ILSP6KeyManager(keyManagerAddress).executeRelayCall(
+                _signatures,
+                _nonces,
+                _values,
+                _payloads
+            );
     }
 }
