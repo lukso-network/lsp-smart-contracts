@@ -84,7 +84,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           "TRANSFERVALUE",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantSigner.address,
           reentrancyContext.batchReentarncyRelayer.address
         );
@@ -107,7 +106,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         "TRANSFERVALUE",
         transferValueTestCases.NoCallsAllowed,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address
       );
@@ -124,7 +122,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         "TRANSFERVALUE",
         transferValueTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address
       );
@@ -176,7 +173,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           "SETDATA",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantSigner.address,
           reentrancyContext.batchReentarncyRelayer.address
         );
@@ -199,7 +195,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         "SETDATA",
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address
       );
@@ -219,7 +214,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         "SETDATA",
         setDataTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address
       );
@@ -260,7 +254,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           "ADDPERMISSIONS",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantSigner.address,
           reentrancyContext.batchReentarncyRelayer.address
         );
@@ -283,7 +276,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         "ADDPERMISSIONS",
         addPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address
       );
@@ -325,7 +317,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           "CHANGEPERMISSIONS",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantSigner.address,
           reentrancyContext.batchReentarncyRelayer.address
         );
@@ -348,7 +339,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         "CHANGEPERMISSIONS",
         changePermissionsTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address
       );
@@ -389,7 +379,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
           "ADDUNIVERSALRECEIVERDELEGATE",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantSigner.address,
           reentrancyContext.batchReentarncyRelayer.address
         );
@@ -412,7 +401,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         "ADDUNIVERSALRECEIVERDELEGATE",
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address
       );
@@ -453,7 +441,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
             "CHANGEUNIVERSALRECEIVERDELEGATE",
             testCase,
             context,
-            reentrancyContext,
             reentrancyContext.reentrantSigner.address,
             reentrancyContext.batchReentarncyRelayer.address
           );
@@ -477,7 +464,6 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
         "CHANGEUNIVERSALRECEIVERDELEGATE",
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address
       );

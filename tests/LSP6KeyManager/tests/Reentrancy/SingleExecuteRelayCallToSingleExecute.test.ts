@@ -71,7 +71,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "TRANSFERVALUE",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -98,7 +97,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "TRANSFERVALUE",
         transferValueTestCases.NoCallsAllowed,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -119,7 +117,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "TRANSFERVALUE",
         transferValueTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -182,7 +179,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "SETDATA",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -209,7 +205,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "SETDATA",
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -233,7 +228,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "SETDATA",
         setDataTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -285,7 +279,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "ADDPERMISSIONS",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -312,7 +305,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "ADDPERMISSIONS",
         addPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -365,7 +357,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "CHANGEPERMISSIONS",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -392,7 +383,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "CHANGEPERMISSIONS",
         changePermissionsTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -444,7 +434,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           "ADDUNIVERSALRECEIVERDELEGATE",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -471,7 +460,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "ADDUNIVERSALRECEIVERDELEGATE",
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -523,7 +511,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
             "CHANGEUNIVERSALRECEIVERDELEGATE",
             testCase,
             context,
-            reentrancyContext,
             reentrancyContext.reentrantContract.address,
             reentrancyContext.reentrantContract.address
           );
@@ -551,7 +538,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         "CHANGEUNIVERSALRECEIVERDELEGATE",
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );

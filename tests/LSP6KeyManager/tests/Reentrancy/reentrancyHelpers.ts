@@ -643,7 +643,6 @@ export const loadTestCase = async (
   payloadType: string,
   testCase: TransferValueTestCase | SetDataTestCase | SimplePermissionTestCase,
   context: LSP6TestContext,
-  reentrancyContext: ReentrancyContext,
   reentrantAddress: string,
   valueReceiverAddress: string
 ) => {
@@ -654,9 +653,7 @@ export const loadTestCase = async (
     case "TRANSFERVALUE": {
       permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          /* reentrancyContext.reentrantSigner.address */ reentrantAddress.substring(
-            2
-          ),
+          reentrantAddress.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           reentrantAddress.substring(2),
       ];
@@ -666,9 +663,7 @@ export const loadTestCase = async (
         (testCase as TransferValueTestCase).allowedCalls
           ? combineAllowedCalls(
               ["0xffffffff"],
-              [
-                valueReceiverAddress /* reentrancyContext.singleReentarncyRelayer.address */,
-              ],
+              [valueReceiverAddress],
               ["0xffffffff"]
             )
           : "0x",
@@ -711,6 +706,6 @@ export const loadTestCase = async (
       [permissionKeys, permissionValues]
     );
   await context.keyManager
-    .connect(reentrancyContext.owner)
+    .connect(context.owner)
     ["execute(bytes)"](permissionsPayload);
 };

@@ -60,7 +60,6 @@ export const testSingleExecuteToBatchExecute = (
           "TRANSFERVALUE",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -83,7 +82,6 @@ export const testSingleExecuteToBatchExecute = (
         "TRANSFERVALUE",
         transferValueTestCases.NoCallsAllowed,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -100,7 +98,6 @@ export const testSingleExecuteToBatchExecute = (
         "TRANSFERVALUE",
         transferValueTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -149,7 +146,6 @@ export const testSingleExecuteToBatchExecute = (
           "SETDATA",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -172,7 +168,6 @@ export const testSingleExecuteToBatchExecute = (
         "SETDATA",
         setDataTestCases.NoERC725YDataKeysAllowed,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -192,7 +187,6 @@ export const testSingleExecuteToBatchExecute = (
         "SETDATA",
         setDataTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -230,7 +224,6 @@ export const testSingleExecuteToBatchExecute = (
           "ADDPERMISSIONS",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -253,7 +246,6 @@ export const testSingleExecuteToBatchExecute = (
         "ADDPERMISSIONS",
         addPermissionsTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -292,7 +284,6 @@ export const testSingleExecuteToBatchExecute = (
           "CHANGEPERMISSIONS",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -315,7 +306,6 @@ export const testSingleExecuteToBatchExecute = (
         "CHANGEPERMISSIONS",
         changePermissionsTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -353,7 +343,6 @@ export const testSingleExecuteToBatchExecute = (
           "ADDUNIVERSALRECEIVERDELEGATE",
           testCase,
           context,
-          reentrancyContext,
           reentrancyContext.reentrantContract.address,
           reentrancyContext.reentrantContract.address
         );
@@ -376,7 +365,6 @@ export const testSingleExecuteToBatchExecute = (
         "ADDUNIVERSALRECEIVERDELEGATE",
         addUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
@@ -414,7 +402,6 @@ export const testSingleExecuteToBatchExecute = (
             "CHANGEUNIVERSALRECEIVERDELEGATE",
             testCase,
             context,
-            reentrancyContext,
             reentrancyContext.reentrantContract.address,
             reentrancyContext.reentrantContract.address
           );
@@ -438,7 +425,6 @@ export const testSingleExecuteToBatchExecute = (
         "CHANGEUNIVERSALRECEIVERDELEGATE",
         changeUniversalReceiverDelegateTestCases.ValidCase,
         context,
-        reentrancyContext,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address
       );
