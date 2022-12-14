@@ -65,14 +65,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     using EIP191Signer for address;
     using BytesLib for bytes;
 
+    address public target;
+
     // Variables, methods and modifier which are used for ReentrancyGuard
     // are taken from the link below and modified according to our needs.
     // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/security/ReentrancyGuard.sol
-    uint256 private constant _NOT_ENTERED = 1;
-    uint256 private constant _ENTERED = 2;
-    uint256 private _reentrancyStatus;
+    bool private _reentrancyStatus;
 
-    address public target;
     mapping(address => mapping(uint256 => uint256)) internal _nonceStore;
 
     /**
@@ -96,11 +95,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc IERC1271
      */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(
+        bytes32 dataHash,
+        bytes memory signature
+    ) public view returns (bytes4 magicValue) {
         address recoveredAddress = dataHash.recover(signature);
 
         return (
@@ -120,11 +118,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(uint256[] calldata values, bytes[] calldata payloads)
-        public
-        payable
-        returns (bytes[] memory)
-    {
+    function execute(
+        uint256[] calldata values,
+        bytes[] calldata payloads
+    ) public payable returns (bytes[] memory) {
         if (values.length != payloads.length) {
             revert BatchExecuteParamsLengthMismatch();
         }
@@ -243,10 +240,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param payload the payload to execute
      * @return bytes the result from calling the target with `_payload`
      */
-    function _executePayload(uint256 msgValue, bytes calldata payload)
-        internal
-        returns (bytes memory)
-    {
+    function _executePayload(
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal returns (bytes memory) {
         emit Executed(bytes4(payload), msgValue);
 
         // solhint-disable avoid-low-level-calls
@@ -984,11 +981,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
      * @return permissionsRequired (bytes32) the permission associated with the `_operationType`
      */
-    function _extractPermissionFromOperation(uint256 operationType)
-        internal
-        pure
-        returns (bytes32 permissionsRequired)
-    {
+    function _extractPermissionFromOperation(
+        uint256 operationType
+    ) internal pure returns (bytes32 permissionsRequired) {
         if (operationType == OPERATION_0_CALL) return _PERMISSION_CALL;
         else if (operationType == OPERATION_1_CREATE) return _PERMISSION_DEPLOY;
         else if (operationType == OPERATION_2_CREATE2) return _PERMISSION_DEPLOY;
@@ -999,11 +994,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @dev returns the `superPermission` needed for a specific `operationType` of the `execute(..)`
      */
-    function _extractSuperPermissionFromOperation(uint256 operationType)
-        internal
-        pure
-        returns (bytes32 superPermission)
-    {
+    function _extractSuperPermissionFromOperation(
+        uint256 operationType
+    ) internal pure returns (bytes32 superPermission) {
         if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
         else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
         else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
@@ -1029,11 +1022,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @dev returns the name of the permission as a string
      */
-    function _getPermissionName(bytes32 permission)
-        internal
-        pure
-        returns (string memory errorMessage)
-    {
+    function _getPermissionName(
+        bytes32 permission
+    ) internal pure returns (string memory errorMessage) {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
         if (permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
         if (permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
@@ -1057,7 +1048,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev Initialise _reentrancyStatus to _NOT_ENTERED.
      */
     function _setupLSP6ReentrancyGuard() internal {
-        _reentrancyStatus = _NOT_ENTERED;
+        _reentrancyStatus = false;
     }
 
     /**
@@ -1066,13 +1057,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts
      */
     function _nonReentrantBefore(address from) private {
-        if (_reentrancyStatus == _ENTERED) {
+        if (_reentrancyStatus) {
             // CHECK the caller has REENTRANCY permission
-            bytes32 callerPermissions = ERC725Y(target).getPermissionsFor(from);
-            _requirePermissions(from, callerPermissions, _PERMISSION_REENTRANCY);
+            _requirePermissions(
+                from,
+                ERC725Y(target).getPermissionsFor(from),
+                _PERMISSION_REENTRANCY
+            );
         }
 
-        _reentrancyStatus = _ENTERED;
+        _reentrancyStatus = true;
     }
 
     /**
@@ -1082,6 +1076,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _nonReentrantAfter() private {
         // By storing the original value once again, a refund is triggered (see
         // https://eips.ethereum.org/EIPS/eip-2200)
-        _reentrancyStatus = _NOT_ENTERED;
+        _reentrancyStatus = false;
     }
 }
