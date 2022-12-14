@@ -341,21 +341,40 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 inputDataValue
             );
 
+            // AddressPermissions:...
+        } else if (bytes6(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
             // AddressPermissions:Permissions:<address>
-        } else if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
-            _verifyCanSetPermissions(controllerAddress, controllerPermissions, inputDataKey);
-        } else if (
-            // AddressPermissions:AllowedCalls:<address>
-            bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX ||
-            // AddressPermissions:AllowedERC725YKeys:<address>
-            bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX
-        ) {
-            _verifyCanSetAllowedCallsOrERC725YKeys(
-                controllerAddress,
-                controllerPermissions,
-                inputDataKey,
-                inputDataValue
-            );
+            if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
+                _verifyCanSetPermissions(controllerAddress, controllerPermissions, inputDataKey);
+            } else if (
+                // AddressPermissions:AllowedCalls:<address>
+                bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX ||
+                // AddressPermissions:AllowedERC725YKeys:<address>
+                bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX
+            ) {
+                _verifyCanSetAllowedCallsOrERC725YKeys(
+                    controllerAddress,
+                    controllerPermissions,
+                    inputDataKey,
+                    inputDataValue
+                );
+                // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
+                // with anything above, this is not a standard LSP6 permission data key so we revert
+            } else {
+                /**
+                 * @dev to implement custom permissions dataKeys, consider overriding
+                 * this function and implement specific checks
+                 *
+                 *      // AddressPermissions:MyCustomPermissions:<address>
+                 *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
+                 *
+                 *      if (bytes12(dataKey) == CUSTOM_PERMISSION_PREFIX) {
+                 *          // custom logic
+                 *      }
+                 *      super._verifyCanSetPermissions(...)
+                 */
+                revert NotRecognisedPermissionKey(inputDataKey);
+            }
         } else if (
             // LSP1UniversalReceiverDelegate
             inputDataKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
@@ -370,25 +389,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
             // CHECK for LSP17Extension data keys
             _verifyCanSetLSP17ExtensionKey(inputDataKey, controllerAddress, controllerPermissions);
-
-            // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
-            // with anything above, this is not a standard LSP6 permission data key so we revert
-        } else if (bytes6(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
-            /**
-             * @dev to implement custom permissions dataKeys, consider overriding
-             * this function and implement specific checks
-             *
-             *      // AddressPermissions:MyCustomPermissions:<address>
-             *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
-             *
-             *      if (bytes12(dataKey) == CUSTOM_PERMISSION_PREFIX) {
-             *          // custom logic
-             *      }
-             *      super._verifyCanSetPermissions(...)
-             */
-            revert NotRecognisedPermissionKey(inputDataKey);
-
-            // if regular ERC725Y data key
         } else {
             _verifyCanSetERC725YDataKey(controllerAddress, controllerPermissions, inputDataKey);
         }
@@ -439,23 +439,47 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 );
                 validatedInputDataKeys[ii - 1] = true;
 
+                // AddressPermissions:...
+            } else if (bytes6(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
                 // AddressPermissions:Permissions:<address>
-            } else if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
-                _verifyCanSetPermissions(controllerAddress, controllerPermissions, inputDataKey);
-                validatedInputDataKeys[ii - 1] = true;
-            } else if (
-                // AddressPermissions:AllowedCalls:<address>
-                bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX ||
-                // AddressPermissions:AllowedERC725YKeys:<address>
-                bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX
-            ) {
-                _verifyCanSetAllowedCallsOrERC725YKeys(
-                    controllerAddress,
-                    controllerPermissions,
-                    inputDataKey,
-                    inputDataValue
-                );
-                validatedInputDataKeys[ii - 1] = true;
+                if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
+                    _verifyCanSetPermissions(
+                        controllerAddress,
+                        controllerPermissions,
+                        inputDataKey
+                    );
+                    validatedInputDataKeys[ii - 1] = true;
+                } else if (
+                    // AddressPermissions:AllowedCalls:<address>
+                    bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX ||
+                    // AddressPermissions:AllowedERC725YKeys:<address>
+                    bytes12(inputDataKey) ==
+                    _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX
+                ) {
+                    _verifyCanSetAllowedCallsOrERC725YKeys(
+                        controllerAddress,
+                        controllerPermissions,
+                        inputDataKey,
+                        inputDataValue
+                    );
+                    validatedInputDataKeys[ii - 1] = true;
+                    // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
+                    // with anything above, this is not a standard LSP6 permission data key so we revert
+                } else {
+                    /**
+                     * @dev to implement custom permissions dataKeys, consider overriding
+                     * this function and implement specific checks
+                     *
+                     *      // AddressPermissions:MyCustomPermissions:<address>
+                     *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
+                     *
+                     *      if (bytes12(dataKey) == CUSTOM_PERMISSION_PREFIX) {
+                     *          // custom logic
+                     *      }
+                     *      super._verifyCanSetPermissions(...)
+                     */
+                    revert NotRecognisedPermissionKey(inputDataKey);
+                }
             } else if (
                 // LSP1UniversalReceiverDelegate
                 inputDataKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
@@ -475,25 +499,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     controllerAddress,
                     controllerPermissions
                 );
-
-                // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
-                // with anything above, this is not a standard LSP6 permission data key so we revert
-            } else if (bytes6(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
-                /**
-                 * @dev to implement custom permissions dataKeys, consider overriding
-                 * this function and implement specific checks
-                 *
-                 *      // AddressPermissions:MyCustomPermissions:<address>
-                 *      bytes12 CUSTOM_PERMISSION_PREFIX = 0x4b80742de2bf9e659ba40000
-                 *
-                 *      if (bytes12(dataKey) == CUSTOM_PERMISSION_PREFIX) {
-                 *          // custom logic
-                 *      }
-                 *      super._verifyCanSetPermissions(...)
-                 */
-                revert NotRecognisedPermissionKey(inputDataKey);
-
-                // if regular ERC725Y data key
+                validatedInputDataKeys[ii - 1] = true;
             } else {
                 isSettingERC725YKeys = true;
             }
