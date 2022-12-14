@@ -631,6 +631,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              */
             uint256 length = uint256(uint8(bytes1(allowedERC725YDataKeysCompacted[pointer])));
 
+            /**
+            * the length of the following key must be under 33 bytes
+            */
+            if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
+
             /*
              * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
              * E.g. 0xfff83a -> 0xfff83a0000000000000000000000000000000000000000000000000000000000
