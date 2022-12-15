@@ -7,7 +7,7 @@ import {LSP19Module} from "./ILSP19Module.sol";
 // module
 import {LSP6OwnershipModule} from "../../LSP6KeyManager/LSP6Modules/LSP6OwnershipModule.sol";
 
-contract LSP19ExecuteModule is LSP19Module, LSP6OwnershipModule {
+contract LSP19OwnershipModule is LSP19Module, LSP6OwnershipModule {
     /**
      * @inheritdoc LSP19Module
      */
