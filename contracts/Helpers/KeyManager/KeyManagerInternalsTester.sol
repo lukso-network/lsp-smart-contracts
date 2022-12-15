@@ -31,7 +31,7 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     }
 
     function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
-        super._verifyAllowedCall(_sender, _payload);
+        super._verifyAllowedCall(_sender, _payload, target);
     }
 
     function isCompactBytesArray(bytes memory compactBytesArray) public pure returns (bool) {
@@ -62,9 +62,5 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         returns (bool)
     {
         return _addressPermission.hasPermission(_permissions);
-    }
-
-    function countTrailingZeroBytes(bytes32 _key) public pure returns (uint256 zeroBytesCount_) {
-        return super._countTrailingZeroBytes(_key);
     }
 }

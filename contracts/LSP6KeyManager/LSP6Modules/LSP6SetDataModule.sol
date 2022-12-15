@@ -25,11 +25,11 @@ import {
 } from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 import {_LSP17_EXTENSION_PREFIX} from "../../LSP17ContractExtension/LSP17Constants.sol";
 
-abstarct contract LSP6SetDataModule {
+abstract contract LSP6SetDataModule {
     using LSP6Utils for *;
     using BytesLib for bytes;
 
-    function verifySetDataPermissions(
+    function _verifySetDataPermissions(
         address from,
         bytes32 permissions,
         bytes calldata payload,
@@ -546,7 +546,7 @@ abstarct contract LSP6SetDataModule {
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
-    ) internal pure {
+    ) internal virtual pure {
         if (!addressPermissions.hasPermission(permissionRequired)) {
             string memory permissionErrorString = permissionRequired.getPermissionName();
             revert NotAuthorised(from, permissionErrorString);

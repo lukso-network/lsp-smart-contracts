@@ -13,12 +13,12 @@ import "../LSP6Constants.sol";
 abstract contract LSP6OwnershipModule {
     using LSP6Utils for *;
 
-    function verifyOwnershipPermissions(
+    function _verifyOwnershipPermissions(
         address from,
         bytes32 permissions,
         bytes calldata,
         address
-    ) external pure {
+    ) internal pure {
         _requirePermissions(from, permissions, _PERMISSION_CHANGEOWNER);
     }
 
@@ -32,7 +32,7 @@ abstract contract LSP6OwnershipModule {
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
-    ) internal pure {
+    ) internal virtual pure {
         if (!addressPermissions.hasPermission(permissionRequired)) {
             string memory permissionErrorString = permissionRequired.getPermissionName();
             revert NotAuthorised(from, permissionErrorString);

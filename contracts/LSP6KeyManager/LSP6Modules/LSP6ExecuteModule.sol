@@ -32,7 +32,7 @@ abstract contract LSP6ExecuteModule {
     using LSP6Utils for *;
     using ERC165Checker for address;
 
-    function verifyExecutePermissions(
+    function _verifyExecutePermissions(
         address from,
         bytes32 permissions,
         bytes calldata payload,
@@ -173,7 +173,7 @@ abstract contract LSP6ExecuteModule {
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
-    ) internal pure {
+    ) internal virtual pure {
         if (!addressPermissions.hasPermission(permissionRequired)) {
             string memory permissionErrorString = permissionRequired.getPermissionName();
             revert NotAuthorised(from, permissionErrorString);
