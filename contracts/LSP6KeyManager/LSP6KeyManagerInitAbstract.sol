@@ -15,7 +15,7 @@ import {InvalidLSP6Target} from "./LSP6Errors.sol";
 abstract contract LSP6KeyManagerInitAbstract is Initializable, LSP6KeyManagerCore {
     function _initialize(address target_) internal virtual onlyInitializing {
         if (target_ == address(0)) revert InvalidLSP6Target();
-        target = target_;
+        _target = target_;
         _setupLSP6ReentrancyGuard();
     }
 }

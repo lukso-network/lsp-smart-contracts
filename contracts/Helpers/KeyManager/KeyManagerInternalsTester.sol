@@ -19,15 +19,15 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     constructor(address _account) LSP6KeyManager(_account) {}
 
     function getPermissionsFor(address _address) public view returns (bytes32) {
-        return ERC725Y(target).getPermissionsFor(_address);
+        return ERC725Y(_target).getPermissionsFor(_address);
     }
 
     function getAllowedCallsFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedCallsFor(_address);
+        return ERC725Y(_target).getAllowedCallsFor(_address);
     }
 
     function getAllowedERC725YDataKeysFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedERC725YDataKeysFor(_address);
+        return ERC725Y(_target).getAllowedERC725YDataKeysFor(_address);
     }
 
     function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
