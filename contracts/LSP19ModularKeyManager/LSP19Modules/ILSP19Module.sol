@@ -3,7 +3,7 @@ pragma solidity ^0.8.5;
 
 import {LSP6ExecuteModule} from "../../LSP6KeyManager/LSP6Modules/LSP6ExecuteModule.sol";
 
-interface LSP19Module {
+interface ILSP19Module {
     /**
      * @dev Verifies the permissions of the callr for a specific method
      * @param target Address of the target contract of the Key Manager

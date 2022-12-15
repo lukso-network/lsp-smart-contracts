@@ -41,7 +41,7 @@ import {
  * @author Fabian Vogelsteller <frozeman>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi)
  * @dev all the permissions can be set on the ERC725 Account using `setData(...)` with the keys constants below
  */
-abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
+abstract contract LSP19ModularKeyManagerCore is ERC165, ILSP6KeyManager {
     using LSP6Utils for *;
     using ECDSA for bytes32;
     using EIP191Signer for address;
@@ -266,10 +266,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _verifyPermissions(address from, bytes calldata payload) internal view {
         bytes32 permissions = ERC725Y(target).getPermissionsFor(from);
         bytes memory methodLogicModule = ERC725Y(target).getData(
-            LSP2Utils.generateMappingKey(
-                _LSP19KEY_MODULEADDRESS_PREFIX,
-                bytes20(bytes.concat(bytes18(0), bytes4(payload)))
-            )
+            bytes32(bytes.concat(_LSP19KEY_MODULEADDRESS_PREFIX, bytes18(0), bytes4(payload)))
         );
         if (methodLogicModule.length == 20) {
             bytes memory verifyPermissionsPayload = abi.encodeWithSignature(
@@ -287,7 +284,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 "LSP19ModularKeyManager: method permissions verification failed"
             );
         } else {
-            revert LSP19MethodPermissionsModuleMission(bytes4(payload));
+            revert LSP19MethodPermissionsModuleMissing(bytes4(payload));
         }
     }
 

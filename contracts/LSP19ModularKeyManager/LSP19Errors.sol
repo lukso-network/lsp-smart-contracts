@@ -2,6 +2,6 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev reverts when Method PErmissions Module is not found
+ * @dev reverts when Method Permissions Module is not found
  */
-error LSP19MethodPermissionsModuleMission(bytes4 functionSignature);
+error LSP19MethodPermissionsModuleMissing(bytes4 functionSignature);

@@ -2,14 +2,14 @@
 pragma solidity ^0.8.5;
 
 // interface
-import {LSP19Module} from "./ILSP19Module.sol";
+import {ILSP19Module} from "./ILSP19Module.sol";
 
 // module
 import {LSP6ExecuteModule} from "../../LSP6KeyManager/LSP6Modules/LSP6ExecuteModule.sol";
 
-contract LSP19ExecuteModule is LSP19Module, LSP6ExecuteModule {
+contract LSP19ExecuteModule is ILSP19Module, LSP6ExecuteModule {
     /**
-     * @inheritdoc LSP19Module
+     * @inheritdoc ILSP19Module
      */
     function verifyMethodLogic(
         address target,
