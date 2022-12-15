@@ -49,7 +49,7 @@ contract KeyManagerInternalTester is LSP6KeyManager {
 
     function verifyAllowedERC725YDataKeys(
         address from,
-        bytes calldata inputKeys,
+        bytes32[] memory inputKeys,
         bytes memory allowedERC725YDataKeysCompacted,
         bool[] memory validatedInputKeys
     ) public pure returns (bool) {

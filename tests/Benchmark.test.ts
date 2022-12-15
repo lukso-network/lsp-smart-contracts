@@ -134,7 +134,7 @@ describe("⛽ gas costs --> setData(...) via Key Manager", () => {
       const dataValues = [
         ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).add(1).toHexString(), 32),
         newController.address,
-        combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.TRANSFERVALUE),
+        combinePermissions(PERMISSIONS.SETDATA),
       ];
 
       const setDataPayload =
