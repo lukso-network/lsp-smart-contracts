@@ -31,7 +31,7 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     }
 
     function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
-        super._verifyAllowedCall(_sender, _payload, target);
+        super._verifyAllowedCall(target, _sender, _payload);
     }
 
     function isCompactBytesArray(bytes memory compactBytesArray) public pure returns (bool) {

@@ -278,16 +278,16 @@ abstract contract LSP6KeyManagerCore is
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
         if (erc725Function == SETDATA_SELECTOR) {
-            _verifySetDataPermissions(from, permissions, payload, target);
+            _verifySetDataPermissions(target, from, permissions, payload);
         } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
-            _verifySetDataPermissions(from, permissions, payload, target);
+            _verifySetDataPermissions(target, from, permissions, payload);
         } else if (erc725Function == EXECUTE_SELECTOR) {
-            _verifyExecutePermissions(from, permissions, payload, target);
+            _verifyExecutePermissions(target, from, permissions, payload);
         } else if (
             erc725Function == LSP14Ownable2Step.transferOwnership.selector ||
             erc725Function == LSP14Ownable2Step.acceptOwnership.selector
         ) {
-            _verifyOwnershipPermissions(from, permissions, payload, target);
+            _verifyOwnershipPermissions(from, permissions, payload);
         } else {
             revert InvalidERC725Function(erc725Function);
         }

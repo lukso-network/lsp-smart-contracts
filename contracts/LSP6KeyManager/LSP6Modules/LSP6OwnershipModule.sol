@@ -16,8 +16,7 @@ abstract contract LSP6OwnershipModule {
     function _verifyOwnershipPermissions(
         address from,
         bytes32 permissions,
-        bytes calldata,
-        address
+        bytes calldata
     ) internal pure {
         _requirePermissions(from, permissions, _PERMISSION_CHANGEOWNER);
     }
@@ -32,7 +31,7 @@ abstract contract LSP6OwnershipModule {
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
-    ) internal virtual pure {
+    ) internal pure virtual {
         if (!addressPermissions.hasPermission(permissionRequired)) {
             string memory permissionErrorString = permissionRequired.getPermissionName();
             revert NotAuthorised(from, permissionErrorString);

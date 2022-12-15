@@ -33,10 +33,10 @@ abstract contract LSP6ExecuteModule {
     using ERC165Checker for address;
 
     function _verifyExecutePermissions(
+        address target,
         address from,
         bytes32 permissions,
-        bytes calldata payload,
-        address target
+        bytes calldata payload
     ) internal view {
         uint256 operationType = uint256(bytes32(payload[4:36]));
         require(operationType < 5, "LSP6KeyManager: invalid operation type");
@@ -79,13 +79,13 @@ abstract contract LSP6ExecuteModule {
         // Skip if both SUPER permissions are present
         if (hasSuperOperation && hasSuperTransferValue) return;
 
-        _verifyAllowedCall(from, payload, target);
+        _verifyAllowedCall(target, from, payload);
     }
 
     function _verifyAllowedCall(
+        address target,
         address from,
-        bytes calldata payload,
-        address target
+        bytes calldata payload
     ) internal view {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
@@ -173,7 +173,7 @@ abstract contract LSP6ExecuteModule {
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
-    ) internal virtual pure {
+    ) internal pure virtual {
         if (!addressPermissions.hasPermission(permissionRequired)) {
             string memory permissionErrorString = permissionRequired.getPermissionName();
             revert NotAuthorised(from, permissionErrorString);

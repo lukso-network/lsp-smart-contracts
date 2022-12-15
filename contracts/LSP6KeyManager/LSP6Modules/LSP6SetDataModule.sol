@@ -30,10 +30,10 @@ abstract contract LSP6SetDataModule {
     using BytesLib for bytes;
 
     function _verifySetDataPermissions(
+        address target,
         address from,
         bytes32 permissions,
-        bytes calldata payload,
-        address target
+        bytes calldata payload
     ) internal view {
         if (bytes4(payload) == SETDATA_SELECTOR) {
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(payload[4:], (bytes32, bytes));
@@ -43,25 +43,21 @@ abstract contract LSP6SetDataModule {
 
             if (bytes16(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
                 // CHECK if key = AddressPermissions[] or AddressPermissions[index]
-                _verifyCanSetPermissionsArray(inputKey, inputValue, from, permissions, target);
-
+                _verifyCanSetPermissionsArray(inputKey, inputValue, target, from, permissions);
             } else if (bytes6(inputKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
                 // CHECK for permission keys
-                _verifyCanSetPermissions(inputKey, inputValue, from, permissions, target);
-
-            } else if(
+                _verifyCanSetPermissions(inputKey, inputValue, target, from, permissions);
+            } else if (
                 inputKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
                 bytes12(inputKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
             ) {
                 // CHECK for Universal Receiver Delegate key
-                _verifyCanSetUniversalReceiverDelegateKey(inputKey, from, permissions, target);
-
+                _verifyCanSetUniversalReceiverDelegateKey(inputKey, target, from, permissions);
             } else if (bytes12(inputKey) == _LSP17_EXTENSION_PREFIX) {
                 // CHECK for LSP17Extension data keys
-                _verifyCanSetLSP17ExtensionKey(inputKey, from, permissions, target);
-
+                _verifyCanSetLSP17ExtensionKey(inputKey, target, from, permissions);
             } else {
-                _verifyCanSetData(from, permissions, inputKey, target);
+                _verifyCanSetData(target, from, permissions, inputKey);
             }
         } else if (bytes4(payload) == SETDATA_ARRAY_SELECTOR) {
             (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
@@ -81,31 +77,28 @@ abstract contract LSP6SetDataModule {
 
                 if (bytes16(key) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
                     // CHECK if key = AddressPermissions[] or AddressPermissions[index]
-                    _verifyCanSetPermissionsArray(key, value, from, permissions, target);
+                    _verifyCanSetPermissionsArray(key, value, target, from, permissions);
 
                     // "nullify" permission keys to not check them against allowed ERC725Y data keys
                     inputKeys[ii] = bytes32(0);
-
                 } else if (bytes6(key) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX) {
                     // CHECK for permissions keys
-                    _verifyCanSetPermissions(key, value, from, permissions, target);
+                    _verifyCanSetPermissions(key, value, target, from, permissions);
 
                     // "nullify" permission keys to not check them against allowed ERC725Y data keys
                     inputKeys[ii] = bytes32(0);
-
-                } else if(
+                } else if (
                     key == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
                     bytes12(key) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
                 ) {
                     // CHECK for Universal Receiver Delegate keys
-                    _verifyCanSetUniversalReceiverDelegateKey(key, from, permissions, target);
+                    _verifyCanSetUniversalReceiverDelegateKey(key, target, from, permissions);
 
                     // "nullify" URD keys to not check them against allowed ERC725Y data keys
                     inputKeys[ii] = bytes32(0);
-
                 } else if (bytes12(key) == _LSP17_EXTENSION_PREFIX) {
                     // CHECK for LSP17Extension data keys
-                    _verifyCanSetLSP17ExtensionKey(key, from, permissions, target);
+                    _verifyCanSetLSP17ExtensionKey(key, target, from, permissions);
 
                     // "nullify" LSP17Extension keys to not check them against allowed ERC725Y data keys
                     inputKeys[ii] = bytes32(0);
@@ -116,7 +109,7 @@ abstract contract LSP6SetDataModule {
             }
 
             if (isSettingERC725YDataKeys) {
-                _verifyCanSetData(from, permissions, inputKeys, target);
+                _verifyCanSetData(target, from, permissions, inputKeys);
             }
         }
     }
@@ -131,9 +124,9 @@ abstract contract LSP6SetDataModule {
     function _verifyCanSetPermissionsArray(
         bytes32 dataKey,
         bytes memory dataValue,
+        address target,
         address from,
-        bytes32 permissions,
-        address target
+        bytes32 permissions
     ) internal view {
         // dataKey = AddressPermissions[] -> array length
         if (dataKey == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
@@ -173,13 +166,13 @@ abstract contract LSP6SetDataModule {
     function _verifyCanSetPermissions(
         bytes32 dataKey,
         bytes memory dataValue,
+        address target,
         address from,
-        bytes32 permissions,
-        address target
+        bytes32 permissions
     ) internal view virtual {
         if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
             // AddressPermissions:Permissions:<address>
-            _verifyCanSetBytes32Permissions(dataKey, from, permissions, target);
+            _verifyCanSetBytes32Permissions(dataKey, target, from, permissions);
         } else if (
             // AddressPermissions:AllowedCalls:<address>
             bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX ||
@@ -233,9 +226,9 @@ abstract contract LSP6SetDataModule {
      */
     function _verifyCanSetBytes32Permissions(
         bytes32 dataKey,
+        address target,
         address from,
-        bytes32 callerPermissions,
-        address target
+        bytes32 callerPermissions
     ) internal view {
         if (bytes32(ERC725Y(target).getData(dataKey)) == bytes32(0)) {
             // if there is nothing stored under this data dataKey,
@@ -258,9 +251,9 @@ abstract contract LSP6SetDataModule {
      */
     function _verifyCanSetUniversalReceiverDelegateKey(
         bytes32 lsp1DataKey,
+        address target,
         address from,
-        bytes32 permissions,
-        address target
+        bytes32 permissions
     ) internal view {
         bytes memory dataValue = ERC725Y(target).getData(lsp1DataKey);
 
@@ -280,9 +273,9 @@ abstract contract LSP6SetDataModule {
      */
     function _verifyCanSetLSP17ExtensionKey(
         bytes32 lsp17ExtensionDataKey,
+        address target,
         address from,
-        bytes32 permissions,
-        address target
+        bytes32 permissions
     ) internal view {
         bytes memory dataValue = ERC725Y(target).getData(lsp17ExtensionDataKey);
 
@@ -300,10 +293,10 @@ abstract contract LSP6SetDataModule {
      * @param inputKey the dataKey being set
      */
     function _verifyCanSetData(
+        address target,
         address from,
         bytes32 permissions,
-        bytes32 inputKey,
-        address target
+        bytes32 inputKey
     ) internal view {
         // Skip if caller has SUPER permissions
         if (permissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
@@ -325,10 +318,10 @@ abstract contract LSP6SetDataModule {
      * containing a list of key-value pairs
      */
     function _verifyCanSetData(
+        address target,
         address from,
         bytes32 permissions,
-        bytes32[] memory inputKeys,
-        address target
+        bytes32[] memory inputKeys
     ) internal view {
         // Skip if caller has SUPER permissions
         if (permissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
@@ -383,6 +376,11 @@ abstract contract LSP6SetDataModule {
              * which is saved in `AllowedERC725YDataKeys[pointer]`
              */
             uint256 length = uint256(uint8(bytes1(allowedERC725YDataKeysCompacted[pointer])));
+
+            /**
+             * the length of the following key must be under 33 bytes
+             */
+            if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
 
             /*
              * transform the allowed key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value
@@ -546,7 +544,7 @@ abstract contract LSP6SetDataModule {
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
-    ) internal virtual pure {
+    ) internal pure virtual {
         if (!addressPermissions.hasPermission(permissionRequired)) {
             string memory permissionErrorString = permissionRequired.getPermissionName();
             revert NotAuthorised(from, permissionErrorString);
