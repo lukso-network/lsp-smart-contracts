@@ -95,4 +95,31 @@ library LSP6Utils {
         bytes memory payload = abi.encodeWithSelector(SETDATA_ARRAY_SELECTOR, keys, values);
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
+
+    /**
+     * @dev returns the name of the permission as a string
+     */
+    function getPermissionName(bytes32 permission)
+        internal
+        pure
+        returns (string memory errorMessage)
+    {
+        if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
+        if (permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
+        if (permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
+        if (permission == _PERMISSION_ADDEXTENSIONS) return "ADDEXTENSIONS";
+        if (permission == _PERMISSION_CHANGEEXTENSIONS) return "CHANGEEXTENSIONS";
+        if (permission == _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE)
+            return "ADDUNIVERSALRECEIVERDELEGATE";
+        if (permission == _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE)
+            return "CHANGEUNIVERSALRECEIVERDELEGATE";
+        if (permission == _PERMISSION_REENTRANCY) return "REENTRANCY";
+        if (permission == _PERMISSION_SETDATA) return "SETDATA";
+        if (permission == _PERMISSION_CALL) return "CALL";
+        if (permission == _PERMISSION_STATICCALL) return "STATICCALL";
+        if (permission == _PERMISSION_DELEGATECALL) return "DELEGATECALL";
+        if (permission == _PERMISSION_DEPLOY) return "DEPLOY";
+        if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
+        if (permission == _PERMISSION_SIGN) return "SIGN";
+    }
 }
