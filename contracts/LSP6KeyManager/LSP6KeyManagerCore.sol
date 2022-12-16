@@ -334,12 +334,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             inputDataValue
         );
 
-        // CHECK the required permission if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-        if (requiredPermission != _PERMISSION_SETDATA) {
-            _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
-
-            // Otherwise CHECK if allowed to set an ERC725Y Data Key
-        } else {
+        // CHECK if allowed to set an ERC725Y Data Key
+        if (requiredPermission == _PERMISSION_SETDATA) {
             // Skip if caller has SUPER permissions
             if (controllerPermissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
@@ -350,6 +346,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 inputDataKey,
                 ERC725Y(_target).getAllowedERC725YDataKeysFor(controllerAddress)
             );
+        } else {
+            // Otherwise CHECK the required permission if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
+            _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
         }
     }
 
@@ -378,12 +377,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 inputDataValues[ii]
             );
 
-            // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-            if (requiredPermission != _PERMISSION_SETDATA) {
+            if (requiredPermission == _PERMISSION_SETDATA) {
+                isSettingERC725YKeys = true;
+            } else {
+                // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
                 _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
                 validatedInputDataKeys[ii] = true;
-            } else {
-                isSettingERC725YKeys = true;
             }
 
             ii = GasLib.uncheckedIncrement(ii);
