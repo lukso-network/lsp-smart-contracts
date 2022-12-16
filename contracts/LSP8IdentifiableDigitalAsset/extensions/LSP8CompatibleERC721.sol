@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.12;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -58,7 +57,9 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         virtual
@@ -74,9 +75,7 @@ abstract contract LSP8CompatibleERC721 is
     /*
      * @inheritdoc ILSP8CompatibleERC721
      */
-    function tokenURI(
-        uint256 /* tokenId */
-    ) public view virtual returns (string memory) {
+    function tokenURI(uint256 /* tokenId */) public view virtual returns (string memory) {
         bytes memory data = _getData(_LSP4_METADATA_KEY);
 
         // offset = bytes4(hashSig) + bytes32(contentHash) -> 4 + 32 = 36
@@ -119,12 +118,10 @@ abstract contract LSP8CompatibleERC721 is
     /*
      * @inheritdoc ILSP8CompatibleERC721
      */
-    function isApprovedForAll(address tokenOwner, address operator)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function isApprovedForAll(
+        address tokenOwner,
+        address operator
+    ) public view virtual returns (bool) {
         return _operatorApprovals[tokenOwner][operator];
     }
 
@@ -148,11 +145,7 @@ abstract contract LSP8CompatibleERC721 is
      * @dev Compatible with ERC721 transferFrom.
      * Using force=true so that EOA and any contract may receive the tokenId.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual {
+    function transferFrom(address from, address to, uint256 tokenId) public virtual {
         return _transfer(from, to, bytes32(tokenId), true, "");
     }
 
@@ -161,11 +154,7 @@ abstract contract LSP8CompatibleERC721 is
      * @dev Compatible with ERC721 safeTransferFrom.
      * Using force=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual {
         return _transfer(from, to, bytes32(tokenId), false, "");
     }
 
@@ -187,11 +176,10 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function authorizeOperator(address operator, bytes32 tokenId)
-        public
-        virtual
-        override(ILSP8IdentifiableDigitalAsset, LSP8IdentifiableDigitalAssetCore)
-    {
+    function authorizeOperator(
+        address operator,
+        bytes32 tokenId
+    ) public virtual override(ILSP8IdentifiableDigitalAsset, LSP8IdentifiableDigitalAssetCore) {
         super.authorizeOperator(operator, tokenId);
         emit Approval(tokenOwnerOf(tokenId), operator, uint256(tokenId));
     }
@@ -245,11 +233,10 @@ abstract contract LSP8CompatibleERC721 is
         emit ApprovalForAll(tokensOwner, operator, approved);
     }
 
-    function _setData(bytes32 key, bytes memory value)
-        internal
-        virtual
-        override(LSP4DigitalAssetMetadata, ERC725YCore)
-    {
+    function _setData(
+        bytes32 key,
+        bytes memory value
+    ) internal virtual override(LSP4DigitalAssetMetadata, ERC725YCore) {
         super._setData(key, value);
     }
 }
