@@ -29,7 +29,7 @@ library LSP2Utils {
      */
     function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
         bytes memory dataKey = bytes(keyName);
-
+        require(dataKey.length > 1, "Must be longer than 1 character");
         require(
             dataKey[dataKey.length - 2] == 0x5b && // "[" in utf8 encoded
                 dataKey[dataKey.length - 1] == 0x5d, // "]" in utf8
