@@ -1,19 +1,12 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
-
 import { BytesLike } from "ethers";
 import { LSP6InternalsTestContext } from "../../utils/context";
-import { abiCoder } from "../../utils/helpers";
+import { encodeCompactBytesArray } from "../../utils/helpers";
 
 export type DataKey = {
   length: BytesLike;
   key: BytesLike;
-};
-
-// remove the first 32 bytes (calldata offset) from the input data
-// so to only keep [length][data]
-const removeCalldataOffset = (inputData: string) => {
-  return "0x" + inputData.slice(66);
 };
 
 export const testAllowedERC725YDataKeysInternals = (
@@ -738,6 +731,33 @@ export const testAllowedERC725YDataKeysInternals = (
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
+      });
+    });
+
+    describe("_verifyAllowedERC725YSingleKey", () => {
+      it("should revert if compactBytesArray length element is superior at 32", async () => {
+        const length33InHex = "0x21";
+        const dynamicKeyOfLength33 = ethers.utils.hexlify(
+          ethers.utils.randomBytes(33)
+        );
+        const compactBytesArray_with_0_length = encodeCompactBytesArray([
+          dataKeys.firstDynamicKey.key,
+          dynamicKeyOfLength33,
+          dataKeys.thirdDynamicKey.key,
+        ]);
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+            context.universalProfile.address,
+            dataKeys.firstFixedKey.key,
+            compactBytesArray_with_0_length
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "InvalidCompactByteArrayLengthElement"
+          )
+          .withArgs(length33InHex);
       });
     });
   });

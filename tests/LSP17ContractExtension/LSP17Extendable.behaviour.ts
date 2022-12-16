@@ -8,6 +8,8 @@ import {
   CheckerExtension__factory,
   CheckerExtension,
   RevertStringExtension,
+  ERC165Extension,
+  ERC165Extension__factory,
   RevertStringExtension__factory,
   RevertCustomExtension,
   RevertCustomExtension__factory,
@@ -54,7 +56,8 @@ export const shouldBehaveLikeLSP17 = (
     reenterAccountFunctionSelector,
     revertStringFunctionSelector,
     revertCustomFunctionSelector,
-    emitEventFunctionSelector;
+    emitEventFunctionSelector,
+    supportsInterfaceFunctionSelector;
 
   let checkMsgVariableFunctionExtensionHandlerKey,
     nameFunctionExtensionHandlerKey,
@@ -65,9 +68,10 @@ export const shouldBehaveLikeLSP17 = (
     revertStringFunctionExtensionHandlerKey,
     revertCustomFunctionExtensionHandlerKey,
     emitEventFunctionExtensionHandlerKey,
-    onERC721ReceivedFunctionExtensionHandlerKey;
+    onERC721ReceivedFunctionExtensionHandlerKey,
+    supportsInterfaceFunctionExtensionHandlerKey;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
     newOwner = context.accounts[1];
 
@@ -100,6 +104,9 @@ export const shouldBehaveLikeLSP17 = (
 
     // onERC721Received(address,address,uint256,bytes)
     onERC721ReceivedFunctionSelector = "0x150b7a02";
+
+    // supportsInterface(bytes4)
+    supportsInterfaceFunctionSelector = "0x01ffc9a7";
 
     checkMsgVariableFunctionExtensionHandlerKey =
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
@@ -144,6 +151,11 @@ export const shouldBehaveLikeLSP17 = (
     onERC721ReceivedFunctionExtensionHandlerKey =
       ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
       onERC721ReceivedFunctionSelector.substring(2) +
+      "00000000000000000000000000000000"; // zero padded
+
+    supportsInterfaceFunctionExtensionHandlerKey =
+      ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+      supportsInterfaceFunctionSelector.substring(2) +
       "00000000000000000000000000000000"; // zero padded
   });
 
@@ -654,6 +666,36 @@ export const shouldBehaveLikeLSP17 = (
                   })
                 ).to.emit(emitEventExtension, "EventEmittedInExtension");
               });
+            });
+          });
+        });
+
+        describe("when calling the supportsInterface of the extendable contract with `0xaabbccdd` value", () => {
+          describe("when the ERC165 extension was not set", () => {
+            it("should return false", async () => {
+              expect(await context.contract.supportsInterface("0xaabbccdd")).to
+                .be.false;
+            });
+          });
+
+          describe("when the ERC165 extension was set", () => {
+            let erc165Extension: ERC165Extension;
+            before(async () => {
+              erc165Extension = await new ERC165Extension__factory(
+                context.accounts[0]
+              ).deploy();
+
+              await context.contract
+                .connect(context.deployParams.owner)
+                ["setData(bytes32,bytes)"](
+                  supportsInterfaceFunctionExtensionHandlerKey,
+                  erc165Extension.address
+                );
+            });
+
+            it("should return true", async () => {
+              expect(await context.contract.supportsInterface("0xaabbccdd")).to
+                .be.true;
             });
           });
         });

@@ -578,18 +578,18 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev Verify if the `inputKey` is present in the list of `allowedERC725KeysCompacted` for the `controllerAddress`.
      * @param controllerAddress the address of the controller.
      * @param inputDataKey the data key to verify against the allowed ERC725Y Data Keys for the `controllerAddress`.
-     * @param allowedERC725YKeysCompacted a CompactBytesArray of allowed ERC725Y Data Keys for the `controllerAddress`.
+     * @param allowedERC725YDataKeysCompacted a CompactBytesArray of allowed ERC725Y Data Keys for the `controllerAddress`.
      */
     function _verifyAllowedERC725YSingleKey(
         address controllerAddress,
         bytes32 inputDataKey,
-        bytes memory allowedERC725YKeysCompacted
+        bytes memory allowedERC725YDataKeysCompacted
     ) internal pure {
-        if (allowedERC725YKeysCompacted.length == 0)
+        if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP2Utils.isCompactBytesArray(allowedERC725YKeysCompacted))
-            revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YKeysCompacted);
+        if (!LSP2Utils.isCompactBytesArray(allowedERC725YDataKeysCompacted))
+            revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         /**
          * The pointer will always land on the length of each bytes value:
@@ -618,9 +618,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          *  first  |  second  |  third
          *  length |  length  |  length
          */
-        while (pointer < allowedERC725YKeysCompacted.length) {
+        while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
-            length = uint8(allowedERC725YKeysCompacted[pointer]);
+            length = uint256(uint8(bytes1(allowedERC725YDataKeysCompacted[pointer])));
+
+            // the length of the allowed data key must be under 33 bytes
+            if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
@@ -648,10 +651,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              */
             // solhint-disable-next-line no-inline-assembly
             assembly {
-                // the first 32 bytes word in memory (where allowedERC725YKeysCompacted is stored)
-                // correspond to the total number of bytes in `allowedERC725YKeysCompacted`
+                // the first 32 bytes word in memory (where allowedERC725YDataKeysCompacted is stored)
+                // correspond to the total number of bytes in `allowedERC725YDataKeysCompacted`
                 let offset := add(add(pointer, 1), 32)
-                let memoryAt := mload(add(allowedERC725YKeysCompacted, offset))
+                let memoryAt := mload(add(allowedERC725YDataKeysCompacted, offset))
                 // MLOAD loads 32 bytes word, so we need to keep only the `length` number of bytes that makes up the allowed data key.
                 allowedKey := and(memoryAt, mask)
             }
@@ -672,20 +675,20 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev Verify if all the `inputDataKeys` are present in the list of `allowedERC725KeysCompacted` of the `controllerAddress`.
      * @param controllerAddress the address of the controller.
      * @param inputDataKeys the data keys to verify against the allowed ERC725Y Data Keys of the `controllerAddress`.
-     * @param allowedERC725YKeysCompacted a CompactBytesArray of allowed ERC725Y Data Keys of the `controllerAddress`.
+     * @param allowedERC725YDataKeysCompacted a CompactBytesArray of allowed ERC725Y Data Keys of the `controllerAddress`.
      * @param validatedInputKeys an array of booleans to store the result of the verification of each data keys checked.
      */
     function _verifyAllowedERC725YDataKeys(
         address controllerAddress,
         bytes32[] memory inputDataKeys,
-        bytes memory allowedERC725YKeysCompacted,
+        bytes memory allowedERC725YDataKeysCompacted,
         bool[] memory validatedInputKeys
     ) internal pure {
-        if (allowedERC725YKeysCompacted.length == 0)
+        if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP2Utils.isCompactBytesArray(allowedERC725YKeysCompacted))
-            revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YKeysCompacted);
+        if (!LSP2Utils.isCompactBytesArray(allowedERC725YDataKeysCompacted))
+            revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         uint256 allowedKeysFound;
 
@@ -719,9 +722,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          *  first  |  second  |  third
          *  length |  length  |  length
          */
-        while (pointer < allowedERC725YKeysCompacted.length) {
+        while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
-            length = uint8(allowedERC725YKeysCompacted[pointer]);
+            length = uint8(allowedERC725YDataKeysCompacted[pointer]);
+
+            // the length of the allowed data key must be under 33 bytes
+            if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
@@ -749,10 +755,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              */
             // solhint-disable-next-line no-inline-assembly
             assembly {
-                // the first 32 bytes word in memory (where allowedERC725YKeysCompacted is stored)
-                // correspond to the length of allowedERC725YKeysCompacted (= total number of bytes)
+                // the first 32 bytes word in memory (where allowedERC725YDataKeysCompacted is stored)
+                // correspond to the length of allowedERC725YDataKeysCompacted (= total number of bytes)
                 let offset := add(add(pointer, 1), 32)
-                let memoryAt := mload(add(allowedERC725YKeysCompacted, offset))
+                let memoryAt := mload(add(allowedERC725YDataKeysCompacted, offset))
                 allowedKey := and(memoryAt, mask)
             }
 
@@ -984,9 +990,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                 ERC725Y(_target).getPermissionsFor(from),
                 _PERMISSION_REENTRANCY
             );
+        } else {
+            _reentrancyStatus = true;
         }
-
-        _reentrancyStatus = true;
     }
 
     /**
