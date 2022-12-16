@@ -99,10 +99,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc IERC1271
      */
-    function isValidSignature(
-        bytes32 dataHash,
-        bytes memory signature
-    ) public view returns (bytes4 magicValue) {
+    function isValidSignature(bytes32 dataHash, bytes memory signature)
+        public
+        view
+        returns (bytes4 magicValue)
+    {
         address recoveredAddress = dataHash.recover(signature);
 
         return (
@@ -122,10 +123,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(
-        uint256[] calldata values,
-        bytes[] calldata payloads
-    ) public payable returns (bytes[] memory) {
+    function execute(uint256[] calldata values, bytes[] calldata payloads)
+        public
+        payable
+        returns (bytes[] memory)
+    {
         if (values.length != payloads.length) {
             revert BatchExecuteParamsLengthMismatch();
         }
@@ -243,10 +245,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param payload the abi-encoded function call to execute on the target.
      * @return bytes the result from calling the target with `payload`
      */
-    function _executePayload(
-        uint256 msgValue,
-        bytes calldata payload
-    ) internal returns (bytes memory) {
+    function _executePayload(uint256 msgValue, bytes calldata payload)
+        internal
+        returns (bytes memory)
+    {
         emit Executed(bytes4(payload), msgValue);
 
         // solhint-disable avoid-low-level-calls
@@ -410,10 +412,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param inputDataValue the data value to set for the `inputDataKey`.
      * @return the permission required to set the `inputDataKey` on the `target`.
      */
-    function _getPermissionRequiredToSetDataKey(
-        bytes32 inputDataKey,
-        bytes memory inputDataValue
-    ) internal view returns (bytes32) {
+    function _getPermissionRequiredToSetDataKey(bytes32 inputDataKey, bytes memory inputDataValue)
+        internal
+        view
+        returns (bytes32)
+    {
         // AddressPermissions[] or AddressPermissions[index]
         if (bytes16(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX) {
             return _getPermissionToSetPermissionsArray(inputDataKey, inputDataValue);
@@ -471,10 +474,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      *
      * @return either ADD or CHANGE PERMISSIONS.
      */
-    function _getPermissionToSetPermissionsArray(
-        bytes32 inputDataKey,
-        bytes memory inputDataValue
-    ) internal view returns (bytes32) {
+    function _getPermissionToSetPermissionsArray(bytes32 inputDataKey, bytes memory inputDataValue)
+        internal
+        view
+        returns (bytes32)
+    {
         bytes memory currentValue = ERC725Y(_target).getData(inputDataKey);
 
         // AddressPermissions[] -> array length
@@ -503,9 +507,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param inputPermissionDataKey `AddressPermissions:Permissions:<controller-address>`.
      * @return either ADD or CHANGE PERMISSIONS.
      */
-    function _getPermissionToSetControllerPermissions(
-        bytes32 inputPermissionDataKey
-    ) internal view returns (bytes32) {
+    function _getPermissionToSetControllerPermissions(bytes32 inputPermissionDataKey)
+        internal
+        view
+        returns (bytes32)
+    {
         return
             // if there is nothing stored under the data key, we are trying to ADD a new controller.
             // if there are already some permissions set under the data key, we are trying to CHANGE the permissions of a controller.
@@ -520,10 +526,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param dataValue the updated value for the `dataKey`. MUST be a CompactBytesArray.
      * @return either ADD or CHANGE PERMISSIONS.
      */
-    function _getPermissionToSetAllowedCallsOrERC725YKeys(
-        bytes32 dataKey,
-        bytes memory dataValue
-    ) internal view returns (bytes32) {
+    function _getPermissionToSetAllowedCallsOrERC725YKeys(bytes32 dataKey, bytes memory dataValue)
+        internal
+        view
+        returns (bytes32)
+    {
         uint256 dataValueLength = uint256(bytes32(dataValue));
         bool isEmptyArray = dataValueLength == 0;
 
@@ -550,9 +557,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * or a data key for a specific `LSP1UniversalReceiverDelegate:<typeId>`, starting with `_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX`.
      * @return either ADD or CHANGE UNIVERSALRECEIVERDELEGATE.
      */
-    function _getPermissionToSetLSP1Delegate(
-        bytes32 lsp1DelegateDataKey
-    ) internal view returns (bytes32) {
+    function _getPermissionToSetLSP1Delegate(bytes32 lsp1DelegateDataKey)
+        internal
+        view
+        returns (bytes32)
+    {
         return
             ERC725Y(_target).getData(lsp1DelegateDataKey).length == 0
                 ? _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE
@@ -564,9 +573,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * of an LSP0 Extension stored under a specific LSP17Extension data key
      * @param lsp17ExtensionDataKey the dataKey to set with `_LSP17_EXTENSION_PREFIX` as prefix.
      */
-    function _getPermissionToSetLSP17Extension(
-        bytes32 lsp17ExtensionDataKey
-    ) internal view returns (bytes32) {
+    function _getPermissionToSetLSP17Extension(bytes32 lsp17ExtensionDataKey)
+        internal
+        view
+        returns (bytes32)
+    {
         return
             ERC725Y(_target).getData(lsp17ExtensionDataKey).length == 0
                 ? _PERMISSION_ADDEXTENSIONS
@@ -906,9 +917,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
      * @return permissionsRequired (bytes32) the permission associated with the `_operationType`
      */
-    function _extractPermissionFromOperation(
-        uint256 operationType
-    ) internal pure returns (bytes32 permissionsRequired) {
+    function _extractPermissionFromOperation(uint256 operationType)
+        internal
+        pure
+        returns (bytes32 permissionsRequired)
+    {
         if (operationType == OPERATION_0_CALL) return _PERMISSION_CALL;
         else if (operationType == OPERATION_1_CREATE) return _PERMISSION_DEPLOY;
         else if (operationType == OPERATION_2_CREATE2) return _PERMISSION_DEPLOY;
@@ -919,9 +932,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @dev returns the `superPermission` needed for a specific `operationType` of the `execute(..)`
      */
-    function _extractSuperPermissionFromOperation(
-        uint256 operationType
-    ) internal pure returns (bytes32 superPermission) {
+    function _extractSuperPermissionFromOperation(uint256 operationType)
+        internal
+        pure
+        returns (bytes32 superPermission)
+    {
         if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
         else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
         else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
@@ -947,9 +962,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @dev returns the name of the permission as a string
      */
-    function _getPermissionName(
-        bytes32 permission
-    ) internal pure returns (string memory errorMessage) {
+    function _getPermissionName(bytes32 permission)
+        internal
+        pure
+        returns (string memory errorMessage)
+    {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
         if (permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
         if (permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
