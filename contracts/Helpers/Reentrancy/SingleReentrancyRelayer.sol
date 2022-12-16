@@ -20,7 +20,6 @@ contract SingleReentrancyRelayer {
         _payload = newPayload;
     }
 
-    // solhint-disable no-empty-blocks
     receive() external payable {}
 
     function relayCallThatReenters(address keyManagerAddress) external returns (bytes memory) {

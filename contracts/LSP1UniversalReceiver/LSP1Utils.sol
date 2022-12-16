@@ -31,7 +31,6 @@ library LSP1Utils {
             msgValue
         );
 
-        // solhint-disable avoid-low-level-calls
         (bool success, bytes memory result) = universalReceiverDelegate.call(callData);
         Address.verifyCallResult(success, result, "Call to universalReceiver failed");
         return result.length != 0 ? abi.decode(result, (bytes)) : result;
