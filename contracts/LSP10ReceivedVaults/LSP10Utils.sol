@@ -12,6 +12,8 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../LSP10ReceivedVaults/LSP10Constants.sol";
 import "../LSP9Vault/LSP9Constants.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @dev reverts when the value stored under the 'LSP10ReceivedVaults[]' data key is not valid.
  *      The value stored under this data key should be exactly 32 bytes long.
@@ -70,13 +72,15 @@ library LSP10Utils {
             // If the storage is already initiated
         } else if (encodedArrayLength.length == 32) {
             uint256 oldArrayLength = uint256(bytes32(encodedArrayLength));
+            // todo: add check that oldArrayLength < 2 power 128 - 1
+            uint128 oldArrayLength128 = uint128(oldArrayLength);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
             values[0] = bytes.concat(bytes32(oldArrayLength + 1));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP10_VAULTS_ARRAY_KEY,
-                oldArrayLength
+                oldArrayLength128
             );
             values[1] = bytes.concat(bytes20(vault));
 
@@ -106,7 +110,8 @@ library LSP10Utils {
 
         // Updating the number of the received vaults
         uint256 oldArrayLength = uint256(bytes32(account.getData(_LSP10_VAULTS_ARRAY_KEY)));
-        uint256 newArrayLength = oldArrayLength - 1;
+        // todo: add check that oldArrayLength < 2 power 128
+        uint128 newArrayLength = uint128(oldArrayLength) - 1;
 
         uint64 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
         bytes32 vaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
@@ -125,7 +130,7 @@ library LSP10Utils {
             values = new bytes[](3);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(newArrayLength));
+            values[0] = bytes.concat(bytes32(oldArrayLength - 1));
 
             keys[1] = vaultInArrayKey;
             values[1] = "";
@@ -148,7 +153,7 @@ library LSP10Utils {
             values = new bytes[](5);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(newArrayLength));
+            values[0] = bytes.concat(bytes32(oldArrayLength - 1));
 
             keys[1] = vaultMapKey;
             values[1] = "";

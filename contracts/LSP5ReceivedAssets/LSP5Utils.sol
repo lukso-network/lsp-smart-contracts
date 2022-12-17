@@ -70,13 +70,15 @@ library LSP5Utils {
             // If the storage is already initiated
         } else if (encodedArrayLength.length == 32) {
             uint256 oldArrayLength = uint256(bytes32(encodedArrayLength));
+            // todo: add check that index =< power 128
+            uint128 index = uint128(oldArrayLength);
 
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
             values[0] = bytes.concat(bytes32(oldArrayLength + 1));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                oldArrayLength
+                index
             );
             values[1] = bytes.concat(bytes20(asset));
 
@@ -153,11 +155,13 @@ library LSP5Utils {
             keys[1] = assetMapKey;
             values[1] = "";
 
+            uint128 newArrayLength128 = uint128(newArrayLength);
+
             // Generate all data Keys/values of the last element in Array to swap
             // with data Keys/values of the asset to remove
             bytes32 lastAssetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                newArrayLength
+                newArrayLength128
             );
 
             bytes20 lastAssetInArrayAddress = bytes20(account.getData(lastAssetInArrayKey));
