@@ -12,8 +12,6 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../LSP10ReceivedVaults/LSP10Constants.sol";
 import "../LSP9Vault/LSP9Constants.sol";
 
-import "hardhat/console.sol";
-
 /**
  * @dev reverts when the value stored under the 'LSP10ReceivedVaults[]' data key is not valid.
  *      The value stored under this data key should be exactly 32 bytes long.
@@ -29,6 +27,18 @@ import "hardhat/console.sol";
  * @param invalidValueLength the invalid number of bytes stored under the LSP10ReceivedVaults[] data key (MUST be 32)
  */
 error InvalidLSP10ReceivedVaultsArrayLength(bytes invalidValue, uint256 invalidValueLength);
+
+/**
+ * @dev reverts when the vault index is superior to uint64
+ * @param index the vault index
+ */
+error VaultIndexSuperiorToUint64(uint256 index);
+
+/**
+ * @dev reverts when the vault index is superior to uint128
+ * @param index the vault index
+ */
+error VaultIndexSuperiorToUint128(uint256 index);
 
 /**
  * @title LSP10Utils
@@ -72,11 +82,15 @@ library LSP10Utils {
             // If the storage is already initiated
         } else if (encodedArrayLength.length == 32) {
             uint256 oldArrayLength = uint256(bytes32(encodedArrayLength));
-            // todo: add check that oldArrayLength < 2 power 128 - 1
+            uint256 newArrayLength = oldArrayLength + 1;
+
+            if (newArrayLength > type(uint64).max) {
+                revert VaultIndexSuperiorToUint64(newArrayLength);
+            }
             uint128 oldArrayLength128 = uint128(oldArrayLength);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(oldArrayLength + 1));
+            values[0] = bytes.concat(bytes32(newArrayLength));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP10_VAULTS_ARRAY_KEY,
@@ -110,7 +124,11 @@ library LSP10Utils {
 
         // Updating the number of the received vaults
         uint256 oldArrayLength = uint256(bytes32(account.getData(_LSP10_VAULTS_ARRAY_KEY)));
-        // todo: add check that oldArrayLength < 2 power 128
+
+        if (oldArrayLength > type(uint128).max) {
+            revert VaultIndexSuperiorToUint128(oldArrayLength);
+        }
+
         uint128 newArrayLength = uint128(oldArrayLength) - 1;
 
         uint64 index = extractIndexFromMap(vaultInterfaceIdAndIndex);

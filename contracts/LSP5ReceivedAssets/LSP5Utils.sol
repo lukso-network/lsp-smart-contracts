@@ -29,6 +29,12 @@ import "../LSP7DigitalAsset/LSP7Constants.sol";
 error InvalidLSP5ReceivedAssetsArrayLength(bytes invalidValue, uint256 invalidValueLength);
 
 /**
+ * @dev reverts when the vault index is superior to uint128
+ * @param index the vault index
+ */
+error VaultIndexSuperiorToUint128(uint256 index);
+
+/**
  * @title LSP5Utils
  * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
  * @dev LSP5Utils is a library of functions that are used to register and manage assets received by an ERC725Y smart contract
@@ -70,15 +76,19 @@ library LSP5Utils {
             // If the storage is already initiated
         } else if (encodedArrayLength.length == 32) {
             uint256 oldArrayLength = uint256(bytes32(encodedArrayLength));
-            // todo: add check that index =< power 128
-            uint128 index = uint128(oldArrayLength);
+
+            if (oldArrayLength + 1 >= type(uint128).max) {
+                revert VaultIndexSuperiorToUint128(oldArrayLength);
+            }
+
+            uint128 oldArrayLength128 = uint128(oldArrayLength);
 
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
             values[0] = bytes.concat(bytes32(oldArrayLength + 1));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                index
+                oldArrayLength128
             );
             values[1] = bytes.concat(bytes20(asset));
 
@@ -154,6 +164,10 @@ library LSP5Utils {
 
             keys[1] = assetMapKey;
             values[1] = "";
+
+            if (newArrayLength >= type(uint128).max) {
+                revert VaultIndexSuperiorToUint128(newArrayLength);
+            }
 
             uint128 newArrayLength128 = uint128(newArrayLength);
 
