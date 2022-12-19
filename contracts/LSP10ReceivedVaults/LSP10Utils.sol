@@ -54,7 +54,7 @@ library LSP10Utils {
         values = new bytes[](3);
 
         IERC725Y account = IERC725Y(receiver);
-        bytes memory encodedArrayLength = account.getData(_LSP10_VAULTS_ARRAY_KEY);
+        bytes memory encodedArrayLength = getLSP10ReceivedVaultsCount(account);
 
         // If it's the first vault to receive
         if (encodedArrayLength.length == 0) {
@@ -105,7 +105,7 @@ library LSP10Utils {
         IERC725Y account = IERC725Y(sender);
 
         // Updating the number of the received vaults
-        uint256 oldArrayLength = uint256(bytes32(account.getData(_LSP10_VAULTS_ARRAY_KEY)));
+        uint256 oldArrayLength = uint256(bytes32(getLSP10ReceivedVaultsCount(account)));
         uint256 newArrayLength = oldArrayLength - 1;
 
         uint64 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
@@ -176,6 +176,10 @@ library LSP10Utils {
             keys[4] = lastVaultInArrayMapKey;
             values[4] = bytes.concat(_INTERFACEID_LSP9, bytes8(index));
         }
+    }
+
+    function getLSP10ReceivedVaultsCount(IERC725Y account) internal view returns (bytes memory) {
+        return account.getData(_LSP10_VAULTS_ARRAY_KEY);
     }
 
     /**
