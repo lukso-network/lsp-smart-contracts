@@ -4,7 +4,6 @@ pragma solidity ^0.8.4;
 // ERC interfaces
 import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -121,12 +120,7 @@ contract CalculateLSPInterfaces {
 
     function calculateInterfaceLSP14() public pure returns (bytes4) {
         // prettier-ignore
-        bytes4 interfaceId =
-            OwnableUnset.owner.selector ^
-            ILSP14Ownable2Step.pendingOwner.selector ^
-            ILSP14Ownable2Step.transferOwnership.selector ^
-            ILSP14Ownable2Step.acceptOwnership.selector ^
-            ILSP14Ownable2Step.renounceOwnership.selector;
+        bytes4 interfaceId = type(ILSP14Ownable2Step).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_LSP14,
