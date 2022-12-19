@@ -12,9 +12,9 @@ interface ILSP14Ownable2Step {
     event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
 
     /**
-     * @dev emitted when the ownership of the contract has been transferred.
+     * @inheritdoc OwnableUnset
+     * event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
      */
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /**
      * @dev emitted when starting the `renounceOwnership(..)` 2-step process.
@@ -27,9 +27,9 @@ interface ILSP14Ownable2Step {
     event OwnershipRenounced();
 
     /**
-     * @dev Returns the address of the current owner.
+     * @inheritdoc OwnableUnset
+     * function owner() external view returns (address);
      */
-    function owner() external view returns (address);
 
     /**
      * @dev Returns the address of the current pending owner.

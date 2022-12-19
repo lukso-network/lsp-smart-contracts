@@ -58,19 +58,6 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     /**
      * @inheritdoc ILSP14Ownable2Step
      */
-    function owner()
-        public
-        view
-        virtual
-        override(ILSP14Ownable2Step, OwnableUnset)
-        returns (address)
-    {
-        return super.owner();
-    }
-
-    /**
-     * @inheritdoc ILSP14Ownable2Step
-     */
     function pendingOwner() public view virtual returns (address) {
         return _pendingOwner;
     }
