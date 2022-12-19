@@ -22,7 +22,7 @@ import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
 } from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
-import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
 // constants
@@ -123,10 +123,7 @@ contract CalculateLSPInterfaces {
         // prettier-ignore
         bytes4 interfaceId =
             OwnableUnset.owner.selector ^
-            OwnableUnset.transferOwnership.selector ^
-            OwnableUnset.renounceOwnership.selector ^
-            LSP14Ownable2Step.pendingOwner.selector ^
-            LSP14Ownable2Step.acceptOwnership.selector;
+            type(ILSP14Ownable2Step).interfaceId;
 
         require(
             interfaceId == _INTERFACEID_LSP14,

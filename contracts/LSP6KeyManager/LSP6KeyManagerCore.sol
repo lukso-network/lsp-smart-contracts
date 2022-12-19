@@ -7,8 +7,7 @@ import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.so
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // modules
-import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
+import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
@@ -369,8 +368,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         } else if (erc725Function == EXECUTE_SELECTOR) {
             _verifyCanExecute(from, permissions, payload);
         } else if (
-            erc725Function == OwnableUnset.transferOwnership.selector ||
-            erc725Function == LSP14Ownable2Step.acceptOwnership.selector
+            erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
+            erc725Function == ILSP14Ownable2Step.acceptOwnership.selector
         ) {
             _requirePermissions(from, permissions, _PERMISSION_CHANGEOWNER);
         } else {
