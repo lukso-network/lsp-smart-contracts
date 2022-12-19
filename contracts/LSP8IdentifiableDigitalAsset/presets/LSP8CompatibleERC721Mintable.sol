@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.12;
 
 import {LSP8CompatibleERC721} from "../extensions/LSP8CompatibleERC721.sol";
 
