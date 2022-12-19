@@ -7,12 +7,11 @@ import {LSP7CompatibleERC20} from "../../LSP7DigitalAsset/extensions/LSP7Compati
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 
 contract LSP7CompatibleERC20Tester is LSP7CompatibleERC20 {
-    /* solhint-disable no-empty-blocks */
     constructor(
-        string memory name,
-        string memory symbol,
-        address newOwner
-    ) LSP7CompatibleERC20(name, symbol, newOwner) {}
+        string memory name_,
+        string memory symbol_,
+        address newOwner_
+    ) LSP7CompatibleERC20(name_, symbol_, newOwner_) {}
 
     function mint(
         address to,

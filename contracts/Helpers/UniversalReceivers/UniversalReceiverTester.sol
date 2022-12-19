@@ -21,7 +21,6 @@ contract UniversalReceiverTester {
     }
 
     function checkImplementationLowLevelCall(address _target, bytes32 _typeId) external payable {
-        // solhint-disable avoid-low-level-calls
         (bool success, ) = _target.call{value: msg.value}(
             abi.encodeWithSelector(ILSP1UniversalReceiver.universalReceiver.selector, _typeId, "")
         );
@@ -29,6 +28,5 @@ contract UniversalReceiverTester {
         require(success, "low-level call to `universalReceiver(...)` function failed");
     }
 
-    // solhint-disable no-empty-blocks
     receive() external payable {}
 }

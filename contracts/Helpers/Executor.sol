@@ -98,7 +98,6 @@ contract Executor {
             erc725Payload
         );
 
-        // solhint-disable avoid-low-level-calls
         (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
@@ -114,7 +113,6 @@ contract Executor {
             erc725Payload
         );
 
-        // solhint-disable avoid-low-level-calls
         (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
@@ -130,7 +128,6 @@ contract Executor {
             erc725Payload
         );
 
-        // solhint-disable avoid-low-level-calls
         (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
@@ -151,7 +148,6 @@ contract Executor {
             erc725Payload
         );
 
-        // solhint-disable avoid-low-level-calls
         (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }
@@ -172,7 +168,6 @@ contract Executor {
             erc725Payload
         );
 
-        // solhint-disable avoid-low-level-calls
         (bool success, ) = address(_keyManager).call(keyManagerPayload);
         return success;
     }

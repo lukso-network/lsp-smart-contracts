@@ -7,7 +7,6 @@ import {LSP7DigitalAsset} from "../../LSP7DigitalAsset/LSP7DigitalAsset.sol";
 import {LSP7CappedSupply} from "../../LSP7DigitalAsset/extensions/LSP7CappedSupply.sol";
 
 contract LSP7CappedSupplyTester is LSP7CappedSupply {
-    /* solhint-disable no-empty-blocks */
     constructor(
         string memory name,
         string memory symbol,

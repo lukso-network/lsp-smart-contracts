@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 contract TokenReceiverWithoutLSP1 {
-    /* solhint-disable no-empty-blocks */
     receive() external payable {}
 
     fallback() external payable {}

@@ -14,8 +14,6 @@ import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
  * @dev LSP7 extension, mintable.
  */
 contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
-    // solhint-disable no-empty-blocks
-
     /**
      * @notice Sets the token-Metadata and register LSP7InterfaceId
      * @param name_ The name of the token

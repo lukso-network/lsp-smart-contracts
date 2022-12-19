@@ -29,7 +29,7 @@ library LSP2Utils {
      */
     function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
         bytes memory dataKey = bytes(keyName);
-
+        require(dataKey.length >= 2, "MUST be longer than 2 characters");
         require(
             dataKey[dataKey.length - 2] == 0x5b && // "[" in utf8 encoded
                 dataKey[dataKey.length - 1] == 0x5d, // "]" in utf8
@@ -50,6 +50,7 @@ library LSP2Utils {
         pure
         returns (bytes32)
     {
+        require(index <= type(uint128).max, "Index too big");
         bytes memory elementInArray = bytes.concat(bytes16(arrayKey), bytes16(uint128(index)));
         return bytes32(elementInArray);
     }

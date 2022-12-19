@@ -31,7 +31,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {} // solhint-disable no-empty-blocks
+    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {}
 
     /**
      * @dev See {IERC165-supportsInterface}.

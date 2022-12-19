@@ -12,7 +12,6 @@ import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol"
  * @dev LSP8 extension.
  */
 contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
-    // solhint-disable no-empty-blocks
     /**
      * @notice Sets the token-Metadata and register LSP8InterfaceId
      * @param name_ The name of the token
