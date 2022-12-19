@@ -16,7 +16,12 @@ contract LSP8CompatibleERC721MintableInitAbstract is LSP8CompatibleERC721InitAbs
         LSP8CompatibleERC721InitAbstract._initialize(name_, symbol_, newOwner_);
     }
 
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public onlyOwner {
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public onlyOwner {
         _mint(to, tokenId, force, data);
     }
 }

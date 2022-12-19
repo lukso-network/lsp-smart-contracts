@@ -41,9 +41,7 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    )
+    function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual
@@ -73,7 +71,11 @@ abstract contract LSP7CompatibleERC20InitAbstract is
      * @dev Compatible with ERC20 transferFrom.
      * Using force=true so that EOA and any contract may receive the tokens.
      */
-    function transferFrom(address from, address to, uint256 amount) public virtual returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public virtual returns (bool) {
         transfer(from, to, amount, true, "");
         return true;
     }
@@ -124,15 +126,20 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         emit Transfer(address(0), to, amount);
     }
 
-    function _burn(address from, uint256 amount, bytes memory data) internal virtual override {
+    function _burn(
+        address from,
+        uint256 amount,
+        bytes memory data
+    ) internal virtual override {
         super._burn(from, amount, data);
         emit Transfer(from, address(0), amount);
     }
 
-    function _setData(
-        bytes32 key,
-        bytes memory value
-    ) internal virtual override(LSP4DigitalAssetMetadataInitAbstract, ERC725YCore) {
+    function _setData(bytes32 key, bytes memory value)
+        internal
+        virtual
+        override(LSP4DigitalAssetMetadataInitAbstract, ERC725YCore)
+    {
         super._setData(key, value);
     }
 }

@@ -16,7 +16,12 @@ contract LSP7CompatibleERC20MintableInitAbstract is LSP7CompatibleERC20InitAbstr
         LSP7CompatibleERC20InitAbstract._initialize(name_, symbol_, newOwner_);
     }
 
-    function mint(address to, uint256 amount, bool force, bytes memory data) public onlyOwner {
+    function mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) public onlyOwner {
         _mint(to, amount, force, data);
     }
 }
