@@ -394,7 +394,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         address from,
         address to,
         bytes32 tokenId
-    ) internal virtual {} // solhint-disable no-empty-blocks
+    ) internal virtual {}
 
     /**
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using

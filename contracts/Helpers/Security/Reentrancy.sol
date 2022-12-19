@@ -20,7 +20,7 @@ contract Reentrancy {
     receive() external payable {
         if (!_switchFallback) {
             _switchFallback = true;
-            // solhint-disable-next-line avoid-low-level-calls
+
             (bool success, bytes memory returnData) = _target.call(_payload);
             Address.verifyCallResult(
                 success,

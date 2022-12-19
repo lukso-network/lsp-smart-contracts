@@ -23,7 +23,6 @@ contract BatchReentrancyRelayer {
         _payloads = newPayloads;
     }
 
-    // solhint-disable no-empty-blocks
     receive() external payable {}
 
     function relayCallThatReenters(address keyManagerAddress) external returns (bytes[] memory) {

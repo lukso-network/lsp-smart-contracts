@@ -53,7 +53,7 @@ abstract contract LSP8CompatibleERC721 is
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {} // solhint-disable no-empty-blocks
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_) {}
 
     /**
      * @dev See {IERC165-supportsInterface}.

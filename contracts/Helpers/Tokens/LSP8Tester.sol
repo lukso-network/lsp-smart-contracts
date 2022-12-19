@@ -9,7 +9,6 @@ import {
 import {LSP8Burnable} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol";
 
 contract LSP8Tester is LSP8IdentifiableDigitalAsset, LSP8Burnable {
-    /* solhint-disable no-empty-blocks */
     constructor(
         string memory name,
         string memory symbol,

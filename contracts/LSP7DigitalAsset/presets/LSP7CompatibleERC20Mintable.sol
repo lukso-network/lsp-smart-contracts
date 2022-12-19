@@ -4,7 +4,6 @@ pragma solidity ^0.8.4;
 import {LSP7CompatibleERC20} from "../extensions/LSP7CompatibleERC20.sol";
 
 contract LSP7CompatibleERC20Mintable is LSP7CompatibleERC20 {
-    /* solhint-disable no-empty-blocks */
     constructor(
         string memory name_,
         string memory symbol_,

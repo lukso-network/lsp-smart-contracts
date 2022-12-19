@@ -28,9 +28,7 @@ contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
         return "thanks for calling";
     }
 
-    /* solhint-disable no-empty-blocks */
     receive() external payable {}
 
-    /* solhint-disable no-empty-blocks */
     fallback() external payable {}
 }

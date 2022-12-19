@@ -15,7 +15,6 @@ import {LSP6KeyManager} from "../../LSP6KeyManager/LSP6KeyManager.sol";
 contract KeyManagerInternalTester is LSP6KeyManager {
     using LSP6Utils for *;
 
-    /* solhint-disable no-empty-blocks */
     constructor(address _account) LSP6KeyManager(_account) {}
 
     function getPermissionsFor(address _address) public view returns (bytes32) {

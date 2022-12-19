@@ -133,7 +133,6 @@ contract LSP16UniversalFactory {
         address contractCreated = Create2.deploy(constructorMsgValue, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, true, initializeCalldata);
 
-        // solhint-disable avoid-low-level-calls
         (bool success, bytes memory returndata) = contractCreated.call{
             value: initializeCalldataMsgValue
         }(initializeCalldata);
@@ -168,7 +167,6 @@ contract LSP16UniversalFactory {
         if (!initializable) {
             if (msg.value != 0) revert ValueNotAllowedWithNonInitializableProxies();
         } else {
-            // solhint-disable avoid-low-level-calls
             (bool success, bytes memory returndata) = proxy.call{value: msg.value}(
                 initializeCalldata
             );
@@ -210,7 +208,7 @@ contract LSP16UniversalFactory {
             // Look for revert reason and bubble it up if present
             if (returndata.length != 0) {
                 // The easiest way to bubble the revert reason is using memory via assembly
-                // solhint-disable
+                // solhint-disable no-inline-assembly
                 /// @solidity memory-safe-assembly
                 assembly {
                     let returndata_size := mload(returndata)
