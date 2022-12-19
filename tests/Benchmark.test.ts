@@ -4,23 +4,43 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Align, getMarkdownTable, Row } from "markdown-table-ts";
 
-import { LSP6KeyManager__factory, UniversalProfile__factory } from "../types";
+import {
+  LSP6KeyManager__factory,
+  LSP7Mintable,
+  LSP7Mintable__factory,
+  LSP8Mintable,
+  LSP8Mintable__factory,
+  UniversalProfile,
+  UniversalProfile__factory,
+} from "../types";
 
-import { ALL_PERMISSIONS, ERC725YDataKeys, PERMISSIONS } from "../constants";
+import {
+  ALL_PERMISSIONS,
+  ERC725YDataKeys,
+  OPERATION_TYPES,
+  PERMISSIONS,
+} from "../constants";
 import { LSP6TestContext } from "./utils/context";
-import { setupKeyManager } from "./utils/fixtures";
+import {
+  setupKeyManager,
+  setupProfileWithKeyManagerWithURD,
+} from "./utils/fixtures";
 import {
   combineAllowedCalls,
   combinePermissions,
   encodeCompactBytesArray,
 } from "./utils/helpers";
+import { BigNumber } from "ethers";
 
-const buildLSP6TestContext = async (): Promise<LSP6TestContext> => {
+const buildLSP6TestContext = async (
+  initialFunding?: BigNumber
+): Promise<LSP6TestContext> => {
   const accounts = await ethers.getSigners();
   const owner = accounts[0];
 
   const universalProfile = await new UniversalProfile__factory(owner).deploy(
-    owner.address
+    owner.address,
+    { value: initialFunding }
   );
   const keyManager = await new LSP6KeyManager__factory(owner).deploy(
     universalProfile.address
@@ -31,6 +51,214 @@ const buildLSP6TestContext = async (): Promise<LSP6TestContext> => {
 
 let mainControllerSetDataTable;
 let restrictedControllerSetDataTable;
+
+describe.only("⛽ gas costs --> execute(...) via Key Manager", () => {
+  let context: LSP6TestContext;
+
+  let recipientEOA: SignerWithAddress;
+  // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
+  let aliceUP: UniversalProfile;
+
+  let lsp7MetaCoin: LSP7Mintable;
+  let lsp8MetaNFT: LSP8Mintable;
+
+  let nftList: string[] = [
+    "0x0000000000000000000000000000000000000000000000000000000000000001",
+    "0x0000000000000000000000000000000000000000000000000000000000000002",
+    "0x0000000000000000000000000000000000000000000000000000000000000003",
+    "0x0000000000000000000000000000000000000000000000000000000000000004",
+  ];
+
+  before(async () => {
+    context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
+
+    recipientEOA = context.accounts[1];
+    let deployedContracts = await setupProfileWithKeyManagerWithURD(
+      context.accounts[2]
+    );
+    aliceUP = deployedContracts[0] as UniversalProfile;
+
+    // the function `setupKeyManager` gives ALL PERMISSIONS
+    // to the owner as the first data key
+    await setupKeyManager(context, [], []);
+
+    // deploy a LSP7 token
+    lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+      "MetaCoin",
+      "MTC",
+      context.owner.address,
+      false
+    );
+
+    // deploy a LSP8 NFT
+    lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+      "MetaNFT",
+      "MNF",
+      context.owner.address
+    );
+
+    // mint some tokens to the UP
+    await lsp7MetaCoin.mint(
+      context.universalProfile.address,
+      1000,
+      false,
+      "0x"
+    );
+
+    // mint some NFTs to the UP
+    nftList.forEach(async (nft) => {
+      await lsp8MetaNFT.mint(
+        context.universalProfile.address,
+        nft,
+        false,
+        "0x"
+      );
+    });
+  });
+  describe("main controller (this browser extension)", () => {
+    it("transfer some LYXes to an EOA", async () => {
+      const lyxAmount = ethers.utils.parseEther("3");
+
+      const transferLYX = context.universalProfile.interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [OPERATION_TYPES.CALL, recipientEOA.address, lyxAmount, "0x"]
+      );
+
+      const tx = await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferLYX);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfers some LYXes to a UP", async () => {
+      const lyxAmount = ethers.utils.parseEther("3");
+
+      const transferLYX = context.universalProfile.interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [OPERATION_TYPES.CALL, aliceUP.address, lyxAmount, "0x"]
+      );
+
+      const tx = await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferLYX);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfers some tokens (LSP7) to an EOA (no data)", async () => {
+      const tokenAmount = 100;
+
+      const transferTokens =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            lsp7MetaCoin.address,
+            0,
+            lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+              context.universalProfile.address,
+              recipientEOA.address,
+              tokenAmount,
+              true,
+              "0x",
+            ]),
+          ]
+        );
+
+      const tx = await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferTokens);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfer some tokens (LSP7) to a UP (no data)", async () => {
+      const tokenAmount = 100;
+
+      const transferTokens =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            lsp7MetaCoin.address,
+            0,
+            lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+              context.universalProfile.address,
+              aliceUP.address,
+              tokenAmount,
+              true,
+              "0x",
+            ]),
+          ]
+        );
+
+      const tx = await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferTokens);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfer a NFT (LSP8) to a EOA (no data)", async () => {
+      const nftId = nftList[0];
+
+      const transferNFT = context.universalProfile.interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          OPERATION_TYPES.CALL,
+          lsp8MetaNFT.address,
+          0,
+          lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            recipientEOA.address,
+            nftId,
+            true,
+            "0x",
+          ]),
+        ]
+      );
+
+      const tx = await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferNFT);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfer a NFT (LSP8) to a UP (no data)", async () => {
+      const nftId = nftList[1];
+
+      const transferNFT = context.universalProfile.interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          OPERATION_TYPES.CALL,
+          lsp8MetaNFT.address,
+          0,
+          lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            aliceUP.address,
+            nftId,
+            false,
+            "0x",
+          ]),
+        ]
+      );
+
+      const tx = await context.keyManager
+        .connect(context.owner)
+        ["execute(bytes)"](transferNFT);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+  });
+});
 
 describe("⛽ gas costs --> setData(...) via Key Manager", () => {
   let context: LSP6TestContext;
@@ -74,9 +302,9 @@ describe("⛽ gas costs --> setData(...) via Key Manager", () => {
     const permissionValues = [
       ALL_PERMISSIONS,
       PERMISSIONS.SETDATA,
-      encodeCompactBytesArray(allowedERC725YDataKeys),
+      allowedERC725YDataKeys,
       combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.ADDPERMISSIONS),
-      encodeCompactBytesArray(allowedERC725YDataKeys),
+      allowedERC725YDataKeys,
       //   ethers.utils.hexZeroPad("0x03", 32),
       "0x0000000000000000000000000000000000000000000000000000000000000003",
       context.owner.address,
@@ -180,7 +408,7 @@ describe("⛽ gas costs --> setData(...) via Key Manager", () => {
 
       // prettier-ignore
       const dataValue = 
-        encodeCompactBytesArray([allowedDataKeys[0], allowedDataKeys[1], allowedDataKeys[2]])
+      encodeCompactBytesArray([allowedDataKeys[0], allowedDataKeys[1], allowedDataKeys[2]])
 
       const setDataPayload =
         context.universalProfile.interface.encodeFunctionData(
