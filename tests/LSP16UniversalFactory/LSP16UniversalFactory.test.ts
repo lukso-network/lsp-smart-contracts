@@ -23,8 +23,8 @@ import { provider, AddressOffset } from "../utils/helpers";
 
 import { bytecode as UniversalProfileBytecode } from "../../artifacts/contracts/UniversalProfile.sol/UniversalProfile.json";
 import { bytecode as LSP6KeyManagerBytecode } from "../../artifacts/contracts/LSP6KeyManager/LSP6KeyManager.sol/LSP6KeyManager.json";
-import { bytecode as PayableContractBytecode } from "../../artifacts/contracts/Helpers/PayableContract.sol/PayableContract.json";
-import { bytecode as ImplementationTesterBytecode } from "../../artifacts/contracts/Helpers/ImplementationTester.sol/ImplementationTester.json";
+import { bytecode as PayableContractBytecode } from "../../artifacts/contracts/Mocks/PayableContract.sol/PayableContract.json";
+import { bytecode as ImplementationTesterBytecode } from "../../artifacts/contracts/Mocks/ImplementationTester.sol/ImplementationTester.json";
 
 type UniversalFactoryTestAccounts = {
   random: SignerWithAddress;
