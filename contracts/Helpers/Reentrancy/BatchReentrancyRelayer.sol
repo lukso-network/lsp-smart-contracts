@@ -3,7 +3,6 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
-import {LSP14Ownable2Step} from "../../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 contract BatchReentrancyRelayer {
     bytes[] private _signatures;
@@ -23,7 +22,6 @@ contract BatchReentrancyRelayer {
         _payloads = newPayloads;
     }
 
-    // solhint-disable no-empty-blocks
     receive() external payable {}
 
     function relayCallThatReenters(address keyManagerAddress) external returns (bytes[] memory) {

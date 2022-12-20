@@ -66,7 +66,7 @@ library LSP5Utils {
         values = new bytes[](3);
 
         IERC725Y account = IERC725Y(receiver);
-        bytes memory encodedArrayLength = account.getData(_LSP5_RECEIVED_ASSETS_ARRAY_KEY);
+        bytes memory encodedArrayLength = getLSP5ReceivedAssetsCount(account);
 
         // If it's the first asset to receive
         if (encodedArrayLength.length == 0) {
@@ -123,7 +123,7 @@ library LSP5Utils {
         IERC725Y account = IERC725Y(sender);
 
         // Updating the number of the received assets
-        uint256 oldArrayLength = uint256(bytes32(account.getData(_LSP5_RECEIVED_ASSETS_ARRAY_KEY)));
+        uint256 oldArrayLength = uint256(bytes32(getLSP5ReceivedAssetsCount(account)));
         uint256 newArrayLength = oldArrayLength - 1;
 
         uint64 index = extractIndexFromMap(assetInterfaceIdAndIndex);
@@ -203,6 +203,10 @@ library LSP5Utils {
             keys[4] = lastAssetInArrayMapKey;
             values[4] = bytes.concat(interfaceID, bytes8(index));
         }
+    }
+
+    function getLSP5ReceivedAssetsCount(IERC725Y account) internal view returns (bytes memory) {
+        return account.getData(_LSP5_RECEIVED_ASSETS_ARRAY_KEY);
     }
 
     /**

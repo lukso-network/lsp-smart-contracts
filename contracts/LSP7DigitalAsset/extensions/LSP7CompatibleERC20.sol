@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.12;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -15,7 +15,6 @@ import {LSP7DigitalAssetCore} from "../LSP7DigitalAssetCore.sol";
  * @dev LSP7 extension, for compatibility for clients / tools that expect ERC20.
  */
 abstract contract LSP7CompatibleERC20 is ILSP7CompatibleERC20, LSP4Compatibility, LSP7DigitalAsset {
-    /* solhint-disable no-empty-blocks */
     /**
      * @notice Sets the name, the symbol and the owner of the token
      * @param name_ The name of the token

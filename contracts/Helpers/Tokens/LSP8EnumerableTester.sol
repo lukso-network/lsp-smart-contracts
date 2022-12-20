@@ -9,7 +9,6 @@ import {
 import {LSP8Enumerable} from "../../LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol";
 
 contract LSP8EnumerableTester is LSP8Enumerable {
-    /* solhint-disable no-empty-blocks */
     constructor(
         string memory name,
         string memory symbol,

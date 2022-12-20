@@ -335,7 +335,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address from,
         address to,
         uint256 amount
-    ) internal virtual {} // solhint-disable no-empty-blocks
+    ) internal virtual {}
 
     /**
      * @dev An attempt is made to notify the token sender about the `amount` tokens changing owners using
