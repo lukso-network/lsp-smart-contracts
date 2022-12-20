@@ -89,7 +89,7 @@ const config: HardhatUserConfig = {
     enabled: true,
     currency: "USD",
     gasPrice: 21,
-    excludeContracts: ["Helpers/"],
+    excludeContracts: ["Mocks/"],
     src: "./contracts",
     showMethodSig: true,
   },
