@@ -317,7 +317,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev verify if the `controllerAddress` has the permissions required to set a data key on the ERC725Y storage of the `target`
+     * @dev verify if the `controllerAddress` has the permissions required to set a data key on the ERC725Y storage of the `target`.
      * @param controllerAddress the address who want to set the data key.
      * @param controllerPermissions the permissions to be checked against.
      * @param inputDataKey the data key to set on the `target`.
