@@ -87,14 +87,13 @@ library LSP10Utils {
             if (newArrayLength > type(uint64).max) {
                 revert VaultIndexSuperiorToUint64(newArrayLength);
             }
-            uint128 oldArrayLength128 = uint128(oldArrayLength);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
             values[0] = bytes.concat(bytes32(newArrayLength));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP10_VAULTS_ARRAY_KEY,
-                oldArrayLength128
+                uint128(oldArrayLength)
             );
             values[1] = bytes.concat(bytes20(vault));
 
