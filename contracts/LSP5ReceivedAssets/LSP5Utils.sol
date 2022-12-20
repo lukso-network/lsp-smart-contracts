@@ -29,6 +29,12 @@ import "../LSP7DigitalAsset/LSP7Constants.sol";
 error InvalidLSP5ReceivedAssetsArrayLength(bytes invalidValue, uint256 invalidValueLength);
 
 /**
+ * @dev reverts when the received assets index is superior to uint64
+ * @param index the received assets index
+ */
+error ReceivedAssetsIndexSuperiorToUint64(uint256 index);
+
+/**
  * @dev reverts when the received assets index is superior to uint128
  * @param index the received assets index
  */
@@ -77,8 +83,8 @@ library LSP5Utils {
         } else if (encodedArrayLength.length == 32) {
             uint256 oldArrayLength = uint256(bytes32(encodedArrayLength));
 
-            if (oldArrayLength + 1 >= type(uint128).max) {
-                revert ReceivedAssetsIndexSuperiorToUint128(oldArrayLength);
+            if (oldArrayLength + 1 >= type(uint64).max) {
+                revert ReceivedAssetsIndexSuperiorToUint64(oldArrayLength);
             }
 
             uint128 oldArrayLength128 = uint128(oldArrayLength);
