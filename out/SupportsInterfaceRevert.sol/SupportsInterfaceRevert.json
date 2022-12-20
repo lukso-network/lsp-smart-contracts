@@ -1,0 +1,294 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5060b18061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806301ffc9a714602d575b600080fd5b60386028366004604c565b604051901515815260200160405180910390f35b600060208284031215605d57600080fd5b81356001600160e01b031981168114607457600080fd5b939250505056fea2646970667358221220352f893e61b788920173352dc4bbcedb20ee45ab2233166f71c868031806c04764736f6c63430008110033",
+    "sourceMap": "121:203:97:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806301ffc9a714602d575b600080fd5b60386028366004604c565b604051901515815260200160405180910390f35b600060208284031215605d57600080fd5b81356001600160e01b031981168114607457600080fd5b939250505056fea2646970667358221220352f893e61b788920173352dc4bbcedb20ee45ab2233166f71c868031806c04764736f6c63430008110033",
+    "sourceMap": "121:203:97:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;160:162;;;;;;:::i;:::-;;;470:14:202;;463:22;445:41;;433:2;418:18;160:162:97;;;;;;;14:286:202;72:6;125:2;113:9;104:7;100:23;96:32;93:52;;;141:1;138;131:12;93:52;167:23;;-1:-1:-1;;;;;;219:32:202;;209:43;;199:71;;266:1;263;256:12;199:71;289:5;14:286;-1:-1:-1;;;14:286:202:o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/ERC165/SupportsInterfaceRevert.sol\":\"SupportsInterfaceRevert\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/ERC165/SupportsInterfaceRevert.sol\":{\"keccak256\":\"0xdfd30d1d26675a420961b875d15826166bba79553c184724dc4e286e225c1a8a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://59829059f08010e1afb3e0cc8bbfbcbdf69096d04ce26ebbbeeabc2fb9d5afaf\",\"dweb:/ipfs/QmTw6a9Z5cvuZifCDGgu5V8vyMT4m3pRKk58G8sgccTCys\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/ERC165/SupportsInterfaceRevert.sol": "SupportsInterfaceRevert"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/ERC165/SupportsInterfaceRevert.sol": {
+        "keccak256": "0xdfd30d1d26675a420961b875d15826166bba79553c184724dc4e286e225c1a8a",
+        "urls": [
+          "bzz-raw://59829059f08010e1afb3e0cc8bbfbcbdf69096d04ce26ebbbeeabc2fb9d5afaf",
+          "dweb:/ipfs/QmTw6a9Z5cvuZifCDGgu5V8vyMT4m3pRKk58G8sgccTCys"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/ERC165/SupportsInterfaceRevert.sol",
+    "id": 14290,
+    "exportedSymbols": {
+      "SupportsInterfaceRevert": [
+        14289
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:293:97",
+    "nodes": [
+      {
+        "id": 14276,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:97",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 14289,
+        "nodeType": "ContractDefinition",
+        "src": "121:203:97",
+        "nodes": [
+          {
+            "id": 14288,
+            "nodeType": "FunctionDefinition",
+            "src": "160:162:97",
+            "nodes": [],
+            "body": {
+              "id": 14287,
+              "nodeType": "Block",
+              "src": "246:76:97",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 14284,
+                      "name": "revert",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        -19,
+                        -19
+                      ],
+                      "referencedDeclaration": -19,
+                      "src": "307:6:97",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_revert_pure$__$returns$__$",
+                        "typeString": "function () pure"
+                      }
+                    },
+                    "id": 14285,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "307:8:97",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 14286,
+                  "nodeType": "ExpressionStatement",
+                  "src": "307:8:97"
+                }
+              ]
+            },
+            "functionSelector": "01ffc9a7",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "supportsInterface",
+            "nameLocation": "169:17:97",
+            "parameters": {
+              "id": 14280,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14279,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 14288,
+                  "src": "187:6:97",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 14278,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "187:6:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "186:24:97"
+            },
+            "returnParameters": {
+              "id": 14283,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14282,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 14288,
+                  "src": "240:4:97",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 14281,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "240:4:97",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "239:6:97"
+            },
+            "scope": 14289,
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "SupportsInterfaceRevert",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 14277,
+          "nodeType": "StructuredDocumentation",
+          "src": "57:63:97",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          14289
+        ],
+        "name": "SupportsInterfaceRevert",
+        "nameLocation": "130:23:97",
+        "scope": 14290,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 97
+}

@@ -1,0 +1,206 @@
+{
+  "abi": [
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220162f8588c12c7bc62e9e9f83b2034d46e07b7ffd3fab6f29a0111400923a1a7f64736f6c63430008110033",
+    "sourceMap": "128:145:110:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052600080fdfea2646970667358221220162f8588c12c7bc62e9e9f83b2034d46e07b7ffd3fab6f29a0111400923a1a7f64736f6c63430008110033",
+    "sourceMap": "128:145:110:-:0;;;256:8;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"stateMutability\":\"payable\",\"type\":\"fallback\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/FallbackExtensions/RevertFallbackExtension.sol\":\"RevertFallbackExtension\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/FallbackExtensions/RevertFallbackExtension.sol\":{\"keccak256\":\"0x7c1e63ec3d4ffe2444bf5cad5bc5c8773d91aea5f6d2cfc6433ff2809fb2505e\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://901ab85f9e1a188cd2d3b6314e8f52cdcab08798aca367a3d293d377c0971c91\",\"dweb:/ipfs/QmbrWTurE4b8MftHoxoDm4E9KztUEbi25jt18h5HBaS5My\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "fallback"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/FallbackExtensions/RevertFallbackExtension.sol": "RevertFallbackExtension"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/FallbackExtensions/RevertFallbackExtension.sol": {
+        "keccak256": "0x7c1e63ec3d4ffe2444bf5cad5bc5c8773d91aea5f6d2cfc6433ff2809fb2505e",
+        "urls": [
+          "bzz-raw://901ab85f9e1a188cd2d3b6314e8f52cdcab08798aca367a3d293d377c0971c91",
+          "dweb:/ipfs/QmbrWTurE4b8MftHoxoDm4E9KztUEbi25jt18h5HBaS5My"
+        ],
+        "license": "Apache-2.0"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/FallbackExtensions/RevertFallbackExtension.sol",
+    "id": 15305,
+    "exportedSymbols": {
+      "RevertFallbackExtension": [
+        15304
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:235:110",
+    "nodes": [
+      {
+        "id": 15295,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:110",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 15304,
+        "nodeType": "ContractDefinition",
+        "src": "128:145:110",
+        "nodes": [
+          {
+            "id": 15303,
+            "nodeType": "FunctionDefinition",
+            "src": "167:104:110",
+            "nodes": [],
+            "body": {
+              "id": 15302,
+              "nodeType": "Block",
+              "src": "195:76:110",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 15299,
+                      "name": "revert",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        -19,
+                        -19
+                      ],
+                      "referencedDeclaration": -19,
+                      "src": "256:6:110",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_revert_pure$__$returns$__$",
+                        "typeString": "function () pure"
+                      }
+                    },
+                    "id": 15300,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "256:8:110",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 15301,
+                  "nodeType": "ExpressionStatement",
+                  "src": "256:8:110"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "fallback",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 15297,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "175:2:110"
+            },
+            "returnParameters": {
+              "id": 15298,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "195:0:110"
+            },
+            "scope": 15304,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "RevertFallbackExtension",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 15296,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:63:110",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          15304
+        ],
+        "name": "RevertFallbackExtension",
+        "nameLocation": "137:23:110",
+        "scope": 15305,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 110
+}

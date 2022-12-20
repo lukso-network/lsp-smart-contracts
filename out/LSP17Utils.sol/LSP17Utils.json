@@ -1,0 +1,343 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220eb5cfa7f49e174e3bcfa2f7914f135f609d81bdde22ddca0d4afb2375190f9a364736f6c63430008110033",
+    "sourceMap": "126:495:18:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;126:495:18;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220eb5cfa7f49e174e3bcfa2f7914f135f609d81bdde22ddca0d4afb2375190f9a364736f6c63430008110033",
+    "sourceMap": "126:495:18:-:0;;;;;;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"title\":\"LSP17 Utility library to check an extension\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/LSP17ContractExtension/LSP17Utils.sol\":\"LSP17Utils\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/LSP17ContractExtension/LSP17Utils.sol\":{\"keccak256\":\"0xe1e4168a3bee5224d767e11212ccff859f00f314e40993795c0d282ba363b2e0\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://70980e254d3f8d88976fe8d9ef112830ea54407b98eee28a24049b74beef866e\",\"dweb:/ipfs/QmeAZGRtAEhUsJzfYuHvzu1ivURd733HsNAaibKWhXtUJo\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/LSP17ContractExtension/LSP17Utils.sol": "LSP17Utils"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/LSP17ContractExtension/LSP17Utils.sol": {
+        "keccak256": "0xe1e4168a3bee5224d767e11212ccff859f00f314e40993795c0d282ba363b2e0",
+        "urls": [
+          "bzz-raw://70980e254d3f8d88976fe8d9ef112830ea54407b98eee28a24049b74beef866e",
+          "dweb:/ipfs/QmeAZGRtAEhUsJzfYuHvzu1ivURd733HsNAaibKWhXtUJo"
+        ],
+        "license": "Apache-2.0"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP17ContractExtension/LSP17Utils.sol",
+    "id": 2351,
+    "exportedSymbols": {
+      "LSP17Utils": [
+        2350
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:583:18",
+    "nodes": [
+      {
+        "id": 2330,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:18",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 2350,
+        "nodeType": "ContractDefinition",
+        "src": "126:495:18",
+        "nodes": [
+          {
+            "id": 2349,
+            "nodeType": "FunctionDefinition",
+            "src": "408:211:18",
+            "nodes": [],
+            "body": {
+              "id": 2348,
+              "nodeType": "Block",
+              "src": "545:74:18",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    },
+                    "id": 2346,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "components": [
+                        {
+                          "commonType": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          "id": 2343,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftExpression": {
+                            "id": 2341,
+                            "name": "parametersLengthWithOffset",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 2334,
+                            "src": "563:26:18",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          "nodeType": "BinaryOperation",
+                          "operator": "+",
+                          "rightExpression": {
+                            "hexValue": "3532",
+                            "id": 2342,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "number",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "592:2:18",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_rational_52_by_1",
+                              "typeString": "int_const 52"
+                            },
+                            "value": "52"
+                          },
+                          "src": "563:31:18",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "id": 2344,
+                      "isConstant": false,
+                      "isInlineArray": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "TupleExpression",
+                      "src": "562:33:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "id": 2345,
+                      "name": "msgDataLength",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2336,
+                      "src": "599:13:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "562:50:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 2340,
+                  "id": 2347,
+                  "nodeType": "Return",
+                  "src": "555:57:18"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 2332,
+              "nodeType": "StructuredDocumentation",
+              "src": "151:252:18",
+              "text": " @dev Returns whether the call is a normal call or an extension call by checking if\n the parametersLength with offset with an additional of 52 bytes supposed msg.sender\n and msg.value appended is equal to the msgDataLength"
+            },
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isExtension",
+            "nameLocation": "417:11:18",
+            "parameters": {
+              "id": 2337,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2334,
+                  "mutability": "mutable",
+                  "name": "parametersLengthWithOffset",
+                  "nameLocation": "437:26:18",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2349,
+                  "src": "429:34:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2333,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "429:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2336,
+                  "mutability": "mutable",
+                  "name": "msgDataLength",
+                  "nameLocation": "473:13:18",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2349,
+                  "src": "465:21:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2335,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "465:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "428:59:18"
+            },
+            "returnParameters": {
+              "id": 2340,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2339,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2349,
+                  "src": "535:4:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 2338,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "535:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "534:6:18"
+            },
+            "scope": 2350,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "LSP17Utils",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "documentation": {
+          "id": 2331,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:61:18",
+          "text": " @title LSP17 Utility library to check an extension"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          2350
+        ],
+        "name": "LSP17Utils",
+        "nameLocation": "134:10:18",
+        "scope": 2351,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 18
+}

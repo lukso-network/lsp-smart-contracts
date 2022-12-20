@@ -1,0 +1,271 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "b",
+          "type": "string"
+        }
+      ],
+      "name": "revertString",
+      "outputs": [],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b506101b3806100206000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c8063b678618b14610030575b600080fd5b61004361003e36600461007e565b610045565b005b8060405162461bcd60e51b815260040161005f919061012f565b60405180910390fd5b634e487b7160e01b600052604160045260246000fd5b60006020828403121561009057600080fd5b813567ffffffffffffffff808211156100a857600080fd5b818401915084601f8301126100bc57600080fd5b8135818111156100ce576100ce610068565b604051601f8201601f19908116603f011681019083821181831017156100f6576100f6610068565b8160405282815287602084870101111561010f57600080fd5b826020860160208301376000928101602001929092525095945050505050565b600060208083528351808285015260005b8181101561015c57858101830151858201604001528201610140565b506000604082860101526040601f19601f830116850101925050509291505056fea2646970667358221220a3274711977d431976e305c7bb1d63eedd99c95160f8269826217144ae4b448c64736f6c63430008110033",
+    "sourceMap": "128:124:111:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c8063b678618b14610030575b600080fd5b61004361003e36600461007e565b610045565b005b8060405162461bcd60e51b815260040161005f919061012f565b60405180910390fd5b634e487b7160e01b600052604160045260246000fd5b60006020828403121561009057600080fd5b813567ffffffffffffffff808211156100a857600080fd5b818401915084601f8301126100bc57600080fd5b8135818111156100ce576100ce610068565b604051601f8201601f19908116603f011681019083821181831017156100f6576100f6610068565b8160405282815287602084870101111561010f57600080fd5b826020860160208301376000928101602001929092525095945050505050565b600060208083528351808285015260005b8181101561015c57858101830151858201604001528201610140565b506000604082860101526040601f19601f830116850101925050509291505056fea2646970667358221220a3274711977d431976e305c7bb1d63eedd99c95160f8269826217144ae4b448c64736f6c63430008110033",
+    "sourceMap": "128:124:111:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;165:85;;;;;;:::i;:::-;;:::i;:::-;;;241:1;234:9;;-1:-1:-1;;;234:9:111;;;;;;;;:::i;:::-;;;;;;;;14:127:202;75:10;70:3;66:20;63:1;56:31;106:4;103:1;96:15;130:4;127:1;120:15;146:922;215:6;268:2;256:9;247:7;243:23;239:32;236:52;;;284:1;281;274:12;236:52;324:9;311:23;353:18;394:2;386:6;383:14;380:34;;;410:1;407;400:12;380:34;448:6;437:9;433:22;423:32;;493:7;486:4;482:2;478:13;474:27;464:55;;515:1;512;505:12;464:55;551:2;538:16;573:2;569;566:10;563:36;;;579:18;;:::i;:::-;654:2;648:9;622:2;708:13;;-1:-1:-1;;704:22:202;;;728:2;700:31;696:40;684:53;;;752:18;;;772:22;;;749:46;746:72;;;798:18;;:::i;:::-;838:10;834:2;827:22;873:2;865:6;858:18;913:7;908:2;903;899;895:11;891:20;888:33;885:53;;;934:1;931;924:12;885:53;990:2;985;981;977:11;972:2;964:6;960:15;947:46;1035:1;1013:15;;;1030:2;1009:24;1002:35;;;;-1:-1:-1;1017:6:202;146:922;-1:-1:-1;;;;;146:922:202:o;1073:548::-;1185:4;1214:2;1243;1232:9;1225:21;1275:6;1269:13;1318:6;1313:2;1302:9;1298:18;1291:34;1343:1;1353:140;1367:6;1364:1;1361:13;1353:140;;;1462:14;;;1458:23;;1452:30;1428:17;;;1447:2;1424:26;1417:66;1382:10;;1353:140;;;1357:3;1542:1;1537:2;1528:6;1517:9;1513:22;1509:31;1502:42;1612:2;1605;1601:7;1596:2;1588:6;1584:15;1580:29;1569:9;1565:45;1561:54;1553:62;;;;1073:548;;;;:::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "revertString(string)": "b678618b"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"b\",\"type\":\"string\"}],\"name\":\"revertString\",\"outputs\":[],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/FallbackExtensions/RevertStringExtension.sol\":\"RevertStringExtension\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/FallbackExtensions/RevertStringExtension.sol\":{\"keccak256\":\"0xb5e3d2e41f630c82d1612455c6875ab9b5771164a3a7192eca1516df94bd9d1f\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://ce5d7ff7fc570d959105e1627ee87278a0036dfa43c745eca4568a4701bb09ad\",\"dweb:/ipfs/QmcqrfA3ACt2qfkPgKf1dsgDFwwTMiocphLHTnHdpQ5yTQ\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "b",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "revertString"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/FallbackExtensions/RevertStringExtension.sol": "RevertStringExtension"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/FallbackExtensions/RevertStringExtension.sol": {
+        "keccak256": "0xb5e3d2e41f630c82d1612455c6875ab9b5771164a3a7192eca1516df94bd9d1f",
+        "urls": [
+          "bzz-raw://ce5d7ff7fc570d959105e1627ee87278a0036dfa43c745eca4568a4701bb09ad",
+          "dweb:/ipfs/QmcqrfA3ACt2qfkPgKf1dsgDFwwTMiocphLHTnHdpQ5yTQ"
+        ],
+        "license": "Apache-2.0"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/FallbackExtensions/RevertStringExtension.sol",
+    "id": 15319,
+    "exportedSymbols": {
+      "RevertStringExtension": [
+        15318
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:214:111",
+    "nodes": [
+      {
+        "id": 15306,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:111",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 15318,
+        "nodeType": "ContractDefinition",
+        "src": "128:124:111",
+        "nodes": [
+          {
+            "id": 15317,
+            "nodeType": "FunctionDefinition",
+            "src": "165:85:111",
+            "nodes": [],
+            "body": {
+              "id": 15316,
+              "nodeType": "Block",
+              "src": "224:26:111",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 15313,
+                        "name": "b",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 15309,
+                        "src": "241:1:111",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      ],
+                      "id": 15312,
+                      "name": "revert",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        -19,
+                        -19
+                      ],
+                      "referencedDeclaration": -19,
+                      "src": "234:6:111",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (string memory) pure"
+                      }
+                    },
+                    "id": 15314,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "234:9:111",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 15315,
+                  "nodeType": "ExpressionStatement",
+                  "src": "234:9:111"
+                }
+              ]
+            },
+            "functionSelector": "b678618b",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "revertString",
+            "nameLocation": "174:12:111",
+            "parameters": {
+              "id": 15310,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15309,
+                  "mutability": "mutable",
+                  "name": "b",
+                  "nameLocation": "201:1:111",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15317,
+                  "src": "187:15:111",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 15308,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "187:6:111",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "186:17:111"
+            },
+            "returnParameters": {
+              "id": 15311,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "224:0:111"
+            },
+            "scope": 15318,
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "RevertStringExtension",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 15307,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:63:111",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          15318
+        ],
+        "name": "RevertStringExtension",
+        "nameLocation": "137:21:111",
+        "scope": 15319,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 111
+}

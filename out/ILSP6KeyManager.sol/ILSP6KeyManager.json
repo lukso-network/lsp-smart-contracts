@@ -1,0 +1,1462 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Executed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "payload",
+          "type": "bytes"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "values",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "bytes[]",
+          "name": "payloads",
+          "type": "bytes[]"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "internalType": "bytes[]",
+          "name": "",
+          "type": "bytes[]"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nonce",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "payload",
+          "type": "bytes"
+        }
+      ],
+      "name": "executeRelayCall",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes[]",
+          "name": "signatures",
+          "type": "bytes[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "nonces",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "values",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "bytes[]",
+          "name": "payloads",
+          "type": "bytes[]"
+        }
+      ],
+      "name": "executeRelayCall",
+      "outputs": [
+        {
+          "internalType": "bytes[]",
+          "name": "",
+          "type": "bytes[]"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "uint128",
+          "name": "channelId",
+          "type": "uint128"
+        }
+      ],
+      "name": "getNonce",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "hash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "isValidSignature",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "magicValue",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "target",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "execute(bytes)": "09c5eabe",
+    "execute(uint256[],bytes[])": "bf3e1f7b",
+    "executeRelayCall(bytes,uint256,bytes)": "902d5fa0",
+    "executeRelayCall(bytes[],uint256[],uint256[],bytes[])": "bd68663a",
+    "getNonce(address,uint128)": "b44581d9",
+    "isValidSignature(bytes32,bytes)": "1626ba7e",
+    "target()": "d4b83992"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes4\",\"name\":\"selector\",\"type\":\"bytes4\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Executed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"payload\",\"type\":\"bytes\"}],\"name\":\"execute\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"values\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes[]\",\"name\":\"payloads\",\"type\":\"bytes[]\"}],\"name\":\"execute\",\"outputs\":[{\"internalType\":\"bytes[]\",\"name\":\"\",\"type\":\"bytes[]\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"payload\",\"type\":\"bytes\"}],\"name\":\"executeRelayCall\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes[]\",\"name\":\"signatures\",\"type\":\"bytes[]\"},{\"internalType\":\"uint256[]\",\"name\":\"nonces\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"values\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes[]\",\"name\":\"payloads\",\"type\":\"bytes[]\"}],\"name\":\"executeRelayCall\",\"outputs\":[{\"internalType\":\"bytes[]\",\"name\":\"\",\"type\":\"bytes[]\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"uint128\",\"name\":\"channelId\",\"type\":\"uint128\"}],\"name\":\"getNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"isValidSignature\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"magicValue\",\"type\":\"bytes4\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"target\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage\",\"kind\":\"dev\",\"methods\":{\"execute(bytes)\":{\"details\":\"the ERC725Account will return some data on successful call, or revert on failure\",\"params\":{\"payload\":\"the payload to execute. Obtained in web3 via encodeABI()\"},\"returns\":{\"_0\":\"the data being returned by the ERC725 Account\"}},\"execute(uint256[],bytes[])\":{\"details\":\"batch `execute(bytes)`\"},\"executeRelayCall(bytes,uint256,bytes)\":{\"details\":\"allows anybody to execute given they have a signed message from an executor\",\"params\":{\"nonce\":\"the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack\",\"payload\":\"obtained via encodeABI() in web3\",\"signature\":\"bytes32 ethereum signature\"},\"returns\":{\"_0\":\"the data being returned by the ERC725 Account\"}},\"executeRelayCall(bytes[],uint256[],uint256[],bytes[])\":{\"details\":\"batch `executeRelayCall(...)`\"},\"getNonce(address,uint128)\":{\"details\":\"use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)\",\"params\":{\"channelId\":\"the channel id to retrieve the nonce from\",\"from\":\"the caller or signer address\"}},\"isValidSignature(bytes32,bytes)\":{\"details\":\"Should return whether the signature provided is valid for the provided data\",\"params\":{\"hash\":\"Hash of the data to be signed\",\"signature\":\"Signature byte array associated with _data\"}},\"target()\":{\"details\":\"this can be a contract that implements  - ERC725X only  - ERC725Y only  - any ERC725 based contract (so implementing both ERC725X and ERC725Y)\",\"returns\":{\"_0\":\"the address of the linked account\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"execute(bytes)\":{\"notice\":\"execute the following payload on the ERC725Account: `payload`\"},\"getNonce(address,uint128)\":{\"notice\":\"get latest nonce for `from` in channel ID: `channelId`\"},\"target()\":{\"notice\":\"returns the address of the account linked to this KeyManager\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/LSP6KeyManager/ILSP6KeyManager.sol\":\"ILSP6KeyManager\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/LSP6KeyManager/ILSP6KeyManager.sol\":{\"keccak256\":\"0x7399a51ae11af311bfe807412eb42b23c215164d78b2adcfcb2641a06a2aa7dd\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://9d741831b7579b3c9bee63adb8d9d1dcbae3825c30812e4a118cfccbcc0c7fb3\",\"dweb:/ipfs/QmRzykhSiMYtg5LQvYH7TRZexfFXpk7hJuGrfWEBnSsbnR\"]},\"node_modules/@openzeppelin/contracts/interfaces/IERC1271.sol\":{\"keccak256\":\"0x0705a4b1b86d7b0bd8432118f226ba139c44b9dcaba0a6eafba2dd7d0639c544\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c45b821ef9e882e57c256697a152e108f0f2ad6997609af8904cae99c9bd422e\",\"dweb:/ipfs/QmRKCJW6jjzR5UYZcLpGnhEJ75UVbH6EHkEa49sWx2SKng\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "selector",
+              "type": "bytes4",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "Executed",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes",
+              "name": "payload",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "execute",
+          "outputs": [
+            {
+              "internalType": "bytes",
+              "name": "",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256[]",
+              "name": "values",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "bytes[]",
+              "name": "payloads",
+              "type": "bytes[]"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "execute",
+          "outputs": [
+            {
+              "internalType": "bytes[]",
+              "name": "",
+              "type": "bytes[]"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "payload",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "executeRelayCall",
+          "outputs": [
+            {
+              "internalType": "bytes",
+              "name": "",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes[]",
+              "name": "signatures",
+              "type": "bytes[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "nonces",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "values",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "bytes[]",
+              "name": "payloads",
+              "type": "bytes[]"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "executeRelayCall",
+          "outputs": [
+            {
+              "internalType": "bytes[]",
+              "name": "",
+              "type": "bytes[]"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "uint128",
+              "name": "channelId",
+              "type": "uint128"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getNonce",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "hash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isValidSignature",
+          "outputs": [
+            {
+              "internalType": "bytes4",
+              "name": "magicValue",
+              "type": "bytes4"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "target",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "execute(bytes)": {
+            "details": "the ERC725Account will return some data on successful call, or revert on failure",
+            "params": {
+              "payload": "the payload to execute. Obtained in web3 via encodeABI()"
+            },
+            "returns": {
+              "_0": "the data being returned by the ERC725 Account"
+            }
+          },
+          "execute(uint256[],bytes[])": {
+            "details": "batch `execute(bytes)`"
+          },
+          "executeRelayCall(bytes,uint256,bytes)": {
+            "details": "allows anybody to execute given they have a signed message from an executor",
+            "params": {
+              "nonce": "the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack",
+              "payload": "obtained via encodeABI() in web3",
+              "signature": "bytes32 ethereum signature"
+            },
+            "returns": {
+              "_0": "the data being returned by the ERC725 Account"
+            }
+          },
+          "executeRelayCall(bytes[],uint256[],uint256[],bytes[])": {
+            "details": "batch `executeRelayCall(...)`"
+          },
+          "getNonce(address,uint128)": {
+            "details": "use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)",
+            "params": {
+              "channelId": "the channel id to retrieve the nonce from",
+              "from": "the caller or signer address"
+            }
+          },
+          "isValidSignature(bytes32,bytes)": {
+            "details": "Should return whether the signature provided is valid for the provided data",
+            "params": {
+              "hash": "Hash of the data to be signed",
+              "signature": "Signature byte array associated with _data"
+            }
+          },
+          "target()": {
+            "details": "this can be a contract that implements  - ERC725X only  - ERC725Y only  - any ERC725 based contract (so implementing both ERC725X and ERC725Y)",
+            "returns": {
+              "_0": "the address of the linked account"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "execute(bytes)": {
+            "notice": "execute the following payload on the ERC725Account: `payload`"
+          },
+          "getNonce(address,uint128)": {
+            "notice": "get latest nonce for `from` in channel ID: `channelId`"
+          },
+          "target()": {
+            "notice": "returns the address of the account linked to this KeyManager"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/LSP6KeyManager/ILSP6KeyManager.sol": "ILSP6KeyManager"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/LSP6KeyManager/ILSP6KeyManager.sol": {
+        "keccak256": "0x7399a51ae11af311bfe807412eb42b23c215164d78b2adcfcb2641a06a2aa7dd",
+        "urls": [
+          "bzz-raw://9d741831b7579b3c9bee63adb8d9d1dcbae3825c30812e4a118cfccbcc0c7fb3",
+          "dweb:/ipfs/QmRzykhSiMYtg5LQvYH7TRZexfFXpk7hJuGrfWEBnSsbnR"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1271.sol": {
+        "keccak256": "0x0705a4b1b86d7b0bd8432118f226ba139c44b9dcaba0a6eafba2dd7d0639c544",
+        "urls": [
+          "bzz-raw://c45b821ef9e882e57c256697a152e108f0f2ad6997609af8904cae99c9bd422e",
+          "dweb:/ipfs/QmRKCJW6jjzR5UYZcLpGnhEJ75UVbH6EHkEa49sWx2SKng"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP6KeyManager/ILSP6KeyManager.sol",
+    "id": 4919,
+    "exportedSymbols": {
+      "IERC1271": [
+        44248
+      ],
+      "ILSP6KeyManager": [
+        4918
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:2611:35",
+    "nodes": [
+      {
+        "id": 4838,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:35",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 4840,
+        "nodeType": "ImportDirective",
+        "src": "78:73:35",
+        "nodes": [],
+        "absolutePath": "node_modules/@openzeppelin/contracts/interfaces/IERC1271.sol",
+        "file": "@openzeppelin/contracts/interfaces/IERC1271.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 4919,
+        "sourceUnit": 44249,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 4839,
+              "name": "IERC1271",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 44248,
+              "src": "86:8:35",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 4918,
+        "nodeType": "ContractDefinition",
+        "src": "271:2378:35",
+        "nodes": [
+          {
+            "id": 4849,
+            "nodeType": "EventDefinition",
+            "src": "339:63:35",
+            "nodes": [],
+            "anonymous": false,
+            "eventSelector": "4004d18dc05f04c061c306cbb394d4083af494786ab828142d6118ab2c43a492",
+            "name": "Executed",
+            "nameLocation": "345:8:35",
+            "parameters": {
+              "id": 4848,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4845,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "selector",
+                  "nameLocation": "369:8:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4849,
+                  "src": "354:23:35",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 4844,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "354:6:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4847,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "value",
+                  "nameLocation": "395:5:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4849,
+                  "src": "379:21:35",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4846,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "379:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "353:48:35"
+            }
+          },
+          {
+            "id": 4855,
+            "nodeType": "FunctionDefinition",
+            "src": "732:50:35",
+            "nodes": [],
+            "documentation": {
+              "id": 4850,
+              "nodeType": "StructuredDocumentation",
+              "src": "408:319:35",
+              "text": " @notice returns the address of the account linked to this KeyManager\n @dev this can be a contract that implements\n  - ERC725X only\n  - ERC725Y only\n  - any ERC725 based contract (so implementing both ERC725X and ERC725Y)\n @return the address of the linked account"
+            },
+            "functionSelector": "d4b83992",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "target",
+            "nameLocation": "741:6:35",
+            "parameters": {
+              "id": 4851,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "747:2:35"
+            },
+            "returnParameters": {
+              "id": 4854,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4853,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4855,
+                  "src": "773:7:35",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4852,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "773:7:35",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "772:9:35"
+            },
+            "scope": 4918,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 4865,
+            "nodeType": "FunctionDefinition",
+            "src": "1112:83:35",
+            "nodes": [],
+            "documentation": {
+              "id": 4856,
+              "nodeType": "StructuredDocumentation",
+              "src": "788:319:35",
+              "text": " @notice get latest nonce for `from` in channel ID: `channelId`\n @dev use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)\n @param from the caller or signer address\n @param channelId the channel id to retrieve the nonce from"
+            },
+            "functionSelector": "b44581d9",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getNonce",
+            "nameLocation": "1121:8:35",
+            "parameters": {
+              "id": 4861,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4858,
+                  "mutability": "mutable",
+                  "name": "from",
+                  "nameLocation": "1138:4:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4865,
+                  "src": "1130:12:35",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4857,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1130:7:35",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4860,
+                  "mutability": "mutable",
+                  "name": "channelId",
+                  "nameLocation": "1152:9:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4865,
+                  "src": "1144:17:35",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint128",
+                    "typeString": "uint128"
+                  },
+                  "typeName": {
+                    "id": 4859,
+                    "name": "uint128",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1144:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1129:33:35"
+            },
+            "returnParameters": {
+              "id": 4864,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4863,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4865,
+                  "src": "1186:7:35",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4862,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1186:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1185:9:35"
+            },
+            "scope": 4918,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 4873,
+            "nodeType": "FunctionDefinition",
+            "src": "1527:81:35",
+            "nodes": [],
+            "documentation": {
+              "id": 4866,
+              "nodeType": "StructuredDocumentation",
+              "src": "1201:321:35",
+              "text": " @notice execute the following payload on the ERC725Account: `payload`\n @dev the ERC725Account will return some data on successful call, or revert on failure\n @param payload the payload to execute. Obtained in web3 via encodeABI()\n @return the data being returned by the ERC725 Account"
+            },
+            "functionSelector": "09c5eabe",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nameLocation": "1536:7:35",
+            "parameters": {
+              "id": 4869,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4868,
+                  "mutability": "mutable",
+                  "name": "payload",
+                  "nameLocation": "1559:7:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4873,
+                  "src": "1544:22:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 4867,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1544:5:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1543:24:35"
+            },
+            "returnParameters": {
+              "id": 4872,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4871,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4873,
+                  "src": "1594:12:35",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 4870,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1594:5:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1593:14:35"
+            },
+            "scope": 4918,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 4886,
+            "nodeType": "FunctionDefinition",
+            "src": "1665:137:35",
+            "nodes": [],
+            "documentation": {
+              "id": 4874,
+              "nodeType": "StructuredDocumentation",
+              "src": "1614:46:35",
+              "text": " @dev batch `execute(bytes)`"
+            },
+            "functionSelector": "bf3e1f7b",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nameLocation": "1674:7:35",
+            "parameters": {
+              "id": 4881,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4877,
+                  "mutability": "mutable",
+                  "name": "values",
+                  "nameLocation": "1701:6:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4886,
+                  "src": "1682:25:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4875,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1682:7:35",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 4876,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1682:9:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4880,
+                  "mutability": "mutable",
+                  "name": "payloads",
+                  "nameLocation": "1726:8:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4886,
+                  "src": "1709:25:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "bytes[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4878,
+                      "name": "bytes",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1709:5:35",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_storage_ptr",
+                        "typeString": "bytes"
+                      }
+                    },
+                    "id": 4879,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1709:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes_storage_$dyn_storage_ptr",
+                      "typeString": "bytes[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1681:54:35"
+            },
+            "returnParameters": {
+              "id": 4885,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4884,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4886,
+                  "src": "1786:14:35",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes_memory_ptr_$dyn_memory_ptr",
+                    "typeString": "bytes[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4882,
+                      "name": "bytes",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1786:5:35",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_storage_ptr",
+                        "typeString": "bytes"
+                      }
+                    },
+                    "id": 4883,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1786:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes_storage_$dyn_storage_ptr",
+                      "typeString": "bytes[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1785:16:35"
+            },
+            "scope": 4918,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 4898,
+            "nodeType": "FunctionDefinition",
+            "src": "2206:161:35",
+            "nodes": [],
+            "documentation": {
+              "id": 4887,
+              "nodeType": "StructuredDocumentation",
+              "src": "1808:393:35",
+              "text": " @dev allows anybody to execute given they have a signed message from an executor\n @param signature bytes32 ethereum signature\n @param nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack\n @param payload obtained via encodeABI() in web3\n @return the data being returned by the ERC725 Account"
+            },
+            "functionSelector": "902d5fa0",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "executeRelayCall",
+            "nameLocation": "2215:16:35",
+            "parameters": {
+              "id": 4894,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4889,
+                  "mutability": "mutable",
+                  "name": "signature",
+                  "nameLocation": "2256:9:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4898,
+                  "src": "2241:24:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 4888,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2241:5:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4891,
+                  "mutability": "mutable",
+                  "name": "nonce",
+                  "nameLocation": "2283:5:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4898,
+                  "src": "2275:13:35",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4890,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2275:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4893,
+                  "mutability": "mutable",
+                  "name": "payload",
+                  "nameLocation": "2313:7:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4898,
+                  "src": "2298:22:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 4892,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2298:5:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2231:95:35"
+            },
+            "returnParameters": {
+              "id": 4897,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4896,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4898,
+                  "src": "2353:12:35",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 4895,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2353:5:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2352:14:35"
+            },
+            "scope": 4918,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 4917,
+            "nodeType": "FunctionDefinition",
+            "src": "2431:216:35",
+            "nodes": [],
+            "documentation": {
+              "id": 4899,
+              "nodeType": "StructuredDocumentation",
+              "src": "2373:53:35",
+              "text": " @dev batch `executeRelayCall(...)`"
+            },
+            "functionSelector": "bd68663a",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "executeRelayCall",
+            "nameLocation": "2440:16:35",
+            "parameters": {
+              "id": 4912,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4902,
+                  "mutability": "mutable",
+                  "name": "signatures",
+                  "nameLocation": "2483:10:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4917,
+                  "src": "2466:27:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "bytes[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4900,
+                      "name": "bytes",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2466:5:35",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_storage_ptr",
+                        "typeString": "bytes"
+                      }
+                    },
+                    "id": 4901,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2466:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes_storage_$dyn_storage_ptr",
+                      "typeString": "bytes[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4905,
+                  "mutability": "mutable",
+                  "name": "nonces",
+                  "nameLocation": "2522:6:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4917,
+                  "src": "2503:25:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4903,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2503:7:35",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 4904,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2503:9:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4908,
+                  "mutability": "mutable",
+                  "name": "values",
+                  "nameLocation": "2557:6:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4917,
+                  "src": "2538:25:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4906,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2538:7:35",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 4907,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2538:9:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4911,
+                  "mutability": "mutable",
+                  "name": "payloads",
+                  "nameLocation": "2590:8:35",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4917,
+                  "src": "2573:25:35",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes_calldata_ptr_$dyn_calldata_ptr",
+                    "typeString": "bytes[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4909,
+                      "name": "bytes",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2573:5:35",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_storage_ptr",
+                        "typeString": "bytes"
+                      }
+                    },
+                    "id": 4910,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2573:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes_storage_$dyn_storage_ptr",
+                      "typeString": "bytes[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2456:148:35"
+            },
+            "returnParameters": {
+              "id": 4916,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4915,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4917,
+                  "src": "2631:14:35",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes_memory_ptr_$dyn_memory_ptr",
+                    "typeString": "bytes[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 4913,
+                      "name": "bytes",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2631:5:35",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_storage_ptr",
+                        "typeString": "bytes"
+                      }
+                    },
+                    "id": 4914,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2631:7:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes_storage_$dyn_storage_ptr",
+                      "typeString": "bytes[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2630:16:35"
+            },
+            "scope": 4918,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 4842,
+              "name": "IERC1271",
+              "nameLocations": [
+                "304:8:35"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 44248,
+              "src": "304:8:35"
+            },
+            "id": 4843,
+            "nodeType": "InheritanceSpecifier",
+            "src": "304:8:35"
+          }
+        ],
+        "canonicalName": "ILSP6KeyManager",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 4841,
+          "nodeType": "StructuredDocumentation",
+          "src": "153:117:35",
+          "text": " @dev Contract acting as a controller of an ERC725 Account, using permissions stored in the ERC725Y storage"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          4918,
+          44248
+        ],
+        "name": "ILSP6KeyManager",
+        "nameLocation": "281:15:35",
+        "scope": 4919,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 35
+}

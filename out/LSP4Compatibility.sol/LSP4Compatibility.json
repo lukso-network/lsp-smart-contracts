@@ -1,0 +1,1265 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "dataKeysLength",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dataValuesLength",
+          "type": "uint256"
+        }
+      ],
+      "name": "ERC725Y_DataKeysValuesLengthMismatch",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "dataKey",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "dataValue",
+          "type": "bytes"
+        }
+      ],
+      "name": "DataChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "dataKeys",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "getData",
+      "outputs": [
+        {
+          "internalType": "bytes[]",
+          "name": "dataValues",
+          "type": "bytes[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "dataKey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getData",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "dataValue",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "dataKeys",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "bytes[]",
+          "name": "dataValues",
+          "type": "bytes[]"
+        }
+      ],
+      "name": "setData",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "dataKey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "dataValue",
+          "type": "bytes"
+        }
+      ],
+      "name": "setData",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "getData(bytes32)": "54f6127f",
+    "getData(bytes32[])": "4e3e6e9c",
+    "name()": "06fdde03",
+    "owner()": "8da5cb5b",
+    "renounceOwnership()": "715018a6",
+    "setData(bytes32,bytes)": "7f23690c",
+    "setData(bytes32[],bytes[])": "14a6e293",
+    "supportsInterface(bytes4)": "01ffc9a7",
+    "symbol()": "95d89b41",
+    "transferOwnership(address)": "f2fde38b"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"dataKeysLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dataValuesLength\",\"type\":\"uint256\"}],\"name\":\"ERC725Y_DataKeysValuesLengthMismatch\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"dataKey\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"dataValue\",\"type\":\"bytes\"}],\"name\":\"DataChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"dataKeys\",\"type\":\"bytes32[]\"}],\"name\":\"getData\",\"outputs\":[{\"internalType\":\"bytes[]\",\"name\":\"dataValues\",\"type\":\"bytes[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"dataKey\",\"type\":\"bytes32\"}],\"name\":\"getData\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"dataValue\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"dataKeys\",\"type\":\"bytes32[]\"},{\"internalType\":\"bytes[]\",\"name\":\"dataValues\",\"type\":\"bytes[]\"}],\"name\":\"setData\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"dataKey\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"dataValue\",\"type\":\"bytes\"}],\"name\":\"setData\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Matthew Stevens\",\"details\":\"LSP4 extension, for compatibility with clients & tools that expect ERC20/721.\",\"errors\":{\"ERC725Y_DataKeysValuesLengthMismatch(uint256,uint256)\":[{\"details\":\"reverts when there is not the same number of elements in the lists of data keys and data values when calling setData(bytes32[],bytes[]).\",\"params\":{\"dataKeysLength\":\"the number of data keys in the bytes32[] dataKeys\",\"dataValuesLength\":\"the number of data value in the bytes[] dataValue\"}}]},\"kind\":\"dev\",\"methods\":{\"getData(bytes32)\":{\"params\":{\"dataKey\":\"The key which value to retrieve\"},\"returns\":{\"dataValue\":\"The data stored at the key\"}},\"getData(bytes32[])\":{\"params\":{\"dataKeys\":\"The array of keys which values to retrieve\"},\"returns\":{\"dataValues\":\"The array of data stored at multiple keys\"}},\"name()\":{\"details\":\"Returns the name of the token.\",\"returns\":{\"_0\":\"The name of the token\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"setData(bytes32,bytes)\":{\"params\":{\"dataKey\":\"The key to retrieve stored value\",\"dataValue\":\"The value to set SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.\"}},\"setData(bytes32[],bytes[])\":{\"details\":\"Sets array of data for multiple given `dataKeys` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.\",\"params\":{\"dataKeys\":\"The array of data keys for values to set\",\"dataValues\":\"The array of values to set\"}},\"supportsInterface(bytes4)\":{\"details\":\"See {IERC165-supportsInterface}.\"},\"symbol()\":{\"details\":\"Returns the symbol of the token, usually a shorter version of the name.\",\"returns\":{\"_0\":\"The symbol of the token\"}},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"LSP4Compatibility\",\"version\":1},\"userdoc\":{\"events\":{\"DataChanged(bytes32,bytes)\":{\"notice\":\"Emitted when data at a key is changed\"}},\"kind\":\"user\",\"methods\":{\"getData(bytes32)\":{\"notice\":\"Gets singular data at a given `dataKey`\"},\"getData(bytes32[])\":{\"notice\":\"Gets array of data for multiple given keys\"},\"setData(bytes32,bytes)\":{\"notice\":\"Sets singular data for a given `dataKey`\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol\":\"LSP4Compatibility\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/LSP4DigitalAssetMetadata/ILSP4Compatibility.sol\":{\"keccak256\":\"0xb75cd25d17cca0c09be8a2f5122ac47f8ec2846006faf357e81bb730bcd929a9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://097258f718d8ce024699b2866c20c4627ee139dd419eb1ab8155ee28dd1511b6\",\"dweb:/ipfs/QmbFXPazAHPpEutFrYfVadCXW2tCbQAXmW7MB5eQuFW5Xa\"]},\"contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol\":{\"keccak256\":\"0xfa8b7b6c2b8823582be57f824a91af769c04669dee6c24876b936b23e57a0fe8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1df074acad92ab54dcaedf31c5841803599ace132cf3ab0106eb6f815d2ce921\",\"dweb:/ipfs/QmRNTB7WK8YfHUBLui4sppnKJV11sGRCTzfHMT3gCH1SPh\"]},\"contracts/LSP4DigitalAssetMetadata/LSP4Constants.sol\":{\"keccak256\":\"0x0fc0aac5c1b6042d9144718de00ee1e3bbbe2baa33d9e325f8fb56aca63c5f55\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://66089951845b83dd168552442fbcd2a1b1988a18fb67642c5178d48f12b6c8c0\",\"dweb:/ipfs/QmXany3a7AwkFddTqo2xskSUBVX5NEghbEjqS8PR4FevpD\"]},\"node_modules/@erc725/smart-contracts/contracts/ERC725YCore.sol\":{\"keccak256\":\"0xc02f97a3a08b659e4c2d00735b0cbb6d8ab3759693b893fcc3f1213e8f5b2ca6\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://7d66151e33557a89dcb19c2088b3d6a263d4678b3a3aa2f9b2b336739b506f7b\",\"dweb:/ipfs/QmZQByTDXFXQyAbXHRN592YiggdZc1JvzBG3eXLVNfaW6C\"]},\"node_modules/@erc725/smart-contracts/contracts/constants.sol\":{\"keccak256\":\"0x3f5b99fbe4cfb947060d3fe735cbe49aa485123417c3a1a425f3bc19ff2da3cb\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://8403c8f3fe0ffb697a9eb170db340ed2873a7a98cbbd913dcb20cabf67327834\",\"dweb:/ipfs/QmXvmrVMGaNbdS1VdLgKB1RNiPLWCtcUXqfXHz3i9C5XUD\"]},\"node_modules/@erc725/smart-contracts/contracts/custom/OwnableUnset.sol\":{\"keccak256\":\"0xe77afcd7d2496c79578ff7f219c0fad901fa4e0421f9ba389eb5f5eb7d9f1dcf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bc4186cf3bffd2b00017463ead8dfdef4c09e47fa943788beec42c4b66253f9e\",\"dweb:/ipfs/QmXvQwkdxHjUJzfs8P86JJbS3aqSgXhxKt4zYSkjW3hnqP\"]},\"node_modules/@erc725/smart-contracts/contracts/errors.sol\":{\"keccak256\":\"0x2f317b1e5f3caa2ffaa26fa6abf483b310c92d7a579207c6febde37422913548\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://440d47addc1cc1cd991c2be80522e3086c8470d3f739387dc81c2920df905089\",\"dweb:/ipfs/QmW64dnj9LAutsgc5sjm35tkgjVWVF236Dy1UXvWczoXFZ\"]},\"node_modules/@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol\":{\"keccak256\":\"0x61689c193b68a7f29a9a4cef38d82c6ec5e2b0036e3d8d4cabd6d68ee1eb0142\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://c48adc3fe4b11578339f0fa75839917948e657cdb925956e5b2b01612dfed1c6\",\"dweb:/ipfs/QmcgEaUqFWW3ygbNEKQ9xtfk9SXEAen9eGTXVTieExm5JV\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "dataKeysLength",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "dataValuesLength",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "ERC725Y_DataKeysValuesLengthMismatch"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "dataKey",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "bytes",
+              "name": "dataValue",
+              "type": "bytes",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "DataChanged",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32[]",
+              "name": "dataKeys",
+              "type": "bytes32[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getData",
+          "outputs": [
+            {
+              "internalType": "bytes[]",
+              "name": "dataValues",
+              "type": "bytes[]"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "dataKey",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getData",
+          "outputs": [
+            {
+              "internalType": "bytes",
+              "name": "dataValue",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "name",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "renounceOwnership"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32[]",
+              "name": "dataKeys",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "bytes[]",
+              "name": "dataValues",
+              "type": "bytes[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setData"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "dataKey",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "dataValue",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setData"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "symbol",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferOwnership"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "getData(bytes32)": {
+            "params": {
+              "dataKey": "The key which value to retrieve"
+            },
+            "returns": {
+              "dataValue": "The data stored at the key"
+            }
+          },
+          "getData(bytes32[])": {
+            "params": {
+              "dataKeys": "The array of keys which values to retrieve"
+            },
+            "returns": {
+              "dataValues": "The array of data stored at multiple keys"
+            }
+          },
+          "name()": {
+            "details": "Returns the name of the token.",
+            "returns": {
+              "_0": "The name of the token"
+            }
+          },
+          "owner()": {
+            "details": "Returns the address of the current owner."
+          },
+          "renounceOwnership()": {
+            "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+          },
+          "setData(bytes32,bytes)": {
+            "params": {
+              "dataKey": "The key to retrieve stored value",
+              "dataValue": "The value to set SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event."
+            }
+          },
+          "setData(bytes32[],bytes[])": {
+            "details": "Sets array of data for multiple given `dataKeys` SHOULD only be callable by the owner of the contract set via ERC173 Emits a {DataChanged} event.",
+            "params": {
+              "dataKeys": "The array of data keys for values to set",
+              "dataValues": "The array of values to set"
+            }
+          },
+          "supportsInterface(bytes4)": {
+            "details": "See {IERC165-supportsInterface}."
+          },
+          "symbol()": {
+            "details": "Returns the symbol of the token, usually a shorter version of the name.",
+            "returns": {
+              "_0": "The symbol of the token"
+            }
+          },
+          "transferOwnership(address)": {
+            "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "getData(bytes32)": {
+            "notice": "Gets singular data at a given `dataKey`"
+          },
+          "getData(bytes32[])": {
+            "notice": "Gets array of data for multiple given keys"
+          },
+          "setData(bytes32,bytes)": {
+            "notice": "Sets singular data for a given `dataKey`"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol": "LSP4Compatibility"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/LSP4DigitalAssetMetadata/ILSP4Compatibility.sol": {
+        "keccak256": "0xb75cd25d17cca0c09be8a2f5122ac47f8ec2846006faf357e81bb730bcd929a9",
+        "urls": [
+          "bzz-raw://097258f718d8ce024699b2866c20c4627ee139dd419eb1ab8155ee28dd1511b6",
+          "dweb:/ipfs/QmbFXPazAHPpEutFrYfVadCXW2tCbQAXmW7MB5eQuFW5Xa"
+        ],
+        "license": "MIT"
+      },
+      "contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol": {
+        "keccak256": "0xfa8b7b6c2b8823582be57f824a91af769c04669dee6c24876b936b23e57a0fe8",
+        "urls": [
+          "bzz-raw://1df074acad92ab54dcaedf31c5841803599ace132cf3ab0106eb6f815d2ce921",
+          "dweb:/ipfs/QmRNTB7WK8YfHUBLui4sppnKJV11sGRCTzfHMT3gCH1SPh"
+        ],
+        "license": "MIT"
+      },
+      "contracts/LSP4DigitalAssetMetadata/LSP4Constants.sol": {
+        "keccak256": "0x0fc0aac5c1b6042d9144718de00ee1e3bbbe2baa33d9e325f8fb56aca63c5f55",
+        "urls": [
+          "bzz-raw://66089951845b83dd168552442fbcd2a1b1988a18fb67642c5178d48f12b6c8c0",
+          "dweb:/ipfs/QmXany3a7AwkFddTqo2xskSUBVX5NEghbEjqS8PR4FevpD"
+        ],
+        "license": "CC0-1.0"
+      },
+      "node_modules/@erc725/smart-contracts/contracts/ERC725YCore.sol": {
+        "keccak256": "0xc02f97a3a08b659e4c2d00735b0cbb6d8ab3759693b893fcc3f1213e8f5b2ca6",
+        "urls": [
+          "bzz-raw://7d66151e33557a89dcb19c2088b3d6a263d4678b3a3aa2f9b2b336739b506f7b",
+          "dweb:/ipfs/QmZQByTDXFXQyAbXHRN592YiggdZc1JvzBG3eXLVNfaW6C"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@erc725/smart-contracts/contracts/constants.sol": {
+        "keccak256": "0x3f5b99fbe4cfb947060d3fe735cbe49aa485123417c3a1a425f3bc19ff2da3cb",
+        "urls": [
+          "bzz-raw://8403c8f3fe0ffb697a9eb170db340ed2873a7a98cbbd913dcb20cabf67327834",
+          "dweb:/ipfs/QmXvmrVMGaNbdS1VdLgKB1RNiPLWCtcUXqfXHz3i9C5XUD"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@erc725/smart-contracts/contracts/custom/OwnableUnset.sol": {
+        "keccak256": "0xe77afcd7d2496c79578ff7f219c0fad901fa4e0421f9ba389eb5f5eb7d9f1dcf",
+        "urls": [
+          "bzz-raw://bc4186cf3bffd2b00017463ead8dfdef4c09e47fa943788beec42c4b66253f9e",
+          "dweb:/ipfs/QmXvQwkdxHjUJzfs8P86JJbS3aqSgXhxKt4zYSkjW3hnqP"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@erc725/smart-contracts/contracts/errors.sol": {
+        "keccak256": "0x2f317b1e5f3caa2ffaa26fa6abf483b310c92d7a579207c6febde37422913548",
+        "urls": [
+          "bzz-raw://440d47addc1cc1cd991c2be80522e3086c8470d3f739387dc81c2920df905089",
+          "dweb:/ipfs/QmW64dnj9LAutsgc5sjm35tkgjVWVF236Dy1UXvWczoXFZ"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol": {
+        "keccak256": "0x61689c193b68a7f29a9a4cef38d82c6ec5e2b0036e3d8d4cabd6d68ee1eb0142",
+        "urls": [
+          "bzz-raw://c48adc3fe4b11578339f0fa75839917948e657cdb925956e5b2b01612dfed1c6",
+          "dweb:/ipfs/QmcgEaUqFWW3ygbNEKQ9xtfk9SXEAen9eGTXVTieExm5JV"
+        ],
+        "license": "CC0-1.0"
+      },
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+        "keccak256": "0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b",
+        "urls": [
+          "bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d",
+          "dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+        "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+        "urls": [
+          "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+          "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP4DigitalAssetMetadata/LSP4Compatibility.sol",
+    "id": 4060,
+    "exportedSymbols": {
+      "ERC725YCore": [
+        43508
+      ],
+      "ILSP4Compatibility": [
+        4008
+      ],
+      "LSP4Compatibility": [
+        4059
+      ],
+      "_LSP4_CREATORS_ARRAY_KEY": [
+        4076
+      ],
+      "_LSP4_CREATORS_MAP_KEY_PREFIX": [
+        4079
+      ],
+      "_LSP4_METADATA_KEY": [
+        4082
+      ],
+      "_LSP4_SUPPORTED_STANDARDS_KEY": [
+        4064
+      ],
+      "_LSP4_SUPPORTED_STANDARDS_VALUE": [
+        4067
+      ],
+      "_LSP4_TOKEN_NAME_KEY": [
+        4070
+      ],
+      "_LSP4_TOKEN_SYMBOL_KEY": [
+        4073
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:1066:28",
+    "nodes": [
+      {
+        "id": 4010,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:28",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 4012,
+        "nodeType": "ImportDirective",
+        "src": "71:60:28",
+        "nodes": [],
+        "absolutePath": "contracts/LSP4DigitalAssetMetadata/ILSP4Compatibility.sol",
+        "file": "./ILSP4Compatibility.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 4060,
+        "sourceUnit": 4009,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 4011,
+              "name": "ILSP4Compatibility",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 4008,
+              "src": "79:18:28",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 4014,
+        "nodeType": "ImportDirective",
+        "src": "144:78:28",
+        "nodes": [],
+        "absolutePath": "node_modules/@erc725/smart-contracts/contracts/ERC725YCore.sol",
+        "file": "@erc725/smart-contracts/contracts/ERC725YCore.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 4060,
+        "sourceUnit": 43509,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 4013,
+              "name": "ERC725YCore",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 43508,
+              "src": "152:11:28",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 4015,
+        "nodeType": "ImportDirective",
+        "src": "237:29:28",
+        "nodes": [],
+        "absolutePath": "contracts/LSP4DigitalAssetMetadata/LSP4Constants.sol",
+        "file": "./LSP4Constants.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 4060,
+        "sourceUnit": 4083,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 4059,
+        "nodeType": "ContractDefinition",
+        "src": "417:680:28",
+        "nodes": [
+          {
+            "id": 4039,
+            "nodeType": "FunctionDefinition",
+            "src": "616:165:28",
+            "nodes": [],
+            "body": {
+              "id": 4038,
+              "nodeType": "Block",
+              "src": "685:96:28",
+              "nodes": [],
+              "statements": [
+                {
+                  "assignments": [
+                    4028
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 4028,
+                      "mutability": "mutable",
+                      "name": "data",
+                      "nameLocation": "708:4:28",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 4038,
+                      "src": "695:17:28",
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_memory_ptr",
+                        "typeString": "bytes"
+                      },
+                      "typeName": {
+                        "id": 4027,
+                        "name": "bytes",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "695:5:28",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_storage_ptr",
+                          "typeString": "bytes"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 4032,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "id": 4030,
+                        "name": "_LSP4_TOKEN_NAME_KEY",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4070,
+                        "src": "724:20:28",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "id": 4029,
+                      "name": "_getData",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 43453,
+                      "src": "715:8:28",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_bytes_memory_ptr_$",
+                        "typeString": "function (bytes32) view returns (bytes memory)"
+                      }
+                    },
+                    "id": 4031,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "715:30:28",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_memory_ptr",
+                      "typeString": "bytes memory"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "695:50:28"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 4035,
+                        "name": "data",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4028,
+                        "src": "769:4:28",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 4034,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "nodeType": "ElementaryTypeNameExpression",
+                      "src": "762:6:28",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_string_storage_ptr_$",
+                        "typeString": "type(string storage pointer)"
+                      },
+                      "typeName": {
+                        "id": 4033,
+                        "name": "string",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "762:6:28",
+                        "typeDescriptions": {}
+                      }
+                    },
+                    "id": 4036,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "typeConversion",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "762:12:28",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_memory_ptr",
+                      "typeString": "string memory"
+                    }
+                  },
+                  "functionReturnParameters": 4026,
+                  "id": 4037,
+                  "nodeType": "Return",
+                  "src": "755:19:28"
+                }
+              ]
+            },
+            "baseFunctions": [
+              4001
+            ],
+            "documentation": {
+              "id": 4021,
+              "nodeType": "StructuredDocumentation",
+              "src": "520:91:28",
+              "text": " @dev Returns the name of the token.\n @return The name of the token"
+            },
+            "functionSelector": "06fdde03",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "name",
+            "nameLocation": "625:4:28",
+            "overrides": {
+              "id": 4023,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "652:8:28"
+            },
+            "parameters": {
+              "id": 4022,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "629:2:28"
+            },
+            "returnParameters": {
+              "id": 4026,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4025,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4039,
+                  "src": "670:13:28",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4024,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "670:6:28",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "669:15:28"
+            },
+            "scope": 4059,
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "id": 4058,
+            "nodeType": "FunctionDefinition",
+            "src": "926:169:28",
+            "nodes": [],
+            "body": {
+              "id": 4057,
+              "nodeType": "Block",
+              "src": "997:98:28",
+              "nodes": [],
+              "statements": [
+                {
+                  "assignments": [
+                    4047
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 4047,
+                      "mutability": "mutable",
+                      "name": "data",
+                      "nameLocation": "1020:4:28",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 4057,
+                      "src": "1007:17:28",
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_memory_ptr",
+                        "typeString": "bytes"
+                      },
+                      "typeName": {
+                        "id": 4046,
+                        "name": "bytes",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "1007:5:28",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_storage_ptr",
+                          "typeString": "bytes"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 4051,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "id": 4049,
+                        "name": "_LSP4_TOKEN_SYMBOL_KEY",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4073,
+                        "src": "1036:22:28",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "id": 4048,
+                      "name": "_getData",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 43453,
+                      "src": "1027:8:28",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_bytes_memory_ptr_$",
+                        "typeString": "function (bytes32) view returns (bytes memory)"
+                      }
+                    },
+                    "id": 4050,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1027:32:28",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_memory_ptr",
+                      "typeString": "bytes memory"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1007:52:28"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 4054,
+                        "name": "data",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4047,
+                        "src": "1083:4:28",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 4053,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "nodeType": "ElementaryTypeNameExpression",
+                      "src": "1076:6:28",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_string_storage_ptr_$",
+                        "typeString": "type(string storage pointer)"
+                      },
+                      "typeName": {
+                        "id": 4052,
+                        "name": "string",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "1076:6:28",
+                        "typeDescriptions": {}
+                      }
+                    },
+                    "id": 4055,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "typeConversion",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1076:12:28",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_memory_ptr",
+                      "typeString": "string memory"
+                    }
+                  },
+                  "functionReturnParameters": 4045,
+                  "id": 4056,
+                  "nodeType": "Return",
+                  "src": "1069:19:28"
+                }
+              ]
+            },
+            "baseFunctions": [
+              4007
+            ],
+            "documentation": {
+              "id": 4040,
+              "nodeType": "StructuredDocumentation",
+              "src": "787:134:28",
+              "text": " @dev Returns the symbol of the token, usually a shorter version of the name.\n @return The symbol of the token"
+            },
+            "functionSelector": "95d89b41",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "symbol",
+            "nameLocation": "935:6:28",
+            "overrides": {
+              "id": 4042,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "964:8:28"
+            },
+            "parameters": {
+              "id": 4041,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "941:2:28"
+            },
+            "returnParameters": {
+              "id": 4045,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4044,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4058,
+                  "src": "982:13:28",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 4043,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "982:6:28",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "981:15:28"
+            },
+            "scope": 4059,
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "abstract": true,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 4017,
+              "name": "ILSP4Compatibility",
+              "nameLocations": [
+                "456:18:28"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 4008,
+              "src": "456:18:28"
+            },
+            "id": 4018,
+            "nodeType": "InheritanceSpecifier",
+            "src": "456:18:28"
+          },
+          {
+            "baseName": {
+              "id": 4019,
+              "name": "ERC725YCore",
+              "nameLocations": [
+                "476:11:28"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 43508,
+              "src": "476:11:28"
+            },
+            "id": 4020,
+            "nodeType": "InheritanceSpecifier",
+            "src": "476:11:28"
+          }
+        ],
+        "canonicalName": "LSP4Compatibility",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 4016,
+          "nodeType": "StructuredDocumentation",
+          "src": "268:148:28",
+          "text": " @title LSP4Compatibility\n @author Matthew Stevens\n @dev LSP4 extension, for compatibility with clients & tools that expect ERC20/721."
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          4059,
+          43508,
+          4008,
+          43840,
+          46531,
+          46594,
+          43687
+        ],
+        "name": "LSP4Compatibility",
+        "nameLocation": "435:17:28",
+        "scope": 4060,
+        "usedErrors": [
+          43726
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 28
+}

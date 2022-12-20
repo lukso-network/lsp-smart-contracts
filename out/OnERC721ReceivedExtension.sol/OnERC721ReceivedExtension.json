@@ -1,0 +1,390 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC721Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b50610159806100206000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c8063150b7a0214610030575b600080fd5b61004f61003e366004610088565b630a85bd0160e11b95945050505050565b6040516001600160e01b0319909116815260200160405180910390f35b80356001600160a01b038116811461008357600080fd5b919050565b6000806000806000608086880312156100a057600080fd5b6100a98661006c565b94506100b76020870161006c565b935060408601359250606086013567ffffffffffffffff808211156100db57600080fd5b818801915088601f8301126100ef57600080fd5b8135818111156100fe57600080fd5b89602082850101111561011057600080fd5b969995985093965060200194939250505056fea26469706673582212202b39f82fdf330468adcc1026a3cdc799389ede02b10bb2db12e695b6fc76850a64736f6c63430008110033",
+    "sourceMap": "128:266:107:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c8063150b7a0214610030575b600080fd5b61004f61003e366004610088565b630a85bd0160e11b95945050505050565b6040516001600160e01b0319909116815260200160405180910390f35b80356001600160a01b038116811461008357600080fd5b919050565b6000806000806000608086880312156100a057600080fd5b6100a98661006c565b94506100b76020870161006c565b935060408601359250606086013567ffffffffffffffff808211156100db57600080fd5b818801915088601f8301126100ef57600080fd5b8135818111156100fe57600080fd5b89602082850101111561011057600080fd5b969995985093965060200194939250505056fea26469706673582212202b39f82fdf330468adcc1026a3cdc799389ede02b10bb2db12e695b6fc76850a64736f6c63430008110033",
+    "sourceMap": "128:266:107:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;169:223;;;;;;:::i;:::-;-1:-1:-1;;;169:223:107;;;;;;;;;;;-1:-1:-1;;;;;;1167:33:202;;;1149:52;;1137:2;1122:18;169:223:107;;;;;;;14:173:202;82:20;;-1:-1:-1;;;;;131:31:202;;121:42;;111:70;;177:1;174;167:12;111:70;14:173;;;:::o;192:808::-;289:6;297;305;313;321;374:3;362:9;353:7;349:23;345:33;342:53;;;391:1;388;381:12;342:53;414:29;433:9;414:29;:::i;:::-;404:39;;462:38;496:2;485:9;481:18;462:38;:::i;:::-;452:48;;547:2;536:9;532:18;519:32;509:42;;602:2;591:9;587:18;574:32;625:18;666:2;658:6;655:14;652:34;;;682:1;679;672:12;652:34;720:6;709:9;705:22;695:32;;765:7;758:4;754:2;750:13;746:27;736:55;;787:1;784;777:12;736:55;827:2;814:16;853:2;845:6;842:14;839:34;;;869:1;866;859:12;839:34;914:7;909:2;900:6;896:2;892:15;888:24;885:37;882:57;;;935:1;932;925:12;882:57;192:808;;;;-1:-1:-1;192:808:202;;-1:-1:-1;966:2:202;958:11;;988:6;192:808;-1:-1:-1;;;192:808:202:o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "onERC721Received(address,address,uint256,bytes)": "150b7a02"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"onERC721Received\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/FallbackExtensions/OnERC721ReceivedExtension.sol\":\"OnERC721ReceivedExtension\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/FallbackExtensions/OnERC721ReceivedExtension.sol\":{\"keccak256\":\"0x2f9e6b5bf274bd2de76245b99197209f321ede23ffff2acd87d2a64c76d17b50\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://d82e048c1a6d8a5449c82bef4691b7d315d21313ea850f3a33af8bb002709c0a\",\"dweb:/ipfs/QmRnwQKJp7ZaReHHSG8RUpmgz1R2kTgn88MLqWTdV2ctx1\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "onERC721Received",
+          "outputs": [
+            {
+              "internalType": "bytes4",
+              "name": "",
+              "type": "bytes4"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/FallbackExtensions/OnERC721ReceivedExtension.sol": "OnERC721ReceivedExtension"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/FallbackExtensions/OnERC721ReceivedExtension.sol": {
+        "keccak256": "0x2f9e6b5bf274bd2de76245b99197209f321ede23ffff2acd87d2a64c76d17b50",
+        "urls": [
+          "bzz-raw://d82e048c1a6d8a5449c82bef4691b7d315d21313ea850f3a33af8bb002709c0a",
+          "dweb:/ipfs/QmRnwQKJp7ZaReHHSG8RUpmgz1R2kTgn88MLqWTdV2ctx1"
+        ],
+        "license": "Apache-2.0"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/FallbackExtensions/OnERC721ReceivedExtension.sol",
+    "id": 15251,
+    "exportedSymbols": {
+      "OnERC721ReceivedExtension": [
+        15250
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:356:107",
+    "nodes": [
+      {
+        "id": 15232,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:107",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 15250,
+        "nodeType": "ContractDefinition",
+        "src": "128:266:107",
+        "nodes": [
+          {
+            "id": 15249,
+            "nodeType": "FunctionDefinition",
+            "src": "169:223:107",
+            "nodes": [],
+            "body": {
+              "id": 15248,
+              "nodeType": "Block",
+              "src": "358:34:107",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "hexValue": "30783135306237613032",
+                    "id": 15246,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "number",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "375:10:107",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_rational_353073666_by_1",
+                      "typeString": "int_const 353073666"
+                    },
+                    "value": "0x150b7a02"
+                  },
+                  "functionReturnParameters": 15245,
+                  "id": 15247,
+                  "nodeType": "Return",
+                  "src": "368:17:107"
+                }
+              ]
+            },
+            "functionSelector": "150b7a02",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onERC721Received",
+            "nameLocation": "178:16:107",
+            "parameters": {
+              "id": 15242,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15235,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15249,
+                  "src": "204:7:107",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 15234,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "204:7:107",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 15237,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15249,
+                  "src": "236:7:107",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 15236,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "236:7:107",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 15239,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15249,
+                  "src": "264:7:107",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 15238,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "264:7:107",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 15241,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15249,
+                  "src": "295:14:107",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 15240,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "295:5:107",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "194:132:107"
+            },
+            "returnParameters": {
+              "id": 15245,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15244,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15249,
+                  "src": "350:6:107",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 15243,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "350:6:107",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "349:8:107"
+            },
+            "scope": 15250,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "OnERC721ReceivedExtension",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 15233,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:63:107",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          15250
+        ],
+        "name": "OnERC721ReceivedExtension",
+        "nameLocation": "137:25:107",
+        "scope": 15251,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 107
+}

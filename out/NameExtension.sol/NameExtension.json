@@ -1,0 +1,237 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5060dd8061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806306fdde0314602d575b600080fd5b60408051808201825260058152644c554b534f60d81b6020820152905160529190605b565b60405180910390f35b600060208083528351808285015260005b81811015608657858101830151858201604001528201606c565b506000604082860101526040601f19601f830116850101925050509291505056fea2646970667358221220851b19be086d21321f6b6663d66525336150e9f393ca0d42a0c8401e6457434964736f6c63430008110033",
+    "sourceMap": "128:122:106:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806306fdde0314602d575b600080fd5b60408051808201825260058152644c554b534f60d81b6020820152905160529190605b565b60405180910390f35b600060208083528351808285015260005b81811015608657858101830151858201604001528201606c565b506000604082860101526040601f19601f830116850101925050509291505056fea2646970667358221220851b19be086d21321f6b6663d66525336150e9f393ca0d42a0c8401e6457434964736f6c63430008110033",
+    "sourceMap": "128:122:106:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;157:91;227:14;;;;;;;;;;;-1:-1:-1;;;227:14:106;;;;157:91;;;;227:14;157:91;:::i;:::-;;;;;;;;14:548:202;126:4;155:2;184;173:9;166:21;216:6;210:13;259:6;254:2;243:9;239:18;232:34;284:1;294:140;308:6;305:1;302:13;294:140;;;403:14;;;399:23;;393:30;369:17;;;388:2;365:26;358:66;323:10;;294:140;;;298:3;483:1;478:2;469:6;458:9;454:22;450:31;443:42;553:2;546;542:7;537:2;529:6;525:15;521:29;510:9;506:45;502:54;494:62;;;;14:548;;;;:::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "name()": "06fdde03"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/FallbackExtensions/NameExtension.sol\":\"NameExtension\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/FallbackExtensions/NameExtension.sol\":{\"keccak256\":\"0x84b1e5f76ab2d5ba56781f1c6019c6363baf8728e14263d255533fde27eb675d\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://305a71e10651574ad5342a7b6322c9a7a48d6ab6bbb14d2482ee1096c287f7b1\",\"dweb:/ipfs/QmNXUfi1soHUPFpsY4TYsbpjQpa14uRVZAZ2KWMC5zWW4V\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "name",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/FallbackExtensions/NameExtension.sol": "NameExtension"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/FallbackExtensions/NameExtension.sol": {
+        "keccak256": "0x84b1e5f76ab2d5ba56781f1c6019c6363baf8728e14263d255533fde27eb675d",
+        "urls": [
+          "bzz-raw://305a71e10651574ad5342a7b6322c9a7a48d6ab6bbb14d2482ee1096c287f7b1",
+          "dweb:/ipfs/QmNXUfi1soHUPFpsY4TYsbpjQpa14uRVZAZ2KWMC5zWW4V"
+        ],
+        "license": "Apache-2.0"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/FallbackExtensions/NameExtension.sol",
+    "id": 15231,
+    "exportedSymbols": {
+      "NameExtension": [
+        15230
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:212:106",
+    "nodes": [
+      {
+        "id": 15220,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:106",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 15230,
+        "nodeType": "ContractDefinition",
+        "src": "128:122:106",
+        "nodes": [
+          {
+            "id": 15229,
+            "nodeType": "FunctionDefinition",
+            "src": "157:91:106",
+            "nodes": [],
+            "body": {
+              "id": 15228,
+              "nodeType": "Block",
+              "src": "217:31:106",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "hexValue": "4c554b534f",
+                    "id": 15226,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "string",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "234:7:106",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_stringliteral_973f32cab6fcd8de4adee643393ca609ccc41d9b1b44c6cf020ba4ceecfc3848",
+                      "typeString": "literal_string \"LUKSO\""
+                    },
+                    "value": "LUKSO"
+                  },
+                  "functionReturnParameters": 15225,
+                  "id": 15227,
+                  "nodeType": "Return",
+                  "src": "227:14:106"
+                }
+              ]
+            },
+            "functionSelector": "06fdde03",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "name",
+            "nameLocation": "166:4:106",
+            "parameters": {
+              "id": 15222,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "170:2:106"
+            },
+            "returnParameters": {
+              "id": 15225,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15224,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15229,
+                  "src": "202:13:106",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 15223,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "202:6:106",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "201:15:106"
+            },
+            "scope": 15230,
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "NameExtension",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 15221,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:63:106",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          15230
+        ],
+        "name": "NameExtension",
+        "nameLocation": "137:13:106",
+        "scope": 15231,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 106
+}

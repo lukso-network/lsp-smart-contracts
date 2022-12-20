@@ -1,0 +1,238 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "EventEmittedInExtension",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "emitEvent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080604052348015600f57600080fd5b5060968061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80637b0cb83914602d575b600080fd5b60336035565b005b6040517f503022199bd2f7e72ffc876a9e53429173bf044bad522b49bfc84cf0e35e784490600090a156fea26469706673582212205b6e98e880974a273e0975b9246b8c44612646210ce47cc468b1b1deda1d4c8464736f6c63430008110033",
+    "sourceMap": "128:157:105:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80637b0cb83914602d575b600080fd5b60336035565b005b6040517f503022199bd2f7e72ffc876a9e53429173bf044bad522b49bfc84cf0e35e784490600090a156fea26469706673582212205b6e98e880974a273e0975b9246b8c44612646210ce47cc468b1b1deda1d4c8464736f6c63430008110033",
+    "sourceMap": "128:157:105:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;200:83;;;:::i;:::-;;;251:25;;;;;;;200:83::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "emitEvent()": "7b0cb839"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[],\"name\":\"EventEmittedInExtension\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"emitEvent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/FallbackExtensions/EmitEventExtension.sol\":\"EmitEventExtension\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/FallbackExtensions/EmitEventExtension.sol\":{\"keccak256\":\"0x2087d2365cbca5b569e5234cfff126e67ceacf0f8b57075f60daaf7fadbdfe63\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://f3db92eb30ceb4987ed13084b37866a1490c7f1979c86bd1c9f296eb80db5825\",\"dweb:/ipfs/QmUZujakxzq898a8rePvAFrYird5JcBi69HuYRN6Yt5Gci\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "event",
+          "name": "EventEmittedInExtension",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "emitEvent"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/FallbackExtensions/EmitEventExtension.sol": "EmitEventExtension"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/FallbackExtensions/EmitEventExtension.sol": {
+        "keccak256": "0x2087d2365cbca5b569e5234cfff126e67ceacf0f8b57075f60daaf7fadbdfe63",
+        "urls": [
+          "bzz-raw://f3db92eb30ceb4987ed13084b37866a1490c7f1979c86bd1c9f296eb80db5825",
+          "dweb:/ipfs/QmUZujakxzq898a8rePvAFrYird5JcBi69HuYRN6Yt5Gci"
+        ],
+        "license": "Apache-2.0"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/FallbackExtensions/EmitEventExtension.sol",
+    "id": 15219,
+    "exportedSymbols": {
+      "EmitEventExtension": [
+        15218
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:247:105",
+    "nodes": [
+      {
+        "id": 15207,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:105",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 15218,
+        "nodeType": "ContractDefinition",
+        "src": "128:157:105",
+        "nodes": [
+          {
+            "id": 15210,
+            "nodeType": "EventDefinition",
+            "src": "162:32:105",
+            "nodes": [],
+            "anonymous": false,
+            "eventSelector": "503022199bd2f7e72ffc876a9e53429173bf044bad522b49bfc84cf0e35e7844",
+            "name": "EventEmittedInExtension",
+            "nameLocation": "168:23:105",
+            "parameters": {
+              "id": 15209,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "191:2:105"
+            }
+          },
+          {
+            "id": 15217,
+            "nodeType": "FunctionDefinition",
+            "src": "200:83:105",
+            "nodes": [],
+            "body": {
+              "id": 15216,
+              "nodeType": "Block",
+              "src": "236:47:105",
+              "nodes": [],
+              "statements": [
+                {
+                  "eventCall": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 15213,
+                      "name": "EventEmittedInExtension",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 15210,
+                      "src": "251:23:105",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$__$returns$__$",
+                        "typeString": "function ()"
+                      }
+                    },
+                    "id": 15214,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "251:25:105",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 15215,
+                  "nodeType": "EmitStatement",
+                  "src": "246:30:105"
+                }
+              ]
+            },
+            "functionSelector": "7b0cb839",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "emitEvent",
+            "nameLocation": "209:9:105",
+            "parameters": {
+              "id": 15211,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "218:2:105"
+            },
+            "returnParameters": {
+              "id": 15212,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "236:0:105"
+            },
+            "scope": 15218,
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "EmitEventExtension",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 15208,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:63:105",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          15218
+        ],
+        "name": "EmitEventExtension",
+        "nameLocation": "137:18:105",
+        "scope": 15219,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 105
+}

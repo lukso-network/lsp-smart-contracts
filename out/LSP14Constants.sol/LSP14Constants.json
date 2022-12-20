@@ -1,0 +1,223 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP14Ownable2Step/LSP14Constants.sol",
+    "id": 1526,
+    "exportedSymbols": {
+      "_INTERFACEID_LSP14": [
+        1516
+      ],
+      "_TYPEID_LSP14_OwnershipTransferStarted": [
+        1519
+      ],
+      "_TYPEID_LSP14_OwnershipTransferred_RecipientNotification": [
+        1525
+      ],
+      "_TYPEID_LSP14_OwnershipTransferred_SenderNotification": [
+        1522
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:676:11",
+    "nodes": [
+      {
+        "id": 1513,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:11",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 1516,
+        "nodeType": "VariableDeclaration",
+        "src": "57:47:11",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_INTERFACEID_LSP14",
+        "nameLocation": "73:18:11",
+        "scope": 1526,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes4",
+          "typeString": "bytes4"
+        },
+        "typeName": {
+          "id": 1514,
+          "name": "bytes4",
+          "nodeType": "ElementaryTypeName",
+          "src": "57:6:11",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes4",
+            "typeString": "bytes4"
+          }
+        },
+        "value": {
+          "hexValue": "30783934626535393939",
+          "id": 1515,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "94:10:11",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_2495502745_by_1",
+            "typeString": "int_const 2495502745"
+          },
+          "value": "0x94be5999"
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 1519,
+        "nodeType": "VariableDeclaration",
+        "src": "170:124:11",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_TYPEID_LSP14_OwnershipTransferStarted",
+        "nameLocation": "187:38:11",
+        "scope": 1526,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes32",
+          "typeString": "bytes32"
+        },
+        "typeName": {
+          "id": 1517,
+          "name": "bytes32",
+          "nodeType": "ElementaryTypeName",
+          "src": "170:7:11",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes32",
+            "typeString": "bytes32"
+          }
+        },
+        "value": {
+          "hexValue": "307865653961376330393234663734306132636133336435396237663063323932393832316561393833376365303433636539316331383233653963346535326330",
+          "id": 1518,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "228:66:11",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_107923408473872749926238325241991453687993739774897834541256342991779704754880_by_1",
+            "typeString": "int_const 1079...(70 digits omitted)...4880"
+          },
+          "value": "0xee9a7c0924f740a2ca33d59b7f0c2929821ea9837ce043ce91c1823e9c4e52c0"
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 1522,
+        "nodeType": "VariableDeclaration",
+        "src": "358:139:11",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_TYPEID_LSP14_OwnershipTransferred_SenderNotification",
+        "nameLocation": "375:53:11",
+        "scope": 1526,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes32",
+          "typeString": "bytes32"
+        },
+        "typeName": {
+          "id": 1520,
+          "name": "bytes32",
+          "nodeType": "ElementaryTypeName",
+          "src": "358:7:11",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes32",
+            "typeString": "bytes32"
+          }
+        },
+        "value": {
+          "hexValue": "307861313234343432653163633762353264386532656465323738376434333532376463316633616530646538376635306464303365323761373138333466373463",
+          "id": 1521,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "431:66:11",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_72886445678177937971425403727869977120269253154666648182282208000682715576140_by_1",
+            "typeString": "int_const 7288...(69 digits omitted)...6140"
+          },
+          "value": "0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c"
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 1525,
+        "nodeType": "VariableDeclaration",
+        "src": "564:142:11",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_TYPEID_LSP14_OwnershipTransferred_RecipientNotification",
+        "nameLocation": "581:56:11",
+        "scope": 1526,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes32",
+          "typeString": "bytes32"
+        },
+        "typeName": {
+          "id": 1523,
+          "name": "bytes32",
+          "nodeType": "ElementaryTypeName",
+          "src": "564:7:11",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes32",
+            "typeString": "bytes32"
+          }
+        },
+        "value": {
+          "hexValue": "307865333263376465626362383137393235626134383833666462666335323739373138376632386637336638363036343164616231613638643962333239303263",
+          "id": 1524,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "640:66:11",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_102753626974564192079134520229428304948559443302741238067301177763249570091052_by_1",
+            "typeString": "int_const 1027...(70 digits omitted)...1052"
+          },
+          "value": "0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c"
+        },
+        "visibility": "internal"
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 11
+}

@@ -1,0 +1,173 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "hello",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080604052348015600f57600080fd5b50606580601d6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806319ff1d2114602d575b600080fd5b00fea264697066735822122022ea10f8c42442c8b42222f2888e3279d101cf9290b0d3fa1aab6bdc46ddd35a64736f6c63430008110033",
+    "sourceMap": "121:78:94:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806319ff1d2114602d575b600080fd5b00fea264697066735822122022ea10f8c42442c8b42222f2888e3279d101cf9290b0d3fa1aab6bdc46ddd35a64736f6c63430008110033",
+    "sourceMap": "121:78:94:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;171:26;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "hello()": "19ff1d21"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"hello\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/ERC165/NoSupportsInterfaceWithoutFallback.sol\":\"NoSupportsInterfaceWithoutFallback\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/ERC165/NoSupportsInterfaceWithoutFallback.sol\":{\"keccak256\":\"0xc1d35bcaf4c6877ae537d84dfa93230539eba587fea0a62ec6eef510791e931f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c80c4f847ce05a4f4db770b07af4a5735a2e2c1949f2cef7301f8a9c0e2c64c6\",\"dweb:/ipfs/QmZT2TKKGSRRdqFF58aCgKRPiLNHGEnCL9PyxU9cjQiBs3\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "hello"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/ERC165/NoSupportsInterfaceWithoutFallback.sol": "NoSupportsInterfaceWithoutFallback"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/ERC165/NoSupportsInterfaceWithoutFallback.sol": {
+        "keccak256": "0xc1d35bcaf4c6877ae537d84dfa93230539eba587fea0a62ec6eef510791e931f",
+        "urls": [
+          "bzz-raw://c80c4f847ce05a4f4db770b07af4a5735a2e2c1949f2cef7301f8a9c0e2c64c6",
+          "dweb:/ipfs/QmZT2TKKGSRRdqFF58aCgKRPiLNHGEnCL9PyxU9cjQiBs3"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/ERC165/NoSupportsInterfaceWithoutFallback.sol",
+    "id": 14242,
+    "exportedSymbols": {
+      "NoSupportsInterfaceWithoutFallback": [
+        14241
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:168:94",
+    "nodes": [
+      {
+        "id": 14235,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:94",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 14241,
+        "nodeType": "ContractDefinition",
+        "src": "121:78:94",
+        "nodes": [
+          {
+            "id": 14240,
+            "nodeType": "FunctionDefinition",
+            "src": "171:26:94",
+            "nodes": [],
+            "body": {
+              "id": 14239,
+              "nodeType": "Block",
+              "src": "195:2:94",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "19ff1d21",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "hello",
+            "nameLocation": "180:5:94",
+            "parameters": {
+              "id": 14237,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "185:2:94"
+            },
+            "returnParameters": {
+              "id": 14238,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "195:0:94"
+            },
+            "scope": 14241,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "NoSupportsInterfaceWithoutFallback",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 14236,
+          "nodeType": "StructuredDocumentation",
+          "src": "57:63:94",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          14241
+        ],
+        "name": "NoSupportsInterfaceWithoutFallback",
+        "nameLocation": "130:34:94",
+        "scope": 14242,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 94
+}

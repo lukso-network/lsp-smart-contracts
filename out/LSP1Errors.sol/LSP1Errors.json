@@ -1,0 +1,193 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP1UniversalReceiver/LSP1Errors.sol",
+    "id": 2406,
+    "exportedSymbols": {
+      "CallerNotLSP6LinkedTarget": [
+        2402
+      ],
+      "CannotRegisterEOAsAsAssets": [
+        2395
+      ],
+      "NativeTokensNotAccepted": [
+        2405
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:735:21",
+    "nodes": [
+      {
+        "id": 2390,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:21",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 2395,
+        "nodeType": "ErrorDefinition",
+        "src": "207:49:21",
+        "nodes": [],
+        "documentation": {
+          "id": 2391,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:142:21",
+          "text": " @dev reverts when EOA calls the `universalReceiver(..)` function with an asset/vault typeId\n @param caller The address of the EOA"
+        },
+        "errorSelector": "a5295345",
+        "name": "CannotRegisterEOAsAsAssets",
+        "nameLocation": "213:26:21",
+        "parameters": {
+          "id": 2394,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 2393,
+              "mutability": "mutable",
+              "name": "caller",
+              "nameLocation": "248:6:21",
+              "nodeType": "VariableDeclaration",
+              "scope": 2395,
+              "src": "240:14:21",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 2392,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "240:7:21",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "239:16:21"
+        }
+      },
+      {
+        "id": 2402,
+        "nodeType": "ErrorDefinition",
+        "src": "580:65:21",
+        "nodes": [],
+        "documentation": {
+          "id": 2396,
+          "nodeType": "StructuredDocumentation",
+          "src": "258:321:21",
+          "text": " @dev reverts when the account calling the UniversalReceiverDelegate is not the same account\n linked as target in the KeyManager -- Security Check\n @param account The address of the account implementing the `universalReceiver(..)` function\n @param target The address of the target linked to the KeyManager"
+        },
+        "errorSelector": "4c5e815a",
+        "name": "CallerNotLSP6LinkedTarget",
+        "nameLocation": "586:25:21",
+        "parameters": {
+          "id": 2401,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 2398,
+              "mutability": "mutable",
+              "name": "account",
+              "nameLocation": "620:7:21",
+              "nodeType": "VariableDeclaration",
+              "scope": 2402,
+              "src": "612:15:21",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 2397,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "612:7:21",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 2400,
+              "mutability": "mutable",
+              "name": "target",
+              "nameLocation": "637:6:21",
+              "nodeType": "VariableDeclaration",
+              "scope": 2402,
+              "src": "629:14:21",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 2399,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "629:7:21",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "611:33:21"
+        }
+      },
+      {
+        "id": 2405,
+        "nodeType": "ErrorDefinition",
+        "src": "741:32:21",
+        "nodes": [],
+        "documentation": {
+          "id": 2403,
+          "nodeType": "StructuredDocumentation",
+          "src": "647:93:21",
+          "text": " @dev reverts when `universalReceiver(...)` is called with a value different than 0"
+        },
+        "errorSelector": "114b721a",
+        "name": "NativeTokensNotAccepted",
+        "nameLocation": "747:23:21",
+        "parameters": {
+          "id": 2404,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "770:2:21"
+        }
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 21
+}

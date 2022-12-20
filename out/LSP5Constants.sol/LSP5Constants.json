@@ -1,0 +1,129 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP5ReceivedAssets/LSP5Constants.sol",
+    "id": 4313,
+    "exportedSymbols": {
+      "_LSP5_RECEIVED_ASSETS_ARRAY_KEY": [
+        4309
+      ],
+      "_LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX": [
+        4312
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:335:33",
+    "nodes": [
+      {
+        "id": 4306,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:33",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 4309,
+        "nodeType": "VariableDeclaration",
+        "src": "127:117:33",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_LSP5_RECEIVED_ASSETS_ARRAY_KEY",
+        "nameLocation": "144:31:33",
+        "scope": 4313,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes32",
+          "typeString": "bytes32"
+        },
+        "typeName": {
+          "id": 4307,
+          "name": "bytes32",
+          "nodeType": "ElementaryTypeName",
+          "src": "127:7:33",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes32",
+            "typeString": "bytes32"
+          }
+        },
+        "value": {
+          "hexValue": "307836343630656533633061616335363363636266373664366531643037626164613738653361393531346536333832623733366564336634373861623762393062",
+          "id": 4308,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "178:66:33",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_45402546410896718107141748213479673200423405609854952817184518844465406261515_by_1",
+            "typeString": "int_const 4540...(69 digits omitted)...1515"
+          },
+          "value": "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b"
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 4312,
+        "nodeType": "VariableDeclaration",
+        "src": "294:78:33",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_LSP5_RECEIVED_ASSETS_MAP_KEY_PREFIX",
+        "nameLocation": "311:36:33",
+        "scope": 4313,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes10",
+          "typeString": "bytes10"
+        },
+        "typeName": {
+          "id": 4310,
+          "name": "bytes10",
+          "nodeType": "ElementaryTypeName",
+          "src": "294:7:33",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes10",
+            "typeString": "bytes10"
+          }
+        },
+        "value": {
+          "hexValue": "30783831326334333334363333656238313663383064",
+          "id": 4311,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "350:22:33",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_610001775634047810586637_by_1",
+            "typeString": "int_const 610001775634047810586637"
+          },
+          "value": "0x812c4334633eb816c80d"
+        },
+        "visibility": "internal"
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 33
+}

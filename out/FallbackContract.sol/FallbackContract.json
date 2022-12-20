@@ -1,0 +1,166 @@
+{
+  "abi": [
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080604052348015600f57600080fd5b50603c80601d6000396000f3fe608060405200fea2646970667358221220b3207758c63b0d9508e59b6bfb21ca88b1100e8e5c4651f099efc9271366995564736f6c63430008110033",
+    "sourceMap": "113:64:101:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405200fea2646970667358221220b3207758c63b0d9508e59b6bfb21ca88b1100e8e5c4651f099efc9271366995564736f6c63430008110033",
+    "sourceMap": "113:64:101:-:0;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"stateMutability\":\"payable\",\"type\":\"fallback\"}],\"devdoc\":{\"details\":\"sample contract used for testing\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/FallbackContract.sol\":\"FallbackContract\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/FallbackContract.sol\":{\"keccak256\":\"0xd1eb696fc0a6a569112f32d548ff011f472c1811e16ee6d6dab1652fce995d7b\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://4a3787a8a8e80559c3fbc1837eda3221f644c063fbeae554e2eb586003310b8f\",\"dweb:/ipfs/QmevoauBvhT6Ti7EpRSsWyVB1ko7gBCk4KVbQovZN2aKXz\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "fallback"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/FallbackContract.sol": "FallbackContract"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/FallbackContract.sol": {
+        "keccak256": "0xd1eb696fc0a6a569112f32d548ff011f472c1811e16ee6d6dab1652fce995d7b",
+        "urls": [
+          "bzz-raw://4a3787a8a8e80559c3fbc1837eda3221f644c063fbeae554e2eb586003310b8f",
+          "dweb:/ipfs/QmevoauBvhT6Ti7EpRSsWyVB1ko7gBCk4KVbQovZN2aKXz"
+        ],
+        "license": "Apache-2.0"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/FallbackContract.sol",
+    "id": 15100,
+    "exportedSymbols": {
+      "FallbackContract": [
+        15099
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:139:101",
+    "nodes": [
+      {
+        "id": 15093,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:101",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 15099,
+        "nodeType": "ContractDefinition",
+        "src": "113:64:101",
+        "nodes": [
+          {
+            "id": 15098,
+            "nodeType": "FunctionDefinition",
+            "src": "145:30:101",
+            "nodes": [],
+            "body": {
+              "id": 15097,
+              "nodeType": "Block",
+              "src": "173:2:101",
+              "nodes": [],
+              "statements": []
+            },
+            "implemented": true,
+            "kind": "fallback",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 15095,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "153:2:101"
+            },
+            "returnParameters": {
+              "id": 15096,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "173:0:101"
+            },
+            "scope": 15099,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "FallbackContract",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 15094,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:48:101",
+          "text": " @dev sample contract used for testing"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          15099
+        ],
+        "name": "FallbackContract",
+        "nameLocation": "122:16:101",
+        "scope": 15100,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 101
+}

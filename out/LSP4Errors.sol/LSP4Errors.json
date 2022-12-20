@@ -1,0 +1,83 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP4DigitalAssetMetadata/LSP4Errors.sol",
+    "id": 4305,
+    "exportedSymbols": {
+      "LSP4TokenNameNotEditable": [
+        4301
+      ],
+      "LSP4TokenSymbolNotEditable": [
+        4304
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:824:32",
+    "nodes": [
+      {
+        "id": 4298,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:32",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 4301,
+        "nodeType": "ErrorDefinition",
+        "src": "426:33:32",
+        "nodes": [],
+        "documentation": {
+          "id": 4299,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:361:32",
+          "text": " @dev Reverts when trying to edit the data key `LSP4TokenName` after the digital asset contract has been deployed.\n      The `LSP4TokenName` data key is located inside the ERC725Y Data key-value store of the digital asset contract.\n      It can be set only once inside the constructor/initializer when the digital asset contract is being deployed."
+        },
+        "errorSelector": "85c169bd",
+        "name": "LSP4TokenNameNotEditable",
+        "nameLocation": "432:24:32",
+        "parameters": {
+          "id": 4300,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "456:2:32"
+        }
+      },
+      {
+        "id": 4304,
+        "nodeType": "ErrorDefinition",
+        "src": "827:35:32",
+        "nodes": [],
+        "documentation": {
+          "id": 4302,
+          "nodeType": "StructuredDocumentation",
+          "src": "461:365:32",
+          "text": " @dev Reverts when trying to edit the data key `LSP4TokenSymbol` after the digital asset contract has been deployed.\n      The `LSP4TokenSymbol` data key is located inside the ERC725Y Data key-value store of the digital asset contract.\n      It can be set only once inside the constructor/initializer when the digital asset contract is being deployed."
+        },
+        "errorSelector": "76755b38",
+        "name": "LSP4TokenSymbolNotEditable",
+        "nameLocation": "833:26:32",
+        "parameters": {
+          "id": 4303,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "859:2:32"
+        }
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 32
+}

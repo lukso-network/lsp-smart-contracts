@@ -1,0 +1,472 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "_proof",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_root",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_leaf",
+          "type": "bytes32"
+        }
+      ],
+      "name": "verifyMerkleProof",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b50610258806100206000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c8063ada4fa1814610030575b600080fd5b61004361003e366004610117565b610057565b604051901515815260200160405180910390f35b600061006484848461006c565b949350505050565b6000826100798584610082565b14949350505050565b600081815b84518110156100c7576100b3828683815181106100a6576100a66101e5565b60200260200101516100cf565b9150806100bf816101fb565b915050610087565b509392505050565b60008183106100eb5760008281526020849052604090206100fa565b60008381526020839052604090205b9392505050565b634e487b7160e01b600052604160045260246000fd5b60008060006060848603121561012c57600080fd5b833567ffffffffffffffff8082111561014457600080fd5b818601915086601f83011261015857600080fd5b813560208282111561016c5761016c610101565b8160051b604051601f19603f8301168101818110868211171561019157610191610101565b60405292835281830193508481018201928a8411156101af57600080fd5b948201945b838610156101cd578535855294820194938201936101b4565b9a918901359950506040909701359695505050505050565b634e487b7160e01b600052603260045260246000fd5b60006001820161021b57634e487b7160e01b600052601160045260246000fd5b506001019056fea2646970667358221220b99972a7d14fee8c46aa02544f948723ad6731fa87f0d6a3bd57bfe781e3390a64736f6c63430008110033",
+    "sourceMap": "166:237:118:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c8063ada4fa1814610030575b600080fd5b61004361003e366004610117565b610057565b604051901515815260200160405180910390f35b600061006484848461006c565b949350505050565b6000826100798584610082565b14949350505050565b600081815b84518110156100c7576100b3828683815181106100a6576100a66101e5565b60200260200101516100cf565b9150806100bf816101fb565b915050610087565b509392505050565b60008183106100eb5760008281526020849052604090206100fa565b60008381526020839052604090205b9392505050565b634e487b7160e01b600052604160045260246000fd5b60008060006060848603121561012c57600080fd5b833567ffffffffffffffff8082111561014457600080fd5b818601915086601f83011261015857600080fd5b813560208282111561016c5761016c610101565b8160051b604051601f19603f8301168101818110868211171561019157610191610101565b60405292835281830193508481018201928a8411156101af57600080fd5b948201945b838610156101cd578535855294820194938201936101b4565b9a918901359950506040909701359695505050505050565b634e487b7160e01b600052603260045260246000fd5b60006001820161021b57634e487b7160e01b600052601160045260246000fd5b506001019056fea2646970667358221220b99972a7d14fee8c46aa02544f948723ad6731fa87f0d6a3bd57bfe781e3390a64736f6c63430008110033",
+    "sourceMap": "166:237:118:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;198:203;;;;;;:::i;:::-;;:::i;:::-;;;1569:14:202;;1562:22;1544:41;;1532:2;1517:18;198:203:118;;;;;;;;331:4;354:40;373:6;381:5;388;354:18;:40::i;:::-;347:47;198:203;-1:-1:-1;;;;198:203:118:o;1153:184:195:-;1274:4;1326;1297:25;1310:5;1317:4;1297:12;:25::i;:::-;:33;;1153:184;-1:-1:-1;;;;1153:184:195:o;1991:290::-;2074:7;2116:4;2074:7;2130:116;2154:5;:12;2150:1;:16;2130:116;;;2202:33;2212:12;2226:5;2232:1;2226:8;;;;;;;;:::i;:::-;;;;;;;2202:9;:33::i;:::-;2187:48;-1:-1:-1;2168:3:195;;;;:::i;:::-;;;;2130:116;;;-1:-1:-1;2262:12:195;1991:290;-1:-1:-1;;;1991:290:195:o;8054:147::-;8117:7;8147:1;8143;:5;:51;;8275:13;8366:15;;;8401:4;8394:15;;;8447:4;8431:21;;8143:51;;;8275:13;8366:15;;;8401:4;8394:15;;;8447:4;8431:21;;8151:20;8136:58;8054:147;-1:-1:-1;;;8054:147:195:o;14:127:202:-;75:10;70:3;66:20;63:1;56:31;106:4;103:1;96:15;130:4;127:1;120:15;146:1253;248:6;256;264;317:2;305:9;296:7;292:23;288:32;285:52;;;333:1;330;323:12;285:52;373:9;360:23;402:18;443:2;435:6;432:14;429:34;;;459:1;456;449:12;429:34;497:6;486:9;482:22;472:32;;542:7;535:4;531:2;527:13;523:27;513:55;;564:1;561;554:12;513:55;600:2;587:16;622:4;645:2;641;638:10;635:36;;;651:18;;:::i;:::-;697:2;694:1;690:10;729:2;723:9;792:2;788:7;783:2;779;775:11;771:25;763:6;759:38;847:6;835:10;832:22;827:2;815:10;812:18;809:46;806:72;;;858:18;;:::i;:::-;894:2;887:22;944:18;;;978:15;;;;-1:-1:-1;1020:11:202;;;1016:20;;;1048:19;;;1045:39;;;1080:1;1077;1070:12;1045:39;1104:11;;;;1124:142;1140:6;1135:3;1132:15;1124:142;;;1206:17;;1194:30;;1157:12;;;;1244;;;;1124:142;;;1285:6;1323:18;;;1310:32;;-1:-1:-1;;1389:2:202;1374:18;;;1361:32;;146:1253;-1:-1:-1;;;;;;146:1253:202:o;1596:127::-;1657:10;1652:3;1648:20;1645:1;1638:31;1688:4;1685:1;1678:15;1712:4;1709:1;1702:15;1728:232;1767:3;1788:17;;;1785:140;;1847:10;1842:3;1838:20;1835:1;1828:31;1882:4;1879:1;1872:15;1910:4;1907:1;1900:15;1785:140;-1:-1:-1;1952:1:202;1941:13;;1728:232::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "verifyMerkleProof(bytes32[],bytes32,bytes32)": "ada4fa18"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"_proof\",\"type\":\"bytes32[]\"},{\"internalType\":\"bytes32\",\"name\":\"_root\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_leaf\",\"type\":\"bytes32\"}],\"name\":\"verifyMerkleProof\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/NFTStorage.sol\":\"NFTStorageMerkle\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/NFTStorage.sol\":{\"keccak256\":\"0x589b2144e87bca53f64670cafca2cf199f63a76b201f0e891cf951a399265e59\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://0ebef2be375ba6c37b3b7d8941814a2266c11b8434c74459e9118b1f349829cb\",\"dweb:/ipfs/QmNSS6tbq6CQGbb836RtQv57GRUHq9DS7Z7Dmafcy9ovML\"]},\"node_modules/@openzeppelin/contracts/utils/cryptography/MerkleProof.sol\":{\"keccak256\":\"0x596ed72a251d391b814a4aa19d7acb02ebdcc92ba27d3fff74a6f0c158b12ab7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d5f49013d50b1011c842f76e96f3c3f146ca7cb15084c8805575e0e0e1a5c700\",\"dweb:/ipfs/QmQ3n5qiuioUA74heD6ZddNkYg1kYihjQBNcy9zgwYXKgM\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32[]",
+              "name": "_proof",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_root",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_leaf",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "verifyMerkleProof",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/NFTStorage.sol": "NFTStorageMerkle"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/NFTStorage.sol": {
+        "keccak256": "0x589b2144e87bca53f64670cafca2cf199f63a76b201f0e891cf951a399265e59",
+        "urls": [
+          "bzz-raw://0ebef2be375ba6c37b3b7d8941814a2266c11b8434c74459e9118b1f349829cb",
+          "dweb:/ipfs/QmNSS6tbq6CQGbb836RtQv57GRUHq9DS7Z7Dmafcy9ovML"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@openzeppelin/contracts/utils/cryptography/MerkleProof.sol": {
+        "keccak256": "0x596ed72a251d391b814a4aa19d7acb02ebdcc92ba27d3fff74a6f0c158b12ab7",
+        "urls": [
+          "bzz-raw://d5f49013d50b1011c842f76e96f3c3f146ca7cb15084c8805575e0e0e1a5c700",
+          "dweb:/ipfs/QmQ3n5qiuioUA74heD6ZddNkYg1kYihjQBNcy9zgwYXKgM"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/NFTStorage.sol",
+    "id": 15650,
+    "exportedSymbols": {
+      "MerkleProof": [
+        46507
+      ],
+      "NFTStorageMerkle": [
+        15649
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:365:118",
+    "nodes": [
+      {
+        "id": 15626,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:118",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 15628,
+        "nodeType": "ImportDirective",
+        "src": "77:87:118",
+        "nodes": [],
+        "absolutePath": "node_modules/@openzeppelin/contracts/utils/cryptography/MerkleProof.sol",
+        "file": "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 15650,
+        "sourceUnit": 46508,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 15627,
+              "name": "MerkleProof",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 46507,
+              "src": "85:11:118",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 15649,
+        "nodeType": "ContractDefinition",
+        "src": "166:237:118",
+        "nodes": [
+          {
+            "id": 15648,
+            "nodeType": "FunctionDefinition",
+            "src": "198:203:118",
+            "nodes": [],
+            "body": {
+              "id": 15647,
+              "nodeType": "Block",
+              "src": "337:64:118",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 15642,
+                        "name": "_proof",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 15631,
+                        "src": "373:6:118",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                          "typeString": "bytes32[] memory"
+                        }
+                      },
+                      {
+                        "id": 15643,
+                        "name": "_root",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 15633,
+                        "src": "381:5:118",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "id": 15644,
+                        "name": "_leaf",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 15635,
+                        "src": "388:5:118",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                          "typeString": "bytes32[] memory"
+                        },
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "expression": {
+                        "id": 15640,
+                        "name": "MerkleProof",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 46507,
+                        "src": "354:11:118",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_MerkleProof_$46507_$",
+                          "typeString": "type(library MerkleProof)"
+                        }
+                      },
+                      "id": 15641,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberLocation": "366:6:118",
+                      "memberName": "verify",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 46029,
+                      "src": "354:18:118",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_array$_t_bytes32_$dyn_memory_ptr_$_t_bytes32_$_t_bytes32_$returns$_t_bool_$",
+                        "typeString": "function (bytes32[] memory,bytes32,bytes32) pure returns (bool)"
+                      }
+                    },
+                    "id": 15645,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "354:40:118",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 15639,
+                  "id": 15646,
+                  "nodeType": "Return",
+                  "src": "347:47:118"
+                }
+              ]
+            },
+            "functionSelector": "ada4fa18",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "verifyMerkleProof",
+            "nameLocation": "207:17:118",
+            "parameters": {
+              "id": 15636,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15631,
+                  "mutability": "mutable",
+                  "name": "_proof",
+                  "nameLocation": "251:6:118",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15648,
+                  "src": "234:23:118",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 15629,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "234:7:118",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 15630,
+                    "nodeType": "ArrayTypeName",
+                    "src": "234:9:118",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 15633,
+                  "mutability": "mutable",
+                  "name": "_root",
+                  "nameLocation": "275:5:118",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15648,
+                  "src": "267:13:118",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 15632,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "267:7:118",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 15635,
+                  "mutability": "mutable",
+                  "name": "_leaf",
+                  "nameLocation": "298:5:118",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15648,
+                  "src": "290:13:118",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 15634,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "290:7:118",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "224:85:118"
+            },
+            "returnParameters": {
+              "id": 15639,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15638,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15648,
+                  "src": "331:4:118",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 15637,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "331:4:118",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "330:6:118"
+            },
+            "scope": 15649,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "NFTStorageMerkle",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          15649
+        ],
+        "name": "NFTStorageMerkle",
+        "nameLocation": "175:16:118",
+        "scope": 15650,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 118
+}

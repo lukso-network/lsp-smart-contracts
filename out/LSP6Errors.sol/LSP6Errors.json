@@ -1,0 +1,1215 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP6KeyManager/LSP6Errors.sol",
+    "id": 5135,
+    "exportedSymbols": {
+      "AddressPermissionArrayIndexValueNotAnAddress": [
+        5086
+      ],
+      "BatchExecuteParamsLengthMismatch": [
+        5115
+      ],
+      "BatchExecuteRelayCallParamsLengthMismatch": [
+        5112
+      ],
+      "InvalidCompactByteArrayLengthElement": [
+        5134
+      ],
+      "InvalidERC725Function": [
+        5074
+      ],
+      "InvalidEncodedAllowedCalls": [
+        5079
+      ],
+      "InvalidEncodedAllowedERC725YDataKeys": [
+        5101
+      ],
+      "InvalidLSP6Target": [
+        5060
+      ],
+      "InvalidRelayNonce": [
+        5069
+      ],
+      "InvalidWhitelistedCall": [
+        5106
+      ],
+      "LSP6BatchExcessiveValueSent": [
+        5129
+      ],
+      "LSP6BatchInsufficientValueSent": [
+        5122
+      ],
+      "NoCallsAllowed": [
+        5096
+      ],
+      "NoERC725YDataKeysAllowed": [
+        5091
+      ],
+      "NoPermissionsSet": [
+        5029
+      ],
+      "NotAllowedCall": [
+        5045
+      ],
+      "NotAllowedERC725YDataKey": [
+        5052
+      ],
+      "NotAuthorised": [
+        5036
+      ],
+      "NotRecognisedPermissionKey": [
+        5057
+      ],
+      "ZeroDataKeyNotAllowed": [
+        5109
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:5616:37",
+    "nodes": [
+      {
+        "id": 5024,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:37",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 5029,
+        "nodeType": "ErrorDefinition",
+        "src": "245:37:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5025,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:180:37",
+          "text": " @dev reverts when address `from` does not have any permissions set\n on the account linked to this Key Manager\n @param from the address that does not have permissions"
+        },
+        "errorSelector": "f292052a",
+        "name": "NoPermissionsSet",
+        "nameLocation": "251:16:37",
+        "parameters": {
+          "id": 5028,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5027,
+              "mutability": "mutable",
+              "name": "from",
+              "nameLocation": "276:4:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5029,
+              "src": "268:12:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5026,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "268:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "267:14:37"
+        }
+      },
+      {
+        "id": 5036,
+        "nodeType": "ErrorDefinition",
+        "src": "471:53:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5030,
+          "nodeType": "StructuredDocumentation",
+          "src": "284:186:37",
+          "text": " @dev reverts when address `from` is not authorised to perform `permission` on the linked account\n @param permission permission required\n @param from address not-authorised"
+        },
+        "errorSelector": "3bdad6e6",
+        "name": "NotAuthorised",
+        "nameLocation": "477:13:37",
+        "parameters": {
+          "id": 5035,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5032,
+              "mutability": "mutable",
+              "name": "from",
+              "nameLocation": "499:4:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5036,
+              "src": "491:12:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5031,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "491:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5034,
+              "mutability": "mutable",
+              "name": "permission",
+              "nameLocation": "512:10:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5036,
+              "src": "505:17:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_memory_ptr",
+                "typeString": "string"
+              },
+              "typeName": {
+                "id": 5033,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "505:6:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "490:33:37"
+        }
+      },
+      {
+        "id": 5045,
+        "nodeType": "ErrorDefinition",
+        "src": "972:64:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5037,
+          "nodeType": "StructuredDocumentation",
+          "src": "526:445:37",
+          "text": " @dev reverts when `from` is not authorised to make the call because of a not allowed standard, address or function.\n @param from address making the request\n @param to the address of an EOA or contract that `from` is trying to interact with\n @param selector if `to` is a contract, the bytes4 selector of the function that `from` is trying to call.\n If no function is called (e.g: a native token transfer), selector = 0x00000000"
+        },
+        "errorSelector": "45147bce",
+        "name": "NotAllowedCall",
+        "nameLocation": "978:14:37",
+        "parameters": {
+          "id": 5044,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5039,
+              "mutability": "mutable",
+              "name": "from",
+              "nameLocation": "1001:4:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5045,
+              "src": "993:12:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5038,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "993:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5041,
+              "mutability": "mutable",
+              "name": "to",
+              "nameLocation": "1015:2:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5045,
+              "src": "1007:10:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5040,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1007:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5043,
+              "mutability": "mutable",
+              "name": "selector",
+              "nameLocation": "1026:8:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5045,
+              "src": "1019:15:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes4",
+                "typeString": "bytes4"
+              },
+              "typeName": {
+                "id": 5042,
+                "name": "bytes4",
+                "nodeType": "ElementaryTypeName",
+                "src": "1019:6:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes4",
+                  "typeString": "bytes4"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "992:43:37"
+        }
+      },
+      {
+        "id": 5052,
+        "nodeType": "ErrorDefinition",
+        "src": "1293:68:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5046,
+          "nodeType": "StructuredDocumentation",
+          "src": "1038:254:37",
+          "text": " @dev reverts when address `from` is not authorised to set the key `disallowedKey` on the linked account\n @param from address making the request\n @param disallowedKey a bytes32 key that `from` is not authorised to set on the ERC725Y storage"
+        },
+        "errorSelector": "557ae079",
+        "name": "NotAllowedERC725YDataKey",
+        "nameLocation": "1299:24:37",
+        "parameters": {
+          "id": 5051,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5048,
+              "mutability": "mutable",
+              "name": "from",
+              "nameLocation": "1332:4:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5052,
+              "src": "1324:12:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5047,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1324:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5050,
+              "mutability": "mutable",
+              "name": "disallowedKey",
+              "nameLocation": "1346:13:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5052,
+              "src": "1338:21:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 5049,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "1338:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "1323:37:37"
+        }
+      },
+      {
+        "id": 5057,
+        "nodeType": "ErrorDefinition",
+        "src": "1614:50:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5053,
+          "nodeType": "StructuredDocumentation",
+          "src": "1363:250:37",
+          "text": " @dev reverts when `dataKey` is a bytes32 that does not adhere to any of the\n      permission data keys specified by the LSP6 standard\n @param dataKey the dataKey that does not match with any of the standard LSP6 permission data keys"
+        },
+        "errorSelector": "0f7d735b",
+        "name": "NotRecognisedPermissionKey",
+        "nameLocation": "1620:26:37",
+        "parameters": {
+          "id": 5056,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5055,
+              "mutability": "mutable",
+              "name": "dataKey",
+              "nameLocation": "1655:7:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5057,
+              "src": "1647:15:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 5054,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "1647:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "1646:17:37"
+        }
+      },
+      {
+        "id": 5060,
+        "nodeType": "ErrorDefinition",
+        "src": "1801:26:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5058,
+          "nodeType": "StructuredDocumentation",
+          "src": "1666:134:37",
+          "text": " @dev reverts when the address provided as a target (= account) linked to this KeyManager is invalid\n      e.g. address(0)"
+        },
+        "errorSelector": "fc854579",
+        "name": "InvalidLSP6Target",
+        "nameLocation": "1807:17:37",
+        "parameters": {
+          "id": 5059,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "1824:2:37"
+        }
+      },
+      {
+        "id": 5069,
+        "nodeType": "ErrorDefinition",
+        "src": "2131:79:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5061,
+          "nodeType": "StructuredDocumentation",
+          "src": "1829:301:37",
+          "text": " @dev reverts when the `signer` address retrieved from the `signature` has an invalid nonce: `invalidNonce`.\n @param signer the address of the signer\n @param invalidNonce the nonce retrieved for the `signer` address\n @param signature the signature used to retrieve the `signer` address"
+        },
+        "errorSelector": "c9bd9eb9",
+        "name": "InvalidRelayNonce",
+        "nameLocation": "2137:17:37",
+        "parameters": {
+          "id": 5068,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5063,
+              "mutability": "mutable",
+              "name": "signer",
+              "nameLocation": "2163:6:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5069,
+              "src": "2155:14:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5062,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "2155:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5065,
+              "mutability": "mutable",
+              "name": "invalidNonce",
+              "nameLocation": "2179:12:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5069,
+              "src": "2171:20:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 5064,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "2171:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5067,
+              "mutability": "mutable",
+              "name": "signature",
+              "nameLocation": "2199:9:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5069,
+              "src": "2193:15:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes_memory_ptr",
+                "typeString": "bytes"
+              },
+              "typeName": {
+                "id": 5066,
+                "name": "bytes",
+                "nodeType": "ElementaryTypeName",
+                "src": "2193:5:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes_storage_ptr",
+                  "typeString": "bytes"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "2154:55:37"
+        }
+      },
+      {
+        "id": 5074,
+        "nodeType": "ErrorDefinition",
+        "src": "2395:52:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5070,
+          "nodeType": "StructuredDocumentation",
+          "src": "2212:182:37",
+          "text": " @dev reverts when trying to run an invalid function on the linked target account via the Key Manager.\n @param invalidFunction the bytes4 selector of the invalid function"
+        },
+        "errorSelector": "2ba8851c",
+        "name": "InvalidERC725Function",
+        "nameLocation": "2401:21:37",
+        "parameters": {
+          "id": 5073,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5072,
+              "mutability": "mutable",
+              "name": "invalidFunction",
+              "nameLocation": "2430:15:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5074,
+              "src": "2423:22:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes4",
+                "typeString": "bytes4"
+              },
+              "typeName": {
+                "id": 5071,
+                "name": "bytes4",
+                "nodeType": "ElementaryTypeName",
+                "src": "2423:6:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes4",
+                  "typeString": "bytes4"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "2422:24:37"
+        }
+      },
+      {
+        "id": 5079,
+        "nodeType": "ErrorDefinition",
+        "src": "2703:58:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5075,
+          "nodeType": "StructuredDocumentation",
+          "src": "2449:253:37",
+          "text": " @dev reverts when `allowedCallsValue` is not properly encoded as a bytes28[CompactBytesArray]\n (CompactBytesArray of bytes28 entries). See LSP2 value type `CompactBytesArray` for details.\n @param allowedCallsValue the list of allowedCalls"
+        },
+        "errorSelector": "187e77ab",
+        "name": "InvalidEncodedAllowedCalls",
+        "nameLocation": "2709:26:37",
+        "parameters": {
+          "id": 5078,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5077,
+              "mutability": "mutable",
+              "name": "allowedCallsValue",
+              "nameLocation": "2742:17:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5079,
+              "src": "2736:23:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes_memory_ptr",
+                "typeString": "bytes"
+              },
+              "typeName": {
+                "id": 5076,
+                "name": "bytes",
+                "nodeType": "ElementaryTypeName",
+                "src": "2736:5:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes_storage_ptr",
+                  "typeString": "bytes"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "2735:25:37"
+        }
+      },
+      {
+        "id": 5086,
+        "nodeType": "ErrorDefinition",
+        "src": "3031:88:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5080,
+          "nodeType": "StructuredDocumentation",
+          "src": "2763:267:37",
+          "text": " @dev reverts when trying to set a value that is not 20 bytes long under AddressPermissions[index]\n @param dataKey the AddressPermissions[index] data key\n @param invalidValue the invalid value that was attempted to be set under AddressPermissions[index]"
+        },
+        "errorSelector": "8f4afa38",
+        "name": "AddressPermissionArrayIndexValueNotAnAddress",
+        "nameLocation": "3037:44:37",
+        "parameters": {
+          "id": 5085,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5082,
+              "mutability": "mutable",
+              "name": "dataKey",
+              "nameLocation": "3090:7:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5086,
+              "src": "3082:15:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 5081,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "3082:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5084,
+              "mutability": "mutable",
+              "name": "invalidValue",
+              "nameLocation": "3105:12:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5086,
+              "src": "3099:18:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes_memory_ptr",
+                "typeString": "bytes"
+              },
+              "typeName": {
+                "id": 5083,
+                "name": "bytes",
+                "nodeType": "ElementaryTypeName",
+                "src": "3099:5:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes_storage_ptr",
+                  "typeString": "bytes"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "3081:37:37"
+        }
+      },
+      {
+        "id": 5091,
+        "nodeType": "ErrorDefinition",
+        "src": "3265:45:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5087,
+          "nodeType": "StructuredDocumentation",
+          "src": "3121:143:37",
+          "text": " @dev reverts if there are no AllowedERC725YDataKeys set for the caller\n @param from the address that has no AllowedERC725YDataKeys"
+        },
+        "errorSelector": "ed7fa509",
+        "name": "NoERC725YDataKeysAllowed",
+        "nameLocation": "3271:24:37",
+        "parameters": {
+          "id": 5090,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5089,
+              "mutability": "mutable",
+              "name": "from",
+              "nameLocation": "3304:4:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5091,
+              "src": "3296:12:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5088,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "3296:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "3295:14:37"
+        }
+      },
+      {
+        "id": 5096,
+        "nodeType": "ErrorDefinition",
+        "src": "3433:35:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5092,
+          "nodeType": "StructuredDocumentation",
+          "src": "3312:120:37",
+          "text": " @dev reverts if there are no allowed calls set for `from`\n @param from the address that has no AllowedCalls"
+        },
+        "errorSelector": "6cb60587",
+        "name": "NoCallsAllowed",
+        "nameLocation": "3439:14:37",
+        "parameters": {
+          "id": 5095,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5094,
+              "mutability": "mutable",
+              "name": "from",
+              "nameLocation": "3462:4:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5096,
+              "src": "3454:12:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5093,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "3454:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "3453:14:37"
+        }
+      },
+      {
+        "id": 5101,
+        "nodeType": "ErrorDefinition",
+        "src": "3619:56:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5097,
+          "nodeType": "StructuredDocumentation",
+          "src": "3470:148:37",
+          "text": " @dev reverts when `value` is not encoded properly using the CompactBytesArray\n @param value the value to check for an CompactBytesArray"
+        },
+        "errorSelector": "4f0dfdda",
+        "name": "InvalidEncodedAllowedERC725YDataKeys",
+        "nameLocation": "3625:36:37",
+        "parameters": {
+          "id": 5100,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5099,
+              "mutability": "mutable",
+              "name": "value",
+              "nameLocation": "3668:5:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5101,
+              "src": "3662:11:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes_memory_ptr",
+                "typeString": "bytes"
+              },
+              "typeName": {
+                "id": 5098,
+                "name": "bytes",
+                "nodeType": "ElementaryTypeName",
+                "src": "3662:5:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes_storage_ptr",
+                  "typeString": "bytes"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "3661:13:37"
+        }
+      },
+      {
+        "id": 5106,
+        "nodeType": "ErrorDefinition",
+        "src": "4051:43:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5102,
+          "nodeType": "StructuredDocumentation",
+          "src": "3677:373:37",
+          "text": " @dev a `from` address is not allowed to have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n in its list of AddressPermissions:AllowedCalls:<address>, as this allows any STANDARD:ADDRESS:FUNCTION.\n This is equivalent to granting the SUPER permission and should never be valid.\n @param from the address that has any allowed calls whitelisted."
+        },
+        "errorSelector": "6fd203c5",
+        "name": "InvalidWhitelistedCall",
+        "nameLocation": "4057:22:37",
+        "parameters": {
+          "id": 5105,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5104,
+              "mutability": "mutable",
+              "name": "from",
+              "nameLocation": "4088:4:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5106,
+              "src": "4080:12:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 5103,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "4080:7:37",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "4079:14:37"
+        }
+      },
+      {
+        "id": 5109,
+        "nodeType": "ErrorDefinition",
+        "src": "4235:30:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5107,
+          "nodeType": "StructuredDocumentation",
+          "src": "4096:138:37",
+          "text": " @dev reverts when trying to set the following data key:\n \"0x0000000000000000000000000000000000000000000000000000000000000000\""
+        },
+        "errorSelector": "b762fbba",
+        "name": "ZeroDataKeyNotAllowed",
+        "nameLocation": "4241:21:37",
+        "parameters": {
+          "id": 5108,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "4262:2:37"
+        }
+      },
+      {
+        "id": 5112,
+        "nodeType": "ErrorDefinition",
+        "src": "4391:50:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5110,
+          "nodeType": "StructuredDocumentation",
+          "src": "4267:123:37",
+          "text": " @dev reverts when providing array parameters of different sizes to `executeRelayCall(bytes[],uint256[],bytes[])`"
+        },
+        "errorSelector": "b4d50d21",
+        "name": "BatchExecuteRelayCallParamsLengthMismatch",
+        "nameLocation": "4397:41:37",
+        "parameters": {
+          "id": 5111,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "4438:2:37"
+        }
+      },
+      {
+        "id": 5115,
+        "nodeType": "ErrorDefinition",
+        "src": "4659:41:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5113,
+          "nodeType": "StructuredDocumentation",
+          "src": "4443:215:37",
+          "text": " @dev there should be the same number of elements for each array parameters\n in the following batch functions:\n  - execute(uint256[],bytes[])\n  - executeRelayCall(bytes[],uint256[],uint256[],bytes[])"
+        },
+        "errorSelector": "55a187db",
+        "name": "BatchExecuteParamsLengthMismatch",
+        "nameLocation": "4665:32:37",
+        "parameters": {
+          "id": 5114,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "4697:2:37"
+        }
+      },
+      {
+        "id": 5122,
+        "nodeType": "ErrorDefinition",
+        "src": "4974:76:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5116,
+          "nodeType": "StructuredDocumentation",
+          "src": "4702:271:37",
+          "text": " @dev the `msg.value` sent is not enough to cover the sum of all the values being\n forwarded on each payloads (`values[]` parameter) in the following batch functions:\n  - execute(uint256[],bytes[])\n  - executeRelayCall(bytes[],uint256[],uint256[],bytes[])"
+        },
+        "errorSelector": "30a324ac",
+        "name": "LSP6BatchInsufficientValueSent",
+        "nameLocation": "4980:30:37",
+        "parameters": {
+          "id": 5121,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5118,
+              "mutability": "mutable",
+              "name": "totalValues",
+              "nameLocation": "5019:11:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5122,
+              "src": "5011:19:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 5117,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "5011:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5120,
+              "mutability": "mutable",
+              "name": "msgValue",
+              "nameLocation": "5040:8:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5122,
+              "src": "5032:16:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 5119,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "5032:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "5010:39:37"
+        }
+      },
+      {
+        "id": 5129,
+        "nodeType": "ErrorDefinition",
+        "src": "5436:73:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5123,
+          "nodeType": "StructuredDocumentation",
+          "src": "5052:383:37",
+          "text": " @dev reverts to avoid the KeyManager to holds some remaining funds sent\n to the following batch functions:\n  - execute(uint256[],bytes[])\n  - executeRelayCall(bytes[],uint256[],uint256[],bytes[])\n This error occurs when `msg.value` is more than the sum of all the values being\n forwarded on each payloads (`values[]` parameter from the batch functions above)."
+        },
+        "errorSelector": "a51868b6",
+        "name": "LSP6BatchExcessiveValueSent",
+        "nameLocation": "5442:27:37",
+        "parameters": {
+          "id": 5128,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5125,
+              "mutability": "mutable",
+              "name": "totalValues",
+              "nameLocation": "5478:11:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5129,
+              "src": "5470:19:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 5124,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "5470:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 5127,
+              "mutability": "mutable",
+              "name": "msgValue",
+              "nameLocation": "5499:8:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5129,
+              "src": "5491:16:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 5126,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "5491:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "5469:39:37"
+        }
+      },
+      {
+        "id": 5134,
+        "nodeType": "ErrorDefinition",
+        "src": "5588:66:37",
+        "nodes": [],
+        "documentation": {
+          "id": 5130,
+          "nodeType": "StructuredDocumentation",
+          "src": "5511:76:37",
+          "text": " @dev reverts when CompatactBytesArray length element is not valid"
+        },
+        "errorSelector": "9f2cb4db",
+        "name": "InvalidCompactByteArrayLengthElement",
+        "nameLocation": "5594:36:37",
+        "parameters": {
+          "id": 5133,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 5132,
+              "mutability": "mutable",
+              "name": "invalidLength",
+              "nameLocation": "5639:13:37",
+              "nodeType": "VariableDeclaration",
+              "scope": 5134,
+              "src": "5631:21:37",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 5131,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "5631:7:37",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "5630:23:37"
+        }
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 37
+}

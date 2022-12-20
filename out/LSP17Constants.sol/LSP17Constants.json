@@ -1,0 +1,176 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP17ContractExtension/LSP17Constants.sol",
+    "id": 2136,
+    "exportedSymbols": {
+      "_INTERFACEID_LSP17_EXTENDABLE": [
+        2129
+      ],
+      "_INTERFACEID_LSP17_EXTENSION": [
+        2132
+      ],
+      "_LSP17_EXTENSION_PREFIX": [
+        2135
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:418:15",
+    "nodes": [
+      {
+        "id": 2126,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:15",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 2129,
+        "nodeType": "VariableDeclaration",
+        "src": "134:58:15",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_INTERFACEID_LSP17_EXTENDABLE",
+        "nameLocation": "150:29:15",
+        "scope": 2136,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes4",
+          "typeString": "bytes4"
+        },
+        "typeName": {
+          "id": 2127,
+          "name": "bytes4",
+          "nodeType": "ElementaryTypeName",
+          "src": "134:6:15",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes4",
+            "typeString": "bytes4"
+          }
+        },
+        "value": {
+          "hexValue": "30786139313866613662",
+          "id": 2128,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "182:10:15",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_2836986475_by_1",
+            "typeString": "int_const 2836986475"
+          },
+          "value": "0xa918fa6b"
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 2132,
+        "nodeType": "VariableDeclaration",
+        "src": "235:57:15",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_INTERFACEID_LSP17_EXTENSION",
+        "nameLocation": "251:28:15",
+        "scope": 2136,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes4",
+          "typeString": "bytes4"
+        },
+        "typeName": {
+          "id": 2130,
+          "name": "bytes4",
+          "nodeType": "ElementaryTypeName",
+          "src": "235:6:15",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes4",
+            "typeString": "bytes4"
+          }
+        },
+        "value": {
+          "hexValue": "30786365653738623430",
+          "id": 2131,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "282:10:15",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_3471280960_by_1",
+            "typeString": "int_const 3471280960"
+          },
+          "value": "0xcee78b40"
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 2135,
+        "nodeType": "VariableDeclaration",
+        "src": "390:65:15",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "_LSP17_EXTENSION_PREFIX",
+        "nameLocation": "407:23:15",
+        "scope": 2136,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes10",
+          "typeString": "bytes10"
+        },
+        "typeName": {
+          "id": 2133,
+          "name": "bytes10",
+          "nodeType": "ElementaryTypeName",
+          "src": "390:7:15",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes10",
+            "typeString": "bytes10"
+          }
+        },
+        "value": {
+          "hexValue": "30786365653738623430393464613836303131303936",
+          "id": 2134,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "433:22:15",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_977078727535809873907862_by_1",
+            "typeString": "int_const 977078727535809873907862"
+          },
+          "value": "0xcee78b4094da86011096"
+        },
+        "visibility": "internal"
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 15
+}

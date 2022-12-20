@@ -1,0 +1,689 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP8IdentifiableDigitalAsset/LSP8Errors.sol",
+    "id": 10050,
+    "exportedSymbols": {
+      "LSP8CannotSendToAddressZero": [
+        10021
+      ],
+      "LSP8CannotSendToSelf": [
+        10024
+      ],
+      "LSP8CannotUseAddressZeroAsOperator": [
+        10018
+      ],
+      "LSP8InvalidTransferBatch": [
+        10039
+      ],
+      "LSP8NonExistentTokenId": [
+        9992
+      ],
+      "LSP8NonExistingOperator": [
+        10031
+      ],
+      "LSP8NotTokenOperator": [
+        10008
+      ],
+      "LSP8NotTokenOwner": [
+        10001
+      ],
+      "LSP8NotifyTokenReceiverContractMissingLSP1Interface": [
+        10044
+      ],
+      "LSP8NotifyTokenReceiverIsEOA": [
+        10049
+      ],
+      "LSP8OperatorAlreadyAuthorized": [
+        10015
+      ],
+      "LSP8TokenIdAlreadyMinted": [
+        10036
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "36:1765:64",
+    "nodes": [
+      {
+        "id": 9987,
+        "nodeType": "PragmaDirective",
+        "src": "36:23:64",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 9992,
+        "nodeType": "ErrorDefinition",
+        "src": "136:46:64",
+        "nodes": [],
+        "documentation": {
+          "id": 9988,
+          "nodeType": "StructuredDocumentation",
+          "src": "76:59:64",
+          "text": " @dev reverts when `tokenId` has not been minted."
+        },
+        "errorSelector": "ae8f9a36",
+        "name": "LSP8NonExistentTokenId",
+        "nameLocation": "142:22:64",
+        "parameters": {
+          "id": 9991,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 9990,
+              "mutability": "mutable",
+              "name": "tokenId",
+              "nameLocation": "173:7:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 9992,
+              "src": "165:15:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 9989,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "165:7:64",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "164:17:64"
+        }
+      },
+      {
+        "id": 10001,
+        "nodeType": "ErrorDefinition",
+        "src": "264:77:64",
+        "nodes": [],
+        "documentation": {
+          "id": 9993,
+          "nodeType": "StructuredDocumentation",
+          "src": "184:79:64",
+          "text": " @dev reverts when `caller` is not the `tokenOwner` of the `tokenId`."
+        },
+        "errorSelector": "5b271ea2",
+        "name": "LSP8NotTokenOwner",
+        "nameLocation": "270:17:64",
+        "parameters": {
+          "id": 10000,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 9995,
+              "mutability": "mutable",
+              "name": "tokenOwner",
+              "nameLocation": "296:10:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10001,
+              "src": "288:18:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 9994,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "288:7:64",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 9997,
+              "mutability": "mutable",
+              "name": "tokenId",
+              "nameLocation": "316:7:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10001,
+              "src": "308:15:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 9996,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "308:7:64",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 9999,
+              "mutability": "mutable",
+              "name": "caller",
+              "nameLocation": "333:6:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10001,
+              "src": "325:14:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 9998,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "325:7:64",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "287:53:64"
+        }
+      },
+      {
+        "id": 10008,
+        "nodeType": "ErrorDefinition",
+        "src": "423:60:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10002,
+          "nodeType": "StructuredDocumentation",
+          "src": "343:79:64",
+          "text": " @dev reverts when `caller` is not an allowed operator for `tokenId`."
+        },
+        "errorSelector": "1294d2a9",
+        "name": "LSP8NotTokenOperator",
+        "nameLocation": "429:20:64",
+        "parameters": {
+          "id": 10007,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 10004,
+              "mutability": "mutable",
+              "name": "tokenId",
+              "nameLocation": "458:7:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10008,
+              "src": "450:15:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 10003,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "450:7:64",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 10006,
+              "mutability": "mutable",
+              "name": "caller",
+              "nameLocation": "475:6:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10008,
+              "src": "467:14:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 10005,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "467:7:64",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "449:33:64"
+        }
+      },
+      {
+        "id": 10015,
+        "nodeType": "ErrorDefinition",
+        "src": "566:71:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10009,
+          "nodeType": "StructuredDocumentation",
+          "src": "485:80:64",
+          "text": " @dev reverts when `operator` is already authorized for the `tokenId`."
+        },
+        "errorSelector": "a7626b68",
+        "name": "LSP8OperatorAlreadyAuthorized",
+        "nameLocation": "572:29:64",
+        "parameters": {
+          "id": 10014,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 10011,
+              "mutability": "mutable",
+              "name": "operator",
+              "nameLocation": "610:8:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10015,
+              "src": "602:16:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 10010,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "602:7:64",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 10013,
+              "mutability": "mutable",
+              "name": "tokenId",
+              "nameLocation": "628:7:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10015,
+              "src": "620:15:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 10012,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "620:7:64",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "601:35:64"
+        }
+      },
+      {
+        "id": 10018,
+        "nodeType": "ErrorDefinition",
+        "src": "715:43:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10016,
+          "nodeType": "StructuredDocumentation",
+          "src": "639:75:64",
+          "text": " @dev reverts when trying to set the zero address as an operator."
+        },
+        "errorSelector": "9577b8b3",
+        "name": "LSP8CannotUseAddressZeroAsOperator",
+        "nameLocation": "721:34:64",
+        "parameters": {
+          "id": 10017,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "755:2:64"
+        }
+      },
+      {
+        "id": 10021,
+        "nodeType": "ErrorDefinition",
+        "src": "831:36:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10019,
+          "nodeType": "StructuredDocumentation",
+          "src": "760:70:64",
+          "text": " @dev reverts when trying to send token to the zero address."
+        },
+        "errorSelector": "24ecef4d",
+        "name": "LSP8CannotSendToAddressZero",
+        "nameLocation": "837:27:64",
+        "parameters": {
+          "id": 10020,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "864:2:64"
+        }
+      },
+      {
+        "id": 10024,
+        "nodeType": "ErrorDefinition",
+        "src": "967:29:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10022,
+          "nodeType": "StructuredDocumentation",
+          "src": "869:97:64",
+          "text": " @dev reverts when specifying the same address for `from` and `to` in a token transfer."
+        },
+        "errorSelector": "5d67d6c1",
+        "name": "LSP8CannotSendToSelf",
+        "nameLocation": "973:20:64",
+        "parameters": {
+          "id": 10023,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "993:2:64"
+        }
+      },
+      {
+        "id": 10031,
+        "nodeType": "ErrorDefinition",
+        "src": "1076:65:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10025,
+          "nodeType": "StructuredDocumentation",
+          "src": "998:77:64",
+          "text": " @dev reverts when `operator` is not an operator for the `tokenId`."
+        },
+        "errorSelector": "4aa31a8c",
+        "name": "LSP8NonExistingOperator",
+        "nameLocation": "1082:23:64",
+        "parameters": {
+          "id": 10030,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 10027,
+              "mutability": "mutable",
+              "name": "operator",
+              "nameLocation": "1114:8:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10031,
+              "src": "1106:16:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 10026,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1106:7:64",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 10029,
+              "mutability": "mutable",
+              "name": "tokenId",
+              "nameLocation": "1132:7:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10031,
+              "src": "1124:15:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 10028,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "1124:7:64",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "1105:35:64"
+        }
+      },
+      {
+        "id": 10036,
+        "nodeType": "ErrorDefinition",
+        "src": "1207:48:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10032,
+          "nodeType": "StructuredDocumentation",
+          "src": "1143:63:64",
+          "text": " @dev reverts when `tokenId` has already been minted."
+        },
+        "errorSelector": "34c7b511",
+        "name": "LSP8TokenIdAlreadyMinted",
+        "nameLocation": "1213:24:64",
+        "parameters": {
+          "id": 10035,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 10034,
+              "mutability": "mutable",
+              "name": "tokenId",
+              "nameLocation": "1246:7:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10036,
+              "src": "1238:15:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              },
+              "typeName": {
+                "id": 10033,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "1238:7:64",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "1237:17:64"
+        }
+      },
+      {
+        "id": 10039,
+        "nodeType": "ErrorDefinition",
+        "src": "1350:33:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10037,
+          "nodeType": "StructuredDocumentation",
+          "src": "1257:92:64",
+          "text": " @dev reverts when the parameters used for `transferBatch` have different lengths."
+        },
+        "errorSelector": "93a83119",
+        "name": "LSP8InvalidTransferBatch",
+        "nameLocation": "1356:24:64",
+        "parameters": {
+          "id": 10038,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "1380:2:64"
+        }
+      },
+      {
+        "id": 10044,
+        "nodeType": "ErrorDefinition",
+        "src": "1529:81:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10040,
+          "nodeType": "StructuredDocumentation",
+          "src": "1385:143:64",
+          "text": " @dev reverts if the `tokenReceiver` does not implement LSP1\n when minting or transferring tokens with `bool force` set as `false`."
+        },
+        "errorSelector": "4349776d",
+        "name": "LSP8NotifyTokenReceiverContractMissingLSP1Interface",
+        "nameLocation": "1535:51:64",
+        "parameters": {
+          "id": 10043,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 10042,
+              "mutability": "mutable",
+              "name": "tokenReceiver",
+              "nameLocation": "1595:13:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10044,
+              "src": "1587:21:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 10041,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1587:7:64",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "1586:23:64"
+        }
+      },
+      {
+        "id": 10049,
+        "nodeType": "ErrorDefinition",
+        "src": "1742:58:64",
+        "nodes": [],
+        "documentation": {
+          "id": 10045,
+          "nodeType": "StructuredDocumentation",
+          "src": "1612:129:64",
+          "text": " @dev reverts if the `tokenReceiver` is an EOA\n when minting or transferring tokens with `bool force` set as `false`."
+        },
+        "errorSelector": "03173137",
+        "name": "LSP8NotifyTokenReceiverIsEOA",
+        "nameLocation": "1748:28:64",
+        "parameters": {
+          "id": 10048,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 10047,
+              "mutability": "mutable",
+              "name": "tokenReceiver",
+              "nameLocation": "1785:13:64",
+              "nodeType": "VariableDeclaration",
+              "scope": 10049,
+              "src": "1777:21:64",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 10046,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1777:7:64",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "1776:23:64"
+        }
+      }
+    ],
+    "license": "CC0-1.0"
+  },
+  "id": 64
+}

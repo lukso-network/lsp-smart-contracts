@@ -1,0 +1,237 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "age",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080604052348015600f57600080fd5b50607780601d6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063262a9dff14602d575b600080fd5b601460405190815260200160405180910390f3fea26469706673582212201c57aa4262bdcc678bcd3d2ccd6e3034400575a4216a77429da84aa02a316ae064736f6c63430008110033",
+    "sourceMap": "128:109:102:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063262a9dff14602d575b600080fd5b601460405190815260200160405180910390f3fea26469706673582212201c57aa4262bdcc678bcd3d2ccd6e3034400575a4216a77429da84aa02a316ae064736f6c63430008110033",
+    "sourceMap": "128:109:102:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;156:79;226:2;156:79;;160:25:202;;;148:2;133:18;156:79:102;;;;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "age()": "262a9dff"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"age\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/FallbackExtensions/AgeExtension.sol\":\"AgeExtension\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/FallbackExtensions/AgeExtension.sol\":{\"keccak256\":\"0x03d2db72ed98d81196a4a76c1af10b79db5b4d9c752b02060dc3aef11427c448\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://681bc2f3241fcea8e3e5d18b189e4aaa70d3737e766b1b74185f57ba32abf85a\",\"dweb:/ipfs/QmdCqgN8L5XpMJ99VX6iBdbbssmuzKpfWpHmF6zdDvJHJT\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "age",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/FallbackExtensions/AgeExtension.sol": "AgeExtension"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/FallbackExtensions/AgeExtension.sol": {
+        "keccak256": "0x03d2db72ed98d81196a4a76c1af10b79db5b4d9c752b02060dc3aef11427c448",
+        "urls": [
+          "bzz-raw://681bc2f3241fcea8e3e5d18b189e4aaa70d3737e766b1b74185f57ba32abf85a",
+          "dweb:/ipfs/QmdCqgN8L5XpMJ99VX6iBdbbssmuzKpfWpHmF6zdDvJHJT"
+        ],
+        "license": "Apache-2.0"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/FallbackExtensions/AgeExtension.sol",
+    "id": 15112,
+    "exportedSymbols": {
+      "AgeExtension": [
+        15111
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:199:102",
+    "nodes": [
+      {
+        "id": 15101,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:102",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 15111,
+        "nodeType": "ContractDefinition",
+        "src": "128:109:102",
+        "nodes": [
+          {
+            "id": 15110,
+            "nodeType": "FunctionDefinition",
+            "src": "156:79:102",
+            "nodes": [],
+            "body": {
+              "id": 15109,
+              "nodeType": "Block",
+              "src": "209:26:102",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "hexValue": "3230",
+                    "id": 15107,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "number",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "226:2:102",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_rational_20_by_1",
+                      "typeString": "int_const 20"
+                    },
+                    "value": "20"
+                  },
+                  "functionReturnParameters": 15106,
+                  "id": 15108,
+                  "nodeType": "Return",
+                  "src": "219:9:102"
+                }
+              ]
+            },
+            "functionSelector": "262a9dff",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "age",
+            "nameLocation": "165:3:102",
+            "parameters": {
+              "id": 15103,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "168:2:102"
+            },
+            "returnParameters": {
+              "id": 15106,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15105,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15110,
+                  "src": "200:7:102",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 15104,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "200:7:102",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "199:9:102"
+            },
+            "scope": 15111,
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "AgeExtension",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 15102,
+          "nodeType": "StructuredDocumentation",
+          "src": "64:63:102",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          15111
+        ],
+        "name": "AgeExtension",
+        "nameLocation": "137:12:102",
+        "scope": 15112,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 102
+}

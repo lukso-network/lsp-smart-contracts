@@ -1,0 +1,336 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5060c78061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806301ffc9a714602d575b600080fd5b604e60383660046062565b6001600160e01b031916636676749760e01b1490565b604051901515815260200160405180910390f35b600060208284031215607357600080fd5b81356001600160e01b031981168114608a57600080fd5b939250505056fea2646970667358221220771db3c64b48431b415d3b268bd9c9edc7d97545966bcbead9d86366ec32f64964736f6c63430008110033",
+    "sourceMap": "174:181:96:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806301ffc9a714602d575b600080fd5b604e60383660046062565b6001600160e01b031916636676749760e01b1490565b604051901515815260200160405180910390f35b600060208284031215607357600080fd5b81356001600160e01b031981168114608a57600080fd5b939250505056fea2646970667358221220771db3c64b48431b415d3b268bd9c9edc7d97545966bcbead9d86366ec32f64964736f6c63430008110033",
+    "sourceMap": "174:181:96:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;215:138;;;;;;:::i;:::-;-1:-1:-1;;;;;;314:32:96;-1:-1:-1;;;314:32:96;;215:138;;;;470:14:202;;463:22;445:41;;433:2;418:18;215:138:96;;;;;;;14:286:202;72:6;125:2;113:9;104:7;100:23;96:32;93:52;;;141:1;138;131:12;93:52;167:23;;-1:-1:-1;;;;;;219:32:202;;209:43;;199:71;;266:1;263;256:12;199:71;289:5;14:286;-1:-1:-1;;;14:286:202:o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This contract is used only for testing purposes\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/ERC165/SupportsInterfaceOnlyLSP0.sol\":\"SupportsInterfaceOnlyLSP0\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/LSP0ERC725Account/LSP0Constants.sol\":{\"keccak256\":\"0xe1a269b644f96fe7c89abe199832ba17239ba3a650a069881e75de9fd634ba04\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://054eff9745e8400f78ea870428ff858e95caa583352367ea020ff350ce3fd6c5\",\"dweb:/ipfs/QmRNHrwDh1DXCAtQi8Pg1XnkYK5b29ApcERVf4B3guE2nw\"]},\"contracts/Mocks/ERC165/SupportsInterfaceOnlyLSP0.sol\":{\"keccak256\":\"0x155b3f874ee9c82aaa997e315f1b64cc9ead452f22401efafe0dcd8d093009dd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://792dd33c66ab44f2cc9c0a239a5011e2ac2346ceaf304745bf4cbaf769ca3a34\",\"dweb:/ipfs/QmbwE4u6yJPzYfHed2ucB8PNAPJVbFpM1W9noqC46rzViF\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/ERC165/SupportsInterfaceOnlyLSP0.sol": "SupportsInterfaceOnlyLSP0"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/LSP0ERC725Account/LSP0Constants.sol": {
+        "keccak256": "0xe1a269b644f96fe7c89abe199832ba17239ba3a650a069881e75de9fd634ba04",
+        "urls": [
+          "bzz-raw://054eff9745e8400f78ea870428ff858e95caa583352367ea020ff350ce3fd6c5",
+          "dweb:/ipfs/QmRNHrwDh1DXCAtQi8Pg1XnkYK5b29ApcERVf4B3guE2nw"
+        ],
+        "license": "Apache-2.0"
+      },
+      "contracts/Mocks/ERC165/SupportsInterfaceOnlyLSP0.sol": {
+        "keccak256": "0x155b3f874ee9c82aaa997e315f1b64cc9ead452f22401efafe0dcd8d093009dd",
+        "urls": [
+          "bzz-raw://792dd33c66ab44f2cc9c0a239a5011e2ac2346ceaf304745bf4cbaf769ca3a34",
+          "dweb:/ipfs/QmbwE4u6yJPzYfHed2ucB8PNAPJVbFpM1W9noqC46rzViF"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/ERC165/SupportsInterfaceOnlyLSP0.sol",
+    "id": 14275,
+    "exportedSymbols": {
+      "SupportsInterfaceOnlyLSP0": [
+        14274
+      ],
+      "_ERC1271_FAILVALUE": [
+        344
+      ],
+      "_ERC1271_MAGICVALUE": [
+        341
+      ],
+      "_INTERFACEID_ERC1271": [
+        338
+      ],
+      "_INTERFACEID_LSP0": [
+        335
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:324:96",
+    "nodes": [
+      {
+        "id": 14259,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:96",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 14260,
+        "nodeType": "ImportDirective",
+        "src": "57:51:96",
+        "nodes": [],
+        "absolutePath": "contracts/LSP0ERC725Account/LSP0Constants.sol",
+        "file": "../../LSP0ERC725Account/LSP0Constants.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 14275,
+        "sourceUnit": 345,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 14274,
+        "nodeType": "ContractDefinition",
+        "src": "174:181:96",
+        "nodes": [
+          {
+            "id": 14273,
+            "nodeType": "FunctionDefinition",
+            "src": "215:138:96",
+            "nodes": [],
+            "body": {
+              "id": 14272,
+              "nodeType": "Block",
+              "src": "297:56:96",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "commonType": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    },
+                    "id": 14270,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "id": 14268,
+                      "name": "interfaceId",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 14263,
+                      "src": "314:11:96",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes4",
+                        "typeString": "bytes4"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "id": 14269,
+                      "name": "_INTERFACEID_LSP0",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 335,
+                      "src": "329:17:96",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes4",
+                        "typeString": "bytes4"
+                      }
+                    },
+                    "src": "314:32:96",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 14267,
+                  "id": 14271,
+                  "nodeType": "Return",
+                  "src": "307:39:96"
+                }
+              ]
+            },
+            "functionSelector": "01ffc9a7",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "supportsInterface",
+            "nameLocation": "224:17:96",
+            "parameters": {
+              "id": 14264,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14263,
+                  "mutability": "mutable",
+                  "name": "interfaceId",
+                  "nameLocation": "249:11:96",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 14273,
+                  "src": "242:18:96",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 14262,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "242:6:96",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "241:20:96"
+            },
+            "returnParameters": {
+              "id": 14267,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14266,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 14273,
+                  "src": "291:4:96",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 14265,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "291:4:96",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "290:6:96"
+            },
+            "scope": 14274,
+            "stateMutability": "view",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "SupportsInterfaceOnlyLSP0",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 14261,
+          "nodeType": "StructuredDocumentation",
+          "src": "110:63:96",
+          "text": " @dev This contract is used only for testing purposes"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          14274
+        ],
+        "name": "SupportsInterfaceOnlyLSP0",
+        "nameLocation": "183:25:96",
+        "scope": 14275,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 96
+}

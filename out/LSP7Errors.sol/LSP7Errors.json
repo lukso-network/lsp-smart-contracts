@@ -1,0 +1,479 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/LSP7DigitalAsset/LSP7Errors.sol",
+    "id": 8725,
+    "exportedSymbols": {
+      "LSP7AmountExceedsAuthorizedAmount": [
+        8702
+      ],
+      "LSP7AmountExceedsBalance": [
+        8691
+      ],
+      "LSP7CannotSendToSelf": [
+        8711
+      ],
+      "LSP7CannotSendWithAddressZero": [
+        8708
+      ],
+      "LSP7CannotUseAddressZeroAsOperator": [
+        8705
+      ],
+      "LSP7InvalidTransferBatch": [
+        8714
+      ],
+      "LSP7NotifyTokenReceiverContractMissingLSP1Interface": [
+        8719
+      ],
+      "LSP7NotifyTokenReceiverIsEOA": [
+        8724
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "36:1418:48",
+    "nodes": [
+      {
+        "id": 8682,
+        "nodeType": "PragmaDirective",
+        "src": "36:23:48",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 8691,
+        "nodeType": "ErrorDefinition",
+        "src": "190:84:48",
+        "nodes": [],
+        "documentation": {
+          "id": 8683,
+          "nodeType": "StructuredDocumentation",
+          "src": "76:113:48",
+          "text": " @dev reverts when sending an `amount` of tokens larger than the current `balance` of the `tokenOwner`."
+        },
+        "errorSelector": "08d47949",
+        "name": "LSP7AmountExceedsBalance",
+        "nameLocation": "196:24:48",
+        "parameters": {
+          "id": 8690,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 8685,
+              "mutability": "mutable",
+              "name": "balance",
+              "nameLocation": "229:7:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8691,
+              "src": "221:15:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 8684,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "221:7:48",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 8687,
+              "mutability": "mutable",
+              "name": "tokenOwner",
+              "nameLocation": "246:10:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8691,
+              "src": "238:18:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 8686,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "238:7:48",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 8689,
+              "mutability": "mutable",
+              "name": "amount",
+              "nameLocation": "266:6:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8691,
+              "src": "258:14:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 8688,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "258:7:48",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "220:53:48"
+        }
+      },
+      {
+        "id": 8702,
+        "nodeType": "ErrorDefinition",
+        "src": "398:138:48",
+        "nodes": [],
+        "documentation": {
+          "id": 8692,
+          "nodeType": "StructuredDocumentation",
+          "src": "276:121:48",
+          "text": " @dev reverts when `operator` of `tokenOwner` send an `amount` of tokens\n larger than the `authorizedAmount`."
+        },
+        "errorSelector": "f3a6b691",
+        "name": "LSP7AmountExceedsAuthorizedAmount",
+        "nameLocation": "404:33:48",
+        "parameters": {
+          "id": 8701,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 8694,
+              "mutability": "mutable",
+              "name": "tokenOwner",
+              "nameLocation": "451:10:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8702,
+              "src": "443:18:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 8693,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "443:7:48",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 8696,
+              "mutability": "mutable",
+              "name": "authorizedAmount",
+              "nameLocation": "475:16:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8702,
+              "src": "467:24:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 8695,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "467:7:48",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 8698,
+              "mutability": "mutable",
+              "name": "operator",
+              "nameLocation": "505:8:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8702,
+              "src": "497:16:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 8697,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "497:7:48",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            },
+            {
+              "constant": false,
+              "id": 8700,
+              "mutability": "mutable",
+              "name": "amount",
+              "nameLocation": "527:6:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8702,
+              "src": "519:14:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 8699,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "519:7:48",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "437:98:48"
+        }
+      },
+      {
+        "id": 8705,
+        "nodeType": "ErrorDefinition",
+        "src": "614:43:48",
+        "nodes": [],
+        "documentation": {
+          "id": 8703,
+          "nodeType": "StructuredDocumentation",
+          "src": "538:75:48",
+          "text": " @dev reverts when trying to set the zero address as an operator."
+        },
+        "errorSelector": "6355e766",
+        "name": "LSP7CannotUseAddressZeroAsOperator",
+        "nameLocation": "620:34:48",
+        "parameters": {
+          "id": 8704,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "654:2:48"
+        }
+      },
+      {
+        "id": 8708,
+        "nodeType": "ErrorDefinition",
+        "src": "742:38:48",
+        "nodes": [],
+        "documentation": {
+          "id": 8706,
+          "nodeType": "StructuredDocumentation",
+          "src": "659:82:48",
+          "text": " @dev reverts when one tries to send tokens to or from the zero address."
+        },
+        "errorSelector": "d2d5ec30",
+        "name": "LSP7CannotSendWithAddressZero",
+        "nameLocation": "748:29:48",
+        "parameters": {
+          "id": 8707,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "777:2:48"
+        }
+      },
+      {
+        "id": 8711,
+        "nodeType": "ErrorDefinition",
+        "src": "879:29:48",
+        "nodes": [],
+        "documentation": {
+          "id": 8709,
+          "nodeType": "StructuredDocumentation",
+          "src": "782:96:48",
+          "text": " @dev reverts when specifying the same address for `from` or `to` in a token transfer."
+        },
+        "errorSelector": "b9afb000",
+        "name": "LSP7CannotSendToSelf",
+        "nameLocation": "885:20:48",
+        "parameters": {
+          "id": 8710,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "905:2:48"
+        }
+      },
+      {
+        "id": 8714,
+        "nodeType": "ErrorDefinition",
+        "src": "1003:33:48",
+        "nodes": [],
+        "documentation": {
+          "id": 8712,
+          "nodeType": "StructuredDocumentation",
+          "src": "910:92:48",
+          "text": " @dev reverts when the parameters used for `transferBatch` have different lengths."
+        },
+        "errorSelector": "263eee8d",
+        "name": "LSP7InvalidTransferBatch",
+        "nameLocation": "1009:24:48",
+        "parameters": {
+          "id": 8713,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "1033:2:48"
+        }
+      },
+      {
+        "id": 8719,
+        "nodeType": "ErrorDefinition",
+        "src": "1182:81:48",
+        "nodes": [],
+        "documentation": {
+          "id": 8715,
+          "nodeType": "StructuredDocumentation",
+          "src": "1038:143:48",
+          "text": " @dev reverts if the `tokenReceiver` does not implement LSP1\n when minting or transferring tokens with `bool force` set as `false`."
+        },
+        "errorSelector": "a608fbb6",
+        "name": "LSP7NotifyTokenReceiverContractMissingLSP1Interface",
+        "nameLocation": "1188:51:48",
+        "parameters": {
+          "id": 8718,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 8717,
+              "mutability": "mutable",
+              "name": "tokenReceiver",
+              "nameLocation": "1248:13:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8719,
+              "src": "1240:21:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 8716,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1240:7:48",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "1239:23:48"
+        }
+      },
+      {
+        "id": 8724,
+        "nodeType": "ErrorDefinition",
+        "src": "1395:58:48",
+        "nodes": [],
+        "documentation": {
+          "id": 8720,
+          "nodeType": "StructuredDocumentation",
+          "src": "1265:129:48",
+          "text": " @dev reverts if the `tokenReceiver` is an EOA\n when minting or transferring tokens with `bool force` set as `false`."
+        },
+        "errorSelector": "26c247f4",
+        "name": "LSP7NotifyTokenReceiverIsEOA",
+        "nameLocation": "1401:28:48",
+        "parameters": {
+          "id": 8723,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 8722,
+              "mutability": "mutable",
+              "name": "tokenReceiver",
+              "nameLocation": "1438:13:48",
+              "nodeType": "VariableDeclaration",
+              "scope": 8724,
+              "src": "1430:21:48",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              },
+              "typeName": {
+                "id": 8721,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1430:7:48",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "1429:23:48"
+        }
+      }
+    ],
+    "license": "CC0-1.0"
+  },
+  "id": 48
+}

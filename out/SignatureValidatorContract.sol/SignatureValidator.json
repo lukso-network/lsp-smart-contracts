@@ -1,0 +1,652 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "isValidSignature",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b50610021630b135d3f60e11b610026565b6100a9565b6001600160e01b031980821690036100845760405162461bcd60e51b815260206004820152601c60248201527f4552433136353a20696e76616c696420696e7465726661636520696400000000604482015260640160405180910390fd5b6001600160e01b0319166000908152602081905260409020805460ff19166001179055565b6101bc806100b86000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c806301ffc9a71461003b5780631626ba7e14610063575b600080fd5b61004e6100493660046100d9565b610099565b60405190151581526020015b60405180910390f35b61008061007136600461010a565b630b135d3f60e11b9392505050565b6040516001600160e01b0319909116815260200161005a565b60006301ffc9a760e01b6001600160e01b0319831614806100d357506001600160e01b0319821660009081526020819052604090205460ff165b92915050565b6000602082840312156100eb57600080fd5b81356001600160e01b03198116811461010357600080fd5b9392505050565b60008060006040848603121561011f57600080fd5b83359250602084013567ffffffffffffffff8082111561013e57600080fd5b818601915086601f83011261015257600080fd5b81358181111561016157600080fd5b87602082850101111561017357600080fd5b602083019450809350505050925092509256fea26469706673582212206bbc4d1c8dacd846bb16a5f9bb589d5123d990e148efea86d7aefde9d615d1a964736f6c63430008110033",
+    "sourceMap": "494:470:124:-:0;;;555:77;;;;;;;;;-1:-1:-1;579:46:124;-1:-1:-1;;;579:18:124;:46::i;:::-;494:470;;1178:198:197;-1:-1:-1;;;;;;1261:25:197;;;;;1253:66;;;;-1:-1:-1;;;1253:66:197;;216:2:202;1253:66:197;;;198:21:202;255:2;235:18;;;228:30;294;274:18;;;267:58;342:18;;1253:66:197;;;;;;;;-1:-1:-1;;;;;;1329:33:197;:20;:33;;;;;;;;;;:40;;-1:-1:-1;;1329:40:197;1365:4;1329:40;;;1178:198::o;14:352:202:-;494:470:124;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c806301ffc9a71461003b5780631626ba7e14610063575b600080fd5b61004e6100493660046100d9565b610099565b60405190151581526020015b60405180910390f35b61008061007136600461010a565b630b135d3f60e11b9392505050565b6040516001600160e01b0319909116815260200161005a565b60006301ffc9a760e01b6001600160e01b0319831614806100d357506001600160e01b0319821660009081526020819052604090205460ff165b92915050565b6000602082840312156100eb57600080fd5b81356001600160e01b03198116811461010357600080fd5b9392505050565b60008060006040848603121561011f57600080fd5b83359250602084013567ffffffffffffffff8082111561013e57600080fd5b818601915086601f83011261015257600080fd5b81358181111561016157600080fd5b87602082850101111561017357600080fd5b602083019450809350505050925092509256fea26469706673582212206bbc4d1c8dacd846bb16a5f9bb589d5123d990e148efea86d7aefde9d615d1a964736f6c63430008110033",
+    "sourceMap": "494:470:124:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;596:188:197;;;;;;:::i;:::-;;:::i;:::-;;;470:14:202;;463:22;445:41;;433:2;418:18;596:188:197;;;;;;;;732:230:124;;;;;;:::i;:::-;-1:-1:-1;;;732:230:124;;;;;;;;;-1:-1:-1;;;;;;1323:33:202;;;1305:52;;1293:2;1278:18;732:230:124;1161:202:202;596:188:197;681:4;-1:-1:-1;;;;;;;;;937:40:196;;;704:73:197;;;-1:-1:-1;;;;;;;744:33:197;;:20;:33;;;;;;;;;;;;;704:73;697:80;596:188;-1:-1:-1;;596:188:197:o;14:286:202:-;72:6;125:2;113:9;104:7;100:23;96:32;93:52;;;141:1;138;131:12;93:52;167:23;;-1:-1:-1;;;;;;219:32:202;;209:43;;199:71;;266:1;263;256:12;199:71;289:5;14:286;-1:-1:-1;;;14:286:202:o;497:659::-;576:6;584;592;645:2;633:9;624:7;620:23;616:32;613:52;;;661:1;658;651:12;613:52;697:9;684:23;674:33;;758:2;747:9;743:18;730:32;781:18;822:2;814:6;811:14;808:34;;;838:1;835;828:12;808:34;876:6;865:9;861:22;851:32;;921:7;914:4;910:2;906:13;902:27;892:55;;943:1;940;933:12;892:55;983:2;970:16;1009:2;1001:6;998:14;995:34;;;1025:1;1022;1015:12;995:34;1070:7;1065:2;1056:6;1052:2;1048:15;1044:24;1041:37;1038:57;;;1091:1;1088;1081:12;1038:57;1122:2;1118;1114:11;1104:21;;1144:6;1134:16;;;;;497:659;;;;;:::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "isValidSignature(bytes32,bytes)": "1626ba7e",
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"isValidSignature\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"sample contract that implements ERC1271 (Standard Signature Validation Method for Contracts)  used to test the permission ALLOWEDSTANDARDS implementation code taken from: https://eips.ethereum.org/EIPS/eip-1271\",\"kind\":\"dev\",\"methods\":{\"supportsInterface(bytes4)\":{\"details\":\"See {IERC165-supportsInterface}.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"isValidSignature(bytes32,bytes)\":{\"notice\":\"Verifies that the signer is the owner of the signing contract.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Mocks/SignatureValidatorContract.sol\":\"SignatureValidator\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@erc725/=node_modules/@erc725/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\",\":solidity-bytes-utils/=node_modules/solidity-bytes-utils/\"]},\"sources\":{\"contracts/Mocks/SignatureValidatorContract.sol\":{\"keccak256\":\"0x84a035169dfbf75521bf74309bd2b7599e789187891d9445532aa12d664e03ea\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://7856c86d1ccc515a1d6584666a9a103e2405f980a7f742c07ab8f1abf7d2f0d8\",\"dweb:/ipfs/QmWPkUBajqJDbBs8WC2zzJEaiaH6HFXGVZVH17msFtwsrM\"]},\"node_modules/@openzeppelin/contracts/interfaces/IERC1271.sol\":{\"keccak256\":\"0x0705a4b1b86d7b0bd8432118f226ba139c44b9dcaba0a6eafba2dd7d0639c544\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c45b821ef9e882e57c256697a152e108f0f2ad6997609af8904cae99c9bd422e\",\"dweb:/ipfs/QmRKCJW6jjzR5UYZcLpGnhEJ75UVbH6EHkEa49sWx2SKng\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/ERC165Storage.sol\":{\"keccak256\":\"0x77bf0086774bab931413c3388d3a0f7d44cf6878965b72147f57bb0fbbf394bd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://22318b1de700090cdc18992c2284437b25c4862f16f7b9b37a317fdb16aa44df\",\"dweb:/ipfs/QmQrgXR7hRSyjZSgjV3nUFGx3Rqq3ESXPsaXh2mdR8vmUc\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "isValidSignature",
+          "outputs": [
+            {
+              "internalType": "bytes4",
+              "name": "",
+              "type": "bytes4"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "supportsInterface(bytes4)": {
+            "details": "See {IERC165-supportsInterface}."
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "isValidSignature(bytes32,bytes)": {
+            "notice": "Verifies that the signer is the owner of the signing contract."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@erc725/=node_modules/@erc725/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat-deploy/=node_modules/hardhat-deploy/",
+        ":hardhat/=node_modules/hardhat/",
+        ":solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/Mocks/SignatureValidatorContract.sol": "SignatureValidator"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/Mocks/SignatureValidatorContract.sol": {
+        "keccak256": "0x84a035169dfbf75521bf74309bd2b7599e789187891d9445532aa12d664e03ea",
+        "urls": [
+          "bzz-raw://7856c86d1ccc515a1d6584666a9a103e2405f980a7f742c07ab8f1abf7d2f0d8",
+          "dweb:/ipfs/QmWPkUBajqJDbBs8WC2zzJEaiaH6HFXGVZVH17msFtwsrM"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1271.sol": {
+        "keccak256": "0x0705a4b1b86d7b0bd8432118f226ba139c44b9dcaba0a6eafba2dd7d0639c544",
+        "urls": [
+          "bzz-raw://c45b821ef9e882e57c256697a152e108f0f2ad6997609af8904cae99c9bd422e",
+          "dweb:/ipfs/QmRKCJW6jjzR5UYZcLpGnhEJ75UVbH6EHkEa49sWx2SKng"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+        "keccak256": "0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b",
+        "urls": [
+          "bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d",
+          "dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165Storage.sol": {
+        "keccak256": "0x77bf0086774bab931413c3388d3a0f7d44cf6878965b72147f57bb0fbbf394bd",
+        "urls": [
+          "bzz-raw://22318b1de700090cdc18992c2284437b25c4862f16f7b9b37a317fdb16aa44df",
+          "dweb:/ipfs/QmQrgXR7hRSyjZSgjV3nUFGx3Rqq3ESXPsaXh2mdR8vmUc"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+        "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+        "urls": [
+          "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+          "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/Mocks/SignatureValidatorContract.sol",
+    "id": 16098,
+    "exportedSymbols": {
+      "ERC165Storage": [
+        46582
+      ],
+      "IERC1271": [
+        44248
+      ],
+      "SignatureValidator": [
+        16097
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:926:124",
+    "nodes": [
+      {
+        "id": 16062,
+        "nodeType": "PragmaDirective",
+        "src": "39:23:124",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 16064,
+        "nodeType": "ImportDirective",
+        "src": "78:73:124",
+        "nodes": [],
+        "absolutePath": "node_modules/@openzeppelin/contracts/interfaces/IERC1271.sol",
+        "file": "@openzeppelin/contracts/interfaces/IERC1271.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 16098,
+        "sourceUnit": 44249,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 16063,
+              "name": "IERC1271",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 44248,
+              "src": "86:8:124",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 16066,
+        "nodeType": "ImportDirective",
+        "src": "164:92:124",
+        "nodes": [],
+        "absolutePath": "node_modules/@openzeppelin/contracts/utils/introspection/ERC165Storage.sol",
+        "file": "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 16098,
+        "sourceUnit": 46583,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 16065,
+              "name": "ERC165Storage",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 46582,
+              "src": "172:13:124",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 16097,
+        "nodeType": "ContractDefinition",
+        "src": "494:470:124",
+        "nodes": [
+          {
+            "id": 16082,
+            "nodeType": "FunctionDefinition",
+            "src": "555:77:124",
+            "nodes": [],
+            "body": {
+              "id": 16081,
+              "nodeType": "Block",
+              "src": "569:63:124",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "expression": {
+                          "arguments": [
+                            {
+                              "id": 16076,
+                              "name": "IERC1271",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 44248,
+                              "src": "603:8:124",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_type$_t_contract$_IERC1271_$44248_$",
+                                "typeString": "type(contract IERC1271)"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_type$_t_contract$_IERC1271_$44248_$",
+                                "typeString": "type(contract IERC1271)"
+                              }
+                            ],
+                            "id": 16075,
+                            "name": "type",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": -27,
+                            "src": "598:4:124",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_metatype_pure$__$returns$__$",
+                              "typeString": "function () pure"
+                            }
+                          },
+                          "id": 16077,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "nameLocations": [],
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "598:14:124",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_meta_type_t_contract$_IERC1271_$44248",
+                            "typeString": "type(contract IERC1271)"
+                          }
+                        },
+                        "id": 16078,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberLocation": "613:11:124",
+                        "memberName": "interfaceId",
+                        "nodeType": "MemberAccess",
+                        "src": "598:26:124",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes4",
+                          "typeString": "bytes4"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes4",
+                          "typeString": "bytes4"
+                        }
+                      ],
+                      "id": 16074,
+                      "name": "_registerInterface",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 46581,
+                      "src": "579:18:124",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_bytes4_$returns$__$",
+                        "typeString": "function (bytes4)"
+                      }
+                    },
+                    "id": 16079,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "579:46:124",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 16080,
+                  "nodeType": "ExpressionStatement",
+                  "src": "579:46:124"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 16072,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "566:2:124"
+            },
+            "returnParameters": {
+              "id": 16073,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "569:0:124"
+            },
+            "scope": 16097,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 16096,
+            "nodeType": "FunctionDefinition",
+            "src": "732:230:124",
+            "nodes": [],
+            "body": {
+              "id": 16095,
+              "nodeType": "Block",
+              "src": "879:83:124",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "hexValue": "30783136323662613765",
+                    "id": 16093,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "number",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "945:10:124",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_rational_371636862_by_1",
+                      "typeString": "int_const 371636862"
+                    },
+                    "value": "0x1626ba7e"
+                  },
+                  "functionReturnParameters": 16092,
+                  "id": 16094,
+                  "nodeType": "Return",
+                  "src": "938:17:124"
+                }
+              ]
+            },
+            "baseFunctions": [
+              44247
+            ],
+            "documentation": {
+              "id": 16083,
+              "nodeType": "StructuredDocumentation",
+              "src": "638:89:124",
+              "text": " @notice Verifies that the signer is the owner of the signing contract."
+            },
+            "functionSelector": "1626ba7e",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isValidSignature",
+            "nameLocation": "741:16:124",
+            "overrides": {
+              "id": 16089,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "853:8:124"
+            },
+            "parameters": {
+              "id": 16088,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16085,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16096,
+                  "src": "767:7:124",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 16084,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "767:7:124",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16087,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16096,
+                  "src": "802:14:124",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 16086,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "802:5:124",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "757:81:124"
+            },
+            "returnParameters": {
+              "id": 16092,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16091,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 16096,
+                  "src": "871:6:124",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 16090,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "871:6:124",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "870:8:124"
+            },
+            "scope": 16097,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 16068,
+              "name": "IERC1271",
+              "nameLocations": [
+                "525:8:124"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 44248,
+              "src": "525:8:124"
+            },
+            "id": 16069,
+            "nodeType": "InheritanceSpecifier",
+            "src": "525:8:124"
+          },
+          {
+            "baseName": {
+              "id": 16070,
+              "name": "ERC165Storage",
+              "nameLocations": [
+                "535:13:124"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 46582,
+              "src": "535:13:124"
+            },
+            "id": 16071,
+            "nodeType": "InheritanceSpecifier",
+            "src": "535:13:124"
+          }
+        ],
+        "canonicalName": "SignatureValidator",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 16067,
+          "nodeType": "StructuredDocumentation",
+          "src": "258:235:124",
+          "text": " @dev sample contract that implements ERC1271 (Standard Signature Validation Method for Contracts)\n  used to test the permission ALLOWEDSTANDARDS\n implementation code taken from: https://eips.ethereum.org/EIPS/eip-1271"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          16097,
+          46582,
+          46531,
+          46594,
+          44248
+        ],
+        "name": "SignatureValidator",
+        "nameLocation": "503:18:124",
+        "scope": 16098,
+        "usedErrors": []
+      }
+    ],
+    "license": "Apache-2.0"
+  },
+  "id": 124
+}
