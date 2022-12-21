@@ -22,7 +22,7 @@ jobs:
           cache: "npm"
 
       - id: "reviews"
-        uses: "jrylan/github-action-reviews-counter@main"
+        uses: "jrylan/github-action-reviews-counter@v1"
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
