@@ -3,8 +3,8 @@
 name: 🆙 📊 Universal Profile Benchmark
 
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    types: [opened]
     branches: "develop"
 
 jobs:
@@ -21,25 +21,16 @@ jobs:
           node-version: "16.15.0"
           cache: "npm"
 
-      - id: "reviews"
-        uses: "jrylan/github-action-reviews-counter@v1"
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
       - name: 📦 Install dependencies
-        if: "steps.reviews.outputs.approved = 1"
         run: npm ci
 
       - name: 🏗️ Build contract artifacts
-        if: "steps.reviews.outputs.approved = 1"
         run: npm run build --if-present
 
       - name: 🧪 Run Benchmark tests
-        if: "steps.reviews.outputs.approved = 1"
         run: npm run test:benchmark
 
       - name: 📊 Generate Benchmark Report
-        if: "steps.reviews.outputs.approved = 1"
         uses: peter-evans/create-or-update-comment@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
