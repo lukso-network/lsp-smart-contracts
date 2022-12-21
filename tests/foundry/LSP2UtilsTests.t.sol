@@ -37,7 +37,7 @@ contract LSP2UtilsTests is Test {
         assert(key != bytes32(0));
     }
 
-    function testIisCompactBytesArray(
+    function testIsCompactBytesArray(
         bytes32 firstBytes,
         bytes20 secondBytes,
         bytes1 thirdBytes
