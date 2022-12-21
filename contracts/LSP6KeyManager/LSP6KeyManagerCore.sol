@@ -774,8 +774,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
              * Iterate over the `inputDataKeys` to check them against the allowed data keys.
              * This until we have validated them all.
              */
-            uint256 ii = 0;
-            for (ii; ii < inputKeysLength; ii = GasLib.uncheckedIncrement(ii)) {
+            for (uint256 ii; ii < inputKeysLength; ii = GasLib.uncheckedIncrement(ii)) {
                 // if the input data key has been marked as allowed previously,
                 // SKIP it and move to the next input data key.
                 if (validatedInputKeys[ii]) continue;
@@ -799,8 +798,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         }
 
         // if we did not find all the input data keys, search for the first not allowed data key to revert.
-        uint256 jj = 0;
-        for (jj; jj < inputKeysLength; jj = GasLib.uncheckedIncrement(jj)) {
+        for (uint256 jj; jj < inputKeysLength; jj = GasLib.uncheckedIncrement(jj)) {
             if (!validatedInputKeys[jj]) {
                 revert NotAllowedERC725YDataKey(controllerAddress, inputDataKeys[jj]);
             }
@@ -881,8 +879,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bool isAllowedAddress;
         bool isAllowedFunction;
 
-        uint256 ii = 0;
-        for (; ii < allowedCallsLength; ii += 29) {
+        for (uint256 ii; ii < allowedCallsLength; ii += 29) {
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
 
             if (bytes28(chunk) == 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff) {
