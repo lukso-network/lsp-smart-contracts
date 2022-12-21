@@ -124,7 +124,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         require(msg.sender == pendingOwner(), "LSP14: caller is not the pendingOwner");
 
         address previousOwner = owner();
-        _setOwner(_pendingOwner);
+        _setOwner(msg.sender);
         delete _pendingOwner;
 
         _notifyUniversalReceiver(
