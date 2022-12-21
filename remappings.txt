@@ -1,0 +1,8 @@
+@erc725/=node_modules/@erc725/
+@openzeppelin/=node_modules/@openzeppelin/
+eth-gas-reporter/=node_modules/eth-gas-reporter/
+forge-std/=lib/forge-std/source/
+hardhat-deploy/=node_modules/hardhat-deploy/
+hardhat/=node_modules/hardhat/
+solidity-bytes-utils/=node_modules/solidity-bytes-utils/
+ds-test/=lib/forge-std/lib/ds-test/source/
