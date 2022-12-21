@@ -1,6 +1,5 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
-
 import { BytesLike } from "ethers";
 import { LSP6InternalsTestContext } from "../../utils/context";
 import { encodeCompactBytesArray } from "../../utils/helpers";
@@ -30,6 +29,7 @@ export const testAllowedERC725YDataKeysInternals = (
     let compactBytesArray_2f: BytesLike;
     let compactBytesArray_2d_2f: BytesLike;
     let compactBytesArray_mixed_d_f: BytesLike;
+
     before(async () => {
       context = await buildContext();
       dataKeys = {
@@ -543,7 +543,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               checkedDataKeys,
-              compactBytesArray_2d
+              compactBytesArray_2d,
+              [false, false]
             );
 
           expect(result).to.be.true;
@@ -554,7 +555,8 @@ export const testAllowedERC725YDataKeysInternals = (
             context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               dataKeysToReturn,
-              compactBytesArray_2d
+              compactBytesArray_2d,
+              Array(dataKeysToReturn.length).fill(false)
             )
           )
             .to.be.revertedWithCustomError(
@@ -576,7 +578,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               checkedDataKeys,
-              compactBytesArray_2f
+              compactBytesArray_2f,
+              Array(dataKeysToReturn.length).fill(false)
             );
 
           expect(result).to.be.true;
@@ -587,7 +590,8 @@ export const testAllowedERC725YDataKeysInternals = (
             context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               dataKeysToReturn,
-              compactBytesArray_2f
+              compactBytesArray_2f,
+              Array(dataKeysToReturn.length).fill(false)
             )
           )
             .to.be.revertedWithCustomError(
@@ -629,7 +633,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               checkedDataKeys,
-              compactBytesArray_2d_2f
+              compactBytesArray_2d_2f,
+              Array(checkedDataKeys.length).fill(false)
             );
 
           expect(result).to.be.true;
@@ -640,7 +645,8 @@ export const testAllowedERC725YDataKeysInternals = (
             context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               dataKeysToReturn,
-              compactBytesArray_2d_2f
+              compactBytesArray_2d_2f,
+              Array(dataKeysToReturn.length).fill(false)
             )
           )
             .to.be.revertedWithCustomError(
@@ -703,7 +709,8 @@ export const testAllowedERC725YDataKeysInternals = (
             await context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               checkedDataKeys,
-              compactBytesArray_mixed_d_f
+              compactBytesArray_mixed_d_f,
+              Array(checkedDataKeys.length).fill(false)
             );
 
           expect(result).to.be.true;
@@ -714,7 +721,8 @@ export const testAllowedERC725YDataKeysInternals = (
             context.keyManagerInternalTester.verifyAllowedERC725YDataKeys(
               context.universalProfile.address,
               dataKeysToReturn,
-              compactBytesArray_mixed_d_f
+              compactBytesArray_mixed_d_f,
+              Array(dataKeysToReturn.length).fill(false)
             )
           )
             .to.be.revertedWithCustomError(

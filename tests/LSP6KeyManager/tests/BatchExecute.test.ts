@@ -531,9 +531,7 @@ export const shouldBehaveLikeBatchExecute = (
                   [firstSetDataPayload, secondSetDataPayload],
                   { value: amountToFund }
                 )
-            ).to.be.revertedWith(
-              "LSP6: Unknown Error occured when calling the linked target contract"
-            );
+            ).to.be.revertedWith("LSP6: failed executing payload");
 
             const keyManagerBalanceAfter = await ethers.provider.getBalance(
               context.keyManager.address
@@ -635,9 +633,7 @@ export const shouldBehaveLikeBatchExecute = (
                 ["execute(uint256[],bytes[])"](msgValues, payloads, {
                   value: totalValues,
                 })
-            ).to.be.revertedWith(
-              "LSP6: Unknown Error occured when calling the linked target contract"
-            );
+            ).to.be.revertedWith("LSP6: failed executing payload");
           });
         });
       });

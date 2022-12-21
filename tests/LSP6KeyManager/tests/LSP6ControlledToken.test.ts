@@ -793,9 +793,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         await expect(
           context.keyManager.connect(context.owner)["execute(bytes)"](payload)
-        ).to.be.revertedWith(
-          "LSP6: Unknown Error occured when calling the linked target contract"
-        );
+        ).to.be.revertedWith("LSP6: failed executing payload");
       });
     });
 

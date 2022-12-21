@@ -18,15 +18,15 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     constructor(address _account) LSP6KeyManager(_account) {}
 
     function getPermissionsFor(address _address) public view returns (bytes32) {
-        return ERC725Y(target).getPermissionsFor(_address);
+        return ERC725Y(_target).getPermissionsFor(_address);
     }
 
     function getAllowedCallsFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedCallsFor(_address);
+        return ERC725Y(_target).getAllowedCallsFor(_address);
     }
 
     function getAllowedERC725YDataKeysFor(address _address) public view returns (bytes memory) {
-        return ERC725Y(target).getAllowedERC725YDataKeysFor(_address);
+        return ERC725Y(_target).getAllowedERC725YDataKeysFor(_address);
     }
 
     function verifyAllowedCall(address _sender, bytes calldata _payload) public view {
@@ -49,9 +49,15 @@ contract KeyManagerInternalTester is LSP6KeyManager {
     function verifyAllowedERC725YDataKeys(
         address from,
         bytes32[] memory inputKeys,
-        bytes memory allowedERC725YDataKeysCompacted
+        bytes memory allowedERC725YDataKeysCompacted,
+        bool[] memory validatedInputKeys
     ) public pure returns (bool) {
-        super._verifyAllowedERC725YDataKeys(from, inputKeys, allowedERC725YDataKeysCompacted);
+        super._verifyAllowedERC725YDataKeys(
+            from,
+            inputKeys,
+            allowedERC725YDataKeysCompacted,
+            validatedInputKeys
+        );
         return true;
     }
 
@@ -61,9 +67,5 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         returns (bool)
     {
         return _addressPermission.hasPermission(_permissions);
-    }
-
-    function countTrailingZeroBytes(bytes32 _key) public pure returns (uint256 zeroBytesCount_) {
-        return super._countTrailingZeroBytes(_key);
     }
 }

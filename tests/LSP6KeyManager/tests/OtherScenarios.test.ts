@@ -87,7 +87,10 @@ export const otherTestScenarios = (
 
       await expect(
         context.keyManager.connect(context.owner)["execute(bytes)"](payload)
-      ).to.be.revertedWith("LSP6KeyManager: invalid operation type");
+      ).to.be.revertedWithCustomError(
+        context.universalProfile,
+        "ERC725X_UnknownOperationType"
+      );
     });
 
     it("Should revert because of wrong operation type when caller has not ALL PERMISSIONS", async () => {
@@ -107,7 +110,10 @@ export const otherTestScenarios = (
         context.keyManager
           .connect(addressCanMakeCall)
           ["execute(bytes)"](payload)
-      ).to.be.revertedWith("LSP6KeyManager: invalid operation type");
+      ).to.be.revertedWithCustomError(
+        context.universalProfile,
+        "ERC725X_UnknownOperationType"
+      );
     });
   });
 };
