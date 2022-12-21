@@ -152,7 +152,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         if (currentBlock > confirmationPeriodEnd) {
             _renounceOwnershipStartedAt = currentBlock;
-            emit RenounceOwnershipInitiated();
+            emit RenounceOwnershipStarted();
             return;
         }
 

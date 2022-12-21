@@ -336,10 +336,10 @@ export const shouldBehaveLikeLSP14 = (
         ).to.equal(renounceOwnershipTx.blockNumber);
       });
 
-      it("should have emitted a RenounceOwnershipInitiated event", async () => {
+      it("should have emitted a RenounceOwnershipStarted event", async () => {
         await expect(renounceOwnershipTx).to.emit(
           context.contract,
-          "RenounceOwnershipInitiated"
+          "RenounceOwnershipStarted"
         );
       });
 
