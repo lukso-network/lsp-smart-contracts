@@ -612,7 +612,7 @@ const EventSignatures = {
 		 * signature = keccak256('RenounceOwnershipStarted()')
 		 */
 		RenounceOwnershipStarted:
-			'0x34adc479e345fc66ff75380de886d5353e8a315a2216b874cd957fbeeab20d9a',
+			'0x81b7f830f1f0084db6497c486cbe6974c86488dcc4e3738eab94ab6d6b1653e7',
 		/**
 		 * event OwnershipRenounced();
 		 *
