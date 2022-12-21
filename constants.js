@@ -607,12 +607,12 @@ const EventSignatures = {
 		OwnershipTransferStarted:
 			'0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700',
 		/**
-		 * event RenounceOwnershipInitiated();
+		 * event RenounceOwnershipStarted();
 		 *
-		 * signature = keccak256('RenounceOwnershipInitiated()')
+		 * signature = keccak256('RenounceOwnershipStarted()')
 		 */
-		RenounceOwnershipInitiated:
-			'0X56272768d104766ae5e663c58927d0a9e47effb40b9a8f6644ac5dfbc9e56f84',
+		RenounceOwnershipStarted:
+			'0x34adc479e345fc66ff75380de886d5353e8a315a2216b874cd957fbeeab20d9a',
 		/**
 		 * event OwnershipRenounced();
 		 *

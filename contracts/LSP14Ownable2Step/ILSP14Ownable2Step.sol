@@ -19,7 +19,7 @@ interface ILSP14Ownable2Step {
     /**
      * @dev emitted when starting the `renounceOwnership(..)` 2-step process.
      */
-    event RenounceOwnershipInitiated();
+    event RenounceOwnershipStarted();
 
     /**
      * @dev emitted when the ownership of the contract has been renounced.
