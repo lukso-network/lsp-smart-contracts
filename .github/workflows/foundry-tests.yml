@@ -1,0 +1,27 @@
+name: Run Foundry Tests
+
+on: [push]
+
+# on:
+#   pull_request:
+#     branches: [develop]
+#   push:
+#     branches: [develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+      - name: NPM Install
+        run: npm ci
+      - name: NPM build
+        run: npm run build
+      - name: Run Foundry tests
+        run: npm run test:foundry
