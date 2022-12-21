@@ -55,72 +55,22 @@ let mainControllerSetDataTable;
 let restrictedControllerSetDataTable;
 
 describe.only("⛽ gas costs --> execute(...) via Key Manager", () => {
-  let context: LSP6TestContext;
-
-  let lsp7MetaCoin: LSP7Mintable, lsp7LyxDai: LSP7Mintable;
-  let lsp8MetaNFT: LSP8Mintable, lsp8LyxPunks: LSP8Mintable;
-
-  const metaNFTList: string[] = [
-    "0x0000000000000000000000000000000000000000000000000000000000000001",
-    "0x0000000000000000000000000000000000000000000000000000000000000002",
-    "0x0000000000000000000000000000000000000000000000000000000000000003",
-    "0x0000000000000000000000000000000000000000000000000000000000000004",
-  ];
-
-  const lyxPunksList: string[] = [
-    "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
-    "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
-    "0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead",
-    "0xf00df00df00df00df00df00df00df00df00df00df00df00df00df00df00df00d",
-  ];
-
-  const deployAndMintTokens = async (contest: LSP6TestContext) => {
-    [
-      { contract: lsp7MetaCoin, name: "MetaCoin", symbol: "MTC" },
-      { contract: lsp7LyxDai, name: "LyxDai", symbol: "LDAI" },
-    ].forEach(async (token) => {
-      token.contract = await new LSP7Mintable__factory(context.owner).deploy(
-        token.name,
-        token.symbol,
-        context.owner.address,
-        false
-      );
-
-      await token.contract.mint(
-        context.universalProfile.address,
-        1000,
-        false,
-        "0x"
-      );
-    });
-
-    // prettier-ignore
-    [
-      { contract: lsp8MetaNFT, name: "MetaNFT", symbol: "MNF", tokenIds: metaNFTList },
-      { contract: lsp8LyxPunks, name: "LyxPunks", symbol: "LPK", tokenIds: lyxPunksList },
-    ].forEach(async (nftContract) => {
-      nftContract.contract = await new LSP8Mintable__factory(
-        context.owner
-      ).deploy(nftContract.name, nftContract.symbol, context.owner.address);
-
-      // mint some NFTs to the UP
-      nftContract.tokenIds.forEach(async (nft) => {
-        await lsp8MetaNFT.mint(
-          context.universalProfile.address,
-          nft,
-          false,
-          "0x"
-        );
-      });
-    });
-
-    return { lsp7MetaCoin, lsp7LyxDai, lsp8MetaNFT, lsp8LyxPunks };
-  };
-
   describe.only("main controller (this browser extension)", () => {
+    let context: LSP6TestContext;
+
     let recipientEOA: SignerWithAddress;
     // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
     let aliceUP: UniversalProfile;
+
+    let lsp7MetaCoin: LSP7Mintable;
+    let lsp8MetaNFT: LSP8Mintable;
+
+    let nftList: string[] = [
+      "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "0x0000000000000000000000000000000000000000000000000000000000000004",
+    ];
 
     before(async () => {
       context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
@@ -131,33 +81,44 @@ describe.only("⛽ gas costs --> execute(...) via Key Manager", () => {
       );
       aliceUP = deployedContracts[0] as UniversalProfile;
 
-      const deployedTokens = await deployAndMintTokens(context);
-
-      (lsp7MetaCoin, lsp8MetaNFT) =
-        (deployedTokens.lsp7MetaCoin, deployedTokens.lsp8MetaNFT);
-
       // the function `setupKeyManager` gives ALL PERMISSIONS
       // to the owner as the first data key
-      // prettier-ignore
-      await setupKeyManager(
-        context, 
-        // register all the received assets of the sender UP
-        [
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "00000000000000000000000000000000",
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index + "00000000000000000000000000000001",
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssetsMap"] + lsp7MetaCoin.address.substring(2),
-            ERC725YDataKeys.LSP5["LSP5ReceivedAssetsMap"] + lsp8MetaNFT.address.substring(2),
-        ], 
-        [
-            abiCoder.encode(["uint256"], [2]),
-            lsp7MetaCoin.address,
-            lsp8MetaNFT.address,
-            abiCoder.encode(["bytes4", "uint64"], [INTERFACE_IDS.LSP7DigitalAsset, 0]),
-            abiCoder.encode(["bytes4", "uint64"], [INTERFACE_IDS.LSP8IdentifiableDigitalAsset, 1]),
-        ]
-    );
+      await setupKeyManager(context, [], []);
+
+      // deploy a LSP7 token
+      lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+        "MetaCoin",
+        "MTC",
+        context.owner.address,
+        false
+      );
+
+      // deploy a LSP8 NFT
+      lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+        "MetaNFT",
+        "MNF",
+        context.owner.address
+      );
+
+      // mint some tokens to the UP
+      await lsp7MetaCoin.mint(
+        context.universalProfile.address,
+        1000,
+        false,
+        "0x"
+      );
+
+      // mint some NFTs to the UP
+      nftList.forEach(async (nft) => {
+        await lsp8MetaNFT.mint(
+          context.universalProfile.address,
+          nft,
+          false,
+          "0x"
+        );
+      });
     });
+
     it("transfer some LYXes to an EOA", async () => {
       const lyxAmount = ethers.utils.parseEther("3");
 
@@ -247,7 +208,7 @@ describe.only("⛽ gas costs --> execute(...) via Key Manager", () => {
     });
 
     it("transfer a NFT (LSP8) to a EOA (no data)", async () => {
-      const nftId = metaNFTList[0];
+      const nftId = nftList[0];
 
       const transferNFT = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -274,7 +235,7 @@ describe.only("⛽ gas costs --> execute(...) via Key Manager", () => {
     });
 
     it("transfer a NFT (LSP8) to a UP (no data)", async () => {
-      const nftId = metaNFTList[1];
+      const nftId = nftList[1];
 
       const transferNFT = context.universalProfile.interface.encodeFunctionData(
         "execute(uint256,address,uint256,bytes)",
@@ -301,14 +262,45 @@ describe.only("⛽ gas costs --> execute(...) via Key Manager", () => {
     });
   });
 
-  describe("controllers with some restrictions", () => {
+  describe.only("controllers with some restrictions", () => {
+    let context: LSP6TestContext;
+
+    let recipientEOA: SignerWithAddress;
+    // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
+    let aliceUP: UniversalProfile;
+
     let canTransferValueToOneAddress: SignerWithAddress,
-      canTransferTwoTokens: SignerWithAddress;
+      canTransferTwoTokens: SignerWithAddress,
+      canTransferTwoNFTs: SignerWithAddress;
 
     let allowedAddressToTransferValue: string;
 
+    let lsp7MetaCoin: LSP7Mintable, lsp7LyxDai: LSP7Mintable;
+    let lsp8MetaNFT: LSP8Mintable, lsp8LyxPunks: LSP8Mintable;
+
+    const metaNFTList: string[] = [
+      "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "0x0000000000000000000000000000000000000000000000000000000000000004",
+    ];
+
+    const lyxPunksList: string[] = [
+      "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
+      "0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef",
+      "0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead",
+      "0xf00df00df00df00df00df00df00df00df00df00df00df00df00df00df00df00d",
+    ];
+
     before(async () => {
       context = await buildLSP6TestContext(ethers.utils.parseEther("50"));
+
+      recipientEOA = context.accounts[1];
+
+      let deployedContracts = await setupProfileWithKeyManagerWithURD(
+        context.accounts[2]
+      );
+      aliceUP = deployedContracts[0] as UniversalProfile;
 
       // LYX transfer scenarios
       canTransferValueToOneAddress = context.accounts[1];
@@ -317,24 +309,77 @@ describe.only("⛽ gas costs --> execute(...) via Key Manager", () => {
       // LSP7 token transfer scenarios
       canTransferTwoTokens = context.accounts[3];
 
+      lsp7MetaCoin = await new LSP7Mintable__factory(context.owner).deploy(
+        "MetaCoin",
+        "MTC",
+        context.owner.address,
+        false
+      );
+
+      lsp7LyxDai = await new LSP7Mintable__factory(context.owner).deploy(
+        "LyxDai",
+        "LDAI",
+        context.owner.address,
+        false
+      );
+
+      [lsp7MetaCoin, lsp7LyxDai].forEach(async (token) => {
+        await token.mint(context.universalProfile.address, 1000, false, "0x");
+      });
+
+      // LSP8 NFT transfer scenarios
+      canTransferTwoNFTs = context.accounts[4];
+
+      lsp8MetaNFT = await new LSP8Mintable__factory(context.owner).deploy(
+        "MetaNFT",
+        "MNF",
+        context.owner.address
+      );
+
+      lsp8LyxPunks = await new LSP8Mintable__factory(context.owner).deploy(
+        "LyxPunks",
+        "LPK",
+        context.owner.address
+      );
+
+      [
+        { contract: lsp8MetaNFT, tokenIds: metaNFTList },
+        { contract: lsp8MetaNFT, tokenIds: lyxPunksList },
+      ].forEach(async (nftContract) => {
+        // mint some NFTs to the UP
+        nftContract.tokenIds.forEach(async (nft) => {
+          await lsp8MetaNFT.mint(
+            context.universalProfile.address,
+            nft,
+            false,
+            "0x"
+          );
+        });
+      });
+
       // prettier-ignore
       await setupKeyManager(
-            context,
-            [
-                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + canTransferValueToOneAddress.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + canTransferTwoTokens.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + canTransferValueToOneAddress.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + canTransferTwoTokens.address.substring(2),
-            ],
-            [
-                PERMISSIONS.TRANSFERVALUE,
-                PERMISSIONS.CALL,
-                combineAllowedCalls(["0xffffffff"], [allowedAddressToTransferValue], ["0xffffffff"])
-            ]
+        context,
+        [
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + canTransferValueToOneAddress.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + canTransferTwoTokens.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + canTransferTwoNFTs.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + canTransferValueToOneAddress.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + canTransferTwoTokens.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + canTransferTwoNFTs.address.substring(2),
+        ],
+        [
+            PERMISSIONS.TRANSFERVALUE,
+            PERMISSIONS.CALL,
+            PERMISSIONS.CALL,
+            combineAllowedCalls(["0xffffffff"], [allowedAddressToTransferValue], ["0xffffffff"]),
+            combineAllowedCalls(["0xffffffff", "0xffffffff"], [lsp7MetaCoin.address, lsp7LyxDai.address], ["0xffffffff", "0xffffffff"]),
+            combineAllowedCalls(["0xffffffff", "0xffffffff"], [lsp8MetaNFT.address, lsp8LyxPunks.address], ["0xffffffff", "0xffffffff"])
+        ]
         )
     });
 
-    it("transfer some LYXes, restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)", async () => {
+    it("transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)", async () => {
       const lyxAmount = 10;
 
       const transferLYX = context.universalProfile.interface.encodeFunctionData(
@@ -345,6 +390,112 @@ describe.only("⛽ gas costs --> execute(...) via Key Manager", () => {
       const tx = await context.keyManager
         .connect(canTransferValueToOneAddress)
         ["execute(bytes)"](transferLYX);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfers some tokens (LSP7) - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+      const tokenAmount = 100;
+
+      const transferTokens =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            lsp7MetaCoin.address,
+            0,
+            lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+              context.universalProfile.address,
+              recipientEOA.address,
+              tokenAmount,
+              true,
+              "0x",
+            ]),
+          ]
+        );
+
+      // prettier-ignore
+      const tx = await context.keyManager.connect(canTransferTwoTokens)["execute(bytes)"](transferTokens);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfers some tokens (LSP7) to an other UP - restricted to LSP7 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+      const tokenAmount = 100;
+
+      const transferTokens =
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            lsp7MetaCoin.address,
+            0,
+            lsp7MetaCoin.interface.encodeFunctionData("transfer", [
+              context.universalProfile.address,
+              aliceUP.address,
+              tokenAmount,
+              true,
+              "0x",
+            ]),
+          ]
+        );
+
+      // prettier-ignore
+      const tx = await context.keyManager.connect(canTransferTwoTokens)["execute(bytes)"](transferTokens);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfers some tokens (LSP8) to an EOA - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+      const nftId = metaNFTList[0];
+
+      const transferNFT = context.universalProfile.interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          OPERATION_TYPES.CALL,
+          lsp8MetaNFT.address,
+          0,
+          lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            recipientEOA.address,
+            nftId,
+            true,
+            "0x",
+          ]),
+        ]
+      );
+
+      // prettier-ignore
+      const tx = await context.keyManager.connect(canTransferTwoNFTs)["execute(bytes)"](transferNFT);
+      const receipt = await tx.wait();
+
+      console.log(receipt.gasUsed.toNumber());
+    });
+
+    it("transfers some tokens (LSP8) to an other UP - restricted to LSP8 + 2x allowed contracts only (CALL + 2x AllowedCalls) (no data)", async () => {
+      const nftId = metaNFTList[1];
+
+      const transferNFT = context.universalProfile.interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          OPERATION_TYPES.CALL,
+          lsp8MetaNFT.address,
+          0,
+          lsp8MetaNFT.interface.encodeFunctionData("transfer", [
+            context.universalProfile.address,
+            aliceUP.address,
+            nftId,
+            false,
+            "0x",
+          ]),
+        ]
+      );
+
+      // prettier-ignore
+      const tx = await context.keyManager.connect(canTransferTwoNFTs)["execute(bytes)"](transferNFT);
       const receipt = await tx.wait();
 
       console.log(receipt.gasUsed.toNumber());
