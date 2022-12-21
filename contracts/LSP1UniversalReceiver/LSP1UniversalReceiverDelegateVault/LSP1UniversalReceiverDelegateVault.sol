@@ -57,13 +57,13 @@ contract LSP1UniversalReceiverDelegateVault is ERC165, ILSP1UniversalReceiver {
         bytes memory notifierMapValue = IERC725Y(msg.sender).getData(notifierMapKey);
 
         if (isReceiving) {
-            // if the amount sent is 0, then do not update the keys
-            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
-            if (balance == 0) return "LSP1: balance not updated";
-
             // if the map value is already set, then do nothing
             if (bytes12(notifierMapValue) != bytes12(0))
                 return "URD: asset received is already registered";
+
+            // if the amount sent is 0, then do not update the keys
+            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
+            if (balance == 0) return "LSP1: balance not updated";
 
             (bytes32[] memory receiverDataKeys, bytes[] memory receiverDataValues) = LSP5Utils
                 .generateReceivedAssetKeys(msg.sender, notifier, notifierMapKey, interfaceID);
