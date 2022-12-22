@@ -8376,10 +8376,10 @@
         }
       }
     },
-    "lib/forge-std/lib/ds-test/source/test.sol": {
-      "lastModificationDate": 1671625578074,
+    "lib/forge-std/ds-test/src/test.sol": {
+      "lastModificationDate": 1671714223227,
       "contentHash": "962996f0e05d5218857a538a62d7c47e",
-      "sourceName": "lib/forge-std/lib/ds-test/source/test.sol",
+      "sourceName": "lib/forge-std/ds-test/src/test.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8416,10 +8416,10 @@
         }
       }
     },
-    "lib/forge-std/source/Common.sol": {
-      "lastModificationDate": 1671625578075,
-      "contentHash": "385215973dee04c2a4bfefa3a37e253c",
-      "sourceName": "lib/forge-std/source/Common.sol",
+    "lib/forge-std/src/Base.sol": {
+      "lastModificationDate": 1671713778841,
+      "contentHash": "1870c8c1d5470db8c3e956c839db8364",
+      "sourceName": "lib/forge-std/src/Base.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8449,30 +8449,26 @@
         }
       },
       "imports": [
-        "lib/forge-std/lib/ds-test/source/test.sol",
-        "lib/forge-std/source/Components.sol",
-        "lib/forge-std/source/StdAssertions.sol",
-        "lib/forge-std/source/StdCheats.sol",
-        "lib/forge-std/source/StdError.sol",
-        "lib/forge-std/source/StdJson.sol",
-        "lib/forge-std/source/StdMath.sol",
-        "lib/forge-std/source/StdStorage.sol",
-        "lib/forge-std/source/StdUtils.sol",
-        "lib/forge-std/source/Vm.sol",
-        "lib/forge-std/source/console.sol",
-        "lib/forge-std/source/console2.sol"
+        "lib/forge-std/src/StdStorage.sol",
+        "lib/forge-std/src/Vm.sol"
       ],
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "CommonBase": {
-          "0.8.17+commit.8df45f5f.Darwin.appleclang": "Common.sol/CommonBase.json"
+          "0.8.17+commit.8df45f5f.Darwin.appleclang": "Base.sol/CommonBase.json"
+        },
+        "ScriptBase": {
+          "0.8.17+commit.8df45f5f.Darwin.appleclang": "Base.sol/ScriptBase.json"
+        },
+        "TestBase": {
+          "0.8.17+commit.8df45f5f.Darwin.appleclang": "Base.sol/TestBase.json"
         }
       }
     },
-    "lib/forge-std/source/Components.sol": {
-      "lastModificationDate": 1671625578075,
-      "contentHash": "745a7e4623550699a5e0333bcf4f0184",
-      "sourceName": "lib/forge-std/source/Components.sol",
+    "lib/forge-std/src/StdAssertions.sol": {
+      "lastModificationDate": 1671713778841,
+      "contentHash": "93fa608efd4df1e671b043437fddd457",
+      "sourceName": "lib/forge-std/src/StdAssertions.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8502,60 +8498,8 @@
         }
       },
       "imports": [
-        "lib/forge-std/lib/ds-test/source/test.sol",
-        "lib/forge-std/source/StdAssertions.sol",
-        "lib/forge-std/source/StdCheats.sol",
-        "lib/forge-std/source/StdError.sol",
-        "lib/forge-std/source/StdJson.sol",
-        "lib/forge-std/source/StdMath.sol",
-        "lib/forge-std/source/StdStorage.sol",
-        "lib/forge-std/source/StdUtils.sol",
-        "lib/forge-std/source/Vm.sol",
-        "lib/forge-std/source/console.sol",
-        "lib/forge-std/source/console2.sol"
-      ],
-      "versionRequirement": ">=0.6.2, <0.9.0",
-      "artifacts": {
-        "Components": {
-          "0.8.17+commit.8df45f5f.Darwin.appleclang": "Components.sol/Components.json"
-        }
-      }
-    },
-    "lib/forge-std/source/StdAssertions.sol": {
-      "lastModificationDate": 1671625578076,
-      "contentHash": "d3f7487aaf77c715fdbdea89ea4f8399",
-      "sourceName": "lib/forge-std/source/StdAssertions.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "london",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "lib/forge-std/lib/ds-test/source/test.sol",
-        "lib/forge-std/source/StdMath.sol"
+        "lib/forge-std/ds-test/src/test.sol",
+        "lib/forge-std/src/StdMath.sol"
       ],
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
@@ -8564,10 +8508,10 @@
         }
       }
     },
-    "lib/forge-std/source/StdCheats.sol": {
-      "lastModificationDate": 1671625578076,
-      "contentHash": "e7337996cb2aa604814b2994c9e65826",
-      "sourceName": "lib/forge-std/source/StdCheats.sol",
+    "lib/forge-std/src/StdChains.sol": {
+      "lastModificationDate": 1671713778841,
+      "contentHash": "80138bc1765b08a6db58237c26985fd9",
+      "sourceName": "lib/forge-std/src/StdChains.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8597,8 +8541,50 @@
         }
       },
       "imports": [
-        "lib/forge-std/source/StdStorage.sol",
-        "lib/forge-std/source/Vm.sol"
+        "lib/forge-std/src/Vm.sol"
+      ],
+      "versionRequirement": ">=0.6.2, <0.9.0",
+      "artifacts": {
+        "StdChains": {
+          "0.8.17+commit.8df45f5f.Darwin.appleclang": "StdChains.sol/StdChains.json"
+        }
+      }
+    },
+    "lib/forge-std/src/StdCheats.sol": {
+      "lastModificationDate": 1671713778841,
+      "contentHash": "fa245ffd8b36936bbb114ab441d5756f",
+      "sourceName": "lib/forge-std/src/StdCheats.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "london",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "lib/forge-std/src/StdStorage.sol",
+        "lib/forge-std/src/Vm.sol"
       ],
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
@@ -8610,10 +8596,10 @@
         }
       }
     },
-    "lib/forge-std/source/StdError.sol": {
-      "lastModificationDate": 1671625578077,
+    "lib/forge-std/src/StdError.sol": {
+      "lastModificationDate": 1671713778841,
       "contentHash": "64c896e1276a291776e5ea5aecb3870a",
-      "sourceName": "lib/forge-std/source/StdError.sol",
+      "sourceName": "lib/forge-std/src/StdError.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8650,10 +8636,10 @@
         }
       }
     },
-    "lib/forge-std/source/StdJson.sol": {
-      "lastModificationDate": 1671625578077,
-      "contentHash": "1df82178ad2d4556c856d0ca4b8f614d",
-      "sourceName": "lib/forge-std/source/StdJson.sol",
+    "lib/forge-std/src/StdJson.sol": {
+      "lastModificationDate": 1671713778841,
+      "contentHash": "016de2d7ee55960094cc97ec792025bb",
+      "sourceName": "lib/forge-std/src/StdJson.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8683,7 +8669,7 @@
         }
       },
       "imports": [
-        "lib/forge-std/source/Vm.sol"
+        "lib/forge-std/src/Vm.sol"
       ],
       "versionRequirement": ">=0.6.0, <0.9.0",
       "artifacts": {
@@ -8692,10 +8678,10 @@
         }
       }
     },
-    "lib/forge-std/source/StdMath.sol": {
-      "lastModificationDate": 1671625578077,
+    "lib/forge-std/src/StdMath.sol": {
+      "lastModificationDate": 1671713778842,
       "contentHash": "9da8f453eba6bb98f3d75bc6822bfb29",
-      "sourceName": "lib/forge-std/source/StdMath.sol",
+      "sourceName": "lib/forge-std/src/StdMath.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8732,10 +8718,10 @@
         }
       }
     },
-    "lib/forge-std/source/StdStorage.sol": {
-      "lastModificationDate": 1671625578082,
-      "contentHash": "3f1bd6d72997330e2f556ececa8114a7",
-      "sourceName": "lib/forge-std/source/StdStorage.sol",
+    "lib/forge-std/src/StdStorage.sol": {
+      "lastModificationDate": 1671713778842,
+      "contentHash": "1b6b8a6cbaaaf5a72860a56f0cde4e33",
+      "sourceName": "lib/forge-std/src/StdStorage.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8765,7 +8751,7 @@
         }
       },
       "imports": [
-        "lib/forge-std/source/Vm.sol"
+        "lib/forge-std/src/Vm.sol"
       ],
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
@@ -8777,10 +8763,10 @@
         }
       }
     },
-    "lib/forge-std/source/StdUtils.sol": {
-      "lastModificationDate": 1671625578083,
-      "contentHash": "1d1d6bf7b4609a675d06cc41f8dcd5ad",
-      "sourceName": "lib/forge-std/source/StdUtils.sol",
+    "lib/forge-std/src/StdUtils.sol": {
+      "lastModificationDate": 1671713778842,
+      "contentHash": "ec75addbeee075c61fa5aff2faee0465",
+      "sourceName": "lib/forge-std/src/StdUtils.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8810,7 +8796,7 @@
         }
       },
       "imports": [
-        "lib/forge-std/source/console2.sol"
+        "lib/forge-std/src/Vm.sol"
       ],
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
@@ -8819,10 +8805,10 @@
         }
       }
     },
-    "lib/forge-std/source/Test.sol": {
-      "lastModificationDate": 1671625578083,
-      "contentHash": "23c73ad6c59f5d629042303f8ffc1359",
-      "sourceName": "lib/forge-std/source/Test.sol",
+    "lib/forge-std/src/Test.sol": {
+      "lastModificationDate": 1671713778842,
+      "contentHash": "9ca73393dbc2f8cde2aa628f8d05c5d5",
+      "sourceName": "lib/forge-std/src/Test.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8852,34 +8838,31 @@
         }
       },
       "imports": [
-        "lib/forge-std/lib/ds-test/source/test.sol",
-        "lib/forge-std/source/Common.sol",
-        "lib/forge-std/source/Components.sol",
-        "lib/forge-std/source/StdAssertions.sol",
-        "lib/forge-std/source/StdCheats.sol",
-        "lib/forge-std/source/StdError.sol",
-        "lib/forge-std/source/StdJson.sol",
-        "lib/forge-std/source/StdMath.sol",
-        "lib/forge-std/source/StdStorage.sol",
-        "lib/forge-std/source/StdUtils.sol",
-        "lib/forge-std/source/Vm.sol",
-        "lib/forge-std/source/console.sol",
-        "lib/forge-std/source/console2.sol"
+        "lib/forge-std/ds-test/src/test.sol",
+        "lib/forge-std/src/Base.sol",
+        "lib/forge-std/src/StdAssertions.sol",
+        "lib/forge-std/src/StdChains.sol",
+        "lib/forge-std/src/StdCheats.sol",
+        "lib/forge-std/src/StdError.sol",
+        "lib/forge-std/src/StdJson.sol",
+        "lib/forge-std/src/StdMath.sol",
+        "lib/forge-std/src/StdStorage.sol",
+        "lib/forge-std/src/StdUtils.sol",
+        "lib/forge-std/src/Vm.sol",
+        "lib/forge-std/src/console.sol",
+        "lib/forge-std/src/console2.sol"
       ],
       "versionRequirement": ">=0.6.2, <0.9.0",
       "artifacts": {
         "Test": {
           "0.8.17+commit.8df45f5f.Darwin.appleclang": "Test.sol/Test.json"
-        },
-        "TestBase": {
-          "0.8.17+commit.8df45f5f.Darwin.appleclang": "Test.sol/TestBase.json"
         }
       }
     },
-    "lib/forge-std/source/Vm.sol": {
-      "lastModificationDate": 1671625578084,
-      "contentHash": "af4e1189b1763fe0d73a21d17cc2ea9c",
-      "sourceName": "lib/forge-std/source/Vm.sol",
+    "lib/forge-std/src/Vm.sol": {
+      "lastModificationDate": 1671713778842,
+      "contentHash": "7d92321fbeea01d10f89778af1d0e074",
+      "sourceName": "lib/forge-std/src/Vm.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8919,10 +8902,10 @@
         }
       }
     },
-    "lib/forge-std/source/console.sol": {
-      "lastModificationDate": 1671625578086,
+    "lib/forge-std/src/console.sol": {
+      "lastModificationDate": 1671713778842,
       "contentHash": "100b8a33b917da1147740d7ab8b0ded3",
-      "sourceName": "lib/forge-std/source/console.sol",
+      "sourceName": "lib/forge-std/src/console.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -8959,10 +8942,10 @@
         }
       }
     },
-    "lib/forge-std/source/console2.sol": {
-      "lastModificationDate": 1671625578087,
-      "contentHash": "493035087920d89b7c215d662e53ace3",
-      "sourceName": "lib/forge-std/source/console2.sol",
+    "lib/forge-std/src/console2.sol": {
+      "lastModificationDate": 1671713778842,
+      "contentHash": "2096b4e5f252c5df9909cccbe3d2da2e",
+      "sourceName": "lib/forge-std/src/console2.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -10270,7 +10253,7 @@
       }
     },
     "tests/foundry/LSP2UtilsTests.t.sol": {
-      "lastModificationDate": 1671706163481,
+      "lastModificationDate": 1671714447769,
       "contentHash": "a8757933909cf2032285e3f7bcb6e4da",
       "sourceName": "tests/foundry/LSP2UtilsTests.t.sol",
       "solcConfig": {
@@ -10303,20 +10286,20 @@
       },
       "imports": [
         "contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol",
-        "lib/forge-std/lib/ds-test/source/test.sol",
-        "lib/forge-std/source/Common.sol",
-        "lib/forge-std/source/Components.sol",
-        "lib/forge-std/source/StdAssertions.sol",
-        "lib/forge-std/source/StdCheats.sol",
-        "lib/forge-std/source/StdError.sol",
-        "lib/forge-std/source/StdJson.sol",
-        "lib/forge-std/source/StdMath.sol",
-        "lib/forge-std/source/StdStorage.sol",
-        "lib/forge-std/source/StdUtils.sol",
-        "lib/forge-std/source/Test.sol",
-        "lib/forge-std/source/Vm.sol",
-        "lib/forge-std/source/console.sol",
-        "lib/forge-std/source/console2.sol",
+        "lib/forge-std/ds-test/src/test.sol",
+        "lib/forge-std/src/Base.sol",
+        "lib/forge-std/src/StdAssertions.sol",
+        "lib/forge-std/src/StdChains.sol",
+        "lib/forge-std/src/StdCheats.sol",
+        "lib/forge-std/src/StdError.sol",
+        "lib/forge-std/src/StdJson.sol",
+        "lib/forge-std/src/StdMath.sol",
+        "lib/forge-std/src/StdStorage.sol",
+        "lib/forge-std/src/StdUtils.sol",
+        "lib/forge-std/src/Test.sol",
+        "lib/forge-std/src/Vm.sol",
+        "lib/forge-std/src/console.sol",
+        "lib/forge-std/src/console2.sol",
         "node_modules/solidity-bytes-utils/contracts/BytesLib.sol"
       ],
       "versionRequirement": "^0.8.13",
