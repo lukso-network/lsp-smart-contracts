@@ -10270,8 +10270,8 @@
       }
     },
     "tests/foundry/LSP2UtilsTests.t.sol": {
-      "lastModificationDate": 1671630528736,
-      "contentHash": "880c059eaa749d4a84f420e2007f9794",
+      "lastModificationDate": 1671706163481,
+      "contentHash": "a8757933909cf2032285e3f7bcb6e4da",
       "sourceName": "tests/foundry/LSP2UtilsTests.t.sol",
       "solcConfig": {
         "settings": {
