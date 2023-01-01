@@ -145,3 +145,4 @@ flat_contracts/
 
 # out folder for foundry builds
 out/
+forge-cache/
