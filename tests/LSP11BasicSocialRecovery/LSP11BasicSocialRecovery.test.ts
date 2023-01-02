@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { expect } from "chai";
 
 import {
   LSP11BasicSocialRecovery__factory,
@@ -20,6 +20,8 @@ import {
   deployProxy,
 } from "../utils/fixtures";
 
+import { combinePermissions } from "../utils/helpers";
+
 import { PERMISSIONS } from "../../constants";
 
 describe("LSP11BasicSocialRecovery contract", () => {
@@ -33,18 +35,19 @@ describe("LSP11BasicSocialRecovery contract", () => {
       const lsp6KeyManager = KM as LSP6KeyManager;
 
       const deployParams = {
-        account: universalProfile,
+        owner: universalProfile,
+        target: universalProfile,
       };
 
       const lsp11BasicSocialRecovery =
         await new LSP11BasicSocialRecovery__factory(accounts.any).deploy(
-          deployParams.account.address
+          deployParams.owner.address,
+          deployParams.target.address
         );
 
-      const lsp11Permissions = ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.ADDPERMISSIONS)) +
-          parseInt(Number(PERMISSIONS.CHANGEPERMISSIONS)),
-        32
+      const lsp11Permissions = combinePermissions(
+        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.CHANGEPERMISSIONS
       );
 
       await grantPermissionViaKeyManager(
@@ -99,25 +102,27 @@ describe("LSP11BasicSocialRecovery contract", () => {
       const lsp6KeyManager = KM as LSP6KeyManager;
 
       const deployParams = {
-        account: universalProfile,
+        owner: universalProfile,
+        target: universalProfile,
       };
 
       const lsp11BasicSocialRecoveryInit =
         await new LSP11BasicSocialRecoveryInit__factory(
           accounts.owner
         ).deploy();
+
       const lsp11BasicSocialRecoveryProxy = await deployProxy(
         lsp11BasicSocialRecoveryInit.address,
         accounts.owner
       );
+
       const lsp11BasicSocialRecovery = lsp11BasicSocialRecoveryInit.attach(
         lsp11BasicSocialRecoveryProxy
       );
 
-      const lsp11Permissions = ethers.utils.hexZeroPad(
-        parseInt(Number(PERMISSIONS.ADDPERMISSIONS)) +
-          parseInt(Number(PERMISSIONS.CHANGEPERMISSIONS)),
-        32
+      const lsp11Permissions = combinePermissions(
+        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.CHANGEPERMISSIONS
       );
 
       await grantPermissionViaKeyManager(
@@ -138,8 +143,9 @@ describe("LSP11BasicSocialRecovery contract", () => {
     };
 
     const initializeProxy = async (context: LSP11TestContext) => {
-      return context.lsp11BasicSocialRecovery["initialize(address)"](
-        context.deployParams.account.address
+      return context.lsp11BasicSocialRecovery["initialize(address,address)"](
+        context.deployParams.owner.address,
+        context.deployParams.target.address
       );
     };
 
@@ -167,7 +173,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
         it("should revert", async () => {
           await initializeProxy(context);
 
-          await expect(initializeProxy(context)).toBeRevertedWith(
+          await expect(initializeProxy(context)).to.be.revertedWith(
             "Initializable: contract is already initialized"
           );
         });
