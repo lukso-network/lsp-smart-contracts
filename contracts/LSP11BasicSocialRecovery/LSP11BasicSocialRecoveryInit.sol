@@ -7,8 +7,8 @@ import {LSP11BasicSocialRecoveryInitAbstract} from "./LSP11BasicSocialRecoveryIn
 
 /**
  * @title Deployable Proxy Implementation of LSP11 - Basic Social Recovery standard
- * @author Fabian Vogelsteller, Yamen Merhi, Jean Cavallera
- * @notice Recovers the permission of a key to control an ERC725 contract through LSP6KeyManager
+ * @dev Sets permission for a controller address after a recovery process to interact with an ERC725
+ * contract via the LSP6KeyManager
  */
 contract LSP11BasicSocialRecoveryInit is LSP11BasicSocialRecoveryInitAbstract {
     constructor() {
@@ -16,10 +16,11 @@ contract LSP11BasicSocialRecoveryInit is LSP11BasicSocialRecoveryInitAbstract {
     }
 
     /**
-     * @notice Initiate the contract with the address of the ERC725 contract and sets the owner
-     * @param _account The address of the ER725 contract to recover and the owner of the contract
+     * @notice Sets the target and the owner addresses
+     * @param _owner The owner of the LSP11 contract
+     * @param target_ The address of the ER725 contract to recover
      */
-    function initialize(address _account) public virtual initializer {
-        LSP11BasicSocialRecoveryInitAbstract._initialize(_account);
+    function initialize(address target_, address _owner) public virtual initializer {
+        LSP11BasicSocialRecoveryInitAbstract._initialize(target_, _owner);
     }
 }
