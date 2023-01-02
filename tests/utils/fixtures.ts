@@ -187,16 +187,16 @@ export async function grantPermissionViaKeyManager(
     "setData(bytes32[],bytes[])",
     [
       [
-        ERC725YKeys.LSP6["AddressPermissions[]"].length,
-        ERC725YKeys.LSP6["AddressPermissions[]"].index +
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
           rawPermissionArrayLength.substring(34, 66),
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           addressToGrant.substr(2),
       ],
       [newRawPermissionArrayLength, addressToGrant, permissions],
     ]
   );
-  await lsp6KeyManager.connect(EOA).execute(payload);
+  await lsp6KeyManager.connect(EOA)["execute(bytes)"](payload);
 }
 
 /**
