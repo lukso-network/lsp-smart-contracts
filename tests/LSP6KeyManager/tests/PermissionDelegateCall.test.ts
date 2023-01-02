@@ -95,8 +95,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
         context.keyManager
           .connect(context.owner)
           ["execute(bytes)"](executePayload)
-      ).to.be.revertedWith(
-        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "DelegateCallDisallowedViaKeyManager"
       );
     });
 
@@ -135,8 +136,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
         context.keyManager
           .connect(addressCanDelegateCall)
           ["execute(bytes)"](executePayload)
-      ).to.be.revertedWith(
-        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "DelegateCallDisallowedViaKeyManager"
       );
     });
 
@@ -175,8 +177,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
         context.keyManager
           .connect(addressCannotDelegateCall)
           ["execute(bytes)"](executePayload)
-      ).to.be.revertedWith(
-        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "DelegateCallDisallowedViaKeyManager"
       );
     });
   });
@@ -282,8 +285,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
               context.keyManager
                 .connect(caller)
                 ["execute(bytes)"](executePayload)
-            ).to.be.revertedWith(
-              "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+            ).to.be.revertedWithCustomError(
+              context.keyManager,
+              "DelegateCallDisallowedViaKeyManager"
             );
 
             // storage should remain unchanged and not set
@@ -326,8 +330,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         await expect(
           context.keyManager.connect(caller)["execute(bytes)"](executePayload)
-        ).to.be.revertedWith(
-          "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "DelegateCallDisallowedViaKeyManager"
         );
 
         // prettier-ignore
@@ -364,8 +369,9 @@ export const shouldBehaveLikePermissionDelegateCall = (
 
         await expect(
           context.keyManager.connect(caller)["execute(bytes)"](executePayload)
-        ).to.be.revertedWith(
-          "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "DelegateCallDisallowedViaKeyManager"
         );
 
         // prettier-ignore

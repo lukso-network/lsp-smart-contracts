@@ -38,7 +38,7 @@ jobs:
         with:
           path: |
             artifacts
-            node_modules 
+            node_modules
             types
           key: ${{ github.run_id }}
 
@@ -57,7 +57,7 @@ jobs:
             "lsp9",
             "lsp11",
             "universalfactory",
-            "helpers",
+            "mocks",
           ]
 
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
         with:
           path: |
             artifacts
-            node_modules 
+            node_modules
             types
           key: ${{ github.run_id }}
 

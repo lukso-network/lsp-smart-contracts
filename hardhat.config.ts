@@ -37,7 +37,7 @@ function getL16ChainConfig(): NetworkUserConfig {
   };
 
   if (process.env.CONTRACT_VERIFICATION_PK !== undefined) {
-    config['accounts'] = [process.env.CONTRACT_VERIFICATION_PK];
+    config["accounts"] = [process.env.CONTRACT_VERIFICATION_PK];
   }
 
   return config;
@@ -57,7 +57,7 @@ const config: HardhatUserConfig = {
       chainId: 22,
       //   accounts: [privateKey1, privateKey2, ...]
     },
-    luksoL16: getL16ChainConfig()
+    luksoL16: getL16ChainConfig(),
   },
   namedAccounts: {
     owner: 0,
@@ -94,7 +94,7 @@ const config: HardhatUserConfig = {
     showMethodSig: true,
   },
   solidity: {
-    version: "0.8.13",
+    version: "0.8.15",
     settings: {
       optimizer: {
         enabled: true,

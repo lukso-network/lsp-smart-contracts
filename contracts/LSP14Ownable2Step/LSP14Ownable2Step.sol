@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
+import {ILSP14Ownable2Step} from "./ILSP14Ownable2Step.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 // modules
@@ -26,22 +27,7 @@ import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
  *      works as a 2 steps process. This can be used as a confirmation mechanism to prevent potential mistakes when
  *      transferring ownership of the contract, where the control of the contract could be lost forever.
  */
-abstract contract LSP14Ownable2Step is OwnableUnset {
-    /**
-     * @dev emitted whenever the `transferOwnership(..)` 2-step process is started
-     */
-    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
-
-    /**
-     * @dev emitted whenever the `renounceOwnership(..)` 2-step process is started
-     */
-    event RenounceOwnershipInitiated();
-
-    /**
-     * @dev emitted when ownership of the contract has been renounced
-     */
-    event OwnershipRenounced();
-
+abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     /**
      * @dev The number of block that MUST pass before one is able to
      *  confirm renouncing ownership
@@ -70,21 +56,40 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
     // --- General Methods
 
     /**
-     * @dev Returns the address of the current pending owner.
+     * @inheritdoc ILSP14Ownable2Step
      */
     function pendingOwner() public view virtual returns (address) {
         return _pendingOwner;
     }
 
-    function transferOwnership(address newOwner) public virtual override onlyOwner {
+    /**
+     * @inheritdoc ILSP14Ownable2Step
+     */
+    function transferOwnership(address newOwner)
+        public
+        virtual
+        override(OwnableUnset, ILSP14Ownable2Step)
+        onlyOwner
+    {
         _transferOwnership(newOwner);
     }
 
+    /**
+     * @inheritdoc ILSP14Ownable2Step
+     */
     function acceptOwnership() public virtual {
         _acceptOwnership();
     }
 
-    function renounceOwnership() public virtual override onlyOwner {
+    /**
+     * @inheritdoc ILSP14Ownable2Step
+     */
+    function renounceOwnership()
+        public
+        virtual
+        override(OwnableUnset, ILSP14Ownable2Step)
+        onlyOwner
+    {
         _renounceOwnership();
     }
 
@@ -119,7 +124,7 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
         require(msg.sender == pendingOwner(), "LSP14: caller is not the pendingOwner");
 
         address previousOwner = owner();
-        _setOwner(_pendingOwner);
+        _setOwner(msg.sender);
         delete _pendingOwner;
 
         _notifyUniversalReceiver(
@@ -147,7 +152,7 @@ abstract contract LSP14Ownable2Step is OwnableUnset {
 
         if (currentBlock > confirmationPeriodEnd) {
             _renounceOwnershipStartedAt = currentBlock;
-            emit RenounceOwnershipInitiated();
+            emit RenounceOwnershipStarted();
             return;
         }
 

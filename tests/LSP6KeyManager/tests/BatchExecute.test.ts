@@ -306,7 +306,8 @@ export const shouldBehaveLikeBatchExecute = (
           .withArgs(
             OPERATION_TYPES.CREATE,
             ethers.utils.getAddress(futureTokenAddress),
-            0
+            0,
+            ethers.utils.hexZeroPad("0x00", 32)
           );
 
         // CHECK initialize parameters have been set correctly
@@ -419,7 +420,8 @@ export const shouldBehaveLikeBatchExecute = (
           .withArgs(
             OPERATION_TYPES.CREATE,
             ethers.utils.getAddress(futureTokenAddress),
-            0
+            0,
+            ethers.utils.hexZeroPad("0x00", 32)
           );
 
         // CHECK for tokens balances of recipients
@@ -529,9 +531,7 @@ export const shouldBehaveLikeBatchExecute = (
                   [firstSetDataPayload, secondSetDataPayload],
                   { value: amountToFund }
                 )
-            ).to.be.revertedWith(
-              "LSP6: Unknown Error occured when calling the linked target contract"
-            );
+            ).to.be.revertedWith("LSP6: failed executing payload");
 
             const keyManagerBalanceAfter = await ethers.provider.getBalance(
               context.keyManager.address
@@ -633,9 +633,7 @@ export const shouldBehaveLikeBatchExecute = (
                 ["execute(uint256[],bytes[])"](msgValues, payloads, {
                   value: totalValues,
                 })
-            ).to.be.revertedWith(
-              "LSP6: Unknown Error occured when calling the linked target contract"
-            );
+            ).to.be.revertedWith("LSP6: failed executing payload");
           });
         });
       });

@@ -1831,9 +1831,8 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           .withArgs(controllerCanSetSomeKeys.address, key);
       });
 
-      it("should revert when trying to set bytes32(0) data key, we do not allow changing the bytes32(0) data key", async () => {
-        const key =
-          "0x0000000000000000000000000000000000000000000000000000000000000000";
+      it("should pass and allow to set the bytes32(0) data key", async () => {
+        const key = zeroKey;
         const value = ethers.utils.hexlify(
           ethers.utils.toUtf8Bytes("some value for " + key)
         );
@@ -1844,17 +1843,16 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
             [key, value]
           );
 
-        await expect(
-          context.keyManager
-            .connect(controllerCanSetSomeKeys)
-            ["execute(bytes)"](setDataPayload)
-        ).to.be.revertedWithCustomError(
-          context.keyManager,
-          "ZeroDataKeyNotAllowed"
-        );
+        await context.keyManager
+          .connect(controllerCanSetSomeKeys)
+          ["execute(bytes)"](setDataPayload);
+
+        expect(
+          await context.universalProfile["getData(bytes32)"](key)
+        ).to.equal(value);
       });
 
-      it("should revert when trying to set an array of data keys including bytes32(0), we do not allow changing the bytes32(0) data key", async () => {
+      it("should pass when trying to set an array of data keys that includes bytes32(0) (= zero data key)", async () => {
         const keys = [customKey1, customKey2, zeroKey];
         const values = [
           ethers.utils.hexlify(
@@ -1874,14 +1872,13 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
             [keys, values]
           );
 
-        await expect(
-          context.keyManager
-            .connect(controllerCanSetSomeKeys)
-            ["execute(bytes)"](setDataPayload)
-        ).to.be.revertedWithCustomError(
-          context.keyManager,
-          "ZeroDataKeyNotAllowed"
-        );
+        await context.keyManager
+          .connect(controllerCanSetSomeKeys)
+          ["execute(bytes)"](setDataPayload);
+
+        expect(
+          await context.universalProfile["getData(bytes32[])"](keys)
+        ).to.deep.equal(values);
       });
 
       it("should revert when trying to set an array of data keys including a dynamic bytes31(0) data key, not in AllowedERC725YDataKeys", async () => {
@@ -2096,7 +2093,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
         expect(result).to.equal(value);
       });
 
-      it("should revert when trying to set bytes32(0) data key, we do not allow changing the bytes32(0) data key", async () => {
+      it("should pass and allow to set the bytes32(0) data key", async () => {
         const key = zeroKey;
         const value = ethers.utils.hexlify(
           ethers.utils.toUtf8Bytes("some value for " + key)
@@ -2108,17 +2105,16 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
             [key, value]
           );
 
-        await expect(
-          context.keyManager
-            .connect(controllerCanSetSomeKeys)
-            ["execute(bytes)"](setDataPayload)
-        ).to.be.revertedWithCustomError(
-          context.keyManager,
-          "ZeroDataKeyNotAllowed"
-        );
+        await context.keyManager
+          .connect(controllerCanSetSomeKeys)
+          ["execute(bytes)"](setDataPayload);
+
+        expect(
+          await context.universalProfile["getData(bytes32)"](key)
+        ).to.equal(value);
       });
 
-      it("should revert when trying to set an array of data keys including bytes32(0), we do not allow changing the bytes32(0) data key", async () => {
+      it("should pass when setting an array of data keys that includes bytes32(0) (= zero data key)", async () => {
         const keys = [customKey1, customKey2, zeroKey];
         const values = [
           ethers.utils.hexlify(
@@ -2138,14 +2134,13 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
             [keys, values]
           );
 
-        await expect(
-          context.keyManager
-            .connect(controllerCanSetSomeKeys)
-            ["execute(bytes)"](setDataPayload)
-        ).to.revertedWithCustomError(
-          context.keyManager,
-          "ZeroDataKeyNotAllowed"
-        );
+        await context.keyManager
+          .connect(controllerCanSetSomeKeys)
+          ["execute(bytes)"](setDataPayload);
+
+        expect(
+          await context.universalProfile["getData(bytes32[])"](keys)
+        ).to.deep.equal(values);
       });
 
       it("should pass when trying to set an array of data keys including a dynamic bytes24(0) data key, because bytes20(0) dynamic data ke is in AllowedERC725YDataKeys", async () => {

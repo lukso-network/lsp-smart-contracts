@@ -474,11 +474,12 @@ const EventSignatures = {
 		 *     uint256 indexed _operation,
 		 *     address indexed _contractAddress,
 		 *     uint256 indexed _value
+		 *     bytes32 _salt
 		 * );
 		 *
-		 * signature = keccak256('ContractCreated(uint256,address,uint256)')
+		 * signature = keccak256('ContractCreated(uint256,address,uint256,bytes32)')
 		 */
-		ContractCreated: '0x01c42bd7e97a66166063b02fce6924e6656b6c2c61966630165095c4fb0b7b2f',
+		ContractCreated: '0xa1fb700aaee2ae4a2ff6f91ce7eba292f89c2f5488b8ec4c5c5c8150692595c3',
 		/**
 		 * event Executed(
 		 *      uint256 indexed _operation,
@@ -697,12 +698,12 @@ const EventSignatures = {
 		OwnershipTransferStarted:
 			'0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700',
 		/**
-		 * event RenounceOwnershipInitiated();
+		 * event RenounceOwnershipStarted();
 		 *
-		 * signature = keccak256('RenounceOwnershipInitiated()')
+		 * signature = keccak256('RenounceOwnershipStarted()')
 		 */
-		RenounceOwnershipInitiated:
-			'0X56272768d104766ae5e663c58927d0a9e47effb40b9a8f6644ac5dfbc9e56f84',
+		RenounceOwnershipStarted:
+			'0x81b7f830f1f0084db6497c486cbe6974c86488dcc4e3738eab94ab6d6b1653e7',
 		/**
 		 * event OwnershipRenounced();
 		 *
