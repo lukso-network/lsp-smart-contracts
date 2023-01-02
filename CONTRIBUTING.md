@@ -1,5 +1,13 @@
 # Contributing
 
+## **Clone project**
+
+Our project uses submodules, we recommend you to clone our repository using the following command:
+
+```bash
+$ git clone --recurse-submodules https://github.com/lukso-network/lsp-smart-contracts.git
+```
+
 ## **Commits and PRs**
 
 This project uses Conventional Commits to generate release notes and to determine versioning. Commit messages should adhere to this standard and be of the form:

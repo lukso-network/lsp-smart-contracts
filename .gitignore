@@ -143,6 +143,6 @@ flat_contracts/
 # codespaces
 .devcontainer
 
-# out folder for foundry builds
+# folders generated for foundry builds
 out/
 forge-cache/
