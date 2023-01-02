@@ -96,10 +96,10 @@ library LSP6Utils {
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 
-    function createPermissionsKeysForController(
+    function generatePermissionsKeysForController(
         IERC725Y _account,
         address _address,
-        bytes memory permissions
+        bytes32 permissions
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         keys = new bytes32[](3);
         values = new bytes[](3);
@@ -120,6 +120,6 @@ library LSP6Utils {
             _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
             bytes20(_address)
         );
-        values[2] = permissions;
+        values[2] = abi.encodePacked(permissions);
     }
 }
