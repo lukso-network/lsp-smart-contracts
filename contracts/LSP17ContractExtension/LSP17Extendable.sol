@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import {_INTERFACEID_LSP17_EXTENDABLE} from "./LSP17Constants.sol";
@@ -35,7 +35,7 @@ abstract contract LSP17Extendable is ERC165 {
         address erc165Extension = _getExtension(ERC165.supportsInterface.selector);
         if (erc165Extension == address(0)) return false;
 
-        return ERC165Checker.supportsERC165Interface(erc165Extension, interfaceId);
+        return ERC165Checker.supportsERC165InterfaceUnchecked(erc165Extension, interfaceId);
     }
 
     /**

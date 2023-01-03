@@ -12,7 +12,7 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // libraries
-import {ERC165Checker} from "../../Custom/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1Utils.sol";
 import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "../../LSP6KeyManager/LSP6Utils.sol";
@@ -72,7 +72,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         // if the contract being transferred doesn't support LSP9, do not register it as a received vault
         if (mapPrefix == _LSP10_VAULTS_MAP_KEY_PREFIX) {
             if (notifier.code.length != 0) {
-                if (!notifier.supportsERC165Interface(_INTERFACEID_LSP9))
+                if (!notifier.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP9))
                     return "LSP1: not an LSP9Vault ownership transfer";
             }
         }
@@ -167,7 +167,8 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         returns (address accountOwner, bool ownerIsKeyManager)
     {
         accountOwner = ERC725Y(msg.sender).owner();
-        if (accountOwner.supportsERC165Interface(_INTERFACEID_LSP6)) ownerIsKeyManager = true;
+        if (accountOwner.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP6))
+            ownerIsKeyManager = true;
 
         address target = ILSP6KeyManager(accountOwner).target();
         // check if the caller is the same account controlled by the keyManager
