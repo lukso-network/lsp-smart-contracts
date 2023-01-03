@@ -29,7 +29,7 @@
     "test:lsp8": "hardhat test --no-compile tests/LSP8IdentifiableDigitalAsset/*.test.ts tests/LSP8IdentifiableDigitalAsset/extensions/*.test.ts",
     "test:lsp9": "hardhat test --no-compile tests/LSP9Vault/*.test.ts",
     "test:universalfactory": "hardhat test --no-compile tests/LSP16UniversalFactory/LSP16UniversalFactory.test.ts",
-    "test:foundry": "forge test --no-match-test Skip",
+    "test:foundry": "forge test --no-match-test Skip --gas-report > gasreport.ansi",
     "build": "hardhat compile",
     "package": "hardhat prepare-package",
     "release": "run-s clean build package && standard-version",

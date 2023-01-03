@@ -1,0 +1,32 @@
+No files changed, compilation skipped
+
+Running 6 tests for tests/foundry/GasTests/GasTests.t.sol:GasTests
+[32m[PASS][0m testTransferLYXToEOA() (gas: 73691)
+[32m[PASS][0m testTransferLYXToRandomUP() (gas: 50432)
+[32m[PASS][0m testTransferNFTToRandomEOA() (gas: 2043290)
+[32m[PASS][0m testTransferNFTToRandomUP() (gas: 2058537)
+[32m[PASS][0m testTransferTokensToRandomEOA() (gas: 1786841)
+[32m[PASS][0m testTransferTokensToRandomUP() (gas: 1802098)
+Test result: [32mok[0m. 6 passed; 0 failed; finished in 4.65ms
+
+Running 4 tests for tests/foundry/LSP2ERC725YJSONSchema/LSP2UtilsTests.t.sol:LSP2UtilsTests
+[32m[PASS][0m testArrayElementKeyAtIndexShouldAllowedOverwrite(uint256) (runs: 100000, μ: 637, ~: 813)
+[32m[PASS][0m testIsCompactBytesArray(bytes32,bytes20,bytes1) (runs: 100000, μ: 1657, ~: 1657)
+[32m[PASS][0m testRevertsOnWrongLastBracket(string) (runs: 100000, μ: 3928, ~: 4022)
+[32m[PASS][0m testRevertsOnWrongSecondToLastBracket(string) (runs: 100000, μ: 3962, ~: 4058)
+Test result: [32mok[0m. 4 passed; 0 failed; finished in 2.70s
+| tests/foundry/GasTests/LSP6MockGas.sol:LSP6MockGas contract |                 |        |        |        |         |
+|-------------------------------------------------------------|-----------------|--------|--------|--------|---------|
+| Deployment Cost                                             | Deployment Size |        |        |        |         |
+| 2323440                                                     | 11719           |        |        |        |         |
+| Function Name                                               | min             | avg    | median | max    | # calls |
+| supportsInterface                                           | 505             | 505    | 505    | 505    | 12      |
+| transferLYXToEOA                                            | 57769           | 57769  | 57769  | 57769  | 1       |
+| transferLYXToUP                                             | 34475           | 34475  | 34475  | 34475  | 1       |
+| transferNFTToRandomEOA                                      | 93996           | 93996  | 93996  | 93996  | 1       |
+| transferNFTToRandomUP                                       | 106220          | 106220 | 106220 | 106220 | 1       |
+| transferTokensToRandomEOA                                   | 66182           | 66182  | 66182  | 66182  | 1       |
+| transferTokensToRandomUP                                    | 81440           | 81440  | 81440  | 81440  | 1       |
+
+
+
