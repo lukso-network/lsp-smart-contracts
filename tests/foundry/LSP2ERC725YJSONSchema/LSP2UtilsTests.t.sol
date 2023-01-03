@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import "../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import "../../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 contract LSP2UtilsTests is Test {
     function testRevertsOnWrongLastBracket(string memory x) public {
@@ -12,6 +12,7 @@ contract LSP2UtilsTests is Test {
         if (dataKey.length > 1 && dataKey[dataKey.length - 1] != 0x5d) {
             vm.expectRevert();
             LSP2Utils.generateArrayKey(x);
+            //
         }
     }
 
