@@ -19,17 +19,6 @@ error CannotInitializeContract();
 error InvalidMsgValueDistribution();
 
 /**
- * @dev reverts when not passing any initializeCalldata to the {deployCreate2Init} function
- */
-error InitializeCalldataRequired();
-
-/**
- * @dev reverts when sending value to the {deployCreate2Proxy} function if the contract being created
- * is an uninitializable clone.
- */
-error ValueNotAllowedWithNonInitializableProxies();
-
-/**
  * @dev UniversalFactory contract can be used to deploy normal or minimal proxy contracts (EIP-1167) using CREATE2.
  * This gives the ability to deploy the same contract at the same address on different chains.
  * If the contract has a constructor, the arguments will be part of the bytecode
@@ -40,6 +29,8 @@ error ValueNotAllowedWithNonInitializableProxies();
  * More information: https://weka.medium.com/how-to-send-ether-to-11-440-people-187e332566b7
  */
 contract LSP16UniversalFactory {
+    bytes private constant _EMPTY_BYTE = "";
+
     /**
      * @dev Emitted whenever a contract is created
      * @param contractCreated The address of the contract created
@@ -61,9 +52,10 @@ contract LSP16UniversalFactory {
     function calculateAddress(
         bytes32 byteCodeHash,
         bytes32 providedSalt,
+        bool initializable,
         bytes calldata initializeCallData
     ) public view returns (address) {
-        bytes32 generatedSalt = _generateSalt(initializeCallData, providedSalt);
+        bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
         return Create2.computeAddress(generatedSalt, byteCodeHash);
     }
 
@@ -74,9 +66,10 @@ contract LSP16UniversalFactory {
     function calculateProxyAddress(
         address baseContract,
         bytes32 providedSalt,
+        bool initializable,
         bytes calldata initializeCallData
     ) public view returns (address) {
-        bytes32 generatedSalt = _generateSalt(initializeCallData, providedSalt);
+        bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
         return Clones.predictDeterministicAddress(baseContract, generatedSalt);
     }
 
@@ -96,9 +89,9 @@ contract LSP16UniversalFactory {
         payable
         returns (address)
     {
-        bytes32 generatedSalt = _generateSalt("", providedSalt);
+        bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
         address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
-        emit ContractCreated(contractCreated, providedSalt, false, "");
+        emit ContractCreated(contractCreated, providedSalt, false, _EMPTY_BYTE);
 
         return contractCreated;
     }
@@ -111,7 +104,6 @@ contract LSP16UniversalFactory {
      *
      * The msg.value is split according to the parameters of the function
      *
-     * The initialize calldata MUST NOT be empty
      * The msg.value sent to this contract MUST be the sum of the two parameters: `constructorMsgValue`
      * and `initializeCalldataMsgValue`
      *
@@ -125,11 +117,10 @@ contract LSP16UniversalFactory {
         uint256 constructorMsgValue,
         uint256 initializeCalldataMsgValue
     ) public payable returns (address) {
-        if (initializeCalldata.length == 0) revert InitializeCalldataRequired();
         if (constructorMsgValue + initializeCalldataMsgValue != msg.value)
             revert InvalidMsgValueDistribution();
 
-        bytes32 generatedSalt = _generateSalt(initializeCalldata, providedSalt);
+        bytes32 generatedSalt = _generateSalt(true, initializeCalldata, providedSalt);
         address contractCreated = Create2.deploy(constructorMsgValue, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, true, initializeCalldata);
 
@@ -146,32 +137,49 @@ contract LSP16UniversalFactory {
      * The address where the contract will be deployed can be known in advance via {calculateProxyAddress}.
      *
      * This function uses the CREATE2 opcode and a salt to deterministically deploy
-     * the clone. The salt is a combination between an initializable boolean, `providedSalt`
-     * and the `initializeCallData` if the contract is initializable. This method allow users
-     * to have the same contracts at the same address across different chains with the same parameters.
+     * the clone. The salt is a combination between an initializable boolean, `providedSalt`.
+     * This method allow users to have the same contracts at the same address across different
+     * chains with the same parameters.
      *
      * Using the same `baseContract` and salt multiple time will revert, since
      * the clones cannot be deployed twice at the same address.
      */
-    function deployCreate2Proxy(
+    function deployCreate2Proxy(address baseContract, bytes32 providedSalt)
+        public
+        returns (address)
+    {
+        bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
+
+        address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
+        emit ContractCreated(proxy, providedSalt, false, _EMPTY_BYTE);
+
+        return proxy;
+    }
+
+    /**
+     * @dev Deploys and returns the address of a clone that mimics the behaviour of `baseContract`.
+     * The address where the contract will be deployed can be known in advance via {calculateProxyAddress}.
+     *
+     * This function uses the CREATE2 opcode and a salt to deterministically deploy
+     * the clone. The salt is a combination between an initializable boolean, `providedSalt`
+     * and the `initializeCallData`. This method allow users to have the same contracts at the same address
+     * across different chains with the same parameters.
+     *
+     * Using the same `baseContract` and salt multiple time will revert, since
+     * the clones cannot be deployed twice at the same address.
+     */
+    function deployCreate2ProxyInit(
         address baseContract,
         bytes32 providedSalt,
         bytes calldata initializeCalldata
     ) public payable returns (address) {
-        bool initializable = initializeCalldata.length != 0;
-        bytes32 generatedSalt = _generateSalt(initializeCalldata, providedSalt);
+        bytes32 generatedSalt = _generateSalt(true, initializeCalldata, providedSalt);
 
         address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
-        emit ContractCreated(proxy, providedSalt, initializable, initializeCalldata);
+        emit ContractCreated(proxy, providedSalt, true, initializeCalldata);
 
-        if (!initializable) {
-            if (msg.value != 0) revert ValueNotAllowedWithNonInitializableProxies();
-        } else {
-            (bool success, bytes memory returndata) = proxy.call{value: msg.value}(
-                initializeCalldata
-            );
-            _verifyCallResult(success, returndata);
-        }
+        (bool success, bytes memory returndata) = proxy.call{value: msg.value}(initializeCalldata);
+        _verifyCallResult(success, returndata);
 
         return proxy;
     }
@@ -186,12 +194,11 @@ contract LSP16UniversalFactory {
      * to deploy the same bytecode + the same salt to get the same address of the contract on
      * another chain without applying the effect of initializing.
      */
-    function _generateSalt(bytes memory initializeCallData, bytes32 providedSalt)
-        internal
-        pure
-        returns (bytes32)
-    {
-        bool initializable = initializeCallData.length != 0;
+    function _generateSalt(
+        bool initializable,
+        bytes memory initializeCallData,
+        bytes32 providedSalt
+    ) internal pure returns (bytes32) {
         if (initializable) {
             return keccak256(abi.encodePacked(initializable, initializeCallData, providedSalt));
         } else {
