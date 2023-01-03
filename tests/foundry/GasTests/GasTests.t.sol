@@ -3,35 +3,49 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import "./LSP6MockGas.sol";
+import "./LSP6MockGasTests.sol";
 import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
+import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
 import "../../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import "../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../contracts/Mocks/Tokens/LSP8Tester.sol";
+import {
+    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
+} from "../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
 
 contract GasTests is Test {
-    LSP6MockGas public keyManager;
     LSP0ERC725Account public universalProfile;
     LSP0ERC725Account public randomUniversalProfile;
+    LSP1UniversalReceiverDelegateUP public universalReceiverDelegate;
+    LSP6MockGasTests public keyManager;
     LSP7Tester public digitalAsset;
     LSP8Tester public indentifiableDigitalAsset;
 
-    address public universalProfileOwner = address(0x100);
-    address public randomEOA = address(0x200);
-    address public digitalAssetsOwner = address(0x300);
+    address public universalProfileOwner;
+    address public randomEOA;
+    address public digitalAssetsOwner;
 
     function setUp() public {
+        universalProfileOwner = vm.addr(1);
+        randomEOA = vm.addr(2);
+        digitalAssetsOwner = vm.addr(3);
+
         universalProfile = new LSP0ERC725Account(universalProfileOwner);
         // create random UP
-        randomUniversalProfile = new LSP0ERC725Account(address(0x3));
+        randomUniversalProfile = new LSP0ERC725Account(vm.addr(4));
 
-        keyManager = new LSP6MockGas(address(universalProfile));
+        // create LSP1UniversalReceiverDelegateUP
+        universalReceiverDelegate = new LSP1UniversalReceiverDelegateUP();
 
-        // give some LYX to UniversalProfile
-        vm.deal(address(universalProfile), 100 ether);
-        // check if UniversalProfile has 100 LYX
-        assertEq((address(universalProfile)).balance, 100 ether);
+        // set LSP1UniversalReceiverDelegateUP as delegate for UniversalProfile
+        vm.prank(universalProfileOwner);
+        universalProfile.setData(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
+            abi.encode(address(universalReceiverDelegate))
+        );
+
+        keyManager = new LSP6MockGasTests(address(universalProfile));
 
         // give all permissions to universalProfileOwner
         bytes32 dataKey = LSP2Utils.generateMappingWithGroupingKey(
@@ -58,6 +72,11 @@ contract GasTests is Test {
     }
 
     function testTransferLYXToEOA() public {
+        // give some LYX to UniversalProfile
+        vm.deal(address(universalProfile), 100 ether);
+        // check if UniversalProfile has 100 LYX
+        assertEq((address(universalProfile)).balance, 100 ether);
+
         // transfer payload to random EOA
         bytes memory transferPayload = abi.encodeWithSignature(
             "execute(uint256,address,uint256,bytes)",
@@ -75,6 +94,10 @@ contract GasTests is Test {
     }
 
     function testTransferLYXToRandomUP() public {
+        // give some LYX to UniversalProfile
+        vm.deal(address(universalProfile), 100 ether);
+        // check if UniversalProfile has 100 LYX
+        assertEq((address(universalProfile)).balance, 100 ether);
         // transfer payload to random UP
         bytes memory transferPayload = abi.encodeWithSignature(
             "execute(uint256,address,uint256,bytes)",
