@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 
 import "./LSP6MockGasTests.sol";
-import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 import "../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
 import "../../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
@@ -13,69 +12,68 @@ import "../../../contracts/Mocks/Tokens/LSP8Tester.sol";
 import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
+import {
+    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+    _PERMISSION_SUPER_SETDATA,
+    _PERMISSION_SUPER_CALL,
+    _PERMISSION_REENTRANCY,
+    _PERMISSION_SUPER_TRANSFERVALUE
+} from "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 
 contract GasTests is Test {
-    LSP0ERC725Account public universalProfile;
+    LSP0ERC725Account public mainUniversalProfile;
     LSP0ERC725Account public randomUniversalProfile;
     LSP1UniversalReceiverDelegateUP public universalReceiverDelegate;
-    LSP6MockGasTests public keyManager;
+    LSP6MockGasTests public keyManagerMainUP;
+    LSP6MockGasTests public keyManagerRandomUP;
     LSP7Tester public digitalAsset;
     LSP8Tester public indentifiableDigitalAsset;
 
-    address public universalProfileOwner;
+    address public mainUniversalProfileOwner;
+    address public randomUniversalProfileOwner;
     address public randomEOA;
     address public digitalAssetsOwner;
 
     function setUp() public {
-        universalProfileOwner = vm.addr(1);
+        mainUniversalProfileOwner = vm.addr(1);
+        vm.label(mainUniversalProfileOwner, "mainUniversalProfileOwner address");
         randomEOA = vm.addr(2);
+        vm.label(randomEOA, "randomEOA address");
         digitalAssetsOwner = vm.addr(3);
+        vm.label(digitalAssetsOwner, "digitalAssetsOwner address");
+        randomUniversalProfileOwner = vm.addr(4);
 
-        universalProfile = new LSP0ERC725Account(universalProfileOwner);
-        // create random UP
-        randomUniversalProfile = new LSP0ERC725Account(vm.addr(4));
+        mainUniversalProfile = new LSP0ERC725Account(mainUniversalProfileOwner);
+        randomUniversalProfile = new LSP0ERC725Account(randomUniversalProfileOwner);
 
-        // create LSP1UniversalReceiverDelegateUP
         universalReceiverDelegate = new LSP1UniversalReceiverDelegateUP();
 
-        // set LSP1UniversalReceiverDelegateUP as delegate for UniversalProfile
-        vm.prank(universalProfileOwner);
-        universalProfile.setData(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
-            abi.encode(address(universalReceiverDelegate))
+        // deploy LSP6KeyManagers
+        keyManagerMainUP = new LSP6MockGasTests(address(mainUniversalProfile));
+        keyManagerRandomUP = new LSP6MockGasTests(address(randomUniversalProfile));
+
+        _setURDToUPAndGivePermissions(mainUniversalProfile, mainUniversalProfileOwner);
+        _setURDToUPAndGivePermissions(randomUniversalProfile, randomUniversalProfileOwner);
+
+        _giveSuperPermissionsToOwner(mainUniversalProfile, mainUniversalProfileOwner);
+        _giveSuperPermissionsToOwner(randomUniversalProfile, randomUniversalProfileOwner);
+
+        _transferOwnershipToKeyManager(
+            mainUniversalProfile,
+            address(keyManagerMainUP),
+            mainUniversalProfileOwner
         );
-
-        keyManager = new LSP6MockGasTests(address(universalProfile));
-
-        // give all permissions to universalProfileOwner
-        bytes32 dataKey = LSP2Utils.generateMappingWithGroupingKey(
-            _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
-            bytes20(universalProfileOwner)
+        _transferOwnershipToKeyManager(
+            randomUniversalProfile,
+            address(keyManagerRandomUP),
+            randomUniversalProfileOwner
         );
-        bytes memory dataValue = bytes(abi.encode((type(uint256).max)));
-        vm.prank(universalProfileOwner);
-        universalProfile.setData(dataKey, dataValue);
-
-        // check if universalProfileOwner has all permissions
-        assertEq(universalProfile.getData(dataKey), dataValue);
-
-        // transfer ownership to keyManager
-        vm.prank(universalProfileOwner);
-        universalProfile.transferOwnership(address(keyManager));
-
-        // accept ownership of UniversalProfile as keyManager
-        vm.prank(address(keyManager));
-        universalProfile.acceptOwnership();
-
-        // check if keyManager is owner of UniversalProfile
-        assertEq(universalProfile.owner(), address(keyManager));
     }
 
     function testTransferLYXToEOA() public {
         // give some LYX to UniversalProfile
-        vm.deal(address(universalProfile), 100 ether);
-        // check if UniversalProfile has 100 LYX
-        assertEq((address(universalProfile)).balance, 100 ether);
+        vm.deal(address(mainUniversalProfile), 100 ether);
+        assertEq((address(mainUniversalProfile)).balance, 100 ether);
 
         // transfer payload to random EOA
         bytes memory transferPayload = abi.encodeWithSignature(
@@ -85,19 +83,18 @@ contract GasTests is Test {
             10 ether,
             "0x"
         );
-        vm.prank(universalProfileOwner);
-        keyManager.transferLYXToEOA(transferPayload);
-        // check if UniversalProfile has 90 LYX
-        assertEq((address(universalProfile)).balance, 90 ether);
-        // check if random EOA has 10 LYX
+        vm.prank(mainUniversalProfileOwner);
+        keyManagerMainUP.transferLYXToEOA(transferPayload);
+
+        assertEq((address(mainUniversalProfile)).balance, 90 ether);
         assertEq((address(randomEOA)).balance, 10 ether);
     }
 
     function testTransferLYXToRandomUP() public {
         // give some LYX to UniversalProfile
-        vm.deal(address(universalProfile), 100 ether);
-        // check if UniversalProfile has 100 LYX
-        assertEq((address(universalProfile)).balance, 100 ether);
+        vm.deal(address(mainUniversalProfile), 100 ether);
+        assertEq((address(mainUniversalProfile)).balance, 100 ether);
+
         // transfer payload to random UP
         bytes memory transferPayload = abi.encodeWithSignature(
             "execute(uint256,address,uint256,bytes)",
@@ -106,13 +103,10 @@ contract GasTests is Test {
             10 ether,
             "0x"
         );
-        vm.prank(universalProfileOwner);
-        keyManager.transferLYXToUP(transferPayload);
+        vm.prank(mainUniversalProfileOwner);
+        keyManagerMainUP.transferLYXToUP(transferPayload);
 
-        // check if UniversalProfile has 90 LYX
-        assertEq((address(universalProfile)).balance, 90 ether);
-
-        // check if random UP has 10 LYX
+        assertEq((address(mainUniversalProfile)).balance, 90 ether);
         assertEq((address(randomUniversalProfile)).balance, 10 ether);
     }
 
@@ -127,20 +121,17 @@ contract GasTests is Test {
             0,
             abi.encodeWithSignature(
                 "transfer(address,address,uint256,bool,bytes)",
-                address(universalProfile),
+                address(mainUniversalProfile),
                 address(randomUniversalProfile),
                 10,
                 false,
                 "0x"
             )
         );
-        vm.prank(universalProfileOwner);
-        keyManager.transferTokensToRandomUP(transferPayload);
+        vm.prank(mainUniversalProfileOwner);
+        keyManagerMainUP.transferTokensToRandomUP(transferPayload);
 
-        // check if UniversalProfile has 90 tokens
-        assertEq(digitalAsset.balanceOf(address(universalProfile)), 90);
-
-        // check if random UP has 10 tokens
+        assertEq(digitalAsset.balanceOf(address(mainUniversalProfile)), 90);
         assertEq(digitalAsset.balanceOf(address(randomUniversalProfile)), 10);
     }
 
@@ -155,20 +146,17 @@ contract GasTests is Test {
             0,
             abi.encodeWithSignature(
                 "transfer(address,address,uint256,bool,bytes)",
-                address(universalProfile),
+                address(mainUniversalProfile),
                 randomEOA,
                 10,
                 true,
                 "0x"
             )
         );
-        vm.prank(universalProfileOwner);
-        keyManager.transferTokensToRandomEOA(transferPayload);
+        vm.prank(mainUniversalProfileOwner);
+        keyManagerMainUP.transferTokensToRandomEOA(transferPayload);
 
-        // check if UniversalProfile has 90 tokens
-        assertEq(digitalAsset.balanceOf(address(universalProfile)), 90);
-
-        // check if random EOA has 10 tokens
+        assertEq(digitalAsset.balanceOf(address(mainUniversalProfile)), 90);
         assertEq(digitalAsset.balanceOf(address(randomEOA)), 10);
     }
 
@@ -183,18 +171,18 @@ contract GasTests is Test {
             0,
             abi.encodeWithSignature(
                 "transfer(address,address,bytes32,bool,bytes)",
-                address(universalProfile),
+                address(mainUniversalProfile),
                 randomUniversalProfile,
                 bytes32(uint256(1)),
                 false,
                 "0x"
             )
         );
-        vm.prank(universalProfileOwner);
-        keyManager.transferNFTToRandomUP(transferPayload);
+        vm.prank(mainUniversalProfileOwner);
+        keyManagerMainUP.transferNFTToRandomUP(transferPayload);
 
         // check if UniversalProfile has 0 tokens
-        assertEq(indentifiableDigitalAsset.balanceOf(address(universalProfile)), 0);
+        assertEq(indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)), 0);
 
         // check if random EOA is owner of tokenID 1
         assertEq(
@@ -214,18 +202,18 @@ contract GasTests is Test {
             0,
             abi.encodeWithSignature(
                 "transfer(address,address,bytes32,bool,bytes)",
-                address(universalProfile),
+                address(mainUniversalProfile),
                 randomEOA,
                 bytes32(uint256(1)),
                 true,
                 "0x"
             )
         );
-        vm.prank(universalProfileOwner);
-        keyManager.transferNFTToRandomEOA(transferPayload);
+        vm.prank(mainUniversalProfileOwner);
+        keyManagerMainUP.transferNFTToRandomEOA(transferPayload);
 
         // check if UniversalProfile has 0 tokens
-        assertEq(indentifiableDigitalAsset.balanceOf(address(universalProfile)), 0);
+        assertEq(indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)), 0);
 
         // check if random EOA is owner of tokenID 1
         assertEq(indentifiableDigitalAsset.tokenOwnerOf(bytes32(uint256(1))), address(randomEOA));
@@ -237,21 +225,89 @@ contract GasTests is Test {
         bytes32 tokenID = bytes32(uint256(1));
 
         // mint 100 tokens to UniversalProfile
-        vm.prank(address(universalProfile));
-        indentifiableDigitalAsset.mint(address(universalProfile), tokenID, false, "0x");
+        vm.prank(address(mainUniversalProfile));
+        indentifiableDigitalAsset.mint(address(mainUniversalProfile), tokenID, false, "0x");
 
         // check if UniversalProfile has 100 tokens
-        assertEq(indentifiableDigitalAsset.balanceOf(address(universalProfile)), 1);
+        assertEq(indentifiableDigitalAsset.balanceOf(address(mainUniversalProfile)), 1);
     }
 
     function _deployandMintLSP7DigitalAsset() internal {
         digitalAsset = new LSP7Tester("TestLSP7", "TSTLSP7", digitalAssetsOwner);
 
         // mint 100 tokens to UniversalProfile
-        vm.prank(address(universalProfile));
-        digitalAsset.mint(address(universalProfile), 100, false, "0x");
+        vm.prank(address(mainUniversalProfile));
+        digitalAsset.mint(address(mainUniversalProfile), 100, false, "0x");
 
         // check if UniversalProfile has 100 tokens
-        assertEq(digitalAsset.balanceOf(address(universalProfile)), 100);
+        assertEq(digitalAsset.balanceOf(address(mainUniversalProfile)), 100);
+    }
+
+    function _setURDToUPAndGivePermissions(
+        LSP0ERC725Account universalProfile,
+        address universalProfileOwner
+    ) internal {
+        vm.startPrank(universalProfileOwner);
+        universalProfile.setData(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY,
+            abi.encodePacked(universalReceiverDelegate)
+        );
+
+        // give SUPER_SETDATA permission to universalReceiverDelegate
+        bytes32 dataKeyURD = LSP2Utils.generateMappingWithGroupingKey(
+            _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+            bytes20(abi.encodePacked(universalReceiverDelegate))
+        );
+
+        bytes32[] memory permissions = new bytes32[](2);
+
+        permissions[0] = _PERMISSION_REENTRANCY;
+        permissions[1] = _PERMISSION_SUPER_SETDATA;
+
+        universalProfile.setData(dataKeyURD, abi.encodePacked(_combinePermissions(permissions)));
+        vm.stopPrank();
+    }
+
+    function _giveSuperPermissionsToOwner(LSP0ERC725Account universalProfile, address owner)
+        internal
+    {
+        bytes32 dataKey = LSP2Utils.generateMappingWithGroupingKey(
+            _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+            bytes20(owner)
+        );
+
+        bytes32[] memory permissions = new bytes32[](3);
+        permissions[0] = _PERMISSION_SUPER_CALL;
+        permissions[1] = _PERMISSION_SUPER_TRANSFERVALUE;
+
+        bytes32 combinedPermissions = _combinePermissions(permissions);
+        bytes memory dataValue = abi.encodePacked(combinedPermissions);
+        vm.prank(owner);
+        universalProfile.setData(dataKey, dataValue);
+    }
+
+    function _transferOwnershipToKeyManager(
+        LSP0ERC725Account universalProfile,
+        address keyManager,
+        address owner
+    ) internal {
+        // transfer ownership to keyManager
+        vm.prank(owner);
+        universalProfile.transferOwnership(keyManager);
+
+        // accept ownership of UniversalProfile as keyManager
+        vm.prank(keyManager);
+        universalProfile.acceptOwnership();
+
+        // check if keyManager is owner of UniversalProfile
+        assertEq(universalProfile.owner(), address(keyManager));
+    }
+
+    function _combinePermissions(bytes32[] memory _permissions) internal pure returns (bytes32) {
+        uint256 result = 0;
+        for (uint256 i = 0; i < _permissions.length; i++) {
+            result += uint256(_permissions[i]);
+        }
+        return bytes32(result);
     }
 }
