@@ -42,7 +42,7 @@ error ValueNotAllowedWithNonInitializableProxies();
  * Therefore, the initializeCallData and the constructor must not include any network-specific parameters, 
  * such as a local non-crosschain token contract address, chain-id, etc ..
  *
- * One way to solve the problem mentioned above, is to set an EOA owner in the initializeCallData/constructor
+ * One way to solve this problem is to set an EOA owner in the initializeCallData/constructor
  * that can later call functions that set these parameters as variables in the contract. 
  *
  * This contract should be deployed using Nick's Method.
