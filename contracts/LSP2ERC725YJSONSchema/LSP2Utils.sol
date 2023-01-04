@@ -45,18 +45,17 @@ library LSP2Utils {
      * @param arrayKey The key from which we're getting the first half of the Array index data key from
      * @param index Used to generate the second half of the Array index data key
      */
-    function generateArrayElementKeyAtIndex(bytes32 arrayKey, uint256 index)
+    function generateArrayElementKeyAtIndex(bytes32 arrayKey, uint128 index)
         internal
         pure
         returns (bytes32)
     {
-        require(index <= type(uint128).max, "Index too big");
-        bytes memory elementInArray = bytes.concat(bytes16(arrayKey), bytes16(uint128(index)));
+        bytes memory elementInArray = bytes.concat(bytes16(arrayKey), bytes16(index));
         return bytes32(elementInArray);
     }
 
     /**
-     * @dev @dev Generates a data key of keyType Mapping by hashing two strings:
+     * @dev Generates a data key of keyType Mapping by hashing two strings:
      * <bytes10(keccak256(firstWord))>:<bytes2(0)>:<bytes20(keccak256(firstWord))>
      * @param firstWord Used to generate a hash and its first 10 bytes
      * are used for the first part of the data key of keyType Mapping

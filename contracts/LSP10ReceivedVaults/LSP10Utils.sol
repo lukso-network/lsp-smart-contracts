@@ -29,6 +29,18 @@ import "../LSP9Vault/LSP9Constants.sol";
 error InvalidLSP10ReceivedVaultsArrayLength(bytes invalidValue, uint256 invalidValueLength);
 
 /**
+ * @dev reverts when the vault index is superior to uint64
+ * @param index the vault index
+ */
+error VaultIndexSuperiorToUint64(uint256 index);
+
+/**
+ * @dev reverts when the vault index is superior to uint128
+ * @param index the vault index
+ */
+error VaultIndexSuperiorToUint128(uint256 index);
+
+/**
  * @title LSP10Utils
  * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
  * @dev LSP5Utils is a library of functions that are used to register and manage vaults received by an ERC725Y smart contract
@@ -70,13 +82,18 @@ library LSP10Utils {
             // If the storage is already initiated
         } else if (encodedArrayLength.length == 32) {
             uint256 oldArrayLength = uint256(bytes32(encodedArrayLength));
+            uint256 newArrayLength = oldArrayLength + 1;
+
+            if (newArrayLength > type(uint64).max) {
+                revert VaultIndexSuperiorToUint64(newArrayLength);
+            }
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(oldArrayLength + 1));
+            values[0] = bytes.concat(bytes32(newArrayLength));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP10_VAULTS_ARRAY_KEY,
-                oldArrayLength
+                uint128(oldArrayLength)
             );
             values[1] = bytes.concat(bytes20(vault));
 
@@ -105,8 +122,13 @@ library LSP10Utils {
         IERC725Y account = IERC725Y(sender);
 
         // Updating the number of the received vaults
-        uint256 oldArrayLength = uint256(bytes32(getLSP10ReceivedVaultsCount(account)));
-        uint256 newArrayLength = oldArrayLength - 1;
+        uint256 oldArrayLength = uint256(bytes32(account.getData(_LSP10_VAULTS_ARRAY_KEY)));
+
+        if (oldArrayLength > type(uint128).max) {
+            revert VaultIndexSuperiorToUint128(oldArrayLength);
+        }
+
+        uint128 newArrayLength = uint128(oldArrayLength) - 1;
 
         uint64 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
         bytes32 vaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
@@ -125,7 +147,7 @@ library LSP10Utils {
             values = new bytes[](3);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(newArrayLength));
+            values[0] = bytes.concat(bytes32(oldArrayLength - 1));
 
             keys[1] = vaultInArrayKey;
             values[1] = "";
@@ -148,7 +170,7 @@ library LSP10Utils {
             values = new bytes[](5);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(newArrayLength));
+            values[0] = bytes.concat(bytes32(oldArrayLength - 1));
 
             keys[1] = vaultMapKey;
             values[1] = "";

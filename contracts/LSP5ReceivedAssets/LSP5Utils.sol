@@ -29,6 +29,18 @@ import "../LSP7DigitalAsset/LSP7Constants.sol";
 error InvalidLSP5ReceivedAssetsArrayLength(bytes invalidValue, uint256 invalidValueLength);
 
 /**
+ * @dev reverts when the received assets index is superior to uint64
+ * @param index the received assets index
+ */
+error ReceivedAssetsIndexSuperiorToUint64(uint256 index);
+
+/**
+ * @dev reverts when the received assets index is superior to uint128
+ * @param index the received assets index
+ */
+error ReceivedAssetsIndexSuperiorToUint128(uint256 index);
+
+/**
  * @title LSP5Utils
  * @author Yamen Merhi <YamenMerhi>, Jean Cavallera <CJ42>
  * @dev LSP5Utils is a library of functions that are used to register and manage assets received by an ERC725Y smart contract
@@ -71,12 +83,18 @@ library LSP5Utils {
         } else if (encodedArrayLength.length == 32) {
             uint256 oldArrayLength = uint256(bytes32(encodedArrayLength));
 
+            if (oldArrayLength + 1 >= type(uint64).max) {
+                revert ReceivedAssetsIndexSuperiorToUint64(oldArrayLength);
+            }
+
+            uint128 oldArrayLength128 = uint128(oldArrayLength);
+
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
             values[0] = bytes.concat(bytes32(oldArrayLength + 1));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                oldArrayLength
+                oldArrayLength128
             );
             values[1] = bytes.concat(bytes20(asset));
 
@@ -153,11 +171,17 @@ library LSP5Utils {
             keys[1] = assetMapKey;
             values[1] = "";
 
+            if (newArrayLength >= type(uint128).max) {
+                revert ReceivedAssetsIndexSuperiorToUint128(newArrayLength);
+            }
+
+            uint128 newArrayLength128 = uint128(newArrayLength);
+
             // Generate all data Keys/values of the last element in Array to swap
             // with data Keys/values of the asset to remove
             bytes32 lastAssetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                newArrayLength
+                newArrayLength128
             );
 
             bytes20 lastAssetInArrayAddress = bytes20(account.getData(lastAssetInArrayKey));
