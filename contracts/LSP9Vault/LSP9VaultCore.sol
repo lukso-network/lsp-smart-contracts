@@ -9,7 +9,7 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {GasLib} from "../Utils/GasLib.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
@@ -239,7 +239,7 @@ contract LSP9VaultCore is
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
                 _reentrantDelegate = universalReceiverDelegate;
                 resultDefaultDelegate = universalReceiverDelegate
                     .callUniversalReceiverWithCallerInfos(
@@ -262,7 +262,7 @@ contract LSP9VaultCore is
         if (lsp1TypeIdDelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
                 _reentrantDelegate = universalReceiverDelegate;
                 resultTypeIdDelegate = universalReceiverDelegate
                     .callUniversalReceiverWithCallerInfos(

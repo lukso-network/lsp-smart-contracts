@@ -8,7 +8,7 @@ import {ILSP8IdentifiableDigitalAsset} from "./ILSP8IdentifiableDigitalAsset.sol
 // libraries
 import {GasLib} from "../Utils/GasLib.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // modules
 
@@ -406,7 +406,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bytes32 tokenId,
         bytes memory data
     ) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(from, _INTERFACEID_LSP1)) {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(from, _INTERFACEID_LSP1)) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1UniversalReceiver(from).universalReceiver(_TYPEID_LSP8_TOKENSSENDER, packedData);
         }
@@ -425,7 +425,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
         bool force,
         bytes memory data
     ) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(to, _INTERFACEID_LSP1)) {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(to, _INTERFACEID_LSP1)) {
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, packedData);
         } else if (!force) {

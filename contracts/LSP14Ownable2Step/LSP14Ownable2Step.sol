@@ -7,7 +7,7 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 
 // modules
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // errors
 import "./LSP14Errors.sol";
@@ -177,7 +177,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         bytes32 typeId,
         bytes memory data
     ) internal virtual {
-        if (ERC165Checker.supportsERC165Interface(notifiedContract, _INTERFACEID_LSP1)) {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
             ILSP1UniversalReceiver(notifiedContract).universalReceiver(typeId, data);
         }
     }

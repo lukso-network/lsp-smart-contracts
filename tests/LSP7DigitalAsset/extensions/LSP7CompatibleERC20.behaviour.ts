@@ -7,7 +7,7 @@ import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 import { INTERFACE_IDS, SupportedStandards } from "../../../constants";
 import {
-  ERC165CheckerCustomTest__factory,
+  CheckInterface__factory,
   LSP7CompatibleERC20,
   LSP7CompatibleERC20Tester,
   TokenReceiverWithLSP1,
@@ -410,14 +410,15 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
       // if the recipient is a contract that implements LSP1,
       // CHECK that it emitted the UniversalReceiver event on the receiver end.
-      const erc165Checker = await new ERC165CheckerCustomTest__factory(
+      const erc165Checker = await new CheckInterface__factory(
         context.accounts.owner
       ).deploy();
 
-      const isLSP1Recipient = await erc165Checker.supportsERC165Interface(
-        txParams.to,
-        INTERFACE_IDS.LSP1UniversalReceiver
-      );
+      const isLSP1Recipient =
+        await erc165Checker.supportsERC165InterfaceUnchecked(
+          txParams.to,
+          INTERFACE_IDS.LSP1UniversalReceiver
+        );
 
       if (isLSP1Recipient) {
         const receiver = await new TokenReceiverWithLSP1__factory(

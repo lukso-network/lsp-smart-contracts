@@ -38,6 +38,10 @@ import {
     _INTERFACEID_LSP17_EXTENSION
 } from "../LSP17ContractExtension/LSP17Constants.sol";
 
+// libraries
+
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+
 /**
  * @dev This contract calculates the ERC165 interface IDs of each LSP contract
  *      and ensure that these values are correctly stored as hardcoded
@@ -188,5 +192,18 @@ contract CalculateERCInterfaces {
 
     function calculateInterfaceERC1271() public pure returns (bytes4) {
         return type(IERC1271).interfaceId;
+    }
+}
+
+/**
+ * @dev Used for testing
+ */
+contract CheckInterface {
+    function supportsERC165InterfaceUnchecked(address _address, bytes4 interfaceId)
+        public
+        view
+        returns (bool)
+    {
+        return ERC165Checker.supportsERC165InterfaceUnchecked(_address, interfaceId);
     }
 }
