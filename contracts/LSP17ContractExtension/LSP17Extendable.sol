@@ -27,7 +27,7 @@ abstract contract LSP17Extendable is ERC165 {
      * {supportsInterface} selector.
      *
      * To be used by extendable contracts wishing to extend the ERC165 interfaceIds originally
-     * supported by reading wether the interfaceId queried is supported in the `supportsInterface`
+     * supported by reading whether the interfaceId queried is supported in the `supportsInterface`
      * extension if the extension is set, if not it returns false.
      */
     function _supportsInterfaceInERC165Extension(bytes4 interfaceId)
