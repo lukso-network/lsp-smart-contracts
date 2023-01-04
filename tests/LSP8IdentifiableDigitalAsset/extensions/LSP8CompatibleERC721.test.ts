@@ -134,9 +134,10 @@ describe("LSP8CompatibleERC721", () => {
       it("LSP8CompatibleERC721Init: prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
-        const lsp8CompatibilityForERC721TesterInit = await new LSP8CompatibleERC721InitTester__factory(
-          accounts[0]
-        ).deploy();
+        const lsp8CompatibilityForERC721TesterInit =
+          await new LSP8CompatibleERC721InitTester__factory(
+            accounts[0]
+          ).deploy();
 
         const randomCaller = accounts[1];
 
@@ -150,9 +151,10 @@ describe("LSP8CompatibleERC721", () => {
       it("LSP8CompatibleERC721MintableInit: prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
-        const lsp8CompatibleERC721MintableInit = await new LSP8CompatibleERC721MintableInit__factory(
-          accounts[0]
-        ).deploy();
+        const lsp8CompatibleERC721MintableInit =
+          await new LSP8CompatibleERC721MintableInit__factory(
+            accounts[0]
+          ).deploy();
 
         const randomCaller = accounts[1];
 
