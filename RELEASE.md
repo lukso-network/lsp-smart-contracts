@@ -3,6 +3,7 @@
 Releases are published when a commit including an increase in the `package.json` version number is merged to the `main` branch.
 
 This function increases the version automatically using [standard-version](https://github.com/conventional-changelog/standard-version):
+
 ```bash
 $ npm run release
 ```
@@ -13,12 +14,13 @@ If the current branch contains new commits since the last git tag that contains 
 - `fix` and `docs` will increase the `patch` version
 
 Standard-version then:
+
 1. updates the `package.json` version
 2. adds to the `CHANGELOG.md` all commit messages grouped by `Feature`, `Bug Fixes`, `Documentation` or `Other`
 3. commits all changes under: `chore(release): <version>`
 
-
 Then push the changes to `develop`:
+
 ```bash
 $ git push origin develop
 ```
@@ -39,7 +41,6 @@ npm run release -- --release-as minor
 # Or
 npm run release -- --release-as 1.1.0
 ```
-
 
 ## Prerelease versions
 
