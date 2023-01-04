@@ -36,6 +36,15 @@ error ValueNotAllowedWithNonInitializableProxies();
  * If the contract has an `initialize` function, the parameters of this function will be included in
  * the salt to ensure that the parameters of the contract should be the same on each chain.
  *
+ * When initializeCallData or the constructor includes non-crosschain parameters, the deployed contract
+ * will not be recreated at the same address on another network, thus defeating the purpose of LSP16UniversalFactory.
+
+ * Therefore, the initializeCallData and the constructor must not include any network-specific parameters, 
+ * such as a local non-crosschain token contract address, chain-id, etc ..
+ *
+ * One way to solve this problem is to set an EOA owner in the initializeCallData/constructor
+ * that can later call functions that set these parameters as variables in the contract. 
+ *
  * This contract should be deployed using Nick's Method.
  * More information: https://weka.medium.com/how-to-send-ether-to-11-440-people-187e332566b7
  */

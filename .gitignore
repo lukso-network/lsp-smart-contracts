@@ -146,3 +146,6 @@ flat_contracts/
 # folders generated for foundry builds
 out/
 forge-cache/
+
+# generated gas benchmark
+benchmark.md
