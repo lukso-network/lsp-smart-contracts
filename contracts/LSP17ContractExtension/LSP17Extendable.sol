@@ -25,6 +25,10 @@ abstract contract LSP17Extendable is ERC165 {
     /**
      * @dev Returns whether the interfaceId being checked is supported in the extension of the
      * {supportsInterface} selector.
+     *
+     * To be used by extendable contracts wishing to extend the ERC165 interfaceIds originally
+     * supported by reading whether the interfaceId queried is supported in the `supportsInterface`
+     * extension if the extension is set, if not it returns false.
      */
     function _supportsInterfaceInERC165Extension(bytes4 interfaceId)
         internal
@@ -54,6 +58,11 @@ abstract contract LSP17Extendable is ERC165 {
      * Returns the return value on success and revert in case of failure.
      *
      * If the msg.data is shorter than 4 bytes, do not check for an extension and return
+     *
+     * As the function uses assembly {return()/revert()} to terminate the call, it cannot be
+     * called before other codes in fallback().
+     *
+     * Otherwise, the codes after _fallbackLSP17Extendable() may never be reached.
      */
     function _fallbackLSP17Extendable() internal virtual {
         if (msg.data.length < 4) return;
