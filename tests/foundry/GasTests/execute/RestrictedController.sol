@@ -23,7 +23,7 @@ import {
 } from "../../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../UniversalProfileTestsHelper.sol";
 
-contract RestrictedController is UniversalProfileTestsHelper {
+contract ExecuteRestrictedController is UniversalProfileTestsHelper {
     LSP0ERC725Account public mainUniversalProfile;
     LSP0ERC725Account public randomUniversalProfile;
     LSP1UniversalReceiverDelegateUP public universalReceiverDelegate;
@@ -58,12 +58,12 @@ contract RestrictedController is UniversalProfileTestsHelper {
         keyManagerMainUP = new LSP6ExecuteRestrictedController(address(mainUniversalProfile));
         keyManagerRandomUP = new LSP6ExecuteRestrictedController(address(randomUniversalProfile));
 
-        _setURDToUPAndGivePermissions(
+        setURDToUPAndGivePermissions(
             mainUniversalProfile,
             mainUniversalProfileOwner,
             address(universalReceiverDelegate)
         );
-        _setURDToUPAndGivePermissions(
+        setURDToUPAndGivePermissions(
             randomUniversalProfile,
             randomUniversalProfileOwner,
             address(universalReceiverDelegate)
@@ -73,26 +73,26 @@ contract RestrictedController is UniversalProfileTestsHelper {
         ownerPermissions[0] = _PERMISSION_SUPER_CALL;
         ownerPermissions[1] = _PERMISSION_SUPER_TRANSFERVALUE;
 
-        _givePermissionsToController(
+        givePermissionsToController(
             mainUniversalProfile,
             mainUniversalProfileOwner,
             mainUniversalProfileOwner,
             ownerPermissions
         );
 
-        _givePermissionsToController(
+        givePermissionsToController(
             randomUniversalProfile,
             randomUniversalProfileOwner,
             randomUniversalProfileOwner,
             ownerPermissions
         );
 
-        _transferOwnership(
+        transferOwnership(
             mainUniversalProfile,
             mainUniversalProfileOwner,
             address(keyManagerMainUP)
         );
-        _transferOwnership(
+        transferOwnership(
             randomUniversalProfile,
             randomUniversalProfileOwner,
             address(keyManagerRandomUP)
@@ -104,11 +104,11 @@ contract RestrictedController is UniversalProfileTestsHelper {
         vm.deal(address(mainUniversalProfile), 100 ether);
         assertEq((address(mainUniversalProfile)).balance, 100 ether);
 
-        // give TransferValue and calls permissions to restrictedController
+        // give TransferValue and CALL permissions to restrictedController
         bytes32[] memory restrictedControllerPermissions = new bytes32[](2);
         restrictedControllerPermissions[0] = _PERMISSION_CALL;
         restrictedControllerPermissions[1] = _PERMISSION_TRANSFERVALUE;
-        _givePermissionsToController(
+        givePermissionsToController(
             mainUniversalProfile,
             restrictedController,
             address(keyManagerMainUP),
@@ -154,11 +154,11 @@ contract RestrictedController is UniversalProfileTestsHelper {
         vm.deal(address(mainUniversalProfile), 100 ether);
         assertEq((address(mainUniversalProfile)).balance, 100 ether);
 
-        // give TransferValue and calls permissions to restrictedController
+        // give TransferValue and CALL permissions to restrictedController
         bytes32[] memory restrictedControllerPermissions = new bytes32[](2);
         restrictedControllerPermissions[0] = _PERMISSION_CALL;
         restrictedControllerPermissions[1] = _PERMISSION_TRANSFERVALUE;
-        _givePermissionsToController(
+        givePermissionsToController(
             mainUniversalProfile,
             restrictedController,
             address(keyManagerMainUP),
@@ -202,11 +202,11 @@ contract RestrictedController is UniversalProfileTestsHelper {
     function testTransferTokensToRandomUP() public {
         _deployandMintLSP7DigitalAsset();
 
-        // give TransferValue and calls permissions to restrictedController
+        // give Call permission to restrictedController
         bytes32[] memory restrictedControllerPermissions = new bytes32[](1);
         restrictedControllerPermissions[0] = _PERMISSION_CALL;
 
-        _givePermissionsToController(
+        givePermissionsToController(
             mainUniversalProfile,
             restrictedController,
             address(keyManagerMainUP),
@@ -260,7 +260,7 @@ contract RestrictedController is UniversalProfileTestsHelper {
         bytes32[] memory restrictedControllerPermissions = new bytes32[](1);
         restrictedControllerPermissions[0] = _PERMISSION_CALL;
 
-        _givePermissionsToController(
+        givePermissionsToController(
             mainUniversalProfile,
             restrictedController,
             address(keyManagerMainUP),
@@ -313,7 +313,7 @@ contract RestrictedController is UniversalProfileTestsHelper {
         bytes32[] memory restrictedControllerPermissions = new bytes32[](1);
         restrictedControllerPermissions[0] = _PERMISSION_CALL;
 
-        _givePermissionsToController(
+        givePermissionsToController(
             mainUniversalProfile,
             restrictedController,
             address(keyManagerMainUP),
@@ -372,7 +372,7 @@ contract RestrictedController is UniversalProfileTestsHelper {
         bytes32[] memory restrictedControllerPermissions = new bytes32[](1);
         restrictedControllerPermissions[0] = _PERMISSION_CALL;
 
-        _givePermissionsToController(
+        givePermissionsToController(
             mainUniversalProfile,
             restrictedController,
             address(keyManagerMainUP),

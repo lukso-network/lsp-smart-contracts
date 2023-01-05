@@ -22,11 +22,11 @@ import {
 import "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
 
 contract UniversalProfileTestsHelper is Test {
-    function _setURDToUPAndGivePermissions(
+    function setURDToUPAndGivePermissions(
         LSP0ERC725Account universalProfile,
         address universalProfileOwner,
         address URD
-    ) internal {
+    ) public {
         vm.startPrank(universalProfileOwner);
         universalProfile.setData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY, abi.encodePacked(URD));
 
@@ -96,35 +96,33 @@ contract UniversalProfileTestsHelper is Test {
             bytes20(allowedCallsController)
         );
 
-        vm.startPrank(universalProfileOwner);
+        vm.prank(universalProfileOwner);
         universalProfile.setData(dataKey, allowedCalls);
-        vm.stopPrank();
     }
 
-    function _givePermissionsToController(
+    function givePermissionsToController(
         LSP0ERC725Account universalProfile,
         address controller,
         address permissionGiver,
         bytes32[] memory permissions
-    ) internal {
+    ) public {
         bytes32 dataKey = LSP2Utils.generateMappingWithGroupingKey(
             _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
             bytes20(controller)
         );
 
         bytes32 combinedPermissions = LSP6Utils.combinePermissions(permissions);
-        console.logBytes32(combinedPermissions);
         bytes memory dataValue = abi.encodePacked(combinedPermissions);
         vm.prank(permissionGiver);
 
         universalProfile.setData(dataKey, dataValue);
     }
 
-    function _transferOwnership(
+    function transferOwnership(
         LSP0ERC725Account universalProfile,
         address oldOwner,
         address newOwner
-    ) internal {
+    ) public {
         // transfer ownership to keyManager
         vm.prank(oldOwner);
         universalProfile.transferOwnership(newOwner);

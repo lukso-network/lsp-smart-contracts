@@ -21,7 +21,7 @@ import {
 } from "../../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../UniversalProfileTestsHelper.sol";
 
-contract UnrestrictedController is UniversalProfileTestsHelper {
+contract ExecuteUnrestrictedController is UniversalProfileTestsHelper {
     LSP0ERC725Account public mainUniversalProfile;
     LSP0ERC725Account public randomUniversalProfile;
     LSP1UniversalReceiverDelegateUP public universalReceiverDelegate;
@@ -53,12 +53,12 @@ contract UnrestrictedController is UniversalProfileTestsHelper {
         keyManagerMainUP = new LSP6ExecuteUnrestrictedController(address(mainUniversalProfile));
         keyManagerRandomUP = new LSP6ExecuteUnrestrictedController(address(randomUniversalProfile));
 
-        _setURDToUPAndGivePermissions(
+        setURDToUPAndGivePermissions(
             mainUniversalProfile,
             mainUniversalProfileOwner,
             address(universalReceiverDelegate)
         );
-        _setURDToUPAndGivePermissions(
+        setURDToUPAndGivePermissions(
             randomUniversalProfile,
             randomUniversalProfileOwner,
             address(universalReceiverDelegate)
@@ -68,26 +68,26 @@ contract UnrestrictedController is UniversalProfileTestsHelper {
         ownerPermissions[0] = _PERMISSION_SUPER_CALL;
         ownerPermissions[1] = _PERMISSION_SUPER_TRANSFERVALUE;
 
-        _givePermissionsToController(
+        givePermissionsToController(
             mainUniversalProfile,
             mainUniversalProfileOwner,
             mainUniversalProfileOwner,
             ownerPermissions
         );
 
-        _givePermissionsToController(
+        givePermissionsToController(
             randomUniversalProfile,
             randomUniversalProfileOwner,
             randomUniversalProfileOwner,
             ownerPermissions
         );
 
-        _transferOwnership(
+        transferOwnership(
             mainUniversalProfile,
             mainUniversalProfileOwner,
             address(keyManagerMainUP)
         );
-        _transferOwnership(
+        transferOwnership(
             randomUniversalProfile,
             randomUniversalProfileOwner,
             address(keyManagerRandomUP)
