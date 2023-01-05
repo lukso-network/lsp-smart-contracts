@@ -17,4 +17,6 @@ const deployUniversalReceiverDelegateVault: DeployFunction = async ({
 };
 
 export default deployUniversalReceiverDelegateVault;
-deployUniversalReceiverDelegateVault.tags = ["LSP1UniversalReceiverDelegateVault"];
+deployUniversalReceiverDelegateVault.tags = [
+  "LSP1UniversalReceiverDelegateVault",
+];
