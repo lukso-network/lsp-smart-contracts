@@ -112,7 +112,7 @@ library LSP6Utils {
 
         keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
-            arrayLength
+            uint128(arrayLength)
         );
         values[1] = abi.encodePacked(_address);
 
