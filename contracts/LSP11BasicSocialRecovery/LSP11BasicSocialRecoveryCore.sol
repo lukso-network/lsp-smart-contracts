@@ -98,6 +98,13 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
+    function getRecoverySecretHash() public view returns (bytes32) {
+        return _recoverySecretHash;
+    }
+
+    /**
+     * @inheritdoc ILSP11BasicSocialRecovery
+     */
     function getGuardianChoice(address guardian) public view returns (address) {
         return _guardiansChoice[_recoveryCounter][guardian];
     }
@@ -109,7 +116,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         if (_guardians.contains(newGuardian)) revert GuardianAlreadyExist(newGuardian);
 
         _guardians.add(newGuardian);
-        emit AddedGuardian(newGuardian);
+        emit GuardianAdded(newGuardian);
     }
 
     /**
@@ -121,7 +128,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
             revert GuardiansNumberCannotGoBelowThreshold(_guardiansThreshold);
 
         _guardians.remove(existingGuardian);
-        emit RemovedGuardian(existingGuardian);
+        emit GuardianRemoved(existingGuardian);
     }
 
     /**
@@ -132,7 +139,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
             revert ThresholdCannotBeHigherThanGuardiansNumber(newThreshold, _guardians.length());
 
         _guardiansThreshold = newThreshold;
-        emit GuardianThresholdChanged(newThreshold);
+        emit GuardiansThresholdChanged(newThreshold);
     }
 
     /**
@@ -159,13 +166,23 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function recoverOwnership(string memory plainSecret, bytes32 newSecretHash) public virtual {
+    function recoverOwnership(
+        address recoverer,
+        string memory plainSecret,
+        bytes32 newSecretHash
+    ) public virtual {
         // caching storage variables
         uint256 currentRecoveryCounter = _recoveryCounter;
         address[] memory guardians = _guardians.values();
         address target_ = _target;
 
-        _validateRequirements(currentRecoveryCounter, plainSecret, newSecretHash, guardians);
+        _validateRequirements(
+            recoverer,
+            currentRecoveryCounter,
+            plainSecret,
+            newSecretHash,
+            guardians
+        );
 
         _recoveryCounter++;
         _recoverySecretHash = newSecretHash;
@@ -173,19 +190,19 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
 
         address keyManager = ERC725(target_).owner();
 
-        // Setting permissions for `msg.sender`
+        // Setting permissions for `recoverer`
         (bytes32[] memory keys, bytes[] memory values) = LSP6Utils
             .generatePermissionsKeysForController(
                 ERC725(target_),
-                msg.sender,
+                recoverer,
                 ALL_REGULAR_PERMISSIONS
             );
 
         LSP6Utils.setDataViaKeyManager(keyManager, keys, values);
 
-        emit RecoverProcessSuccessful(
+        emit RecoveryProcessSuccessful(
             currentRecoveryCounter,
-            msg.sender,
+            recoverer,
             newSecretHash,
             _guardians.values()
         );
@@ -194,28 +211,35 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     }
 
     /**
-     * @dev Throws if:
+     * @dev The number of guardians should be reasonable, as the validation method
+     * is using a loop to check the selection of each guardian
+     *
+     * Throws if:
      * - The address trying to recover didn't reach the guardiansThreshold
      * - The new hash being set is bytes32(0)
      * - The secret word provided is incorrect
      */
     function _validateRequirements(
+        address recoverer,
         uint256 currentRecoveryCounter,
         string memory plainSecret,
         bytes32 newHash,
         address[] memory guardians
     ) internal view {
-        if (msg.sender == address(0)) revert AddressZeroNotAllowed();
+        if (recoverer == address(0)) revert AddressZeroNotAllowed();
         uint256 callerSelections;
 
         unchecked {
             for (uint256 i; i < guardians.length; i++) {
-                if (_guardiansChoice[currentRecoveryCounter][guardians[i]] == msg.sender)
+                if (_guardiansChoice[currentRecoveryCounter][guardians[i]] == recoverer)
                     callerSelections++;
             }
         }
 
-        if (callerSelections < _guardiansThreshold) revert ThresholdNotReachedForCaller(msg.sender);
+        uint256 guardiansThreshold = _guardiansThreshold;
+
+        if (callerSelections < guardiansThreshold)
+            revert ThresholdNotReachedForRecoverer(recoverer, callerSelections, guardiansThreshold);
         if (newHash == bytes32(0)) revert SecretHashCannotBeZero();
         if (keccak256(abi.encodePacked(plainSecret)) != _recoverySecretHash)
             revert WrongPlainSecret();

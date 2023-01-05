@@ -160,7 +160,11 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp11BasicSocialRecovery
               .connect(context.accounts.addressASelected)
-              .recoverOwnership(txParams.secret, txParams.newHash)
+              .recoverOwnership(
+                context.accounts.addressASelected.address,
+                txParams.secret,
+                txParams.newHash
+              )
           ).to.be.revertedWithCustomError(
             context.lsp11BasicSocialRecovery,
             "WrongPlainSecret"
@@ -179,7 +183,11 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp11BasicSocialRecovery
               .connect(context.accounts.addressASelected)
-              .recoverOwnership(txParams.secret, txParams.newHash)
+              .recoverOwnership(
+                context.accounts.addressASelected.address,
+                txParams.secret,
+                txParams.newHash
+              )
           ).to.be.revertedWithCustomError(
             context.lsp11BasicSocialRecovery,
             "SecretHashCannotBeZero"
@@ -205,7 +213,11 @@ export const shouldBehaveLikeLSP11 = (
 
           recoveryTx = await context.lsp11BasicSocialRecovery
             .connect(context.accounts.addressASelected)
-            .recoverOwnership(txParams.secret, txParams.newHash);
+            .recoverOwnership(
+              context.accounts.addressASelected.address,
+              txParams.secret,
+              txParams.newHash
+            );
         });
 
         it("should increment the recovery counter", async () => {
@@ -217,14 +229,14 @@ export const shouldBehaveLikeLSP11 = (
           );
         });
 
-        it("should emit RecoverProcessSuccessful event", async () => {
+        it("should emit RecoveryProcessSuccessful event", async () => {
           const guardians =
             await context.lsp11BasicSocialRecovery.callStatic.getGuardians();
 
           expect(recoveryTx)
             .to.emit(
               context.lsp11BasicSocialRecovery,
-              "RecoverProcessSuccessful"
+              "RecoveryProcessSuccessful"
             )
             .withArgs(
               recoveryCounterBeforeRecovery,
@@ -310,7 +322,7 @@ export const shouldBehaveLikeLSP11 = (
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
-      it("Should pass and emit AddedGuardian event when owner calls addGuardian function", async () => {
+      it("Should pass and emit GuardianAdded event when owner calls addGuardian function", async () => {
         const txParams = {
           guardianAddress: context.accounts.guardian1.address,
         };
@@ -332,7 +344,7 @@ export const shouldBehaveLikeLSP11 = (
               )
             )
         )
-          .to.emit(context.lsp11BasicSocialRecovery, "AddedGuardian")
+          .to.emit(context.lsp11BasicSocialRecovery, "GuardianAdded")
           .withArgs(txParams.guardianAddress);
 
         const isGuardian =
@@ -354,7 +366,7 @@ export const shouldBehaveLikeLSP11 = (
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
-      it("Should pass and emit RemovedGuardian event when owner calls removeGuardian function", async () => {
+      it("Should pass and emit GuardianRemoved event when owner calls removeGuardian function", async () => {
         const txParams = {
           guardianAddress: context.accounts.guardian1.address,
         };
@@ -376,7 +388,7 @@ export const shouldBehaveLikeLSP11 = (
               )
             )
         )
-          .to.emit(context.lsp11BasicSocialRecovery, "RemovedGuardian")
+          .to.emit(context.lsp11BasicSocialRecovery, "GuardianRemoved")
           .withArgs(txParams.guardianAddress);
 
         const isGuardian =
@@ -399,7 +411,7 @@ export const shouldBehaveLikeLSP11 = (
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
-      it("Should pass and emit GuardianThresholdChanged event when owner `setGuardiansThreshold(..)`", async () => {
+      it("Should pass and emit GuardiansThresholdChanged event when owner `setGuardiansThreshold(..)`", async () => {
         const txParams = {
           newThreshold: 0,
         };
@@ -421,7 +433,10 @@ export const shouldBehaveLikeLSP11 = (
               )
             )
         )
-          .to.emit(context.lsp11BasicSocialRecovery, "GuardianThresholdChanged")
+          .to.emit(
+            context.lsp11BasicSocialRecovery,
+            "GuardiansThresholdChanged"
+          )
           .withArgs(txParams.newThreshold);
 
         const guardiansThreshold = (
@@ -497,7 +512,7 @@ export const shouldBehaveLikeLSP11 = (
                 )
               )
           )
-            .to.emit(context.lsp11BasicSocialRecovery, "AddedGuardian")
+            .to.emit(context.lsp11BasicSocialRecovery, "GuardianAdded")
             .withArgs(txParams.guardianAddress);
         });
 
@@ -624,7 +639,7 @@ export const shouldBehaveLikeLSP11 = (
           )
             .to.emit(
               context.lsp11BasicSocialRecovery,
-              "GuardianThresholdChanged"
+              "GuardiansThresholdChanged"
             )
             .withArgs(txParams.newThreshold);
 
@@ -664,7 +679,7 @@ export const shouldBehaveLikeLSP11 = (
           )
             .to.emit(
               context.lsp11BasicSocialRecovery,
-              "GuardianThresholdChanged"
+              "GuardiansThresholdChanged"
             )
             .withArgs(txParams.newThreshold);
 
@@ -888,6 +903,8 @@ export const shouldBehaveLikeLSP11 = (
       let recoverySecretHash;
       let beforeRecoveryCounter;
       let guardiansThreshold;
+      let addressAselection;
+      let addressBselection;
       before(
         "Distribution selection of the guardians and setting recovery params",
         async () => {
@@ -993,6 +1010,9 @@ export const shouldBehaveLikeLSP11 = (
               context.accounts.guardian4.address
             );
 
+          addressAselection = 3;
+          addressBselection = 1;
+
           expect(guardian4Choice).to.equal(
             context.accounts.addressBSelected.address
           );
@@ -1000,7 +1020,7 @@ export const shouldBehaveLikeLSP11 = (
       );
 
       describe("When address B calls recoverOwnership(..) when it didn't reached the guardians threshold", () => {
-        it("should revert with ThresholdNotReachedForCaller error", async () => {
+        it("should revert with ThresholdNotReachedForRecoverer error", async () => {
           const txParams = {
             secret: plainSecret,
             newHash: ethers.utils.solidityKeccak256(["string"], ["NotLUKSO"]),
@@ -1009,13 +1029,21 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp11BasicSocialRecovery
               .connect(context.accounts.addressBSelected)
-              .recoverOwnership(txParams.secret, txParams.newHash)
+              .recoverOwnership(
+                context.accounts.addressBSelected.address,
+                txParams.secret,
+                txParams.newHash
+              )
           )
             .to.be.revertedWithCustomError(
               context.lsp11BasicSocialRecovery,
-              "ThresholdNotReachedForCaller"
+              "ThresholdNotReachedForRecoverer"
             )
-            .withArgs(context.accounts.addressBSelected.address);
+            .withArgs(
+              context.accounts.addressBSelected.address,
+              addressBselection,
+              guardiansThreshold
+            );
         });
       });
 
@@ -1030,7 +1058,11 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp11BasicSocialRecovery
               .connect(context.accounts.addressASelected)
-              .recoverOwnership(txParams.secret, txParams.newHash)
+              .recoverOwnership(
+                context.accounts.addressASelected.address,
+                txParams.secret,
+                txParams.newHash
+              )
           ).to.be.revertedWithCustomError(
             context.lsp11BasicSocialRecovery,
             "SecretHashCannotBeZero"
@@ -1048,7 +1080,11 @@ export const shouldBehaveLikeLSP11 = (
           await expect(
             context.lsp11BasicSocialRecovery
               .connect(context.accounts.addressASelected)
-              .recoverOwnership(txParams.secret, txParams.newHash)
+              .recoverOwnership(
+                context.accounts.addressASelected.address,
+                txParams.secret,
+                txParams.newHash
+              )
           ).to.be.revertedWithCustomError(
             context.lsp11BasicSocialRecovery,
             "WrongPlainSecret"
@@ -1074,14 +1110,18 @@ export const shouldBehaveLikeLSP11 = (
 
           ownershipRecoveryTx = await context.lsp11BasicSocialRecovery
             .connect(context.accounts.addressASelected)
-            .recoverOwnership(txParams.secret, txParams.newHash);
+            .recoverOwnership(
+              context.accounts.addressASelected.address,
+              txParams.secret,
+              txParams.newHash
+            );
         });
 
-        it("should pass and emit RecoverProcessSuccessful event", async () => {
+        it("should pass and emit RecoveryProcessSuccessful event", async () => {
           expect(ownershipRecoveryTx)
             .to.emit(
               context.lsp11BasicSocialRecovery,
-              "RecoverProcessSuccessful"
+              "RecoveryProcessSuccessful"
             )
             .withArgs(
               beforeRecoveryCounter,

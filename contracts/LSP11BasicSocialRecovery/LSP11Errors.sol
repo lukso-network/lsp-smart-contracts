@@ -36,10 +36,17 @@ error ThresholdCannotBeHigherThanGuardiansNumber(uint256 thresholdGiven, uint256
 error SecretHashCannotBeZero();
 
 /**
- * @dev reverts when a controller call `recoverOwnership(..)` and didn't reach
+ * @dev reverts when `recoverOwnership(..)` is called with a recoverer that didn't reach
  * the guardians threshold
+ * @param recoverer The address of the recoverer
+ * @param selections The number of selections that the recoverer have
+ * @param guardiansThreshold The minimum number of selection needed
  */
-error ThresholdNotReachedForCaller(address caller);
+error ThresholdNotReachedForRecoverer(
+    address recoverer,
+    uint256 selections,
+    uint256 guardiansThreshold
+);
 
 /**
  * @dev reverts when the plain secret produce a different hash than the

@@ -11,20 +11,20 @@ interface ILSP11BasicSocialRecovery {
      * @notice Emitted when setting a new guardian for the target
      * @param newGuardian The address of the added guardian
      */
-    event AddedGuardian(address indexed newGuardian);
+    event GuardianAdded(address indexed newGuardian);
 
     /**
      * @notice Emitted when removing an existing guardian for the target
      * @param removedGuardian The address of the guardian removed
      */
-    event RemovedGuardian(address indexed removedGuardian);
+    event GuardianRemoved(address indexed removedGuardian);
 
     /**
      * @notice Emitted when changing the guardian threshold
      * @param guardianThreshold The minimum number of selection by guardians needed by a controller to start
      * a recovery process
      */
-    event GuardianThresholdChanged(uint256 indexed guardianThreshold);
+    event GuardiansThresholdChanged(uint256 indexed guardianThreshold);
 
     /**
      * @notice Emitted when changing the secret hash
@@ -51,7 +51,7 @@ interface ILSP11BasicSocialRecovery {
      * @param newController The address of the new controller controlling the target by the KeyManager
      * @param guardians The array of addresses containing the guardians of the target
      */
-    event RecoverProcessSuccessful(
+    event RecoveryProcessSuccessful(
         uint256 indexed recoveryCounter,
         address indexed newController,
         bytes32 indexed newSecretHash,
@@ -83,6 +83,11 @@ interface ILSP11BasicSocialRecovery {
      * @param _address The address to query
      */
     function isGuardian(address _address) external view returns (bool);
+
+    /**
+     * @dev Returns the recovery secret hash
+     */
+    function getRecoverySecretHash() external view returns (bytes32);
 
     /**
      * @dev Returns the guardian threshold
@@ -155,13 +160,18 @@ interface ILSP11BasicSocialRecovery {
      * and increment the recover counter
      *
      * Requirements
-     * - the address of the caller must have a selection equal or higher than the threshold
+     * - the address of the recoverer must have a selection equal or higher than the threshold
      * defined in `getGuardiansThreshold(...)`
      *
-     * - the address must have provided the right `plainSecret` that produces the secret Hash
+     * - must have provided the right `plainSecret` that produces the secret Hash
      *
+     * @param recoverer The address of the recoverer
      * @param plainSecret The secret word that produce the secret Hash
      * @param newHash The new secret Hash to be used in the next recovery process
      */
-    function recoverOwnership(string memory plainSecret, bytes32 newHash) external;
+    function recoverOwnership(
+        address recoverer,
+        string memory plainSecret,
+        bytes32 newHash
+    ) external;
 }
