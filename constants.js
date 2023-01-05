@@ -23,6 +23,7 @@ const INTERFACE_IDS = {
 	LSP7DigitalAsset: '0xda1f85e4',
 	LSP8IdentifiableDigitalAsset: '0x622e7a01',
 	LSP9Vault: '0x7050cee9',
+	LSP11BasicSocialRecovery: '0x049a28f1',
 	LSP14Ownable2Step: '0x94be5999',
 	LSP17Extendable: '0xa918fa6b',
 	LSP17Extension: '0xcee78b40',
@@ -404,6 +405,45 @@ const Errors = {
 			message: 'LSP8CappedSupply: cannot mint over the max cap supply',
 		},
 	},
+	LSP11: {
+		'0x5560e16': {
+			error: 'CallerIsNotGuardian(address)',
+			message: 'LSP11: The caller is not a guardian',
+		},
+		'0xd52858db': {
+			error: 'GuardianAlreadyExist(address)',
+			message: 'LSP11: The address provided is already a guardian',
+		},
+		'0x3d8e524e': {
+			error: 'GuardianDoNotExist(address)',
+			message: 'LSP11: The address provided is not an existing guardian',
+		},
+		'0x27113777': {
+			error: 'GuardiansNumberCannotGoBelowThreshold(uint256)',
+			message: 'LSP11: The guardian number cannot go below the guardians threshold',
+		},
+		'0xe3db80bd': {
+			error: 'ThresholdCannotBeHigherThanGuardiansNumber(uint256,uint256)',
+			message: 'LSP11: The guardian threshold cannot be higher than the guardians number',
+		},
+		'0x7f617002': {
+			error: 'SecretHashCannotBeZero()',
+			message: 'LSP11: The secret hash cannot be bytes32(0)',
+		},
+		'0xf78f0507': {
+			error: 'ThresholdNotReachedForRecoverer(address,uint256,uint256)',
+			message: "LSP11: The caller cannot recover as he didn't reach the guardians threshold",
+		},
+		'0x6fa723c3': {
+			error: 'WrongPlainSecret()',
+			message:
+				'LSP11: The plain secret provided do not produce the secret hash set by the owner',
+		},
+		'0x0855380c': {
+			error: 'AddressZeroNotAllowed()',
+			message: 'LSP11: The address zero is not allowed to call recoverOwnership function',
+		},
+	},
 	LSP14Ownable2Step: {
 		'0x8b9bf507': {
 			error: 'NotInRenounceOwnershipInterval(uint256,uint256)',
@@ -580,6 +620,60 @@ const EventSignatures = {
 		 * signature = keccak256('ValueReceived(address,uint256)')
 		 */
 		ValueReceived: '0x7e71433ddf847725166244795048ecf3e3f9f35628254ecbf736056664233493',
+	},
+	LSP11: {
+		/**
+		 * event GuardianAdded(address indexed newGuardian);
+		 *
+		 * signature = keccak256('GuardianAdded(address)')
+		 */
+		GuardianAdded: '0x038596bb31e2e7d3d9f184d4c98b310103f6d7f5830e5eec32bffe6f1728f969',
+
+		/**
+		 * event GuardianRemoved(address indexed removedGuardian);
+		 *
+		 * signature = keccak256('GuardianRemoved(address)')
+		 */
+		GuardianRemoved: '0xb8107d0c6b40be480ce3172ee66ba6d64b71f6b1685a851340036e6e2e3e3c52',
+
+		/**
+		 * event GuardiansThresholdChanged(uint256 indexed guardianThreshold);
+		 *
+		 * signature = keccak256('GuardiansThresholdChanged(uint256)')
+		 */
+		GuardiansThresholdChanged:
+			'0x7146d20a2c7b7c75c203774c9f241b61698fac43a4a81ccd828f0d8162392790',
+
+		/**
+		 * event SecretHashChanged(bytes32 indexed secretHash);
+		 *
+		 * signature = keccak256('SecretHashChanged(bytes32)')
+		 */
+		SecretHashChanged: '0x2e8c5419a62207ade549fe0b66c1c85c16f5e1ed654815dee3a3f3ac41770df3',
+
+		/**
+		 * event SelectedNewController(
+		 *      uint256 indexed recoveryCounter,
+		 *      address indexed guardian,
+		 *      address indexed addressSelected
+		 * );
+		 *
+		 * signature = keccak256('SelectedNewController(uint256,address,address)')
+		 */
+		SelectedNewController: '0xe43f3c1093c69ab76b2cf6246090acb2f8eab7f19ba9942dfc8b8ec446e3a3de',
+
+		/**
+		 * event RecoveryProcessSuccessful(
+		 *      uint256 indexed recoveryCounter,
+		 *      address indexed newController,
+		 *      bytes32 indexed newSecretHash,
+		 *      address[] guardians
+		 * );
+		 *
+		 * signature = keccak256('RecoveryProcessSuccessful(uint256,address,bytes32,address[])')
+		 */
+		RecoveryProcessSuccessful:
+			'0xf4ff8803d6b43af46d48c200977209829c2f42f19f27eda1c89dbf26a28009cd',
 	},
 	Helpers: {
 		/**

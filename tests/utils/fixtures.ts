@@ -2,15 +2,17 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
+  LSP1UniversalReceiverDelegateUP__factory,
+  LSP6KeyManager,
   LSP6KeyManager__factory,
   UniversalProfile__factory,
-  LSP1UniversalReceiverDelegateUP__factory,
 } from "../../types";
 
 import { PERMISSIONS, ERC725YDataKeys, ALL_PERMISSIONS } from "../../constants";
 
 // helpers
 import { ARRAY_LENGTH, combinePermissions } from "../utils/helpers";
+
 import { LSP6TestContext, LSP6InternalsTestContext } from "./context";
 
 /**
@@ -154,6 +156,47 @@ export async function setupProfileWithKeyManagerWithURD(
     value: ethers.utils.parseEther("10"),
   });
   return [universalProfile, lsp6KeyManager, lsp1universalReceiverDelegateUP];
+}
+
+/**
+ * Sets `permissions` for the `addressToGrant` on the `universalProfile`
+ * via `lsp6KeyManager`
+ */
+export async function grantPermissionViaKeyManager(
+  EOA: SignerWithAddress,
+  universalProfile,
+  lsp6KeyManager,
+  addressToGrant,
+  permissions
+) {
+  const rawPermissionArrayLength = await universalProfile.callStatic[
+    "getData(bytes32)"
+  ](ERC725YDataKeys.LSP6["AddressPermissions[]"].length);
+
+  let permissionArrayLength = ethers.BigNumber.from(
+    rawPermissionArrayLength
+  ).toNumber();
+
+  const newPermissionArrayLength = permissionArrayLength + 1;
+  const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
+    ethers.utils.hexValue(newPermissionArrayLength),
+    32
+  );
+
+  const payload = universalProfile.interface.encodeFunctionData(
+    "setData(bytes32[],bytes[])",
+    [
+      [
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+          rawPermissionArrayLength.substring(34, 66),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          addressToGrant.substr(2),
+      ],
+      [newRawPermissionArrayLength, addressToGrant, permissions],
+    ]
+  );
+  await lsp6KeyManager.connect(EOA)["execute(bytes)"](payload);
 }
 
 /**
