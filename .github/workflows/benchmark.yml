@@ -3,13 +3,12 @@
 name: 🆙 📊 Universal Profile Benchmark
 
 on:
-  pull_request_review:
-    types: [submitted]
-    branches: "develop"
+  pull_request:
+    types: [opened]
+    branches: ["develop"]
 
 jobs:
   benchmark:
-    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
 
     steps:

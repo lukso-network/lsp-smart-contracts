@@ -8,7 +8,7 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
@@ -151,7 +151,7 @@ abstract contract LSP0ERC725AccountCore is
         // if OWNER is a contract
         if (_owner.code.length != 0) {
             return
-                ERC165Checker.supportsERC165Interface(_owner, _INTERFACEID_ERC1271)
+                _owner.supportsERC165InterfaceUnchecked(_INTERFACEID_ERC1271)
                     ? IERC1271(_owner).isValidSignature(dataHash, signature)
                     : _ERC1271_FAILVALUE;
             // if OWNER is a key
@@ -223,7 +223,7 @@ abstract contract LSP0ERC725AccountCore is
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
 
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
                 resultDefaultDelegate = universalReceiverDelegate
                     .callUniversalReceiverWithCallerInfos(
                         typeId,
@@ -245,7 +245,7 @@ abstract contract LSP0ERC725AccountCore is
         if (lsp1TypeIdDelegateValue.length >= 20) {
             address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
 
-            if (universalReceiverDelegate.supportsERC165Interface(_INTERFACEID_LSP1)) {
+            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
                 resultTypeIdDelegate = universalReceiverDelegate
                     .callUniversalReceiverWithCallerInfos(
                         typeId,

@@ -16,7 +16,7 @@ import {GasLib} from "../Utils/GasLib.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ERC165Checker} from "../Custom/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
 import {EIP191Signer} from "../Custom/EIP191Signer.sol";
@@ -892,7 +892,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             isAllowedStandard =
                 allowedStandard == 0xffffffff ||
-                to.supportsERC165Interface(allowedStandard);
+                to.supportsERC165InterfaceUnchecked(allowedStandard);
             isAllowedAddress =
                 allowedAddress == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF ||
                 to == allowedAddress;

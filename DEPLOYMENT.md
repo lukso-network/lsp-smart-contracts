@@ -1,4 +1,3 @@
-
 # Deployment
 
 You can find a deployment utility with hardhat to easily deploy the smart contracts locally or on our L16 test network,
@@ -7,6 +6,7 @@ if you don't have some LYX test token visit [LUKSO l16 Faucet](http://faucet.l16
 All the deployment scripts for `base` contracts initialize the contract after deployment to the zero address for security.
 
 &nbsp;
+
 ## How to deploy on L16 with Hardhat?
 
 1. write a private key for an address you control in the `hardhat.config.ts` file. For instance for L16 network:
@@ -35,9 +35,9 @@ Available `--tags <options>` are:
 
 - `UniversalProfileInit`: deploy + initialize (= lock) a Universal Profile as a base contract that can be used as implementation behind proxy.
 
-- `LSP6KeyManager`: deploy a `UniversalProfile` + `KeyManager`, with the Universal Profile address linked to the Key Manager.     
+- `LSP6KeyManager`: deploy a `UniversalProfile` + `KeyManager`, with the Universal Profile address linked to the Key Manager.
 
-- `LSP6KeyManagerInit`: deploy + initialize (= lock) both a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).   
+- `LSP6KeyManagerInit`: deploy + initialize (= lock) both a `UniversalProfileInit` + `KeyManagerInit`, as base contracts (**NB:** the Key Manager will be initialized with reference to `address(0)`).
 
 - `LSP1UniversalReceiverDelegateUP`: deploy a Universal Receiver Delegate contract that can be used to register assets and vaults received by a Universal Profile.
 
@@ -54,7 +54,6 @@ Available `--tags <options>` are:
 - `LSP9Vault`: deploy a `LSP9Vault` contract with the deployer as the owner.
 
 - `LSP9VaultInit`: deploy + initialize (= lock) a `LSP9VaultInit` contract that can be used as implementation behind proxy.
-
 
 - `standard`: deploy the 4 standard contract above.
 
@@ -133,10 +132,9 @@ npx hardhat verify <address of the LSP7 contract> --constructor-args arguments.j
 
 ```js title="arguments.js"
 module.exports = [
-    '<token-name>',  
-    '<token-symbol>', 
-    '<owner-address>', 
-    false // isNonDivisible_ (true or false)
+  "<token-name>",
+  "<token-symbol>",
+  "<owner-address>",
+  false, // isNonDivisible_ (true or false)
 ];
-
 ```

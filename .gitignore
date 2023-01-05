@@ -142,3 +142,6 @@ flat_contracts/
 
 # codespaces
 .devcontainer
+
+# generated gas benchmark
+benchmark.md
