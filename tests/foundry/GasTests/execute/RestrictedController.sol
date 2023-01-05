@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "forge-std/Test.sol";
-
 import "../LSP6s/LSP6ExecuteRC.sol";
 import "../../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 import "../../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";

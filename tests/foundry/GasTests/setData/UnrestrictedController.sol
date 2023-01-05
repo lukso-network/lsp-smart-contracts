@@ -1,16 +1,8 @@
 pragma solidity ^0.8.13;
 
-import "forge-std/Test.sol";
-
 import "../LSP6s/LSP6SetDataUC.sol";
 import "../../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
-import "../../../../contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol";
 import "../../../../contracts/LSP2ERC725YJSONSchema/LSP2Utils.sol";
-import "../../../../contracts/Mocks/Tokens/LSP7Tester.sol";
-import "../../../../contracts/Mocks/Tokens/LSP8Tester.sol";
-import {
-    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "../../../../contracts/LSP1UniversalReceiver/LSP1Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
     _PERMISSION_SUPER_SETDATA,
@@ -63,10 +55,6 @@ contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
 
     // give permissions to a controller (AddressPermissions[] + AddressPermissions[index] + AddressPermissions:Permissions:)
     function testGivePermissionsToController() public {
-        bytes32[] memory permissionsToGive = new bytes32[](1);
-        permissionsToGive[0] = _PERMISSION_SUPER_CALL;
-        bytes32 combinedPermissions = LSP6Utils.combinePermissions(permissionsToGive);
-
         bytes32[] memory keys = new bytes32[](3);
         bytes[] memory values = new bytes[](3);
 
@@ -82,13 +70,13 @@ contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
             _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
             uint128(arrayLength)
         );
-        values[1] = abi.encodePacked(unrestrictedController);
+        values[1] = abi.encodePacked(permissionsReceiver);
 
         keys[2] = LSP2Utils.generateMappingWithGroupingKey(
             _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
             bytes20(permissionsReceiver)
         );
-        values[2] = abi.encodePacked(combinedPermissions);
+        values[2] = abi.encodePacked(_PERMISSION_SUPER_CALL);
 
         // setData payload
         bytes memory payload = abi.encodeWithSignature("setData(bytes32[],bytes[])", keys, values);
