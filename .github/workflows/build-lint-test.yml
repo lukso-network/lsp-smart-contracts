@@ -1,6 +1,5 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Node.js CI - Build + Lint + Test
 
 on:
@@ -10,6 +9,60 @@ on:
       - "develop"
 
 jobs:
+  solidity_versions:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        solc: [
+          "0.8.5",
+          "0.8.6",
+          "0.8.7",
+          "0.8.8",
+          "0.8.9",
+          "0.8.10", 
+          "0.8.11", 
+          "0.8.12", 
+          "0.8.13", 
+          "0.8.14", 
+          # 0.8.15 skipped as default in hardhat.config.ts
+          "0.8.16", 
+          "0.8.17"
+        ]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js '16.15.0'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.15.0"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: Install solc-select
+        run: pip3 install solc-select
+
+      - name: Use Solc v${{ matrix.solc }}
+        run: |
+          solc-select install ${{ matrix.solc }}
+          solc-select use ${{ matrix.solc }}
+
+      - name: Compile Smart Contracts
+        run: |
+          if [[ ${{ matrix.solc }} < 0.8.12 ]]
+          then 
+            solc $(ls contracts/**/*.sol | grep -v "Compatible") \
+              @erc725/smart-contracts/=node_modules/@erc725/smart-contracts/ \
+              @openzeppelin/=node_modules/@openzeppelin/ \
+              solidity-bytes-utils/=node_modules/solidity-bytes-utils/
+          else
+            solc contracts/**/*.sol \
+              @erc725/smart-contracts/=node_modules/@erc725/smart-contracts/ \
+              @openzeppelin/=node_modules/@openzeppelin/ \
+              solidity-bytes-utils/=node_modules/solidity-bytes-utils/
+          fi;
+          
   build:
     runs-on: ubuntu-latest
 
