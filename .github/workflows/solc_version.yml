@@ -9,7 +9,7 @@ on:
       - "develop"
 
 jobs:
-  solc_versions:
+  solc_version:
     runs-on: ubuntu-latest
     strategy:
       matrix:
