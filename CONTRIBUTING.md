@@ -18,6 +18,7 @@ $ git commit -m "fix: Fix bug in feature x"
 $ git commit -m "docs: Add documentation for feature x"
 $ git commit -m "test: Add test suite for feature x"
 ```
+
 Further details on `conventional commits` can be found here: https://www.conventionalcommits.org/en/v1.0.0/
 
 When merging a branch to `develop` PRs should be squashed into one conventional commit by selecting the `Squash and merge` option. This ensures Release notes are useful and readable when releases are created.

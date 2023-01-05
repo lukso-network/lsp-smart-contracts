@@ -25,6 +25,8 @@ import {
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
+import {ILSP11BasicSocialRecovery} from "../LSP11BasicSocialRecovery/ILSP11BasicSocialRecovery.sol";
+
 // constants
 import {_INTERFACEID_LSP0} from "../LSP0ERC725Account/LSP0Constants.sol";
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -32,6 +34,7 @@ import {_INTERFACEID_LSP6} from "../LSP6KeyManager/LSP6Constants.sol";
 import {_INTERFACEID_LSP7} from "../LSP7DigitalAsset/LSP7Constants.sol";
 import {_INTERFACEID_LSP8} from "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
 import {_INTERFACEID_LSP9} from "../LSP9Vault/LSP9Constants.sol";
+import {_INTERFACEID_LSP11} from "../LSP11BasicSocialRecovery/LSP11Constants.sol";
 
 import {
     _INTERFACEID_LSP17_EXTENDABLE,
@@ -156,6 +159,17 @@ contract CalculateLSPInterfaces {
         require(
             interfaceId == _INTERFACEID_LSP17_EXTENSION,
             "hardcoded _INTERFACEID_LSP17_EXTENSION does not match hash of LSP17Extension"
+        );
+
+        return interfaceId;
+    }
+
+    function calculateInterfaceLSP11() public pure returns (bytes4) {
+        bytes4 interfaceId = type(ILSP11BasicSocialRecovery).interfaceId;
+
+        require(
+            interfaceId == _INTERFACEID_LSP11,
+            "_LSP11_INTERFACE_ID does not match XOR of the functions"
         );
 
         return interfaceId;

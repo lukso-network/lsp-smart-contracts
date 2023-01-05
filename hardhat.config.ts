@@ -126,6 +126,7 @@ const config: HardhatUserConfig = {
       "LSP8CappedSupply",
       "LSP8Mintable",
       "LSP9Vault",
+      "LSP11BasicSocialRecovery",
       // Proxy version
       // ------------------
       "UniversalProfileInit",
@@ -139,6 +140,7 @@ const config: HardhatUserConfig = {
       "LSP8CappedSupplyInitAbstract",
       "LSP8MintableInit",
       "LSP9VaultInit",
+      "LSP11BasicSocialRecoveryInit",
       // ERC Compatible tokens
       // ------------------
       "LSP4Compatibility",
