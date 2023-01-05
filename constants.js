@@ -432,15 +432,16 @@ const Errors = {
 		},
 		'0xf78f0507': {
 			error: 'ThresholdNotReachedForRecoverer(address,uint256,uint256)',
-			message: 'LSP11: The caller cannot recover as he didn\'t reach the guardians threshold',
+			message: "LSP11: The caller cannot recover as he didn't reach the guardians threshold",
 		},
 		'0x6fa723c3': {
 			error: 'WrongPlainSecret()',
-			message: 'LSP11: The plain secret provided do not produce the secret hash set by the owner',
+			message:
+				'LSP11: The plain secret provided do not produce the secret hash set by the owner',
 		},
 		'0x0855380c': {
 			error: 'AddressZeroNotAllowed()',
-			message: 'LSP11: The address zero is not allowed to call recoverOwnership function'
+			message: 'LSP11: The address zero is not allowed to call recoverOwnership function',
 		},
 	},
 	LSP14Ownable2Step: {
@@ -640,7 +641,8 @@ const EventSignatures = {
 		 *
 		 * signature = keccak256('GuardiansThresholdChanged(uint256)')
 		 */
-		GuardiansThresholdChanged: '0x7146d20a2c7b7c75c203774c9f241b61698fac43a4a81ccd828f0d8162392790',
+		GuardiansThresholdChanged:
+			'0x7146d20a2c7b7c75c203774c9f241b61698fac43a4a81ccd828f0d8162392790',
 
 		/**
 		 * event SecretHashChanged(bytes32 indexed secretHash);
@@ -670,7 +672,8 @@ const EventSignatures = {
 		 *
 		 * signature = keccak256('RecoveryProcessSuccessful(uint256,address,bytes32,address[])')
 		 */
-		RecoveryProcessSuccessful: '0xf4ff8803d6b43af46d48c200977209829c2f42f19f27eda1c89dbf26a28009cd',
+		RecoveryProcessSuccessful:
+			'0xf4ff8803d6b43af46d48c200977209829c2f42f19f27eda1c89dbf26a28009cd',
 	},
 	Helpers: {
 		/**
