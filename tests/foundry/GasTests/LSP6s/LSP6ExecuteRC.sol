@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "forge-std/Test.sol";
+import "../../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
 
-import "../../../contracts/LSP6KeyManager/LSP6KeyManager.sol";
-
-contract LSP6MockGasTests is LSP6KeyManager {
+contract LSP6ExecuteRestrictedController is LSP6KeyManager {
     constructor(address target_) LSP6KeyManager(target_) {}
 
     function transferLYXToEOA(bytes calldata payload) public payable returns (bytes memory) {

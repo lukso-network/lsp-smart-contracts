@@ -25,10 +25,7 @@ contract LSP2UtilsTests is Test {
         }
     }
 
-    function testArrayElementKeyAtIndexShouldAllowedOverwrite(uint256 index) public pure {
-        if (index > type(uint128).max) {
-            return;
-        }
+    function testArrayElementKeyAtIndexShouldAllowedOverwrite(uint128 index) public pure {
         bytes32 arrayKey = keccak256(abi.encodePacked("test"));
         uint256 uniqueIndex = 1;
         if (index == uniqueIndex) {
