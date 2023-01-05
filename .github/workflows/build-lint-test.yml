@@ -14,9 +14,10 @@ jobs:
     strategy:
       matrix:
         solc: [
-          "0.8.5",
-          "0.8.6",
-          "0.8.7",
+          # TODO: wait for a patch release of @erc725/smart-contracts to compile on these 3 versions
+          # "0.8.5",
+          # "0.8.6",
+          # "0.8.7",
           "0.8.8",
           "0.8.9",
           "0.8.10", 
@@ -52,7 +53,7 @@ jobs:
         run: |
           if [[ ${{ matrix.solc }} < 0.8.12 ]]
           then 
-            solc $(ls contracts/**/*.sol | grep -v "Compatible") \
+            solc $(ls contracts/**/*.sol | grep -v "Compatible") --allow-paths $(pwd)/node_modules/ \
               @erc725/smart-contracts/=node_modules/@erc725/smart-contracts/ \
               @openzeppelin/=node_modules/@openzeppelin/ \
               solidity-bytes-utils/=node_modules/solidity-bytes-utils/
