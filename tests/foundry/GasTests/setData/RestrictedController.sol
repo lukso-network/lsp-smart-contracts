@@ -166,5 +166,11 @@ contract SetDataRestrictedController is UniversalProfileTestsHelper {
 
         vm.prank(permissionsReceiver);
         keyManagerMainUP.execute(callPayload);
+
+        vm.prank(permissionsReceiver);
+        bytes memory returnedValue = mainUniversalProfile.getData(
+            keccak256(abi.encodePacked("RandomKey"))
+        );
+        assertEq(returnedValue, bytes(string("RandomValue")));
     }
 }
