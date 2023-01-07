@@ -33,6 +33,24 @@ contract LSP11BasicSocialRecoveryTests is Test {
         );
     }
 
+    function testShouldNotRevertWithCorrectSecret(string memory plainSecret) public {
+        address recoverer = vm.addr(3);
+        uint256 currentRecoveryCounter = 1;
+        bytes32 newHash = keccak256(abi.encodePacked("newHash"));
+        address[] memory guardians = new address[](0);
+        vm.prank(_lsp11OwnerAddress);
+        lsp11.setRecoverySecretHash(keccak256(abi.encodePacked(plainSecret)));
+        lsp11.validateRequirements(
+            recoverer,
+            currentRecoveryCounter,
+            plainSecret,
+            newHash,
+            guardians
+        );
+    }
+
+
+
     // mocking setGuardiansThreshold(...) to be able to test the revert (ThresholdCannotBeHigherThanGuardiansNumber)
     function testSetCannotGuardiansThresholdSuperiorToGuardiansLength(
         uint64 guardianLength,
