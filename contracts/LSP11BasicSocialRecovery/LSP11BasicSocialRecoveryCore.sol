@@ -37,6 +37,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
 
     // The secret hash to be set by the owner
     bytes32 internal _recoverySecretHash;
+    
 
     // Stores the address selected by a guardian
     // in the current `_recoveryCounter`
@@ -204,7 +205,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
             currentRecoveryCounter,
             recoverer,
             newSecretHash,
-            _guardians.values()
+            guardians
         );
 
         _cleanStorage(currentRecoveryCounter, guardians.length, guardians);
