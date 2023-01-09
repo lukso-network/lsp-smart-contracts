@@ -1,5 +1,17 @@
 # Contributing
 
+## Linting & Formatting Code
+
+Run the linter and prettier from the _lsp-smart-contracts_ project root:
+
+```bash
+npm run linter
+npm run prettier
+```
+
+The linter is configured to check your code for adherence to our guidelines defined in `.solcover.js`.
+The script above will prettify the smart contracts, tests and other files according to our styling guidelines defined in `.prettierrc`.
+
 ## **Commits and PRs**
 
 This project uses Conventional Commits to generate release notes and to determine versioning. Commit messages should adhere to this standard and be of the form:
