@@ -32,12 +32,12 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
      * @dev The number of block that MUST pass before one is able to
      *  confirm renouncing ownership
      */
-    uint256 private constant _RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY = 100;
+    uint256 public constant RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY = 100;
 
     /**
      * @dev The number of blocks during which one can renounce ownership
      */
-    uint256 private constant _RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD = 100;
+    uint256 public constant RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD = 100;
 
     /**
      * @dev The block number saved when initiating the process of
@@ -146,9 +146,9 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     function _renounceOwnership() internal virtual {
         uint256 currentBlock = block.number;
         uint256 confirmationPeriodStart = _renounceOwnershipStartedAt +
-            _RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY;
+            RENOUNCE_OWNERSHIP_CONFIRMATION_DELAY;
         uint256 confirmationPeriodEnd = confirmationPeriodStart +
-            _RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD;
+            RENOUNCE_OWNERSHIP_CONFIRMATION_PERIOD;
 
         if (currentBlock > confirmationPeriodEnd) {
             _renounceOwnershipStartedAt = currentBlock;
