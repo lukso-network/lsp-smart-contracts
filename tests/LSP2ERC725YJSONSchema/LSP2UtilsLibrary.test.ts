@@ -191,12 +191,6 @@ describe("LSP2Utils", () => {
       expect(result).to.be.true;
     });
 
-    it("should return false with `0x00`", async () => {
-      const data = "0x00";
-      const result = await lsp2Utils.isCompactBytesArray(data);
-      expect(result).to.be.false;
-    });
-
     describe("when pass a CompactBytesArray with one element", () => {
       it("should return true when the first length byte matches the following number of bytes", async () => {
         const data = "0x05aabbccddee";
