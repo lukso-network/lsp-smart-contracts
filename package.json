@@ -38,7 +38,8 @@
     "generate-types:web3": "typechain --target=web3-v1 'artifacts/**/*.json'",
     "generate-types:ethers": "typechain --target=ethers-v5 'artifacts/**/*.json'",
     "remixd": "remixd -s . --remix-ide",
-    "linter": "solhint 'contracts/**/*.sol'"
+    "linter": "solhint 'contracts/**/*.sol'",
+    "prettier": "prettier --write ."
   },
   "repository": {
     "type": "git",
