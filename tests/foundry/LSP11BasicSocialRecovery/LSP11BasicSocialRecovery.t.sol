@@ -49,8 +49,6 @@ contract LSP11BasicSocialRecoveryTests is Test {
         );
     }
 
-
-
     // mocking setGuardiansThreshold(...) to be able to test the revert (ThresholdCannotBeHigherThanGuardiansNumber)
     function testSetCannotGuardiansThresholdSuperiorToGuardiansLength(
         uint64 guardianLength,
