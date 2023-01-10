@@ -52,6 +52,7 @@ abstract contract LSP0ERC725AccountCore is
 {
     using ERC165Checker for address;
     using LSP1Utils for address;
+    using Address for address;
 
     /**
      * @notice Emitted when receiving native tokens
@@ -149,7 +150,7 @@ abstract contract LSP0ERC725AccountCore is
     {
         address _owner = owner();
         // if OWNER is a contract
-        if (_owner.code.length != 0) {
+        if (_owner.isContract()) {
             return
                 _owner.supportsERC165InterfaceUnchecked(_INTERFACEID_ERC1271)
                     ? IERC1271(_owner).isValidSignature(dataHash, signature)

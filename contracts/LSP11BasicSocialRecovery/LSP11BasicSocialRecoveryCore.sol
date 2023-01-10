@@ -200,12 +200,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
 
         LSP6Utils.setDataViaKeyManager(keyManager, keys, values);
 
-        emit RecoveryProcessSuccessful(
-            currentRecoveryCounter,
-            recoverer,
-            newSecretHash,
-            _guardians.values()
-        );
+        emit RecoveryProcessSuccessful(currentRecoveryCounter, recoverer, newSecretHash, guardians);
 
         _cleanStorage(currentRecoveryCounter, guardians.length, guardians);
     }
