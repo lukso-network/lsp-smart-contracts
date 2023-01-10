@@ -186,10 +186,10 @@ export function combineAllowedCalls(
   _allowedAddresses: string[],
   _allowedFunctions: string[]
 ) {
-  let result: string = "0x1c";
+  let result: string = "0x001c";
 
   for (let ii = 0; ii < _allowedStandards.length; ii++) {
-    // remove "0x" prefix
+    // remove "0x" prefixes
     let allowedStandard = _allowedStandards[ii].substring(2);
     let allowedAddress = _allowedAddresses[ii].substring(2).toLowerCase();
     let allowedFunction = _allowedFunctions[ii].substring(2);
@@ -197,7 +197,7 @@ export function combineAllowedCalls(
     result = result + allowedStandard + allowedAddress + allowedFunction;
 
     if (ii != _allowedStandards.length - 1) {
-      result = result + "1c";
+      result = result + "001c";
     }
   }
 
