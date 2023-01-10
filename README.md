@@ -1,7 +1,7 @@
 # LSP Smart Contracts &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp-smart-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp-smart-contracts) [![Coverage Status](https://coveralls.io/repos/github/lukso-network/lsp-smart-contracts/badge.svg?branch=develop)](https://coveralls.io/github/lukso-network/lsp-smart-contracts?branch=develop)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -130,6 +130,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://www.hugomasclet.com/"><img src="https://avatars.githubusercontent.com/u/477945?v=4?s=50" width="50px;" alt="Hugo Masclet"/><br /><sub><b>Hugo Masclet</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/pulls?q=is%3Apr+reviewed-by%3AHugoo" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=Hugoo" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Leondroids"><img src="https://avatars.githubusercontent.com/u/11769769?v=4?s=50" width="50px;" alt="Leondroid"/><br /><sub><b>Leondroid</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/pulls?q=is%3Apr+reviewed-by%3ALeondroids" title="Reviewed Pull Requests">👀</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lucasmt"><img src="https://avatars.githubusercontent.com/u/36549752?v=4?s=50" width="50px;" alt="lucasmt"/><br /><sub><b>lucasmt</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/issues?q=author%3Alucasmt" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/qian-hu"><img src="https://avatars.githubusercontent.com/u/88806138?v=4?s=50" width="50px;" alt="qian-hu"/><br /><sub><b>qian-hu</b></sub></a><br /><a href="#security-qian-hu" title="Security">🛡️</a> <a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/issues?q=author%3Aqian-hu" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
   <tfoot>
