@@ -82,6 +82,28 @@ library LSP6Utils {
     }
 
     /**
+     * @dev same as LSP2Utils.isLSP2CompactBytesArray with the exception
+     * that it does not allow empty length elements
+     *
+     * @param compactBytesArray the compact bytes array to check
+     * @return true if:
+     *  - the compact bytes array is valid according to LSP2
+     *  - the compact bytes array does not include 0 length elements
+     * false otherwise
+     */
+    function isLSP6CompactBytesArray(bytes memory compactBytesArray) internal pure returns (bool) {
+        uint256 pointer;
+
+        while (pointer < compactBytesArray.length) {
+            uint256 elementLength = uint8(compactBytesArray[pointer]);
+            if (elementLength == 0) return false;
+            pointer += elementLength + 1;
+        }
+        if (pointer == compactBytesArray.length) return true;
+        return false;
+    }
+
+    /**
      * @dev use the `setData(bytes32[],bytes[])` via the KeyManager of the target
      * @param keyManagerAddress the address of the KeyManager
      * @param keys the array of data keys

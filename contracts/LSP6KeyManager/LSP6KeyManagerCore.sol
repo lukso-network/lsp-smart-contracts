@@ -17,7 +17,6 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
 import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
@@ -57,7 +56,6 @@ import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.
  *      Permissions for controllers are stored in the ERC725Y storage of the ERC725 Account and can be updated using `setData(...)`.
  */
 abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
-    using LSP2Utils for *;
     using LSP6Utils for *;
     using Address for address;
     using ECDSA for bytes32;
@@ -529,7 +527,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         view
         returns (bytes32)
     {
-        if (!LSP2Utils.isCompactBytesArray(dataValue)) {
+        if (!LSP6Utils.isLSP6CompactBytesArray(dataValue)) {
             if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
                 revert InvalidEncodedAllowedCalls(dataValue);
             } else {
@@ -596,7 +594,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP2Utils.isCompactBytesArray(allowedERC725YDataKeysCompacted))
+        if (!LSP6Utils.isLSP6CompactBytesArray(allowedERC725YDataKeysCompacted))
             revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         /**
@@ -695,7 +693,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP2Utils.isCompactBytesArray(allowedERC725YDataKeysCompacted))
+        if (!LSP6Utils.isLSP6CompactBytesArray(allowedERC725YDataKeysCompacted))
             revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         uint256 allowedKeysFound;
@@ -871,7 +869,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory allowedCalls = ERC725Y(_target).getAllowedCallsFor(from);
         uint256 allowedCallsLength = allowedCalls.length;
 
-        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) {
+        if (allowedCallsLength == 0 || !LSP6Utils.isLSP6CompactBytesArray(allowedCalls)) {
             revert NoCallsAllowed(from);
         }
 
