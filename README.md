@@ -1,7 +1,7 @@
 # LSP Smart Contracts &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp-smart-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp-smart-contracts) [![Coverage Status](https://coveralls.io/repos/github/lukso-network/lsp-smart-contracts/badge.svg?branch=develop)](https://coveralls.io/github/lukso-network/lsp-smart-contracts?branch=develop)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -123,6 +123,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://www.mattgstevens.com/"><img src="https://avatars.githubusercontent.com/u/2363636?v=4?s=50" width="50px;" alt="Matthew Stevens"/><br /><sub><b>Matthew Stevens</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=mattgstevens" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://rryter.ch/"><img src="https://avatars.githubusercontent.com/u/798709?v=4?s=50" width="50px;" alt="Reto Ryter"/><br /><sub><b>Reto Ryter</b></sub></a><br /><a href="#tool-rryter" title="Tools">🔧</a> <a href="#infra-rryter" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/CallumGrindle"><img src="https://avatars.githubusercontent.com/u/54543428?v=4?s=50" width="50px;" alt="Callum Grindle"/><br /><sub><b>Callum Grindle</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/pulls?q=is%3Apr+reviewed-by%3ACallumGrindle" title="Reviewed Pull Requests">👀</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/skimaharvey"><img src="https://avatars.githubusercontent.com/u/64636974?v=4?s=50" width="50px;" alt="Skima Harvey"/><br /><sub><b>Skima Harvey</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=skimaharvey" title="Code">💻</a></td>
     </tr>
   </tbody>
   <tfoot>
