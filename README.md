@@ -1,7 +1,7 @@
 # LSP Smart Contracts &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp-smart-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp-smart-contracts) [![Coverage Status](https://coveralls.io/repos/github/lukso-network/lsp-smart-contracts/badge.svg?branch=develop)](https://coveralls.io/github/lukso-network/lsp-smart-contracts?branch=develop)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -135,6 +135,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hugo0"><img src="https://avatars.githubusercontent.com/u/12943235?v=4?s=50" width="50px;" alt="Hugo Montenegro"/><br /><sub><b>Hugo Montenegro</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=Hugo0" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://lykhonis.com/"><img src="https://avatars.githubusercontent.com/u/881338?v=4?s=50" width="50px;" alt="Volodymyr Lykhonis"/><br /><sub><b>Volodymyr Lykhonis</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=lykhonis" title="Code">💻</a></td>
     </tr>
   </tbody>
   <tfoot>

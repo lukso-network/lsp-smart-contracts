@@ -147,6 +147,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "lykhonis",
+      "name": "Volodymyr Lykhonis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/881338?v=4",
+      "profile": "https://lykhonis.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
