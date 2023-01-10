@@ -7,9 +7,19 @@
     "README.md"
   ],
   "imageSize": 50,
-  "commit": false,
-  "commitConvention": "none",
-  "contributors": [],
+  "commit": true,
+  "commitConvention": "eslint",
+  "contributors": [
+    {
+      "login": "CJ42",
+      "name": "Jean Cvllr",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31145285?v=4",
+      "profile": "https://github.com/CJ42",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
   "contributorsPerLine": 7,
   "linkToUsage": true
 }
