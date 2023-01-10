@@ -1,5 +1,11 @@
 # Contributing
 
+Since the `@lukso/lsp-smart-contracts` is an Open Source project, we welcome contributions from anyone about any topics. You can do PRs or open issues in the repository for instance to:
+
+- discuss and propose new ideas or features.
+- report bug and issues.
+- introduce new features or bug fixes.
+
 ## **Clone project**
 
 Our project uses submodules, we recommend you to clone our repository using the following command:
@@ -37,3 +43,7 @@ When merging a branch to `develop` PRs should be squashed into one conventional 
 
 <!-- ![alt text](https://docs.github.com/assets/images/help/pull_requests/select-squash-and-merge-from-drop-down-menu.png) -->
 <img src="https://docs.github.com/assets/images/help/pull_requests/select-squash-and-merge-from-drop-down-menu.png" alt="drawing" style="width:600px;"/>
+
+## Adding contributors
+
+You can add yourself to the list of contributors in the repository when opening a PR for the first time in the repository. See the [`all-contributors-cli`](https://allcontributors.org/docs/en/cli/usage#all-contributors-add) usage documentation.
