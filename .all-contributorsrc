@@ -1,6 +1,6 @@
 {
   "projectName": "lsp-smart-contracts",
-  "projectOwner": "Fabian Vogelsteller",
+  "projectOwner": "lukso-network",
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
@@ -80,6 +80,7 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/64636974?v=4",
       "profile": "https://github.com/skimaharvey",
       "contributions": [
+        "security",
         "code"
       ]
     },
@@ -117,6 +118,7 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/36549752?v=4",
       "profile": "https://github.com/lucasmt",
       "contributions": [
+        "security",
         "bug"
       ]
     },
