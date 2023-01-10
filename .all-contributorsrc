@@ -27,6 +27,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "frozeman",
+      "name": "Fabian Vogelsteller",
+      "avatar_url": "https://avatars.githubusercontent.com/u/232662?v=4",
+      "profile": "https://lukso.network/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
