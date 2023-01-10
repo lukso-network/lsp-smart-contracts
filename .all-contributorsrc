@@ -101,6 +101,15 @@
         "review",
         "code"
       ]
+    },
+    {
+      "login": "Leondroids",
+      "name": "Leondroid",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11769769?v=4",
+      "profile": "https://github.com/Leondroids",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
