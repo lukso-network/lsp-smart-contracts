@@ -129,6 +129,15 @@
         "security",
         "bug"
       ]
+    },
+    {
+      "login": "magalimorin18",
+      "name": "Magali Morin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51906903?v=4",
+      "profile": "https://github.com/magalimorin18",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
