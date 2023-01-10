@@ -288,7 +288,7 @@ library LSP2Utils {
          * Make sure that the last length describes exactly the last bytes value and you do not get out of bounds.
          */
         while (pointer < compactBytesArray.length) {
-            uint256 elementLength = uint256(uint8(bytes1(compactBytesArray[pointer])));
+            uint256 elementLength = uint8(bytes1(compactBytesArray[pointer]));
             if (elementLength == 0) return false;
             pointer += elementLength + 1;
         }
