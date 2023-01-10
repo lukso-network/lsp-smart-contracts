@@ -1,5 +1,13 @@
 # Contributing
 
+## **Clone project**
+
+Our project uses submodules, we recommend you to clone our repository using the following command:
+
+```bash
+$ git clone --recurse-submodules https://github.com/lukso-network/lsp-smart-contracts.git
+```
+
 ## Linting & Formatting Code
 
 Run the linter and prettier from the _lsp-smart-contracts_ project root:
