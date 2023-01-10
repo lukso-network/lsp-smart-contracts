@@ -1,7 +1,7 @@
 # LSP Smart Contracts &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp-smart-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp-smart-contracts) [![Coverage Status](https://coveralls.io/repos/github/lukso-network/lsp-smart-contracts/badge.svg?branch=develop)](https://coveralls.io/github/lukso-network/lsp-smart-contracts?branch=develop)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -120,6 +120,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/YamenMerhi"><img src="https://avatars.githubusercontent.com/u/86341666?v=4?s=50" width="50px;" alt="Yamen Merhi"/><br /><sub><b>Yamen Merhi</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=YamenMerhi" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://lukso.network/"><img src="https://avatars.githubusercontent.com/u/232662?v=4?s=50" width="50px;" alt="Fabian Vogelsteller"/><br /><sub><b>Fabian Vogelsteller</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=frozeman" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/b00ste"><img src="https://avatars.githubusercontent.com/u/62855857?v=4?s=50" width="50px;" alt="b00ste.lyx"/><br /><sub><b>b00ste.lyx</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=b00ste" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.mattgstevens.com/"><img src="https://avatars.githubusercontent.com/u/2363636?v=4?s=50" width="50px;" alt="Matthew Stevens"/><br /><sub><b>Matthew Stevens</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=mattgstevens" title="Code">💻</a></td>
     </tr>
   </tbody>
   <tfoot>
