@@ -156,6 +156,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "OnahProsperity",
+      "name": "Prosperity",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40717516?v=4",
+      "profile": "https://onahprosperity.github.io/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
