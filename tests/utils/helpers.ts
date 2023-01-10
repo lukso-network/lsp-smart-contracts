@@ -150,9 +150,15 @@ export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   for (let i = 0; i < inputKeys.length; i++) {
     compactBytesArray +=
       ethers.utils
-        .hexlify([inputKeys[i].toString().substring(2).length / 2])
+        .hexZeroPad(
+          ethers.utils.hexlify([
+            inputKeys[i].toString().substring(2).length / 2,
+          ]),
+          2
+        )
         .substring(2) + inputKeys[i].toString().substring(2);
   }
+
   return compactBytesArray;
 }
 
@@ -161,17 +167,16 @@ export function decodeCompactBytes(compactBytesArray: BytesLike) {
   let keysToExport: BytesLike[] = [];
   while (pointer < compactBytesArray.length) {
     const length = ethers.BigNumber.from(
-      "0x" + compactBytesArray.toString().substring(pointer, pointer + 2)
+      "0x" + compactBytesArray.toString().substring(pointer, pointer + 4)
     ).toNumber();
-
     keysToExport.push(
       "0x" +
         compactBytesArray
           .toString()
-          .substring(pointer + 2, pointer + 2 * (length + 1))
+          .substring(pointer + 4, pointer + 2 * length + 4)
     );
 
-    pointer += 2 * (length + 1);
+    pointer += 2 * length + 4;
   }
   return keysToExport;
 }
