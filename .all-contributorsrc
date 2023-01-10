@@ -110,6 +110,15 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "lucasmt",
+      "name": "lucasmt",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36549752?v=4",
+      "profile": "https://github.com/lucasmt",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
