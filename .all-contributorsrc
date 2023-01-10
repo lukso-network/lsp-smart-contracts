@@ -138,6 +138,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Hugo0",
+      "name": "Hugo Montenegro",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12943235?v=4",
+      "profile": "https://github.com/Hugo0",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

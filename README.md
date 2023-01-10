@@ -1,7 +1,7 @@
 # LSP Smart Contracts &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp-smart-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp-smart-contracts) [![Coverage Status](https://coveralls.io/repos/github/lukso-network/lsp-smart-contracts/badge.svg?branch=develop)](https://coveralls.io/github/lukso-network/lsp-smart-contracts?branch=develop)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -132,6 +132,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lucasmt"><img src="https://avatars.githubusercontent.com/u/36549752?v=4?s=50" width="50px;" alt="lucasmt"/><br /><sub><b>lucasmt</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/issues?q=author%3Alucasmt" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/qian-hu"><img src="https://avatars.githubusercontent.com/u/88806138?v=4?s=50" width="50px;" alt="qian-hu"/><br /><sub><b>qian-hu</b></sub></a><br /><a href="#security-qian-hu" title="Security">🛡️</a> <a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/issues?q=author%3Aqian-hu" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/magalimorin18"><img src="https://avatars.githubusercontent.com/u/51906903?v=4?s=50" width="50px;" alt="Magali Morin"/><br /><sub><b>Magali Morin</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=magalimorin18" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hugo0"><img src="https://avatars.githubusercontent.com/u/12943235?v=4?s=50" width="50px;" alt="Hugo Montenegro"/><br /><sub><b>Hugo Montenegro</b></sub></a><br /><a href="https://github.com/Fabian Vogelsteller/lsp-smart-contracts/commits?author=Hugo0" title="Documentation">📖</a></td>
     </tr>
   </tbody>
   <tfoot>
