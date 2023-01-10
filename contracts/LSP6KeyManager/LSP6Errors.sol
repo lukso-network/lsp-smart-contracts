@@ -100,7 +100,6 @@ error InvalidEncodedAllowedERC725YDataKeys(bytes value);
  */
 error InvalidWhitelistedCall(address from);
 
-
 /**
  * @dev reverts when providing array parameters of different sizes to `executeRelayCall(bytes[],uint256[],bytes[])`
  */
