@@ -91,6 +91,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Hugoo",
+      "name": "Hugo Masclet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/477945?v=4",
+      "profile": "http://www.hugomasclet.com/",
+      "contributions": [
+        "review",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
