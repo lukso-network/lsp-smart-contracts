@@ -628,14 +628,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          */
         while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
-            bytes2 lengthBytes = bytes2(
-                abi.encodePacked(
-                    allowedERC725YDataKeysCompacted[pointer],
-                    allowedERC725YDataKeysCompacted[pointer + 1]
+            length = uint16(
+                bytes2(
+                    abi.encodePacked(
+                        allowedERC725YDataKeysCompacted[pointer],
+                        allowedERC725YDataKeysCompacted[pointer + 1]
+                    )
                 )
             );
-
-            length = uint16(lengthBytes);
             // the length of the allowed data key must be under 33 bytes
             if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
 
@@ -738,13 +738,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          */
         while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
-            bytes2 lengthBytes = bytes2(
-                abi.encodePacked(
-                    allowedERC725YDataKeysCompacted[pointer],
-                    allowedERC725YDataKeysCompacted[pointer + 1]
+            length = uint16(
+                bytes2(
+                    abi.encodePacked(
+                        allowedERC725YDataKeysCompacted[pointer],
+                        allowedERC725YDataKeysCompacted[pointer + 1]
+                    )
                 )
             );
-            length = uint16(lengthBytes);
 
             // the length of the allowed data key must be under 33 bytes
             if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
