@@ -96,6 +96,7 @@ library LSP6Utils {
 
         while (pointer < allowedCallsCompacted.length) {
             uint256 elementLength = uint8(allowedCallsCompacted[pointer]);
+            // each entries in the allowedCalls (compact) array must be 28 bytes long
             if (elementLength != 28) return false;
             pointer += elementLength + 1;
         }
@@ -116,6 +117,7 @@ library LSP6Utils {
 
         while (pointer < allowedERC725YDataKeysCompacted.length) {
             uint256 elementLength = uint8(allowedERC725YDataKeysCompacted[pointer]);
+            // the length of the allowed data key must be not under 33 bytes and not 0
             if (elementLength == 0 || elementLength > 32) return false;
             pointer += elementLength + 1;
         }

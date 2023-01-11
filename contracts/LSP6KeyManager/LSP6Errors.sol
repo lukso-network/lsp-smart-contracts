@@ -101,12 +101,6 @@ error InvalidEncodedAllowedERC725YDataKeys(bytes value);
 error InvalidWhitelistedCall(address from);
 
 /**
- * @dev reverts when trying to set the following data key:
- * "0x0000000000000000000000000000000000000000000000000000000000000000"
- */
-error ZeroDataKeyNotAllowed();
-
-/**
  * @dev reverts when providing array parameters of different sizes to `executeRelayCall(bytes[],uint256[],bytes[])`
  */
 error BatchExecuteRelayCallParamsLengthMismatch();
@@ -142,8 +136,3 @@ error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);
  * @dev ERC725X operation type 4 (DELEGATECALL) is disallowed by default
  */
 error DelegateCallDisallowedViaKeyManager();
-
-/**
- * @dev reverts when CompatactBytesArray length element is not valid
- */
-error InvalidCompactByteArrayLengthElement(uint256 invalidLength);

@@ -740,7 +740,7 @@ export const testAllowedERC725YDataKeysInternals = (
         const dynamicKeyOfLength33 = ethers.utils.hexlify(
           ethers.utils.randomBytes(33)
         );
-        const compactBytesArray_with_0_length = encodeCompactBytesArray([
+        const compactBytesArray_with_invalid_length = encodeCompactBytesArray([
           dataKeys.firstDynamicKey.key,
           dynamicKeyOfLength33,
           dataKeys.thirdDynamicKey.key,
@@ -750,14 +750,14 @@ export const testAllowedERC725YDataKeysInternals = (
           context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
             context.universalProfile.address,
             dataKeys.firstFixedKey.key,
-            compactBytesArray_with_0_length
+            compactBytesArray_with_invalid_length
           )
         )
           .to.be.revertedWithCustomError(
             context.keyManagerInternalTester,
-            "InvalidCompactByteArrayLengthElement"
+            "InvalidEncodedAllowedERC725YDataKeys"
           )
-          .withArgs(length33InHex);
+          .withArgs(compactBytesArray_with_invalid_length);
       });
     });
   });

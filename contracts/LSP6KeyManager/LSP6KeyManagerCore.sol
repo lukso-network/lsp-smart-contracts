@@ -649,9 +649,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             // save the length of the allowed data key to calculate the `mask`.
             length = uint256(uint8(bytes1(allowedERC725YDataKeysCompacted[pointer])));
 
-            // the length of the allowed data key must be under 33 bytes
-            if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
-
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
              * It is used to compare only the relevant parts of each input data key against dynamic allowed data keys.
@@ -752,9 +749,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
             length = uint8(allowedERC725YDataKeysCompacted[pointer]);
-
-            // the length of the allowed data key must be under 33 bytes
-            if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
