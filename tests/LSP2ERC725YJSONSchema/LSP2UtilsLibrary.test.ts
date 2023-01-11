@@ -205,7 +205,11 @@ describe("LSP2Utils", () => {
       });
 
       it("should return false when the first length does not matches the following number of bytes", async () => {
-        const data = encodeCompactBytesArray(["0xaabbccddee"]);
+        let data = encodeCompactBytesArray(["0xaabbccddee"]);
+
+        // replace the first length byte of 0xaabbccddee with an invalid length value
+        data = data.replace(/05/g, "10");
+
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.false;
       });
@@ -247,6 +251,12 @@ describe("LSP2Utils", () => {
 
         // replace the first length byte of 0xaabbccddee with an invalid length value
         data = data.replace(/05/g, "10");
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.false;
+      });
+
+      it("should return false if the byte length of the last element is invalid and points 'too far'", async () => {
+        let data = "0x02aabb05112233445520cafecafe";
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.false;
       });

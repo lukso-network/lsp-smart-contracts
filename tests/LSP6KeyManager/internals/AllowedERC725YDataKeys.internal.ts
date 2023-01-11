@@ -553,6 +553,31 @@ export const testAllowedERC725YDataKeysInternals = (
           }
         });
       });
+
+      it("should revert if compactBytesArray length element is superior at 32", async () => {
+        const length33InHex = "0x21";
+        const dynamicKeyOfLength33 = ethers.utils.hexlify(
+          ethers.utils.randomBytes(33)
+        );
+        const compactBytesArray_with_invalid_length = encodeCompactBytesArray([
+          dataKeys.firstDynamicKey.key,
+          dynamicKeyOfLength33,
+          dataKeys.thirdDynamicKey.key,
+        ]);
+
+        await expect(
+          context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+            context.universalProfile.address,
+            dataKeys.firstFixedKey.key,
+            compactBytesArray_with_invalid_length
+          )
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "InvalidEncodedAllowedERC725YDataKeys"
+          )
+          .withArgs(compactBytesArray_with_invalid_length);
+      });
     });
 
     describe("`verifyAllowedERC725YDataKeys(..)`", () => {
@@ -773,33 +798,6 @@ export const testAllowedERC725YDataKeysInternals = (
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
-      });
-    });
-
-    describe("_verifyAllowedERC725YSingleKey", () => {
-      it("should revert if compactBytesArray length element is superior at 32", async () => {
-        const length33InHex = "0x21";
-        const dynamicKeyOfLength33 = ethers.utils.hexlify(
-          ethers.utils.randomBytes(33)
-        );
-        const compactBytesArray_with_invalid_length = encodeCompactBytesArray([
-          dataKeys.firstDynamicKey.key,
-          dynamicKeyOfLength33,
-          dataKeys.thirdDynamicKey.key,
-        ]);
-
-        await expect(
-          context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
-            context.universalProfile.address,
-            dataKeys.firstFixedKey.key,
-            compactBytesArray_with_invalid_length
-          )
-        )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          )
-          .withArgs(compactBytesArray_with_invalid_length);
       });
     });
   });
