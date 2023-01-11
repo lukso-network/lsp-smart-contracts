@@ -455,6 +455,12 @@ const Errors = {
 			message: 'LSP14: Cannot transfer ownership to address(this)',
 		},
 	},
+	LSP17ContractExtension: {
+		'0x3d746f74' : {
+			error: 'NoExtensionForFunctionSelector(bytes4)',
+			message: 'The function being called on the contract is not supported and there is no extension for it'
+		}
+	}
 };
 
 const EventSignatures = {
