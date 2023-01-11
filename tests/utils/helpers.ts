@@ -173,10 +173,10 @@ export function decodeCompactBytes(compactBytesArray: BytesLike) {
       "0x" +
         compactBytesArray
           .toString()
-          .substring(pointer + 4, pointer + 2 * length + 4)
+          .substring(pointer + 4, pointer + 2 * (length + 2))
     );
 
-    pointer += 2 * length + 4;
+    pointer += 2 * (length + 2);
   }
   return keysToExport;
 }
