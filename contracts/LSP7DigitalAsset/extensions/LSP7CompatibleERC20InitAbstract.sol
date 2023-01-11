@@ -69,7 +69,7 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     /**
      * @inheritdoc ILSP7CompatibleERC20
      * @dev Compatible with ERC20 transferFrom.
-     * Using force=true so that EOA and any contract may receive the tokens.
+     * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokens.
      */
     function transferFrom(
         address from,
@@ -85,7 +85,7 @@ abstract contract LSP7CompatibleERC20InitAbstract is
     /**
      * @inheritdoc ILSP7CompatibleERC20
      * @dev Compatible with ERC20 transfer.
-     * Using force=true so that EOA and any contract may receive the tokens.
+     * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokens.
      */
     function transfer(address to, uint256 amount) public virtual override returns (bool) {
         transfer(msg.sender, to, amount, true, "");
@@ -109,20 +109,20 @@ abstract contract LSP7CompatibleERC20InitAbstract is
         address from,
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._transfer(from, to, amount, force, data);
+        super._transfer(from, to, amount, allowNonLSP1Recipient, data);
         emit Transfer(from, to, amount);
     }
 
     function _mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._mint(to, amount, force, data);
+        super._mint(to, amount, allowNonLSP1Recipient, data);
         emit Transfer(address(0), to, amount);
     }
 
