@@ -82,24 +82,44 @@ library LSP6Utils {
     }
 
     /**
-     * @dev same as LSP2Utils.isLSP2CompactBytesArray with the exception
-     * that it does not allow empty length elements
+     * @dev same as LSP2Utils.isCompactBytesArray with the additional requirement that each element must be 28 bytes long.
      *
-     * @param compactBytesArray the compact bytes array to check
-     * @return true if:
-     *  - the compact bytes array is valid according to LSP2
-     *  - the compact bytes array does not include 0 length elements
-     * false otherwise
+     * @param allowedCallsCompacted a compact bytes array of tuples (bytes4,address,bytes4) to check.
+     * @return true if the value passed is a valid compact bytes array of bytes28 elements according to LSP2, false otherwise.
      */
-    function isLSP6CompactBytesArray(bytes memory compactBytesArray) internal pure returns (bool) {
+    function isCompactBytesArrayOfAllowedCalls(bytes memory allowedCallsCompacted)
+        internal
+        pure
+        returns (bool)
+    {
         uint256 pointer;
 
-        while (pointer < compactBytesArray.length) {
-            uint256 elementLength = uint8(compactBytesArray[pointer]);
-            if (elementLength == 0) return false;
+        while (pointer < allowedCallsCompacted.length) {
+            uint256 elementLength = uint8(allowedCallsCompacted[pointer]);
+            if (elementLength != 28) return false;
             pointer += elementLength + 1;
         }
-        if (pointer == compactBytesArray.length) return true;
+        if (pointer == allowedCallsCompacted.length) return true;
+        return false;
+    }
+
+    /**
+     * @dev same as LSP2Utils.isCompactBytesArray with the additional requirement that each element must be from 1 to 32 bytes long.
+     *
+     * @param allowedERC725YDataKeysCompacted a compact bytes array of ERC725Y Data Keys (full bytes32 data keys or bytesN prefix) to check.
+     * @return true if the value passed is a valid compact bytes array of ERC725Y Data Keys, false otherwise.
+     */
+    function isCompactBytesArrayOfAllowedERC725YDataKeys(
+        bytes memory allowedERC725YDataKeysCompacted
+    ) internal pure returns (bool) {
+        uint256 pointer;
+
+        while (pointer < allowedERC725YDataKeysCompacted.length) {
+            uint256 elementLength = uint8(allowedERC725YDataKeysCompacted[pointer]);
+            if (elementLength == 0 || elementLength > 32) return false;
+            pointer += elementLength + 1;
+        }
+        if (pointer == allowedERC725YDataKeysCompacted.length) return true;
         return false;
     }
 

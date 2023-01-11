@@ -422,13 +422,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             // AddressPermissions:Permissions:<address>
             if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
                 return _getPermissionToSetControllerPermissions(inputDataKey);
-            } else if (
+
                 // AddressPermissions:AllowedCalls:<address>
-                bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX ||
+            } else if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
+                return _getPermissionToSetAllowedCalls(inputDataKey, inputDataValue);
+
                 // AddressPermissions:AllowedERC725YKeys:<address>
+            } else if (
                 bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX
             ) {
-                return _getPermissionToSetAllowedCallsOrERC725YKeys(inputDataKey, inputDataValue);
+                return _getPermissionToSetAllowedERC725YDataKeys(inputDataKey, inputDataValue);
+
                 // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
                 // with anything above, this is not a standard LSP6 permission data key so we revert.
             } else {
@@ -446,15 +450,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                  */
                 revert NotRecognisedPermissionKey(inputDataKey);
             }
+
+            // LSP1UniversalReceiverDelegate or LSP1UniversalReceiverDelegate:<typeId>
         } else if (
-            // LSP1UniversalReceiverDelegate
             inputDataKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
-            // or LSP1UniversalReceiverDelegate:<typeId>
             bytes12(inputDataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
         ) {
             return _getPermissionToSetLSP1Delegate(inputDataKey);
-        } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+
             // LSP17Extension:<bytes4>
+        } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
             return _getPermissionToSetLSP17Extension(inputDataKey);
         } else {
             return _PERMISSION_SETDATA;
@@ -522,24 +527,40 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param dataValue the updated value for the `dataKey`. MUST be a CompactBytesArray.
      * @return either ADD or CHANGE PERMISSIONS.
      */
-    function _getPermissionToSetAllowedCallsOrERC725YKeys(bytes32 dataKey, bytes memory dataValue)
+    function _getPermissionToSetAllowedCalls(bytes32 dataKey, bytes memory dataValue)
         internal
         view
         returns (bytes32)
     {
-        if (!LSP6Utils.isLSP6CompactBytesArray(dataValue)) {
-            if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
-                revert InvalidEncodedAllowedCalls(dataValue);
-            } else {
-                revert InvalidEncodedAllowedERC725YDataKeys(dataValue);
-            }
+        if (!LSP6Utils.isCompactBytesArrayOfAllowedCalls(dataValue)) {
+            revert InvalidEncodedAllowedCalls(dataValue);
         }
 
-        // if there is nothing stored under the data key, depending on the data key being set, we are trying to:
-        //  - either ADD a list of restricted calls (standards + address + function selector)
-        //  - or ADD a list of restricted ERC725Y Data Keys.
+        // if there is nothing stored under the Allowed Calls of the controller,
+        // we are trying to ADD a list of restricted calls (standards + address + function selector)
         //
-        // if there are already some data set under one of these data keys, we are trying to CHANGE (= edit) these restrictions.
+        // if there are already some data set under the Allowed Calls of the controller,
+        // we are trying to CHANGE (= edit) these restrictions.
+        return
+            ERC725Y(_target).getData(dataKey).length == 0
+                ? _PERMISSION_ADDPERMISSIONS
+                : _PERMISSION_CHANGEPERMISSIONS;
+    }
+
+    function _getPermissionToSetAllowedERC725YDataKeys(bytes32 dataKey, bytes memory dataValue)
+        internal
+        view
+        returns (bytes32)
+    {
+        if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(dataValue)) {
+            revert InvalidEncodedAllowedERC725YDataKeys(dataValue);
+        }
+
+        // if there is nothing stored under the Allowed ERC725Y Data Keys of the controller,
+        // we are trying to ADD a list of restricted ERC725Y Data Keys.
+        //
+        // if there are already some data set under the Allowed ERC725Y Data Keys of the controller,
+        // we are trying to CHANGE (= edit) these restricted ERC725Y data keys.
         return
             ERC725Y(_target).getData(dataKey).length == 0
                 ? _PERMISSION_ADDPERMISSIONS
@@ -594,7 +615,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP6Utils.isLSP6CompactBytesArray(allowedERC725YDataKeysCompacted))
+        if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted))
             revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         /**
@@ -693,7 +714,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP6Utils.isLSP6CompactBytesArray(allowedERC725YDataKeysCompacted))
+        if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted))
             revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         uint256 allowedKeysFound;
@@ -869,7 +890,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory allowedCalls = ERC725Y(_target).getAllowedCallsFor(from);
         uint256 allowedCallsLength = allowedCalls.length;
 
-        if (allowedCallsLength == 0 || !LSP6Utils.isLSP6CompactBytesArray(allowedCalls)) {
+        if (allowedCallsLength == 0 || !LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls)) {
             revert NoCallsAllowed(from);
         }
 

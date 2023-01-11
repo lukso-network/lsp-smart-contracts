@@ -114,10 +114,10 @@ export const testAllowedERC725YDataKeysInternals = (
         dataKeys.thirdFixedKey.key.toString().substring(2);
     });
 
-    describe("`isCompactBytesArray(..)`", () => {
+    describe("`isCompactBytesArrayOfAllowedERC725YDataKeys(..)`", () => {
       it("should return true for a CompactBytesArray containing 2 dynamic keys", async () => {
         const result =
-          await context.keyManagerInternalTester.callStatic.isCompactBytesArray(
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2d
           );
 
@@ -126,7 +126,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it("should return true for a CompactBytesArray containing 2 fixed keys", async () => {
         const result =
-          await context.keyManagerInternalTester.callStatic.isCompactBytesArray(
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2f
           );
 
@@ -135,7 +135,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it("should return true for a CompactBytesArray containing 2 dynamic keys and 2 fixed keys", async () => {
         const result =
-          await context.keyManagerInternalTester.callStatic.isCompactBytesArray(
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2d_2f
           );
 
@@ -144,7 +144,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it("should return true for a CompactBytesArray with mixed dynamic and fixed keys", async () => {
         const result =
-          await context.keyManagerInternalTester.callStatic.isCompactBytesArray(
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_mixed_d_f
           );
 
