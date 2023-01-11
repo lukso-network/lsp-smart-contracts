@@ -286,11 +286,13 @@ export const shouldBehaveLikeLSP3 = (
       const sender = context.accounts[0];
       const amount = ethers.utils.parseEther("5");
 
+      // The payload must be prepended with bytes4(0) to be interpreted as graffiti
+      // and not as a function selector
       await expect(
         sender.sendTransaction({
           to: context.universalProfile.address,
           value: amount,
-          data: "0xaabbccdd",
+          data: "0x00000000aabbccdd",
         })
       )
         .to.emit(context.universalProfile, "ValueReceived")
@@ -300,10 +302,12 @@ export const shouldBehaveLikeLSP3 = (
 
   describe("when sending a random payload, without any value", () => {
     it("should execute the fallback function, but not emit the ValueReceived event", async () => {
+      // The payload must be prepended with bytes4(0) to be interpreted as graffiti
+      // and not as a function selector
       let tx = await context.accounts[0].sendTransaction({
         to: context.universalProfile.address,
         value: 0,
-        data: "0xaabbccdd",
+        data: "0x00000000aabbccdd",
       });
 
       // check that no event was emitted
