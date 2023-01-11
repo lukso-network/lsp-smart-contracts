@@ -140,6 +140,19 @@ library LSP6Utils {
         result = ILSP6KeyManager(keyManagerAddress).execute(payload);
     }
 
+    /**
+     * @dev combine multiple permissions into a single bytes32
+     * @param _permissions the array of permissions to combine
+     * @return a bytes32 containing the combined permissions
+     */
+    function combinePermissions(bytes32[] memory _permissions) internal pure returns (bytes32) {
+        uint256 result = 0;
+        for (uint256 i = 0; i < _permissions.length; i++) {
+            result += uint256(_permissions[i]);
+        }
+        return bytes32(result);
+    }
+
     function generatePermissionsKeysForController(
         IERC725Y _account,
         address _address,
