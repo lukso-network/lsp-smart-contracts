@@ -214,18 +214,23 @@ export const shouldBehaveLikeLSP17 = (
     describe("when calling method that doesn't exist", () => {
       describe("when there is no extension for the function called", () => {
         describe("when calling without sending any value", () => {
-          it("should pass and not emit any event", async () => {
+          it("should revert with NoExtensionForFunctionSignature error", async () => {
             await expect(
               context.accounts[0].sendTransaction({
                 to: context.contract.address,
                 data: notExistingFunctionSignature,
               })
-            ).to.not.be.reverted.to.not.emit(context.contract, "ValueReceived");
+            )
+              .to.be.revertedWithCustomError(
+                context.contract,
+                "NoExtensionForFunctionSelector"
+              )
+              .withArgs(notExistingFunctionSignature);
           });
         });
 
         describe("when calling with sending value", () => {
-          it("should pass and emit ValueReceived event", async () => {
+          it("should revert with NoExtensionForFunctionSignature error", async () => {
             const amountSent = 200;
             await expect(
               context.accounts[0].sendTransaction({
@@ -234,8 +239,11 @@ export const shouldBehaveLikeLSP17 = (
                 value: amountSent,
               })
             )
-              .to.emit(context.contract, "ValueReceived")
-              .withArgs(context.accounts[0].address, amountSent);
+              .to.be.revertedWithCustomError(
+                context.contract,
+                "NoExtensionForFunctionSelector"
+              )
+              .withArgs(notExistingFunctionSignature);
           });
         });
       });
@@ -244,7 +252,7 @@ export const shouldBehaveLikeLSP17 = (
         describe("when double checking that the msg.sender & msg.value were sent with the calldata to the extension", () => {
           describe("when relying on the Checker Extension", () => {
             describe("when the extension is not set yet", () => {
-              it("should pass even if passed a different address from the msg.sender", async () => {
+              it("should revert with NoExtensionForFunctionSelector", async () => {
                 const supposedSender = context.accounts[0];
                 const value = 200;
                 const checkMsgVariableFunctionSignature =
@@ -263,7 +271,12 @@ export const shouldBehaveLikeLSP17 = (
                     data: checkMsgVariableFunctionSignature,
                     value: value,
                   })
-                ).to.not.be.reverted;
+                )
+                  .to.be.revertedWithCustomError(
+                    context.contract,
+                    "NoExtensionForFunctionSelector"
+                  )
+                  .withArgs(checkMsgVariableFunctionSelector);
               });
 
               it("should pass even if passed a different value from the msg.value", async () => {
@@ -284,7 +297,12 @@ export const shouldBehaveLikeLSP17 = (
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
                   })
-                ).to.not.be.reverted;
+                )
+                  .to.be.revertedWithCustomError(
+                    context.contract,
+                    "NoExtensionForFunctionSelector"
+                  )
+                  .withArgs(checkMsgVariableFunctionSelector);
               });
             });
 
@@ -360,38 +378,6 @@ export const shouldBehaveLikeLSP17 = (
                   value: value,
                 });
               });
-            });
-          });
-        });
-
-        describe("when calling an extension that reverts on any selector", () => {
-          describe("when calling with a payload that starts with bytes4(0)", () => {
-            let revertFallbackExtension: RevertFallbackExtension;
-            beforeEach(async () => {
-              revertFallbackExtension =
-                await new RevertFallbackExtension__factory(
-                  context.accounts[0]
-                ).deploy();
-
-              const bytes4ZeroExtensionHandlerKey =
-                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-                "00000000" +
-                "00000000000000000000000000000000"; // zero padded
-
-              await context.contract
-                .connect(context.deployParams.owner)
-                ["setData(bytes32,bytes)"](
-                  bytes4ZeroExtensionHandlerKey,
-                  revertFallbackExtension.address
-                );
-            });
-            it("should forward the call to the extension and revert", async () => {
-              await expect(
-                context.accounts[0].sendTransaction({
-                  to: context.contract.address,
-                  data: "0x00000000",
-                })
-              ).to.be.reverted;
             });
           });
         });
@@ -723,9 +709,82 @@ export const shouldBehaveLikeLSP17 = (
             );
         });
         it("should pass even if there is an extension for it that reverts", async () => {
-          await context.accounts[0].sendTransaction({
-            to: context.contract.address,
-            data: "0x01",
+          await expect(
+            context.accounts[0].sendTransaction({
+              to: context.contract.address,
+              data: "0x01",
+            })
+          ).to.not.be.reverted;
+        });
+      });
+
+      describe("when calling with a payload preprended with 4 bytes of 0", () => {
+        describe("when the payload is equal to 4 bytes of zeros", () => {
+          describe("with sending value", () => {
+            it("should pass and emit ValueReceived value", async () => {
+              const amountSent = 2;
+              await expect(
+                context.accounts[0].sendTransaction({
+                  to: context.contract.address,
+                  data: "0x00000000",
+                  value: amountSent,
+                })
+              )
+                .to.emit(context.contract, "ValueReceived")
+                .withArgs(context.accounts[0].address, amountSent);
+            });
+          });
+          describe("without sending value", () => {
+            it("should pass", async () => {
+              await expect(
+                context.accounts[0].sendTransaction({
+                  to: context.contract.address,
+                  data: "0x00000000",
+                })
+              ).to.not.be.reverted;
+            });
+          });
+        });
+        describe("when the payload is larger than 4 bytes of zeros", () => {
+          describe("with sending value", () => {
+            it("should pass and emit ValueReceived value", async () => {
+              const amountSent = 2;
+              const graffiti =
+                "0x00000000" +
+                ethers.utils
+                  .hexlify(
+                    ethers.utils.toUtf8Bytes("This is a small tip for you!")
+                  )
+                  .substring(2);
+
+              await expect(
+                context.accounts[0].sendTransaction({
+                  to: context.contract.address,
+                  data: graffiti,
+                  value: amountSent,
+                })
+              )
+                .to.emit(context.contract, "ValueReceived")
+                .withArgs(context.accounts[0].address, amountSent);
+            });
+          });
+          describe("without sending value", () => {
+            it("should pass", async () => {
+              const graffiti =
+                "0x00000000" +
+                ethers.utils
+                  .hexlify(
+                    ethers.utils.toUtf8Bytes("Sending a decentralized message")
+                  )
+                  .substring(2);
+
+              await expect(
+                context.accounts[0].sendTransaction({
+                  to: context.contract.address,
+                  data: graffiti,
+                })
+              ).to.not.be.reverted;
+            });
           });
         });
       });
