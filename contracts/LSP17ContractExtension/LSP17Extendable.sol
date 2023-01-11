@@ -8,6 +8,9 @@ import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165C
 // constants
 import {_INTERFACEID_LSP17_EXTENDABLE} from "./LSP17Constants.sol";
 
+// errors
+import "./LSP17Errors.sol";
+
 /**
  * @title Implementation of the fallback logic according to LSP17ContractExtension
  * @dev Module to be inherited used to extend the functionality of the parent contract when
@@ -52,12 +55,13 @@ abstract contract LSP17Extendable is ERC165 {
 
     /**
      * Forwards the call to an extension mapped to a function selector. If the address of
-     * the extension is address(0), then return.
+     * the extension is address(0), then revert.
      *
      * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
      * Returns the return value on success and revert in case of failure.
      *
-     * If the msg.data is shorter than 4 bytes, do not check for an extension and return
+     * If the msg.data is shorter than 4 bytes or the first 4 bytes are 0s
+     * do not check for an extension and return
      *
      * As the function uses assembly {return()/revert()} to terminate the call, it cannot be
      * called before other codes in fallback().
@@ -65,12 +69,13 @@ abstract contract LSP17Extendable is ERC165 {
      * Otherwise, the codes after _fallbackLSP17Extendable() may never be reached.
      */
     function _fallbackLSP17Extendable() internal virtual {
-        if (msg.data.length < 4) return;
+        if (msg.data.length < 4 || msg.sig == bytes4(0)) return;
+        
         // If there is a function selector
         address extension = _getExtension(msg.sig);
 
-        // if no extension was found, return
-        if (extension == address(0)) return;
+        // if no extension was found, revert
+        if (extension == address(0)) revert NoExtensionForFunctionSelector(msg.sig);
 
         // solhint-disable no-inline-assembly
         // if the extension was found, call the extension with the msg.data
