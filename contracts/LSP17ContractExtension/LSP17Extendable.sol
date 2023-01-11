@@ -70,7 +70,7 @@ abstract contract LSP17Extendable is ERC165 {
      */
     function _fallbackLSP17Extendable() internal virtual {
         if (msg.data.length < 4 || msg.sig == bytes4(0)) return;
-        
+
         // If there is a function selector
         address extension = _getExtension(msg.sig);
 
