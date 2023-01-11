@@ -85,6 +85,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      *
      */
     function authorizeOperator(address operator, uint256 amount) public virtual {
+        if (operator == msg.sender) {
+            return;
+        }
         _updateOperator(msg.sender, operator, amount);
     }
 
@@ -92,6 +95,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
      * @inheritdoc ILSP7DigitalAsset
      */
     function revokeOperator(address operator) public virtual {
+        if (operator == msg.sender) {
+            return;
+        }
         _updateOperator(msg.sender, operator, 0);
     }
 
@@ -184,11 +190,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     ) internal virtual {
         if (operator == address(0)) {
             revert LSP7CannotUseAddressZeroAsOperator();
-        }
-
-        // tokenOwner is always their own operator, no update required
-        if (operator == tokenOwner) {
-            return;
         }
 
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
