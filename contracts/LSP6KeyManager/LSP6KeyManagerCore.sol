@@ -269,7 +269,7 @@ abstract contract LSP6KeyManagerCore is
      * @param from the address making the request
      * @param payload the payload that will be run on `target`
      */
-    function _verifyPermissions(address from, bytes calldata payload) internal view {
+    function _verifyPermissions(address from, bytes calldata payload) internal view virtual {
         bytes4 erc725Function = bytes4(payload);
 
         // get the permissions of the caller
