@@ -512,7 +512,7 @@ describe("UniversalFactory contract", () => {
         await context.universalFactory.deployCreate2Init(
           UPBytecode,
           salt,
-          "0xaabbccdd",
+          "0x00000000aabbccdd", // send some random data along prepended with `0x00000000`
           0,
           0
         );
@@ -521,7 +521,7 @@ describe("UniversalFactory contract", () => {
           context.universalFactory.deployCreate2Init(
             UPBytecode,
             salt,
-            "0xaabbccdd",
+            "0x00000000aabbccdd", // send some random data along prepended with `0x00000000`
             0,
             0
           )

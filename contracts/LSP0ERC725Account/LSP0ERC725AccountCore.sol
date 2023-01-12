@@ -101,7 +101,8 @@ abstract contract LSP0ERC725AccountCore is
      * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
      * Returns the return value on success and revert in case of failure.
      *
-     * If the msg.data is shorter than 4 bytes, do not check for an extension and return
+     * If the msg.data is shorter than 4 bytes or the first 4 bytes are 0s
+     * do not check for an extension and return
      *
      * Executed when:
      * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
@@ -109,6 +110,8 @@ abstract contract LSP0ERC725AccountCore is
      */
     fallback() external payable virtual {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.data.length < 4 || msg.sig == bytes4(0)) return;
+
         _fallbackLSP17Extendable();
     }
 
