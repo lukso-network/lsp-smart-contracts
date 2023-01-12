@@ -665,7 +665,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     const transferSuccessScenario = async (
       { operator, from, to, tokenId, data }: TransferTxParams,
       transferFn: string,
-      force: boolean,
+      allowNonLSP1Recipient: boolean,
       expectedData: string
     ) => {
       // pre-conditions
@@ -688,7 +688,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           from,
           to,
           tokenIdAsBytes32(tokenId),
-          force,
+          allowNonLSP1Recipient,
           expectedData
         );
 
@@ -766,7 +766,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
     describe("transferFrom", () => {
       const transferFn = "transferFrom";
-      const force = true;
+      const allowNonLSP1Recipient = true;
       const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(""));
 
       describe("when the from address is the tokenId owner", () => {
@@ -782,7 +782,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
             await transferSuccessScenario(
               txParams,
               transferFn,
-              force,
+              allowNonLSP1Recipient,
               expectedData
             );
           });
@@ -801,7 +801,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               await transferSuccessScenario(
                 txParams,
                 transferFn,
-                force,
+                allowNonLSP1Recipient,
                 expectedData
               );
             });
@@ -819,7 +819,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               await transferSuccessScenario(
                 txParams,
                 transferFn,
-                force,
+                allowNonLSP1Recipient,
                 expectedData
               );
             });
@@ -851,7 +851,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
     describe("safeTransferFrom(address,address,uint256)", () => {
       const transferFn = "safeTransferFrom(address,address,uint256)";
-      const force = false;
+      const allowNonLSP1Recipient = false;
       const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(""));
 
       describe("when the from address is the tokenId owner", () => {
@@ -885,7 +885,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               await transferSuccessScenario(
                 txParams,
                 transferFn,
-                force,
+                allowNonLSP1Recipient,
                 expectedData
               );
             });
@@ -935,7 +935,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
     describe("safeTransferFrom(address,address,uint256,bytes)", () => {
       const transferFn = "safeTransferFrom(address,address,uint256,bytes)";
-      const force = false;
+      const allowNonLSP1Recipient = false;
       const expectedData = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(`custom-data-${Date.now()}`)
       );
@@ -973,7 +973,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
               await transferSuccessScenario(
                 txParams,
                 transferFn,
-                force,
+                allowNonLSP1Recipient,
                 expectedData
               );
             });

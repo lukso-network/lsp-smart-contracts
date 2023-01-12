@@ -145,7 +145,7 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      * @dev Compatible with ERC721 transferFrom.
-     * Using force=true so that EOA and any contract may receive the tokenId.
+     * Using allowNonLSP1Recipient=true so that EOA and any contract may receive the tokenId.
      */
     function transferFrom(
         address from,
@@ -158,7 +158,7 @@ abstract contract LSP8CompatibleERC721 is
     /**
      * @inheritdoc ILSP8CompatibleERC721
      * @dev Compatible with ERC721 safeTransferFrom.
-     * Using force=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
+     * Using allowNonLSP1Recipient=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
     function safeTransferFrom(
         address from,
@@ -170,7 +170,7 @@ abstract contract LSP8CompatibleERC721 is
 
     /*
      * @dev Compatible with ERC721 safeTransferFrom.
-     * Using force=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
+     * Using allowNonLSP1Recipient=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
     function safeTransferFrom(
         address from,
@@ -199,7 +199,7 @@ abstract contract LSP8CompatibleERC721 is
         address from,
         address to,
         bytes32 tokenId,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
         address operator = msg.sender;
@@ -208,17 +208,17 @@ abstract contract LSP8CompatibleERC721 is
             revert LSP8NotTokenOperator(tokenId, operator);
         }
 
-        super._transfer(from, to, tokenId, force, data);
+        super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
         emit Transfer(from, to, uint256(tokenId));
     }
 
     function _mint(
         address to,
         bytes32 tokenId,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
-        super._mint(to, tokenId, force, data);
+        super._mint(to, tokenId, allowNonLSP1Recipient, data);
         emit Transfer(address(0), to, uint256(tokenId));
     }
 

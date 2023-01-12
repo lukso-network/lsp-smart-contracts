@@ -18,7 +18,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param from The address which tokens are sent
      * @param to The receiving address
      * @param amount The amount of tokens transferred
-     * @param force When set to TRUE, `to` may be any address but
+     * @param allowNonLSP1Recipient When set to TRUE, `to` may be any address but
      * when set to FALSE `to` must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses
      */
@@ -27,7 +27,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address indexed from,
         address indexed to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes data
     );
 
@@ -137,11 +137,11 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param from The sending address.
      * @param to The receiving address.
      * @param amount The amount of tokens to transfer.
-     * @param force When set to TRUE, to may be any address but
+     * @param allowNonLSP1Recipient When set to TRUE, to may be any address but
      * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      *
-     * @dev Transfers `amount` of tokens from `from` to `to`. The `force` parameter will be used
+     * @dev Transfers `amount` of tokens from `from` to `to`. The `allowNonLSP1Recipient` parameter will be used
      * when notifying the token sender and receiver.
      *
      * Requirements:
@@ -158,7 +158,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address from,
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) external;
 
@@ -166,7 +166,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
      * @param from The list of sending addresses.
      * @param to The list of receiving addresses.
      * @param amount The amount of tokens to transfer.
-     * @param force When set to TRUE, to may be any address but
+     * @param allowNonLSP1Recipient When set to TRUE, to may be any address but
      * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      *
@@ -188,7 +188,7 @@ interface ILSP7DigitalAsset is IERC165, IERC725Y {
         address[] memory from,
         address[] memory to,
         uint256[] memory amount,
-        bool[] memory force,
+        bool[] memory allowNonLSP1Recipient,
         bytes[] memory data
     ) external;
 }
