@@ -54,7 +54,7 @@ abstract contract LSP17Extendable is ERC165 {
     function _getExtension(bytes4 functionSelector) internal view virtual returns (address);
 
     /**
-     * @dev Forwards the call to an extension mapped to a function selector. If no extension address 
+     * @dev Forwards the call to an extension mapped to a function selector. If no extension address
      * is mapped to the function selector (address(0)), then revert.
      *
      * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
