@@ -628,8 +628,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          */
         while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
-            length = uint256(uint8(bytes1(allowedERC725YDataKeysCompacted[pointer])));
-
+            length = uint16(
+                bytes2(
+                    abi.encodePacked(
+                        allowedERC725YDataKeysCompacted[pointer],
+                        allowedERC725YDataKeysCompacted[pointer + 1]
+                    )
+                )
+            );
             // the length of the allowed data key must be under 33 bytes
             if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
 
@@ -661,7 +667,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             assembly {
                 // the first 32 bytes word in memory (where allowedERC725YDataKeysCompacted is stored)
                 // correspond to the total number of bytes in `allowedERC725YDataKeysCompacted`
-                let offset := add(add(pointer, 1), 32)
+                let offset := add(add(pointer, 2), 32)
                 let memoryAt := mload(add(allowedERC725YDataKeysCompacted, offset))
                 // MLOAD loads 32 bytes word, so we need to keep only the `length` number of bytes that makes up the allowed data key.
                 allowedKey := and(memoryAt, mask)
@@ -672,7 +678,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             // move the pointer to the index of the next allowed data key
             unchecked {
-                pointer = pointer + (length + 1);
+                pointer = pointer + (length + 2);
             }
         }
 
@@ -732,7 +738,14 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
          */
         while (pointer < allowedERC725YDataKeysCompacted.length) {
             // save the length of the allowed data key to calculate the `mask`.
-            length = uint8(allowedERC725YDataKeysCompacted[pointer]);
+            length = uint16(
+                bytes2(
+                    abi.encodePacked(
+                        allowedERC725YDataKeysCompacted[pointer],
+                        allowedERC725YDataKeysCompacted[pointer + 1]
+                    )
+                )
+            );
 
             // the length of the allowed data key must be under 33 bytes
             if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
@@ -765,7 +778,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             assembly {
                 // the first 32 bytes word in memory (where allowedERC725YDataKeysCompacted is stored)
                 // correspond to the length of allowedERC725YDataKeysCompacted (= total number of bytes)
-                let offset := add(add(pointer, 1), 32)
+                let offset := add(add(pointer, 2), 32)
                 let memoryAt := mload(add(allowedERC725YDataKeysCompacted, offset))
                 allowedKey := and(memoryAt, mask)
             }
@@ -793,7 +806,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             // Move the pointer to the next AllowedERC725YKey
             unchecked {
-                pointer = pointer + (length + 1);
+                pointer = pointer + (length + 2);
             }
         }
 
@@ -879,8 +892,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bool isAllowedAddress;
         bool isAllowedFunction;
 
-        for (uint256 ii; ii < allowedCallsLength; ii += 29) {
-            bytes memory chunk = BytesLib.slice(allowedCalls, ii + 1, 28);
+        for (uint256 ii; ii < allowedCallsLength; ii += 30) {
+            bytes memory chunk = BytesLib.slice(allowedCalls, ii + 2, 28);
 
             if (bytes28(chunk) == 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff) {
                 revert InvalidWhitelistedCall(from);

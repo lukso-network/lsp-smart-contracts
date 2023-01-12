@@ -150,9 +150,15 @@ export function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   for (let i = 0; i < inputKeys.length; i++) {
     compactBytesArray +=
       ethers.utils
-        .hexlify([inputKeys[i].toString().substring(2).length / 2])
+        .hexZeroPad(
+          ethers.utils.hexlify([
+            inputKeys[i].toString().substring(2).length / 2,
+          ]),
+          2
+        )
         .substring(2) + inputKeys[i].toString().substring(2);
   }
+
   return compactBytesArray;
 }
 
@@ -161,17 +167,16 @@ export function decodeCompactBytes(compactBytesArray: BytesLike) {
   let keysToExport: BytesLike[] = [];
   while (pointer < compactBytesArray.length) {
     const length = ethers.BigNumber.from(
-      "0x" + compactBytesArray.toString().substring(pointer, pointer + 2)
+      "0x" + compactBytesArray.toString().substring(pointer, pointer + 4)
     ).toNumber();
-
     keysToExport.push(
       "0x" +
         compactBytesArray
           .toString()
-          .substring(pointer + 2, pointer + 2 * (length + 1))
+          .substring(pointer + 4, pointer + 2 * (length + 2))
     );
 
-    pointer += 2 * (length + 1);
+    pointer += 2 * (length + 2);
   }
   return keysToExport;
 }
@@ -181,10 +186,10 @@ export function combineAllowedCalls(
   _allowedAddresses: string[],
   _allowedFunctions: string[]
 ) {
-  let result: string = "0x1c";
+  let result: string = "0x001c";
 
   for (let ii = 0; ii < _allowedStandards.length; ii++) {
-    // remove "0x" prefix
+    // remove "0x" prefixes
     let allowedStandard = _allowedStandards[ii].substring(2);
     let allowedAddress = _allowedAddresses[ii].substring(2).toLowerCase();
     let allowedFunction = _allowedFunctions[ii].substring(2);
@@ -192,7 +197,7 @@ export function combineAllowedCalls(
     result = result + allowedStandard + allowedAddress + allowedFunction;
 
     if (ii != _allowedStandards.length - 1) {
-      result = result + "1c";
+      result = result + "001c";
     }
   }
 
