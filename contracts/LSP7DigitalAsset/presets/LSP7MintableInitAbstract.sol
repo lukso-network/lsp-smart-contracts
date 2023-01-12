@@ -27,9 +27,9 @@ abstract contract LSP7MintableInitAbstract is LSP7DigitalAssetInitAbstract, ILSP
     function mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) public virtual onlyOwner {
-        _mint(to, amount, force, data);
+        _mint(to, amount, allowNonLSP1Recipient, data);
     }
 }

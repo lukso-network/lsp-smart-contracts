@@ -18,7 +18,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param from The address which tokens are sent
      * @param to The receiving address
      * @param tokenId The tokenId transferred
-     * @param force When set to TRUE, `to` may be any address but
+     * @param allowNonLSP1Recipient When set to TRUE, `to` may be any address but
      * when set to FALSE `to` must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses
      */
@@ -27,7 +27,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address indexed from,
         address indexed to,
         bytes32 indexed tokenId,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes data
     );
 
@@ -159,7 +159,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param from The sending address.
      * @param to The receiving address.
      * @param tokenId The tokenId to transfer.
-     * @param force When set to TRUE, to may be any address but
+     * @param allowNonLSP1Recipient When set to TRUE, to may be any address but
      * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      * @dev Transfers `tokenId` token from `from` to `to`.
@@ -178,7 +178,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address from,
         address to,
         bytes32 tokenId,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) external;
 
@@ -186,7 +186,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
      * @param from The list of sending addresses.
      * @param to The list of receiving addresses.
      * @param tokenId The list of tokenId to transfer.
-     * @param force When set to TRUE, to may be any address but
+     * @param allowNonLSP1Recipient When set to TRUE, to may be any address but
      * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      *
@@ -208,7 +208,7 @@ interface ILSP8IdentifiableDigitalAsset is IERC165, IERC725Y {
         address[] memory from,
         address[] memory to,
         bytes32[] memory tokenId,
-        bool[] memory force,
+        bool[] memory allowNonLSP1Recipient,
         bytes[] memory data
     ) external;
 }

@@ -55,12 +55,12 @@ error LSP8InvalidTransferBatch();
 
 /**
  * @dev reverts if the `tokenReceiver` does not implement LSP1
- * when minting or transferring tokens with `bool force` set as `false`.
+ * when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
  */
 error LSP8NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
 
 /**
  * @dev reverts if the `tokenReceiver` is an EOA
- * when minting or transferring tokens with `bool force` set as `false`.
+ * when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
  */
 error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);

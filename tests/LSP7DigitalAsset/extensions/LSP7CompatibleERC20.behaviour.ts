@@ -345,7 +345,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
       from: string;
       to: string;
       amount: BigNumber;
-      force?: boolean;
+      allowNonLSP1Recipient?: boolean;
       data?: string;
     };
 
@@ -375,7 +375,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           txParams.from,
           txParams.to,
           txParams.amount,
-          txParams.force ?? true,
+          txParams.allowNonLSP1Recipient ?? true,
           expectedData
         );
 
@@ -782,7 +782,9 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                 txParams.from,
                 txParams.to,
                 txParams.amount,
-                txParams.force ? txParams.force : false,
+                txParams.allowNonLSP1Recipient
+                  ? txParams.allowNonLSP1Recipient
+                  : false,
                 txParams.data ? txParams.data : "0x"
               );
           },
@@ -797,13 +799,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
             describe("when caller (msg.sender) is the `from` address", () => {
               describe("when `to` is an EOA", () => {
-                it("should allow transfering the tokens with `force` param = true", async () => {
+                it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
                   const txParams = {
                     operator: context.accounts.owner,
                     from: context.accounts.owner.address,
                     to: context.accounts.tokenReceiver.address,
                     amount: transferAmount,
-                    force: true,
+                    allowNonLSP1Recipient: true,
                     data: expectedData,
                   };
 
@@ -815,13 +817,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                   );
                 });
 
-                it("should NOT allow transfering the tokens with `force` param = false", async () => {
+                it("should NOT allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
                   const txParams = {
                     operator: context.accounts.owner,
                     from: context.accounts.owner.address,
                     to: context.accounts.tokenReceiver.address,
                     amount: transferAmount,
-                    force: false,
+                    allowNonLSP1Recipient: false,
                     data: expectedData,
                   };
 
@@ -839,13 +841,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
               describe("when `to` is a contract", () => {
                 describe("when receiving contract supports LSP1", () => {
-                  it("should allow transfering the tokens with `force` param = true", async () => {
+                  it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
                     const txParams = {
                       operator: context.accounts.owner,
                       from: context.accounts.owner.address,
                       to: deployedContracts.tokenReceiverWithLSP1.address,
                       amount: transferAmount,
-                      force: true,
+                      allowNonLSP1Recipient: true,
                       data: expectedData,
                     };
 
@@ -857,13 +859,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                     );
                   });
 
-                  it("should allow transfering the tokens with `force` param = false", async () => {
+                  it("should allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
                     const txParams = {
                       operator: context.accounts.owner,
                       from: context.accounts.owner.address,
                       to: deployedContracts.tokenReceiverWithLSP1.address,
                       amount: transferAmount,
-                      force: false,
+                      allowNonLSP1Recipient: false,
                       data: expectedData,
                     };
 
@@ -877,13 +879,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                 });
 
                 describe("when receiving contract does not support LSP1", () => {
-                  it("should allow transfering the tokens with `force` param = true", async () => {
+                  it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
                     const txParams = {
                       operator: context.accounts.owner,
                       from: context.accounts.owner.address,
                       to: deployedContracts.tokenReceiverWithoutLSP1.address,
                       amount: transferAmount,
-                      force: true,
+                      allowNonLSP1Recipient: true,
                       data: expectedData,
                     };
 
@@ -895,13 +897,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                     );
                   });
 
-                  it("should NOT allow transfering the tokens with `force` param = false", async () => {
+                  it("should NOT allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
                     const txParams = {
                       operator: context.accounts.owner,
                       from: context.accounts.owner.address,
                       to: deployedContracts.tokenReceiverWithoutLSP1.address,
                       amount: transferAmount,
-                      force: false,
+                      allowNonLSP1Recipient: false,
                       data: expectedData,
                     };
 
@@ -922,13 +924,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
             describe("when caller (msg.sender) is an operator (= Not the `from` address)", () => {
               describe("when `to` is an EOA", () => {
-                it("should allow transfering the tokens with `force` param = true", async () => {
+                it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
                   const txParams = {
                     operator: context.accounts.operator,
                     from: context.accounts.owner.address,
                     to: context.accounts.tokenReceiver.address,
                     amount: transferAmount,
-                    force: true,
+                    allowNonLSP1Recipient: true,
                     data: expectedData,
                   };
 
@@ -940,13 +942,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                   );
                 });
 
-                it("should NOT allow transfering the tokens with `force` param = false", async () => {
+                it("should NOT allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
                   const txParams = {
                     operator: context.accounts.operator,
                     from: context.accounts.owner.address,
                     to: context.accounts.tokenReceiver.address,
                     amount: transferAmount,
-                    force: false,
+                    allowNonLSP1Recipient: false,
                     data: expectedData,
                   };
 
@@ -964,13 +966,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
 
               describe("when `to` is a contract", () => {
                 describe("when receiving contract supports LSP1", () => {
-                  it("should allow transfering the tokens with `force` param = true", async () => {
+                  it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
                     const txParams = {
                       operator: context.accounts.operator,
                       from: context.accounts.owner.address,
                       to: deployedContracts.tokenReceiverWithLSP1.address,
                       amount: transferAmount,
-                      force: true,
+                      allowNonLSP1Recipient: true,
                       data: expectedData,
                     };
 
@@ -982,13 +984,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                     );
                   });
 
-                  it("should allow transfering the tokens with `force` param = false", async () => {
+                  it("should allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
                     const txParams = {
                       operator: context.accounts.operator,
                       from: context.accounts.owner.address,
                       to: deployedContracts.tokenReceiverWithLSP1.address,
                       amount: transferAmount,
-                      force: false,
+                      allowNonLSP1Recipient: false,
                       data: expectedData,
                     };
 
@@ -1002,13 +1004,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                 });
 
                 describe("when receiving contract does not support LSP1", () => {
-                  it("should allow transfering the tokens with `force` param = true", async () => {
+                  it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
                     const txParams = {
                       operator: context.accounts.operator,
                       from: context.accounts.owner.address,
                       to: deployedContracts.tokenReceiverWithoutLSP1.address,
                       amount: transferAmount,
-                      force: true,
+                      allowNonLSP1Recipient: true,
                       data: expectedData,
                     };
 
@@ -1020,13 +1022,13 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                     );
                   });
 
-                  it("should NOT allow transfering the tokens with `force` param = false", async () => {
+                  it("should NOT allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
                     const txParams = {
                       operator: context.accounts.operator,
                       from: context.accounts.owner.address,
                       to: deployedContracts.tokenReceiverWithoutLSP1.address,
                       amount: transferAmount,
-                      force: false,
+                      allowNonLSP1Recipient: false,
                       data: expectedData,
                     };
 
@@ -1059,7 +1061,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithoutLSP1.address,
                   amount: ownerBalance.add(1),
-                  force: true,
+                  allowNonLSP1Recipient: true,
                   data: expectedData,
                 };
                 const expectedError = "LSP7AmountExceedsBalance";
@@ -1091,7 +1093,7 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithoutLSP1.address,
                   amount: ownerBalance.add(1),
-                  force: true,
+                  allowNonLSP1Recipient: true,
                   data: expectedData,
                 };
                 const expectedError = "LSP7AmountExceedsAuthorizedAmount";

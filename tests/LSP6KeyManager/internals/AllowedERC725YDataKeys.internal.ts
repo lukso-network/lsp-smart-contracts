@@ -34,35 +34,35 @@ export const testAllowedERC725YDataKeysInternals = (
       context = await buildContext();
       dataKeys = {
         firstDynamicKey: {
-          length: "0x11",
+          length: "0x0011",
           key: "0xaf449139942203369080622073bf7f2dab",
         },
         secondDynamicKey: {
-          length: "0x01",
+          length: "0x0001",
           key: "0x1c",
         },
         thirdDynamicKey: {
-          length: "0x1c",
+          length: "0x001c",
           key: "0x4f042128e305e375c54b8782c3f9f1bde93f3586649d48db9c68beef",
         },
         fourthDynamicKey: {
-          length: "0x15",
+          length: "0x0015",
           key: "0xe6e8c1d23558e2a87caf19b7cc928eff323881d3e6",
         },
         firstFixedKey: {
-          length: "0x20",
+          length: "0x0020",
           key: "0xcbfb606f69bb97c04cbaea2a8b7cb13a2e229fafa3fb3be6db11d96ee3add114",
         },
         secondFixedKey: {
-          length: "0x20",
+          length: "0x0020",
           key: "0xa2c116feaaf87e499ac78081e8ce74b0a85627265144d605904971a89f81220a",
         },
         thirdFixedKey: {
-          length: "0x20",
+          length: "0x0020",
           key: "0x7b68176ed8c5774f16c8040df3f2c4aac9959612242613785716c4263670fe18",
         },
         fourthFixedKey: {
-          length: "0x20",
+          length: "0x0020",
           key: "0x2b58178172d258515ef1d9e7c467f6f6a09510e863ef5ad383dbfc50721183df",
         },
       };
@@ -736,7 +736,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
     describe("_verifyAllowedERC725YSingleKey", () => {
       it("should revert if compactBytesArray length element is superior at 32", async () => {
-        const length33InHex = "0x21";
+        const length33InHex = "0x0021";
         const dynamicKeyOfLength33 = ethers.utils.hexlify(
           ethers.utils.randomBytes(33)
         );

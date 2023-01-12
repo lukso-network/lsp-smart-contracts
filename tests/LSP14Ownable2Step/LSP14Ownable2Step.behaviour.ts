@@ -347,7 +347,7 @@ export const shouldBehaveLikeLSP14 = (
         expect(await context.contract.owner()).to.equal(currentOwner.address);
       });
 
-      it("should not reset the pendingOwner", async () => {
+      it("should reset the pendingOwner", async () => {
         const anotherOwner = context.accounts[3].address;
 
         await context.contract
@@ -356,7 +356,9 @@ export const shouldBehaveLikeLSP14 = (
 
         await context.contract.connect(currentOwner).renounceOwnership();
 
-        expect(await context.contract.pendingOwner()).to.equal(anotherOwner);
+        expect(await context.contract.pendingOwner()).to.equal(
+          ethers.constants.AddressZero
+        );
       });
 
       describe("currentOwner should still be able to interact with contract before confirming", () => {

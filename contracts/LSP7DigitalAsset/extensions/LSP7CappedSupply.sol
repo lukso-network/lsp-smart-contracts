@@ -54,13 +54,13 @@ abstract contract LSP7CappedSupply is LSP7DigitalAsset {
     function _mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
         if (totalSupply() + amount > tokenSupplyCap()) {
             revert LSP7CappedSupplyCannotMintOverCap();
         }
 
-        super._mint(to, amount, force, data);
+        super._mint(to, amount, allowNonLSP1Recipient, data);
     }
 }

@@ -183,4 +183,26 @@ describe("LSP2Utils", () => {
       });
     });
   });
+
+  describe("`isCompactBytesArray(...)`", () => {
+    it("should return true with `0x` (equivalent to `[]`)", async () => {
+      const data = "0x";
+      const result = await lsp2Utils.isCompactBytesArray(data);
+      expect(result).to.be.true;
+    });
+
+    describe("when pass a CompactBytesArray with one element", () => {
+      it("should return true when the first length byte matches the following number of bytes", async () => {
+        const data = "0x0005aabbccddee";
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.true;
+      });
+
+      it("should return false when the first length does not matches the following number of bytes", async () => {
+        const data = "0x0004aabbccddee";
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.false;
+      });
+    });
+  });
 });

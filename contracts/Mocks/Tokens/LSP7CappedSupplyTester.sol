@@ -15,7 +15,7 @@ contract LSP7CappedSupplyTester is LSP7CappedSupply {
     ) LSP7DigitalAsset(name, symbol, newOwner, true) LSP7CappedSupply(tokenSupplyCap) {}
 
     function mint(address to, uint256 amount) public {
-        // using force=true so we can send to EOA in test
+        // using allowNonLSP1Recipient=true so we can send to EOA in test
         _mint(to, amount, true, "token printer go brrr");
     }
 

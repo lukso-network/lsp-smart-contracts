@@ -13,9 +13,9 @@ contract LSP7CompatibleERC20Mintable is LSP7CompatibleERC20 {
     function mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) public onlyOwner {
-        _mint(to, amount, force, data);
+        _mint(to, amount, allowNonLSP1Recipient, data);
     }
 }

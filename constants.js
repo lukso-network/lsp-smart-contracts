@@ -555,7 +555,7 @@ const EventSignatures = {
 		 *     address indexed from,
 		 *     address indexed to,
 		 *     uint256 amount,
-		 *     bool force,
+		 *     bool allowNonLSP1Recipient,
 		 *     bytes data
 		 * );
 		 *
@@ -589,7 +589,7 @@ const EventSignatures = {
 		 *     address indexed from,
 		 *     address indexed to,
 		 *     bytes32 indexed tokenId,
-		 *     bool force,
+		 *     bool allowNonLSP1Recipient,
 		 *     bytes data
 		 * );
 		 *
