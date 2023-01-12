@@ -120,7 +120,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address from,
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) public virtual {
         if (from == to) revert LSP7CannotSendToSelf();
@@ -135,7 +135,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             _updateOperator(from, operator, operatorAmount - amount);
         }
 
-        _transfer(from, to, amount, force, data);
+        _transfer(from, to, amount, allowNonLSP1Recipient, data);
     }
 
     /**
@@ -145,14 +145,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address[] memory from,
         address[] memory to,
         uint256[] memory amount,
-        bool[] memory force,
+        bool[] memory allowNonLSP1Recipient,
         bytes[] memory data
     ) public virtual {
         uint256 fromLength = from.length;
         if (
             fromLength != to.length ||
             fromLength != amount.length ||
-            fromLength != force.length ||
+            fromLength != allowNonLSP1Recipient.length ||
             fromLength != data.length
         ) {
             revert LSP7InvalidTransferBatch();
@@ -160,7 +160,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         for (uint256 i = 0; i < fromLength; i = GasLib.uncheckedIncrement(i)) {
             // using the public transfer function to handle updates to operator authorized amounts
-            transfer(from[i], to[i], amount[i], force[i], data[i]);
+            transfer(from[i], to[i], amount[i], allowNonLSP1Recipient[i], data[i]);
         }
     }
 
@@ -212,7 +212,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     function _mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual {
         if (to == address(0)) {
@@ -228,9 +228,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, address(0), to, amount, force, data);
+        emit Transfer(operator, address(0), to, amount, allowNonLSP1Recipient, data);
 
-        _notifyTokenReceiver(address(0), to, amount, force, data);
+        _notifyTokenReceiver(address(0), to, amount, allowNonLSP1Recipient, data);
     }
 
     /**
@@ -297,7 +297,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address from,
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual {
         if (from == address(0) || to == address(0)) {
@@ -316,10 +316,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         _tokenOwnerBalances[from] -= amount;
         _tokenOwnerBalances[to] += amount;
 
-        emit Transfer(operator, from, to, amount, force, data);
+        emit Transfer(operator, from, to, amount, allowNonLSP1Recipient, data);
 
         _notifyTokenSender(from, to, amount, data);
-        _notifyTokenReceiver(from, to, amount, force, data);
+        _notifyTokenReceiver(from, to, amount, allowNonLSP1Recipient, data);
     }
 
     /**
@@ -358,7 +358,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
     /**
      * @dev An attempt is made to notify the token receiver about the `amount` tokens changing owners
-     * using LSP1 interface. When force is FALSE the token receiver MUST support LSP1.
+     * using LSP1 interface. When allowNonLSP1Recipient is FALSE the token receiver MUST support LSP1.
      *
      * The receiver may revert when the token being sent is not wanted.
      */
@@ -366,13 +366,13 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address from,
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual {
         if (ERC165Checker.supportsERC165InterfaceUnchecked(to, _INTERFACEID_LSP1)) {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
             ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP7_TOKENSRECIPIENT, packedData);
-        } else if (!force) {
+        } else if (!allowNonLSP1Recipient) {
             if (to.isContract()) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {

@@ -34,9 +34,9 @@ contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
     function mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) public virtual onlyOwner {
-        _mint(to, amount, force, data);
+        _mint(to, amount, allowNonLSP1Recipient, data);
     }
 }

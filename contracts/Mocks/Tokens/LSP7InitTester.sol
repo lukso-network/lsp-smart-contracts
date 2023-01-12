@@ -26,9 +26,9 @@ contract LSP7InitTester is LSP7DigitalAssetInitAbstract, LSP7Burnable {
     function mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) public {
-        _mint(to, amount, force, data);
+        _mint(to, amount, allowNonLSP1Recipient, data);
     }
 }

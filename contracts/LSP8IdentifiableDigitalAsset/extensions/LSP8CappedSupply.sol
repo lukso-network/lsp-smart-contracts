@@ -55,13 +55,13 @@ abstract contract LSP8CappedSupply is LSP8IdentifiableDigitalAsset {
     function _mint(
         address to,
         bytes32 tokenId,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) internal virtual override {
         if (totalSupply() + 1 > tokenSupplyCap()) {
             revert LSP8CappedSupplyCannotMintOverCap();
         }
 
-        super._mint(to, tokenId, force, data);
+        super._mint(to, tokenId, allowNonLSP1Recipient, data);
     }
 }
