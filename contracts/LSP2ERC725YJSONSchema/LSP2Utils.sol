@@ -267,7 +267,6 @@ library LSP2Utils {
      * @dev Verify the validity of the `compactBytesArray` according to LSP2
      */
     function isCompactBytesArray(bytes memory compactBytesArray) internal pure returns (bool) {
-        if (compactBytesArray.length == 0) return false;
         /**
          * Pointer will always land on these values:
          *
@@ -288,9 +287,12 @@ library LSP2Utils {
          * Make sure that the last length describes exactly the last bytes value and you do not get out of bounds.
          */
         while (pointer < compactBytesArray.length) {
-            uint256 elementLength = uint256(uint8(bytes1(compactBytesArray[pointer])));
+            uint256 elementLength = uint16(
+                bytes2(abi.encodePacked(compactBytesArray[pointer], compactBytesArray[pointer + 1]))
+            );
+
             if (elementLength == 0) return false;
-            pointer += elementLength + 1;
+            pointer += elementLength + 2;
         }
         if (pointer == compactBytesArray.length) return true;
         return false;
