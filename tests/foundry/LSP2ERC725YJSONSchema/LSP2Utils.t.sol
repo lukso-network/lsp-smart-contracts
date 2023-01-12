@@ -40,10 +40,6 @@ contract LSP2UtilsTests is Test {
         bytes20 secondBytes,
         bytes2 thirdBytes
     ) public pure {
-        //return if some  bytes are empty
-        if (firstBytes.length == 0 || secondBytes.length == 0 || thirdBytes.length == 0) {
-            return;
-        }
         // store firstBytes length
         uint16 firstBytesLength = firstBytes.length;
         // store secondBytes length
@@ -61,133 +57,55 @@ contract LSP2UtilsTests is Test {
         assert(LSP2Utils.isCompactBytesArray(data));
     }
 
-    // Skip test because failing sometimes
-    function testIsCompactBytesArrayShouldReturnFalseWithWrongLengthElementSkip(
-        bytes32 firstBytes,
-        bytes32 secondBytes
+    function testShouldNotRevertWithLowerLengthElement(
+        bytes memory firstBytes,
+        bytes memory secondBytes,
+        uint8 reducer
     ) public pure {
-        //return if some  bytes are empty
-        if (firstBytes.length == 0 || secondBytes.length == 0) {
-            return;
-        }
         // store firstBytes length
-        uint8 firstBytesLength = uint8(firstBytes.length);
-        // secondBytesLength is 32 and not 10
-        uint8 secondBytesLength = 10;
+        uint16 firstBytesLength = uint16(firstBytes.length);
+        // store secondBytes length
+        uint16 secondBytesLength = uint16(secondBytes.length);
+
+        if (reducer > secondBytesLength) {
+            secondBytesLength = 0;
+        } else {
+            secondBytesLength -= reducer;
+        }
+
         bytes memory data = abi.encodePacked(
             firstBytesLength,
             firstBytes,
             secondBytesLength,
             secondBytes
         );
-        // should always return false because secondBytesConcatTimes10Length is 320 and not 0x40
-        assert(!LSP2Utils.isCompactBytesArray(data));
+
+        LSP2Utils.isCompactBytesArray(data);
     }
 
-    // Skip test because failing sometimes
-    function testIsCompactBytesArrayShouldReturnFalseWithTruncatedLengthElementSkip(
-        bytes32 firstBytes,
-        bytes32 secondBytes
+    function testShouldNotRevertWithBiggerLengthElement(
+        bytes memory firstBytes,
+        bytes memory secondBytes,
+        uint16 adder
     ) public pure {
-        //return if some  bytes are empty
-        if (firstBytes.length == 0 || secondBytes.length == 0) {
-            return;
-        }
         // store firstBytes length
-        uint8 firstBytesLength = uint8(firstBytes.length);
-        // concat secondBytes 10 times so that we have 320 bytes length
-        bytes memory secondBytesConcatTimes10 = abi.encodePacked(
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes
-        );
-        // secondBytesConcatTimes10Length is 320 and not 10
-        uint8 secondBytesConcatTimes10Length = 10;
-        bytes memory data = abi.encodePacked(
-            firstBytesLength,
-            firstBytes,
-            secondBytesConcatTimes10Length,
-            secondBytesConcatTimes10
-        );
-        // should always return false because secondBytesConcatTimes10Length is 320 and not 0x40
-        assert(!LSP2Utils.isCompactBytesArray(data));
-    }
+        uint16 firstBytesLength = uint16(firstBytes.length);
+        // store secondBytes length
+        uint16 secondBytesLength = uint16(secondBytes.length);
 
-    // Skip test because failing sometimes
-    function testIsCompactBytesArrayShouldReturnFalseWithBigCBASkip(
-        bytes32 firstBytes,
-        bytes32 secondBytes
-    ) public pure {
-        //return if some  bytes are empty
-        if (firstBytes.length == 0 || secondBytes.length == 0) {
-            return;
+        if (adder > type(uint16).max - secondBytesLength) {
+            secondBytesLength = adder;
+        } else {
+            secondBytesLength += adder;
         }
-        // store firstBytes length
-        uint8 firstBytesLength = uint8(firstBytes.length);
-        // concat secondBytes 10 times so that we have 320 bytes length
-        bytes memory secondBytesConcatTimes10 = abi.encodePacked(
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes
-        );
-        // cast down to uint8 : 320 = 0x0140 => uint8(0x0140) = 0x40
-        uint8 secondBytesConcatTimes10Length = uint8(secondBytesConcatTimes10.length);
-        bytes memory data = abi.encodePacked(
-            firstBytesLength,
-            firstBytes,
-            secondBytesConcatTimes10Length,
-            secondBytesConcatTimes10
-        );
-        // should always return false because secondBytesConcatTimes10Length is 320 and not 0x40
-        assert(!LSP2Utils.isCompactBytesArray(data));
-    }
 
-    // Skip test because failing sometimes
-    function testIsCompactBytesArrayShouldReturnTrueSkip(bytes32 firstBytes, bytes32 secondBytes)
-        public
-        pure
-    {
-        //return if some  bytes are empty
-        if (firstBytes.length == 0 || secondBytes.length == 0) {
-            return;
-        }
-        // store firstBytes length
-        uint8 firstBytesLength = uint8(firstBytes.length);
-        // concat secondBytes 10 times so that we have 320 bytes length
-        bytes memory secondBytesConcatTimes10 = abi.encodePacked(
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes,
-            secondBytes
-        );
-        // cast down to uint8 : 320 = 0x0140 => uint8(0x0140) = 0x40
         bytes memory data = abi.encodePacked(
             firstBytesLength,
             firstBytes,
-            uint16(secondBytesConcatTimes10.length),
-            secondBytesConcatTimes10
+            secondBytesLength,
+            secondBytes
         );
-        // should always return false because secondBytesConcatTimes10Length is 320 and not 0x40
-        assert(LSP2Utils.isCompactBytesArray(data));
+
+        LSP2Utils.isCompactBytesArray(data);
     }
 }

@@ -193,13 +193,13 @@ describe("LSP2Utils", () => {
 
     describe("when pass a CompactBytesArray with one element", () => {
       it("should return true when the first length byte matches the following number of bytes", async () => {
-        const data = "0x05aabbccddee";
+        const data = "0x0005aabbccddee";
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.true;
       });
 
       it("should return false when the first length does not matches the following number of bytes", async () => {
-        const data = "0x04aabbccddee";
+        const data = "0x0004aabbccddee";
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.false;
       });
