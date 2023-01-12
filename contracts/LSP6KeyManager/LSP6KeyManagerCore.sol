@@ -529,10 +529,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         view
         returns (bytes32)
     {
-        uint256 dataValueLength = uint256(bytes32(dataValue));
-        bool isEmptyArray = dataValueLength == 0;
-
-        if (!isEmptyArray && !LSP2Utils.isCompactBytesArray(dataValue)) {
+        if (!LSP2Utils.isCompactBytesArray(dataValue)) {
             if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
                 revert InvalidEncodedAllowedCalls(dataValue);
             } else {
@@ -540,10 +537,13 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             }
         }
 
-        bytes memory storedAllowedValues = ERC725Y(_target).getData(dataKey);
-
+        // if there is nothing stored under the data key, depending on the data key being set, we are trying to:
+        //  - either ADD a list of restricted calls (standards + address + function selector)
+        //  - or ADD a list of restricted ERC725Y Data Keys.
+        //
+        // if there are already some data set under one of these data keys, we are trying to CHANGE (= edit) these restrictions.
         return
-            storedAllowedValues.length == 0
+            ERC725Y(_target).getData(dataKey).length == 0
                 ? _PERMISSION_ADDPERMISSIONS
                 : _PERMISSION_CHANGEPERMISSIONS;
     }
