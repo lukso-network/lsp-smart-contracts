@@ -331,11 +331,11 @@ const Errors = {
 		},
 		'0x4f0dfdda': {
 			error: 'InvalidEncodedAllowedERC725YDataKeys(bytes)',
-			message: 'LSP6: Invalid Encoded Allowed ERC725YDataKeys Compact Bytes Array',
+			message: 'LSP6: Invalid Encoding for the Compact Bytes Array of Allowed ERC725Y Data Keys.',
 		},
 		'0x8f4afa38': {
 			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
-			message: 'LSP6: value provided for AddressPermission[index] not an address.',
+			message: 'LSP6: value provided for AddressPermission[index] is not an address.',
 		},
 		'0x55a187db': {
 			error: 'BatchExecuteParamsLengthMismatch()',
@@ -361,11 +361,11 @@ const Errors = {
 		},
 		'0x6fd203c5': {
 			error: 'InvalidWhitelistedCall(address)',
-			message: 'LSP6: Having all calls allowed in AllowedCalls is not allowed',
+			message: 'LSP6: LSP6: Not allowed to whitelist all calls in AllowedCalls.',
 		},
 		'0x80d6ebae': {
 			error: 'DelegateCallDisallowedViaKeyManager()',
-			message: 'LSP6: DelegateCall is disallowed in LSP6',
+			message: 'LSP6: DelegateCall is disallowed via the Key Manager',
 		},
 		'0x9f2cb4db': {
 			error: 'InvalidCompactByteArrayLengthElement(uint256)',
