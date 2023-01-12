@@ -223,7 +223,7 @@ export const shouldBehaveLikeLSP17 = (
             )
               .to.be.revertedWithCustomError(
                 context.contract,
-                "NoExtensionForFunctionSelector"
+                "NoExtensionFoundForFunctionSelector"
               )
               .withArgs(notExistingFunctionSignature);
           });
@@ -241,7 +241,7 @@ export const shouldBehaveLikeLSP17 = (
             )
               .to.be.revertedWithCustomError(
                 context.contract,
-                "NoExtensionForFunctionSelector"
+                "NoExtensionFoundForFunctionSelector"
               )
               .withArgs(notExistingFunctionSignature);
           });
@@ -252,7 +252,7 @@ export const shouldBehaveLikeLSP17 = (
         describe("when double checking that the msg.sender & msg.value were sent with the calldata to the extension", () => {
           describe("when relying on the Checker Extension", () => {
             describe("when the extension is not set yet", () => {
-              it("should revert with NoExtensionForFunctionSelector", async () => {
+              it("should revert with NoExtensionFoundForFunctionSelector", async () => {
                 const supposedSender = context.accounts[0];
                 const value = 200;
                 const checkMsgVariableFunctionSignature =
@@ -274,7 +274,7 @@ export const shouldBehaveLikeLSP17 = (
                 )
                   .to.be.revertedWithCustomError(
                     context.contract,
-                    "NoExtensionForFunctionSelector"
+                    "NoExtensionFoundForFunctionSelector"
                   )
                   .withArgs(checkMsgVariableFunctionSelector);
               });
@@ -300,7 +300,7 @@ export const shouldBehaveLikeLSP17 = (
                 )
                   .to.be.revertedWithCustomError(
                     context.contract,
-                    "NoExtensionForFunctionSelector"
+                    "NoExtensionFoundForFunctionSelector"
                   )
                   .withArgs(checkMsgVariableFunctionSelector);
               });
@@ -719,7 +719,7 @@ export const shouldBehaveLikeLSP17 = (
       });
 
       describe("when calling with a payload preprended with 4 bytes of 0", () => {
-        describe("when the payload is equal to 4 bytes of zeros", () => {
+        describe("when the payload is `0x00000000`", () => {
           describe("with sending value", () => {
             it("should pass and emit ValueReceived value", async () => {
               const amountSent = 2;
@@ -745,7 +745,7 @@ export const shouldBehaveLikeLSP17 = (
             });
           });
         });
-        describe("when the payload is larger than 4 bytes of zeros", () => {
+        describe("when the payload is `0x00000000` + some random data ('graffiti')", () => {
           describe("with sending value", () => {
             it("should pass and emit ValueReceived value", async () => {
               const amountSent = 2;

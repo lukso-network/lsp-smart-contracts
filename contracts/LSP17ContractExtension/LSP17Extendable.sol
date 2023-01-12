@@ -54,8 +54,8 @@ abstract contract LSP17Extendable is ERC165 {
     function _getExtension(bytes4 functionSelector) internal view virtual returns (address);
 
     /**
-     * @dev Forwards the call to an extension mapped to a function selector. If the address of
-     * the extension is address(0), then revert.
+     * @dev Forwards the call to an extension mapped to a function selector. If no extension address 
+     * is mapped to the function selector (address(0)), then revert.
      *
      * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
      * Returns the return value on success and revert in case of failure.
@@ -70,7 +70,7 @@ abstract contract LSP17Extendable is ERC165 {
         address extension = _getExtension(msg.sig);
 
         // if no extension was found, revert
-        if (extension == address(0)) revert NoExtensionForFunctionSelector(msg.sig);
+        if (extension == address(0)) revert NoExtensionFoundForFunctionSelector(msg.sig);
 
         // solhint-disable no-inline-assembly
         // if the extension was found, call the extension with the msg.data

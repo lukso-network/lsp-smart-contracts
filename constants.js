@@ -456,8 +456,8 @@ const Errors = {
 		},
 	},
 	LSP17ContractExtension: {
-		'0x3d746f74': {
-			error: 'NoExtensionForFunctionSelector(bytes4)',
+		'0xbb370b2b': {
+			error: 'NoExtensionFoundForFunctionSelector(bytes4)',
 			message:
 				'The function being called on the contract is not supported and there is no extension for it',
 		},
