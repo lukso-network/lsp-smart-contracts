@@ -106,6 +106,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         if (newOwner == address(this)) revert CannotTransferOwnershipToSelf();
 
         _pendingOwner = newOwner;
+        delete _renounceOwnershipStartedAt;
         address currentOwner = owner();
         emit OwnershipTransferStarted(currentOwner, newOwner);
 
@@ -152,6 +153,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         if (currentBlock > confirmationPeriodEnd) {
             _renounceOwnershipStartedAt = currentBlock;
+            delete _pendingOwner;
             emit RenounceOwnershipStarted();
             return;
         }
