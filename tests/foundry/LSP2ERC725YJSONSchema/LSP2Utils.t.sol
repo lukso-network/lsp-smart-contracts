@@ -38,18 +38,18 @@ contract LSP2UtilsTests is Test {
     function testIsCompactBytesArray(
         bytes32 firstBytes,
         bytes20 secondBytes,
-        bytes1 thirdBytes
+        bytes2 thirdBytes
     ) public pure {
         //return if some  bytes are empty
         if (firstBytes.length == 0 || secondBytes.length == 0 || thirdBytes.length == 0) {
             return;
         }
         // store firstBytes length
-        uint8 firstBytesLength = uint8(firstBytes.length);
+        uint16 firstBytesLength = firstBytes.length;
         // store secondBytes length
-        uint8 secondBytesLength = uint8(secondBytes.length);
+        uint16 secondBytesLength = secondBytes.length;
         // store thirdBytes length
-        uint8 thirdBytesLength = uint8(thirdBytes.length);
+        uint16 thirdBytesLength = thirdBytes.length;
         bytes memory data = abi.encodePacked(
             firstBytesLength,
             firstBytes,

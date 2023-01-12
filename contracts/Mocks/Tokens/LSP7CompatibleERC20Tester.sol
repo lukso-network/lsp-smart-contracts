@@ -18,7 +18,7 @@ contract LSP7CompatibleERC20Tester is LSP7CompatibleERC20 {
         uint256 amount,
         bytes calldata data
     ) public {
-        // using force=true so we can send to EOA in test
+        // using allowNonLSP1Recipient=true so we can send to EOA in test
         _mint(to, amount, true, data);
     }
 

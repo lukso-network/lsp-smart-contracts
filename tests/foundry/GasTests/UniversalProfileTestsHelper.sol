@@ -61,9 +61,9 @@ contract UniversalProfileTestsHelper is Test {
         }
 
         //check that the total length is less than 256
-        require(totalLength < type(uint8).max, "UniversalProfileHelper: CBA Element too big");
+        require(totalLength < type(uint16).max, "UniversalProfileHelper: CBA Element too big");
 
-        return bytes.concat(bytes1(uint8(totalLength)), concatenatedBytes);
+        return bytes.concat(bytes2(uint16(totalLength)), concatenatedBytes);
     }
 
     function setAllowedCallsForController(

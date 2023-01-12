@@ -12,7 +12,7 @@ interface ILSP7Mintable is ILSP7DigitalAsset {
     /**
      * @param to The address to mint tokens
      * @param amount The amount to mint
-     * @param force When set to TRUE, to may be any address but
+     * @param allowNonLSP1Recipient When set to TRUE, to may be any address but
      * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      * @dev Mints `amount` tokens and transfers it to `to`.
@@ -26,7 +26,7 @@ interface ILSP7Mintable is ILSP7DigitalAsset {
     function mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) external;
 }

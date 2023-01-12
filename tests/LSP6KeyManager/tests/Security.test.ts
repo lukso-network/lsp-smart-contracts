@@ -344,7 +344,9 @@ export const testSecurityScenarios = (
                 PERMISSIONS.TRANSFERVALUE,
                 PERMISSIONS.REENTRANCY
               ),
-              "0x1cffffffff" + URDDummy.address.substring(2) + "ffffffff",
+              encodeCompactBytesArray([
+                "0xffffffff" + URDDummy.address.substring(2) + "ffffffff",
+              ]),
             ],
           ]
         );
