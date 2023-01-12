@@ -331,7 +331,8 @@ const Errors = {
 		},
 		'0x4f0dfdda': {
 			error: 'InvalidEncodedAllowedERC725YDataKeys(bytes)',
-			message: 'LSP6: Invalid Encoding for the Compact Bytes Array of Allowed ERC725Y Data Keys.',
+			message:
+				'LSP6: Invalid Encoding for the Compact Bytes Array of Allowed ERC725Y Data Keys.',
 		},
 		'0x8f4afa38': {
 			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
