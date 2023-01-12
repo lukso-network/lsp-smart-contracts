@@ -74,36 +74,42 @@ const ERC725YDataKeys = {
 	LSP1: {
 		// bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0)
 		LSP1UniversalReceiverDelegatePrefix: '0x0cfc51aec37c55a4d0b10000',
+
 		// keccak256('LSP1UniversalReceiverDelegate')
 		LSP1UniversalReceiverDelegate:
 			'0x0cfc51aec37c55a4d0b1a65c6255c4bf2fbdf6277f3cc0730c45b828b6db8b47',
 	},
 	LSP3: {
 		SupportedStandards_LSP3: SupportedStandards.LSP3UniversalProfile.key,
+
 		// keccak256('LSP3Profile')
 		LSP3Profile: '0x5ef83ad9559033e6e941db7d7c495acdce616347d28e90c7ce47cbfcfcad3bc5',
 	},
 	LSP4: {
 		SupportedStandards_LSP4: SupportedStandards.LSP4DigitalAsset.key,
+
 		// keccak256('LSP4TokenName')
 		LSP4TokenName: '0xdeba1e292f8ba88238e10ab3c7f88bd4be4fac56cad5194b6ecceaf653468af1',
+
 		// keccak256('LSP4TokenSymbol')
 		LSP4TokenSymbol: '0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756',
+
 		// keccak256('LSP4Metadata')
 		LSP4Metadata: '0x9afb95cacc9f95858ec44aa8c3b685511002e30ae54415823f406128b85b238e',
+
 		// LSP4CreatorsMap:<address>  + bytes2(0)
 		LSP4CreatorsMap: '0x6de85eaf5d982b4e5da00000',
+
 		// keccak256('"LSP4Creators[]')
 		'LSP4Creators[]': {
-			// use this key to get the number of elements in the array
 			length: '0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7',
-			// use this key + bytes16(index) to access an index in the array
 			index: '0x114bd03b3a46d48759680d81ebb2b414',
 		},
 	},
 	LSP5: {
 		// LSP5ReceivedAssetsMap:<address>  + bytes2(0)
 		LSP5ReceivedAssetsMap: '0x812c4334633eb816c80d0000',
+
 		// keccak256('LSP5ReceivedAssets[]')
 		'LSP5ReceivedAssets[]': {
 			length: '0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
@@ -116,10 +122,13 @@ const ERC725YDataKeys = {
 			length: '0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3',
 			index: '0xdf30dba06db6a30e65354d9a64c60986',
 		},
+
 		// AddressPermissions:Permissions:<address>  + bytes2(0)
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
+
 		// AddressPermissions:AllowedERC725YDataKeys:<address>  + bytes2(0)
 		'AddressPermissions:AllowedERC725YDataKeys': '0x4b80742de2bf866c29110000',
+
 		// AddressPermissions:AllowedCalls:<address>  + bytes2(0)
 		'AddressPermissions:AllowedCalls': '0x4b80742de2bf393a64c70000',
 	},
@@ -129,6 +138,7 @@ const ERC725YDataKeys = {
 	LSP10: {
 		// keccak256('LSP10VaultsMap') + bytes2(0)
 		LSP10VaultsMap: '0x192448c3c0f88c7f238c0000',
+
 		// keccak256('LSP10Vaults[]')
 		'LSP10Vaults[]': {
 			length: '0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06',
@@ -138,6 +148,7 @@ const ERC725YDataKeys = {
 	LSP12: {
 		// LSP12IssuedAssetsMap:<address>  + bytes2(0)
 		LSP12IssuedAssetsMap: '0x74ac2555c10b9349e78f0000',
+
 		// keccak256('LSP12IssuedAssets[]')
 		'LSP12IssuedAssets[]': {
 			length: '0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd',
@@ -212,27 +223,48 @@ const LSP1_TYPE_IDS = {
 	// keccak256('LSP7Tokens_SenderNotification')
 	LSP7Tokens_SenderNotification:
 		'0x429ac7a06903dbc9c13dfcb3c9d11df8194581fa047c96d7a4171fc7402958ea',
+
 	// keccak256('LSP7Tokens_RecipientNotification')
 	LSP7Tokens_RecipientNotification:
 		'0x20804611b3e2ea21c480dc465142210acf4a2485947541770ec1fb87dee4a55c',
+
 	// keccak256('LSP8Tokens_SenderNotification')
 	LSP8Tokens_SenderNotification:
 		'0xb23eae7e6d1564b295b4c3e3be402d9a2f0776c57bdf365903496f6fa481ab00',
+
 	// keccak256('LSP8Tokens_RecipientNotification')
 	LSP8Tokens_RecipientNotification:
 		'0x0b084a55ebf70fd3c06fd755269dac2212c4d3f0f4d09079780bfa50c1b2984d',
+
 	// keccak256('LSP14OwnershipTransferStarted')
 	LSP14OwnershipTransferStarted:
 		'0xee9a7c0924f740a2ca33d59b7f0c2929821ea9837ce043ce91c1823e9c4e52c0',
+
 	// keccak256('LSP14OwnershipTransferred_SenderNotification')
 	LSP14OwnershipTransferred_SenderNotification:
 		'0xa124442e1cc7b52d8e2ede2787d43527dc1f3ae0de87f50dd03e27a71834f74c',
+
 	// keccak256('LSP14OwnershipTransferred_RecipientNotification')
 	LSP14OwnershipTransferred_RecipientNotification:
 		'0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c',
 };
 
 const Errors = {
+	LSP1: {
+		'0xa5295345': {
+			error: 'CannotRegisterEOAsAsAssets(address)',
+			message:
+				'LSP1: EOAs cannot call the UniversalReceiverDelegate with asset/vault typeIds',
+		},
+		'0x4c5e815a': {
+			error: 'CallerNotLSP6LinkedTarget(address,address)',
+			message: 'LSP1: Cannot write received vaults/assets on address other than the caller',
+		},
+		'0x114b721a': {
+			error: 'NativeTokensNotAccepted()',
+			message: 'LSP1: Cannot send native tokens to the UniversalReceiverDelegate',
+		},
+	},
 	LSP4: {
 		'0x85c169bd': {
 			error: 'LSP4TokenNameNotEditable()',
@@ -247,6 +279,16 @@ const Errors = {
 		'0xecba7af8': {
 			error: 'InvalidLSP5ReceivedAssetsArrayLength(bytes,uint256)',
 			message: 'LSP5: Invalid value for `LSP5ReceivedAssets[]` (array length)',
+		},
+		'0x1c458e39': {
+			error: 'ReceivedAssetsIndexSuperiorToUint64(uint256)',
+			message:
+				'LSP5: The index of the received assets cannot be registered if superior to uint64',
+		},
+		'0xe8a4fba': {
+			error: 'ReceivedAssetsIndexSuperiorToUint128(uint256)',
+			message:
+				'LSP5: The index of the received assets cannot be registered if superior to uint128',
 		},
 	},
 	LSP6: {
@@ -263,7 +305,7 @@ const Errors = {
 			message:
 				'LSP6: not authorised to interact with `to` with the provided data payload (standard, address or function of `to` not authorised).',
 		},
-		'0x3003e7ae': {
+		'0x557ae079': {
 			error: 'NotAllowedERC725YDataKey(address,bytes32)',
 			message: 'LSP6: not allowed to set the ERC725Y data key.',
 		},
@@ -287,18 +329,24 @@ const Errors = {
 			error: 'NoERC725YDataKeysAllowed(address)',
 			message: 'LSP6: caller has no AllowedERC725YDataKeys',
 		},
-		'0x7231ac57': {
+		'0x4f0dfdda': {
 			error: 'InvalidEncodedAllowedERC725YDataKeys(bytes)',
-			message: 'LSP6: Invalid Compact Bytes Array',
+			message:
+				'LSP6: Invalid Encoding for the Compact Bytes Array of Allowed ERC725Y Data Keys.',
 		},
 		'0x8f4afa38': {
 			error: 'AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)',
-			message: 'LSP6: value provided for AddressPermission[index] not an address.',
+			message: 'LSP6: value provided for AddressPermission[index] is not an address.',
 		},
-		'0x8be02e75': {
+		'0x55a187db': {
+			error: 'BatchExecuteParamsLengthMismatch()',
+			message:
+				'LSP6: different number of elements for each array parameters in batch `execute(uint256[],bytes[])`',
+		},
+		'0xb4d50d21': {
 			error: 'BatchExecuteRelayCallParamsLengthMismatch()',
 			message:
-				'LSP6: different number of elements for each array parameters in batch `executeRelayCall(bytes[],uint256[],bytes[])',
+				'LSP6: different number of elements for each array parameters in batch `executeRelayCall(bytes[],uint256[],bytes[])`',
 		},
 		'0x30a324ac': {
 			error: 'LSP6BatchInsufficientValueSent(uint256,uint256)',
@@ -307,6 +355,22 @@ const Errors = {
 		'0xa51868b6': {
 			error: 'LSP6BatchExcessiveValueSent(uint256,uint256)',
 			message: 'LSP6: cannot send more `msg.value` than all the combined `values[]`.',
+		},
+		'0x6cb60587': {
+			error: 'NoCallsAllowed(address)',
+			message: 'LSP6: No calls allowed for the provided address',
+		},
+		'0x6fd203c5': {
+			error: 'InvalidWhitelistedCall(address)',
+			message: 'LSP6: LSP6: Not allowed to whitelist all calls in AllowedCalls.',
+		},
+		'0x80d6ebae': {
+			error: 'DelegateCallDisallowedViaKeyManager()',
+			message: 'LSP6: DelegateCall is disallowed via the Key Manager',
+		},
+		'0x9f2cb4db': {
+			error: 'InvalidCompactByteArrayLengthElement(uint256)',
+			message: 'LSP6: Invalid element length for AllowedERC725YDataKeys',
 		},
 	},
 	LSP7: {
@@ -393,6 +457,14 @@ const Errors = {
 		'0x03173137': {
 			error: 'LSP8NotifyTokenReceiverIsEOA(address)',
 			message: 'LSP8: token recipient is an Externally Owned Account.',
+		},
+		'0x4aa31a8c': {
+			error: 'LSP8NonExistingOperator(address,bytes32)',
+			message: 'LSP8: Cannot remove a non existing operator.',
+		},
+		'0xa7626b68': {
+			error: 'LSP8OperatorAlreadyAuthorized(address,bytes32)',
+			message: 'LSP8: Cannot authorize an existing operator twice for the same tokenId.',
 		},
 	},
 	LSP8CappedSupply: {
@@ -719,7 +791,20 @@ const EventSignatures = {
 		 *
 		 * signature = keccak256('OwnershipRenounced()')
 		 */
-		OwnershipRenounced: '0xb7bf72702f3f3fa4264be1e7ff21454ac15cd02da829374909f77f9090199ea2',
+		OwnershipRenounced: '0xd1f66c3d2bc1993a86be5e3d33709d98f0442381befcedd29f578b9b2506b1ce',
+	},
+	LSP16UniversalFactory: {
+		/**
+		 * event ContractCreated(
+		 *    address indexed contractCreated,
+		 *    bytes32 indexed providedSalt,
+		 *    bool indexed initializable,
+		 *    bytes initializeCalldata
+		 * );
+		 *
+		 * signature = keccak256('ContractCreated(address,bytes32,bool,bytes)')
+		 */
+		ContractCreated: '0xc587425c92859c27d4383bf2eb0ab8ea1670c48039f8d6375b9947b82a20f746',
 	},
 };
 
