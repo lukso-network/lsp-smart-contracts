@@ -114,10 +114,10 @@ export const testAllowedERC725YDataKeysInternals = (
         dataKeys.thirdFixedKey.key.toString().substring(2);
     });
 
-    describe("`isCompactBytesArray(..)`", () => {
+    describe("`isCompactBytesArrayOfAllowedERC725YDataKeys(..)`", () => {
       it("should return true for a CompactBytesArray containing 2 dynamic keys", async () => {
         const result =
-          await context.keyManagerInternalTester.callStatic.isCompactBytesArray(
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2d
           );
 
@@ -126,7 +126,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it("should return true for a CompactBytesArray containing 2 fixed keys", async () => {
         const result =
-          await context.keyManagerInternalTester.callStatic.isCompactBytesArray(
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2f
           );
 
@@ -135,7 +135,7 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it("should return true for a CompactBytesArray containing 2 dynamic keys and 2 fixed keys", async () => {
         const result =
-          await context.keyManagerInternalTester.callStatic.isCompactBytesArray(
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2d_2f
           );
 
@@ -144,11 +144,56 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it("should return true for a CompactBytesArray with mixed dynamic and fixed keys", async () => {
         const result =
-          await context.keyManagerInternalTester.callStatic.isCompactBytesArray(
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_mixed_d_f
           );
 
         expect(result).to.be.true;
+      });
+
+      it("should return false if the CompactBytesArray contains a zero length data key", async () => {
+        const data = encodeCompactBytesArray([
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("1st Data Key")),
+          "0x",
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("2nd Data Key")),
+        ]);
+
+        const result =
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
+            data
+          );
+        expect(result).to.be.false;
+      });
+
+      it("should return false if the CompactBytesArray contains an entry larger than 32 bytes", async () => {
+        const data = encodeCompactBytesArray([
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("1st Data Key")),
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("2nd Data Key")),
+          ethers.utils.hexlify(ethers.utils.randomBytes(33)),
+        ]);
+
+        const result =
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
+            data
+          );
+        expect(result).to.be.false;
+      });
+
+      it("should return false if the CompactBytesArray contains a data key with a length byte that does not correspond to the length of its element", async () => {
+        let data = encodeCompactBytesArray([
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("1st Data Key")),
+          ethers.utils.hexlify(ethers.utils.randomBytes(10)), // <-- replace length byte here
+          ethers.utils.keccak256(ethers.utils.toUtf8Bytes("3rd Data Key")),
+        ]);
+
+        // replace the length byte of the 2nd data key with a different value
+        data = data.replace(/000a/g, "0030");
+
+        const result =
+          await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
+            data
+          );
+        expect(result).to.be.false;
       });
     });
 
@@ -510,6 +555,33 @@ export const testAllowedERC725YDataKeysInternals = (
               .withArgs(context.universalProfile.address, dataKeyToCheck);
           }
         });
+
+        it("should revert if compactBytesArray length element is superior at 32", async () => {
+          const length33InHex = "0x21";
+          const dynamicKeyOfLength33 = ethers.utils.hexlify(
+            ethers.utils.randomBytes(33)
+          );
+          const compactBytesArray_with_invalid_length = encodeCompactBytesArray(
+            [
+              dataKeys.firstDynamicKey.key,
+              dynamicKeyOfLength33,
+              dataKeys.thirdDynamicKey.key,
+            ]
+          );
+
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
+              context.universalProfile.address,
+              dataKeys.firstFixedKey.key,
+              compactBytesArray_with_invalid_length
+            )
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(compactBytesArray_with_invalid_length);
+        });
       });
     });
 
@@ -755,9 +827,9 @@ export const testAllowedERC725YDataKeysInternals = (
         )
           .to.be.revertedWithCustomError(
             context.keyManagerInternalTester,
-            "InvalidCompactByteArrayLengthElement"
+            "InvalidEncodedAllowedERC725YDataKeys"
           )
-          .withArgs(length33InHex);
+          .withArgs(dynamicKeyOfLength33);
       });
     });
   });
