@@ -17,7 +17,6 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 import {LSP6Utils} from "./LSP6Utils.sol";
 import {EIP191Signer} from "../Custom/EIP191Signer.sol";
 
@@ -57,7 +56,6 @@ import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.
  *      Permissions for controllers are stored in the ERC725Y storage of the ERC725 Account and can be updated using `setData(...)`.
  */
 abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
-    using LSP2Utils for *;
     using LSP6Utils for *;
     using Address for address;
     using ECDSA for bytes32;
@@ -424,13 +422,17 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             // AddressPermissions:Permissions:<address>
             if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX) {
                 return _getPermissionToSetControllerPermissions(inputDataKey);
-            } else if (
+
                 // AddressPermissions:AllowedCalls:<address>
-                bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX ||
+            } else if (bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
+                return _getPermissionToSetAllowedCalls(inputDataKey, inputDataValue);
+
                 // AddressPermissions:AllowedERC725YKeys:<address>
+            } else if (
                 bytes12(inputDataKey) == _LSP6KEY_ADDRESSPERMISSIONS_AllowedERC725YDataKeys_PREFIX
             ) {
-                return _getPermissionToSetAllowedCallsOrERC725YKeys(inputDataKey, inputDataValue);
+                return _getPermissionToSetAllowedERC725YDataKeys(inputDataKey, inputDataValue);
+
                 // if the first 6 bytes of the input data key are "AddressPermissions:..." but did not match
                 // with anything above, this is not a standard LSP6 permission data key so we revert.
             } else {
@@ -448,15 +450,16 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                  */
                 revert NotRecognisedPermissionKey(inputDataKey);
             }
+
+            // LSP1UniversalReceiverDelegate or LSP1UniversalReceiverDelegate:<typeId>
         } else if (
-            // LSP1UniversalReceiverDelegate
             inputDataKey == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY ||
-            // or LSP1UniversalReceiverDelegate:<typeId>
             bytes12(inputDataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
         ) {
             return _getPermissionToSetLSP1Delegate(inputDataKey);
-        } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
+
             // LSP17Extension:<bytes4>
+        } else if (bytes12(inputDataKey) == _LSP17_EXTENSION_PREFIX) {
             return _getPermissionToSetLSP17Extension(inputDataKey);
         } else {
             return _PERMISSION_SETDATA;
@@ -519,29 +522,51 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     }
 
     /**
-     * @dev retrieve the permission required to either set some AllowedCalls or AllowedERC725YDataKeys.
-     * @param dataKey either `AddressPermissions:AllowedCalls:<controller-address>` or `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.
-     * @param dataValue the updated value for the `dataKey`. MUST be a CompactBytesArray.
+     * @dev retrieve the permission required to set some AllowedCalls for a controller.
+     * @param dataKey `AddressPermissions:AllowedCalls:<controller-address>`.
+     * @param dataValue the updated value for the `dataKey`. MUST be a bytes28[CompactBytesArray] of Allowed Calls.
      * @return either ADD or CHANGE PERMISSIONS.
      */
-    function _getPermissionToSetAllowedCallsOrERC725YKeys(bytes32 dataKey, bytes memory dataValue)
+    function _getPermissionToSetAllowedCalls(bytes32 dataKey, bytes memory dataValue)
         internal
         view
         returns (bytes32)
     {
-        if (!LSP2Utils.isCompactBytesArray(dataValue)) {
-            if (bytes12(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX) {
-                revert InvalidEncodedAllowedCalls(dataValue);
-            } else {
-                revert InvalidEncodedAllowedERC725YDataKeys(dataValue);
-            }
+        if (!LSP6Utils.isCompactBytesArrayOfAllowedCalls(dataValue)) {
+            revert InvalidEncodedAllowedCalls(dataValue);
         }
 
-        // if there is nothing stored under the data key, depending on the data key being set, we are trying to:
-        //  - either ADD a list of restricted calls (standards + address + function selector)
-        //  - or ADD a list of restricted ERC725Y Data Keys.
+        // if there is nothing stored under the Allowed Calls of the controller,
+        // we are trying to ADD a list of restricted calls (standards + address + function selector)
         //
-        // if there are already some data set under one of these data keys, we are trying to CHANGE (= edit) these restrictions.
+        // if there are already some data set under the Allowed Calls of the controller,
+        // we are trying to CHANGE (= edit) these restrictions.
+        return
+            ERC725Y(_target).getData(dataKey).length == 0
+                ? _PERMISSION_ADDPERMISSIONS
+                : _PERMISSION_CHANGEPERMISSIONS;
+    }
+
+    /**
+     * @dev retrieve the permission required to set some AllowedCalls for a controller.
+     * @param dataKey  or `AddressPermissions:AllowedERC725YDataKeys:<controller-address>`.
+     * @param dataValue the updated value for the `dataKey`. MUST be a bytes[CompactBytesArray] of Allowed ERC725Y Data Keys.
+     * @return either ADD or CHANGE PERMISSIONS.
+     */
+    function _getPermissionToSetAllowedERC725YDataKeys(bytes32 dataKey, bytes memory dataValue)
+        internal
+        view
+        returns (bytes32)
+    {
+        if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(dataValue)) {
+            revert InvalidEncodedAllowedERC725YDataKeys(dataValue);
+        }
+
+        // if there is nothing stored under the Allowed ERC725Y Data Keys of the controller,
+        // we are trying to ADD a list of restricted ERC725Y Data Keys.
+        //
+        // if there are already some data set under the Allowed ERC725Y Data Keys of the controller,
+        // we are trying to CHANGE (= edit) these restricted ERC725Y data keys.
         return
             ERC725Y(_target).getData(dataKey).length == 0
                 ? _PERMISSION_ADDPERMISSIONS
@@ -596,7 +621,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP2Utils.isCompactBytesArray(allowedERC725YDataKeysCompacted))
+        if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted))
             revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         /**
@@ -636,8 +661,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     )
                 )
             );
-            // the length of the allowed data key must be under 33 bytes
-            if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
@@ -701,7 +724,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP2Utils.isCompactBytesArray(allowedERC725YDataKeysCompacted))
+        if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted))
             revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         uint256 allowedKeysFound;
@@ -746,9 +769,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
                     )
                 )
             );
-
-            // the length of the allowed data key must be under 33 bytes
-            if (length > 32) revert InvalidCompactByteArrayLengthElement(length);
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
@@ -884,7 +904,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory allowedCalls = ERC725Y(_target).getAllowedCallsFor(from);
         uint256 allowedCallsLength = allowedCalls.length;
 
-        if (allowedCallsLength == 0 || !LSP2Utils.isCompactBytesArray(allowedCalls)) {
+        if (allowedCallsLength == 0 || !LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls)) {
             revert NoCallsAllowed(from);
         }
 

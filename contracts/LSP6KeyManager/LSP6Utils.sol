@@ -82,6 +82,66 @@ library LSP6Utils {
     }
 
     /**
+     * @dev same as LSP2Utils.isCompactBytesArray with the additional requirement that each element must be 28 bytes long.
+     *
+     * @param allowedCallsCompacted a compact bytes array of tuples (bytes4,address,bytes4) to check.
+     * @return true if the value passed is a valid compact bytes array of bytes28 elements according to LSP2, false otherwise.
+     */
+    function isCompactBytesArrayOfAllowedCalls(bytes memory allowedCallsCompacted)
+        internal
+        pure
+        returns (bool)
+    {
+        uint256 pointer;
+
+        while (pointer < allowedCallsCompacted.length) {
+            if (pointer + 1 >= allowedCallsCompacted.length) return false;
+            uint256 elementLength = uint16(
+                bytes2(
+                    abi.encodePacked(
+                        allowedCallsCompacted[pointer],
+                        allowedCallsCompacted[pointer + 1]
+                    )
+                )
+            );
+            // each entries in the allowedCalls (compact) array must be 28 bytes long
+            if (elementLength != 28) return false;
+            pointer += elementLength + 2;
+        }
+        if (pointer == allowedCallsCompacted.length) return true;
+        return false;
+    }
+
+    /**
+     * @dev same as LSP2Utils.isCompactBytesArray with the additional requirement that each element must be from 1 to 32 bytes long.
+     *
+     * @param allowedERC725YDataKeysCompacted a compact bytes array of ERC725Y Data Keys (full bytes32 data keys or bytesN prefix) to check.
+     * @return true if the value passed is a valid compact bytes array of ERC725Y Data Keys, false otherwise.
+     */
+    function isCompactBytesArrayOfAllowedERC725YDataKeys(
+        bytes memory allowedERC725YDataKeysCompacted
+    ) internal pure returns (bool) {
+        uint256 pointer;
+
+        while (pointer < allowedERC725YDataKeysCompacted.length) {
+            if (pointer + 1 >= allowedERC725YDataKeysCompacted.length) return false;
+            uint256 elementLength = uint16(
+                bytes2(
+                    abi.encodePacked(
+                        allowedERC725YDataKeysCompacted[pointer],
+                        allowedERC725YDataKeysCompacted[pointer + 1]
+                    )
+                )
+            );
+            // the length of the allowed data key must be not under 33 bytes and not 0
+            if (elementLength == 0 || elementLength > 32) return false;
+            pointer += elementLength + 2;
+        }
+        if (pointer == allowedERC725YDataKeysCompacted.length) return true;
+        return false;
+    }
+
+    /**
      * @dev use the `setData(bytes32[],bytes[])` via the KeyManager of the target
      * @param keyManagerAddress the address of the KeyManager
      * @param keys the array of data keys
