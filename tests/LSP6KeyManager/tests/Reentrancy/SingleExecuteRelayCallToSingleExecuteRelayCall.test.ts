@@ -298,7 +298,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       await generateSingleRelayPayload(
         context.universalProfile,
         context.keyManager,
-        "ADDPERMISSIONS",
+        "ADDCONTROLLER",
         reentrancyContext.singleReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
@@ -309,7 +309,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
     addPermissionsTestCases.NotAuthorised.forEach((testCase) => {
       it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
-          "ADDPERMISSIONS",
+          "ADDCONTROLLER",
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
@@ -333,9 +333,9 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       });
     });
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, ADDPERMISSIONS", async () => {
+    it("should pass if the reentrant signer has the following permissions: REENTRANCY, ADDCONTROLLER", async () => {
       await loadTestCase(
-        "ADDPERMISSIONS",
+        "ADDCONTROLLER",
         addPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,

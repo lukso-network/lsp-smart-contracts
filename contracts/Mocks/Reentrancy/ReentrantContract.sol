@@ -29,7 +29,7 @@ contract ReentrantContract {
             keccak256(bytes("SomeRandomTextUsed")),
             bytes("SomeRandomTextUsed")
         );
-        _payloads["ADDPERMISSIONS"] = abi.encodeWithSignature(
+        _payloads["ADDCONTROLLER"] = abi.encodeWithSignature(
             "setData(bytes32,bytes)",
             bytes32(
                 bytes.concat(

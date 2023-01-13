@@ -575,7 +575,7 @@ describe("⛽📊 Gas Benchmark", () => {
     let context: LSP6TestContext;
 
     let controllerCanSetData: SignerWithAddress,
-      controllerCanSetDataAndAddPermissions: SignerWithAddress;
+      controllerCanSetDataAndAddController: SignerWithAddress;
 
     const allowedERC725YDataKeys = [
       ethers.utils.keccak256(ethers.utils.toUtf8Bytes("key1")),
@@ -594,15 +594,15 @@ describe("⛽📊 Gas Benchmark", () => {
       context = await buildLSP6TestContext();
 
       controllerCanSetData = context.accounts[1];
-      controllerCanSetDataAndAddPermissions = context.accounts[2];
+      controllerCanSetDataAndAddController = context.accounts[2];
 
       // prettier-ignore
       const permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanSetData.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllerCanSetData.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanSetDataAndAddPermissions.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllerCanSetDataAndAddPermissions.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanSetDataAndAddController.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllerCanSetDataAndAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
         ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000000",
         ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000001",
@@ -614,13 +614,13 @@ describe("⛽📊 Gas Benchmark", () => {
         ALL_PERMISSIONS,
         PERMISSIONS.SETDATA,
         encodeCompactBytesArray(allowedERC725YDataKeys),
-        combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.ADDPERMISSIONS),
+        combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.ADDCONTROLLER),
         encodeCompactBytesArray(allowedERC725YDataKeys),
         //   ethers.utils.hexZeroPad("0x03", 32),
         "0x0000000000000000000000000000000000000000000000000000000000000003",
         context.owner.address,
         controllerCanSetData.address,
-        controllerCanSetDataAndAddPermissions.address,
+        controllerCanSetDataAndAddController.address,
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -883,7 +883,7 @@ describe("⛽📊 Gas Benchmark", () => {
       });
     });
 
-    describe("a controller (EOA) can SETDATA, ADDPERMISSIONS and on 10x AllowedERC725YKeys", () => {
+    describe("a controller (EOA) can SETDATA, ADDCONTROLLER and on 10x AllowedERC725YKeys", () => {
       let benchmarkCasesSetDataRestrictedController: Row[] = [];
 
       it("`setData(bytes32,bytes)` -> updates 1x data key", async () => {
@@ -997,7 +997,7 @@ describe("⛽📊 Gas Benchmark", () => {
           );
 
         const tx = await context.keyManager
-          .connect(controllerCanSetDataAndAddPermissions)
+          .connect(controllerCanSetDataAndAddController)
           ["execute(bytes)"](setDataPayload);
         const receipt = await tx.wait();
 
