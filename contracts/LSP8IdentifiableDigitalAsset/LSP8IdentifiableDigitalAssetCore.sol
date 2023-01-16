@@ -52,7 +52,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() public view virtual returns (uint256) {
         return _existingTokens;
     }
 
@@ -61,14 +61,14 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function balanceOf(address tokenOwner) public view returns (uint256) {
+    function balanceOf(address tokenOwner) public view virtual returns (uint256) {
         return _ownedTokens[tokenOwner].length();
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenOwnerOf(bytes32 tokenId) public view returns (address) {
+    function tokenOwnerOf(bytes32 tokenId) public view virtual returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
 
         if (tokenOwner == address(0)) {
@@ -81,7 +81,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenIdsOf(address tokenOwner) public view returns (bytes32[] memory) {
+    function tokenIdsOf(address tokenOwner) public view virtual returns (bytes32[] memory) {
         return _ownedTokens[tokenOwner].values();
     }
 
@@ -261,7 +261,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
     /**
      * @dev When `tokenId` does not exist then revert with an error.
      */
-    function _existsOrError(bytes32 tokenId) internal view {
+    function _existsOrError(bytes32 tokenId) internal view virtual {
         if (!_exists(tokenId)) {
             revert LSP8NonExistentTokenId(tokenId);
         }
