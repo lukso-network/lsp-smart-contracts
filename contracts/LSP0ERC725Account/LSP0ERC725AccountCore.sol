@@ -26,7 +26,10 @@ import "@erc725/smart-contracts/contracts/errors.sol";
 import {
     _INTERFACEID_LSP0,
     _INTERFACEID_ERC1271,
-    _ERC1271_FAILVALUE
+    _ERC1271_FAILVALUE,
+    _TYPEID_LSP0_OwnershipTransferStarted,
+    _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+    _TYPEID_LSP0_OwnershipTransferred_RecipientNotification
 } from "../LSP0ERC725Account/LSP0Constants.sol";
 import {
     _INTERFACEID_LSP1,
@@ -299,5 +302,58 @@ abstract contract LSP0ERC725AccountCore is
             dataKey,
             dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
         );
+    }
+
+    // --- LSP14 URD Hooks
+
+    /**
+     * @dev Calls the universalReceiver function of the sender's Universal Profile when ownerhsip transfer starts
+     * if supports LSP1 InterfaceId
+     */
+    function _notifyLSP1SenderOnTransferStart(address notifiedContract, bytes memory data)
+        internal
+        virtual
+        override
+    {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
+                _TYPEID_LSP0_OwnershipTransferStarted,
+                data
+            );
+        }
+    }
+
+    /**
+     * @dev Calls the universalReceiver function of the sender's Universal Profile when ownerhsip transfer is complete
+     * if supports LSP1 InterfaceId
+     */
+    function _notifyLSP1SenderOnTransferCompletion(address notifiedContract, bytes memory data)
+        internal
+        virtual
+        override
+    {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
+                _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+                data
+            );
+        }
+    }
+
+    /**
+     * @dev Calls the universalReceiver function of the recipient's Universal Profile when ownerhsip transfer is complete
+     * if supports LSP1 InterfaceId
+     */
+    function _notifyLSP1RecipientOnTransferCompletion(address notifiedContract, bytes memory data)
+        internal
+        virtual
+        override
+    {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
+                _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
+                data
+            );
+        }
     }
 }
