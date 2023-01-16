@@ -220,7 +220,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         string memory plainSecret,
         bytes32 newHash,
         address[] memory guardians
-    ) internal view {
+    ) internal view virtual {
         if (recoverer == address(0)) revert AddressZeroNotAllowed();
         uint256 callerSelections;
 

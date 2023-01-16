@@ -110,7 +110,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         address keyManager,
         bytes32 notifierMapKey,
         bytes4 interfaceID
-    ) internal returns (bytes memory result) {
+    ) internal virtual returns (bytes memory result) {
         // if it's a token transfer (LSP7/LSP8)
         if (typeId != _TYPEID_LSP14_OwnershipTransferred_RecipientNotification) {
             // if the amount sent is 0, then do not update the keys
@@ -140,7 +140,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         address keyManager,
         bytes32 notifierMapKey,
         bytes memory notifierMapValue
-    ) internal returns (bytes memory result) {
+    ) internal virtual returns (bytes memory result) {
         // if it's a token transfer (LSP7/LSP8)
         if (typeId != _TYPEID_LSP14_OwnershipTransferred_SenderNotification) {
             // if the amount sent is not the full balance, then do not update the keys

@@ -76,7 +76,13 @@ abstract contract LSP0ERC725AccountCore is
      *
      * If no extension is stored, returns the address(0)
      */
-    function _getExtension(bytes4 functionSelector) internal view override returns (address) {
+    function _getExtension(bytes4 functionSelector)
+        internal
+        view
+        virtual
+        override
+        returns (address)
+    {
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector

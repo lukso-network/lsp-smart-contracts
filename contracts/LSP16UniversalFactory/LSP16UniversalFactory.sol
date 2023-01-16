@@ -207,7 +207,7 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes memory initializeCallData,
         bytes32 providedSalt
-    ) internal pure returns (bytes32) {
+    ) internal pure virtual returns (bytes32) {
         if (initializable) {
             return keccak256(abi.encodePacked(initializable, initializeCallData, providedSalt));
         } else {
@@ -219,7 +219,7 @@ contract LSP16UniversalFactory {
      * @dev Verifies that the contract created was initialized correctly
      * Bubble the revert reason if present, revert with `CannotInitializeContract` otherwise
      */
-    function _verifyCallResult(bool success, bytes memory returndata) internal pure {
+    function _verifyCallResult(bool success, bytes memory returndata) internal pure virtual {
         if (!success) {
             // Look for revert reason and bubble it up if present
             if (returndata.length != 0) {
