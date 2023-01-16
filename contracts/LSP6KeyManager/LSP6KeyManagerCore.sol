@@ -115,7 +115,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(bytes calldata payload) public payable returns (bytes memory) {
+    function execute(bytes calldata payload) public payable virtual returns (bytes memory) {
         return _execute(msg.value, payload);
     }
 
@@ -125,6 +125,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function execute(uint256[] calldata values, bytes[] calldata payloads)
         public
         payable
+        virtual
         returns (bytes[] memory)
     {
         if (values.length != payloads.length) {
@@ -156,7 +157,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory signature,
         uint256 nonce,
         bytes calldata payload
-    ) public payable returns (bytes memory) {
+    ) public payable virtual returns (bytes memory) {
         return _executeRelayCall(signature, nonce, msg.value, payload);
     }
 
@@ -168,7 +169,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256[] calldata nonces,
         uint256[] calldata values,
         bytes[] calldata payloads
-    ) public payable returns (bytes[] memory) {
+    ) public payable virtual returns (bytes[] memory) {
         if (
             signatures.length != nonces.length ||
             nonces.length != values.length ||
@@ -195,7 +196,11 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         return results;
     }
 
-    function _execute(uint256 msgValue, bytes calldata payload) internal returns (bytes memory) {
+    function _execute(uint256 msgValue, bytes calldata payload)
+        internal
+        virtual
+        returns (bytes memory)
+    {
         _nonReentrantBefore(msg.sender);
         _verifyPermissions(msg.sender, payload);
         bytes memory result = _executePayload(msgValue, payload);
@@ -208,7 +213,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 nonce,
         uint256 msgValue,
         bytes calldata payload
-    ) internal returns (bytes memory) {
+    ) internal virtual returns (bytes memory) {
         bytes memory encodedMessage = abi.encodePacked(
             LSP6_VERSION,
             block.chainid,
@@ -246,6 +251,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      */
     function _executePayload(uint256 msgValue, bytes calldata payload)
         internal
+        virtual
         returns (bytes memory)
     {
         emit Executed(bytes4(payload), msgValue);
@@ -270,7 +276,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param from caller address
      * @param idx (channel id + nonce within the channel)
      */
-    function _isValidNonce(address from, uint256 idx) internal view returns (bool) {
+    function _isValidNonce(address from, uint256 idx) internal view virtual returns (bool) {
         // idx % (1 << 128) = nonce
         // (idx >> 128) = channel
         // equivalent to: return (nonce == _nonceStore[_from][channel]
@@ -282,7 +288,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @param from either the caller of `execute(...)` or the signer of `executeRelayCall(...)`.
      * @param payload the payload to execute on the `target`.
      */
-    function _verifyPermissions(address from, bytes calldata payload) internal view {
+    function _verifyPermissions(address from, bytes calldata payload) internal view virtual {
         bytes32 permissions = ERC725Y(_target).getPermissionsFor(from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
@@ -328,7 +334,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes32 controllerPermissions,
         bytes32 inputDataKey,
         bytes memory inputDataValue
-    ) internal view {
+    ) internal view virtual {
         bytes32 requiredPermission = _getPermissionRequiredToSetDataKey(
             inputDataKey,
             inputDataValue
@@ -364,7 +370,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes32 controllerPermissions,
         bytes32[] memory inputDataKeys,
         bytes[] memory inputDataValues
-    ) internal view {
+    ) internal view virtual {
         bool isSettingERC725YKeys;
         bool[] memory validatedInputDataKeys = new bool[](inputDataKeys.length);
 
@@ -413,6 +419,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _getPermissionRequiredToSetDataKey(bytes32 inputDataKey, bytes memory inputDataValue)
         internal
         view
+        virtual
         returns (bytes32)
     {
         // AddressPermissions[] or AddressPermissions[index]
@@ -475,6 +482,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _getPermissionToSetPermissionsArray(bytes32 inputDataKey, bytes memory inputDataValue)
         internal
         view
+        virtual
         returns (bytes32)
     {
         bytes memory currentValue = ERC725Y(_target).getData(inputDataKey);
@@ -507,6 +515,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _getPermissionToSetControllerPermissions(bytes32 inputPermissionDataKey)
         internal
         view
+        virtual
         returns (bytes32)
     {
         return
@@ -526,6 +535,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _getPermissionToSetAllowedCallsOrERC725YKeys(bytes32 dataKey, bytes memory dataValue)
         internal
         view
+        virtual
         returns (bytes32)
     {
         if (!LSP2Utils.isCompactBytesArray(dataValue)) {
@@ -557,6 +567,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _getPermissionToSetLSP1Delegate(bytes32 lsp1DelegateDataKey)
         internal
         view
+        virtual
         returns (bytes32)
     {
         return
@@ -573,6 +584,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _getPermissionToSetLSP17Extension(bytes32 lsp17ExtensionDataKey)
         internal
         view
+        virtual
         returns (bytes32)
     {
         return
@@ -591,7 +603,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         address controllerAddress,
         bytes32 inputDataKey,
         bytes memory allowedERC725YDataKeysCompacted
-    ) internal pure {
+    ) internal pure virtual {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
@@ -696,7 +708,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes32[] memory inputDataKeys,
         bytes memory allowedERC725YDataKeysCompacted,
         bool[] memory validatedInputKeys
-    ) internal pure {
+    ) internal pure virtual {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
@@ -827,7 +839,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         address from,
         bytes32 permissions,
         bytes calldata payload
-    ) internal view {
+    ) internal view virtual {
         // MUST be one of the ERC725X operation types.
         uint256 operationType = uint256(bytes32(payload[4:36]));
 
@@ -872,7 +884,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         _verifyAllowedCall(from, payload);
     }
 
-    function _verifyAllowedCall(address from, bytes calldata payload) internal view {
+    function _verifyAllowedCall(address from, bytes calldata payload) internal view virtual {
         // CHECK for ALLOWED CALLS
         address to = address(bytes20(payload[48:68]));
 
@@ -927,6 +939,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _extractPermissionFromOperation(uint256 operationType)
         internal
         pure
+        virtual
         returns (bytes32 permissionsRequired)
     {
         if (operationType == OPERATION_0_CALL) return _PERMISSION_CALL;
@@ -942,6 +955,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _extractSuperPermissionFromOperation(uint256 operationType)
         internal
         pure
+        virtual
         returns (bytes32 superPermission)
     {
         if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
@@ -959,7 +973,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         address from,
         bytes32 addressPermissions,
         bytes32 permissionRequired
-    ) internal pure {
+    ) internal pure virtual {
         if (!addressPermissions.hasPermission(permissionRequired)) {
             string memory permissionErrorString = _getPermissionName(permissionRequired);
             revert NotAuthorised(from, permissionErrorString);
@@ -972,6 +986,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     function _getPermissionName(bytes32 permission)
         internal
         pure
+        virtual
         returns (string memory errorMessage)
     {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
@@ -996,7 +1011,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     /**
      * @dev Initialise _reentrancyStatus to _NOT_ENTERED.
      */
-    function _setupLSP6ReentrancyGuard() internal {
+    function _setupLSP6ReentrancyGuard() internal virtual {
         _reentrancyStatus = false;
     }
 
@@ -1005,7 +1020,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * the status is `_ENTERED` in order to revert the call unless the caller has the REENTRANCY permission
      * Used in the beginning of the `nonReentrant` modifier, before the method execution starts.
      */
-    function _nonReentrantBefore(address from) private {
+    function _nonReentrantBefore(address from) internal virtual {
         if (_reentrancyStatus) {
             // CHECK the caller has REENTRANCY permission
             _requirePermissions(
@@ -1022,7 +1037,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
      * @dev Resets the status to `_NOT_ENTERED`
      * Used in the end of the `nonReentrant` modifier after the method execution is terminated
      */
-    function _nonReentrantAfter() private {
+    function _nonReentrantAfter() internal virtual {
         // By storing the original value once again, a refund is triggered (see
         // https://eips.ethereum.org/EIPS/eip-2200)
         _reentrancyStatus = false;
