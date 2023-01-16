@@ -12,7 +12,7 @@ import {
     _PERMISSION_CALL,
     _PERMISSION_TRANSFERVALUE,
     _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
-    _PERMISSION_ADDPERMISSIONS,
+    _PERMISSION_ADDCONTROLLER,
     _PERMISSION_SETDATA
 } from "../../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../UniversalProfileTestsHelper.sol";
@@ -60,7 +60,7 @@ contract SetDataRestrictedController is UniversalProfileTestsHelper {
     // give permissions to a controller (AddressPermissions[] + AddressPermissions[index] + AddressPermissions:Permissions:)
     function testGivePermissionsToController() public {
         bytes32[] memory restrictedControllerPermissions = new bytes32[](1);
-        restrictedControllerPermissions[0] = _PERMISSION_ADDPERMISSIONS;
+        restrictedControllerPermissions[0] = _PERMISSION_ADDCONTROLLER;
 
         givePermissionsToController(
             mainUniversalProfile,
@@ -114,7 +114,7 @@ contract SetDataRestrictedController is UniversalProfileTestsHelper {
     // restrict a controller to some specific ERC725Y Data Keys
     function testRestrictControllerToERC725YKeys() public {
         bytes32[] memory restrictedControllerPermissions = new bytes32[](1);
-        restrictedControllerPermissions[0] = _PERMISSION_ADDPERMISSIONS;
+        restrictedControllerPermissions[0] = _PERMISSION_ADDCONTROLLER;
 
         givePermissionsToController(
             mainUniversalProfile,

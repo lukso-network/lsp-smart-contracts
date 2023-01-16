@@ -1,5 +1,5 @@
 export * from "./PermissionChangeOwner.test";
-export * from "./PermissionChangeAddPermissions.test";
+export * from "./PermissionChangeAddController.test";
 export * from "./PermissionChangeAddExtensions.test";
 export * from "./PermissionChangeAddURD.test";
 export * from "./PermissionSetData.test";

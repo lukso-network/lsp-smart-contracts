@@ -240,7 +240,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       await generateBatchRelayPayload(
         context.universalProfile,
         context.keyManager,
-        "ADDPERMISSIONS",
+        "ADDCONTROLLER",
         reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
@@ -251,7 +251,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
     addPermissionsTestCases.NotAuthorised.forEach((testCase) => {
       it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
-          "ADDPERMISSIONS",
+          "ADDCONTROLLER",
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
@@ -271,9 +271,9 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       });
     });
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, ADDPERMISSIONS", async () => {
+    it("should pass if the reentrant signer has the following permissions: REENTRANCY, ADDCONTROLLER", async () => {
       await loadTestCase(
-        "ADDPERMISSIONS",
+        "ADDCONTROLLER",
         addPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,

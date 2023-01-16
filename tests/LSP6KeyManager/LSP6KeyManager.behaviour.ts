@@ -6,7 +6,7 @@ import { INTERFACE_IDS } from "../../constants";
 
 import {
   shouldBehaveLikePermissionChangeOwner,
-  shouldBehaveLikePermissionChangeOrAddPermissions,
+  shouldBehaveLikePermissionChangeOrAddController,
   shouldBehaveLikePermissionChangeOrAddExtensions,
   shouldBehaveLikePermissionChangeOrAddURD,
   shouldBehaveLikePermissionSetData,
@@ -42,7 +42,7 @@ export const shouldBehaveLikeLSP6 = (
   });
 
   describe("CHANGE / ADD permissions", () => {
-    shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
+    shouldBehaveLikePermissionChangeOrAddController(buildContext);
   });
 
   describe("CHANGE / ADD extensions", () => {
