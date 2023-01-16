@@ -7,6 +7,8 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 
 // constants
+import "../LSP0ERC725Account/LSP0Constants.sol";
+import "../LSP9Vault/LSP9Constants.sol";
 import "../LSP14Ownable2Step/LSP14Constants.sol";
 
 /**
@@ -28,7 +30,11 @@ contract UPWithInstantAcceptOwnership is LSP0ERC725AccountCore {
         override
         returns (bytes memory)
     {
-        if (typeId == _TYPEID_LSP14_OwnershipTransferStarted) {
+        if (
+            typeId == _TYPEID_LSP0_OwnershipTransferStarted ||
+            typeId == _TYPEID_LSP9_OwnershipTransferStarted ||
+            typeId == _TYPEID_LSP14_OwnershipTransferStarted
+        ) {
             LSP14Ownable2Step(msg.sender).acceptOwnership();
         }
         return super.universalReceiver(typeId, receivedData);
