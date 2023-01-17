@@ -542,7 +542,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // we are trying to CHANGE (= edit) these restrictions.
         return
             ERC725Y(_target).getData(dataKey).length == 0
-                ? _PERMISSION_ADDPERMISSIONS
+                ? _PERMISSION_ADDCONTROLLER
                 : _PERMISSION_CHANGEPERMISSIONS;
     }
 
