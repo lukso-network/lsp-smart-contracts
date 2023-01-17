@@ -60,18 +60,12 @@ library LSP1Utils {
             interfaceId = _INTERFACEID_LSP8;
             isReceiving = typeId == _TYPEID_LSP8_TOKENSRECIPIENT ? true : false;
         } else if (
-            typeId == _TYPEID_LSP0_OwnershipTransferred_SenderNotification ||
-            typeId == _TYPEID_LSP0_OwnershipTransferred_RecipientNotification ||
             typeId == _TYPEID_LSP9_OwnershipTransferred_SenderNotification ||
-            typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification ||
-            typeId == _TYPEID_LSP14_OwnershipTransferred_SenderNotification ||
-            typeId == _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
+            typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
         ) {
             mapPrefix = _LSP10_VAULTS_MAP_KEY_PREFIX;
             interfaceId = _INTERFACEID_LSP9;
-            isReceiving = (typeId == _TYPEID_LSP0_OwnershipTransferred_RecipientNotification ||
-                typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification ||
-                typeId == _TYPEID_LSP14_OwnershipTransferred_RecipientNotification)
+            isReceiving = (typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification)
                 ? true
                 : false;
         } else {
