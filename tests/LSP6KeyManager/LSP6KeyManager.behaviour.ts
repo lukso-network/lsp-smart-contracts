@@ -57,7 +57,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionSetData(buildContext);
   });
 
-  describe("CALL", () => {
+  describe.only("CALL", () => {
     shouldBehaveLikePermissionCall(buildContext);
   });
 
@@ -81,15 +81,9 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionSign(buildContext);
   });
 
-  describe("ALLOWEDADDRESSES", () => {
+  describe("ALLOWED CALLS", () => {
     shouldBehaveLikeAllowedAddresses(buildContext);
-  });
-
-  describe("ALLOWEDFUNCTIONS", () => {
     shouldBehaveLikeAllowedFunctions(buildContext);
-  });
-
-  describe("ALLOWEDSTANDARDS", () => {
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 

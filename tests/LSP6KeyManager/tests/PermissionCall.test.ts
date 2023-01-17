@@ -97,6 +97,81 @@ export const shouldBehaveLikePermissionCall = (
         const result = await targetContract.callStatic.getName();
         expect(result).to.equal(argument);
       });
+
+      describe("when calling a function that returns some value", () => {
+        it("should return the value to the Key Manager <- UP <- targetContract.getName()", async () => {
+          let expectedName = await targetContract.callStatic.getName();
+
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("getName");
+
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
+
+          let result = await context.keyManager
+            .connect(context.owner)
+            .callStatic["execute(bytes)"](executePayload);
+
+          let [decodedResult] = abiCoder.decode(["string"], result);
+          expect(decodedResult).to.equal(expectedName);
+        });
+
+        it("Should return the value to the Key Manager <- UP <- targetContract.getNumber()", async () => {
+          let expectedNumber = await targetContract.callStatic.getNumber();
+
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("getNumber");
+
+          let executePayload =
+            context.universalProfile.interface.encodeFunctionData(
+              "execute(uint256,address,uint256,bytes)",
+              [
+                OPERATION_TYPES.CALL,
+                targetContract.address,
+                0,
+                targetContractPayload,
+              ]
+            );
+
+          let result = await context.keyManager
+            .connect(context.owner)
+            .callStatic["execute(bytes)"](executePayload);
+
+          let [decodedResult] = abiCoder.decode(["uint256"], result);
+          expect(decodedResult).to.equal(expectedNumber);
+        });
+      });
+
+      describe("when calling a function that reverts", () => {
+        it("should revert", async () => {
+          let targetContractPayload =
+            targetContract.interface.encodeFunctionData("revertCall");
+
+          let payload = context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              targetContract.address,
+              0,
+              targetContractPayload,
+            ]
+          );
+
+          await expect(
+            context.keyManager["execute(bytes)"](payload)
+          ).to.be.revertedWith(
+            "TargetContract:revertCall: this function has reverted!"
+          );
+        });
+      });
     });
 
     describe("when caller has permission CALL", () => {
@@ -169,81 +244,6 @@ export const shouldBehaveLikePermissionCall = (
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(addressCannotMakeCall.address, "CALL");
-      });
-    });
-
-    describe("when calling a function that returns some value", () => {
-      it("should return the value to the Key Manager <- UP <- targetContract.getName()", async () => {
-        let expectedName = await targetContract.callStatic.getName();
-
-        let targetContractPayload =
-          targetContract.interface.encodeFunctionData("getName");
-
-        let executePayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
-
-        let result = await context.keyManager
-          .connect(context.owner)
-          .callStatic["execute(bytes)"](executePayload);
-
-        let [decodedResult] = abiCoder.decode(["string"], result);
-        expect(decodedResult).to.equal(expectedName);
-      });
-
-      it("Should return the value to the Key Manager <- UP <- targetContract.getNumber()", async () => {
-        let expectedNumber = await targetContract.callStatic.getNumber();
-
-        let targetContractPayload =
-          targetContract.interface.encodeFunctionData("getNumber");
-
-        let executePayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
-              OPERATION_TYPES.CALL,
-              targetContract.address,
-              0,
-              targetContractPayload,
-            ]
-          );
-
-        let result = await context.keyManager
-          .connect(context.owner)
-          .callStatic["execute(bytes)"](executePayload);
-
-        let [decodedResult] = abiCoder.decode(["uint256"], result);
-        expect(decodedResult).to.equal(expectedNumber);
-      });
-    });
-
-    describe("when calling a function that reverts", () => {
-      it("should revert", async () => {
-        let targetContractPayload =
-          targetContract.interface.encodeFunctionData("revertCall");
-
-        let payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            targetContract.address,
-            0,
-            targetContractPayload,
-          ]
-        );
-
-        await expect(
-          context.keyManager["execute(bytes)"](payload)
-        ).to.be.revertedWith(
-          "TargetContract:revertCall: this function has reverted!"
-        );
       });
     });
   });
