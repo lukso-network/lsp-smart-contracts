@@ -95,7 +95,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
   let addressCanChangeOwner: SignerWithAddress;
   let addressCanChangePermissions: SignerWithAddress;
-  let addressCanAddPermissions: SignerWithAddress;
+  let addressCanAddController: SignerWithAddress;
   let addressCanSetData: SignerWithAddress;
   let addressCanSign: SignerWithAddress;
 
@@ -107,7 +107,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
     addressCanChangeOwner = context.accounts[1];
     addressCanChangePermissions = context.accounts[2];
-    addressCanAddPermissions = context.accounts[3];
+    addressCanAddController = context.accounts[3];
     addressCanSetData = context.accounts[4];
     addressCanSign = context.accounts[5];
   });
@@ -471,14 +471,14 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       });
     });
 
-    describe("testing ADDPERMISSIONS permission", () => {
+    describe("testing ADDCONTROLLER permission", () => {
       before(async () => {
         await addControllerWithPermission(
           context,
-          addressCanAddPermissions,
+          addressCanAddController,
           ARRAY_LENGTH.FOUR,
           "0".repeat(31) + "3",
-          PERMISSIONS.ADDPERMISSIONS
+          PERMISSIONS.ADDCONTROLLER
         );
       });
 
@@ -505,18 +505,18 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanChangePermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            addressCanAddPermissions.address.substring(2),
+            addressCanAddController.address.substring(2),
         ];
         const values = [
           ARRAY_LENGTH.FOUR,
           context.owner.address,
           addressCanChangeOwner.address,
           addressCanChangePermissions.address,
-          addressCanAddPermissions.address,
+          addressCanAddController.address,
           ALL_PERMISSIONS,
           PERMISSIONS.CHANGEOWNER,
           PERMISSIONS.CHANGEPERMISSIONS,
-          PERMISSIONS.ADDPERMISSIONS,
+          PERMISSIONS.ADDCONTROLLER,
         ];
 
         expect(await context.token["getData(bytes32[])"](keys)).to.deep.equal(
@@ -535,7 +535,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
 
         await context.keyManager
-          .connect(addressCanAddPermissions)
+          .connect(addressCanAddController)
           ["execute(bytes)"](payload);
 
         expect(await context.token["getData(bytes32)"](key)).to.equal(value);
@@ -553,11 +553,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         await expect(
           context.keyManager
-            .connect(addressCanAddPermissions)
+            .connect(addressCanAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCanAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(addressCanAddController.address, "CHANGEPERMISSIONS");
       });
 
       after(async () => {
@@ -623,7 +623,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanChangePermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            addressCanAddPermissions.address.substring(2),
+            addressCanAddController.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanSetData.address.substring(2),
         ];
@@ -632,12 +632,12 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           context.owner.address,
           addressCanChangeOwner.address,
           addressCanChangePermissions.address,
-          addressCanAddPermissions.address,
+          addressCanAddController.address,
           addressCanSetData.address,
           ALL_PERMISSIONS,
           PERMISSIONS.CHANGEOWNER,
           PERMISSIONS.CHANGEPERMISSIONS,
-          PERMISSIONS.ADDPERMISSIONS,
+          PERMISSIONS.ADDCONTROLLER,
           PERMISSIONS.SETDATA,
         ];
 
@@ -837,7 +837,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanChangePermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            addressCanAddPermissions.address.substring(2),
+            addressCanAddController.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanSetData.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -848,13 +848,13 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           context.owner.address,
           addressCanChangeOwner.address,
           addressCanChangePermissions.address,
-          addressCanAddPermissions.address,
+          addressCanAddController.address,
           addressCanSetData.address,
           addressCanSign.address,
           ALL_PERMISSIONS,
           PERMISSIONS.CHANGEOWNER,
           PERMISSIONS.CHANGEPERMISSIONS,
-          PERMISSIONS.ADDPERMISSIONS,
+          PERMISSIONS.ADDCONTROLLER,
           PERMISSIONS.SETDATA,
           PERMISSIONS.SIGN,
         ];

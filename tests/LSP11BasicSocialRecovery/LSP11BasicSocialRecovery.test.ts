@@ -46,7 +46,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
         );
 
       const lsp11Permissions = combinePermissions(
-        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.CHANGEPERMISSIONS
       );
 
@@ -121,7 +121,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
       );
 
       const lsp11Permissions = combinePermissions(
-        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.CHANGEPERMISSIONS
       );
 

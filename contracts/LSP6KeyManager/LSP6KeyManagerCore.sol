@@ -488,7 +488,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
 
             return
                 newLength > uint256(bytes32(currentValue))
-                    ? _PERMISSION_ADDPERMISSIONS
+                    ? _PERMISSION_ADDCONTROLLER
                     : _PERMISSION_CHANGEPERMISSIONS;
         }
 
@@ -499,8 +499,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             revert AddressPermissionArrayIndexValueNotAnAddress(inputDataKey, inputDataValue);
         }
 
-        return
-            currentValue.length == 0 ? _PERMISSION_ADDPERMISSIONS : _PERMISSION_CHANGEPERMISSIONS;
+        return currentValue.length == 0 ? _PERMISSION_ADDCONTROLLER : _PERMISSION_CHANGEPERMISSIONS;
     }
 
     /**
@@ -517,7 +516,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             // if there is nothing stored under the data key, we are trying to ADD a new controller.
             // if there are already some permissions set under the data key, we are trying to CHANGE the permissions of a controller.
             bytes32(ERC725Y(_target).getData(inputPermissionDataKey)) == bytes32(0)
-                ? _PERMISSION_ADDPERMISSIONS
+                ? _PERMISSION_ADDCONTROLLER
                 : _PERMISSION_CHANGEPERMISSIONS;
     }
 
@@ -569,7 +568,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // we are trying to CHANGE (= edit) these restricted ERC725Y data keys.
         return
             ERC725Y(_target).getData(dataKey).length == 0
-                ? _PERMISSION_ADDPERMISSIONS
+                ? _PERMISSION_ADDCONTROLLER
                 : _PERMISSION_CHANGEPERMISSIONS;
     }
 
@@ -997,7 +996,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
         if (permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
-        if (permission == _PERMISSION_ADDPERMISSIONS) return "ADDPERMISSIONS";
+        if (permission == _PERMISSION_ADDCONTROLLER) return "ADDCONTROLLER";
         if (permission == _PERMISSION_ADDEXTENSIONS) return "ADDEXTENSIONS";
         if (permission == _PERMISSION_CHANGEEXTENSIONS) return "CHANGEEXTENSIONS";
         if (permission == _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE)

@@ -51,7 +51,7 @@ export type SetDataTestCase = {
   missingPermission: string;
 };
 
-//Other permissions, e.g.: ADDPERMISSIONS, CHANGEPERMISSIONS, ADDUNIVERSALRECEIVERDELEGATE, CHANGEUNIVERSALRECEIVERDELEGATE
+//Other permissions, e.g.: ADDCONTROLLER, CHANGEPERMISSIONS, ADDUNIVERSALRECEIVERDELEGATE, CHANGEUNIVERSALRECEIVERDELEGATE
 export type SimplePermissionTestCase = {
   permissionsText: string;
   permissions: string;
@@ -204,19 +204,19 @@ export const addPermissionsTestCases = {
     {
       permissionsText: "REENTRANCY",
       permissions: PERMISSIONS.REENTRANCY,
-      missingPermission: "ADDPERMISSIONS",
+      missingPermission: "ADDCONTROLLER",
     },
     {
-      permissionsText: "ADDPERMISSIONS",
-      permissions: PERMISSIONS.ADDPERMISSIONS,
+      permissionsText: "ADDCONTROLLER",
+      permissions: PERMISSIONS.ADDCONTROLLER,
       missingPermission: "REENTRANCY",
     },
   ],
   ValidCase: {
-    permissionsText: "REENTRANCY, ADDPERMISSIONS",
+    permissionsText: "REENTRANCY, ADDCONTROLLER",
     permissions: combinePermissions(
       PERMISSIONS.REENTRANCY,
-      PERMISSIONS.ADDPERMISSIONS
+      PERMISSIONS.ADDCONTROLLER
     ),
     missingPermission: "",
   },
@@ -456,7 +456,7 @@ export const generateSingleRelayPayload = async (
         ]
       );
       break;
-    case "ADDPERMISSIONS":
+    case "ADDCONTROLLER":
       payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [
@@ -546,7 +546,7 @@ export const generateBatchRelayPayload = async (
         ]
       );
       break;
-    case "ADDPERMISSIONS":
+    case "ADDCONTROLLER":
       payload = universalProfile.interface.encodeFunctionData(
         "setData(bytes32,bytes)",
         [

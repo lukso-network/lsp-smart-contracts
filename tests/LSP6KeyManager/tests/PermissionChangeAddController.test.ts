@@ -21,13 +21,13 @@ import {
   encodeCompactBytesArray,
 } from "../../utils/helpers";
 
-export const shouldBehaveLikePermissionChangeOrAddPermissions = (
+export const shouldBehaveLikePermissionChangeOrAddController = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
 
   describe("setting permissions keys (CHANGE vs ADD Permissions)", () => {
-    let canOnlyAddPermissions: SignerWithAddress,
+    let canOnlyAddController: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress,
       canOnlySetData: SignerWithAddress,
       // addresses being used to CHANGE (= edit) permissions
@@ -40,7 +40,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     beforeEach(async () => {
       context = await buildContext();
 
-      canOnlyAddPermissions = context.accounts[1];
+      canOnlyAddController = context.accounts[1];
       canOnlyChangePermissions = context.accounts[2];
       canOnlySetData = context.accounts[3];
       addressToEditPermissions = context.accounts[4];
@@ -50,7 +50,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddPermissions.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangePermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -63,7 +63,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
       let permissionValues = [
         ALL_PERMISSIONS,
-        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.CHANGEPERMISSIONS,
         PERMISSIONS.SETDATA,
         // placeholder permission
@@ -91,7 +91,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       permissionArrayValues = [
         ethers.utils.hexZeroPad(ethers.utils.hexlify(6), 32),
         context.owner.address,
-        canOnlyAddPermissions.address,
+        canOnlyAddController.address,
         canOnlyChangePermissions.address,
         canOnlySetData.address,
         addressToEditPermissions.address,
@@ -391,7 +391,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
       });
 
-      describe("when caller is an address with permission ADDPERMISSIONS", () => {
+      describe("when caller is an address with permission ADDCONTROLLER", () => {
         it("should be allowed to ADD a permission", async () => {
           let newController = ethers.Wallet.createRandom();
 
@@ -407,7 +407,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
 
           await context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload);
 
           // prettier-ignore
@@ -429,11 +429,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+            .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
         });
 
         describe("when editing `AddressPermissions[]` array length", () => {
@@ -447,7 +447,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             );
 
             await context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload);
 
             // prettier-ignore
@@ -466,14 +466,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddPermissions)
+                .connect(canOnlyAddController)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+              .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
           });
         });
 
@@ -490,7 +490,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             );
 
             await context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload);
 
             const result = await context.universalProfile["getData(bytes32)"](
@@ -514,7 +514,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddPermissions)
+                .connect(canOnlyAddController)
                 ["execute(bytes)"](setupPayload)
             )
               .to.be.revertedWithCustomError(
@@ -540,7 +540,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddPermissions)
+                .connect(canOnlyAddController)
                 ["execute(bytes)"](setupPayload)
             )
               .to.be.revertedWithCustomError(
@@ -568,14 +568,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddPermissions)
+                .connect(canOnlyAddController)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+              .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
           });
         });
 
@@ -594,14 +594,14 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddPermissions)
+                .connect(canOnlyAddController)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+              .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
           });
         });
 
@@ -625,7 +625,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
             await expect(
               context.keyManager
-                .connect(canOnlyAddPermissions)
+                .connect(canOnlyAddController)
                 ["execute(bytes)"](payload)
             )
               .to.be.revertedWithCustomError(
@@ -658,7 +658,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
+            .withArgs(canOnlyChangePermissions.address, "ADDCONTROLLER");
         });
 
         it("should not be allowed to set (= ADD) a permission for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
@@ -678,7 +678,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
+            .withArgs(canOnlyChangePermissions.address, "ADDCONTROLLER");
         });
 
         it("should be allowed to CHANGE a permission", async () => {
@@ -721,7 +721,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
+              .withArgs(canOnlyChangePermissions.address, "ADDCONTROLLER");
           });
 
           it("should be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
@@ -764,7 +764,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
+              .withArgs(canOnlyChangePermissions.address, "ADDCONTROLLER");
           });
         });
 
@@ -920,7 +920,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySetData.address, "ADDPERMISSIONS");
+            .withArgs(canOnlySetData.address, "ADDCONTROLLER");
         });
 
         it("should not be allowed to set (= ADD) a permission for an address that has 32 x 0 bytes (0x0000...0000) as permission value", async () => {
@@ -940,7 +940,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySetData.address, "ADDPERMISSIONS");
+            .withArgs(canOnlySetData.address, "ADDCONTROLLER");
         });
 
         it("should not be allowed to CHANGE a permission", async () => {
@@ -983,7 +983,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canOnlySetData.address, "ADDPERMISSIONS");
+              .withArgs(canOnlySetData.address, "ADDCONTROLLER");
           });
 
           it("should not be allowed to decrement the length", async () => {
@@ -1051,7 +1051,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlySetData.address, "ADDPERMISSIONS");
+            .withArgs(canOnlySetData.address, "ADDCONTROLLER");
         });
 
         it("should not be allowed to edit key at index -> AddressPermissions[4]", async () => {
@@ -1117,7 +1117,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   });
 
   describe("deleting AllowedCalls", () => {
-    let canOnlyAddPermissions: SignerWithAddress,
+    let canOnlyAddController: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress;
@@ -1127,7 +1127,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     before(async () => {
       context = await buildContext();
 
-      canOnlyAddPermissions = context.accounts[1];
+      canOnlyAddController = context.accounts[1];
       canOnlyChangePermissions = context.accounts[2];
 
       beneficiary = context.accounts[3];
@@ -1136,7 +1136,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddPermissions.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangePermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -1152,7 +1152,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.CHANGEPERMISSIONS,
         PERMISSIONS.CALL,
         PERMISSIONS.CALL,
@@ -1186,11 +1186,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](setDataPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
     });
 
@@ -1220,7 +1220,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   });
 
   describe("setting Allowed Calls -> Addresses", () => {
-    let canOnlyAddPermissions: SignerWithAddress,
+    let canOnlyAddController: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress,
@@ -1231,7 +1231,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     before(async () => {
       context = await buildContext();
 
-      canOnlyAddPermissions = context.accounts[1];
+      canOnlyAddController = context.accounts[1];
       canOnlyChangePermissions = context.accounts[2];
 
       beneficiary = context.accounts[3];
@@ -1241,7 +1241,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddPermissions.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangePermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -1255,7 +1255,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.CHANGEPERMISSIONS,
         combineAllowedCalls(
           ["0xffffffff", "0xffffffff"],
@@ -1273,7 +1273,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe("when caller has permission ADDPERMISSIONS", () => {
+    describe("when caller has permission ADDCONTROLLER", () => {
       it("should fail when trying to edit existing allowed addresses for an address", async () => {
         let key =
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -1295,11 +1295,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary address had an invalid bytes28[CompatBytesArray]", async () => {
@@ -1323,11 +1323,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       /**
@@ -1354,11 +1354,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       /**
@@ -1385,11 +1385,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       it("should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]", async () => {
@@ -1414,7 +1414,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         await context.keyManager
-          .connect(canOnlyAddPermissions)
+          .connect(canOnlyAddController)
           ["execute(bytes)"](payload);
 
         // prettier-ignore
@@ -1439,7 +1439,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
@@ -1466,7 +1466,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
@@ -1506,7 +1506,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
+          .withArgs(canOnlyChangePermissions.address, "ADDCONTROLLER");
       });
 
       it("should pass when trying to edit existing allowed addresses for an address", async () => {
@@ -1681,7 +1681,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   });
 
   describe("setting Allowed Calls -> Functions", () => {
-    let canOnlyAddPermissions: SignerWithAddress,
+    let canOnlyAddController: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress,
@@ -1692,7 +1692,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     before(async () => {
       context = await buildContext();
 
-      canOnlyAddPermissions = context.accounts[1];
+      canOnlyAddController = context.accounts[1];
       canOnlyChangePermissions = context.accounts[2];
 
       beneficiary = context.accounts[3];
@@ -1702,7 +1702,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddPermissions.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangePermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -1716,7 +1716,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.CHANGEPERMISSIONS,
         combineAllowedCalls(
           ["0xffffffff", "0xffffffff"],
@@ -1734,7 +1734,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe("when caller has permission ADDPERMISSIONS", () => {
+    describe("when caller has permission ADDCONTROLLER", () => {
       it("should fail when trying to edit existing allowed functions for an address", async () => {
         let key =
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -1756,11 +1756,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary address had an invalid bytes28[CompactBytesArray] initially", async () => {
@@ -1784,11 +1784,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       /**
@@ -1815,11 +1815,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       /**
@@ -1846,11 +1846,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       it("should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]", async () => {
@@ -1875,7 +1875,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         await context.keyManager
-          .connect(canOnlyAddPermissions)
+          .connect(canOnlyAddController)
           ["execute(bytes)"](payload);
 
         // prettier-ignore
@@ -1900,7 +1900,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
@@ -1927,7 +1927,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
@@ -1967,7 +1967,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
+          .withArgs(canOnlyChangePermissions.address, "ADDCONTROLLER");
       });
 
       it("should pass when trying to edit existing allowed bytes4 selectors under ANY:ANY:<selector>", async () => {
@@ -2142,7 +2142,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   });
 
   describe("setting Allowed Calls -> Standards", () => {
-    let canOnlyAddPermissions: SignerWithAddress,
+    let canOnlyAddController: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress,
@@ -2153,7 +2153,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     before(async () => {
       context = await buildContext();
 
-      canOnlyAddPermissions = context.accounts[1];
+      canOnlyAddController = context.accounts[1];
       canOnlyChangePermissions = context.accounts[2];
 
       beneficiary = context.accounts[3];
@@ -2163,7 +2163,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddPermissions.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangePermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -2177,7 +2177,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.CHANGEPERMISSIONS,
         combineAllowedCalls(
           [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.ERC20],
@@ -2195,7 +2195,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe("when caller has ADDPERMISSIONS", () => {
+    describe("when caller has ADDCONTROLLER", () => {
       it("should fail when trying to edit existing allowed standards for an address", async () => {
         let key =
           ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
@@ -2224,11 +2224,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       it("should fail with NotAuthorised -> when beneficiary address had an invalid bytes28[CompactBytesArray] initially", async () => {
@@ -2259,11 +2259,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       /**
@@ -2297,11 +2297,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       /**
@@ -2335,11 +2335,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
         await expect(
           context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+          .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
       });
 
       it("should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]", async () => {
@@ -2371,7 +2371,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         );
 
         await context.keyManager
-          .connect(canOnlyAddPermissions)
+          .connect(canOnlyAddController)
           ["execute(bytes)"](payload);
 
         // prettier-ignore
@@ -2396,7 +2396,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
@@ -2423,7 +2423,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
@@ -2463,7 +2463,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
+          .withArgs(canOnlyChangePermissions.address, "ADDCONTROLLER");
       });
 
       it("should pass when trying to edit existing allowed standards for an address", async () => {
@@ -2645,7 +2645,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   });
 
   describe("setting Allowed ERC725YDataKeys", () => {
-    let canOnlyAddPermissions: SignerWithAddress,
+    let canOnlyAddController: SignerWithAddress,
       canOnlyChangePermissions: SignerWithAddress;
 
     let beneficiary: SignerWithAddress,
@@ -2656,7 +2656,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     before(async () => {
       context = await buildContext();
 
-      canOnlyAddPermissions = context.accounts[1];
+      canOnlyAddController = context.accounts[1];
       canOnlyChangePermissions = context.accounts[2];
 
       beneficiary = context.accounts[3];
@@ -2666,7 +2666,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
       let permissionKeys = [
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canOnlyAddPermissions.address.substring(2),
+          canOnlyAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canOnlyChangePermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
@@ -2680,7 +2680,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       ];
 
       let permissionValues = [
-        PERMISSIONS.ADDPERMISSIONS,
+        PERMISSIONS.ADDCONTROLLER,
         PERMISSIONS.CHANGEPERMISSIONS,
         encodeCompactBytesArray([
           ERC725YDataKeys.LSP3["LSP3Profile"],
@@ -2695,7 +2695,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
       await setupKeyManager(context, permissionKeys, permissionValues);
     });
 
-    describe("when caller has ADDPERMISSIONS", () => {
+    describe("when caller has ADDCONTROLLER", () => {
       describe("when beneficiary had some ERC725Y data keys set under AddressPermissions:AllowedERC725YDataKeys:...", () => {
         it("should fail when adding an extra allowed ERC725Y data key", async () => {
           let key =
@@ -2717,11 +2717,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+            .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
         });
 
         it("should fail when removing an allowed ERC725Y data key", async () => {
@@ -2740,11 +2740,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+            .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
         });
 
         it("should fail when trying to clear the CompactedBytesArray completely", async () => {
@@ -2761,11 +2761,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyAddPermissions.address, "CHANGEPERMISSIONS");
+            .withArgs(canOnlyAddController.address, "CHANGEPERMISSIONS");
         });
 
         it("should fail when setting an invalid CompactedBytesArray", async () => {
@@ -2782,7 +2782,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           ).to.be.revertedWithCustomError(
             context.keyManager,
@@ -2812,7 +2812,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
 
           await context.keyManager
-            .connect(canOnlyAddPermissions)
+            .connect(canOnlyAddController)
             ["execute(bytes)"](payload);
 
           // prettier-ignore
@@ -2836,7 +2836,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canOnlyAddPermissions)
+              .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
           ).to.be.revertedWithCustomError(
             context.keyManager,
@@ -2966,7 +2966,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canOnlyChangePermissions.address, "ADDPERMISSIONS");
+            .withArgs(canOnlyChangePermissions.address, "ADDCONTROLLER");
         });
 
         it("should fail when setting an invalid CompactedBytesArray", async () => {
@@ -2997,7 +2997,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
   });
 
   describe("setting mixed keys (SETDATA, CHANGE & ADD Permissions)", () => {
-    let canSetDataAndAddPermissions: SignerWithAddress,
+    let canSetDataAndAddController: SignerWithAddress,
       canSetDataAndChangePermissions: SignerWithAddress;
     // addresses being used to CHANGE (= edit) permissions
     let addressesToEditPermissions: [SignerWithAddress, SignerWithAddress];
@@ -3011,7 +3011,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
     beforeEach(async () => {
       context = await buildContext();
 
-      canSetDataAndAddPermissions = context.accounts[1];
+      canSetDataAndAddController = context.accounts[1];
       canSetDataAndChangePermissions = context.accounts[2];
 
       addressesToEditPermissions = [context.accounts[3], context.accounts[4]];
@@ -3020,9 +3020,9 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          canSetDataAndAddPermissions.address.substring(2),
+          canSetDataAndAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
-          canSetDataAndAddPermissions.address.substring(2),
+          canSetDataAndAddController.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           canSetDataAndChangePermissions.address.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] +
@@ -3036,7 +3036,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
       const permissionValues = [
         ALL_PERMISSIONS,
-        combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.ADDPERMISSIONS),
+        combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.ADDCONTROLLER),
         encodeCompactBytesArray(allowedERC725YDataKeys),
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.CHANGEPERMISSIONS),
         encodeCompactBytesArray(allowedERC725YDataKeys),
@@ -3155,7 +3155,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
         });
       });
 
-      describe("when caller is an address with permission SETDATA + ADDPERMISSIONS + 3x Allowed ERC725Y data keys", () => {
+      describe("when caller is an address with permission SETDATA + ADDCONTROLLER + 3x Allowed ERC725Y data keys", () => {
         it("(should pass): 2 x allowed data keys + add 2 x new controllers", async () => {
           let newControllerKeyOne = ethers.Wallet.createRandom();
           let newControllerKeyTwo = ethers.Wallet.createRandom();
@@ -3182,7 +3182,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
 
           await context.keyManager
-            .connect(canSetDataAndAddPermissions)
+            .connect(canSetDataAndAddController)
             ["execute(bytes)"](payload);
 
           expect(
@@ -3218,7 +3218,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
           );
 
           await context.keyManager
-            .connect(canSetDataAndAddPermissions)
+            .connect(canSetDataAndAddController)
             ["execute(bytes)"](payload);
 
           expect(
@@ -3255,11 +3255,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canSetDataAndAddPermissions)
+              .connect(canSetDataAndAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canSetDataAndAddPermissions.address, "CHANGEPERMISSIONS");
+            .withArgs(canSetDataAndAddController.address, "CHANGEPERMISSIONS");
         });
 
         it("(should fail): 2 x allowed data keys + edit permissions of 2 x existing controllers", async () => {
@@ -3286,11 +3286,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canSetDataAndAddPermissions)
+              .connect(canSetDataAndAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canSetDataAndAddPermissions.address, "CHANGEPERMISSIONS");
+            .withArgs(canSetDataAndAddController.address, "CHANGEPERMISSIONS");
         });
 
         it("(should fail): 2 x allowed data keys + (add 1 x new controller) + (edit permission of 1 x existing controller)", async () => {
@@ -3321,11 +3321,11 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canSetDataAndAddPermissions)
+              .connect(canSetDataAndAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canSetDataAndAddPermissions.address, "CHANGEPERMISSIONS");
+            .withArgs(canSetDataAndAddController.address, "CHANGEPERMISSIONS");
         });
 
         it("(should fail): 1 x allowed data key + 1 x NOT allowed data key + 2 x new controllers", async () => {
@@ -3361,7 +3361,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
 
           await expect(
             context.keyManager
-              .connect(canSetDataAndAddPermissions)
+              .connect(canSetDataAndAddController)
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(
@@ -3369,7 +3369,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               "NotAllowedERC725YDataKey"
             )
             .withArgs(
-              canSetDataAndAddPermissions.address,
+              canSetDataAndAddController.address,
               NotAllowedERC725YDataKey
             );
         });
@@ -3471,7 +3471,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canSetDataAndChangePermissions.address, "ADDPERMISSIONS");
+            .withArgs(canSetDataAndChangePermissions.address, "ADDCONTROLLER");
         });
 
         it("(should fail): 2 x allowed data keys + increment AddressPermissions[].length by +1", async () => {
@@ -3498,7 +3498,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canSetDataAndChangePermissions.address, "ADDPERMISSIONS");
+            .withArgs(canSetDataAndChangePermissions.address, "ADDCONTROLLER");
         });
 
         it("(should fail): 2 x allowed data keys + (add 1 x new permission) + (edit permission of 1 x existing controller)", async () => {
@@ -3531,7 +3531,7 @@ export const shouldBehaveLikePermissionChangeOrAddPermissions = (
               ["execute(bytes)"](payload)
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-            .withArgs(canSetDataAndChangePermissions.address, "ADDPERMISSIONS");
+            .withArgs(canSetDataAndChangePermissions.address, "ADDCONTROLLER");
         });
 
         it("(should fail): edit permissions of 2 x existing controllers + (set 1 x allowed data key) + (set 1 x NOT allowed data key)", async () => {

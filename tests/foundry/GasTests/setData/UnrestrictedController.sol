@@ -12,7 +12,7 @@ import {
     _PERMISSION_CALL,
     _PERMISSION_TRANSFERVALUE,
     _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
-    _PERMISSION_ADDPERMISSIONS,
+    _PERMISSION_ADDCONTROLLER,
     _PERMISSION_SETDATA
 } from "../../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 import "../UniversalProfileTestsHelper.sol";
@@ -41,7 +41,7 @@ contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
         bytes32[] memory ownerPermissions = new bytes32[](3);
         ownerPermissions[0] = _PERMISSION_SUPER_CALL;
         ownerPermissions[1] = _PERMISSION_SUPER_TRANSFERVALUE;
-        ownerPermissions[2] = _PERMISSION_ADDPERMISSIONS;
+        ownerPermissions[2] = _PERMISSION_ADDCONTROLLER;
 
         givePermissionsToController(
             mainUniversalProfile,
