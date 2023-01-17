@@ -3,7 +3,6 @@ pragma solidity ^0.8.4;
 
 // libraries
 import {LSP6Utils} from "../../LSP6KeyManager/LSP6Utils.sol";
-import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
@@ -33,8 +32,18 @@ contract KeyManagerInternalTester is LSP6KeyManager {
         super._verifyAllowedCall(_sender, _payload);
     }
 
-    function isCompactBytesArray(bytes memory compactBytesArray) public pure returns (bool) {
-        return LSP2Utils.isCompactBytesArray(compactBytesArray);
+    function isCompactBytesArrayOfAllowedCalls(bytes memory allowedCallsCompacted)
+        public
+        pure
+        returns (bool)
+    {
+        return allowedCallsCompacted.isCompactBytesArrayOfAllowedCalls();
+    }
+
+    function isCompactBytesArrayOfAllowedERC725YDataKeys(
+        bytes memory allowedERC725YDataKeysCompacted
+    ) public pure returns (bool) {
+        return allowedERC725YDataKeysCompacted.isCompactBytesArrayOfAllowedERC725YDataKeys();
     }
 
     function verifyAllowedERC725YSingleKey(
