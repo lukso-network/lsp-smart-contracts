@@ -49,14 +49,14 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function decimals() public view returns (uint8) {
+    function decimals() public view virtual returns (uint8) {
         return _isNonDivisible ? 0 : 18;
     }
 
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() public view virtual returns (uint256) {
         return _existingTokens;
     }
 
@@ -65,7 +65,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function balanceOf(address tokenOwner) public view returns (uint256) {
+    function balanceOf(address tokenOwner) public view virtual returns (uint256) {
         return _tokenOwnerBalances[tokenOwner];
     }
 

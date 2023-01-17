@@ -63,7 +63,7 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bool initializable,
         bytes calldata initializeCallData
-    ) public view returns (address) {
+    ) public view virtual returns (address) {
         bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
         return Create2.computeAddress(generatedSalt, byteCodeHash);
     }
@@ -77,7 +77,7 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bool initializable,
         bytes calldata initializeCallData
-    ) public view returns (address) {
+    ) public view virtual returns (address) {
         bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
         return Clones.predictDeterministicAddress(baseContract, generatedSalt);
     }
@@ -96,6 +96,7 @@ contract LSP16UniversalFactory {
     function deployCreate2(bytes calldata byteCode, bytes32 providedSalt)
         public
         payable
+        virtual
         returns (address)
     {
         bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
@@ -125,7 +126,7 @@ contract LSP16UniversalFactory {
         bytes calldata initializeCalldata,
         uint256 constructorMsgValue,
         uint256 initializeCalldataMsgValue
-    ) public payable returns (address) {
+    ) public payable virtual returns (address) {
         if (constructorMsgValue + initializeCalldataMsgValue != msg.value)
             revert InvalidMsgValueDistribution();
 
@@ -155,6 +156,7 @@ contract LSP16UniversalFactory {
      */
     function deployCreate2Proxy(address baseContract, bytes32 providedSalt)
         public
+        virtual
         returns (address)
     {
         bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
@@ -181,7 +183,7 @@ contract LSP16UniversalFactory {
         address baseContract,
         bytes32 providedSalt,
         bytes calldata initializeCalldata
-    ) public payable returns (address) {
+    ) public payable virtual returns (address) {
         bytes32 generatedSalt = _generateSalt(true, initializeCalldata, providedSalt);
 
         address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
@@ -207,7 +209,7 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes memory initializeCallData,
         bytes32 providedSalt
-    ) internal pure returns (bytes32) {
+    ) internal pure virtual returns (bytes32) {
         if (initializable) {
             return keccak256(abi.encodePacked(initializable, initializeCallData, providedSalt));
         } else {
@@ -219,7 +221,7 @@ contract LSP16UniversalFactory {
      * @dev Verifies that the contract created was initialized correctly
      * Bubble the revert reason if present, revert with `CannotInitializeContract` otherwise
      */
-    function _verifyCallResult(bool success, bytes memory returndata) internal pure {
+    function _verifyCallResult(bool success, bytes memory returndata) internal pure virtual {
         if (!success) {
             // Look for revert reason and bubble it up if present
             if (returndata.length != 0) {
