@@ -220,6 +220,18 @@ const PERMISSIONS = {
 }
 
 const LSP1_TYPE_IDS = {
+	// keccak256('LSP0OwnershipTransferStarted')
+	LSP0OwnershipTransferStarted:
+		'0xe17117c9d2665d1dbeb479ed8058bbebde3c50ac50e2e65619f60006caac6926',
+
+	// keccak256('LSP0OwnershipTransferred_SenderNotification')
+	LSP0OwnershipTransferred_SenderNotification:
+		'0xa4e59c931d14f7c8a7a35027f92ee40b5f2886b9fdcdb78f30bc5ecce5a2f814',
+
+	// keccak256('LSP0OwnershipTransferred_RecipientNotification')
+	LSP0OwnershipTransferred_RecipientNotification:
+		'0xceca317f109c43507871523e82dc2a3cc64dfa18f12da0b6db14f6e23f995538',
+
 	// keccak256('LSP7Tokens_SenderNotification')
 	LSP7Tokens_SenderNotification:
 		'0x429ac7a06903dbc9c13dfcb3c9d11df8194581fa047c96d7a4171fc7402958ea',
@@ -235,6 +247,18 @@ const LSP1_TYPE_IDS = {
 	// keccak256('LSP8Tokens_RecipientNotification')
 	LSP8Tokens_RecipientNotification:
 		'0x0b084a55ebf70fd3c06fd755269dac2212c4d3f0f4d09079780bfa50c1b2984d',
+
+	// keccak256('LSP9OwnershipTransferStarted')
+	LSP9OwnershipTransferStarted:
+		'0xaefd43f45fed1bcd8992f23c803b6f4ec45cf6b62b0d404d565f290a471e763f',
+
+	// keccak256('LSP9OwnershipTransferred_SenderNotification')
+	LSP9OwnershipTransferred_SenderNotification:
+		'0x0c622e58e6b7089ae35f1af1c86d997be92fcdd8c9509652022d41aa65169471',
+
+	// keccak256('LSP9OwnershipTransferred_RecipientNotification')
+	LSP9OwnershipTransferred_RecipientNotification:
+		'0x79855c97dbc259ce395421d933d7bc0699b0f1561f988f09a9e8633fd542fe5c',
 
 	// keccak256('LSP14OwnershipTransferStarted')
 	LSP14OwnershipTransferStarted:

@@ -22,6 +22,7 @@ import {LSP10Utils} from "../../LSP10ReceivedVaults/LSP10Utils.sol";
 
 // constants
 import "../LSP1Constants.sol";
+import "../../LSP0ERC725Account/LSP0Constants.sol";
 import "../../LSP6KeyManager/LSP6Constants.sol";
 import "../../LSP9Vault/LSP9Constants.sol";
 import "../../LSP10ReceivedVaults/LSP10Constants.sol";
@@ -112,7 +113,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         bytes4 interfaceID
     ) internal virtual returns (bytes memory result) {
         // if it's a token transfer (LSP7/LSP8)
-        if (typeId != _TYPEID_LSP14_OwnershipTransferred_RecipientNotification) {
+        if (typeId != _TYPEID_LSP9_OwnershipTransferred_RecipientNotification) {
             // if the amount sent is 0, then do not update the keys
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
             if (balance == 0) return "LSP1: balance not updated";
@@ -142,7 +143,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         bytes memory notifierMapValue
     ) internal virtual returns (bytes memory result) {
         // if it's a token transfer (LSP7/LSP8)
-        if (typeId != _TYPEID_LSP14_OwnershipTransferred_SenderNotification) {
+        if (typeId != _TYPEID_LSP9_OwnershipTransferred_SenderNotification) {
             // if the amount sent is not the full balance, then do not update the keys
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
             if (balance != 0) return "LSP1: full balance is not sent";

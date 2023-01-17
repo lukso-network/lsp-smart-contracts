@@ -101,8 +101,8 @@ export const shouldBehaveLikeLSP1Delegate = (
           LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
           LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification,
           LSP1_TYPE_IDS.LSP8Tokens_SenderNotification,
-          LSP1_TYPE_IDS.LSP14OwnershipTransferred_RecipientNotification,
-          LSP1_TYPE_IDS.LSP14OwnershipTransferred_SenderNotification,
+          LSP1_TYPE_IDS.LSP9OwnershipTransferred_RecipientNotification,
+          LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
         ];
 
         for (let i = 0; i < URD_TypeIds.length; i++) {
