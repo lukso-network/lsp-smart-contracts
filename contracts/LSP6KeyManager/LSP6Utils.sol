@@ -95,7 +95,7 @@ library LSP6Utils {
         uint256 pointer;
 
         while (pointer < allowedCallsCompacted.length) {
-            if (pointer + 1 >= allowedCallsCompacted.length) return false;
+            if (pointer + 1 > allowedCallsCompacted.length) return false;
             uint256 elementLength = uint16(
                 bytes2(
                     abi.encodePacked(
@@ -124,7 +124,7 @@ library LSP6Utils {
         uint256 pointer;
 
         while (pointer < allowedERC725YDataKeysCompacted.length) {
-            if (pointer + 1 >= allowedERC725YDataKeysCompacted.length) return false;
+            if (pointer + 1 > allowedERC725YDataKeysCompacted.length) return false;
             uint256 elementLength = uint16(
                 bytes2(
                     abi.encodePacked(

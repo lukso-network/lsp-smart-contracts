@@ -115,7 +115,34 @@ export const testAllowedERC725YDataKeysInternals = (
     });
 
     describe("`isCompactBytesArrayOfAllowedERC725YDataKeys(..)`", () => {
-      it("should return true for a CompactBytesArray containing 2 dynamic keys", async () => {
+      it("should return `false` if element is 0x0000 (zero length elements not allowed)", async () => {
+        const allowedERC25YDataKeys = "0x0000";
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedERC725YDataKeys(
+            allowedERC25YDataKeys
+          );
+        expect(result).to.be.false;
+      });
+
+      it("should return `false` if there are just 2 x length bytes but not followed by the value (the allowed ERC725Y Data Key)", async () => {
+        const allowedCalls = "0x0020";
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedERC725YDataKeys(
+            allowedCalls
+          );
+        expect(result).to.be.false;
+      });
+
+      it("should return `false` if there are just 2 x length bytes equal to `0x0002`", async () => {
+        const allowedCalls = "0x0002";
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedERC725YDataKeys(
+            allowedCalls
+          );
+        expect(result).to.be.false;
+      });
+
+      it("should return `true` for a CompactBytesArray containing 2 dynamic keys", async () => {
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2d
@@ -124,7 +151,7 @@ export const testAllowedERC725YDataKeysInternals = (
         expect(result).to.be.true;
       });
 
-      it("should return true for a CompactBytesArray containing 2 fixed keys", async () => {
+      it("should return `true` for a CompactBytesArray containing 2 fixed keys", async () => {
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2f
@@ -133,7 +160,7 @@ export const testAllowedERC725YDataKeysInternals = (
         expect(result).to.be.true;
       });
 
-      it("should return true for a CompactBytesArray containing 2 dynamic keys and 2 fixed keys", async () => {
+      it("should return `true` for a CompactBytesArray containing 2 dynamic keys and 2 fixed keys", async () => {
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_2d_2f
@@ -142,7 +169,7 @@ export const testAllowedERC725YDataKeysInternals = (
         expect(result).to.be.true;
       });
 
-      it("should return true for a CompactBytesArray with mixed dynamic and fixed keys", async () => {
+      it("should return `true` for a CompactBytesArray with mixed dynamic and fixed keys", async () => {
         const result =
           await context.keyManagerInternalTester.callStatic.isCompactBytesArrayOfAllowedERC725YDataKeys(
             compactBytesArray_mixed_d_f
@@ -151,7 +178,7 @@ export const testAllowedERC725YDataKeysInternals = (
         expect(result).to.be.true;
       });
 
-      it("should return false if the CompactBytesArray contains a zero length data key", async () => {
+      it("should return `false` if the CompactBytesArray contains a zero length data key", async () => {
         const data = encodeCompactBytesArray([
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("1st Data Key")),
           "0x",
@@ -165,7 +192,7 @@ export const testAllowedERC725YDataKeysInternals = (
         expect(result).to.be.false;
       });
 
-      it("should return false if the CompactBytesArray contains an entry larger than 32 bytes", async () => {
+      it("should return `false` if the CompactBytesArray contains an entry larger than 32 bytes", async () => {
         const data = encodeCompactBytesArray([
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("1st Data Key")),
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("2nd Data Key")),
@@ -179,7 +206,7 @@ export const testAllowedERC725YDataKeysInternals = (
         expect(result).to.be.false;
       });
 
-      it("should return false if the CompactBytesArray contains a data key with a length byte that does not correspond to the length of its element", async () => {
+      it("should return `false` if the CompactBytesArray contains a data key with a length byte that does not correspond to the length of its element", async () => {
         let data = encodeCompactBytesArray([
           ethers.utils.keccak256(ethers.utils.toUtf8Bytes("1st Data Key")),
           ethers.utils.hexlify(ethers.utils.randomBytes(10)), // <-- replace length byte here

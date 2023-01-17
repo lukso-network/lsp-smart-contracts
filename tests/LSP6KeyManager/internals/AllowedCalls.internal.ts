@@ -34,7 +34,7 @@ export const testAllowedCallsInternals = (
 
   describe("`isCompactBytesArrayOfAllowedCalls`", () => {
     describe("when passing a compact bytes array with 1 element", () => {
-      it("should pass if element is 28 bytes long", async () => {
+      it("should return `true` if element is 28 bytes long", async () => {
         const allowedCalls = combineAllowedCalls(
           ["0xffffffff"],
           [context.accounts[5].address],
@@ -49,7 +49,7 @@ export const testAllowedCallsInternals = (
         expect(result).to.be.true;
       });
 
-      it("should fail if element is not 28 bytes long", async () => {
+      it("should return `false` if element is not 28 bytes long", async () => {
         const allowedCalls = ethers.utils.hexlify(ethers.utils.randomBytes(27));
         const result =
           await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
@@ -58,8 +58,26 @@ export const testAllowedCallsInternals = (
         expect(result).to.be.false;
       });
 
-      it("should fail if element is 0x00", async () => {
-        const allowedCalls = "0x00";
+      it("should return `false` if element is 0x0000 (zero length elements not allowed)", async () => {
+        const allowedCalls = "0x0000";
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+            allowedCalls
+          );
+        expect(result).to.be.false;
+      });
+
+      it("should return `false` if there are just 2 x length bytes but not followed by the value (the allowed calls)", async () => {
+        const allowedCalls = "0x001c";
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
+            allowedCalls
+          );
+        expect(result).to.be.false;
+      });
+
+      it("should return `false` if there are just 2 x length bytes equal to `0x0002`", async () => {
+        const allowedCalls = "0x0002";
         const result =
           await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
             allowedCalls
