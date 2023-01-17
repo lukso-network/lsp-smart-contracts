@@ -63,7 +63,7 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bool initializable,
         bytes calldata initializeCallData
-    ) public view virtual returns (address) {
+    ) public view returns (address) {
         bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
         return Create2.computeAddress(generatedSalt, byteCodeHash);
     }
@@ -77,15 +77,15 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bool initializable,
         bytes calldata initializeCallData
-    ) public view virtual returns (address) {
+    ) public view returns (address) {
         bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
         return Clones.predictDeterministicAddress(baseContract, generatedSalt);
     }
 
     /**
      * @dev Deploys a contract using `CREATE2`. The address where the contract will be deployed
-     * can be known in advance via {calculateAddress}. The salt is a combination between an initializable
-     * boolean, false in this case, and the providedSalt.
+     * can be known in advance via {calculateAddress}. The salt is a hash of the `providedSalt`
+     * toegther with an empty byte, to prevent mimicing the `deployCreate2Init()` and other functions.
      *
      * This method allow users to have the same contracts at the same address across different
      * chains with the same parameters.
@@ -96,7 +96,6 @@ contract LSP16UniversalFactory {
     function deployCreate2(bytes calldata byteCode, bytes32 providedSalt)
         public
         payable
-        virtual
         returns (address)
     {
         bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
@@ -108,8 +107,10 @@ contract LSP16UniversalFactory {
 
     /**
      * @dev Deploys a contract using `CREATE2`. The address where the contract will be deployed
-     * can be known in advance via {calculateAddress}. The salt is a combination between an initializable
-     * boolean, true in this case, `providedSalt` and the `initializeCallData`. This method allow users
+     * can be known in advance via {calculateAddress}. The salt is a hash of the `providedSalt` and
+     * and the `initializeCallData`.
+     * 
+     * This method allow users
      * to have the same contracts at the same address across different chains with the same parameters.
      *
      * The msg.value is split according to the parameters of the function
@@ -126,7 +127,7 @@ contract LSP16UniversalFactory {
         bytes calldata initializeCalldata,
         uint256 constructorMsgValue,
         uint256 initializeCalldataMsgValue
-    ) public payable virtual returns (address) {
+    ) public payable returns (address) {
         if (constructorMsgValue + initializeCalldataMsgValue != msg.value)
             revert InvalidMsgValueDistribution();
 
@@ -147,7 +148,9 @@ contract LSP16UniversalFactory {
      * The address where the contract will be deployed can be known in advance via {calculateProxyAddress}.
      *
      * This function uses the CREATE2 opcode and a salt to deterministically deploy
-     * the clone. The salt is a combination between an initializable boolean, `providedSalt`.
+     * the clone. The salt is a hash of the `providedSalt`
+     * toegther with an empty byte, to prevent mimicing the `deployCreate2ProxyInit()` and other functions.
+     *
      * This method allow users to have the same contracts at the same address across different
      * chains with the same parameters.
      *
@@ -156,7 +159,6 @@ contract LSP16UniversalFactory {
      */
     function deployCreate2Proxy(address baseContract, bytes32 providedSalt)
         public
-        virtual
         returns (address)
     {
         bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
@@ -172,8 +174,10 @@ contract LSP16UniversalFactory {
      * The address where the contract will be deployed can be known in advance via {calculateProxyAddress}.
      *
      * This function uses the CREATE2 opcode and a salt to deterministically deploy
-     * the clone. The salt is a combination between an initializable boolean, `providedSalt`
-     * and the `initializeCallData`. This method allow users to have the same contracts at the same address
+     * the clone. The salt is a hash of the `providedSalt` and
+     * and the `initializeCallData`.
+     *
+     * This method allow users to have the same contracts at the same address
      * across different chains with the same parameters.
      *
      * Using the same `baseContract` and salt multiple time will revert, since
@@ -183,7 +187,7 @@ contract LSP16UniversalFactory {
         address baseContract,
         bytes32 providedSalt,
         bytes calldata initializeCalldata
-    ) public payable virtual returns (address) {
+    ) public payable returns (address) {
         bytes32 generatedSalt = _generateSalt(true, initializeCalldata, providedSalt);
 
         address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
@@ -209,7 +213,7 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes memory initializeCallData,
         bytes32 providedSalt
-    ) internal pure virtual returns (bytes32) {
+    ) internal pure returns (bytes32) {
         if (initializable) {
             return keccak256(abi.encodePacked(initializable, initializeCallData, providedSalt));
         } else {
@@ -221,7 +225,7 @@ contract LSP16UniversalFactory {
      * @dev Verifies that the contract created was initialized correctly
      * Bubble the revert reason if present, revert with `CannotInitializeContract` otherwise
      */
-    function _verifyCallResult(bool success, bytes memory returndata) internal pure virtual {
+    function _verifyCallResult(bool success, bytes memory returndata) internal pure {
         if (!success) {
             // Look for revert reason and bubble it up if present
             if (returndata.length != 0) {
