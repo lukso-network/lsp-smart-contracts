@@ -28,11 +28,11 @@ error InvalidMsgValueDistribution();
  * When initializeCallData or the constructor includes non-crosschain parameters, the deployed contract
  * will not be recreated at the same address on another network, thus defeating the purpose of LSP16UniversalFactory.
 
- * Therefore, the initializeCallData and the constructor must not include any network-specific parameters, 
+ * Therefore, the initializeCallData and the constructor must not include any network-specific parameters,
  * such as a local non-crosschain token contract address, chain-id, etc ..
  *
  * One way to solve this problem is to set an EOA owner in the initializeCallData/constructor
- * that can later call functions that set these parameters as variables in the contract. 
+ * that can later call functions that set these parameters as variables in the contract.
  *
  * This contract should be deployed using Nick's Method.
  * More information: https://weka.medium.com/how-to-send-ether-to-11-440-people-187e332566b7
@@ -63,7 +63,7 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bool initializable,
         bytes calldata initializeCallData
-    ) public view returns (address) {
+    ) public view virtual returns (address) {
         bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
         return Create2.computeAddress(generatedSalt, byteCodeHash);
     }
@@ -77,7 +77,7 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bool initializable,
         bytes calldata initializeCallData
-    ) public view returns (address) {
+    ) public view virtual returns (address) {
         bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
         return Clones.predictDeterministicAddress(baseContract, generatedSalt);
     }
@@ -85,7 +85,7 @@ contract LSP16UniversalFactory {
     /**
      * @dev Deploys a contract using `CREATE2`. The address where the contract will be deployed
      * can be known in advance via {calculateAddress}. The salt is a hash of the `providedSalt`
-     * toegther with an empty byte, to prevent mimicing the `deployCreate2Init()` and other functions.
+     * together with an empty byte, to prevent mimicing the `deployCreate2Init()` and other functions.
      *
      * This method allow users to have the same contracts at the same address across different
      * chains with the same parameters.
@@ -96,6 +96,7 @@ contract LSP16UniversalFactory {
     function deployCreate2(bytes calldata byteCode, bytes32 providedSalt)
         public
         payable
+        virtual
         returns (address)
     {
         bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
@@ -109,7 +110,7 @@ contract LSP16UniversalFactory {
      * @dev Deploys a contract using `CREATE2`. The address where the contract will be deployed
      * can be known in advance via {calculateAddress}. The salt is a hash of the `providedSalt` and
      * and the `initializeCallData`.
-     * 
+     *
      * This method allow users
      * to have the same contracts at the same address across different chains with the same parameters.
      *
@@ -127,7 +128,7 @@ contract LSP16UniversalFactory {
         bytes calldata initializeCalldata,
         uint256 constructorMsgValue,
         uint256 initializeCalldataMsgValue
-    ) public payable returns (address) {
+    ) public payable virtual returns (address) {
         if (constructorMsgValue + initializeCalldataMsgValue != msg.value)
             revert InvalidMsgValueDistribution();
 
@@ -159,6 +160,7 @@ contract LSP16UniversalFactory {
      */
     function deployCreate2Proxy(address baseContract, bytes32 providedSalt)
         public
+        virtual
         returns (address)
     {
         bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
@@ -187,7 +189,7 @@ contract LSP16UniversalFactory {
         address baseContract,
         bytes32 providedSalt,
         bytes calldata initializeCalldata
-    ) public payable returns (address) {
+    ) public payable virtual returns (address) {
         bytes32 generatedSalt = _generateSalt(true, initializeCalldata, providedSalt);
 
         address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
@@ -213,7 +215,7 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes memory initializeCallData,
         bytes32 providedSalt
-    ) internal pure returns (bytes32) {
+    ) internal pure virtual returns (bytes32) {
         if (initializable) {
             return keccak256(abi.encodePacked(initializable, initializeCallData, providedSalt));
         } else {
@@ -225,7 +227,7 @@ contract LSP16UniversalFactory {
      * @dev Verifies that the contract created was initialized correctly
      * Bubble the revert reason if present, revert with `CannotInitializeContract` otherwise
      */
-    function _verifyCallResult(bool success, bytes memory returndata) internal pure {
+    function _verifyCallResult(bool success, bytes memory returndata) internal pure virtual {
         if (!success) {
             // Look for revert reason and bubble it up if present
             if (returndata.length != 0) {
