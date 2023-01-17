@@ -291,8 +291,6 @@ library LSP2Utils {
             uint256 elementLength = uint16(
                 bytes2(abi.encodePacked(compactBytesArray[pointer], compactBytesArray[pointer + 1]))
             );
-
-            if (elementLength == 0) return false;
             pointer += elementLength + 2;
         }
         if (pointer == compactBytesArray.length) return true;

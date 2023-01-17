@@ -368,10 +368,6 @@ const Errors = {
 			error: 'DelegateCallDisallowedViaKeyManager()',
 			message: 'LSP6: DelegateCall is disallowed via the Key Manager',
 		},
-		'0x9f2cb4db': {
-			error: 'InvalidCompactByteArrayLengthElement(uint256)',
-			message: 'LSP6: Invalid element length for AllowedERC725YDataKeys',
-		},
 	},
 	LSP7: {
 		'0x08d47949': {
