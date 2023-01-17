@@ -6,7 +6,7 @@ import {
   LSP2UtilsLibraryTester__factory,
 } from "../../types";
 
-import { abiCoder } from "../utils/helpers";
+import { abiCoder, encodeCompactBytesArray } from "../utils/helpers";
 
 describe("LSP2Utils", () => {
   let accounts: SignerWithAddress[];
@@ -192,14 +192,73 @@ describe("LSP2Utils", () => {
     });
 
     describe("when pass a CompactBytesArray with one element", () => {
+      it("should return true when the first length byte is 0", async () => {
+        const data = encodeCompactBytesArray(["0x"]);
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.true;
+      });
+
       it("should return true when the first length byte matches the following number of bytes", async () => {
-        const data = "0x0005aabbccddee";
+        const data = encodeCompactBytesArray(["0xaabbccddee"]);
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.true;
       });
 
       it("should return false when the first length does not matches the following number of bytes", async () => {
-        const data = "0x0004aabbccddee";
+        let data = encodeCompactBytesArray(["0xaabbccddee"]);
+        console.log(data);
+
+        // replace the first length byte of 0xaabbccddee with an invalid length value
+        data = String(data).replace(/05/g, "10");
+        console.log(data);
+
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.false;
+      });
+    });
+
+    describe("when passing a CompactBytesArray with 3 x elements", () => {
+      it("should return true when all the length bytes match the number of bytes of each elements", async () => {
+        const data = encodeCompactBytesArray([
+          "0xaabbccddee",
+          "0xaabbccddee",
+          "0xaabbccddee",
+        ]);
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.true;
+      });
+
+      it("should return true even if one of the element is an empty byte", async () => {
+        const data = encodeCompactBytesArray([
+          "0xaabbccddee",
+          "0x",
+          "0x1122334455",
+        ]);
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.true;
+      });
+
+      it("should return true if all the elements are empty bytes", async () => {
+        const data = encodeCompactBytesArray(["0x", "0x", "0x"]);
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.true;
+      });
+
+      it("should return false if one of the byte length of an element has an incorrect length", async () => {
+        let data = encodeCompactBytesArray([
+          "0xaabbccddee",
+          "0xcafecafecafecafe",
+          "0x112233",
+        ]);
+
+        // replace the first length byte of 0xaabbccddee with an invalid length value
+        data = String(data).replace(/05/g, "10");
+        const result = await lsp2Utils.isCompactBytesArray(data);
+        expect(result).to.be.false;
+      });
+
+      it("should return false if the byte length of the last element is invalid and points 'too far'", async () => {
+        let data = "0x02aabb05112233445520cafecafe";
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.false;
       });
