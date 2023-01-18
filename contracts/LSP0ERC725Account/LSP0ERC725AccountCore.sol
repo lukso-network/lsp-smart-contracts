@@ -26,6 +26,7 @@ import "@erc725/smart-contracts/contracts/errors.sol";
 import {
     _INTERFACEID_LSP0,
     _INTERFACEID_ERC1271,
+    _ERC1271_MAGICVALUE,
     _ERC1271_FAILVALUE,
     _TYPEID_LSP0_OwnershipTransferStarted,
     _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
@@ -171,15 +172,15 @@ abstract contract LSP0ERC725AccountCore is
 
             bool isValid = (success &&
                 result.length == 32 &&
-                abi.decode(result, (bytes32)) == bytes32(IERC1271.isValidSignature.selector));
+                abi.decode(result, (bytes32)) == bytes32(_ERC1271_MAGICVALUE));
 
-            return isValid ? IERC1271.isValidSignature.selector : _ERC1271_FAILVALUE;
+            return isValid ? _ERC1271_MAGICVALUE : _ERC1271_FAILVALUE;
         }
         // If owner is an EOA
         else {
             return
                 owner_ == ECDSA.recover(dataHash, signature)
-                    ? IERC1271.isValidSignature.selector
+                    ? _ERC1271_MAGICVALUE
                     : _ERC1271_FAILVALUE;
         }
     }
