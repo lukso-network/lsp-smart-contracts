@@ -92,7 +92,7 @@ library LSP6Utils {
         pure
         returns (bool)
     {
-        if(allowedCallsCompacted.length == 0) return false;
+        if (allowedCallsCompacted.length == 0) return false;
 
         uint256 pointer;
 
