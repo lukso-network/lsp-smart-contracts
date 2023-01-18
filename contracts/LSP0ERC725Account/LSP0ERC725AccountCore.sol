@@ -161,18 +161,25 @@ abstract contract LSP0ERC725AccountCore is
         virtual
         returns (bytes4 magicValue)
     {
-        address _owner = owner();
-        // if OWNER is a contract
-        if (_owner.isContract()) {
+        address owner_ = owner();
+
+        // If owner is a contract
+        if (owner_.code.length > 0) {
+            (bool success, bytes memory result) = owner_.staticcall(
+                abi.encodeWithSelector(IERC1271.isValidSignature.selector, dataHash, signature)
+            );
+
+            bool isValid = (success &&
+                result.length == 32 &&
+                abi.decode(result, (bytes32)) == bytes32(IERC1271.isValidSignature.selector));
+
+            return isValid ? IERC1271.isValidSignature.selector : _ERC1271_FAILVALUE;
+        }
+        // If owner is an EOA
+        else {
             return
-                _owner.supportsERC165InterfaceUnchecked(_INTERFACEID_ERC1271)
-                    ? IERC1271(_owner).isValidSignature(dataHash, signature)
-                    : _ERC1271_FAILVALUE;
-            // if OWNER is a key
-        } else {
-            return
-                _owner == ECDSA.recover(dataHash, signature)
-                    ? _INTERFACEID_ERC1271
+                owner_ == ECDSA.recover(dataHash, signature)
+                    ? IERC1271.isValidSignature.selector
                     : _ERC1271_FAILVALUE;
         }
     }
