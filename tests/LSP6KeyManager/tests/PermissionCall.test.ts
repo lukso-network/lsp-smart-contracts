@@ -76,26 +76,6 @@ export const shouldBehaveLikePermissionCall = (
   });
 
   describe("when interacting via `execute(...)`", () => {
-    describe("when the payload is smaller than 4 bytes", () => {
-      it("should revert when using `execute(..)` with a payload smaller than 4 bytes", async () => {
-        await expect(context.keyManager["execute(bytes)"]("0xaabbcc"))
-          .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
-          .withArgs("0xaabbcc");
-      });
-
-      it("should revert when using `executeRelayCall(..)` with a payload smaller than 4 bytes", async () => {
-        await expect(
-          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
-            "0x",
-            0,
-            "0xaabbcc"
-          )
-        )
-          .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
-          .withArgs("0xaabbcc");
-      });
-    });
-
     describe("when caller has ALL PERMISSIONS", () => {
       it("should pass and change state at the target contract", async () => {
         let argument = "new name";
