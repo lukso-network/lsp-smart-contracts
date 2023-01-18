@@ -200,7 +200,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         returns (bytes memory)
     {
         if (payload.length < 4) {
-            revert LSP6InvalidPayload(payload);
+            revert InvalidPayload(payload);
         }
 
         _nonReentrantBefore(msg.sender);
@@ -217,7 +217,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes calldata payload
     ) internal virtual returns (bytes memory) {
         if (payload.length < 4) {
-            revert LSP6InvalidPayload(payload);
+            revert InvalidPayload(payload);
         }
 
         bytes memory encodedMessage = abi.encodePacked(
