@@ -57,7 +57,7 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionSetData(buildContext);
   });
 
-  describe.only("CALL", () => {
+  describe("CALL", () => {
     shouldBehaveLikePermissionCall(buildContext);
   });
 

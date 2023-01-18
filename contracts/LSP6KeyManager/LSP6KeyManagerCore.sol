@@ -886,7 +886,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // Skip on contract creation (CREATE or CREATE2)
         if (isContractCreation) return;
 
-        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty call)
+        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
         if (hasSuperOperation && value == 0) return;
 
         // Skip if caller has SUPER permission for value transfers
