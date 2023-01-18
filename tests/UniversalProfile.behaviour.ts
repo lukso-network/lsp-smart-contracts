@@ -101,7 +101,7 @@ export const shouldBehaveLikeLSP3 = (
       expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
 
-    it("should return failValue when the owner isValidSignature function that doesn't return bytes4", async () => {
+    it("should return failValue when the owner call isValidSignature function that doesn't return bytes4", async () => {
       const signer = context.accounts[1];
 
       const maliciousERC1271Wallet = await new ERC1271MaliciousMock__factory(
