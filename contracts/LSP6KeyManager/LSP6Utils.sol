@@ -121,7 +121,6 @@ library LSP6Utils {
     function isCompactBytesArrayOfAllowedERC725YDataKeys(
         bytes memory allowedERC725YDataKeysCompacted
     ) internal pure returns (bool) {
-        if (allowedERC725YDataKeysCompacted.length == 0) return false;
         uint256 pointer;
 
         while (pointer < allowedERC725YDataKeysCompacted.length) {
