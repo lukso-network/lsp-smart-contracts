@@ -174,9 +174,11 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         if (accountOwner.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP6))
             ownerIsKeyManager = true;
 
-        address target = ILSP6KeyManager(accountOwner).target();
-        // check if the caller is the same account controlled by the keyManager
-        if (target != msg.sender) revert CallerNotLSP6LinkedTarget(msg.sender, target);
+        if (ownerIsKeyManager) {
+            address target = ILSP6KeyManager(accountOwner).target();
+            // check if the caller is the same account controlled by the keyManager
+            if (target != msg.sender) revert CallerNotLSP6LinkedTarget(msg.sender, target);
+        }
     }
 
     // --- Overrides
