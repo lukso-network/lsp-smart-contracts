@@ -21,6 +21,9 @@ import "../../LSP1UniversalReceiver/LSP1Constants.sol";
 import "../../LSP6KeyManager/LSP6Constants.sol";
 import "../../LSP17ContractExtension/LSP17Constants.sol";
 
+/**
+ * @dev This contract is used only for testing
+ */
 contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
     constructor() {
         _registerInterface(_INTERFACEID_LSP1);
@@ -86,6 +89,6 @@ contract UniversalReceiverDelegateVaultMalicious is ERC165Storage {
                 Address.verifyCallResult(success, result, "Call reverted");
             }
         }
-        return "";
+        return "Empty";
     }
 }
