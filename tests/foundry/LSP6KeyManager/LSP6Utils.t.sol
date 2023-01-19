@@ -2,8 +2,10 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
+import "forge-std/console.sol";
 
 import "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
+import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 
 contract LSP6UtilsTests is Test {
     function testIsCBAOfAllowedCallsWithValidAllowedCalls(uint8 numberOfAllowedCalls) public view {
@@ -268,21 +270,166 @@ contract LSP6UtilsTests is Test {
         uint64 firstPermission,
         uint64 secondPermission,
         uint64 thirdPermission,
-        uint64 foruthPermission
+        uint64 fourthPermission
     ) public pure {
         uint256 totalPermissions = uint256(firstPermission) +
             uint256(secondPermission) +
             uint256(thirdPermission) +
-            uint256(foruthPermission);
+            uint256(fourthPermission);
         bytes32 totalPermissionsBytes32 = bytes32(totalPermissions);
 
         bytes32[] memory combinePermissions = new bytes32[](4);
         combinePermissions[0] = bytes32(uint256(firstPermission));
         combinePermissions[1] = bytes32(uint256(secondPermission));
         combinePermissions[2] = bytes32(uint256(thirdPermission));
-        combinePermissions[3] = bytes32(uint256(foruthPermission));
+        combinePermissions[3] = bytes32(uint256(fourthPermission));
 
         assert(totalPermissionsBytes32 == LSP6Utils.combinePermissions(combinePermissions));
+    }
+
+    function testHasPermissionShouldReturnTrueToAllRegularPermission(uint256 randomNumber)
+        public
+        pure
+    {
+        // number between 1 and 17 (number of permissions with non regulars)
+        uint8 numberOfPermissions = uint8((randomNumber % 18) + 1);
+
+        bytes32[19] memory normalPermissions = [
+            _PERMISSION_CHANGEOWNER,
+            _PERMISSION_ADDCONTROLLER,
+            _PERMISSION_CHANGEPERMISSIONS,
+            _PERMISSION_ADDEXTENSIONS,
+            _PERMISSION_CHANGEEXTENSIONS,
+            _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,
+            _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE,
+            _PERMISSION_SUPER_TRANSFERVALUE,
+            _PERMISSION_TRANSFERVALUE,
+            _PERMISSION_SUPER_CALL,
+            _PERMISSION_CALL,
+            _PERMISSION_SUPER_STATICCALL,
+            _PERMISSION_STATICCALL,
+            _PERMISSION_DEPLOY,
+            _PERMISSION_SUPER_SETDATA,
+            _PERMISSION_SETDATA,
+            _PERMISSION_ENCRYPT,
+            _PERMISSION_DECRYPT,
+            _PERMISSION_SIGN
+        ];
+
+        bytes32[] memory dynamicPermissionsArray = new bytes32[](numberOfPermissions);
+
+        for (uint256 i = 0; i < numberOfPermissions; i++) {
+            dynamicPermissionsArray[i] = (normalPermissions[i]);
+        }
+
+        bytes32[] memory randomPermissionsPicked = _randomPermissions(
+            dynamicPermissionsArray,
+            numberOfPermissions
+        );
+
+        bytes32 combinedPermissions = LSP6Utils.combinePermissions(randomPermissionsPicked);
+
+        assert(LSP6Utils.hasPermission(combinedPermissions, _PERMISSION_CHANGEOWNER));
+    }
+
+    function testHasPermissionShouldReturnFalseToAllRegularPermissionWithNonRegularPermission(
+        uint256 randomNumber
+    ) public {
+        // number between 1 and 17 (number of permissions with non regulars)
+        uint8 numberOfPermissions = uint8((randomNumber % 18) + 1);
+
+        bytes32[19] memory normalPermissions = [
+            _PERMISSION_CHANGEOWNER,
+            _PERMISSION_ADDCONTROLLER,
+            _PERMISSION_CHANGEPERMISSIONS,
+            _PERMISSION_ADDEXTENSIONS,
+            _PERMISSION_CHANGEEXTENSIONS,
+            _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,
+            _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE,
+            _PERMISSION_SUPER_TRANSFERVALUE,
+            _PERMISSION_TRANSFERVALUE,
+            _PERMISSION_SUPER_CALL,
+            _PERMISSION_CALL,
+            _PERMISSION_SUPER_STATICCALL,
+            _PERMISSION_STATICCALL,
+            _PERMISSION_DEPLOY,
+            _PERMISSION_SUPER_SETDATA,
+            _PERMISSION_SETDATA,
+            _PERMISSION_ENCRYPT,
+            _PERMISSION_DECRYPT,
+            _PERMISSION_SIGN
+        ];
+
+        bytes32[] memory dynamicNormalPermissionsArray = new bytes32[](normalPermissions.length);
+
+        for (uint256 i = 0; i < normalPermissions.length; i++) {
+            dynamicNormalPermissionsArray[i] = (normalPermissions[i]);
+        }
+
+        bytes32[3] memory nonRegularPermissions = [
+            _PERMISSION_REENTRANCY,
+            _PERMISSION_DELEGATECALL,
+            _PERMISSION_SUPER_DELEGATECALL
+        ];
+
+        bytes32[] memory dynamicNonRegularPermissionsArray = new bytes32[](
+            normalPermissions.length
+        );
+
+        for (uint256 i = 0; i < normalPermissions.length; i++) {
+            dynamicNonRegularPermissionsArray[i] = (normalPermissions[i]);
+        }
+
+        bytes32[] memory randomPermissionsPicked = _randomMixPermissions(
+            dynamicNormalPermissionsArray,
+            dynamicNonRegularPermissionsArray,
+            numberOfPermissions
+        );
+
+        bytes32 combinedPermissions = LSP6Utils.combinePermissions(randomPermissionsPicked);
+
+        assert(!LSP6Utils.hasPermission(combinedPermissions, _PERMISSION_CHANGEOWNER));
+    }
+
+    function _randomPermissions(bytes32[] memory permissions, uint256 randomNumber)
+        internal
+        pure
+        returns (bytes32[] memory)
+    {
+        bytes32[] memory pickedPermissions = new bytes32[](randomNumber);
+
+        bytes32[] memory availablePermissions = new bytes32[](permissions.length);
+        for (uint256 i = 0; i < permissions.length; i++) {
+            availablePermissions[i] = permissions[i];
+        }
+
+        uint256 numPermissions = randomNumber % (permissions.length + 1);
+
+        for (uint256 i = 0; i < numPermissions; i++) {
+            uint256 index = randomNumber % availablePermissions.length;
+            pickedPermissions[i] = (availablePermissions[index]);
+            delete availablePermissions[index];
+            availablePermissions = new bytes32[](availablePermissions.length - 1);
+        }
+        return pickedPermissions;
+    }
+
+    function _randomMixPermissions(
+        bytes32[] memory normalPermissions,
+        bytes32[] memory nonRegularPermissions,
+        uint256 totalPermissions
+    ) internal returns (bytes32[] memory) {
+        bytes32[] memory result = new bytes32[](totalPermissions);
+        uint256 normalPermissionsCount = normalPermissions.length;
+        uint256 nonRegularPermissionsCount = nonRegularPermissions.length;
+        for (uint256 i = 0; i < totalPermissions; i++) {
+            if (i < normalPermissionsCount) {
+                result[i] = normalPermissions[i];
+            } else {
+                result[i] = nonRegularPermissions[i - normalPermissionsCount];
+            }
+        }
+        return result;
     }
 
     function _generateAllowedCalls(uint8 numberOfAllowedCalls, uint8 allowedCallLength)
