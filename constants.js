@@ -499,6 +499,12 @@ const Errors = {
 			message: 'LSP8CappedSupply: cannot mint over the max cap supply',
 		},
 	},
+	LSP9: {
+		'0x199611f': {
+			error: 'LSP1DelegateNotAllowedToSetDataKey(bytes32)',
+			message: 'The UniversalReceiverDelegate is not allowed to set this data key',
+		},
+	},
 	LSP11: {
 		'0x5560e16': {
 			error: 'CallerIsNotGuardian(address)',
