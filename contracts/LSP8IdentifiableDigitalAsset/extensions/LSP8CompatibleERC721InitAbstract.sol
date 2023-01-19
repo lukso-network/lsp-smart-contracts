@@ -3,10 +3,12 @@ pragma solidity ^0.8.12;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {ILSP8CompatibleERC721} from "./ILSP8CompatibleERC721.sol";
 import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
@@ -34,6 +36,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
     LSP8IdentifiableDigitalAssetInitAbstract,
     LSP4Compatibility
 {
+    using Address for address;
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /**
@@ -131,6 +134,9 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         emit Approval(tokenOwnerOf(bytes32(tokenId)), operator, tokenId);
     }
 
+    /**
+     * @dev See _setApprovalForAll
+     */
     function setApprovalForAll(address operator, bool approved) public virtual {
         _setApprovalForAll(msg.sender, operator, approved);
     }
@@ -145,12 +151,12 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         address to,
         uint256 tokenId
     ) public virtual {
-        return _transfer(from, to, bytes32(tokenId), true, "");
+        _transfer(from, to, bytes32(tokenId), true, "");
     }
 
     /**
      * @inheritdoc ILSP8CompatibleERC721
-     * @dev Compatible with ERC721 safeTransferFrom.
+     * @dev Compatible with ERC721 safeTransferFrom (without optional data).
      * Using allowNonLSP1Recipient=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
     function safeTransferFrom(
@@ -158,11 +164,11 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         address to,
         uint256 tokenId
     ) public virtual {
-        return _transfer(from, to, bytes32(tokenId), false, "");
+        _safeTransfer(from, to, tokenId, "");
     }
 
     /*
-     * @dev Compatible with ERC721 safeTransferFrom.
+     * @dev Compatible with ERC721 safeTransferFrom (with optional data).
      * Using allowNonLSP1Recipient=false so that no EOA and only contracts supporting LSP1 interface may receive the tokenId.
      */
     function safeTransferFrom(
@@ -171,11 +177,14 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         uint256 tokenId,
         bytes memory data
     ) public virtual {
-        return _transfer(from, to, bytes32(tokenId), false, data);
+        _safeTransfer(from, to, tokenId, data);
     }
 
     // --- Overrides
 
+    /**
+     * @inheritdoc ILSP8IdentifiableDigitalAsset
+     */
     function authorizeOperator(address operator, bytes32 tokenId)
         public
         virtual
@@ -200,6 +209,19 @@ abstract contract LSP8CompatibleERC721InitAbstract is
 
         super._transfer(from, to, tokenId, allowNonLSP1Recipient, data);
         emit Transfer(from, to, uint256(tokenId));
+    }
+
+    function _safeTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) internal virtual {
+        _transfer(from, to, bytes32(tokenId), true, data);
+        require(
+            _checkOnERC721Received(from, to, tokenId, data),
+            "LSP8CompatibleERC721: transfer to non ERC721Receiver implementer"
+        );
     }
 
     function _mint(
@@ -232,6 +254,42 @@ abstract contract LSP8CompatibleERC721InitAbstract is
         require(tokensOwner != operator, "LSP8CompatibleERC721: approve to caller");
         _operatorApprovals[tokensOwner][operator] = approved;
         emit ApprovalForAll(tokensOwner, operator, approved);
+    }
+
+    /**
+     * @dev Internal function to invoke {IERC721Receiver-onERC721Received} on a target address.
+     * The call is not executed if the target address is not a contract.
+     *
+     * @param from address representing the previous owner of the given token ID
+     * @param to target address that will receive the token
+     * @param tokenId uint256 ID of the token to be transferred
+     * @param data bytes optional data to send along with the call
+     * @return bool whether the call correctly returned the expected magic value
+     */
+    function _checkOnERC721Received(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) private returns (bool) {
+        if (to.isContract()) {
+            try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data) returns (
+                bytes4 retval
+            ) {
+                return retval == IERC721Receiver.onERC721Received.selector;
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert("LSP8CompatibleERC721: transfer to non ERC721Receiver implementer");
+                } else {
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        revert(add(32, reason), mload(reason))
+                    }
+                }
+            }
+        } else {
+            return true;
+        }
     }
 
     function _setData(bytes32 key, bytes memory value)
