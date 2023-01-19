@@ -3,7 +3,11 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
-import { UniversalProfile, TargetContract__factory } from "../types";
+import {
+  UniversalProfile,
+  GenericExecutor__factory,
+  ERC1271MaliciousMock__factory,
+} from "../types";
 
 // helpers
 import { getRandomAddresses } from "./utils/helpers";
@@ -33,6 +37,9 @@ export const shouldBehaveLikeLSP3 = (
   });
 
   describe("when using `isValidSignature()` from ERC1271", () => {
+    afterEach(async () => {
+      context = await buildContext(100);
+    });
     it("should verify signature from owner", async () => {
       const signer = context.deployParams.owner;
 
@@ -61,17 +68,60 @@ export const shouldBehaveLikeLSP3 = (
       expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
 
-    /** @todo update this test for acceptOwnership(...) */
-    it("should return failValue when the owner doesn't support ERC1271", async () => {
+    it("should return failValue when the owner doesn't have isValidSignature function", async () => {
       const signer = context.accounts[1];
 
-      const targetContract = await new TargetContract__factory(
+      const genericExecutor = await new GenericExecutor__factory(
         context.accounts[0]
       ).deploy();
 
       await context.universalProfile
         .connect(context.accounts[0])
-        .transferOwnership(targetContract.address);
+        .transferOwnership(genericExecutor.address);
+
+      const acceptOwnershipPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "acceptOwnership"
+        );
+
+      await genericExecutor.call(
+        context.universalProfile.address,
+        0,
+        acceptOwnershipPayload
+      );
+
+      const dataToSign = "0xcafecafe";
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await signer.signMessage(dataToSign);
+
+      const result = await context.universalProfile.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
+    });
+
+    it("should return failValue when the owner call isValidSignature function that doesn't return bytes4", async () => {
+      const signer = context.accounts[1];
+
+      const maliciousERC1271Wallet = await new ERC1271MaliciousMock__factory(
+        context.accounts[0]
+      ).deploy();
+
+      await context.universalProfile
+        .connect(context.accounts[0])
+        .transferOwnership(maliciousERC1271Wallet.address);
+
+      const acceptOwnershipPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "acceptOwnership"
+        );
+
+      await maliciousERC1271Wallet.call(
+        context.universalProfile.address,
+        0,
+        acceptOwnershipPayload
+      );
 
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
