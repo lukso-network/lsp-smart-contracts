@@ -41,9 +41,8 @@ contract LSP2UtilsTests is Test {
         uint16 thirdBytesLength
     ) public view {
         // check if thirdBytesLength is not too big to speed up test
-        if (thirdBytesLength > 750) {
-            return;
-        }
+        if (thirdBytesLength > 750) return;
+
         // store firstBytes length
         bytes memory firstBytes = _generateRandomBytes(firstBytesLength);
         // store secondBytes length

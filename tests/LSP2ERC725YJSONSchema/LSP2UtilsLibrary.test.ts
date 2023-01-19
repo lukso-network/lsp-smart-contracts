@@ -262,6 +262,7 @@ describe("LSP2Utils", () => {
         const result = await lsp2Utils.isCompactBytesArray(data);
         expect(result).to.be.false;
       });
+
       it("should return false for 0x000000", async () => {
         const data = "0x000000";
         const result = await lsp2Utils.isCompactBytesArray(data);
