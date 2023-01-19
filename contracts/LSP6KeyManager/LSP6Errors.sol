@@ -136,3 +136,8 @@ error LSP6BatchExcessiveValueSent(uint256 totalValues, uint256 msgValue);
  * @dev ERC725X operation type 4 (DELEGATECALL) is disallowed by default
  */
 error DelegateCallDisallowedViaKeyManager();
+
+/**
+ * @dev reverts when the payload is invalid.
+ */
+error InvalidPayload(bytes payload);

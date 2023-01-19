@@ -33,7 +33,12 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
-import {_INTERFACEID_LSP9} from "./LSP9Constants.sol";
+import {
+    _INTERFACEID_LSP9,
+    _TYPEID_LSP9_OwnershipTransferStarted,
+    _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
+    _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
+} from "./LSP9Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
 
@@ -89,7 +94,13 @@ contract LSP9VaultCore is
      *
      * If no extension is stored, returns the address(0)
      */
-    function _getExtension(bytes4 functionSelector) internal view override returns (address) {
+    function _getExtension(bytes4 functionSelector)
+        internal
+        view
+        virtual
+        override
+        returns (address)
+    {
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector
@@ -353,5 +364,56 @@ contract LSP9VaultCore is
         }
 
         revert ERC725X_UnknownOperationType(operationType);
+    }
+
+    // --- LSP14 URD Hooks
+
+    /**
+     * @dev Calls the universalReceiver function of the sender when ownerhsip transfer starts
+     * if supports LSP1 InterfaceId
+     */
+    function _notifyLSP1SenderOnOwnershipTransferStart(address notifiedContract, bytes memory data)
+        internal
+        virtual
+        override
+    {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
+                _TYPEID_LSP9_OwnershipTransferStarted,
+                data
+            );
+        }
+    }
+
+    /**
+     * @dev Calls the universalReceiver function of the sender when ownerhsip transfer is complete
+     * if supports LSP1 InterfaceId
+     */
+    function _notifyLSP1SenderOnOwnershipTransferCompletion(
+        address notifiedContract,
+        bytes memory data
+    ) internal virtual override {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
+                _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
+                data
+            );
+        }
+    }
+
+    /**
+     * @dev Calls the universalReceiver function of the recipient when ownerhsip transfer is complete
+     * if supports LSP1 InterfaceId
+     */
+    function _notifyLSP1RecipientOnOwnershipTransferCompletion(
+        address notifiedContract,
+        bytes memory data
+    ) internal virtual override {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
+            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
+                _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
+                data
+            );
+        }
     }
 }

@@ -405,7 +405,7 @@ export const shouldBehaveLikeLSP9 = (
           .withArgs(
             context.lsp9Vault.address,
             0,
-            LSP1_TYPE_IDS.LSP14OwnershipTransferStarted,
+            LSP1_TYPE_IDS.LSP9OwnershipTransferStarted,
             "0x",
             abiCoder.encode(
               ["bytes", "bytes"],

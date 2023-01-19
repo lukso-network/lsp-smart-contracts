@@ -70,42 +70,42 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getRecoveryCounter() public view returns (uint256) {
+    function getRecoveryCounter() public view virtual returns (uint256) {
         return _recoveryCounter;
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getGuardians() public view returns (address[] memory) {
+    function getGuardians() public view virtual returns (address[] memory) {
         return _guardians.values();
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function isGuardian(address _address) public view returns (bool) {
+    function isGuardian(address _address) public view virtual returns (bool) {
         return _guardians.contains(_address);
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getGuardiansThreshold() public view returns (uint256) {
+    function getGuardiansThreshold() public view virtual returns (uint256) {
         return _guardiansThreshold;
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getRecoverySecretHash() public view returns (bytes32) {
+    function getRecoverySecretHash() public view virtual returns (bytes32) {
         return _recoverySecretHash;
     }
 
     /**
      * @inheritdoc ILSP11BasicSocialRecovery
      */
-    function getGuardianChoice(address guardian) public view returns (address) {
+    function getGuardianChoice(address guardian) public view virtual returns (address) {
         return _guardiansChoice[_recoveryCounter][guardian];
     }
 
@@ -220,7 +220,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         string memory plainSecret,
         bytes32 newHash,
         address[] memory guardians
-    ) internal view {
+    ) internal view virtual {
         if (recoverer == address(0)) revert AddressZeroNotAllowed();
         uint256 callerSelections;
 
@@ -248,7 +248,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
         uint256 recoveryCounter,
         uint256 guardiansLength,
         address[] memory guardians
-    ) internal {
+    ) internal virtual {
         unchecked {
             for (uint256 i; i < guardiansLength; i++) {
                 delete _guardiansChoice[recoveryCounter][guardians[i]];

@@ -6,6 +6,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 // constants
 import "./ILSP1UniversalReceiver.sol";
+import "../LSP0ERC725Account/LSP0Constants.sol";
 import "../LSP5ReceivedAssets/LSP5Constants.sol";
 import "../LSP7DigitalAsset/LSP7Constants.sol";
 import "../LSP8IdentifiableDigitalAsset/LSP8Constants.sol";
@@ -59,12 +60,12 @@ library LSP1Utils {
             interfaceId = _INTERFACEID_LSP8;
             isReceiving = typeId == _TYPEID_LSP8_TOKENSRECIPIENT ? true : false;
         } else if (
-            typeId == _TYPEID_LSP14_OwnershipTransferred_SenderNotification ||
-            typeId == _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
+            typeId == _TYPEID_LSP9_OwnershipTransferred_SenderNotification ||
+            typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
         ) {
             mapPrefix = _LSP10_VAULTS_MAP_KEY_PREFIX;
             interfaceId = _INTERFACEID_LSP9;
-            isReceiving = typeId == _TYPEID_LSP14_OwnershipTransferred_RecipientNotification
+            isReceiving = (typeId == _TYPEID_LSP9_OwnershipTransferred_RecipientNotification)
                 ? true
                 : false;
         } else {
