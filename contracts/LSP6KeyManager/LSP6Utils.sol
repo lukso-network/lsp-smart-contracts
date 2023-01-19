@@ -159,6 +159,7 @@ library LSP6Utils {
 
     /**
      * @dev combine multiple permissions into a single bytes32
+     * Make sure that the sum of the values of the input array is less than 2^256-1 to avoid overflow.
      * @param _permissions the array of permissions to combine
      * @return a bytes32 containing the combined permissions
      */

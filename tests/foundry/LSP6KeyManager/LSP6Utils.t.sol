@@ -264,6 +264,27 @@ contract LSP6UtilsTests is Test {
         return elementCBA;
     }
 
+    function testCombinePermissions(
+        uint64 firstPermission,
+        uint64 secondPermission,
+        uint64 thirdPermission,
+        uint64 foruthPermission
+    ) public pure {
+        uint256 totalPermissions = uint256(firstPermission) +
+            uint256(secondPermission) +
+            uint256(thirdPermission) +
+            uint256(foruthPermission);
+        bytes32 totalPermissionsBytes32 = bytes32(totalPermissions);
+
+        bytes32[] memory combinePermissions = new bytes32[](4);
+        combinePermissions[0] = bytes32(uint256(firstPermission));
+        combinePermissions[1] = bytes32(uint256(secondPermission));
+        combinePermissions[2] = bytes32(uint256(thirdPermission));
+        combinePermissions[3] = bytes32(uint256(foruthPermission));
+
+        assert(totalPermissionsBytes32 == LSP6Utils.combinePermissions(combinePermissions));
+    }
+
     function _generateAllowedCalls(uint8 numberOfAllowedCalls, uint8 allowedCallLength)
         internal
         view
