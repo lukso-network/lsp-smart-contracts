@@ -63,11 +63,12 @@ contract LSP6UtilsTests is Test {
     }
 
     function testIsCBAOfAllowedCallsWithBiggerAllowedCall(uint8 numberOfAllowedCalls) public view {
-        uint8 allowedCallLength = (numberOfAllowedCalls % uint8(type(uint8).max)) + 29;
-        bytes memory allowedCalls = _generateAllowedCalls(
-            numberOfAllowedCalls % 50,
-            numberOfAllowedCalls % allowedCallLength
-        );
+        uint8 allowedCallLength = (numberOfAllowedCalls % (255 - 28)) + 29;
+        if (allowedCallLength == 28) {
+            allowedCallLength = allowedCallLength + 1;
+        }
+
+        bytes memory allowedCalls = _generateAllowedCalls(1, allowedCallLength);
 
         assert(!LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls));
     }
@@ -76,12 +77,12 @@ contract LSP6UtilsTests is Test {
         public
         view
     {
-        uint8 allowedCallLength = (numberOfAllowedCalls % uint8(type(uint8).max)) + 29;
+        uint8 allowedCallLength = (numberOfAllowedCalls % (255 - 28)) + 29;
+        if (allowedCallLength == 28) {
+            allowedCallLength = allowedCallLength + 1;
+        }
 
-        bytes memory invalidAllowedCall = _generateAllowedCalls(
-            1,
-            numberOfAllowedCalls % allowedCallLength
-        );
+        bytes memory invalidAllowedCall = _generateAllowedCalls(1, allowedCallLength);
         bytes memory validAllowedCall = _generateAllowedCalls(1, 28);
         bytes memory allowedCalls = abi.encodePacked(invalidAllowedCall, validAllowedCall);
 
@@ -92,13 +93,13 @@ contract LSP6UtilsTests is Test {
         public
         view
     {
-        uint8 allowedCallLength = (numberOfAllowedCalls % uint8(type(uint8).max)) + 29;
+        uint8 allowedCallLength = (numberOfAllowedCalls % (255 - 28)) + 29;
+        if (allowedCallLength == 28) {
+            allowedCallLength = allowedCallLength + 1;
+        }
 
         bytes memory validAllowedCallBefore = _generateAllowedCalls(1, 28);
-        bytes memory invalidAllowedCall = _generateAllowedCalls(
-            1,
-            numberOfAllowedCalls % allowedCallLength
-        );
+        bytes memory invalidAllowedCall = _generateAllowedCalls(1, allowedCallLength);
         bytes memory validAllowedCallAfter = _generateAllowedCalls(1, 28);
         bytes memory allowedCalls = abi.encodePacked(
             validAllowedCallBefore,
@@ -113,12 +114,9 @@ contract LSP6UtilsTests is Test {
         public
         view
     {
-        uint8 allowedCallLength = (numberOfAllowedCalls % uint8(type(uint8).max)) + 29;
+        uint8 allowedCallLength = (numberOfAllowedCalls % (255 - 28)) + 29;
 
-        bytes memory allowedCallsEnd = _generateAllowedCalls(
-            1,
-            numberOfAllowedCalls % allowedCallLength
-        );
+        bytes memory allowedCallsEnd = _generateAllowedCalls(1, allowedCallLength);
         bytes memory validAllowedCall = _generateAllowedCalls(1, 28);
         bytes memory allowedCalls = abi.encodePacked(validAllowedCall, allowedCallsEnd);
 
