@@ -8,6 +8,8 @@ import "../../../contracts/LSP6KeyManager/LSP6Utils.sol";
 import "../../../contracts/LSP6KeyManager/LSP6Constants.sol";
 
 contract LSP6UtilsTests is Test {
+    mapping(bytes32 => bool) selectedPermissions;
+
     function testIsCBAOfAllowedCallsWithValidAllowedCalls(uint8 numberOfAllowedCalls) public view {
         // generate between 1 and 50 allowedCalls
         bytes memory allowedCalls = _generateAllowedCalls((numberOfAllowedCalls % 50) + 1, 28);
@@ -289,7 +291,7 @@ contract LSP6UtilsTests is Test {
 
     function testHasPermissionShouldReturnTrueToAllRegularPermission(uint256 randomNumber)
         public
-        pure
+        view
     {
         // number between 1 and 17 (number of permissions with non regulars)
         uint8 numberOfPermissions = uint8((randomNumber % 18) + 1);
@@ -329,14 +331,14 @@ contract LSP6UtilsTests is Test {
 
         bytes32 combinedPermissions = LSP6Utils.combinePermissions(randomPermissionsPicked);
 
-        assert(LSP6Utils.hasPermission(combinedPermissions, _PERMISSION_CHANGEOWNER));
+        assert(LSP6Utils.hasPermission(ALL_REGULAR_PERMISSIONS, combinedPermissions));
     }
 
     function testHasPermissionShouldReturnFalseToAllRegularPermissionWithNonRegularPermission(
         uint256 randomNumber
     ) public {
-        // number between 1 and 17 (number of permissions with non regulars)
-        uint8 numberOfPermissions = uint8((randomNumber % 18) + 1);
+        // number between 2 and 20 (number of permissions with non regulars)
+        uint8 numberOfPermissions = uint8((randomNumber % 19) + 2);
 
         bytes32[19] memory normalPermissions = [
             _PERMISSION_CHANGEOWNER,
@@ -373,11 +375,11 @@ contract LSP6UtilsTests is Test {
         ];
 
         bytes32[] memory dynamicNonRegularPermissionsArray = new bytes32[](
-            normalPermissions.length
+            nonRegularPermissions.length
         );
 
-        for (uint256 i = 0; i < normalPermissions.length; i++) {
-            dynamicNonRegularPermissionsArray[i] = (normalPermissions[i]);
+        for (uint256 i = 0; i < nonRegularPermissions.length; i++) {
+            dynamicNonRegularPermissionsArray[i] = (nonRegularPermissions[i]);
         }
 
         bytes32[] memory randomPermissionsPicked = _randomMixPermissions(
@@ -388,7 +390,7 @@ contract LSP6UtilsTests is Test {
 
         bytes32 combinedPermissions = LSP6Utils.combinePermissions(randomPermissionsPicked);
 
-        assert(!LSP6Utils.hasPermission(combinedPermissions, _PERMISSION_CHANGEOWNER));
+        assert(!(LSP6Utils.hasPermission(combinedPermissions, ALL_REGULAR_PERMISSIONS)));
     }
 
     function _randomPermissions(bytes32[] memory permissions, uint256 randomNumber)
@@ -414,6 +416,7 @@ contract LSP6UtilsTests is Test {
         return pickedPermissions;
     }
 
+    // Returns an array of randomly selected permissions, including at least one non-regular permission.
     function _randomMixPermissions(
         bytes32[] memory normalPermissions,
         bytes32[] memory nonRegularPermissions,
@@ -422,12 +425,31 @@ contract LSP6UtilsTests is Test {
         bytes32[] memory result = new bytes32[](totalPermissions);
         uint256 normalPermissionsCount = normalPermissions.length;
         uint256 nonRegularPermissionsCount = nonRegularPermissions.length;
-        for (uint256 i = 0; i < totalPermissions; i++) {
-            if (i < normalPermissionsCount) {
-                result[i] = normalPermissions[i];
+
+        // Ensure at least one non-regular permission is included
+        if (totalPermissions > 0 && nonRegularPermissionsCount > 0) {
+            uint256 index = uint256(keccak256(abi.encodePacked(block.timestamp))) %
+                nonRegularPermissionsCount;
+            result[0] = nonRegularPermissions[index];
+            selectedPermissions[nonRegularPermissions[index]] = true;
+        }
+
+        uint256 count = 1;
+        while (count < totalPermissions) {
+            uint256 index = uint256(keccak256(abi.encodePacked(block.timestamp))) %
+                (normalPermissionsCount + nonRegularPermissionsCount);
+            bytes32 selectedPermission;
+            if (index < normalPermissionsCount) {
+                selectedPermission = normalPermissions[index];
             } else {
-                result[i] = nonRegularPermissions[i - normalPermissionsCount];
+                selectedPermission = nonRegularPermissions[index - normalPermissionsCount];
             }
+
+            if (!selectedPermissions[selectedPermission]) {
+                result[count] = selectedPermission;
+                selectedPermissions[selectedPermission] = true;
+            }
+            count++;
         }
         return result;
     }
