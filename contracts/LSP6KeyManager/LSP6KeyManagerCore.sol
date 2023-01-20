@@ -199,6 +199,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         virtual
         returns (bytes memory)
     {
+        if (payload.length < 4) {
+            revert InvalidPayload(payload);
+        }
+
         _nonReentrantBefore(msg.sender);
         _verifyPermissions(msg.sender, payload);
         bytes memory result = _executePayload(msgValue, payload);
@@ -212,6 +216,10 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         uint256 msgValue,
         bytes calldata payload
     ) internal virtual returns (bytes memory) {
+        if (payload.length < 4) {
+            revert InvalidPayload(payload);
+        }
+
         bytes memory encodedMessage = abi.encodePacked(
             LSP6_VERSION,
             block.chainid,
@@ -879,6 +887,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             ? false
             : permissions.hasPermission(_extractSuperPermissionFromOperation(operationType));
 
+        // CHECK if we are doing an empty call, as the receive() or fallback() function
+        // of the target contract could run some code.
+        if (!hasSuperOperation && !isCallDataPresent && value == 0) {
+            _requirePermissions(from, permissions, _extractPermissionFromOperation(operationType));
+        }
+
         if (isCallDataPresent && !hasSuperOperation) {
             _requirePermissions(from, permissions, _extractPermissionFromOperation(operationType));
         }
@@ -892,8 +906,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // Skip on contract creation (CREATE or CREATE2)
         if (isContractCreation) return;
 
-        // Skip if caller has SUPER permissions for operations
-        if (hasSuperOperation && isCallDataPresent && value == 0) return;
+        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
+        if (hasSuperOperation && value == 0) return;
 
         // Skip if caller has SUPER permission for value transfers
         if (hasSuperTransferValue && !isCallDataPresent && value != 0) return;

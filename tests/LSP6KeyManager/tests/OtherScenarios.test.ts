@@ -52,8 +52,30 @@ export const otherTestScenarios = (
   });
 
   describe("payload", () => {
-    it.skip("should fail when sending an empty payload to `keyManager.execute('0x')`", async () => {
-      await context.keyManager.connect(context.owner)["execute(bytes)"]("0x");
+    describe("when the payload is smaller than 4 bytes", () => {
+      it("should revert when using `execute(..)` with a payload smaller than 4 bytes", async () => {
+        await expect(context.keyManager["execute(bytes)"]("0xaabbcc"))
+          .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
+          .withArgs("0xaabbcc");
+      });
+
+      it("should revert when using `executeRelayCall(..)` with a payload smaller than 4 bytes", async () => {
+        await expect(
+          context.keyManager["executeRelayCall(bytes,uint256,bytes)"](
+            "0x",
+            0,
+            "0xaabbcc"
+          )
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
+          .withArgs("0xaabbcc");
+      });
+    });
+
+    it("should fail when sending an empty payload to `keyManager.execute('0x')`", async () => {
+      await expect(context.keyManager["execute(bytes)"]("0x"))
+        .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
+        .withArgs("0x");
     });
 
     it("Should revert because calling an unexisting function in ERC725", async () => {

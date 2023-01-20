@@ -394,6 +394,10 @@ const Errors = {
 			error: 'DelegateCallDisallowedViaKeyManager()',
 			message: 'LSP6: DelegateCall is disallowed via the Key Manager',
 		},
+		'0x3621bbcc': {
+			error: 'InvalidPayload(bytes)',
+			message: 'LSP6: Invalid Payload',
+		},
 	},
 	LSP7: {
 		'0x08d47949': {
