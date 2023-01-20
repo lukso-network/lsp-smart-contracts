@@ -932,7 +932,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bool isAllowedFunction;
 
         for (uint256 ii; ii < allowedCallsLength; ii += 30) {
-            if (ii + 28 > allowedCallsLength) {
+            if (ii + 30 >= allowedCallsLength) {
                 revert InvalidEncodedAllowedCalls(allowedCalls);
             }
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 2, 28);
