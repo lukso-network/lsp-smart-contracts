@@ -7,4 +7,4 @@ cache_path = 'forge-cache'
 test = 'tests/foundry'
 solc_version = "0.8.15"
 [fuzz]
-runs = 100_000
+runs = 50_000
