@@ -143,7 +143,7 @@ contract LSP16UniversalProfileTest is Test {
                 "deployCreate2Init(bytes,bytes32,bytes,uint256,uint256)",
                 type(LSP0ERC725AccountInit).creationCode,
                 salt,
-                _removeRandomByte(initilializerBytes),
+                _removeRandomByteFromBytes4(initilializerBytes),
                 0, // constructor is not payable
                 valueForInitializer
             )
@@ -255,7 +255,7 @@ contract LSP16UniversalProfileTest is Test {
         vm.deal(address(this), valueForInitializer);
         assert(address(this).balance == valueForInitializer);
 
-        bytes memory initializeCallData = _removeRandomByte(initilializerBytes);
+        bytes memory initializeCallData = _removeRandomByteFromBytes4(initilializerBytes);
 
         address expectedAddress = lsp16.calculateAddress(
             keccak256(type(LSP0ERC725AccountInit).creationCode),
@@ -316,7 +316,7 @@ contract LSP16UniversalProfileTest is Test {
         vm.deal(address(this), valueForInitializer);
         assert(address(this).balance == valueForInitializer);
 
-        bytes memory initializeCallData = _removeRandomByte(initilializerBytes);
+        bytes memory initializeCallData = _removeRandomByteFromBytes4(initilializerBytes);
 
         address expectedAddress = lsp16.calculateProxyAddress(
             address(lsp0Init),
@@ -358,10 +358,13 @@ contract LSP16UniversalProfileTest is Test {
         assert(expectedAddress == returnedAddress);
     }
 
-    function _removeRandomByte(bytes4 input) internal view returns (bytes memory) {
-        uint32 inputUint = uint32(input);
+    /**
+     * @dev Randomly removes one byte from the input bytes4 .
+     * @param input The bytes4 input to remove byte from
+     * @return result The new bytes which is a bytes array of length 3, it is the input bytes4 but one byte removed randomly
+     */
+    function _removeRandomByteFromBytes4(bytes4 input) internal view returns (bytes memory) {
         uint256 randomByteIndex = uint256(keccak256(abi.encodePacked(block.timestamp))) % 4;
-        inputUint = inputUint >> (randomByteIndex * 8);
         bytes memory result = new bytes(3);
         for (uint8 i = 0; i < 3; i++) {
             if (i < randomByteIndex) {
