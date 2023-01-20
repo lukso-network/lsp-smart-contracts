@@ -123,6 +123,8 @@ const ERC725YDataKeys = {
 			index: '0xdf30dba06db6a30e65354d9a64c60986',
 		},
 
+		AddressPermissionsPrefix: '0x4b80742de2bf',
+
 		// AddressPermissions:Permissions:<address>  + bytes2(0)
 		'AddressPermissions:Permissions': '0x4b80742de2bf82acb3630000',
 
@@ -499,6 +501,12 @@ const Errors = {
 		'0xe8ba2291': {
 			error: 'LSP8CappedSupplyCannotMintOverCap()',
 			message: 'LSP8CappedSupply: cannot mint over the max cap supply',
+		},
+	},
+	LSP9: {
+		'0x199611f': {
+			error: 'LSP1DelegateNotAllowedToSetDataKey(bytes32)',
+			message: 'The UniversalReceiverDelegate is not allowed to set this data key',
 		},
 	},
 	LSP11: {

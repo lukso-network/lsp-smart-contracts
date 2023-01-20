@@ -33,6 +33,8 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "../LSP1UniversalReceiver/LSP1Constants.sol";
+
+import {_LSP6KEY_ADDRESSPERMISSIONS_PREFIX} from "../LSP6KeyManager/LSP6Constants.sol";
 import {
     _INTERFACEID_LSP9,
     _TYPEID_LSP9_OwnershipTransferStarted,
@@ -41,6 +43,9 @@ import {
 } from "./LSP9Constants.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
+
+// errors
+import "./LSP9Errors.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -65,19 +70,6 @@ contract LSP9VaultCore is
      * @param value The amount of native tokens received
      */
     event ValueReceived(address indexed sender, uint256 indexed value);
-
-    /**
-     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
-     */
-    modifier onlyAllowed() {
-        if (msg.sender != owner()) {
-            require(
-                msg.sender == _reentrantDelegate,
-                "Only Owner or reentered Universal Receiver Delegate allowed"
-            );
-        }
-        _;
-    }
 
     /**
      * @dev Emits an event when receiving native tokens
@@ -202,7 +194,17 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32 dataKey, bytes memory dataValue) public virtual override onlyAllowed {
+    function setData(bytes32 dataKey, bytes memory dataValue) public virtual override {
+        bool isURD = _validateAndIdentifyCaller();
+        if (isURD) {
+            if (
+                bytes12(dataKey) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
+                bytes6(dataKey) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
+                bytes12(dataKey) == _LSP17_EXTENSION_PREFIX
+            ) {
+                revert LSP1DelegateNotAllowedToSetDataKey(dataKey);
+            }
+        }
         _setData(dataKey, dataValue);
     }
 
@@ -214,18 +216,36 @@ contract LSP9VaultCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
-        public
-        virtual
-        override
-        onlyAllowed
-    {
+    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues) public virtual override {
+        bool isURD = _validateAndIdentifyCaller();
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
         }
 
         for (uint256 i = 0; i < dataKeys.length; i = GasLib.uncheckedIncrement(i)) {
+            if (isURD) {
+                if (
+                    bytes12(dataKeys[i]) == _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
+                    bytes6(dataKeys[i]) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
+                    bytes12(dataKeys[i]) == _LSP17_EXTENSION_PREFIX
+                ) {
+                    revert LSP1DelegateNotAllowedToSetDataKey(dataKeys[i]);
+                }
+            }
             _setData(dataKeys[i], dataValues[i]);
+        }
+    }
+
+    /**
+     * @dev Modifier restricting the call to the owner of the contract and the UniversalReceiverDelegate
+     */
+    function _validateAndIdentifyCaller() internal view returns (bool isURD) {
+        if (msg.sender != owner()) {
+            require(
+                msg.sender == _reentrantDelegate,
+                "Only Owner or reentered Universal Receiver Delegate allowed"
+            );
+            isURD = true;
         }
     }
 
