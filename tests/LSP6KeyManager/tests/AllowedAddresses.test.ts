@@ -37,6 +37,7 @@ export const shouldBehaveLikeAllowedAddresses = (
     notAllowedEOA: SignerWithAddress,
     allowedTargetContract: TargetContract,
     notAllowedTargetContract: TargetContract;
+  const invalidEncodedAllowedCallsValue = "0xbadbadbadbad";
 
   before(async () => {
     context = await buildContext();
@@ -79,7 +80,7 @@ export const shouldBehaveLikeAllowedAddresses = (
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
       encodedAllowedCalls,
       combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
-      "0xbadbadbadbad",
+      invalidEncodedAllowedCallsValue,
     ];
 
     await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -259,10 +260,8 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       randomAddresses.forEach((recipient) => {
         it(`-> should revert when sending 1 LYX to EOA ${recipient}`, async () => {
-          let initialBalanceUP = await provider.getBalance(
-            context.universalProfile.address
-          );
-          let initialBalanceEOA = await provider.getBalance(recipient);
+          await provider.getBalance(context.universalProfile.address);
+          await provider.getBalance(recipient);
 
           let amount = ethers.utils.parseEther("1");
 
@@ -277,8 +276,11 @@ export const shouldBehaveLikeAllowedAddresses = (
               .connect(invalidEncodedAllowedCalls)
               ["execute(bytes)"](transferPayload)
           )
-            .to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed")
-            .withArgs(invalidEncodedAllowedCalls.address);
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedCalls"
+            )
+            .withArgs(invalidEncodedAllowedCallsValue);
         });
       });
     });
