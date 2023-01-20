@@ -11,7 +11,7 @@ import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165S
 // constants
 import {_INTERFACEID_LSP1} from "../../LSP1UniversalReceiver/LSP1Constants.sol";
 
-contract TokenReceiverWithLSP1WithERC721ReceivedRevert is
+contract TokenReceiverWithLSP1WithERC721ReceivedInvalid is
     ERC165Storage,
     ILSP1UniversalReceiver,
     ERC721Holder
@@ -43,6 +43,6 @@ contract TokenReceiverWithLSP1WithERC721ReceivedRevert is
         uint256, /* tokenId */
         bytes memory /* data */
     ) public pure override returns (bytes4) {
-        revert("TokenReceiverWithLSP1WithERC721ReceivedRevert: transfer rejected");
+        return 0xdeadbeef;
     }
 }
