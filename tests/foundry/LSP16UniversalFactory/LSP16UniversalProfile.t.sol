@@ -129,7 +129,10 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testDeployCreate2InitShouldNotKeepValueWithUPInit(uint128 valueForInitializer) public {
+    function testDeployCreate2InitShouldNotKeepValueWithUPInit(
+        uint128 valueForInitializer,
+        bytes4 initilializerBytes
+    ) public {
         vm.deal(address(this), valueForInitializer);
         assert(address(this).balance == valueForInitializer);
 
@@ -140,7 +143,7 @@ contract LSP16UniversalProfileTest is Test {
                 "deployCreate2Init(bytes,bytes32,bytes,uint256,uint256)",
                 type(LSP0ERC725AccountInit).creationCode,
                 salt,
-                hex"aabbcc",
+                _removeRandomByte(initilializerBytes),
                 0, // constructor is not payable
                 valueForInitializer
             )
@@ -246,12 +249,13 @@ contract LSP16UniversalProfileTest is Test {
 
     function testCalculateAddressShouldReturnCorrectUPAddressWithDeployCreate2Init(
         bytes32 providedSalt,
-        uint256 valueForInitializer
+        uint256 valueForInitializer,
+        bytes4 initilializerBytes
     ) public {
         vm.deal(address(this), valueForInitializer);
         assert(address(this).balance == valueForInitializer);
 
-        bytes memory initializeCallData = hex"aabbcc";
+        bytes memory initializeCallData = _removeRandomByte(initilializerBytes);
 
         address expectedAddress = lsp16.calculateAddress(
             keccak256(type(LSP0ERC725AccountInit).creationCode),
@@ -306,12 +310,13 @@ contract LSP16UniversalProfileTest is Test {
 
     function testCalculateProxyAddressWithDeployCreate2ProxyInit(
         bytes32 providedSalt,
-        uint256 valueForInitializer
+        uint256 valueForInitializer,
+        bytes4 initilializerBytes
     ) public {
         vm.deal(address(this), valueForInitializer);
         assert(address(this).balance == valueForInitializer);
 
-        bytes memory initializeCallData = hex"aabbcc";
+        bytes memory initializeCallData = _removeRandomByte(initilializerBytes);
 
         address expectedAddress = lsp16.calculateProxyAddress(
             address(lsp0Init),
@@ -351,5 +356,20 @@ contract LSP16UniversalProfileTest is Test {
 
         address returnedAddress = abi.decode(returnedData, (address));
         assert(expectedAddress == returnedAddress);
+    }
+
+    function _removeRandomByte(bytes4 input) internal view returns (bytes memory) {
+        uint32 inputUint = uint32(input);
+        uint256 randomByteIndex = uint256(keccak256(abi.encodePacked(block.timestamp))) % 4;
+        inputUint = inputUint >> (randomByteIndex * 8);
+        bytes memory result = new bytes(3);
+        for (uint8 i = 0; i < 3; i++) {
+            if (i < randomByteIndex) {
+                result[i] = input[i];
+            } else {
+                result[i] = input[i + 1];
+            }
+        }
+        return result;
     }
 }
