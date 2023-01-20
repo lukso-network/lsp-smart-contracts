@@ -11,6 +11,7 @@ import {
   UniversalReceiverDelegateVaultSetter__factory,
   UniversalReceiverDelegateVaultReentrantA__factory,
   UniversalReceiverDelegateVaultReentrantB__factory,
+  UniversalReceiverDelegateVaultMalicious__factory,
 } from "../../types";
 
 // helpers
@@ -188,6 +189,296 @@ export const shouldBehaveLikeLSP9 = (
         data.substring(0, 66)
       );
       expect(resultAfter).to.equal("0xddccbbaa");
+    });
+
+    describe("when setting LSP1, LSP6, LSP17 dataKeys", () => {
+      before(async () => {
+        // setting UniversalReceiverDelegate that setData
+        const lsp1UniversalReceiverDelegateVaultMalicious =
+          await new UniversalReceiverDelegateVaultMalicious__factory(
+            context.accounts.anyone
+          ).deploy();
+
+        await context.lsp9Vault
+          .connect(context.accounts.owner)
+          ["setData(bytes32,bytes)"](
+            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+            lsp1UniversalReceiverDelegateVaultMalicious.address
+          );
+      });
+      describe("when testing LSP1 Keys", () => {
+        describe("when the owner is setting data", () => {
+          describe("using setData", () => {
+            it("should pass", async () => {
+              const key =
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+                ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+
+              const value = "0xaabbccdd";
+
+              await context.lsp9Vault
+                .connect(context.accounts.owner)
+                ["setData(bytes32,bytes)"](key, value);
+
+              const result = await context.lsp9Vault.callStatic[
+                "getData(bytes32)"
+              ](key);
+              expect(result).to.equal(value);
+            });
+          });
+
+          describe("using setData Array", () => {
+            it("should pass", async () => {
+              const key1 = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+              const value1 = ethers.utils.hexlify(ethers.utils.randomBytes(5));
+
+              const key2 =
+                ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+                ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+
+              const value2 = ethers.utils.hexlify(ethers.utils.randomBytes(5));
+
+              const keys = [key1, key2];
+              const values = [value1, value2];
+
+              await context.lsp9Vault
+                .connect(context.accounts.owner)
+                ["setData(bytes32[],bytes[])"](keys, values);
+
+              const result = await context.lsp9Vault.callStatic[
+                "getData(bytes32[])"
+              ](keys);
+
+              expect(result).to.deep.equal(values);
+            });
+          });
+        });
+
+        describe("when the URD is setting data", () => {
+          describe("using setData", () => {
+            it("should revert", async () => {
+              const typeId = ethers.utils.solidityKeccak256(
+                ["string"],
+                ["setData"]
+              );
+
+              const data = "0x00"; // To set MappedUniversalReceiverDelegate Key
+
+              await expect(context.lsp9Vault.universalReceiver(typeId, data))
+                .to.be.revertedWithCustomError(
+                  context.lsp9Vault,
+                  "LSP1DelegateNotAllowedToSetDataKey"
+                )
+                .withArgs(
+                  ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+                    "00".repeat(20)
+                );
+            });
+          });
+          describe("using setData Array", () => {
+            it("should revert", async () => {
+              const typeId = ethers.utils.solidityKeccak256(
+                ["string"],
+                ["setData[]"]
+              );
+
+              const data = "0x00"; // To set MappedUniversalReceiverDelegate Key
+
+              await expect(context.lsp9Vault.universalReceiver(typeId, data))
+                .to.be.revertedWithCustomError(
+                  context.lsp9Vault,
+                  "LSP1DelegateNotAllowedToSetDataKey"
+                )
+                .withArgs(
+                  ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
+                    "00".repeat(20)
+                );
+            });
+          });
+        });
+      });
+
+      describe("when testing LSP6 Keys", () => {
+        describe("when the owner is setting data", () => {
+          describe("using setData", () => {
+            it("should pass", async () => {
+              const key =
+                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+
+              const value = "0xaabbccdd";
+
+              await context.lsp9Vault
+                .connect(context.accounts.owner)
+                ["setData(bytes32,bytes)"](key, value);
+
+              const result = await context.lsp9Vault.callStatic[
+                "getData(bytes32)"
+              ](key);
+              expect(result).to.equal(value);
+            });
+          });
+
+          describe("using setData Array", () => {
+            it("should pass", async () => {
+              const key1 = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+              const value1 = ethers.utils.hexlify(ethers.utils.randomBytes(5));
+
+              const key2 =
+                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+                ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+
+              const value2 = ethers.utils.hexlify(ethers.utils.randomBytes(5));
+
+              const keys = [key1, key2];
+              const values = [value1, value2];
+
+              await context.lsp9Vault
+                .connect(context.accounts.owner)
+                ["setData(bytes32[],bytes[])"](keys, values);
+
+              const result = await context.lsp9Vault.callStatic[
+                "getData(bytes32[])"
+              ](keys);
+
+              expect(result).to.deep.equal(values);
+            });
+          });
+        });
+
+        describe("when the URD is setting data", () => {
+          describe("using setData", () => {
+            it("should revert", async () => {
+              const typeId = ethers.utils.solidityKeccak256(
+                ["string"],
+                ["setData"]
+              );
+
+              const data = "0x01"; // To set LSP6Permission Key
+
+              await expect(context.lsp9Vault.universalReceiver(typeId, data))
+                .to.be.revertedWithCustomError(
+                  context.lsp9Vault,
+                  "LSP1DelegateNotAllowedToSetDataKey"
+                )
+                .withArgs(
+                  ERC725YDataKeys.LSP6.AddressPermissionsPrefix +
+                    "00".repeat(26)
+                );
+            });
+          });
+          describe("using setData Array", () => {
+            it("should revert", async () => {
+              const typeId = ethers.utils.solidityKeccak256(
+                ["string"],
+                ["setData[]"]
+              );
+
+              const data = "0x01"; // To set LSP6Permission Key
+
+              await expect(context.lsp9Vault.universalReceiver(typeId, data))
+                .to.be.revertedWithCustomError(
+                  context.lsp9Vault,
+                  "LSP1DelegateNotAllowedToSetDataKey"
+                )
+                .withArgs(
+                  ERC725YDataKeys.LSP6.AddressPermissionsPrefix +
+                    "00".repeat(26)
+                );
+            });
+          });
+        });
+      });
+
+      describe("when testing LSP17 Keys", () => {
+        describe("when the owner is setting data", () => {
+          describe("using setData", () => {
+            it("should pass", async () => {
+              const key =
+                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+                ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+
+              const value = "0xaabbccdd";
+
+              await context.lsp9Vault
+                .connect(context.accounts.owner)
+                ["setData(bytes32,bytes)"](key, value);
+
+              const result = await context.lsp9Vault.callStatic[
+                "getData(bytes32)"
+              ](key);
+              expect(result).to.equal(value);
+            });
+          });
+
+          describe("using setData Array", () => {
+            it("should pass", async () => {
+              const key1 = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+              const value1 = ethers.utils.hexlify(ethers.utils.randomBytes(5));
+
+              const key2 =
+                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+                ethers.utils.hexlify(ethers.utils.randomBytes(20)).substring(2);
+
+              const value2 = ethers.utils.hexlify(ethers.utils.randomBytes(5));
+
+              const keys = [key1, key2];
+              const values = [value1, value2];
+
+              await context.lsp9Vault
+                .connect(context.accounts.owner)
+                ["setData(bytes32[],bytes[])"](keys, values);
+
+              const result = await context.lsp9Vault.callStatic[
+                "getData(bytes32[])"
+              ](keys);
+
+              expect(result).to.deep.equal(values);
+            });
+          });
+        });
+
+        describe("when the URD is setting data", () => {
+          describe("using setData", () => {
+            it("should revert", async () => {
+              const typeId = ethers.utils.solidityKeccak256(
+                ["string"],
+                ["setData"]
+              );
+
+              const data = "0x02"; // To set LSP17Extension Key
+
+              await expect(context.lsp9Vault.universalReceiver(typeId, data))
+                .to.be.revertedWithCustomError(
+                  context.lsp9Vault,
+                  "LSP1DelegateNotAllowedToSetDataKey"
+                )
+                .withArgs(
+                  ERC725YDataKeys.LSP17.LSP17ExtensionPrefix + "00".repeat(20)
+                );
+            });
+          });
+          describe("using setData Array", () => {
+            it("should revert", async () => {
+              const typeId = ethers.utils.solidityKeccak256(
+                ["string"],
+                ["setData[]"]
+              );
+
+              const data = "0x02"; // To set LSP17Extension Key
+
+              await expect(context.lsp9Vault.universalReceiver(typeId, data))
+                .to.be.revertedWithCustomError(
+                  context.lsp9Vault,
+                  "LSP1DelegateNotAllowedToSetDataKey"
+                )
+                .withArgs(
+                  ERC725YDataKeys.LSP17.LSP17ExtensionPrefix + "00".repeat(20)
+                );
+            });
+          });
+        });
+      });
     });
 
     describe("when setting a data key with a value less than 256 bytes", () => {
