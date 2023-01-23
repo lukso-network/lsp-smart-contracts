@@ -1,4 +1,4 @@
-@erc725/=node_modules/@erc725/
+@erc725/smart-contracts/=node_modules/@erc725/smart-contracts/
 @openzeppelin/contracts/=node_modules/@openzeppelin/contracts/
 @openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/
 eth-gas-reporter/=node_modules/eth-gas-reporter/
