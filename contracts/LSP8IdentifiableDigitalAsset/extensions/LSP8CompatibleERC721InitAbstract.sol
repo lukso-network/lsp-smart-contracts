@@ -281,6 +281,7 @@ abstract contract LSP8CompatibleERC721InitAbstract is
                 if (reason.length == 0) {
                     revert("LSP8CompatibleERC721: transfer to non ERC721Receiver implementer");
                 } else {
+                    // solhint-disable no-inline-assembly
                     /// @solidity memory-safe-assembly
                     assembly {
                         revert(add(32, reason), mload(reason))

@@ -78,7 +78,7 @@ describe("LSP8CompatibleERC721", () => {
     });
   });
 
-  describe.skip("when using LSP8 contract with proxy", () => {
+  describe("when using LSP8 contract with proxy", () => {
     const buildTestContext =
       async (): Promise<LSP8CompatibleERC721TestContext> => {
         const accounts = await getNamedAccounts();
