@@ -610,27 +610,6 @@ export const shouldBehaveLikeLSP8 = (
         return tx;
       };
 
-      const transferFailScenario = async (
-        { from, to, tokenId, allowNonLSP1Recipient, data }: TransferTxParams,
-        operator: SignerWithAddress,
-        expectedError: ExpectedError
-      ) => {
-        if (expectedError.args.length > 0)
-          await expect(
-            context.lsp8
-              .connect(operator)
-              .transfer(from, to, tokenId, allowNonLSP1Recipient, data)
-          )
-            .to.be.revertedWithCustomError(context.lsp8, expectedError.error)
-            .withArgs(...expectedError.args);
-        else
-          await expect(
-            context.lsp8
-              .connect(operator)
-              .transfer(from, to, tokenId, allowNonLSP1Recipient, data)
-          ).to.be.revertedWithCustomError(context.lsp8, expectedError.error);
-      };
-
       const sendingTransferTransactions = (
         getOperator: () => SignerWithAddress
       ) => {
@@ -658,12 +637,21 @@ export const shouldBehaveLikeLSP8 = (
                   allowNonLSP1Recipient,
                   data,
                 };
-                const expectedError = "LSP8CannotSendToAddressZero";
 
-                await transferFailScenario(txParams, operator, {
-                  error: expectedError,
-                  args: [],
-                });
+                await expect(
+                  context.lsp8
+                    .connect(operator)
+                    .transfer(
+                      txParams.from,
+                      txParams.to,
+                      txParams.tokenId,
+                      txParams.allowNonLSP1Recipient,
+                      txParams.data
+                    )
+                ).to.be.revertedWithCustomError(
+                  context.lsp8,
+                  "LSP8CannotSendToAddressZero"
+                );
               });
             });
 
@@ -734,12 +722,21 @@ export const shouldBehaveLikeLSP8 = (
                 allowNonLSP1Recipient,
                 data,
               };
-              const expectedError = "LSP8CannotSendToSelf";
 
-              await transferFailScenario(txParams, operator, {
-                error: expectedError,
-                args: [],
-              });
+              await expect(
+                context.lsp8
+                  .connect(operator)
+                  .transfer(
+                    txParams.from,
+                    txParams.to,
+                    txParams.tokenId,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              ).to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8CannotSendToSelf"
+              );
             });
           });
         });
@@ -761,12 +758,23 @@ export const shouldBehaveLikeLSP8 = (
                 allowNonLSP1Recipient,
                 data,
               };
-              const expectedError = "LSP8NotifyTokenReceiverIsEOA";
 
-              await transferFailScenario(txParams, operator, {
-                error: expectedError,
-                args: [txParams.to],
-              });
+              await expect(
+                context.lsp8
+                  .connect(operator)
+                  .transfer(
+                    txParams.from,
+                    txParams.to,
+                    txParams.tokenId,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              )
+                .to.be.revertedWithCustomError(
+                  context.lsp8,
+                  "LSP8NotifyTokenReceiverIsEOA"
+                )
+                .withArgs(txParams.to);
             });
           });
 
@@ -809,13 +817,23 @@ export const shouldBehaveLikeLSP8 = (
                   allowNonLSP1Recipient,
                   data,
                 };
-                const expectedError =
-                  "LSP8NotifyTokenReceiverContractMissingLSP1Interface";
 
-                await transferFailScenario(txParams, operator, {
-                  error: expectedError,
-                  args: [txParams.to],
-                });
+                await expect(
+                  context.lsp8
+                    .connect(operator)
+                    .transfer(
+                      txParams.from,
+                      txParams.to,
+                      txParams.tokenId,
+                      txParams.allowNonLSP1Recipient,
+                      txParams.data
+                    )
+                )
+                  .to.be.revertedWithCustomError(
+                    context.lsp8,
+                    "LSP8NotifyTokenReceiverContractMissingLSP1Interface"
+                  )
+                  .withArgs(txParams.to);
               });
             });
           });
@@ -829,12 +847,22 @@ export const shouldBehaveLikeLSP8 = (
                 allowNonLSP1Recipient,
                 data,
               };
-              const expectedError = "LSP8CannotSendToSelf";
 
-              await transferFailScenario(txParams, operator, {
-                error: expectedError,
-                args: [],
-              });
+              await expect(
+                context.lsp8
+                  .connect(operator)
+                  .transfer(
+                    txParams.from,
+                    txParams.to,
+                    txParams.tokenId,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              ).to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8CannotSendToSelf"
+              );
+              const expectedError = "LSP8CannotSendToSelf";
             });
           });
         });
@@ -857,12 +885,23 @@ export const shouldBehaveLikeLSP8 = (
               allowNonLSP1Recipient: true,
               data: "0x",
             };
-            const expectedError = "LSP8NotTokenOperator";
 
-            await transferFailScenario(txParams, operator, {
-              error: expectedError,
-              args: [txParams.tokenId.toString(), operator.address],
-            });
+            await expect(
+              context.lsp8
+                .connect(operator)
+                .transfer(
+                  txParams.from,
+                  txParams.to,
+                  txParams.tokenId,
+                  txParams.allowNonLSP1Recipient,
+                  txParams.data
+                )
+            )
+              .to.be.revertedWithCustomError(
+                context.lsp8,
+                "LSP8NotTokenOperator"
+              )
+              .withArgs(txParams.tokenId.toString(), operator.address);
           });
         });
       });
@@ -877,16 +916,24 @@ export const shouldBehaveLikeLSP8 = (
             allowNonLSP1Recipient: true,
             data: "0x",
           };
-          const expectedError = "LSP8NotTokenOwner";
 
-          await transferFailScenario(txParams, operator, {
-            error: expectedError,
-            args: [
+          await expect(
+            context.lsp8
+              .connect(operator)
+              .transfer(
+                txParams.from,
+                txParams.to,
+                txParams.tokenId,
+                txParams.allowNonLSP1Recipient,
+                txParams.data
+              )
+          )
+            .to.be.revertedWithCustomError(context.lsp8, "LSP8NotTokenOwner")
+            .withArgs(
               context.accounts.owner.address,
               txParams.tokenId.toString(),
-              txParams.from,
-            ],
-          });
+              txParams.from
+            );
         });
       });
 
@@ -900,12 +947,23 @@ export const shouldBehaveLikeLSP8 = (
             allowNonLSP1Recipient: true,
             data: "0x",
           };
-          const expectedError = "LSP8NonExistentTokenId";
 
-          await transferFailScenario(txParams, operator, {
-            error: expectedError,
-            args: [txParams.tokenId.toString()],
-          });
+          await expect(
+            context.lsp8
+              .connect(operator)
+              .transfer(
+                txParams.from,
+                txParams.to,
+                txParams.tokenId,
+                txParams.allowNonLSP1Recipient,
+                txParams.data
+              )
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp8,
+              "LSP8NonExistentTokenId"
+            )
+            .withArgs(txParams.tokenId.toString());
         });
       });
     });
