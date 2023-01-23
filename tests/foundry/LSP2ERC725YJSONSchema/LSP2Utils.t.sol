@@ -36,20 +36,28 @@ contract LSP2UtilsTests is Test {
     }
 
     function testIsCompactBytesArray(
-        bytes32 firstBytes,
-        bytes20 secondBytes,
-        bytes2 thirdBytes
-    ) public pure {
+        uint8 firstBytesLength,
+        uint8 secondBytesLength,
+        uint16 thirdBytesLength
+    ) public view {
+        // check if thirdBytesLength is not too big to speed up test
+        if (thirdBytesLength > 750) return;
+
         // store firstBytes length
-        uint16 firstBytesLength = firstBytes.length;
+        bytes memory firstBytes = _generateRandomBytes(firstBytesLength);
         // store secondBytes length
-        uint16 secondBytesLength = secondBytes.length;
+        bytes memory secondBytes = _generateRandomBytes(secondBytesLength);
+
+        bytes memory thirdBytes = _generateRandomBytes(thirdBytesLength);
+
+        uint16 firstBytesLength16 = uint16(firstBytesLength);
+        uint16 secondBytesLength16 = uint16(secondBytesLength);
+
         // store thirdBytes length
-        uint16 thirdBytesLength = thirdBytes.length;
         bytes memory data = abi.encodePacked(
-            firstBytesLength,
+            firstBytesLength16,
             firstBytes,
-            secondBytesLength,
+            secondBytesLength16,
             secondBytes,
             thirdBytesLength,
             thirdBytes
@@ -60,7 +68,7 @@ contract LSP2UtilsTests is Test {
     function testShouldNotRevertWithLowerLengthElement(
         bytes memory firstBytes,
         bytes memory secondBytes,
-        uint8 reducer
+        uint16 reducer
     ) public pure {
         // store firstBytes length
         uint16 firstBytesLength = uint16(firstBytes.length);
@@ -107,5 +115,13 @@ contract LSP2UtilsTests is Test {
         );
 
         LSP2Utils.isCompactBytesArray(data);
+    }
+
+    function _generateRandomBytes(uint256 length) private view returns (bytes memory) {
+        bytes memory b = new bytes(length);
+        for (uint256 i = 0; i < length; i++) {
+            b[i] = bytes1(uint8(uint256(keccak256(abi.encodePacked(block.timestamp, i)))));
+        }
+        return b;
     }
 }

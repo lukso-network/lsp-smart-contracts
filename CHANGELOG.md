@@ -2,24 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.8.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.7.0...v0.8.0) (2022-09-20)
-
-### ⚠ BREAKING CHANGES
-
-- split between ENCRYPT/DECRYPT permissions + move SUPER permissions on the left bit range
-
-### Features
-
-- created `LSP7Burnable` and `LSP8Burnable` token extension. (commit [#bc238b5](https://github.com/lukso-network/lsp-smart-contracts/pull/312/commits/bc238b569615d741dc539977bae21fcefc88c317))
-
-### Bug Fixes
-
-- Reset `pendingOwner` whenever `renounceOwnership(..)` is used. ([#310](https://github.com/lukso-network/lsp-smart-contracts/issues/310)) ([d0bb563](https://github.com/lukso-network/lsp-smart-contracts/commit/d0bb563dbce36353c8d9407f90c4dfb68c5d47d1))
-- add reference to `.key` member for SupportedStandards in constants ([#311](https://github.com/lukso-network/lsp-smart-contracts/issues/311)) ([550699f](https://github.com/lukso-network/lsp-smart-contracts/commit/550699fe6735bc249b6810046ae596444a683642))
-- fixed failing iOS CI ([#313](https://github.com/lukso-network/lsp-smart-contracts/issues/313)) ([25e965b](https://github.com/lukso-network/lsp-smart-contracts/commit/25e965b0f0a20979bc874853842dd1971acd6bd8))
-
-- split between ENCRYPT/DECRYPT permissions + move SUPER permissions on the left bit range ([dfeaec5](https://github.com/lukso-network/lsp-smart-contracts/commit/dfeaec525d5cc7997e20ea1f4554b28438cfeed5))
-
 ## [0.7.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.2...v0.7.0) (2022-09-07)
 
 ### ⚠ BREAKING CHANGES

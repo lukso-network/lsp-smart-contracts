@@ -887,6 +887,12 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
             ? false
             : permissions.hasPermission(_extractSuperPermissionFromOperation(operationType));
 
+        // CHECK if we are doing an empty call, as the receive() or fallback() function
+        // of the target contract could run some code.
+        if (!hasSuperOperation && !isCallDataPresent && value == 0) {
+            _requirePermissions(from, permissions, _extractPermissionFromOperation(operationType));
+        }
+
         if (isCallDataPresent && !hasSuperOperation) {
             _requirePermissions(from, permissions, _extractPermissionFromOperation(operationType));
         }
@@ -900,8 +906,8 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         // Skip on contract creation (CREATE or CREATE2)
         if (isContractCreation) return;
 
-        // Skip if caller has SUPER permissions for operations
-        if (hasSuperOperation && isCallDataPresent && value == 0) return;
+        // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
+        if (hasSuperOperation && value == 0) return;
 
         // Skip if caller has SUPER permission for value transfers
         if (hasSuperTransferValue && !isCallDataPresent && value != 0) return;
@@ -923,7 +929,7 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bytes memory allowedCalls = ERC725Y(_target).getAllowedCallsFor(from);
         uint256 allowedCallsLength = allowedCalls.length;
 
-        if (allowedCallsLength == 0 || !LSP6Utils.isCompactBytesArrayOfAllowedCalls(allowedCalls)) {
+        if (allowedCallsLength == 0) {
             revert NoCallsAllowed(from);
         }
 
@@ -932,6 +938,9 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         bool isAllowedFunction;
 
         for (uint256 ii; ii < allowedCallsLength; ii += 30) {
+            if (ii + 30 > allowedCallsLength) {
+                revert InvalidEncodedAllowedCalls(allowedCalls);
+            }
             bytes memory chunk = BytesLib.slice(allowedCalls, ii + 2, 28);
 
             if (bytes28(chunk) == 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff) {
