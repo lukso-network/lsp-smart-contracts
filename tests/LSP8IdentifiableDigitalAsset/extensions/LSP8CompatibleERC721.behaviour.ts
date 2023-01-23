@@ -713,13 +713,13 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
     };
 
     describe("transferFrom", () => {
-      const transferFn = "transferFrom";
+      const transferFn = "transferFrom(address,address,uint256)";
       const allowNonLSP1Recipient = true;
       const expectedData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(""));
 
       describe("when the from address is the tokenId owner", () => {
         describe("when `to` is an EOA", () => {
-          it("should allow transfering the tokenId", async () => {
+          it("should allow transferring the tokenId", async () => {
             const txParams = {
               operator: context.accounts.owner.address,
               from: context.accounts.owner.address,
@@ -738,7 +738,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
 
         describe("when `to` is a contract", () => {
           describe("when receiving contract supports LSP1", () => {
-            it("should allow transfering the tokenId", async () => {
+            it("should allow transferring the tokenId", async () => {
               const txParams = {
                 operator: context.accounts.owner.address,
                 from: context.accounts.owner.address,
@@ -756,7 +756,7 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           });
 
           describe("when receiving contract does not support LSP1", () => {
-            it("should allow transfering the tokenId", async () => {
+            it("should allow transferring the tokenId", async () => {
               const txParams = {
                 operator: context.accounts.owner.address,
                 from: context.accounts.owner.address,
@@ -790,9 +790,11 @@ export const shouldBehaveLikeLSP8CompatibleERC721 = (
           );
 
           await expect(
-            context.lsp8CompatibleERC721
-              .connect(txParams.operator)
-              [transferFn](txParams.from, txParams.to, txParams.tokenId)
+            context.lsp8CompatibleERC721[transferFn](
+              txParams.from,
+              txParams.to,
+              tokenIdAsBytes32(txParams.tokenId)
+            )
           )
             .to.be.revertedWithCustomError(
               context.lsp8CompatibleERC721,
