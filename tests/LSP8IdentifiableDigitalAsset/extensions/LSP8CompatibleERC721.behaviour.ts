@@ -28,7 +28,7 @@ import {
   SupportedStandards,
 } from "../../../constants";
 
-import type { BytesLike } from "ethers";
+import type { BytesLike, Contract } from "ethers";
 import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 export type LSP8CompatibleERC721TestAccounts = {

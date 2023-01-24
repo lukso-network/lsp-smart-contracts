@@ -15,12 +15,12 @@ import {_LSP4_METADATA_KEY} from "../../LSP4DigitalAssetMetadata/LSP4Constants.s
 
 contract LSP8CompatibleERC721Tester is LSP8CompatibleERC721 {
     constructor(
-        string memory name,
-        string memory symbol,
-        address newOwner,
-        bytes memory tokenURIValue
-    ) LSP8CompatibleERC721(name, symbol, newOwner) {
-        _setData(_LSP4_METADATA_KEY, tokenURIValue);
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        bytes memory tokenURIValue_
+    ) LSP8CompatibleERC721(name_, symbol_, newOwner_) {
+        _setData(_LSP4_METADATA_KEY, tokenURIValue_);
     }
 
     function mint(
