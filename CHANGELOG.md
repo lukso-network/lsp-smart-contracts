@@ -2,6 +2,129 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.2...v0.8.0) (2023-01-24)
+
+
+### ⚠ BREAKING CHANGES
+
+*  [WP-I16] Revert instead of return when no extension exist in LSP17 (#433)
+* Change `AllowedERC725YKeys` to `AllowedERC725YDataKeys` (#379)
+* change `universalReceiverDelegate(..)` to `universalReceiver(..)` (#376)
+* switch the order of LSP6 `Executed` event + index both params (#378)
+* Add LSP17ContractExtension implementation in LSP0 & LSP9 (#369)
+* add ADD/CHANGE Extensions permissions and check in LSP6 (#368)
+* mark `initialize(...)` function as `external` (#359)
+* upgrade `@erc725/smart-contracts` dependency to 4.0.0 (#355)
+* [WP-M7] LSP-6: do not allow any interaction if `AllowedCalls` is empty for a caller/signer (#356)
+* [WP-M5] LSP-6: Replace `AllowedStandards/Address/Functions` by `AllowedCalls` - Signature collisions can be exploited with phishing attack (#351)
+* [WP-C2] Change the verification logic of AllowedERC725YKeys in LSP6 (#352)
+* [WP-I19] Adding `bool[]` for token `transferBatch(..)` (#350)
+* Change executeRelayCall signing data with EIP191 (#349)
+* Re-order and Add new LSP6 permissions (#346)
+* [WP-L12] - LSP-6: change parameter of `getNonce(address,uint256)` to a `uint128` -> `getNonce(address,uint128)` (#341)
+* add check for `amount != 0` when transferring LSP7 tokens
+* Replace custom/ClaimOwnership with LSP14Ownable2Step (#323)
+* change order of LSP6 permissions (#322)
+* switch the returnedValue with the receivedData values in UniversalReceiver Event (#321)
+* split between ENCRYPT/DECRYPT permissions + move SUPER permissions on the left bit range
+* remove `LSP7Init` and `LSP8Init` + make barebone LSP7/8 contracts non deployable (#296)
+* Update ClaimOwnership, LSP0 and LSP9 InterfaceId (#298)
+* [LSP0, LSP4, LSP9] emit only the first 256 bytes of the value in the `DataChanged` event (#301)
+* use `uint8` instead of `uint256` in LSP7 decimals (#292)
+* add new permission ENCRYPT in `constants.js` (#289)
+* Change `isOperatorFor(..)` to `authorizedAmountFor(..)` in LSP7 (#279)
+
+### Features
+
+* [QSP - Best Practices] Use `_uncheckedIncrement(..)` for saving gas when iterating loops ([#273](https://github.com/lukso-network/lsp-smart-contracts/issues/273)) ([4632f9c](https://github.com/lukso-network/lsp-smart-contracts/commit/4632f9ce673bbab9bee841394a85d3d0b9de8832))
+* [QSP-12] Add two step process for `renounceOwnership(...)` in `ClaimOwnership` contract ([#282](https://github.com/lukso-network/lsp-smart-contracts/issues/282)) ([b816f38](https://github.com/lukso-network/lsp-smart-contracts/commit/b816f38e44ace092722bc7be0408231eb462549a))
+* [WP-H2] Add msg.value to LSP6 signed message ([#347](https://github.com/lukso-network/lsp-smart-contracts/issues/347)) ([f47d44d](https://github.com/lukso-network/lsp-smart-contracts/commit/f47d44dff2cca92a0a767193eb0003d14a35d445))
+* Add `OwnershipRenounced()` event as mentioned in the specs. ([#324](https://github.com/lukso-network/lsp-smart-contracts/issues/324)) ([4191842](https://github.com/lukso-network/lsp-smart-contracts/commit/4191842a537aedba50477b9895ec748124fbd962))
+* Add a hook that notifies the vault pending owner ([#295](https://github.com/lukso-network/lsp-smart-contracts/issues/295)) ([bb9d579](https://github.com/lukso-network/lsp-smart-contracts/commit/bb9d579f7ab6657ef805794166cdbf8d4c061dbd))
+* add ADD/CHANGE Extensions permissions and check in LSP6 ([#368](https://github.com/lukso-network/lsp-smart-contracts/issues/368)) ([f1e5993](https://github.com/lukso-network/lsp-smart-contracts/commit/f1e59939a1a187cb6ba4fff80191914661b80fe9))
+* add ADD/CHANGE UniversalReceiverDelegate checks in LSP6 ([#363](https://github.com/lukso-network/lsp-smart-contracts/issues/363)) ([99a439f](https://github.com/lukso-network/lsp-smart-contracts/commit/99a439f0176b53a0298d964f9d8ae6218ca5a686))
+* add GasLib library with unchecked increment ([#297](https://github.com/lukso-network/lsp-smart-contracts/issues/297)) ([1a7757f](https://github.com/lukso-network/lsp-smart-contracts/commit/1a7757fd85940e3dee5a7577e2410dc5d04eaad8))
+* add LSP11BasicSocialRecovery implementation ([#114](https://github.com/lukso-network/lsp-smart-contracts/issues/114)) ([91b900a](https://github.com/lukso-network/lsp-smart-contracts/commit/91b900a5ee974b036f9497514bdd1643a3f2557a))
+* Add LSP17ContractExtension implementation in LSP0 & LSP9 ([#369](https://github.com/lukso-network/lsp-smart-contracts/issues/369)) ([749ace7](https://github.com/lukso-network/lsp-smart-contracts/commit/749ace76cfd4269f888c338dd88f97410d4c283e))
+* add new permission ENCRYPT in `constants.js` ([#289](https://github.com/lukso-network/lsp-smart-contracts/issues/289)) ([259c55e](https://github.com/lukso-network/lsp-smart-contracts/commit/259c55ee19602fe521861bf4eeddf1e36d699238))
+* add routing (= external call ) to additional contract in `universalReceiver(...)` function based on typeId ([#326](https://github.com/lukso-network/lsp-smart-contracts/issues/326)) ([345c563](https://github.com/lukso-network/lsp-smart-contracts/commit/345c563cfdf5c3012f0fa29ec73b406fbb4ce3f3))
+* Add the `ValueReceived` event in all payable methods ([#330](https://github.com/lukso-network/lsp-smart-contracts/issues/330)) ([eb9919f](https://github.com/lukso-network/lsp-smart-contracts/commit/eb9919fb82414657b721cfb6e70f06659366af52))
+* Allows reentrancy in LSP6 only from controller addresses with REENTRANCY permission + new tests ([#332](https://github.com/lukso-network/lsp-smart-contracts/issues/332)) ([b1ef1bd](https://github.com/lukso-network/lsp-smart-contracts/commit/b1ef1bd77ecb31948ca0cb20dfc0f3a34fd337f4))
+* introduce batch `execute(bytes[])` and`executeRelayCall(bytes[],uint256[],bytes[])` on the LSP6 Key Manager ([#367](https://github.com/lukso-network/lsp-smart-contracts/issues/367)) ([bde715a](https://github.com/lukso-network/lsp-smart-contracts/commit/bde715afe8ed318befd73b5d9792e608427f7ec0))
+* Re-order and Add new LSP6 permissions ([#346](https://github.com/lukso-network/lsp-smart-contracts/issues/346)) ([fa501a1](https://github.com/lukso-network/lsp-smart-contracts/commit/fa501a1d501eaedd394e70300d7dde76ac96d63f))
+* Replace custom/ClaimOwnership with LSP14Ownable2Step ([#323](https://github.com/lukso-network/lsp-smart-contracts/issues/323)) ([b3ff7a6](https://github.com/lukso-network/lsp-smart-contracts/commit/b3ff7a66439cbfed779e3ee0992d5b9047ad208e))
+
+
+### Bug Fixes
+
+*  Reset `pendingOwner` whenever `renounceOwnership(..)` is used. ([#310](https://github.com/lukso-network/lsp-smart-contracts/issues/310)) ([d0bb563](https://github.com/lukso-network/lsp-smart-contracts/commit/d0bb563dbce36353c8d9407f90c4dfb68c5d47d1))
+* [QSP - Best Practices] Add ReentrancyGuard for Mintable token presets ([#280](https://github.com/lukso-network/lsp-smart-contracts/issues/280)) ([a8445cb](https://github.com/lukso-network/lsp-smart-contracts/commit/a8445cb4b51d7ae56fc0b52075ca8e5b59088817))
+* [QSP - Best Practices] clean TODO comments + add extra permission checks and support in LSP6 ([#272](https://github.com/lukso-network/lsp-smart-contracts/issues/272)) ([f5c6e3a](https://github.com/lukso-network/lsp-smart-contracts/commit/f5c6e3a14dd62a356ef24c34dcde008a07ef4739))
+* [QSP - Best Practices] refactor `deployCreate2Proxy(..)` to revert instead of refund caller ([#276](https://github.com/lukso-network/lsp-smart-contracts/issues/276)) ([cc99840](https://github.com/lukso-network/lsp-smart-contracts/commit/cc9984093ddd0a22f90c0f3e7dcf45d9ffc69f56))
+* [QSP-10] Revert when authorizing existing operators in LSP8 ([#270](https://github.com/lukso-network/lsp-smart-contracts/issues/270)) ([f7b0c36](https://github.com/lukso-network/lsp-smart-contracts/commit/f7b0c362156bbb176c2244d5b2473c80183faa09))
+* [QSP-14] Revert when revoking non-existing operators  ([#271](https://github.com/lukso-network/lsp-smart-contracts/issues/271)) ([a5d72cf](https://github.com/lukso-network/lsp-smart-contracts/commit/a5d72cff5361279da8ac298ffa8d90438348b6d4))
+* [QSP-3] Operator Could Clear Operator List in LSP8 ([#266](https://github.com/lukso-network/lsp-smart-contracts/issues/266)) ([d608479](https://github.com/lukso-network/lsp-smart-contracts/commit/d608479df753087b33897586f2fe92b90252c869))
+* [QSP-4] add requirements checks on `LSP4DigitalAssetMetadata` deployment + add tests for internal `_burn(...)` function in LSP8 ([#268](https://github.com/lukso-network/lsp-smart-contracts/issues/268)) ([b576750](https://github.com/lukso-network/lsp-smart-contracts/commit/b576750374feab64bc4abfc0e2fcf7964f5ade60))
+* [QSP-5] Missing _disableInitializers for some Contracts ([#265](https://github.com/lukso-network/lsp-smart-contracts/issues/265)) ([097c266](https://github.com/lukso-network/lsp-smart-contracts/commit/097c266712d34947a34dd3152403c652a3d269a8))
+* [QSP-6] fix incorrect index check for `_countTrailingZeroBytes(...)` in `LSP6KeyManagerCore.sol` ([#264](https://github.com/lukso-network/lsp-smart-contracts/issues/264)) ([41407aa](https://github.com/lukso-network/lsp-smart-contracts/commit/41407aa8c651039ea06d020b86fece7ad5859456))
+* [WP-I6] add `onERC721Received` check for the `safeTransferFrom` functions of `LSP8CompatibleERC721` contracts ([#455](https://github.com/lukso-network/lsp-smart-contracts/issues/455)) ([d65f197](https://github.com/lukso-network/lsp-smart-contracts/commit/d65f197082f14f548e91860e70970cdd5ed11039))
+* [WP-L11] LSP-7: LSP7CompatibleERC20 is not fully compatible with the conventional implementation of ERC20 on the emission of `Approval` events ([#373](https://github.com/lukso-network/lsp-smart-contracts/issues/373)) ([3b1bede](https://github.com/lukso-network/lsp-smart-contracts/commit/3b1bede36e034993dcadf50dafcdfa4a6cb35366))
+* [WP-L12] - LSP-6: change parameter of `getNonce(address,uint256)` to a `uint128` -> `getNonce(address,uint128)` ([#341](https://github.com/lukso-network/lsp-smart-contracts/issues/341)) ([67f41c4](https://github.com/lukso-network/lsp-smart-contracts/commit/67f41c4266acb4d2b7ec884dfe3f6016d24a2f34))
+* [WP-L13] refactor the LSP6 Key Manager to allow empty calls + check for required permissions ([#450](https://github.com/lukso-network/lsp-smart-contracts/issues/450)) ([b34ae22](https://github.com/lukso-network/lsp-smart-contracts/commit/b34ae22bf9d4e351d08c94ef3cce3a0c74bfe32f))
+* [WP-M2] LSP-2: `LSP2Utils.isCompactBytesArray(bytes)` does not support zero-length elements (`[..., 0x, ...]`) ([#438](https://github.com/lukso-network/lsp-smart-contracts/issues/438)) ([b962386](https://github.com/lukso-network/lsp-smart-contracts/commit/b962386a0d7484ceab6850a2b83f54d0986896d4))
+* [WP-M5] LSP-6: Replace `AllowedStandards/Address/Functions` by `AllowedCalls` - Signature collisions can be exploited with phishing attack ([#351](https://github.com/lukso-network/lsp-smart-contracts/issues/351)) ([86c92a6](https://github.com/lukso-network/lsp-smart-contracts/commit/86c92a659ead37928a2b0c9bb0d9125c3fa48100))
+* [WP-M7] LSP-6: do not allow any interaction if `AllowedCalls` is empty for a caller/signer ([#356](https://github.com/lukso-network/lsp-smart-contracts/issues/356)) ([7b1258a](https://github.com/lukso-network/lsp-smart-contracts/commit/7b1258aae7087c7fbaec11c0ddbdd6933fc7acbc))
+* [WP-M8] LSP7 allow zero-value transfers for `transfer(..)`, `mint(..)` and `burn(..)` ([#343](https://github.com/lukso-network/lsp-smart-contracts/issues/343)) ([c503124](https://github.com/lukso-network/lsp-smart-contracts/commit/c503124e996815d50c9fb48432f359d1c32edee3))
+* [WP-M9] LSP-2: `LSP2Utils.isEncodedArray()` Incomplete implementation ([#342](https://github.com/lukso-network/lsp-smart-contracts/issues/342)) ([57c4a26](https://github.com/lukso-network/lsp-smart-contracts/commit/57c4a26975628b0c4ecd85de302c00f5b88b4350))
+* add `setApprovalForAll(...)` in `LSP8CompatibleERC721` ([#239](https://github.com/lukso-network/lsp-smart-contracts/issues/239)) ([945c776](https://github.com/lukso-network/lsp-smart-contracts/commit/945c776276144e8afa0e386d023ba300bc1ebcef))
+* add `ValueReceived` event to batch ERC725X `execute(uint256[],address[],uint256[],bytes[])` functions in LSP0 and LSP9 ([#377](https://github.com/lukso-network/lsp-smart-contracts/issues/377)) ([6502e15](https://github.com/lukso-network/lsp-smart-contracts/commit/6502e15170f2d8ed210feb9f47128d35f527fc4c))
+* Add appropriate overrides of supportsInterface in LSP7 and LSP8 ([#389](https://github.com/lukso-network/lsp-smart-contracts/issues/389)) ([61843b7](https://github.com/lukso-network/lsp-smart-contracts/commit/61843b7047ddbe140007cf25213aa0e252b2f6b7))
+* add check for `amount != 0` when transferring LSP7 tokens ([733e85d](https://github.com/lukso-network/lsp-smart-contracts/commit/733e85d5723312f6871b6889242247ca6dc75fe3))
+* add check for ValueReceived event in LSP0/LSP9 ([#361](https://github.com/lukso-network/lsp-smart-contracts/issues/361)) ([2c6e1a0](https://github.com/lukso-network/lsp-smart-contracts/commit/2c6e1a03d0f2fc39789ae74fa3644d03be93d495))
+* add checks for ADD / CHANGE permissions when data key is `AddressPermissions[index]` ([#320](https://github.com/lukso-network/lsp-smart-contracts/issues/320)) ([2e9f459](https://github.com/lukso-network/lsp-smart-contracts/commit/2e9f45969f67018fe947e0a71e01c3a15c3523bd))
+* Add Checks to ensure contract cannot be self owned with ClaimOwnership  ([#288](https://github.com/lukso-network/lsp-smart-contracts/issues/288)) ([31a304e](https://github.com/lukso-network/lsp-smart-contracts/commit/31a304efaf4f3955298d74dfe1aacc72af8e3736))
+* add length check to isCompactBytesArray ([#437](https://github.com/lukso-network/lsp-smart-contracts/issues/437)) ([f82166e](https://github.com/lukso-network/lsp-smart-contracts/commit/f82166ed825dd579b100fcc19504295a2086e3c8))
+* add reference to `.key` member for SupportedStandards in constants ([#311](https://github.com/lukso-network/lsp-smart-contracts/issues/311)) ([550699f](https://github.com/lukso-network/lsp-smart-contracts/commit/550699fe6735bc249b6810046ae596444a683642))
+* all `solc` compiler warnings ([#385](https://github.com/lukso-network/lsp-smart-contracts/issues/385)) ([914fcd0](https://github.com/lukso-network/lsp-smart-contracts/commit/914fcd007b9a924d4cb0e3115705018a35620044))
+* allow clearing `AddressPermission[index]` with CHANGE permission ([#345](https://github.com/lukso-network/lsp-smart-contracts/issues/345)) ([29ad552](https://github.com/lukso-network/lsp-smart-contracts/commit/29ad552da5b56aadd1f0e428873e10b6ab4b48e5))
+* avoid "returnbomb" in ERC165Checker ([#340](https://github.com/lukso-network/lsp-smart-contracts/issues/340)) ([f11a2db](https://github.com/lukso-network/lsp-smart-contracts/commit/f11a2dbd786d14418b51eddfe17d3ee48ccbd9bc))
+* emit `OwnershipTransferStarted` and `Executed` events before external calls ([#333](https://github.com/lukso-network/lsp-smart-contracts/issues/333)) ([91776ed](https://github.com/lukso-network/lsp-smart-contracts/commit/91776ed78ed829290e0a474288d0bee177c8cce5))
+* error selector for `LSP7AmountExceedsBalance` ([#365](https://github.com/lukso-network/lsp-smart-contracts/issues/365)) ([ce1ab23](https://github.com/lukso-network/lsp-smart-contracts/commit/ce1ab234dc2e808aada58c27dd597206dfbfa2c0))
+* Fix LSP8Constants errors ([#255](https://github.com/lukso-network/lsp-smart-contracts/issues/255)) ([c8e1533](https://github.com/lukso-network/lsp-smart-contracts/commit/c8e15337f7946f21e9f51a28beb3c5341bd2d70e))
+* fixed failing iOS CI ([#313](https://github.com/lukso-network/lsp-smart-contracts/issues/313)) ([25e965b](https://github.com/lukso-network/lsp-smart-contracts/commit/25e965b0f0a20979bc874853842dd1971acd6bd8))
+* Hide linter warnings ([#250](https://github.com/lukso-network/lsp-smart-contracts/issues/250)) ([b0dc655](https://github.com/lukso-network/lsp-smart-contracts/commit/b0dc65570646f7d2daa6d437e2dc7d92befe4056))
+* incorrect permission for `DECRYPT` ([#317](https://github.com/lukso-network/lsp-smart-contracts/issues/317)) ([0f4b4e4](https://github.com/lukso-network/lsp-smart-contracts/commit/0f4b4e499f5a4bad9ad2353d797a92ab70c5035f))
+* Narrower remapping of erc725 to support git modules downstream ([#456](https://github.com/lukso-network/lsp-smart-contracts/issues/456)) ([69ea41f](https://github.com/lukso-network/lsp-smart-contracts/commit/69ea41f7712f7fd360ec448938b9d87c63485976))
+* prevent operator allowance to decrease if `from` and `to` are the same address ([#291](https://github.com/lukso-network/lsp-smart-contracts/issues/291)) ([200a21f](https://github.com/lukso-network/lsp-smart-contracts/commit/200a21f50d34f5bfea82a885dbabd805c7de3d24))
+* remove code length check in UniversalReceiverDelegate ([#267](https://github.com/lukso-network/lsp-smart-contracts/issues/267)) ([5a92642](https://github.com/lukso-network/lsp-smart-contracts/commit/5a9264238380b65f36ae6dd9adafca5bbb0965a1))
+* replace variable silinter with `solhint-disable` ([#285](https://github.com/lukso-network/lsp-smart-contracts/issues/285)) ([07c6fa1](https://github.com/lukso-network/lsp-smart-contracts/commit/07c6fa156fced93d7517fb83ccee5176e36765a0))
+* update the logic inside universalReceiver function and revert typeId changes ([#331](https://github.com/lukso-network/lsp-smart-contracts/issues/331)) ([dd9f309](https://github.com/lukso-network/lsp-smart-contracts/commit/dd9f3094088ddbe343f8b9e1a51d80b2d644c7a0))
+* upgrade to 0.8.15 for default compiler + increase minimum solc version for LSP7/LSP8 Compatible ([#402](https://github.com/lukso-network/lsp-smart-contracts/issues/402)) ([1b8b2e0](https://github.com/lukso-network/lsp-smart-contracts/commit/1b8b2e02b2329ac96d9db24024877e8454a20f84))
+* Use @openzeppelin/contracts-upgradeable for Initializable imports ([#445](https://github.com/lukso-network/lsp-smart-contracts/issues/445)) ([628aac5](https://github.com/lukso-network/lsp-smart-contracts/commit/628aac51f31ec1678b8f2f06a988ee8c113840ec))
+
+
+### build
+
+* upgrade `@erc725/smart-contracts` dependency to 4.0.0 ([#355](https://github.com/lukso-network/lsp-smart-contracts/issues/355)) ([310c8a5](https://github.com/lukso-network/lsp-smart-contracts/commit/310c8a531038de32d572e1583068cc454ae886e8))
+
+
+*  [WP-I16] Revert instead of return when no extension exist in LSP17 ([#433](https://github.com/lukso-network/lsp-smart-contracts/issues/433)) ([d464ab8](https://github.com/lukso-network/lsp-smart-contracts/commit/d464ab8ca00c4cb7fbe9ba8057fb19707637a875))
+* [LSP0, LSP4, LSP9] emit only the first 256 bytes of the value in the `DataChanged` event ([#301](https://github.com/lukso-network/lsp-smart-contracts/issues/301)) ([f92f996](https://github.com/lukso-network/lsp-smart-contracts/commit/f92f996c1aa7bf8789a427ae6cfd6606009079bf))
+* [WP-C2] Change the verification logic of AllowedERC725YKeys in LSP6 ([#352](https://github.com/lukso-network/lsp-smart-contracts/issues/352)) ([0b45749](https://github.com/lukso-network/lsp-smart-contracts/commit/0b45749f6a63596f53fb913931b200166fcaf128))
+* [WP-I19] Adding `bool[]` for token `transferBatch(..)` ([#350](https://github.com/lukso-network/lsp-smart-contracts/issues/350)) ([4ea5b0e](https://github.com/lukso-network/lsp-smart-contracts/commit/4ea5b0ea29d1fed191e2577175db3fd6bcd5090b))
+* Change `AllowedERC725YKeys` to `AllowedERC725YDataKeys` ([#379](https://github.com/lukso-network/lsp-smart-contracts/issues/379)) ([0566ea1](https://github.com/lukso-network/lsp-smart-contracts/commit/0566ea1be44c30b9c37e9beb72a3c29c2caf2087))
+* Change `isOperatorFor(..)` to `authorizedAmountFor(..)` in LSP7 ([#279](https://github.com/lukso-network/lsp-smart-contracts/issues/279)) ([afc5895](https://github.com/lukso-network/lsp-smart-contracts/commit/afc58954c5a877615820d5699b6be7a7857a91df))
+* change `universalReceiverDelegate(..)` to `universalReceiver(..)` ([#376](https://github.com/lukso-network/lsp-smart-contracts/issues/376)) ([bba92d5](https://github.com/lukso-network/lsp-smart-contracts/commit/bba92d5448ac7ff2bcc6af563a730fe29e498cff))
+* Change executeRelayCall signing data with EIP191 ([#349](https://github.com/lukso-network/lsp-smart-contracts/issues/349)) ([ef7d0c7](https://github.com/lukso-network/lsp-smart-contracts/commit/ef7d0c7e0cfeff25925596842e944ce38954e5c3))
+* change order of LSP6 permissions ([#322](https://github.com/lukso-network/lsp-smart-contracts/issues/322)) ([0dfc377](https://github.com/lukso-network/lsp-smart-contracts/commit/0dfc37774c0d7a031283383ac9d4186bbb777496))
+* mark `initialize(...)` function as `external` ([#359](https://github.com/lukso-network/lsp-smart-contracts/issues/359)) ([849299f](https://github.com/lukso-network/lsp-smart-contracts/commit/849299fc584ec00568a9d83ecde199d3843195af))
+* remove `LSP7Init` and `LSP8Init` + make barebone LSP7/8 contracts non deployable ([#296](https://github.com/lukso-network/lsp-smart-contracts/issues/296)) ([4dec2f1](https://github.com/lukso-network/lsp-smart-contracts/commit/4dec2f1c739bdca1eb81bf97604861fb8e388cb2))
+* split between ENCRYPT/DECRYPT permissions + move SUPER permissions on the left bit range ([dfeaec5](https://github.com/lukso-network/lsp-smart-contracts/commit/dfeaec525d5cc7997e20ea1f4554b28438cfeed5))
+* switch the order of LSP6 `Executed` event + index both params ([#378](https://github.com/lukso-network/lsp-smart-contracts/issues/378)) ([193fd0e](https://github.com/lukso-network/lsp-smart-contracts/commit/193fd0ed11eb34f7bab8223c3265a46980558dfa))
+* switch the returnedValue with the receivedData values in UniversalReceiver Event ([#321](https://github.com/lukso-network/lsp-smart-contracts/issues/321)) ([00b6833](https://github.com/lukso-network/lsp-smart-contracts/commit/00b6833fca1e0100970af8c9519fd82ccbf57b5f))
+* Update ClaimOwnership, LSP0 and LSP9 InterfaceId ([#298](https://github.com/lukso-network/lsp-smart-contracts/issues/298)) ([24a281c](https://github.com/lukso-network/lsp-smart-contracts/commit/24a281cd683951031bbd1ab261b002e0d8e8d6a8))
+* use `uint8` instead of `uint256` in LSP7 decimals ([#292](https://github.com/lukso-network/lsp-smart-contracts/issues/292)) ([cc23ff5](https://github.com/lukso-network/lsp-smart-contracts/commit/cc23ff5ca985baaa3644e39b0628efd11198b94a))
+
 ## [0.7.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.6.2...v0.7.0) (2022-09-07)
 
 ### ⚠ BREAKING CHANGES
