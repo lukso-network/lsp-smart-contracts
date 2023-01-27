@@ -10,7 +10,10 @@ import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
 
 // constants
 import {SETDATA_ARRAY_SELECTOR} from "@erc725/smart-contracts/contracts/constants.sol";
-import "../LSP6KeyManager/LSP6Constants.sol";
+import "./LSP6Constants.sol";
+
+// errors
+import {NotAuthorised} from "./LSP6Errors.sol";
 
 library LSP6Utils {
     using LSP2Utils for bytes12;
@@ -195,5 +198,49 @@ library LSP6Utils {
             bytes20(_address)
         );
         values[2] = abi.encodePacked(permissions);
+    }
+
+    /**
+     * @dev returns the name of the permission as a string
+     */
+    function getPermissionName(bytes32 permission)
+        internal
+        pure
+        returns (string memory errorMessage)
+    {
+        if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
+        if (permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
+        if (permission == _PERMISSION_ADDCONTROLLER) return "ADDCONTROLLER";
+        if (permission == _PERMISSION_ADDEXTENSIONS) return "ADDEXTENSIONS";
+        if (permission == _PERMISSION_CHANGEEXTENSIONS) return "CHANGEEXTENSIONS";
+        if (permission == _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE)
+            return "ADDUNIVERSALRECEIVERDELEGATE";
+        if (permission == _PERMISSION_CHANGEUNIVERSALRECEIVERDELEGATE)
+            return "CHANGEUNIVERSALRECEIVERDELEGATE";
+        if (permission == _PERMISSION_REENTRANCY) return "REENTRANCY";
+        if (permission == _PERMISSION_SETDATA) return "SETDATA";
+        if (permission == _PERMISSION_CALL) return "CALL";
+        if (permission == _PERMISSION_STATICCALL) return "STATICCALL";
+        if (permission == _PERMISSION_DELEGATECALL) return "DELEGATECALL";
+        if (permission == _PERMISSION_DEPLOY) return "DEPLOY";
+        if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
+        if (permission == _PERMISSION_SIGN) return "SIGN";
+    }
+
+    /**
+     * @dev revert if `controller`'s `addressPermissions` doesn't contain `permissionsRequired`
+     * @param controller the caller address
+     * @param addressPermissions the caller's permissions BitArray
+     * @param permissionRequired the required permission
+     */
+    function requirePermissions(
+        address controller,
+        bytes32 addressPermissions,
+        bytes32 permissionRequired
+    ) internal pure {
+        if (!hasPermission(addressPermissions, permissionRequired)) {
+            string memory permissionErrorString = getPermissionName(permissionRequired);
+            revert NotAuthorised(controller, permissionErrorString);
+        }
     }
 }
