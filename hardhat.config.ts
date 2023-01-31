@@ -1,4 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
+import { NetworkUserConfig } from "hardhat/types";
+import { config as dotenvConfig } from "dotenv";
+import { resolve } from "path";
 
 /**
  * this package includes:
@@ -24,6 +27,22 @@ import "@nomiclabs/hardhat-web3";
  */
 // import "@primitivefi/hardhat-dodoc";
 
+dotenvConfig({ path: resolve(__dirname, "./.env") });
+
+function getL16ChainConfig(): NetworkUserConfig {
+  const config = {
+    live: true,
+    url: "https://rpc.l16.lukso.network",
+    chainId: 2828,
+  };
+
+  if (process.env.CONTRACT_VERIFICATION_PK !== undefined) {
+    config["accounts"] = [process.env.CONTRACT_VERIFICATION_PK];
+  }
+
+  return config;
+}
+
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
@@ -38,12 +57,7 @@ const config: HardhatUserConfig = {
       chainId: 22,
       //   accounts: [privateKey1, privateKey2, ...]
     },
-    luksoL16: {
-      live: true,
-      url: "https://rpc.l16.lukso.network",
-      chainId: 2828,
-      //   accounts: [privateKey1, privateKey2, ...]
-    },
+    luksoL16: getL16ChainConfig(),
   },
   namedAccounts: {
     owner: 0,
@@ -80,7 +94,7 @@ const config: HardhatUserConfig = {
     showMethodSig: true,
   },
   solidity: {
-    version: "0.8.10",
+    version: "0.8.15",
     settings: {
       optimizer: {
         enabled: true,
@@ -112,6 +126,7 @@ const config: HardhatUserConfig = {
       "LSP8CappedSupply",
       "LSP8Mintable",
       "LSP9Vault",
+      "LSP11BasicSocialRecovery",
       // Proxy version
       // ------------------
       "UniversalProfileInit",
@@ -125,6 +140,7 @@ const config: HardhatUserConfig = {
       "LSP8CappedSupplyInitAbstract",
       "LSP8MintableInit",
       "LSP9VaultInit",
+      "LSP11BasicSocialRecoveryInit",
       // ERC Compatible tokens
       // ------------------
       "LSP4Compatibility",
@@ -142,7 +158,7 @@ const config: HardhatUserConfig = {
       // Tools
       // ------------------
       "Create2Factory",
-      "UniversalFactory",
+      "LSP16UniversalFactory",
     ],
     // Whether to include the TypeChain factories or not.
     // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.

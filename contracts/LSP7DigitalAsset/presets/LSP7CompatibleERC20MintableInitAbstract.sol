@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.12;
 
 // modules
 import {LSP7CompatibleERC20InitAbstract} from "../extensions/LSP7CompatibleERC20InitAbstract.sol";
@@ -19,9 +19,9 @@ contract LSP7CompatibleERC20MintableInitAbstract is LSP7CompatibleERC20InitAbstr
     function mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) public onlyOwner {
-        _mint(to, amount, force, data);
+        _mint(to, amount, allowNonLSP1Recipient, data);
     }
 }

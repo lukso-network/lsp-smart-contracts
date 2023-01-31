@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
@@ -12,7 +12,7 @@ interface ILSP8Mintable is ILSP8IdentifiableDigitalAsset {
     /**
      * @param to The address to mint tokens
      * @param tokenId The tokenId to mint
-     * @param force When set to TRUE, to may be any address but
+     * @param allowNonLSP1Recipient When set to TRUE, to may be any address but
      * when set to FALSE to must be a contract that supports LSP1 UniversalReceiver
      * @param data Additional data the caller wants included in the emitted event, and sent in the hooks to `from` and `to` addresses.
      * @dev Mints `amount` tokens and transfers it to `to`.
@@ -26,7 +26,7 @@ interface ILSP8Mintable is ILSP8IdentifiableDigitalAsset {
     function mint(
         address to,
         bytes32 tokenId,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) external;
 }

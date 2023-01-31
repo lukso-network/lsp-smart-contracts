@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP7Mintable} from "./ILSP7Mintable.sol";
@@ -14,8 +14,6 @@ import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
  * @dev LSP7 extension, mintable.
  */
 contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
-    // solhint-disable no-empty-blocks
-
     /**
      * @notice Sets the token-Metadata and register LSP7InterfaceId
      * @param name_ The name of the token
@@ -36,9 +34,9 @@ contract LSP7Mintable is LSP7DigitalAsset, ILSP7Mintable {
     function mint(
         address to,
         uint256 amount,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) public virtual onlyOwner {
-        _mint(to, amount, force, data);
+        _mint(to, amount, allowNonLSP1Recipient, data);
     }
 }

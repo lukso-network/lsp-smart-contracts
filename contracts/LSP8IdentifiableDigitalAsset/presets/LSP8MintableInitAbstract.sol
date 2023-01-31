@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP8Mintable} from "./ILSP8Mintable.sol";
@@ -30,9 +30,9 @@ abstract contract LSP8MintableInitAbstract is
     function mint(
         address to,
         bytes32 tokenId,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
     ) public virtual onlyOwner {
-        _mint(to, tokenId, force, data);
+        _mint(to, tokenId, allowNonLSP1Recipient, data);
     }
 }

@@ -46,7 +46,7 @@ describe("LSP1UniversalReceiverDelegateUP", () => {
     describe("when deploying the contract", () => {
       let context: LSP1DelegateTestContext;
 
-      beforeEach(async () => {
+      before(async () => {
         context = await buildLSP1DelegateTestContext();
       });
 

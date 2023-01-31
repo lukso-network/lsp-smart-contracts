@@ -1,13 +1,13 @@
 {
   "name": "@lukso/lsp-smart-contracts",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "The reference implementation for universal profiles smart contracts",
   "directories": {
     "test": "test"
   },
   "files": [
     "contracts/**/*.sol",
-    "!contracts/Helpers/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
     "artifacts/*.json",
     "constants.js",
     "README.md",
@@ -16,9 +16,10 @@
   ],
   "scripts": {
     "test": "hardhat test",
+    "test:benchmark": "hardhat test --no-compile tests/Benchmark.test.ts",
     "test:coverage": "hardhat coverage",
-    "test:parallel": "run-p test:helpers test:up test:lsp1 test:lsp2 test:lsp4 test:lsp6 test:lsp7 test:lsp8 test:lsp9 test:universalfactory",
-    "test:helpers": "hardhat test --no-compile tests/Helpers/*.test.ts ",
+    "test:parallel": "run-p test:mocks test:up test:lsp1 test:lsp2 test:lsp4 test:lsp6 test:lsp7 test:lsp8 test:lsp9 test:lsp11 test:universalfactory",
+    "test:mocks": "hardhat test --no-compile tests/Mocks/*.test.ts ",
     "test:up": "hardhat test --no-compile tests/UniversalProfile.test.ts",
     "test:lsp1": "hardhat test --no-compile tests/LSP1UniversalReceiver/*.test.ts",
     "test:lsp2": "hardhat test --no-compile tests/LSP2ERC725YJSONSchema/LSP2UtilsLibrary.test.ts",
@@ -27,7 +28,9 @@
     "test:lsp7": "hardhat test --no-compile tests/LSP7DigitalAsset/*.test.ts tests/LSP7DigitalAsset/extensions/*.test.ts",
     "test:lsp8": "hardhat test --no-compile tests/LSP8IdentifiableDigitalAsset/*.test.ts tests/LSP8IdentifiableDigitalAsset/extensions/*.test.ts",
     "test:lsp9": "hardhat test --no-compile tests/LSP9Vault/*.test.ts",
-    "test:universalfactory": "hardhat test --no-compile tests/Factories/UniversalFactory.test.ts",
+    "test:lsp11": "hardhat test --no-compile tests/LSP11BasicSocialRecovery/*.test.ts",
+    "test:universalfactory": "hardhat test --no-compile tests/LSP16UniversalFactory/LSP16UniversalFactory.test.ts",
+    "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "build": "hardhat compile",
     "package": "hardhat prepare-package",
     "release": "run-s clean build package && standard-version",
@@ -36,7 +39,8 @@
     "generate-types:web3": "typechain --target=web3-v1 'artifacts/**/*.json'",
     "generate-types:ethers": "typechain --target=ethers-v5 'artifacts/**/*.json'",
     "remixd": "remixd -s . --remix-ide",
-    "linter": "solhint 'contracts/**/*.sol'"
+    "linter": "solhint 'contracts/**/*.sol'",
+    "prettier": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -57,13 +61,14 @@
   },
   "homepage": "https://github.com/lukso-network/lsp-smart-contracts#readme",
   "dependencies": {
-    "@erc725/smart-contracts": "^3.2.0",
-    "@openzeppelin/contracts": "^4.7.3",
-    "@openzeppelin/contracts-upgradeable": "^4.7.3",
+    "@erc725/smart-contracts": "^4.1.1",
+    "@openzeppelin/contracts": "^4.8.0",
+    "@openzeppelin/contracts-upgradeable": "^4.8.0",
     "solidity-bytes-utils": "0.8.0"
   },
   "devDependencies": {
     "@erc725/erc725.js": "0.8.0",
+    "@lukso/eip191-signer.js": "^0.2.0",
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@primitivefi/hardhat-dodoc": "^0.1.1",
@@ -71,7 +76,9 @@
     "@typechain/ethers-v5": "^10.0.0",
     "@typechain/web3-v1": "^6.0.0",
     "@types/node": "^16.7.4",
+    "all-contributors-cli": "^6.24.0",
     "chai": "^4.3.6",
+    "dotenv": "^16.0.2",
     "esbuild": "^0.12.24",
     "eth-create2-calculator": "^1.1.5",
     "ethers": "^5.6.9",
@@ -81,6 +88,7 @@
     "hardhat-deploy-ethers": "^0.3.0-beta.11",
     "hardhat-packager": "^1.1.0",
     "keccak256": "1.0.3",
+    "markdown-table-ts": "^1.0.3",
     "merkletreejs": "0.2.24",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",

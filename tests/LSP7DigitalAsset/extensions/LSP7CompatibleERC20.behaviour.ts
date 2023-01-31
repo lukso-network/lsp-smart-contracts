@@ -7,6 +7,7 @@ import type { TransactionResponse } from "@ethersproject/abstract-provider";
 
 import { INTERFACE_IDS, SupportedStandards } from "../../../constants";
 import {
+  CheckInterface__factory,
   LSP7CompatibleERC20,
   LSP7CompatibleERC20Tester,
   TokenReceiverWithLSP1,
@@ -14,7 +15,7 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../../types";
-import { ERC725YKeys } from "../../../constants.js";
+import { ERC725YDataKeys } from "../../../constants.js";
 
 type LSP7CompatibleERC20TestAccounts = {
   owner: SignerWithAddress;
@@ -338,22 +339,28 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
     });
 
     type TransferParams = {
-      operator: string;
+      // we make the operator of type SignerWithAddress because it is used to sign the transaction
+      // when calling the contract via `contractName.connect(operator).functionName(...)`
+      operator: SignerWithAddress;
       from: string;
       to: string;
       amount: BigNumber;
+      allowNonLSP1Recipient?: boolean;
+      data?: string;
     };
 
     const transferSuccessScenario = async (
-      { operator, from, to, amount }: TransferParams,
+      txParams: TransferParams,
       sendTransaction: () => Promise<ContractTransaction>,
       expectedData: string
     ) => {
       // pre-conditions
-      const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(from);
+      const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+        txParams.from
+      );
       const preAllowance = await context.lsp7CompatibleERC20.allowance(
-        from,
-        operator
+        txParams.from,
+        txParams.operator.address
       );
 
       // effect
@@ -364,11 +371,11 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           "Transfer(address,address,address,uint256,bool,bytes)"
         )
         .withArgs(
-          operator,
-          from,
-          to,
-          amount,
-          true, // Using force=true so that EOA and any contract may receive the tokens.
+          txParams.operator.address,
+          txParams.from,
+          txParams.to,
+          txParams.amount,
+          txParams.allowNonLSP1Recipient ?? true,
           expectedData
         );
 
@@ -377,156 +384,887 @@ export const shouldBehaveLikeLSP7CompatibleERC20 = (
           context.lsp7CompatibleERC20,
           "Transfer(address,address,uint256)"
         )
-        .withArgs(from, to, amount);
+        .withArgs(txParams.from, txParams.to, txParams.amount);
 
       // post-conditions
-      const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(from);
-      expect(postBalanceOf).to.equal(preBalanceOf.sub(amount));
+      const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+        txParams.from
+      );
+      expect(postBalanceOf).to.equal(preBalanceOf.sub(txParams.amount));
 
-      if (operator !== from) {
+      if (txParams.operator.address !== txParams.from) {
         const postAllowance = await context.lsp7CompatibleERC20.allowance(
-          from,
-          operator
+          txParams.from,
+          txParams.operator.address
         );
-        expect(postAllowance).to.equal(preAllowance.sub(amount));
-      }
-    };
+        expect(postAllowance).to.equal(preAllowance.sub(txParams.amount));
 
-    const transferFailScenario = async (
-      { from }: TransferParams,
-      sendTransaction: () => Promise<ContractTransaction>,
-      expectedError: ExpectedError
-    ) => {
-      // pre-conditions
-      const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(from);
-
-      // effect
-      if (expectedError.args.length > 0) {
-        await expect(sendTransaction())
-          .to.be.revertedWithCustomError(
+        // check for ERC20 Approval event
+        await expect(tx)
+          .to.emit(
             context.lsp7CompatibleERC20,
-            expectedError.error
+            "Approval(address,address,uint256)"
           )
-          .withArgs(...expectedError.args);
-      } else {
-        await expect(sendTransaction()).to.be.revertedWithCustomError(
-          context.lsp7CompatibleERC20,
-          expectedError.error
-        );
+          .withArgs(txParams.from, txParams.operator.address, postAllowance);
       }
 
-      // post-conditions
-      const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(from);
-      expect(postBalanceOf).to.equal(preBalanceOf);
+      // if the recipient is a contract that implements LSP1,
+      // CHECK that it emitted the UniversalReceiver event on the receiver end.
+      const erc165Checker = await new CheckInterface__factory(
+        context.accounts.owner
+      ).deploy();
+
+      const isLSP1Recipient =
+        await erc165Checker.supportsERC165InterfaceUnchecked(
+          txParams.to,
+          INTERFACE_IDS.LSP1UniversalReceiver
+        );
+
+      if (isLSP1Recipient) {
+        const receiver = await new TokenReceiverWithLSP1__factory(
+          context.accounts.owner
+        ).attach(txParams.to);
+
+        // TODO: the Helper contract TokenReceiverWithLSP1 does not emit the standard `UniversalReceiver` event.
+        // modify this behaviour to emit the UniversalReceiver event
+        await expect(tx).to.emit(receiver, "UniversalReceiverCalled");
+      }
     };
 
-    [
-      {
-        transferFn: "transfer",
-        sendTransaction: (
-          lsp7CompatibleERC20: LSP7CompatibleERC20Tester,
-          txParams: TransferParams
-        ) => {
-          return lsp7CompatibleERC20["transfer(address,uint256)"](
-            txParams.to,
-            txParams.amount
-          );
-        },
-        expectedData: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("")),
-      },
-      {
-        transferFn: "transferFrom",
-        sendTransaction: (
-          lsp7CompatibleERC20: LSP7CompatibleERC20Tester,
-          txParams: TransferParams
-        ) => {
-          return lsp7CompatibleERC20.transferFrom(
-            txParams.from,
-            txParams.to,
-            txParams.amount
-          );
-        },
-        expectedData: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("")),
-      },
-    ].forEach(({ transferFn, sendTransaction, expectedData }) => {
-      describe(transferFn, () => {
-        describe("when sender has enough balance", () => {
-          describe("when `to` is an EOA", () => {
-            it("should allow transfering the tokenId", async () => {
+    describe("ERC20 -> `transfer(address,uint256)`", () => {
+      describe("when sender has enough balance", () => {
+        const transferAmount = ethers.BigNumber.from("10");
+
+        describe("when `to` is an EOA", () => {
+          it("should allow transfering the tokens", async () => {
+            const txParams = {
+              operator: context.accounts.owner,
+              from: context.accounts.owner.address,
+              to: context.accounts.tokenReceiver.address,
+              amount: transferAmount,
+            };
+
+            await transferSuccessScenario(
+              txParams,
+              () =>
+                context.lsp7CompatibleERC20
+                  .connect(txParams.operator)
+                  ["transfer(address,uint256)"](txParams.to, txParams.amount),
+              "0x"
+            );
+          });
+        });
+
+        describe("when `to` is a contract", () => {
+          describe("when receiving contract supports LSP1", () => {
+            it("should allow transfering the tokens", async () => {
               const txParams = {
-                operator: context.accounts.owner.address,
+                operator: context.accounts.owner,
                 from: context.accounts.owner.address,
-                to: context.accounts.tokenReceiver.address,
-                amount: context.initialSupply,
+                to: deployedContracts.tokenReceiverWithLSP1.address,
+                amount: transferAmount,
               };
 
               await transferSuccessScenario(
                 txParams,
-                () => sendTransaction(context.lsp7CompatibleERC20, txParams),
-                expectedData
+                () =>
+                  context.lsp7CompatibleERC20
+                    .connect(txParams.operator)
+                    ["transfer(address,uint256)"](txParams.to, txParams.amount),
+                "0x"
+              );
+            });
+          });
+
+          describe("when receiving contract does not support LSP1", () => {
+            it("should allow transfering the tokens", async () => {
+              const txParams = {
+                operator: context.accounts.owner,
+                from: context.accounts.owner.address,
+                to: deployedContracts.tokenReceiverWithoutLSP1.address,
+                amount: transferAmount,
+              };
+
+              await transferSuccessScenario(
+                txParams,
+                () =>
+                  context.lsp7CompatibleERC20
+                    .connect(txParams.operator)
+                    ["transfer(address,uint256)"](txParams.to, txParams.amount),
+                "0x"
+              );
+            });
+          });
+        });
+      });
+
+      describe("when sender does not have enough balance", () => {
+        it("should revert with `LSP7AmountExceedsBalance` error if sending more tokens than the tokenOwner's balance", async () => {
+          const ownerBalance = await context.lsp7CompatibleERC20.balanceOf(
+            context.accounts.owner.address
+          );
+
+          const txParams = {
+            operator: context.accounts.owner,
+            from: context.accounts.owner.address,
+            to: deployedContracts.tokenReceiverWithoutLSP1.address,
+            amount: ownerBalance.add(1),
+          };
+
+          // pre-conditions
+          const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+            txParams.from
+          );
+
+          await expect(
+            context.lsp7CompatibleERC20
+              .connect(txParams.operator)
+              ["transferFrom(address,address,uint256)"](
+                txParams.from,
+                txParams.to,
+                txParams.amount
+              )
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp7CompatibleERC20,
+              "LSP7AmountExceedsBalance"
+            )
+            .withArgs(
+              ownerBalance.toHexString(),
+              txParams.from,
+              txParams.amount.toHexString()
+            );
+
+          // post-conditions
+          const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+            txParams.from
+          );
+          expect(postBalanceOf).to.equal(preBalanceOf);
+        });
+      });
+    });
+
+    describe("ERC20 -> `transferFrom(address,address,uint256)`", () => {
+      describe("when sender has enough balance", () => {
+        const transferAmount = ethers.BigNumber.from("10");
+
+        describe("when caller (msg.sender) is the `from` address", () => {
+          describe("when `to` is an EOA", () => {
+            it("should allow transfering the tokens", async () => {
+              const txParams = {
+                operator: context.accounts.owner,
+                from: context.accounts.owner.address,
+                to: context.accounts.tokenReceiver.address,
+                amount: transferAmount,
+              };
+
+              await transferSuccessScenario(
+                txParams,
+                () =>
+                  context.lsp7CompatibleERC20
+                    .connect(txParams.operator)
+                    .transferFrom(txParams.from, txParams.to, txParams.amount),
+                "0x"
               );
             });
           });
 
           describe("when `to` is a contract", () => {
             describe("when receiving contract supports LSP1", () => {
-              it("should allow transfering the tokenId", async () => {
+              it("should allow transfering the tokens", async () => {
                 const txParams = {
-                  operator: context.accounts.owner.address,
+                  operator: context.accounts.owner,
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithLSP1.address,
-                  amount: context.initialSupply,
+                  amount: transferAmount,
                 };
 
                 await transferSuccessScenario(
                   txParams,
-                  () => sendTransaction(context.lsp7CompatibleERC20, txParams),
-                  expectedData
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      .transferFrom(
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount
+                      ),
+                  "0x"
                 );
               });
             });
 
             describe("when receiving contract does not support LSP1", () => {
-              it("should allow transfering the tokenId", async () => {
+              it("should allow transfering the tokens", async () => {
                 const txParams = {
-                  operator: context.accounts.owner.address,
+                  operator: context.accounts.owner,
                   from: context.accounts.owner.address,
                   to: deployedContracts.tokenReceiverWithoutLSP1.address,
-                  amount: context.initialSupply,
+                  amount: transferAmount,
                 };
 
                 await transferSuccessScenario(
                   txParams,
-                  () => sendTransaction(context.lsp7CompatibleERC20, txParams),
-                  expectedData
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      .transferFrom(
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount
+                      ),
+                  "0x"
                 );
               });
             });
           });
         });
 
-        describe("when sender does not have enough balance", () => {
-          it("should revert", async () => {
+        describe("when caller (msg.sender) is an operator (= Not the `from` address)", () => {
+          describe("when `to` is an EOA", () => {
+            it("should allow transfering the tokens", async () => {
+              const txParams = {
+                operator: context.accounts.operator,
+                from: context.accounts.owner.address,
+                to: context.accounts.tokenReceiver.address,
+                amount: transferAmount,
+              };
+
+              await transferSuccessScenario(
+                txParams,
+                () =>
+                  context.lsp7CompatibleERC20
+                    .connect(txParams.operator)
+                    .transferFrom(txParams.from, txParams.to, txParams.amount),
+                "0x"
+              );
+            });
+          });
+
+          describe("when `to` is a contract", () => {
+            describe("when receiving contract supports LSP1", () => {
+              it("should allow transfering the tokens", async () => {
+                const txParams = {
+                  operator: context.accounts.operator,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithLSP1.address,
+                  amount: transferAmount,
+                };
+
+                await transferSuccessScenario(
+                  txParams,
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      .transferFrom(
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount
+                      ),
+                  "0x"
+                );
+              });
+            });
+
+            describe("when receiving contract does not support LSP1", () => {
+              it("should allow transfering the tokens", async () => {
+                const txParams = {
+                  operator: context.accounts.operator,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithoutLSP1.address,
+                  amount: transferAmount,
+                };
+
+                await transferSuccessScenario(
+                  txParams,
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      .transferFrom(
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount
+                      ),
+                  "0x"
+                );
+              });
+            });
+          });
+        });
+      });
+
+      describe("when sender does not have enough balance", () => {
+        describe("when caller (msg.sender) is the `from` address", () => {
+          it("should revert with `LSP7AmountExceedsBalance` error if sending more tokens than the tokenOwner's balance", async () => {
+            const ownerBalance = await context.lsp7CompatibleERC20.balanceOf(
+              context.accounts.owner.address
+            );
+
             const txParams = {
-              operator: context.accounts.owner.address,
+              operator: context.accounts.owner,
               from: context.accounts.owner.address,
               to: deployedContracts.tokenReceiverWithoutLSP1.address,
-              amount: context.initialSupply.add(1),
+              amount: ownerBalance.add(1),
             };
-            const expectedError = "LSP7AmountExceedsBalance";
 
-            await transferFailScenario(
-              txParams,
-              () => sendTransaction(context.lsp7CompatibleERC20, txParams),
-              {
-                error: expectedError,
-                args: [
-                  context.initialSupply.toHexString(),
-                  txParams.from,
-                  txParams.amount.toHexString(),
-                ],
-              }
+            // pre-conditions
+            const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+              txParams.from
             );
+
+            await expect(
+              context.lsp7CompatibleERC20
+                .connect(txParams.operator)
+                .transferFrom(txParams.from, txParams.to, txParams.amount)
+            )
+              .to.be.revertedWithCustomError(
+                context.lsp7CompatibleERC20,
+                "LSP7AmountExceedsBalance"
+              )
+              .withArgs(
+                ownerBalance.toHexString(),
+                txParams.from,
+                txParams.amount.toHexString()
+              );
+
+            // post-conditions
+            const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+              txParams.from
+            );
+            expect(postBalanceOf).to.equal(preBalanceOf);
+          });
+        });
+
+        describe("when caller (msg.sender) is an operator (= Not the `from` address)", () => {
+          it("should revert with `LSP7AmountExceedsAuthorizedAmount` error if sending more tokens than the tokenOwner's balance", async () => {
+            const ownerBalance = await context.lsp7CompatibleERC20.balanceOf(
+              context.accounts.owner.address
+            );
+
+            const txParams = {
+              operator: context.accounts.operator,
+              from: context.accounts.owner.address,
+              to: deployedContracts.tokenReceiverWithoutLSP1.address,
+              amount: ownerBalance.add(1),
+            };
+
+            // pre-conditions
+            const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+              txParams.from
+            );
+
+            await expect(
+              context.lsp7CompatibleERC20
+                .connect(txParams.operator)
+                .transferFrom(txParams.from, txParams.to, txParams.amount)
+            )
+              .to.be.revertedWithCustomError(
+                context.lsp7CompatibleERC20,
+                "LSP7AmountExceedsAuthorizedAmount"
+              )
+              .withArgs(
+                context.accounts.owner.address,
+                ownerBalance.toHexString(),
+                txParams.operator.address,
+                txParams.amount.toHexString()
+              );
+
+            // post-conditions
+            const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+              txParams.from
+            );
+            expect(postBalanceOf).to.equal(preBalanceOf);
+          });
+        });
+      });
+    });
+
+    describe("LSP7 -> `transfer(address,address,uint256,bool,bytes)`", () => {
+      const expectedData = ethers.utils.hexlify(
+        ethers.utils.toUtf8Bytes("LSP7 token transfer")
+      );
+
+      describe("when sender has enough balance", () => {
+        const transferAmount = ethers.BigNumber.from("10");
+
+        describe("when caller (msg.sender) is the `from` address", () => {
+          describe("when `to` is an EOA", () => {
+            it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
+              const txParams = {
+                operator: context.accounts.owner,
+                from: context.accounts.owner.address,
+                to: context.accounts.tokenReceiver.address,
+                amount: transferAmount,
+                allowNonLSP1Recipient: true,
+                data: expectedData,
+              };
+
+              await transferSuccessScenario(
+                txParams,
+                () =>
+                  context.lsp7CompatibleERC20
+                    .connect(txParams.operator)
+                    ["transfer(address,address,uint256,bool,bytes)"](
+                      txParams.from,
+                      txParams.to,
+                      txParams.amount,
+                      txParams.allowNonLSP1Recipient,
+                      txParams.data
+                    ),
+                expectedData
+              );
+            });
+
+            it("should NOT allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
+              const txParams = {
+                operator: context.accounts.owner,
+                from: context.accounts.owner.address,
+                to: context.accounts.tokenReceiver.address,
+                amount: transferAmount,
+                allowNonLSP1Recipient: false,
+                data: expectedData,
+              };
+
+              // pre-conditions
+              const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+                txParams.from
+              );
+
+              await expect(
+                context.lsp7CompatibleERC20
+                  .connect(txParams.operator)
+                  ["transfer(address,address,uint256,bool,bytes)"](
+                    txParams.from,
+                    txParams.to,
+                    txParams.amount,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              )
+                .to.be.revertedWithCustomError(
+                  context.lsp7CompatibleERC20,
+                  "LSP7NotifyTokenReceiverIsEOA"
+                )
+                .withArgs(txParams.to);
+
+              // post-conditions
+              const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+                txParams.from
+              );
+              expect(postBalanceOf).to.equal(preBalanceOf);
+            });
+          });
+
+          describe("when `to` is a contract", () => {
+            describe("when receiving contract supports LSP1", () => {
+              it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
+                const txParams = {
+                  operator: context.accounts.owner,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithLSP1.address,
+                  amount: transferAmount,
+                  allowNonLSP1Recipient: true,
+                  data: expectedData,
+                };
+
+                await transferSuccessScenario(
+                  txParams,
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      ["transfer(address,address,uint256,bool,bytes)"](
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount,
+                        txParams.allowNonLSP1Recipient,
+                        txParams.data
+                      ),
+                  expectedData
+                );
+              });
+
+              it("should allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
+                const txParams = {
+                  operator: context.accounts.owner,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithLSP1.address,
+                  amount: transferAmount,
+                  allowNonLSP1Recipient: false,
+                  data: expectedData,
+                };
+
+                await transferSuccessScenario(
+                  txParams,
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      ["transfer(address,address,uint256,bool,bytes)"](
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount,
+                        txParams.allowNonLSP1Recipient,
+                        txParams.data
+                      ),
+                  expectedData
+                );
+              });
+            });
+
+            describe("when receiving contract does not support LSP1", () => {
+              it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
+                const txParams = {
+                  operator: context.accounts.owner,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithoutLSP1.address,
+                  amount: transferAmount,
+                  allowNonLSP1Recipient: true,
+                  data: expectedData,
+                };
+
+                await transferSuccessScenario(
+                  txParams,
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      ["transfer(address,address,uint256,bool,bytes)"](
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount,
+                        txParams.allowNonLSP1Recipient,
+                        txParams.data
+                      ),
+                  expectedData
+                );
+              });
+
+              it("should NOT allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
+                const txParams = {
+                  operator: context.accounts.owner,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithoutLSP1.address,
+                  amount: transferAmount,
+                  allowNonLSP1Recipient: false,
+                  data: expectedData,
+                };
+
+                // pre-conditions
+                const preBalanceOf =
+                  await context.lsp7CompatibleERC20.balanceOf(txParams.from);
+
+                await expect(
+                  context.lsp7CompatibleERC20
+                    .connect(txParams.operator)
+                    ["transfer(address,address,uint256,bool,bytes)"](
+                      txParams.from,
+                      txParams.to,
+                      txParams.amount,
+                      txParams.allowNonLSP1Recipient,
+                      txParams.data
+                    )
+                )
+                  .to.be.revertedWithCustomError(
+                    context.lsp7CompatibleERC20,
+                    "LSP7NotifyTokenReceiverContractMissingLSP1Interface"
+                  )
+                  .withArgs(txParams.to);
+
+                // post-conditions
+                const postBalanceOf =
+                  await context.lsp7CompatibleERC20.balanceOf(txParams.from);
+                expect(postBalanceOf).to.equal(preBalanceOf);
+              });
+            });
+          });
+        });
+
+        describe("when caller (msg.sender) is an operator (= Not the `from` address)", () => {
+          describe("when `to` is an EOA", () => {
+            it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
+              const txParams = {
+                operator: context.accounts.operator,
+                from: context.accounts.owner.address,
+                to: context.accounts.tokenReceiver.address,
+                amount: transferAmount,
+                allowNonLSP1Recipient: true,
+                data: expectedData,
+              };
+
+              await transferSuccessScenario(
+                txParams,
+                () =>
+                  context.lsp7CompatibleERC20
+                    .connect(txParams.operator)
+                    ["transfer(address,address,uint256,bool,bytes)"](
+                      txParams.from,
+                      txParams.to,
+                      txParams.amount,
+                      txParams.allowNonLSP1Recipient,
+                      txParams.data
+                    ),
+                expectedData
+              );
+            });
+
+            it("should NOT allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
+              const txParams = {
+                operator: context.accounts.operator,
+                from: context.accounts.owner.address,
+                to: context.accounts.tokenReceiver.address,
+                amount: transferAmount,
+                allowNonLSP1Recipient: false,
+                data: expectedData,
+              };
+
+              // pre-conditions
+              const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+                txParams.from
+              );
+
+              await expect(
+                context.lsp7CompatibleERC20
+                  .connect(txParams.operator)
+                  ["transfer(address,address,uint256,bool,bytes)"](
+                    txParams.from,
+                    txParams.to,
+                    txParams.amount,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              )
+                .to.be.revertedWithCustomError(
+                  context.lsp7CompatibleERC20,
+                  "LSP7NotifyTokenReceiverIsEOA"
+                )
+                .withArgs(txParams.to);
+
+              // post-conditions
+              const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+                txParams.from
+              );
+              expect(postBalanceOf).to.equal(preBalanceOf);
+            });
+          });
+
+          describe("when `to` is a contract", () => {
+            describe("when receiving contract supports LSP1", () => {
+              it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
+                const txParams = {
+                  operator: context.accounts.operator,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithLSP1.address,
+                  amount: transferAmount,
+                  allowNonLSP1Recipient: true,
+                  data: expectedData,
+                };
+
+                await transferSuccessScenario(
+                  txParams,
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      ["transfer(address,address,uint256,bool,bytes)"](
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount,
+                        txParams.allowNonLSP1Recipient,
+                        txParams.data
+                      ),
+                  expectedData
+                );
+              });
+
+              it("should allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
+                const txParams = {
+                  operator: context.accounts.operator,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithLSP1.address,
+                  amount: transferAmount,
+                  allowNonLSP1Recipient: false,
+                  data: expectedData,
+                };
+
+                await transferSuccessScenario(
+                  txParams,
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      ["transfer(address,address,uint256,bool,bytes)"](
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount,
+                        txParams.allowNonLSP1Recipient,
+                        txParams.data
+                      ),
+                  expectedData
+                );
+              });
+            });
+
+            describe("when receiving contract does not support LSP1", () => {
+              it("should allow transfering the tokens with `allowNonLSP1Recipient` param = true", async () => {
+                const txParams = {
+                  operator: context.accounts.operator,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithoutLSP1.address,
+                  amount: transferAmount,
+                  allowNonLSP1Recipient: true,
+                  data: expectedData,
+                };
+
+                await transferSuccessScenario(
+                  txParams,
+                  () =>
+                    context.lsp7CompatibleERC20
+                      .connect(txParams.operator)
+                      ["transfer(address,address,uint256,bool,bytes)"](
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount,
+                        txParams.allowNonLSP1Recipient,
+                        txParams.data
+                      ),
+                  expectedData
+                );
+              });
+
+              it("should NOT allow transfering the tokens with `allowNonLSP1Recipient` param = false", async () => {
+                const txParams = {
+                  operator: context.accounts.operator,
+                  from: context.accounts.owner.address,
+                  to: deployedContracts.tokenReceiverWithoutLSP1.address,
+                  amount: transferAmount,
+                  allowNonLSP1Recipient: false,
+                  data: expectedData,
+                };
+
+                // pre-conditions
+                const preBalanceOf =
+                  await context.lsp7CompatibleERC20.balanceOf(txParams.from);
+
+                await expect(
+                  context.lsp7CompatibleERC20
+                    .connect(txParams.operator)
+                    ["transfer(address,address,uint256,bool,bytes)"](
+                      txParams.from,
+                      txParams.to,
+                      txParams.amount,
+                      txParams.allowNonLSP1Recipient,
+                      txParams.data
+                    )
+                )
+                  .to.be.revertedWithCustomError(
+                    context.lsp7CompatibleERC20,
+                    "LSP7NotifyTokenReceiverContractMissingLSP1Interface"
+                  )
+                  .withArgs(txParams.to);
+
+                // post-conditions
+                const postBalanceOf =
+                  await context.lsp7CompatibleERC20.balanceOf(txParams.from);
+                expect(postBalanceOf).to.equal(preBalanceOf);
+              });
+            });
+          });
+        });
+      });
+
+      describe("when sender does not have enough balance", () => {
+        describe("when caller (msg.sender) is the `from` address", () => {
+          it("should revert with `LSP7AmountExceedsBalance` error if sending more tokens than the tokenOwner's balance", async () => {
+            const ownerBalance = await context.lsp7CompatibleERC20.balanceOf(
+              context.accounts.owner.address
+            );
+
+            const txParams = {
+              operator: context.accounts.owner,
+              from: context.accounts.owner.address,
+              to: deployedContracts.tokenReceiverWithoutLSP1.address,
+              amount: ownerBalance.add(1),
+              allowNonLSP1Recipient: true,
+              data: expectedData,
+            };
+
+            // pre-conditions
+            const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+              txParams.from
+            );
+
+            await expect(
+              context.lsp7CompatibleERC20
+                .connect(txParams.operator)
+                ["transfer(address,address,uint256,bool,bytes)"](
+                  txParams.from,
+                  txParams.to,
+                  txParams.amount,
+                  txParams.allowNonLSP1Recipient,
+                  txParams.data
+                )
+            )
+              .to.be.revertedWithCustomError(
+                context.lsp7CompatibleERC20,
+                "LSP7AmountExceedsBalance"
+              )
+              .withArgs(
+                ownerBalance.toHexString(),
+                txParams.from,
+                txParams.amount.toHexString()
+              );
+
+            // post-conditions
+            const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+              txParams.from
+            );
+            expect(postBalanceOf).to.equal(preBalanceOf);
+          });
+        });
+
+        describe("when caller (msg.sender) is an operator (= Not the `from` address)", () => {
+          it("should revert with `LSP7AmountExceedsAuthorizedAmount` error if sending more tokens than the tokenOwner's balance", async () => {
+            const ownerBalance = await context.lsp7CompatibleERC20.balanceOf(
+              context.accounts.owner.address
+            );
+
+            const txParams = {
+              operator: context.accounts.operator,
+              from: context.accounts.owner.address,
+              to: deployedContracts.tokenReceiverWithoutLSP1.address,
+              amount: ownerBalance.add(1),
+              allowNonLSP1Recipient: true,
+              data: expectedData,
+            };
+
+            // pre-conditions
+            const preBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+              txParams.from
+            );
+
+            await expect(
+              context.lsp7CompatibleERC20
+                .connect(txParams.operator)
+                ["transfer(address,address,uint256,bool,bytes)"](
+                  txParams.from,
+                  txParams.to,
+                  txParams.amount,
+                  txParams.allowNonLSP1Recipient,
+                  txParams.data
+                )
+            )
+              .to.be.revertedWithCustomError(
+                context.lsp7CompatibleERC20,
+                "LSP7AmountExceedsAuthorizedAmount"
+              )
+              .withArgs(
+                context.accounts.owner.address,
+                ownerBalance.toHexString(),
+                txParams.operator.address,
+                txParams.amount.toHexString()
+              );
+
+            // post-conditions
+            const postBalanceOf = await context.lsp7CompatibleERC20.balanceOf(
+              txParams.from
+            );
+            expect(postBalanceOf).to.equal(preBalanceOf);
           });
         });
       });
@@ -571,7 +1309,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         )
       ).to.equal(SupportedStandards.LSP4DigitalAsset.value);
 
-      const nameKey = ERC725YKeys.LSP4.LSP4TokenName;
+      const nameKey = ERC725YDataKeys.LSP4.LSP4TokenName;
       const expectedNameValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.name)
       );
@@ -582,7 +1320,7 @@ export const shouldInitializeLikeLSP7CompatibleERC20 = (
         await context.lsp7CompatibleERC20["getData(bytes32)"](nameKey)
       ).to.equal(expectedNameValue);
 
-      const symbolKey = ERC725YKeys.LSP4.LSP4TokenSymbol;
+      const symbolKey = ERC725YDataKeys.LSP4.LSP4TokenSymbol;
       const expectedSymbolValue = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes(context.deployParams.symbol)
       );

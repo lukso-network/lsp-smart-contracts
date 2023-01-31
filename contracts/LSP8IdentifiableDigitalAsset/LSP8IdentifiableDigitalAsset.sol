@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -31,7 +31,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {} // solhint-disable no-empty-blocks
+    ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_) {}
 
     /**
      * @dev See {IERC165-supportsInterface}.

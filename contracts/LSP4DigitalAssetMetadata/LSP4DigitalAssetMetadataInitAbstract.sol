@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {ERC725YInitAbstract} from "@erc725/smart-contracts/contracts/ERC725YInitAbstract.sol";
@@ -46,7 +46,7 @@ abstract contract LSP4DigitalAssetMetadataInitAbstract is ERC725YInitAbstract {
         } else if (dataKey == _LSP4_TOKEN_SYMBOL_KEY) {
             revert LSP4TokenSymbolNotEditable();
         } else {
-            store[dataKey] = dataValue;
+            _store[dataKey] = dataValue;
             emit DataChanged(
                 dataKey,
                 dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)

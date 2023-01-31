@@ -1,11 +1,14 @@
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { LSP6TestContext, LSP6InternalsTestContext } from "../utils/context";
 
 import { INTERFACE_IDS } from "../../constants";
 
 import {
   shouldBehaveLikePermissionChangeOwner,
-  shouldBehaveLikePermissionChangeOrAddPermissions,
+  shouldBehaveLikePermissionChangeOrAddController,
+  shouldBehaveLikePermissionChangeOrAddExtensions,
+  shouldBehaveLikePermissionChangeOrAddURD,
   shouldBehaveLikePermissionSetData,
   shouldBehaveLikePermissionCall,
   shouldBehaveLikePermissionStaticCall,
@@ -16,28 +19,38 @@ import {
   shouldBehaveLikeAllowedAddresses,
   shouldBehaveLikeAllowedFunctions,
   shouldBehaveLikeAllowedStandards,
-  shouldBehaveLikeAllowedERC725YKeys,
+  shouldBehaveLikeAllowedERC725YDataKeys,
   shouldBehaveLikeMultiChannelNonce,
+  shouldBehaveLikeExecuteRelayCall,
+  shouldBehaveLikeBatchExecute,
   testSecurityScenarios,
   otherTestScenarios,
+  testReentrancyScenarios,
 } from "./tests";
 
 import {
-  testAllowedAddressesInternals,
-  testAllowedERC725YKeysInternals,
-  testAllowedFunctionsInternals,
+  testAllowedCallsInternals,
+  testAllowedERC725YDataKeysInternals,
   testReadingPermissionsInternals,
 } from "./internals";
 
 export const shouldBehaveLikeLSP6 = (
-  buildContext: () => Promise<LSP6TestContext>
+  buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>
 ) => {
   describe("CHANGEOWNER", () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
   describe("CHANGE / ADD permissions", () => {
-    shouldBehaveLikePermissionChangeOrAddPermissions(buildContext);
+    shouldBehaveLikePermissionChangeOrAddController(buildContext);
+  });
+
+  describe("CHANGE / ADD extensions", () => {
+    shouldBehaveLikePermissionChangeOrAddExtensions(buildContext);
+  });
+
+  describe("CHANGE / ADD UniversalReceiverDelegate", () => {
+    shouldBehaveLikePermissionChangeOrAddURD(buildContext);
   });
 
   describe("SETDATA", () => {
@@ -68,24 +81,26 @@ export const shouldBehaveLikeLSP6 = (
     shouldBehaveLikePermissionSign(buildContext);
   });
 
-  describe("ALLOWEDADDRESSES", () => {
+  describe("ALLOWED CALLS", () => {
     shouldBehaveLikeAllowedAddresses(buildContext);
-  });
-
-  describe("ALLOWEDFUNCTIONS", () => {
     shouldBehaveLikeAllowedFunctions(buildContext);
-  });
-
-  describe("ALLOWEDSTANDARDS", () => {
     shouldBehaveLikeAllowedStandards(buildContext);
   });
 
-  describe("ALLOWEDERC725YKeys", () => {
-    shouldBehaveLikeAllowedERC725YKeys(buildContext);
+  describe("AllowedERC725YDataKeys", () => {
+    shouldBehaveLikeAllowedERC725YDataKeys(buildContext);
   });
 
   describe("Multi Channel nonces", () => {
     shouldBehaveLikeMultiChannelNonce(buildContext);
+  });
+
+  describe("Execute Relay Call", () => {
+    shouldBehaveLikeExecuteRelayCall(buildContext);
+  });
+
+  describe("batch execute", () => {
+    shouldBehaveLikeBatchExecute(buildContext);
   });
 
   describe("miscellaneous", () => {
@@ -95,6 +110,10 @@ export const shouldBehaveLikeLSP6 = (
   describe("Security", () => {
     testSecurityScenarios(buildContext);
   });
+
+  describe("Reentrancy", () => {
+    testReentrancyScenarios(buildContext);
+  });
 };
 
 export const shouldInitializeLikeLSP6 = (
@@ -102,7 +121,7 @@ export const shouldInitializeLikeLSP6 = (
 ) => {
   let context: LSP6TestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
@@ -138,8 +157,7 @@ export const shouldInitializeLikeLSP6 = (
 export const testLSP6InternalFunctions = (
   buildContext: () => Promise<LSP6InternalsTestContext>
 ) => {
-  testAllowedAddressesInternals(buildContext);
-  testAllowedFunctionsInternals(buildContext);
-  testAllowedERC725YKeysInternals(buildContext);
+  testAllowedCallsInternals(buildContext);
+  testAllowedERC725YDataKeysInternals(buildContext);
   testReadingPermissionsInternals(buildContext);
 };

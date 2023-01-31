@@ -76,9 +76,7 @@ describe("LSP7", () => {
             deployParams.symbol,
             deployParams.newOwner
           )
-        ).to.be.revertedWith(
-          "Ownable: contract owner cannot be the zero address"
-        );
+        ).to.be.revertedWith("Ownable: new owner is the zero address");
       });
 
       describe("once the contract was deployed", () => {
@@ -148,7 +146,7 @@ describe("LSP7", () => {
           accounts,
           deployParams,
         };
-      }
+      };
 
     const initializeProxy = async (context: LSP7TestContext) => {
       return context.lsp7["initialize(string,string,address,bool)"](
@@ -174,9 +172,7 @@ describe("LSP7", () => {
             ethers.constants.AddressZero,
             false
           )
-        ).to.be.revertedWith(
-          "Ownable: contract owner cannot be the zero address"
-        );
+        ).to.be.revertedWith("Ownable: new owner is the zero address");
       });
 
       describe("when initializing the contract", () => {
@@ -206,13 +202,13 @@ describe("LSP7", () => {
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP4DigitalAssetMetadata(async () => {
         let lsp4Context = await buildLSP4DigitalAssetMetadataTestContext();
-        
+
         await lsp4Context.contract["initialize(string,string,address,bool)"](
           "LSP7 - deployed with proxy",
           "TKN",
           lsp4Context.deployParams.owner.address,
           false
-        )
+        );
 
         return lsp4Context;
       });

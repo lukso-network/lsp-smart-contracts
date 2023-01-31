@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {LSP7MintableInitAbstract} from "./LSP7MintableInitAbstract.sol";
@@ -28,7 +28,7 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
         string memory symbol_,
         address newOwner_,
         bool isNonDivisible_
-    ) public virtual initializer {
+    ) external virtual initializer {
         LSP7MintableInitAbstract._initialize(name_, symbol_, newOwner_, isNonDivisible_);
     }
 }

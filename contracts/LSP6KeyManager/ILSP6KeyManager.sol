@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
@@ -11,7 +11,7 @@ interface ILSP6KeyManager is
     IERC1271
     /* is ERC165 */
 {
-    event Executed(uint256 indexed value, bytes4 selector);
+    event Executed(bytes4 indexed selector, uint256 indexed value);
 
     /**
      * @notice returns the address of the account linked to this KeyManager
@@ -25,12 +25,12 @@ interface ILSP6KeyManager is
     function target() external view returns (address);
 
     /**
-     * @notice get latest nonce for `from` for channel ID: `channelId`
+     * @notice get latest nonce for `from` in channel ID: `channelId`
      * @dev use channel ID = 0 for sequential nonces, any other number for out-of-order execution (= execution in parallel)
-     * @param from caller address
-     * @param channelId channel id
+     * @param from the caller or signer address
+     * @param channelId the channel id to retrieve the nonce from
      */
-    function getNonce(address from, uint256 channelId) external view returns (uint256);
+    function getNonce(address from, uint128 channelId) external view returns (uint256);
 
     /**
      * @notice execute the following payload on the ERC725Account: `payload`
@@ -41,6 +41,14 @@ interface ILSP6KeyManager is
     function execute(bytes calldata payload) external payable returns (bytes memory);
 
     /**
+     * @dev batch `execute(bytes)`
+     */
+    function execute(uint256[] calldata values, bytes[] calldata payloads)
+        external
+        payable
+        returns (bytes[] memory);
+
+    /**
      * @dev allows anybody to execute given they have a signed message from an executor
      * @param signature bytes32 ethereum signature
      * @param nonce the address' nonce (in a specific `_channel`), obtained via `getNonce(...)`. Used to prevent replay attack
@@ -48,8 +56,18 @@ interface ILSP6KeyManager is
      * @return the data being returned by the ERC725 Account
      */
     function executeRelayCall(
-        bytes memory signature,
+        bytes calldata signature,
         uint256 nonce,
         bytes calldata payload
     ) external payable returns (bytes memory);
+
+    /**
+     * @dev batch `executeRelayCall(...)`
+     */
+    function executeRelayCall(
+        bytes[] calldata signatures,
+        uint256[] calldata nonces,
+        uint256[] calldata values,
+        bytes[] calldata payloads
+    ) external payable returns (bytes[] memory);
 }

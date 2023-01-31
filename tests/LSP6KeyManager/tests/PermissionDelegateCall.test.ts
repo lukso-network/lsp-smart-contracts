@@ -8,7 +8,7 @@ import {
 
 // constants
 import {
-  ERC725YKeys,
+  ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
@@ -19,47 +19,47 @@ import { LSP6TestContext } from "../../utils/context";
 import { setupKeyManager } from "../../utils/fixtures";
 
 // helpers
-import { abiCoder } from "../../utils/helpers";
+import { combineAllowedCalls } from "../../utils/helpers";
 
 export const shouldBehaveLikePermissionDelegateCall = (
   buildContext: () => Promise<LSP6TestContext>
 ) => {
   let context: LSP6TestContext;
 
-  let addressCanDelegateCall: SignerWithAddress,
-    addressCannotDelegateCall: SignerWithAddress;
-
-  let erc725YDelegateCallContract: ERC725YDelegateCall;
-
-  beforeEach(async () => {
-    context = await buildContext();
-
-    addressCanDelegateCall = context.accounts[1];
-    addressCannotDelegateCall = context.accounts[2];
-
-    erc725YDelegateCallContract = await new ERC725YDelegateCall__factory(
-      context.owner
-    ).deploy(context.universalProfile.address);
-
-    const permissionKeys = [
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        context.owner.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCanDelegateCall.address.substring(2),
-      ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-        addressCannotDelegateCall.address.substring(2),
-    ];
-
-    const permissionsValues = [
-      ALL_PERMISSIONS,
-      PERMISSIONS.DELEGATECALL,
-      PERMISSIONS.CALL,
-    ];
-
-    await setupKeyManager(context, permissionKeys, permissionsValues);
-  });
-
   describe("when trying to make a DELEGATECALL via UP, DELEGATECALL is disallowed", () => {
+    let addressCanDelegateCall: SignerWithAddress,
+      addressCannotDelegateCall: SignerWithAddress;
+
+    let erc725YDelegateCallContract: ERC725YDelegateCall;
+
+    before(async () => {
+      context = await buildContext();
+
+      addressCanDelegateCall = context.accounts[1];
+      addressCannotDelegateCall = context.accounts[2];
+
+      erc725YDelegateCallContract = await new ERC725YDelegateCall__factory(
+        context.owner
+      ).deploy(context.universalProfile.address);
+
+      const permissionKeys = [
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          context.owner.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          addressCanDelegateCall.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          addressCannotDelegateCall.address.substring(2),
+      ];
+
+      const permissionsValues = [
+        ALL_PERMISSIONS,
+        PERMISSIONS.DELEGATECALL,
+        PERMISSIONS.CALL,
+      ];
+
+      await setupKeyManager(context, permissionKeys, permissionsValues);
+    });
+
     it("should revert even if caller has ALL PERMISSIONS", async () => {
       const key =
         "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
@@ -81,17 +81,23 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.DELEGATECALL,
-          erc725YDelegateCallContract.address,
-          0,
-          delegateCallPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            erc725YDelegateCallContract.address,
+            0,
+            delegateCallPayload,
+          ]
+        );
 
       await expect(
-        context.keyManager.connect(context.owner).execute(executePayload)
-      ).to.be.revertedWith(
-        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+        context.keyManager
+          .connect(context.owner)
+          ["execute(bytes)"](executePayload)
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "DelegateCallDisallowedViaKeyManager"
       );
     });
 
@@ -116,19 +122,23 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.DELEGATECALL,
-          erc725YDelegateCallContract.address,
-          0,
-          delegateCallPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            erc725YDelegateCallContract.address,
+            0,
+            delegateCallPayload,
+          ]
+        );
 
       await expect(
         context.keyManager
           .connect(addressCanDelegateCall)
-          .execute(executePayload)
-      ).to.be.revertedWith(
-        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+          ["execute(bytes)"](executePayload)
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "DelegateCallDisallowedViaKeyManager"
       );
     });
 
@@ -153,19 +163,23 @@ export const shouldBehaveLikePermissionDelegateCall = (
         );
 
       let executePayload =
-        context.universalProfile.interface.encodeFunctionData("execute", [
-          OPERATION_TYPES.DELEGATECALL,
-          erc725YDelegateCallContract.address,
-          0,
-          delegateCallPayload,
-        ]);
+        context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.DELEGATECALL,
+            erc725YDelegateCallContract.address,
+            0,
+            delegateCallPayload,
+          ]
+        );
 
       await expect(
         context.keyManager
           .connect(addressCannotDelegateCall)
-          .execute(executePayload)
-      ).to.be.revertedWith(
-        "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+          ["execute(bytes)"](executePayload)
+      ).to.be.revertedWithCustomError(
+        context.keyManager,
+        "DelegateCallDisallowedViaKeyManager"
       );
     });
   });
@@ -178,7 +192,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
       ERC725YDelegateCall
     ];
 
-    beforeEach(async () => {
+    before(async () => {
       context = await buildContext();
 
       caller = context.accounts[1];
@@ -193,22 +207,21 @@ export const shouldBehaveLikePermissionDelegateCall = (
       ];
 
       const permissionKeys = [
-        ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           caller.address.substring(2),
-        ERC725YKeys.LSP6["AddressPermissions:AllowedAddresses"] +
+        ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
           caller.address.substring(2),
       ];
 
       const permissionValues = [
         PERMISSIONS.SUPER_DELEGATECALL,
-        abiCoder.encode(
-          ["address[]"],
+        combineAllowedCalls(
+          ["0xffffffff", "0xffffffff"],
           [
-            [
-              allowedDelegateCallContracts[0].address,
-              allowedDelegateCallContracts[1].address,
-            ],
-          ]
+            allowedDelegateCallContracts[0].address,
+            allowedDelegateCallContracts[1].address,
+          ],
+          ["0xffffffff", "0xffffffff"]
         ),
       ];
 
@@ -258,17 +271,23 @@ export const shouldBehaveLikePermissionDelegateCall = (
               ]);
 
             let executePayload =
-              context.universalProfile.interface.encodeFunctionData("execute", [
-                OPERATION_TYPES.DELEGATECALL,
-                randomContracts[ii].address,
-                0,
-                delegateCallPayload,
-              ]);
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [
+                  OPERATION_TYPES.DELEGATECALL,
+                  randomContracts[ii].address,
+                  0,
+                  delegateCallPayload,
+                ]
+              );
 
             await expect(
-              context.keyManager.connect(caller).execute(executePayload)
-            ).to.be.revertedWith(
-              "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+              context.keyManager
+                .connect(caller)
+                ["execute(bytes)"](executePayload)
+            ).to.be.revertedWithCustomError(
+              context.keyManager,
+              "DelegateCallDisallowedViaKeyManager"
             );
 
             // storage should remain unchanged and not set
@@ -299,17 +318,21 @@ export const shouldBehaveLikePermissionDelegateCall = (
           ]);
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.DELEGATECALL,
-            allowedDelegateCallContracts[0].address,
-            0,
-            delegateCallPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.DELEGATECALL,
+              allowedDelegateCallContracts[0].address,
+              0,
+              delegateCallPayload,
+            ]
+          );
 
         await expect(
-          context.keyManager.connect(caller).execute(executePayload)
-        ).to.be.revertedWith(
-          "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "DelegateCallDisallowedViaKeyManager"
         );
 
         // prettier-ignore
@@ -334,17 +357,21 @@ export const shouldBehaveLikePermissionDelegateCall = (
           ]);
 
         let executePayload =
-          context.universalProfile.interface.encodeFunctionData("execute", [
-            OPERATION_TYPES.DELEGATECALL,
-            allowedDelegateCallContracts[1].address,
-            0,
-            delegateCallPayload,
-          ]);
+          context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.DELEGATECALL,
+              allowedDelegateCallContracts[1].address,
+              0,
+              delegateCallPayload,
+            ]
+          );
 
         await expect(
-          context.keyManager.connect(caller).execute(executePayload)
-        ).to.be.revertedWith(
-          "LSP6KeyManager: operation DELEGATECALL is currently disallowed"
+          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+        ).to.be.revertedWithCustomError(
+          context.keyManager,
+          "DelegateCallDisallowedViaKeyManager"
         );
 
         // prettier-ignore

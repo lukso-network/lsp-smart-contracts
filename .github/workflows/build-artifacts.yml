@@ -36,7 +36,7 @@ jobs:
         run: curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
       - name: Generate Android artifacts
-        run: npx ts-node make-android.ts
+        run: npx ts-node ./scripts/android-artifacts.ts
 
       - name: Set up our JDK environment
         uses: actions/setup-java@v1.4.3
@@ -54,7 +54,7 @@ jobs:
       - name: Generate iOS artifacts
         run: |
           mkdir ios
-          npx ts-node make-ios.ts
+          npx ts-node ./scripts/ios-artifacts.ts
 
       # Upload Arifacts
       - name: Upload iOS Artifact

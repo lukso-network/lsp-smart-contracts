@@ -1,0 +1,183 @@
+{
+  "projectName": "lsp-smart-contracts",
+  "projectOwner": "lukso-network",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 50,
+  "commit": true,
+  "commitConvention": "eslint",
+  "contributors": [
+    {
+      "login": "CJ42",
+      "name": "Jean Cvllr",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31145285?v=4",
+      "profile": "https://github.com/CJ42",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "YamenMerhi",
+      "name": "Yamen Merhi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/86341666?v=4",
+      "profile": "https://github.com/YamenMerhi",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "frozeman",
+      "name": "Fabian Vogelsteller",
+      "avatar_url": "https://avatars.githubusercontent.com/u/232662?v=4",
+      "profile": "https://lukso.network/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "b00ste",
+      "name": "b00ste.lyx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62855857?v=4",
+      "profile": "https://github.com/b00ste",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mattgstevens",
+      "name": "Matthew Stevens",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2363636?v=4",
+      "profile": "http://www.mattgstevens.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "rryter",
+      "name": "Reto Ryter",
+      "avatar_url": "https://avatars.githubusercontent.com/u/798709?v=4",
+      "profile": "http://rryter.ch/",
+      "contributions": [
+        "tool",
+        "infra"
+      ]
+    },
+    {
+      "login": "CallumGrindle",
+      "name": "Callum Grindle",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54543428?v=4",
+      "profile": "https://github.com/CallumGrindle",
+      "contributions": [
+        "review"
+      ]
+    },
+    {
+      "login": "skimaharvey",
+      "name": "Skima Harvey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/64636974?v=4",
+      "profile": "https://github.com/skimaharvey",
+      "contributions": [
+        "security",
+        "code"
+      ]
+    },
+    {
+      "login": "JeneaVranceanu",
+      "name": "Jenea Vranceanu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36865532?v=4",
+      "profile": "https://stackoverflow.com/users/7210237/jenea-vranceanu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Hugoo",
+      "name": "Hugo Masclet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/477945?v=4",
+      "profile": "http://www.hugomasclet.com/",
+      "contributions": [
+        "review",
+        "code"
+      ]
+    },
+    {
+      "login": "Leondroids",
+      "name": "Leondroid",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11769769?v=4",
+      "profile": "https://github.com/Leondroids",
+      "contributions": [
+        "review"
+      ]
+    },
+    {
+      "login": "lucasmt",
+      "name": "lucasmt",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36549752?v=4",
+      "profile": "https://github.com/lucasmt",
+      "contributions": [
+        "security",
+        "bug"
+      ]
+    },
+    {
+      "login": "qian-hu",
+      "name": "qian-hu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/88806138?v=4",
+      "profile": "https://github.com/qian-hu",
+      "contributions": [
+        "security",
+        "bug"
+      ]
+    },
+    {
+      "login": "magalimorin18",
+      "name": "Magali Morin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51906903?v=4",
+      "profile": "https://github.com/magalimorin18",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Hugo0",
+      "name": "Hugo Montenegro",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12943235?v=4",
+      "profile": "https://github.com/Hugo0",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "lykhonis",
+      "name": "Volodymyr Lykhonis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/881338?v=4",
+      "profile": "https://lykhonis.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "OnahProsperity",
+      "name": "Prosperity",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40717516?v=4",
+      "profile": "https://onahprosperity.github.io/",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "ScreamingHawk",
+      "name": "Michael Standen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1460552?v=4",
+      "profile": "https://michael.standen.link/",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "linkToUsage": true
+}

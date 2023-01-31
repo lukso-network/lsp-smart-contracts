@@ -3,7 +3,7 @@ pragma solidity ^0.8.5;
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
 import {InvalidLSP6Target} from "./LSP6Errors.sol";
 
@@ -15,6 +15,7 @@ import {InvalidLSP6Target} from "./LSP6Errors.sol";
 abstract contract LSP6KeyManagerInitAbstract is Initializable, LSP6KeyManagerCore {
     function _initialize(address target_) internal virtual onlyInitializing {
         if (target_ == address(0)) revert InvalidLSP6Target();
-        target = target_;
+        _target = target_;
+        _setupLSP6ReentrancyGuard();
     }
 }

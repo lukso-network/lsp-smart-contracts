@@ -139,3 +139,13 @@ flat_contracts/
 
 # Mac
 .DS_Store
+
+# codespaces
+.devcontainer
+
+# folders generated for foundry builds
+out/
+forge-cache/
+
+# generated gas benchmark
+benchmark.md

@@ -1,0 +1,37 @@
+# This workflow benchmark the gas usage of Universal Profile for common interactions
+
+name: 🆙 📊 Universal Profile Benchmark
+
+on:
+  pull_request:
+    types: [opened]
+    branches: ["develop"]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js '16.15.0'
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.15.0"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build contract artifacts
+        run: npm run build --if-present
+
+      - name: 🧪 Run Benchmark tests
+        run: npm run test:benchmark
+
+      - name: 📊 Generate Benchmark Report
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file: "./benchmark.md"

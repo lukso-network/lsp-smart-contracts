@@ -1,21 +1,24 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // modules
 import {LSP8IdentifiableDigitalAssetCore} from "../LSP8IdentifiableDigitalAssetCore.sol";
 import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {LSP8CappedSupplyCore} from "./LSP8CappedSupplyCore.sol";
 
 /**
  * @dev LSP8 extension, adds token supply cap.
  */
-abstract contract LSP8CappedSupplyInitAbstract is
-    LSP8IdentifiableDigitalAssetInitAbstract,
-    LSP8CappedSupplyCore
-{
+abstract contract LSP8CappedSupplyInitAbstract is LSP8IdentifiableDigitalAssetInitAbstract {
+    // --- Errors
+    error LSP8CappedSupplyRequired();
+    error LSP8CappedSupplyCannotMintOverCap();
+
+    // --- Storage
+    uint256 internal _tokenSupplyCap;
+
     function _initialize(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
         if (tokenSupplyCap_ == 0) {
             revert LSP8CappedSupplyRequired();
@@ -24,7 +27,17 @@ abstract contract LSP8CappedSupplyInitAbstract is
         _tokenSupplyCap = tokenSupplyCap_;
     }
 
-    // --- Overrides
+    // --- Token queries
+
+    /**
+     * @dev Returns the number of tokens that can be minted.
+     * @return The token max supply
+     */
+    function tokenSupplyCap() public view virtual returns (uint256) {
+        return _tokenSupplyCap;
+    }
+
+    // --- Transfer functionality
 
     /**
      * @dev Mints `tokenId` and transfers it to `to`.
@@ -40,9 +53,13 @@ abstract contract LSP8CappedSupplyInitAbstract is
     function _mint(
         address to,
         bytes32 tokenId,
-        bool force,
+        bool allowNonLSP1Recipient,
         bytes memory data
-    ) internal virtual override(LSP8IdentifiableDigitalAssetCore, LSP8CappedSupplyCore) {
-        super._mint(to, tokenId, force, data);
+    ) internal virtual override {
+        if (totalSupply() + 1 > tokenSupplyCap()) {
+            revert LSP8CappedSupplyCannotMintOverCap();
+        }
+
+        super._mint(to, tokenId, allowNonLSP1Recipient, data);
     }
 }

@@ -13,10 +13,20 @@ import {
   LSP1UniversalReceiverDelegateVault,
 } from "../../types";
 
-import { ARRAY_LENGTH, TOKEN_ID } from "../utils/helpers";
+import {
+  ARRAY_LENGTH,
+  TOKEN_ID,
+  LSP1_HOOK_PLACEHOLDER,
+  abiCoder,
+} from "../utils/helpers";
 
 // constants
-import { ERC725YKeys, INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
+import {
+  ERC725YDataKeys,
+  INTERFACE_IDS,
+  OPERATION_TYPES,
+  LSP1_TYPE_IDS,
+} from "../../constants";
 import { callPayload, getLSP5MapAndArrayKeysValue } from "../utils/fixtures";
 
 export type LSP1TestAccounts = {
@@ -60,12 +70,87 @@ export const shouldBehaveLikeLSP1Delegate = (
       expect(result).to.be.true;
     });
 
-    it("should support LSP1Delegate interface", async () => {
+    it("should support LSP1 interface", async () => {
       const result =
         await context.lsp1universalReceiverDelegateVault.supportsInterface(
-          INTERFACE_IDS.LSP1UniversalReceiverDelegate
+          INTERFACE_IDS.LSP1UniversalReceiver
         );
       expect(result).to.be.true;
+    });
+  });
+
+  describe("When testing EOA call to URD through the UR function", () => {
+    describe("when calling with tokens typeId", () => {
+      it("should revert with custom error", async () => {
+        let URD_TypeIds = [
+          LSP1_TYPE_IDS.LSP7Tokens_RecipientNotification,
+          LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+          LSP1_TYPE_IDS.LSP8Tokens_RecipientNotification,
+          LSP1_TYPE_IDS.LSP8Tokens_SenderNotification,
+        ];
+
+        for (let i = 0; i < URD_TypeIds.length; i++) {
+          await expect(
+            context.lsp9Vault1
+              .connect(context.accounts.any)
+              .universalReceiver(URD_TypeIds[i], "0x")
+          )
+            .to.be.revertedWithCustomError(
+              context.lsp1universalReceiverDelegateVault,
+              "CannotRegisterEOAsAsAssets"
+            )
+            .withArgs(context.accounts.any.address);
+        }
+      });
+    });
+
+    describe("when calling with vaults sender and recipient typeIds", () => {
+      it("should pass and return typeId out of scope return value", async () => {
+        let Vault_TypeIds = [
+          LSP1_TYPE_IDS.LSP14OwnershipTransferred_RecipientNotification,
+          LSP1_TYPE_IDS.LSP14OwnershipTransferred_SenderNotification,
+        ];
+
+        for (let i = 0; i < Vault_TypeIds.length; i++) {
+          let result = await context.lsp9Vault1
+            .connect(context.accounts.any)
+            .callStatic.universalReceiver(Vault_TypeIds[i], "0x");
+
+          const [resultDelegate, resultTypeID] = abiCoder.decode(
+            ["bytes", "bytes"],
+            result
+          );
+
+          expect(resultDelegate).to.equal(
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+            )
+          );
+
+          expect(resultTypeID).to.equal("0x");
+        }
+      });
+    });
+
+    describe("when calling with random bytes32 typeId", () => {
+      it("should pass and return typeId out of scope return value", async () => {
+        let result = await context.lsp9Vault1
+          .connect(context.accounts.any)
+          .callStatic.universalReceiver(LSP1_HOOK_PLACEHOLDER, "0x");
+
+        const [resultDelegate, resultTypeID] = abiCoder.decode(
+          ["bytes", "bytes"],
+          result
+        );
+
+        expect(resultDelegate).to.equal(
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("LSP1: typeId out of scope")
+          )
+        );
+
+        expect(resultTypeID).to.equal("0x");
+      });
     });
   });
 
@@ -97,7 +182,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -125,7 +210,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -153,7 +238,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -181,7 +266,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -210,7 +295,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -220,10 +305,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys: arrayLength 2, no map, no tokenC address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenC.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000002",
             ]);
 
@@ -243,7 +328,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -263,10 +348,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys: arrayLength 1, no map, no tokenA address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenA.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -286,7 +371,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -313,7 +398,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -323,10 +408,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys: arrayLength 0, no map, no tokenB address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000000",
             ]);
 
@@ -390,7 +475,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -410,10 +495,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys: arrayLength 2, no map, no tokenA address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenA.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000002",
             ]);
 
@@ -444,7 +529,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -483,7 +568,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -522,7 +607,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -533,10 +618,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys (no pop and swap as TokenB has the last index): arrayLength 1, no map, no tokenB address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -567,7 +652,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -578,10 +663,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys (no pop and swap as TokenC has the last index): arrayLength 0, no map, no tokenB address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp7TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -612,7 +697,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault2.address,
               0,
@@ -641,7 +726,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.universalProfile
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             context.lsp9Vault1.address,
             0,
@@ -656,7 +741,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.universalProfile
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             context.lsp9Vault2.address,
             0,
@@ -671,7 +756,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.universalProfile
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             context.lsp9Vault2.address,
             0,
@@ -686,7 +771,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         await context.universalProfile
           .connect(context.accounts.owner1)
-          .execute(
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             context.lsp9Vault2.address,
             0,
@@ -695,11 +780,11 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
       it("should remove all lsp5 keys on both UP", async () => {
         const arrayLengthUP1 = await context.lsp9Vault1["getData(bytes32)"](
-          ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length
+          ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length
         );
 
         const arrayLengthUP2 = await context.lsp9Vault2["getData(bytes32)"](
-          ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length
+          ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length
         );
 
         expect(arrayLengthUP1).to.equal(ARRAY_LENGTH.ZERO);
@@ -736,7 +821,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -766,7 +851,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -796,7 +881,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -826,7 +911,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -856,7 +941,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -866,10 +951,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys: arrayLength 2, no map, no tokenC address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenC.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000002",
             ]);
 
@@ -888,7 +973,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -910,10 +995,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys: arrayLength 1, no map, no tokenA address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenA.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -932,7 +1017,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -960,7 +1045,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -970,10 +1055,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys: arrayLength 0, no map, no tokenB address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000000",
             ]);
 
@@ -1052,7 +1137,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1074,10 +1159,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys: arrayLength 2, no map, no tokenA address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenA.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000002",
             ]);
 
@@ -1110,7 +1195,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1153,7 +1238,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1196,7 +1281,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1207,10 +1292,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys (no pop and swap as TokenB has the last index): arrayLength 1, no map, no tokenB address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -1243,7 +1328,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault1.address,
               0,
@@ -1254,10 +1339,10 @@ export const shouldBehaveLikeLSP1Delegate = (
         it("should update lsp5keys (no pop and swap as TokenC has the last index): arrayLength 0, no map, no tokenB address in Vault1", async () => {
           const [mapValue, arrayLength, elementAddress] =
             await context.lsp9Vault1["getData(bytes32[])"]([
-              ERC725YKeys.LSP5.LSP5ReceivedAssetsMap +
+              ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
                 lsp8TokenB.address.substr(2),
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].length,
-              ERC725YKeys.LSP5["LSP5ReceivedAssets[]"].index +
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length,
+              ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
                 "00000000000000000000000000000001",
             ]);
 
@@ -1290,7 +1375,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           await context.universalProfile
             .connect(context.accounts.owner1)
-            .execute(
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.CALL,
               context.lsp9Vault2.address,
               0,

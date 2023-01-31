@@ -10,7 +10,7 @@ import {
 } from "../../types";
 
 // constants
-import { ERC725YKeys } from "../../constants";
+import { ERC725YDataKeys } from "../../constants";
 
 export type LS4DigitalAssetMetadataTestContext = {
   accounts: SignerWithAddress[];
@@ -29,7 +29,7 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
   describe("when setting data on ERC725Y storage", () => {
     it("should revert when trying to edit Token Name", async () => {
-      const key = ERC725YKeys.LSP4["LSP4TokenName"];
+      const key = ERC725YDataKeys.LSP4["LSP4TokenName"];
       const value = ethers.utils.hexlify(
         ethers.utils.toUtf8Bytes("Overriden Token Name")
       );
@@ -45,7 +45,7 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
     });
 
     it("should revert when trying to edit Token Symbol", async () => {
-      const key = ERC725YKeys.LSP4["LSP4TokenSymbol"];
+      const key = ERC725YDataKeys.LSP4["LSP4TokenSymbol"];
       const value = ethers.utils.hexlify(ethers.utils.toUtf8Bytes("BAD"));
 
       expect(

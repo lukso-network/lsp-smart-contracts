@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // --- ERC165 interface ids
-bytes4 constant _INTERFACEID_LSP7 = 0x5fcaac27;
+bytes4 constant _INTERFACEID_LSP7 = 0xda1f85e4;
 
 // --- Token Hooks
 
-// keccak256('LSP7TokensSender')
-bytes32 constant _TYPEID_LSP7_TOKENSSENDER = 0x40b8bec57d7b5ff0dbd9e9acd0a47dfeb0101e1a203766f5ccab00445fbf39e9;
+// keccak256('LSP7Tokens_SenderNotification')
+bytes32 constant _TYPEID_LSP7_TOKENSSENDER = 0x429ac7a06903dbc9c13dfcb3c9d11df8194581fa047c96d7a4171fc7402958ea;
 
-// keccak256('LSP7TokensRecipient')
-bytes32 constant _TYPEID_LSP7_TOKENSRECIPIENT = 0xdbe2c314e1aee2970c72666f2ebe8933a8575263ea71e5ff6a9178e95d47a26f;
+// keccak256('LSP7Tokens_RecipientNotification')
+bytes32 constant _TYPEID_LSP7_TOKENSRECIPIENT = 0x20804611b3e2ea21c480dc465142210acf4a2485947541770ec1fb87dee4a55c;

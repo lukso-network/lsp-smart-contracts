@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
-import {UtilsLib} from "../Utils/UtilsLib.sol";
 
 /**
  * @title ERC725 Utility library to encode key types
@@ -13,8 +12,6 @@ import {UtilsLib} from "../Utils/UtilsLib.sol";
  */
 library LSP2Utils {
     using BytesLib for bytes;
-
-    /* solhint-disable no-inline-assembly */
 
     /**
      * @dev Generates a data key of keyType Singleton
@@ -32,7 +29,7 @@ library LSP2Utils {
      */
     function generateArrayKey(string memory keyName) internal pure returns (bytes32) {
         bytes memory dataKey = bytes(keyName);
-
+        require(dataKey.length >= 2, "MUST be longer than 2 characters");
         require(
             dataKey[dataKey.length - 2] == 0x5b && // "[" in utf8 encoded
                 dataKey[dataKey.length - 1] == 0x5d, // "]" in utf8
@@ -48,20 +45,17 @@ library LSP2Utils {
      * @param arrayKey The key from which we're getting the first half of the Array index data key from
      * @param index Used to generate the second half of the Array index data key
      */
-    function generateArrayElementKeyAtIndex(bytes32 arrayKey, uint256 index)
+    function generateArrayElementKeyAtIndex(bytes32 arrayKey, uint128 index)
         internal
         pure
         returns (bytes32)
     {
-        bytes memory elementInArray = UtilsLib.concatTwoBytes16(
-            bytes16(arrayKey),
-            bytes16(uint128(index))
-        );
+        bytes memory elementInArray = bytes.concat(bytes16(arrayKey), bytes16(index));
         return bytes32(elementInArray);
     }
 
     /**
-     * @dev @dev Generates a data key of keyType Mapping by hashing two strings:
+     * @dev Generates a data key of keyType Mapping by hashing two strings:
      * <bytes10(keccak256(firstWord))>:<bytes2(0)>:<bytes20(keccak256(firstWord))>
      * @param firstWord Used to generate a hash and its first 10 bytes
      * are used for the first part of the data key of keyType Mapping
@@ -175,11 +169,11 @@ library LSP2Utils {
         string memory hashFunction,
         string memory json,
         string memory url
-    ) internal pure returns (bytes memory key) {
+    ) internal pure returns (bytes memory) {
         bytes32 hashFunctionDigest = keccak256(bytes(hashFunction));
         bytes32 jsonDigest = keccak256(bytes(json));
 
-        key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
+        return abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
     /**
@@ -192,11 +186,11 @@ library LSP2Utils {
         string memory hashFunction,
         string memory assetBytes,
         string memory url
-    ) internal pure returns (bytes memory key) {
+    ) internal pure returns (bytes memory) {
         bytes32 hashFunctionDigest = keccak256(bytes(hashFunction));
         bytes32 jsonDigest = keccak256(bytes(assetBytes));
 
-        key = abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
+        return abi.encodePacked(bytes4(hashFunctionDigest), jsonDigest, url);
     }
 
     /**
@@ -206,15 +200,9 @@ library LSP2Utils {
     function isEncodedArray(bytes memory data) internal pure returns (bool) {
         uint256 nbOfBytes = data.length;
 
-        // 1) there must be at least 32 bytes to store the offset
-        if (nbOfBytes < 32) return false;
-
-        // 2) there must be at least the same number of bytes specified by
-        // the offset value (otherwise, the offset points to nowhere)
+        // there must be at least 32 x length bytes after offset
         uint256 offset = uint256(bytes32(data));
-        if (nbOfBytes < offset) return false;
-
-        // 3) there must be at least 32 x length bytes after offset
+        if (nbOfBytes < offset + 32) return false;
         uint256 arrayLength = data.toUint256(offset);
 
         //   32 bytes word (= offset)
@@ -273,6 +261,40 @@ library LSP2Utils {
         }
 
         return true;
+    }
+
+    /**
+     * @dev Verify the validity of the `compactBytesArray` according to LSP2
+     */
+    function isCompactBytesArray(bytes memory compactBytesArray) internal pure returns (bool) {
+        /**
+         * Pointer will always land on these values:
+         *
+         * ↓↓
+         * 03 a00000
+         * 05 fff83a0011
+         * 20 aa0000000000000000000000000000000000000000000000000000000000cafe
+         * 12 bb000000000000000000000000000000beef
+         * 19 cc00000000000000000000000000000000000000000000deed
+         * ↑↑
+         *
+         * The pointer can only land on the length of the following bytes value.
+         */
+        uint256 pointer;
+
+        /**
+         * Check each length byte and make sure that when you reach the last length byte.
+         * Make sure that the last length describes exactly the last bytes value and you do not get out of bounds.
+         */
+        while (pointer < compactBytesArray.length) {
+            if (pointer + 1 >= compactBytesArray.length) return false;
+            uint256 elementLength = uint16(
+                bytes2(abi.encodePacked(compactBytesArray[pointer], compactBytesArray[pointer + 1]))
+            );
+            pointer += elementLength + 2;
+        }
+        if (pointer == compactBytesArray.length) return true;
+        return false;
     }
 
     /**

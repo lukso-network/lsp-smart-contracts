@@ -3,7 +3,11 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
-import { UniversalProfile, TargetContract__factory } from "../types";
+import {
+  UniversalProfile,
+  GenericExecutor__factory,
+  ERC1271MaliciousMock__factory,
+} from "../types";
 
 // helpers
 import { getRandomAddresses } from "./utils/helpers";
@@ -11,8 +15,9 @@ import { getRandomAddresses } from "./utils/helpers";
 // constants
 import {
   ERC1271_VALUES,
-  ERC725YKeys,
+  ERC725YDataKeys,
   INTERFACE_IDS,
+  OPERATION_TYPES,
   SupportedStandards,
 } from "../constants";
 
@@ -23,15 +28,18 @@ export type LSP3TestContext = {
 };
 
 export const shouldBehaveLikeLSP3 = (
-  buildContext: () => Promise<LSP3TestContext>
+  buildContext: (initialFunding?: number) => Promise<LSP3TestContext>
 ) => {
   let context: LSP3TestContext;
 
-  beforeEach(async () => {
-    context = await buildContext();
+  before(async () => {
+    context = await buildContext(100);
   });
 
   describe("when using `isValidSignature()` from ERC1271", () => {
+    afterEach(async () => {
+      context = await buildContext(100);
+    });
     it("should verify signature from owner", async () => {
       const signer = context.deployParams.owner;
 
@@ -60,17 +68,60 @@ export const shouldBehaveLikeLSP3 = (
       expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
     });
 
-    /** @todo update this test for claimOwnership(...) */
-    it("should return failValue when the owner doesn't support ERC1271", async () => {
+    it("should return failValue when the owner doesn't have isValidSignature function", async () => {
       const signer = context.accounts[1];
 
-      const targetContract = await new TargetContract__factory(
+      const genericExecutor = await new GenericExecutor__factory(
         context.accounts[0]
       ).deploy();
 
       await context.universalProfile
         .connect(context.accounts[0])
-        .transferOwnership(targetContract.address);
+        .transferOwnership(genericExecutor.address);
+
+      const acceptOwnershipPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "acceptOwnership"
+        );
+
+      await genericExecutor.call(
+        context.universalProfile.address,
+        0,
+        acceptOwnershipPayload
+      );
+
+      const dataToSign = "0xcafecafe";
+      const messageHash = ethers.utils.hashMessage(dataToSign);
+      const signature = await signer.signMessage(dataToSign);
+
+      const result = await context.universalProfile.isValidSignature(
+        messageHash,
+        signature
+      );
+      expect(result).to.equal(ERC1271_VALUES.FAIL_VALUE);
+    });
+
+    it("should return failValue when the owner call isValidSignature function that doesn't return bytes4", async () => {
+      const signer = context.accounts[1];
+
+      const maliciousERC1271Wallet = await new ERC1271MaliciousMock__factory(
+        context.accounts[0]
+      ).deploy();
+
+      await context.universalProfile
+        .connect(context.accounts[0])
+        .transferOwnership(maliciousERC1271Wallet.address);
+
+      const acceptOwnershipPayload =
+        context.universalProfile.interface.encodeFunctionData(
+          "acceptOwnership"
+        );
+
+      await maliciousERC1271Wallet.call(
+        context.universalProfile.address,
+        0,
+        acceptOwnershipPayload
+      );
 
       const dataToSign = "0xcafecafe";
       const messageHash = ethers.utils.hashMessage(dataToSign);
@@ -86,11 +137,12 @@ export const shouldBehaveLikeLSP3 = (
 
   describe("when interacting with the ERC725Y storage", () => {
     let lsp12IssuedAssetsKeys = [
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000000",
-      ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
         "00000000000000000000000000000001",
     ];
+
     let lsp12IssuedAssetsValues = [
       "0xd94353d9b005b3c0a9da169b768a31c57844e490",
       "0xdaea594e385fc724449e3118b2db7e86dfba1826",
@@ -98,10 +150,10 @@ export const shouldBehaveLikeLSP3 = (
 
     it("should set the 3 x keys for a basic UP setup => `LSP3Profile`, `LSP12IssuedAssets[]` and `LSP1UniversalReceiverDelegate`", async () => {
       let keys = [
-        ERC725YKeys.LSP3.LSP3Profile,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length,
+        ERC725YDataKeys.LSP3.LSP3Profile,
+        ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ];
       let values = [
         "0x6f357c6a820464ddfac1bec070cc14a8daf04129871d458f2ca94368aae8391311af6361696670733a2f2f516d597231564a4c776572673670456f73636468564775676f3339706136727963455a4c6a7452504466573834554178",
@@ -131,7 +183,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -142,7 +194,7 @@ export const shouldBehaveLikeLSP3 = (
 
       let keys = [
         ...lsp12IssuedAssetsKeys,
-        ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
+        ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
       ];
 
       let values = [
@@ -167,7 +219,7 @@ export const shouldBehaveLikeLSP3 = (
         let hexIndex = ethers.utils.hexlify(lsp12IssuedAssetsKeys.length + 1);
 
         lsp12IssuedAssetsKeys.push(
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].index +
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index +
             ethers.utils.hexZeroPad(hexIndex, 16).substring(2)
         );
 
@@ -177,7 +229,7 @@ export const shouldBehaveLikeLSP3 = (
 
         let keys = [
           ...lsp12IssuedAssetsKeys,
-          ERC725YKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
+          ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length, // update array length
         ];
 
         let values = [
@@ -249,6 +301,22 @@ export const shouldBehaveLikeLSP3 = (
     });
   });
 
+  describe("when calling the contract without any value or data", () => {
+    it("should pass and not emit the ValueReceived event", async () => {
+      const sender = context.accounts[0];
+      const amount = 0;
+
+      // prettier-ignore
+      await expect(
+          sender.sendTransaction({
+            to: context.universalProfile.address,
+            value: amount,
+          })
+        ).to.not.be.reverted
+         .to.not.emit(context.universalProfile, "ValueReceived");
+    });
+  });
+
   describe("when sending native tokens to the contract", () => {
     it("should emit the right ValueReceived event", async () => {
       const sender = context.accounts[0];
@@ -268,11 +336,13 @@ export const shouldBehaveLikeLSP3 = (
       const sender = context.accounts[0];
       const amount = ethers.utils.parseEther("5");
 
+      // The payload must be prepended with bytes4(0) to be interpreted as graffiti
+      // and not as a function selector
       await expect(
         sender.sendTransaction({
           to: context.universalProfile.address,
           value: amount,
-          data: "0xaabbccdd",
+          data: "0x00000000aabbccdd",
         })
       )
         .to.emit(context.universalProfile, "ValueReceived")
@@ -282,14 +352,62 @@ export const shouldBehaveLikeLSP3 = (
 
   describe("when sending a random payload, without any value", () => {
     it("should execute the fallback function, but not emit the ValueReceived event", async () => {
+      // The payload must be prepended with bytes4(0) to be interpreted as graffiti
+      // and not as a function selector
       let tx = await context.accounts[0].sendTransaction({
         to: context.universalProfile.address,
         value: 0,
-        data: "0xaabbccdd",
+        data: "0x00000000aabbccdd",
       });
 
       // check that no event was emitted
       await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
+    });
+  });
+
+  describe("when using the batch `ERC725X.execute(uint256[],address[],uint256[],bytes[])` function", () => {
+    describe("when specifying `msg.value`", () => {
+      it("should emit a `ValueReceived` event", async () => {
+        const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
+        const recipients = [
+          context.accounts[1].address,
+          context.accounts[2].address,
+          context.accounts[3].address,
+        ];
+        const values = Array(3).fill(ethers.BigNumber.from("1"));
+        const datas = Array(3).fill("0x");
+
+        const msgValue = ethers.utils.parseEther("10");
+
+        const tx = await context.universalProfile[
+          "execute(uint256[],address[],uint256[],bytes[])"
+        ](operationsType, recipients, values, datas, { value: msgValue });
+
+        await expect(tx)
+          .to.emit(context.universalProfile, "ValueReceived")
+          .withArgs(context.deployParams.owner.address, msgValue);
+      });
+    });
+
+    describe("when NOT sending any `msg.value`", () => {
+      it("should NOT emit a `ValueReceived` event", async () => {
+        const operationsType = Array(3).fill(OPERATION_TYPES.CALL);
+        const recipients = [
+          context.accounts[1].address,
+          context.accounts[2].address,
+          context.accounts[3].address,
+        ];
+        const values = Array(3).fill(ethers.BigNumber.from("1"));
+        const datas = Array(3).fill("0x");
+
+        const msgValue = 0;
+
+        const tx = await context.universalProfile[
+          "execute(uint256[],address[],uint256[],bytes[])"
+        ](operationsType, recipients, values, datas, { value: msgValue });
+
+        await expect(tx).to.not.emit(context.universalProfile, "ValueReceived");
+      });
     });
   });
 };
@@ -299,7 +417,7 @@ export const shouldInitializeLikeLSP3 = (
 ) => {
   let context: LSP3TestContext;
 
-  beforeEach(async () => {
+  before(async () => {
     context = await buildContext();
   });
 
@@ -346,9 +464,16 @@ export const shouldInitializeLikeLSP3 = (
       expect(result).to.be.true;
     });
 
-    it("should support ClaimOwnership interface", async () => {
+    it("should support LSP14Ownable2Step interface", async () => {
       const result = await context.universalProfile.supportsInterface(
-        INTERFACE_IDS.ClaimOwnership
+        INTERFACE_IDS.LSP14Ownable2Step
+      );
+      expect(result).to.be.true;
+    });
+
+    it("should support LSP17Extendable interface", async () => {
+      const result = await context.universalProfile.supportsInterface(
+        INTERFACE_IDS.LSP17Extendable
       );
       expect(result).to.be.true;
     });

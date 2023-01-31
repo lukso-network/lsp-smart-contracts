@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.12;
 
 // modules
 import {
@@ -24,7 +24,7 @@ contract LSP7CompatibleERC20MintableInit is LSP7CompatibleERC20MintableInitAbstr
         string memory name_,
         string memory symbol_,
         address newOwner_
-    ) public virtual initializer {
+    ) external virtual initializer {
         LSP7CompatibleERC20MintableInitAbstract._initialize(name_, symbol_, newOwner_);
     }
 }

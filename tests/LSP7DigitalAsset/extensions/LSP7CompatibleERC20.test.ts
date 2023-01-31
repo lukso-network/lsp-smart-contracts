@@ -4,6 +4,7 @@ import { expect } from "chai";
 import {
   LSP7CompatibleERC20Tester__factory,
   LSP7CompatibleERC20InitTester__factory,
+  LSP7CompatibleERC20MintableInit__factory,
 } from "../../../types";
 
 import {
@@ -20,7 +21,7 @@ describe("LSP7CompatibleERC20", () => {
     const buildTestContext =
       async (): Promise<LSP7CompatibleERC20TestContext> => {
         const accounts = await getNamedAccounts();
-        const initialSupply = ethers.BigNumber.from("3");
+        const initialSupply = ethers.BigNumber.from("1000");
         const deployParams = {
           name: "Compat for ERC20",
           symbol: "NFT",
@@ -71,7 +72,7 @@ describe("LSP7CompatibleERC20", () => {
     const buildTestContext =
       async (): Promise<LSP7CompatibleERC20TestContext> => {
         const accounts = await getNamedAccounts();
-        const initialSupply = ethers.BigNumber.from("3");
+        const initialSupply = ethers.BigNumber.from("1000");
         const deployParams = {
           name: "LSP7 - deployed with constructor",
           symbol: "NFT",
@@ -107,7 +108,7 @@ describe("LSP7CompatibleERC20", () => {
     };
 
     describe("when deploying the base implementation contract", () => {
-      it("prevent any address from calling the initialize(...) function on the implementation", async () => {
+      it("LSP7CompatibleERC20Init: prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
 
         const lsp7CompatibilityForERC20TesterInit =
@@ -121,6 +122,25 @@ describe("LSP7CompatibleERC20", () => {
           lsp7CompatibilityForERC20TesterInit[
             "initialize(string,string,address)"
           ]("XXXXXXXXXXX", "XXX", randomCaller.address)
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+      });
+
+      it("LSP7CompatibleERC20MintableInit: prevent any address from calling the initialize(...) function on the implementation", async () => {
+        const accounts = await ethers.getSigners();
+
+        const lsp7CompatibleERC20MintableInit =
+          await new LSP7CompatibleERC20MintableInit__factory(
+            accounts[0]
+          ).deploy();
+
+        const randomCaller = accounts[1];
+
+        await expect(
+          lsp7CompatibleERC20MintableInit["initialize(string,string,address)"](
+            "XXXXXXXXXXX",
+            "XXX",
+            randomCaller.address
+          )
         ).to.be.revertedWith("Initializable: contract is already initialized");
       });
     });

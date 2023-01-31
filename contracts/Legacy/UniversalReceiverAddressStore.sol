@@ -1,10 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
-
-// interfaces
-import {
-    ILSP1UniversalReceiverDelegate
-} from "../LSP1UniversalReceiver/ILSP1UniversalReceiverDelegate.sol";
+pragma solidity ^0.8.4;
 
 // libraries
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -13,11 +8,7 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import {AddressRegistry} from "./Registries/AddressRegistry.sol";
 
-contract UniversalReceiverAddressStore is
-    ERC165Storage,
-    ILSP1UniversalReceiverDelegate,
-    AddressRegistry
-{
+contract UniversalReceiverAddressStore is ERC165Storage, AddressRegistry {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     bytes4 internal constant _INTERFACE_ID_LSP1DELEGATE = 0xa245bbda;
@@ -40,13 +31,12 @@ contract UniversalReceiverAddressStore is
         return _addressStore.remove(_address);
     }
 
-    // solhint-disable no-unused-vars
     function universalReceiverDelegate(
         address sender,
-        uint256 value,
+        uint256, /* value */
         bytes32 typeId,
         bytes memory
-    ) external override onlyAccount returns (bytes memory) {
+    ) external onlyAccount returns (bytes memory) {
         // require(typeId == _TOKENS_RECIPIENT_INTERFACE_HASH, 'UniversalReceiverDelegate: Type not supported');
 
         // store tokens only if received, DO NOT revert on _TOKENS_SENDER_INTERFACE_HASH

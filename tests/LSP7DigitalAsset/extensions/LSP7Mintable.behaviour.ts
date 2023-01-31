@@ -10,7 +10,12 @@ import {
 
 import { setupProfileWithKeyManagerWithURD } from "../../utils/fixtures";
 
-import { PERMISSIONS, ERC725YKeys, OPERATION_TYPES } from "../../../constants";
+import {
+  PERMISSIONS,
+  ERC725YDataKeys,
+  OPERATION_TYPES,
+} from "../../../constants";
+import { combineAllowedCalls, combinePermissions } from "../../utils/helpers";
 
 export type LSP7MintableTestAccounts = {
   owner: SignerWithAddress;
@@ -53,7 +58,7 @@ export const shouldBehaveLikeLSP7Mintable = (
       await context.lsp7Mintable.mint(
         context.accounts.tokenReceiver.address,
         amountToMint,
-        true, // beneficiary is an EOA, so we need to force minting
+        true, // beneficiary is an EOA, so we need to allowNonLSP1Recipient minting
         "0x"
       );
 
@@ -112,18 +117,29 @@ export const shouldBehaveLikeLSP7Mintable = (
         "setData(bytes32[],bytes[])",
         [
           [
-            ERC725YKeys.LSP6["AddressPermissions:Permissions"] +
-              URDTokenReentrant.address.substr(2),
-            ERC725YKeys.LSP1.LSP1UniversalReceiverDelegate,
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+              URDTokenReentrant.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] +
+              URDTokenReentrant.address.substring(2),
+            ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ],
-          [PERMISSIONS.CALL, URDTokenReentrant.address],
+          [
+            combinePermissions(PERMISSIONS.CALL, PERMISSIONS.REENTRANCY),
+            combineAllowedCalls(
+              ["0xffffffff"],
+              [context.lsp7Mintable.address],
+              ["0xffffffff"]
+            ),
+            URDTokenReentrant.address,
+          ],
         ]
       );
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-        .execute(setDataPayload);
+        ["execute(bytes)"](setDataPayload);
     });
+
     it("should pass", async () => {
       const firstAmount = 50;
       const secondAmount = 150;
@@ -142,13 +158,13 @@ export const shouldBehaveLikeLSP7Mintable = (
       );
 
       const executePayload = universalProfile.interface.encodeFunctionData(
-        "execute",
+        "execute(uint256,address,uint256,bytes)",
         [OPERATION_TYPES.CALL, context.lsp7Mintable.address, 0, mintPayload]
       );
 
       await lsp6KeyManager
         .connect(context.accounts.profileOwner)
-        .execute(executePayload);
+        ["execute(bytes)"](executePayload);
 
       const balanceOfUP = await context.lsp7Mintable.callStatic.balanceOf(
         universalProfile.address
