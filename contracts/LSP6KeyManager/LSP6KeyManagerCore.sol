@@ -640,9 +640,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
 
-        if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted))
-            revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
-
         /**
          * The pointer will always land on the length of each bytes value:
          *
@@ -742,9 +739,6 @@ abstract contract LSP6KeyManagerCore is ERC165, ILSP6KeyManager {
     ) internal pure virtual {
         if (allowedERC725YDataKeysCompacted.length == 0)
             revert NoERC725YDataKeysAllowed(controllerAddress);
-
-        if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted))
-            revert InvalidEncodedAllowedERC725YDataKeys(allowedERC725YDataKeysCompacted);
 
         uint256 allowedKeysFound;
 
