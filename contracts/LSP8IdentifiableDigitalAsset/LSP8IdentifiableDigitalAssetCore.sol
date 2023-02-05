@@ -92,10 +92,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
      */
     function authorizeOperator(address operator, bytes32 tokenId) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address caller = msg.sender;
 
-        if (tokenOwner != caller) {
-            revert LSP8NotTokenOwner(tokenOwner, tokenId, caller);
+        if (tokenOwner != msg.sender) {
+            revert LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender);
         }
 
         if (operator == address(0)) {
@@ -117,10 +116,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
      */
     function revokeOperator(address operator, bytes32 tokenId) public virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        address caller = msg.sender;
 
-        if (tokenOwner != caller) {
-            revert LSP8NotTokenOwner(tokenOwner, tokenId, caller);
+        if (tokenOwner != msg.sender) {
+            revert LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender);
         }
 
         if (operator == address(0)) {
