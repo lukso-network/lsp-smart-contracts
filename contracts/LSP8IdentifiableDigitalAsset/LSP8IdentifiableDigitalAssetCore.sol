@@ -102,9 +102,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             revert LSP8CannotUseAddressZeroAsOperator();
         }
 
-        // tokenOwner is always their own operator, no update required
         if (tokenOwner == operator) {
-            return;
+            revert LSP8TokenOwnerCannotBeOperator();
         }
 
         bool isAdded = _operators[tokenId].add(operator);
@@ -128,9 +127,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             revert LSP8CannotUseAddressZeroAsOperator();
         }
 
-        // tokenOwner is always their own operator, no update required
         if (tokenOwner == operator) {
-            return;
+            revert LSP8TokenOwnerCannotBeOperator();
         }
 
         _revokeOperator(operator, tokenOwner, tokenId);

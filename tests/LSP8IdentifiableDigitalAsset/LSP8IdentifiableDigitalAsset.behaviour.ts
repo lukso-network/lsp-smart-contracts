@@ -243,6 +243,20 @@ export const shouldBehaveLikeLSP8 = (
       });
     });
 
+    describe("when operator is the token owner", () => {
+      it("should revert", async () => {
+        await expect(
+          context.lsp8.authorizeOperator(
+            context.accounts.owner.address,
+            mintedTokenId
+          )
+        ).to.be.revertedWithCustomError(
+          context.lsp8,
+          "LSP8TokenOwnerCannotBeOperator"
+        );
+      });
+    });
+
     describe("when caller is owner of tokenId", () => {
       describe("when operator is not the zero address", () => {
         it("should succeed", async () => {
@@ -309,6 +323,22 @@ export const shouldBehaveLikeLSP8 = (
         )
           .to.be.revertedWithCustomError(context.lsp8, "LSP8NonExistentTokenId")
           .withArgs(neverMintedTokenId);
+      });
+    });
+
+    describe("when caller is not owner of tokenId", () => {
+      it("should revert", async () => {
+        await expect(
+          context.lsp8
+            .connect(context.accounts.anyone)
+            .authorizeOperator(context.accounts.operator.address, mintedTokenId)
+        )
+          .to.be.revertedWithCustomError(context.lsp8, "LSP8NotTokenOwner")
+          .withArgs(
+            context.accounts.owner.address,
+            mintedTokenId,
+            context.accounts.anyone.address
+          );
       });
     });
 
