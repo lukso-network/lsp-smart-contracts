@@ -60,7 +60,7 @@ contract LSP9VaultCore is
     ILSP1UniversalReceiver
 {
     using ERC165Checker for address;
-    using LSP1Utils for address;
+    using LSP1Utils for *;
 
     address private _reentrantDelegate;
 
@@ -266,7 +266,7 @@ contract LSP9VaultCore is
         returns (bytes memory returnedValues)
     {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory lsp1DelegateValue = _store.getLSP1DelegateValue();
         bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
@@ -284,12 +284,7 @@ contract LSP9VaultCore is
             }
         }
 
-        bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
-            bytes20(typeId)
-        );
-
-        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
+        bytes memory lsp1TypeIdDelegateValue = _store.getLSP1DelegateValueForTypeId(typeId);
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
