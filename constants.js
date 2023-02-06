@@ -432,6 +432,10 @@ const Errors = {
 			error: 'LSP7NotifyTokenReceiverIsEOA(address)',
 			message: 'LSP7: token recipient is an Externally Owned Account.',
 		},
+		dab75047: {
+			error: 'LSP7TokenOwnerCannotBeOperator()',
+			message: 'LSP7: token owner cannot be an operator.',
+		},
 	},
 	LSP7CappedSupply: {
 		'0xacf1d8c5': {
@@ -491,6 +495,10 @@ const Errors = {
 		'0xa7626b68': {
 			error: 'LSP8OperatorAlreadyAuthorized(address,bytes32)',
 			message: 'LSP8: Cannot authorize an existing operator twice for the same tokenId.',
+		},
+		'0x89fdad62': {
+			error: 'LSP8TokenOwnerCannotBeOperator()',
+			message: 'LSP8: Cannot authorize the token owner as an operator.',
 		},
 	},
 	LSP8CappedSupply: {
