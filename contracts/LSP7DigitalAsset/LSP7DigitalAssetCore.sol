@@ -186,9 +186,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotUseAddressZeroAsOperator();
         }
 
-        // tokenOwner is always their own operator, no update required
         if (operator == tokenOwner) {
-            return;
+            revert LSP7TokenOwnerCannotBeOperator();
         }
 
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
