@@ -50,3 +50,8 @@ error LSP7NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver)
  * when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
  */
 error LSP7NotifyTokenReceiverIsEOA(address tokenReceiver);
+
+/**
+ * @dev reverts when trying to authorize or revoke the token's owner as an operator.
+ */
+error LSP7TokenOwnerCannotBeOperator();

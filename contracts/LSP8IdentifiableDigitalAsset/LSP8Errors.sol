@@ -64,3 +64,8 @@ error LSP8NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver)
  * when minting or transferring tokens with `bool allowNonLSP1Recipient` set as `false`.
  */
 error LSP8NotifyTokenReceiverIsEOA(address tokenReceiver);
+
+/**
+ * @dev reverts when trying to authorize or revoke the token's owner as an operator.
+ */
+error LSP8TokenOwnerCannotBeOperator();
