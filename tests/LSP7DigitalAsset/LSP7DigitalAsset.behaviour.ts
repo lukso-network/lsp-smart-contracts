@@ -276,6 +276,19 @@ export const shouldBehaveLikeLSP7 = (
           );
         });
       });
+
+      describe("when operator is the token owner", () => {
+        it("should revert", async () => {
+          const operator = context.accounts.owner.address;
+
+          await expect(
+            context.lsp7.authorizeOperator(operator, context.initialSupply)
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7TokenOwnerCannotBeOperator"
+          );
+        });
+      });
     });
   });
 
@@ -314,6 +327,19 @@ export const shouldBehaveLikeLSP7 = (
         ).to.be.revertedWithCustomError(
           context.lsp7,
           "LSP7CannotUseAddressZeroAsOperator"
+        );
+      });
+    });
+
+    describe("when operator is the token owner", () => {
+      it("should revert", async () => {
+        const operator = context.accounts.owner.address;
+
+        await expect(
+          context.lsp7.revokeOperator(operator)
+        ).to.be.revertedWithCustomError(
+          context.lsp7,
+          "LSP7TokenOwnerCannotBeOperator"
         );
       });
     });
@@ -485,28 +511,6 @@ export const shouldBehaveLikeLSP7 = (
           return tx;
         };
 
-        const transferFailScenario = async (
-          { from, to, amount, allowNonLSP1Recipient, data }: TransferTxParams,
-          operator: SignerWithAddress,
-          expectedError: ExpectedError
-        ) => {
-          if (expectedError.args.length > 0) {
-            await expect(
-              context.lsp7
-                .connect(operator)
-                .transfer(from, to, amount, allowNonLSP1Recipient, data)
-            )
-              .to.be.revertedWithCustomError(context.lsp7, expectedError.error)
-              .withArgs(...expectedError.args);
-          } else {
-            await expect(
-              context.lsp7
-                .connect(operator)
-                .transfer(from, to, amount, allowNonLSP1Recipient, data)
-            ).to.be.revertedWithCustomError(context.lsp7, expectedError.error);
-          }
-        };
-
         const sendingTransferTransactions = (
           getOperator: () => SignerWithAddress
         ) => {
@@ -542,7 +546,7 @@ export const shouldBehaveLikeLSP7 = (
 
               describe("when `to` is the zero address", () => {
                 it("should revert", async () => {
-                  const txParams = {
+                  const txParams: TransferTxParams = {
                     from: operator.address,
                     to: ethers.constants.AddressZero,
                     amount: context.initialSupply,
@@ -551,10 +555,20 @@ export const shouldBehaveLikeLSP7 = (
                   };
                   const expectedError = "LSP7CannotSendWithAddressZero";
 
-                  await transferFailScenario(txParams, operator, {
-                    error: expectedError,
-                    args: [],
-                  });
+                  await expect(
+                    context.lsp7
+                      .connect(operator)
+                      .transfer(
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount,
+                        txParams.allowNonLSP1Recipient,
+                        txParams.data
+                      )
+                  ).to.be.revertedWithCustomError(
+                    context.lsp7,
+                    "LSP7CannotSendWithAddressZero"
+                  );
                 });
               });
             });
@@ -620,12 +634,23 @@ export const shouldBehaveLikeLSP7 = (
                   allowNonLSP1Recipient,
                   data,
                 };
-                const expectedError = "LSP7NotifyTokenReceiverIsEOA";
 
-                await transferFailScenario(txParams, operator, {
-                  error: expectedError,
-                  args: [txParams.to],
-                });
+                await expect(
+                  context.lsp7
+                    .connect(operator)
+                    .transfer(
+                      txParams.from,
+                      txParams.to,
+                      txParams.amount,
+                      txParams.allowNonLSP1Recipient,
+                      txParams.data
+                    )
+                )
+                  .to.be.revertedWithCustomError(
+                    context.lsp7,
+                    "LSP7NotifyTokenReceiverIsEOA"
+                  )
+                  .withArgs(txParams.to);
               });
             });
 
@@ -666,13 +691,23 @@ export const shouldBehaveLikeLSP7 = (
                     allowNonLSP1Recipient,
                     data,
                   };
-                  const expectedError =
-                    "LSP7NotifyTokenReceiverContractMissingLSP1Interface";
 
-                  await transferFailScenario(txParams, operator, {
-                    error: expectedError,
-                    args: [txParams.to],
-                  });
+                  await expect(
+                    context.lsp7
+                      .connect(operator)
+                      .transfer(
+                        txParams.from,
+                        txParams.to,
+                        txParams.amount,
+                        txParams.allowNonLSP1Recipient,
+                        txParams.data
+                      )
+                  )
+                    .to.be.revertedWithCustomError(
+                      context.lsp7,
+                      "LSP7NotifyTokenReceiverContractMissingLSP1Interface"
+                    )
+                    .withArgs(txParams.to);
                 });
               });
             });
@@ -687,7 +722,6 @@ export const shouldBehaveLikeLSP7 = (
                 allowNonLSP1Recipient: true,
                 data: "0x",
               };
-              const expectedError = "LSP7AmountExceedsBalance";
 
               if (txParams.from !== operator.address) {
                 await context.lsp7.authorizeOperator(
@@ -696,14 +730,26 @@ export const shouldBehaveLikeLSP7 = (
                 );
               }
 
-              await transferFailScenario(txParams, operator, {
-                error: expectedError,
-                args: [
+              await expect(
+                context.lsp7
+                  .connect(operator)
+                  .transfer(
+                    txParams.from,
+                    txParams.to,
+                    txParams.amount,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              )
+                .to.be.revertedWithCustomError(
+                  context.lsp7,
+                  "LSP7AmountExceedsBalance"
+                )
+                .withArgs(
                   context.initialSupply.toHexString(),
                   txParams.from,
-                  txParams.amount.toHexString(),
-                ],
-              });
+                  txParams.amount.toHexString()
+                );
             });
           });
         };
@@ -736,12 +782,20 @@ export const shouldBehaveLikeLSP7 = (
                   context.accounts.owner.address
                 );
 
-              const expectedError = "LSP7CannotSendToSelf";
-
-              await transferFailScenario(txParams, operator, {
-                error: expectedError,
-                args: [],
-              });
+              await expect(
+                context.lsp7
+                  .connect(operator)
+                  .transfer(
+                    txParams.from,
+                    txParams.to,
+                    txParams.amount,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              ).to.be.revertedWithCustomError(
+                context.lsp7,
+                "LSP7CannotSendToSelf"
+              );
 
               // token owner balance should not have changed
               const postFromBalanceOf = await context.lsp7.balanceOf(
@@ -770,12 +824,23 @@ export const shouldBehaveLikeLSP7 = (
                 allowNonLSP1Recipient: false,
                 data: "0x",
               };
-              const expectedError = "LSP7NotifyTokenReceiverIsEOA";
 
-              await transferFailScenario(txParams, caller, {
-                error: expectedError,
-                args: [txParams.to],
-              });
+              await expect(
+                context.lsp7
+                  .connect(caller)
+                  .transfer(
+                    txParams.from,
+                    txParams.to,
+                    txParams.amount,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              )
+                .to.be.revertedWithCustomError(
+                  context.lsp7,
+                  "LSP7NotifyTokenReceiverIsEOA"
+                )
+                .withArgs(txParams.to);
             });
 
             it("should pass with `allowNonLSP1Recipient == true`", async () => {
@@ -803,21 +868,32 @@ export const shouldBehaveLikeLSP7 = (
                 allowNonLSP1Recipient: true,
                 data: "0x",
               };
-              const expectedError = "LSP7AmountExceedsAuthorizedAmount";
               const operatorAmount = await context.lsp7.authorizedAmountFor(
                 operator.address,
                 txParams.from
               );
 
-              await transferFailScenario(txParams, operator, {
-                error: expectedError,
-                args: [
+              await expect(
+                context.lsp7
+                  .connect(operator)
+                  .transfer(
+                    txParams.from,
+                    txParams.to,
+                    txParams.amount,
+                    txParams.allowNonLSP1Recipient,
+                    txParams.data
+                  )
+              )
+                .to.be.revertedWithCustomError(
+                  context.lsp7,
+                  "LSP7AmountExceedsAuthorizedAmount"
+                )
+                .withArgs(
                   txParams.from,
                   operatorAmount.toHexString(),
                   operator.address,
-                  txParams.amount.toHexString(),
-                ],
-              });
+                  txParams.amount.toHexString()
+                );
             });
           });
         });
@@ -832,7 +908,6 @@ export const shouldBehaveLikeLSP7 = (
               allowNonLSP1Recipient: true,
               data: "0x",
             };
-            const expectedError = "LSP7AmountExceedsAuthorizedAmount";
             const operatorAmount = await context.lsp7.authorizedAmountFor(
               operator.address,
               txParams.from
@@ -847,15 +922,27 @@ export const shouldBehaveLikeLSP7 = (
             ).to.equal(ethers.constants.Zero);
 
             // effects
-            await transferFailScenario(txParams, operator, {
-              error: expectedError,
-              args: [
+            await expect(
+              context.lsp7
+                .connect(operator)
+                .transfer(
+                  txParams.from,
+                  txParams.to,
+                  txParams.amount,
+                  txParams.allowNonLSP1Recipient,
+                  txParams.data
+                )
+            )
+              .to.be.revertedWithCustomError(
+                context.lsp7,
+                "LSP7AmountExceedsAuthorizedAmount"
+              )
+              .withArgs(
                 txParams.from,
                 operatorAmount.toHexString(),
                 operator.address,
-                txParams.amount.toHexString(),
-              ],
-            });
+                txParams.amount.toHexString()
+              );
           });
         });
       });
