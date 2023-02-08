@@ -86,7 +86,7 @@ It also includes constant values [Array data keys](https://github.com/lukso-netw
 },
 ```
 
-## Audits
+## Audits
 
 The following audits where conducted. All high-level issues were addressed, or were not deemed as critical.
 
