@@ -44,10 +44,10 @@ jobs:
           java-version: 1.11
 
       - name: Grant rights
-        run: chmod +x java/build.gradle
+        run: chmod +x scripts/build.gradle
 
       - name: Build jar
-        working-directory: ./java
+        working-directory: ./scripts
         run: gradle build
 
       # iOS artifacts

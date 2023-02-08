@@ -22,7 +22,7 @@ jobs:
           event: push
 
       - name: Publish jar
-        working-directory: ./java
+        working-directory: ./scripts
         run: gradle publish
         env:
           # https://github.com/actions/setup-node/issues/49
