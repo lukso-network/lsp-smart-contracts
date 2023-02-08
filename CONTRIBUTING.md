@@ -26,6 +26,14 @@ npm run prettier
 The linter is configured to check your code for adherence to our guidelines defined in `.solcover.js`.
 The script above will prettify the smart contracts, tests and other files according to our styling guidelines defined in `.prettierrc`.
 
+## Testing
+
+Chai contract tests are defined under the tests directory. To run all the tests, run:
+
+```bash
+$ npm test
+```
+
 ## **Commits and PRs**
 
 This project uses Conventional Commits to generate release notes and to determine versioning. Commit messages should adhere to this standard and be of the form:
