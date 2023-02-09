@@ -172,30 +172,6 @@ export const ERC725YDataKeys = {
   },
 };
 
-export const BasicUPSetup_Schema = [
-  {
-    name: "LSP3Profile",
-    key: ERC725YDataKeys.LSP3["LSP3Profile"],
-    keyType: "Singleton",
-    valueContent: "JSONURL",
-    valueType: "bytes",
-  },
-  {
-    name: "LSP1UniversalReceiverDelegate",
-    key: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-    keyType: "Singleton",
-    valueContent: "Address",
-    valueType: "address",
-  },
-  {
-    name: "LSP12IssuedAssets[]",
-    key: ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
-    keyType: "Array",
-    valueContent: "Number",
-    valueType: "uint256",
-  },
-];
-
 // LSP6
 // ----------
 
