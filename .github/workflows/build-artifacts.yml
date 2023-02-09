@@ -31,7 +31,6 @@ jobs:
       - run: npm ci
 
       # Android artifacts
-
       - name: Install Web3j
         run: curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 
