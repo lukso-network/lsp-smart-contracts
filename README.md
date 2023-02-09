@@ -7,11 +7,9 @@ For more information see [Documentation](https://docs.lukso.tech/standards/smart
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
 
-## **Overview**
+## Installation
 
-### Installation
-
-#### npm
+### npm
 
 LSP smart contracts are available as a [npm package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
 
@@ -19,7 +17,7 @@ LSP smart contracts are available as a [npm package](https://www.npmjs.com/packa
 npm install @lukso/lsp-smart-contracts
 ```
 
-#### cloning the repository
+### cloning the repository
 
 Alternatively you can also clone the repository and install its dependencies to start using the smart contracts.
 
@@ -31,7 +29,7 @@ $ npm install
 
 ## Usage
 
-#### in Javascript
+### in Javascript
 
 You can use the contracts JSON ABI by importing them as follow:
 
@@ -45,7 +43,7 @@ const myContract = new web3.eth.Contract(
 );
 ```
 
-#### in Solidity
+### in Solidity
 
 ```sol
 import "@lukso/lsp-smart-contracts/contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
@@ -56,19 +54,11 @@ contract MyAccount is LSP0ERC725Account {
 
 ```
 
-### Testing
-
-Chai contract tests are defined under the tests directory. To run all the tests, run:
-
-```bash
-$ npm test
-```
-
 ### Deployment via hardhat
 
 You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./DEPLOYMENT.md) page.
 
-### Available Constants
+## Available Constants
 
 You can access interface IDs and other constants, using the [`constants.js` file](https://github.com/lukso-network/lsp-smart-contracts/blob/main/constants.js) file from the [lsp-smart-contracts package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts).
 
@@ -95,6 +85,15 @@ It also includes constant values [Array data keys](https://github.com/lukso-netw
     index: '0x6460ee3c0aac563ccbf76d6e1d07bada',
 },
 ```
+
+## Audits
+
+The following audits where conducted. All high-level issues were addressed, or were not deemed as critical.
+
+- Chainsulting Audit, 06-07-2022, Final Result: [Chainsulting_audit_06_07_2022.pdf](./audits/Chainsulting_audit_06_07_2022.pdf)
+- Quantstamp Audit, 20-10-2022, Final Result: [Quantstamp_audit_07_09_2022.pdf](./audits/Quantstamp_audit_07_09_2022.pdf)
+- Watchpug Audit, 20-10-2022, Final Result: [Watchpug_audit_20_10_2022.pdf](./audits/Watchpug_audit_20_10_2022.pdf)
+- Watchpug Audit, 15-12-2022, Final Result: [Watchpug_audit_15_12_2022.pdf](./audits/Watchpug_audit_15_12_2022.pdf)
 
 ## Contributors ✨
 
