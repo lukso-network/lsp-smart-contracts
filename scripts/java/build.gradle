@@ -15,7 +15,7 @@ if (githubPropertiesFile.canRead()) {
 
 def getVersionName = { ->
     def jsonSlurper = new JsonSlurper()
-    def packageJson = jsonSlurper.parse file('../package.json')
+    def packageJson = jsonSlurper.parse file('../../package.json')
     return packageJson.version
 }
 

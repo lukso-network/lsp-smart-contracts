@@ -2,7 +2,7 @@ const fs = require("fs");
 const hre = require("hardhat");
 const { exec } = require("child_process");
 
-const destination = "./java/src/main/java/network/lukso/up/contracts";
+const destination = "./scripts/java/src/main/java/network/lukso/up/contracts";
 const package = "network.lukso.up.contracts";
 
 hre.run("prepare-package").then(async () => {

@@ -124,9 +124,9 @@ typechain
 deployments
 
 # JAVA
-java/github.properties
-java/.gradle
-java/.idea
+scripts/java/github.properties
+scripts/java/.gradle
+scripts/java/.idea
 tmp/
 
 .idea

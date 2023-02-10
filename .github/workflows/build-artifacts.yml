@@ -43,10 +43,10 @@ jobs:
           java-version: 1.11
 
       - name: Grant rights
-        run: chmod +x scripts/build.gradle
+        run: chmod +x scripts/java/build.gradle
 
       - name: Build jar
-        working-directory: ./scripts
+        working-directory: ./scripts/java
         run: gradle build
 
       # iOS artifacts
@@ -55,7 +55,7 @@ jobs:
           mkdir ios
           npx ts-node ./scripts/ios-artifacts.ts
 
-      # Upload Arifacts
+      # Upload Artifacts
       - name: Upload iOS Artifact
         uses: actions/upload-artifact@v2
         if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
