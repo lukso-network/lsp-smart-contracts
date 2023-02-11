@@ -9,6 +9,7 @@
          "type":"enum",
          "rawValueType":"String",
          "documentation":"ERC1271\n----------",
+         "caseIterable":true,
          "cases":[
             {
                "key":"MAGIC_VALUE",
@@ -25,6 +26,7 @@
          "type":"enum",
          "rawValueType":"String",
          "documentation":"ERC165\n----------",
+         "caseIterable":true,
          "cases":[
             {
                "key":"ERC165",
@@ -60,7 +62,7 @@
             },
             {
                "key":"ERC725X",
-               "value":"0x44c028fe"
+               "value":"0x570ef073"
             },
             {
                "key":"ERC725Y",
@@ -68,19 +70,15 @@
             },
             {
                "key":"LSP0ERC725Account",
-               "value":"0xeb6be62e"
+               "value":"0x66767497"
             },
             {
                "key":"LSP1UniversalReceiver",
                "value":"0x6bb56a14"
             },
             {
-               "key":"LSP1UniversalReceiverDelegate",
-               "value":"0xa245bbda"
-            },
-            {
                "key":"LSP6KeyManager",
-               "value":"0xc403d48f"
+               "value":"0xfb437414"
             },
             {
                "key":"LSP7DigitalAsset",
@@ -97,6 +95,14 @@
             {
                "key":"ClaimOwnership",
                "value":"0xa375e9c6"
+            },
+            {
+                "key":"LSP14",
+                "value":"0x94be5999"
+            },
+            {
+                "key":"LSP17Extendable",
+                "value":"0xa918fa6b"
             }
          ]
       },
@@ -105,6 +111,7 @@
          "type":"enum",
          "documentation":"ERC725X\n----------",
          "rawValueType":"Int",
+         "caseIterable":true,
          "cases":[
             {
                "key":"CALL",
@@ -183,7 +190,25 @@
                      "keyType":"Singleton",
                      "valueType":"address",
                      "valueContent":"Address"
-                  }
+                  },
+                  {
+                       "name":"LSP1UniversalReceiverDelegate:<bytes32>",
+                       "documentation":"LSP1UniversalReceiverDelegate:<bytes32>",
+                       "type":"ERC725Y_JSONSchema",
+                       "key":"0x0cfc51aec37c55a4d0b10000",
+                       "keyType":"Mapping",
+                       "valueType":"address",
+                       "valueContent":"Address"
+                   },
+                   {
+                       "name":"LSP17Extension:<bytes4>",
+                       "documentation":"LSP17Extension:<bytes4>",
+                       "type":"ERC725Y_JSONSchema",
+                       "key":"0xcee78b4094da860110960000",
+                       "keyType":"Mapping",
+                       "valueType":"address",
+                       "valueContent":"Address"
+                   }
                ]
             },
             {
@@ -285,40 +310,20 @@
                      "valueContent":"Address"
                   },
                   {
-                     "name":"AddressPermissions:AllowedAddresses",
-                     "documentation":"AddressPermissions:AllowedAddresses:<address>",
-                     "type":"ERC725Y_JSONSchema",
-                     "key":"0x4b80742de2bfc6dd6b3c0000",
-                     "keyType":"MappingWithGrouping",
-                     "valueType":"address[]",
-                     "valueContent":"Address"
+                      "name": "AddressPermissions:AllowedCalls",
+                      "type":"ERC725Y_JSONSchema",
+                      "key": "0x4b80742de2bf393a64c70000",
+                      "keyType": "MappingWithGrouping",
+                      "valueType": "(bytes4,address,bytes4)[CompactBytesArray]",
+                      "valueContent": "(Bytes4,Address,Bytes4)"
                   },
                   {
-                     "name":"AddressPermissions:AllowedFunctions",
-                     "documentation":"AddressPermissions:AllowedFunctions:<address>",
-                     "type":"ERC725Y_JSONSchema",
-                     "key":"0x4b80742de2bf8efea1e80000",
-                     "keyType":"MappingWithGrouping",
-                     "valueContent":"Bytes4",
-                     "valueType":"bytes4[]"
-                  },
-                  {
-                     "name":"AddressPermissions:AllowedStandards",
-                     "documentation":"AddressPermissions:AllowedStandards:<address>",
-                     "type":"ERC725Y_JSONSchema",
-                     "key":"0x4b80742de2bf3efa94a30000",
-                     "keyType":"MappingWithGrouping",
-                     "valueType":"bytes4[]",
-                     "valueContent":"Bytes4"
-                  },
-                  {
-                     "name":"AddressPermissions:AllowedERC725YKeys",
-                     "documentation":"AddressPermissions:AllowedERC725YKeys:<address>",
-                     "type":"ERC725Y_JSONSchema",
-                     "key":"0x4b80742de2bf90b8b4850000",
-                     "keyType":"MappingWithGrouping",
-                     "valueType":"bytes4[]",
-                     "valueContent":"Bytes4"
+                      "name": "AddressPermissions:AllowedERC725YDataKeys",
+                      "type":"ERC725Y_JSONSchema",
+                      "key": "0x4b80742de2bf866c29110000",
+                      "keyType": "MappingWithGrouping",
+                      "valueType": "bytes[CompactBytesArray]",
+                      "valueContent": "Bytes"
                   }
                ]
             },
@@ -353,7 +358,7 @@
                "documentation":null,
                "members":[
                   {
-                     "name":"LSP12IssuedAssetsMap",
+                     "name":"LSP12IssuedAssetsMap:<address>",
                      "documentation":"LSP12IssuedAssetsMap:<address>",
                      "type":"ERC725Y_JSONSchema",
                      "key":"0x74ac2555c10b9349e78f0000",
@@ -492,6 +497,7 @@
          "type":"enum",
          "documentation":"prettier-ignore",
          "rawValueType":"String",
+         "caseIterable":true,
          "cases":[
             {
                "documentation":[
@@ -565,19 +571,22 @@
                "name":"ERC725X",
                "members":[
                   {
-                     "type":"const",
-                     "name":"ContractCreated",
-                     "value":"\"0x01c42bd7e97a66166063b02fce6924e6656b6c2c61966630165095c4fb0b7b2f\"",
-                     "documentation":[
-                        "event ContractCreated(",
-                        "    uint256 indexed _operation,",
-                        "    address indexed _contractAddress,",
-                        "    uint256 indexed _value",
-                        ");",
-                        "",
-                        "signature = keccak256('ContractCreated(uint256,address,uint256)')"
-                     ]
-                  },
+                       "type":"const",
+                       "name":"ContractCreated",
+                       "value":"\"0xa1fb700aaee2ae4a2ff6f91ce7eba292f89c2f5488b8ec4c5c5c8150692595c3\"",
+                       "documentation":[
+                           "In case of `CREATE2` operation the salt will be the provided salt by the user.",
+                           "In case of `CREATE` operation the salt will be `bytes32(0)`.",
+                           "event ContractCreated(",
+                           "    uint256 indexed operationType,",
+                           "    address indexed contractAddress,",
+                           "    uint256 indexed value,",
+                           "    bytes32 salt",
+                           ");",
+                           "",
+                           "signature = keccak256('ContractCreated(uint256,address,uint256,bytes32)')"
+                       ]
+                   },
                   {
                      "type":"const",
                      "name":"Executed",
@@ -659,10 +668,10 @@
                      "documentation":[
                         "event UniversalReceiver(",
                         "   address indexed from,",
-                        "   uint256 value,",
+                        "   uint256 indexed value,",
                         "   bytes32 indexed typeId,",
-                        "   bytes32 indexed returnedValue,",
-                        "   bytes receivedData",
+                        "   bytes receivedData,",
+                        "   bytes returnedValue",
                         ");",
                         "",
                         "signature = keccak256('UniversalReceiver(address,uint256,bytes32,bytes,bytes)')"
@@ -677,14 +686,14 @@
                   {
                      "type":"const",
                      "name":"Executed",
-                     "value":"\"0x2e733a17851169f232b3859260eb3ad2a086afd54e999eb4ea9afb7791702e41\"",
+                     "value":"\"0x4004d18dc05f04c061c306cbb394d4083af494786ab828142d6118ab2c43a492\"",
                      "documentation":[
                         "event Executed(",
-                        "    uint256 indexed _value,",
-                        "    bytes _data",
+                        "    bytes4 indexed selector,",
+                        "    uint256 indexed value",
                         ");",
                         "",
-                        "signature = keccak256('Executed(uint256,bytes)')"
+                        "signature = keccak256('Executed(bytes4,uint256)')"
                      ]
                   }
                ]

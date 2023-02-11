@@ -75,36 +75,144 @@ def declareJsonSchema(validName, jsonConstant, parentJsonConstant):
 	declarationLine = declarationLine + "name: \"{}\",\n".format(jsonConstant["name"])
 	jsonSchemaAttrs = ["key: \"{}\",".format(key),
 					   "keyType: .{},".format(jsonConstant["keyType"]),
-					   "valueType: .{},".format(getJsonSchemaValueType(jsonConstant)),
-					   "valueContent: .{})\n".format(getJsonSchemaValueContent(jsonConstant))]
+					   "valueType: {},".format(getJsonSchemaValueType(jsonConstant["valueType"])),
+					   "valueContent: {})\n".format(getJsonSchemaValueContent(jsonConstant["valueContent"]))]
 
 	jsonSchemaAttrs = filter(lambda x: x != None, jsonSchemaAttrs)
 
 	return declarationLine + "\n".join(map(lambda attr: indent + attr, jsonSchemaAttrs))
+ 
+def getJsonSchemaValueType(valueType):
+    """ 
+    Expects jsonConstant to be a ERC725Y_JSONSchema object with "valueType" attribute
+    that is parsed into a valid `ValueType` Swift enum instance that is returned.
+    Note that "valueType" can have multiple types declared as tuple (e.g. "(uint256,address,bytes32)")
+    """
 
-def getJsonSchemaValueType(jsonConstant):
-	""" 
-	Expects jsonConstant to be a ERC725Y_JSONSchema object with "valueType" attribute
-	that is parsed into a valid `ValueType` Swift enum instance that is returned.
-	"""
-	valueType = jsonConstant["valueType"].replace("[]", "Array")
-	if valueType.lower().startswith("bytes") and valueType.lower().endswith("array"):
-		valueType = "bytesNArray({})".format(valueType.lower()
-													  .replace("bytes", "")
-													  .replace("array", ""))
-	return valueType
+    if valueType.count('(') != valueType.count(')'):
+            raise Exception("Given valueType contains tuples but the number of opening and closing parentheses doesn't match: {}".format(valueType))
 
-def getJsonSchemaValueContent(jsonConstant):
-	""" 
-	Expects jsonConstant to be a ERC725Y_JSONSchema object with "valueContent" attribute
-	that is parsed into a valid `ValueContent` Swift enum instance that is returned.
-	"""
-	valueContent = jsonConstant["valueContent"].strip()
-	if valueContent.startswith("0x"):
-		valueContent = "SpecificBytes(\"{}\")".format(valueContent) 
-	elif valueContent.lower().startswith("bytes") and valueContent.lower() != "bytes":
-		valueContent = "BytesN({})".format(valueContent.lower().replace("bytes", ""))
-	return valueContent
+    valueType = valueType.strip()
+    original = valueType
+    isTuple = valueType.startswith("(")
+    isArray = valueType.endswith("]")
+    isCompactBytesArray = isArray and re.search(r'\[compactbytesarray\]$', valueType.lower()) is not None
+    
+    size = re.search(r'\d+$', valueType)
+
+    if size is not None:
+        """
+        This case should cover types like uintN, intN, bytesN
+        """
+        size = size.group(0)
+        valueType = "{}({})".format(valueType.replace(size, ""), size)
+    elif isArray:
+            """
+            This case should cover all arrays
+            """
+            if valueType.endswith("[]"):
+                    valueType = "array({})".format(getJsonSchemaValueType(rreplace(valueType, "[]", "", 1)))
+            elif isCompactBytesArray:
+                    valueType = "compactBytesArray({})".format(getJsonSchemaValueType(rreplace(valueType, "[CompactBytesArray]", "", 1)))
+            
+            arraySizeMatch = re.search(r'\[(\d+)\]$', valueType)
+            if arraySizeMatch is not None:
+                    rawArraySize = arraySizeMatch.group(1)
+                    arraySize = int(rawArraySize)
+                    
+                    if arraySize is None:
+                            raise Exception("Failed to parse array size: {}".format(rawArraySize))
+                    if arraySize <= 0:
+                            raise Exception("Invalid array size. Must be greater than 1. Given: {}".format(arraySize))
+                    valueType = "array({}, {})".format(getJsonSchemaValueType(rreplace(valueType, arraySizeMatch.group(0), "", 1)), arraySize)
+    elif isTuple:
+            """
+            This case covers tuples
+            """
+
+            roughlySplitTupleTypes = valueType[1:valueType.rindex(")")].split(",")
+            typesCount = len(roughlySplitTupleTypes)
+            parsedTypes = []
+            nestedTuple = None
+            for idx, _type in enumerate(roughlySplitTupleTypes):
+                    _type = _type.strip()
+                    # A tuple that contains only one type, e.g. (address)
+                    oneTypeTuple = re.search(r'\([^()]*\)', _type) is not None
+                    if oneTypeTuple and nestedTuple is None:
+                            _type = _type
+                    elif _type.startswith("(") and nestedTuple is None:
+                            nestedTuple = _type
+                            if idx + 1 == typesCount:
+                                    raise Exception("Reached last type in a tuple and the number of open and closed parentheses doesn't match.")
+                            else:
+                                    continue
+                    elif _type.endswith(")") and nestedTuple is not None:
+                            nestedTuple = nestedTuple + "," + _type
+                            if nestedTuple.count('(') == nestedTuple.count(')'):
+                                    _type = nestedTuple
+                                    nestedTuple = None
+                            elif idx + 1 < typesCount:
+                                    continue
+                            else:
+                                    raise Exception("Reached last type in a tuple and the number of open and closed parentheses doesn't match.")
+                    elif nestedTuple is not None:
+                            nestedTuple = nestedTuple + "," + _type
+                            if idx + 1 < typesCount:
+                                    continue
+                            else:
+                                    _type = nestedTuple
+                    parsedTypes.append(getJsonSchemaValueType(_type))
+            valueType = "tuple([{}])".format(",".join(parsedTypes))
+    """
+    The rest of simple value types covered here
+    """
+    if valueType.lower() == "bytes":
+            return ".bytes()"
+    return ".{}".format(valueType)
+ 
+def getJsonSchemaValueContent(valueContent):
+    """ 
+    Expects jsonConstant to be a ERC725Y_JSONSchema object with "valueContent" attribute
+    that is parsed into a valid `ValueContent` Swift enum instance that is returned.
+    Note that "valueContent" can have multiple values declared as tuple (e.g. "(uint256,address,bytes32)")
+    """
+
+    if valueContent.count('(') != valueContent.count(')'):
+            raise Exception("Given valueContent contains tuples but the number of opening and closing parentheses doesn't match: {}".format(valueContent))
+
+    valueContent = valueContent.strip()
+    isTuple = valueContent.startswith("(")
+
+    if valueContent.startswith("0x"):
+            valueContent = "SpecificBytes(\"{}\")".format(valueContent) 
+    elif valueContent.lower().startswith("bytes") and valueContent.lower() != "bytes":
+            valueContent = "BytesN({})".format(valueContent.lower().replace("bytes", ""))
+    elif isTuple:
+            roughlySplitTupleTypes = valueContent[1:valueContent.rindex(")")].split(",")
+            parsedTypes = []
+            nestedTuple = None
+            for _type in roughlySplitTupleTypes:
+                    _type = _type.strip()
+                    if _type.startswith("(") and nestedTuple is None:
+                            nestedTuple = _type
+                            continue
+                    elif _type.endswith(")") and nestedTuple is not None:
+                            nestedTuple = nestedTuple + "," + _type
+                            _type = nestedTuple
+                            nestedTuple = None
+                    elif nestedTuple is not None:
+                            nestedTuple = nestedTuple + "," + _type
+                            continue
+
+                    parsedTypes.append(getJsonSchemaValueContent(_type))
+
+            valueContent = "tuple([{}])".format(",".join(parsedTypes))
+            
+    return ".{}".format(valueContent)
+ 
+def rreplace(s, old, new, occurrence):
+       li = s.rsplit(old, occurrence)
+       return new.join(li)
 
 def getValidEnumType(rawValueType):
 	"""Returns Swift type that is extended by enum."""
