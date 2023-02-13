@@ -1,4 +1,5 @@
-# Upload Android artifacts
+# This workflow publishes Android artifacts
+# See: https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-gradle
 name: Upload Android Github artifacts CD
 
 on:
@@ -8,10 +9,23 @@ on:
 jobs:
   android-build-artifacts:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download artifact
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: "11"
+          distribution: "adopt"
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+
+      - name: Download artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: build-artifacts.yml
@@ -21,11 +35,10 @@ jobs:
           branch: main
           event: push
 
-      - name: Publish jar
+      - name: Publish to Maven
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: publish
         working-directory: ./scripts
-        run: gradle publish
         env:
-          # https://github.com/actions/setup-node/issues/49
-          # Have to use my personal access token until the issue is resolved
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
-          GITHUB_ACTOR: ${{ secrets.PERSONAL_ACTOR }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
