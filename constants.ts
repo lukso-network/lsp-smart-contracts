@@ -6,6 +6,11 @@
 // ERC165
 // ---------
 
+/**
+ * @dev ERC165 interface IDs for the LSP interface standards + some backward compatible ERC token standards.
+ * These `bytes4` values can be used to detect if a contract implements a specific interface
+ * with `supportsInterface(interfaceId)`.
+ */
 export const INTERFACE_IDS = {
   ERC165: "0x01ffc9a7",
   ERC1271: "0x1626ba7e",
@@ -32,6 +37,10 @@ export const INTERFACE_IDS = {
 // ERC1271
 // ----------
 
+/**
+ * @dev values returned by the `isValidSignature` function of the ERC1271 standard.
+ * Can be used to check if a signature is valid or not.
+ */
 export const ERC1271_VALUES = {
   MAGIC_VALUE: "0x1626ba7e",
   FAIL_VALUE: "0xffffffff",
@@ -40,6 +49,10 @@ export const ERC1271_VALUES = {
 // ERC725X
 // ----------
 
+/**
+ * @dev list of ERC725X operation types.
+ * @see https://github.com/ERC725Alliance/ERC725/blob/develop/docs/ERC-725.md#execute
+ */
 export const OPERATION_TYPES = {
   CALL: 0,
   CREATE: 1,
@@ -51,6 +64,11 @@ export const OPERATION_TYPES = {
 // ERC725Y
 // ----------
 
+/**
+ * @dev list of ERC725Y keys from the LSP standards.
+ * Can be used to detect if a contract implements a specific LSP Metadata standard
+ * and contain a set of pre-defined ERC725Y Data Keys.
+ */
 export const SupportedStandards = {
   LSP3UniversalProfile: {
     key: "0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38",
@@ -67,7 +85,7 @@ export const SupportedStandards = {
 };
 
 /**
- * For more infos on the type of each keys
+ * @dev list of ERC725Y Metadata keys from the LSP standards.
  * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
  */
 export const ERC725YDataKeys = {
@@ -175,16 +193,25 @@ export const ERC725YDataKeys = {
 // LSP6
 // ----------
 
+/**
+ * @dev LSP6 version number for signing `executeRelayCall(...)` transaction using EIP191
+ * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executerelaycall
+ */
 export const LSP6_VERSION = 6;
 
-// All Permissions currently exclude REENTRANCY, DELEGATECALL and SUPER_DELEGATECALL for security
+/**
+ * @dev `bytes32` hex value for all the LSP6 permissions excluding REENTRANCY, DELEGATECALL and SUPER_DELEGATECALL for security (these should be set manually)
+ */
 export const ALL_PERMISSIONS =
   "0x00000000000000000000000000000000000000000000000000000000003f3f7f";
 
+/**
+ * @dev List of `bytes32` permissions from LSP6 Key Manager Standard
+ */
 // prettier-ignore
 export const PERMISSIONS = {
 	CHANGEOWNER                      :"0x0000000000000000000000000000000000000000000000000000000000000001",
-	ADDCONTROLLER                   :"0x0000000000000000000000000000000000000000000000000000000000000002",
+	ADDCONTROLLER                    :"0x0000000000000000000000000000000000000000000000000000000000000002",
 	CHANGEPERMISSIONS                :"0x0000000000000000000000000000000000000000000000000000000000000004",
 	ADDEXTENSIONS                    :"0x0000000000000000000000000000000000000000000000000000000000000008",
 	CHANGEEXTENSIONS                 :"0x0000000000000000000000000000000000000000000000000000000000000010",
@@ -207,6 +234,11 @@ export const PERMISSIONS = {
 	SIGN                             :"0x0000000000000000000000000000000000000000000000000000000000200000",
 }
 
+/**
+ * @dev list of standard type IDs ("hooks") defined in the LSPs that can be used to notify
+ * a LSP1 compliant contract about certain type of transactions or information
+ * (e.g: token transfer, vault transfer, ownership transfer, etc...)
+ */
 export const LSP1_TYPE_IDS = {
   // keccak256('LSP0OwnershipTransferStarted')
   LSP0OwnershipTransferStarted:
