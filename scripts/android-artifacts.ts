@@ -55,25 +55,19 @@ hre.run("prepare-package").then(async () => {
         "./scripts/java/src/main/java/network/lukso/up/contracts";
       const package = "network.lukso.up.contracts";
 
-      try {
-        // generate smart contract wrappers in Java
-        exec(
-          `web3j generate solidity --abiFile=${abiFile} --binFile=${binFile} -o ${destination} -p ${package}`,
-          (error, stdout, stderr) => {
-            if (error) {
-              console.log(`error: ${error.message}`);
-              return;
-            }
-            if (stderr) {
-              console.log(`stderr: ${stderr}`);
-              return;
-            }
-            console.log(`stdout: ${stdout}`);
+      // generate smart contract wrappers in Java
+      exec(
+        `web3j generate solidity --abiFile=${abiFile} --binFile=${binFile} -o ${destination} -p ${package}`,
+        (error, stdout, stderr) => {
+          if (error) {
+            throw new Error(error.message);
           }
-        );
-      } catch (error) {
-        throw new Error(error);
-      }
+          if (stderr) {
+            throw new Error(stderr);
+          }
+          console.log(`stdout: ${stdout}`);
+        }
+      );
     }
   });
 });
