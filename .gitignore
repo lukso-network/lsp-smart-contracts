@@ -127,7 +127,7 @@ deployments
 scripts/java/github.properties
 scripts/java/.gradle
 scripts/java/.idea
-tmp/
+android/
 
 .idea
 
