@@ -1,0 +1,60 @@
+import groovy.json.JsonSlurper
+
+plugins {
+    id 'java'
+}
+apply plugin: 'maven-publish'
+
+
+def githubPropertiesFile = file("github.properties")
+def githubProperties = new Properties()
+if (githubPropertiesFile.canRead()) {
+    githubProperties.load(new FileInputStream(githubPropertiesFile))
+}
+
+
+def getVersionName = { ->
+    def jsonSlurper = new JsonSlurper()
+    def packageJson = jsonSlurper.parse file('../../package.json')
+    return packageJson.version
+}
+
+def getArtifactId = { ->
+    return "upcontracts"
+}
+
+archivesBaseName = getArtifactId()
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
+    implementation 'org.web3j:core:5.0.0'
+}
+
+
+publishing {
+    publications {
+        upcontracts(MavenPublication) {
+            groupId 'network.lukso'
+            artifactId getArtifactId()
+            version getVersionName()
+            artifact("$buildDir/libs/${getArtifactId()}.jar")
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/lukso-network/lsp-smart-contracts")
+            credentials {
+                username = githubProperties['gpr.usr'] ?: System.getenv("GITHUB_ACTOR")
+                password = githubProperties['gpr.key'] ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
