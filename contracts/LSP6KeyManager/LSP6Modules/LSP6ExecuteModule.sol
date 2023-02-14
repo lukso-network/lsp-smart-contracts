@@ -80,7 +80,7 @@ abstract contract LSP6ExecuteModule {
         // CHECK if we are doing an empty call, as the receive() or fallback() function
         // of the controlledContract could run some code.
         if (!hasSuperOperation && !isCallDataPresent && value == 0) {
-            requirePermissions(
+            _requirePermissions(
                 controllerAddress,
                 controllerPermissions,
                 _extractPermissionFromOperation(operationType)
@@ -88,7 +88,7 @@ abstract contract LSP6ExecuteModule {
         }
 
         if (isCallDataPresent && !hasSuperOperation) {
-            requirePermissions(
+            _requirePermissions(
                 controllerAddress,
                 controllerPermissions,
                 _extractPermissionFromOperation(operationType)
@@ -100,7 +100,11 @@ abstract contract LSP6ExecuteModule {
         );
 
         if (value != 0 && !hasSuperTransferValue) {
-            requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_TRANSFERVALUE);
+            _requirePermissions(
+                controllerAddress,
+                controllerPermissions,
+                _PERMISSION_TRANSFERVALUE
+            );
         }
 
         // Skip on contract creation (CREATE or CREATE2)
@@ -212,7 +216,7 @@ abstract contract LSP6ExecuteModule {
      * @param addressPermissions the caller's permissions BitArray
      * @param permissionRequired the required permission
      */
-    function requirePermissions(
+    function _requirePermissions(
         address controller,
         bytes32 addressPermissions,
         bytes32 permissionRequired

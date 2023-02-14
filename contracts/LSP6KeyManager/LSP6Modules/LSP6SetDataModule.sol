@@ -71,7 +71,7 @@ abstract contract LSP6SetDataModule {
             // Skip if caller has SUPER permissions
             if (controllerPermissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
-            requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_SETDATA);
+            _requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_SETDATA);
 
             _verifyAllowedERC725YSingleKey(
                 controllerAddress,
@@ -80,7 +80,7 @@ abstract contract LSP6SetDataModule {
             );
         } else {
             // Otherwise CHECK the required permission if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-            requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
+            _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
         }
     }
 
@@ -116,7 +116,7 @@ abstract contract LSP6SetDataModule {
                 isSettingERC725YKeys = true;
             } else {
                 // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-                requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
+                _requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
                 validatedInputDataKeys[ii] = true;
             }
 
@@ -128,7 +128,7 @@ abstract contract LSP6SetDataModule {
             // Skip if caller has SUPER permissions
             if (controllerPermissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
-            requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_SETDATA);
+            _requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_SETDATA);
 
             _verifyAllowedERC725YDataKeys(
                 controllerAddress,
@@ -593,7 +593,7 @@ abstract contract LSP6SetDataModule {
      * @param addressPermissions the caller's permissions BitArray
      * @param permissionRequired the required permission
      */
-    function requirePermissions(
+    function _requirePermissions(
         address controller,
         bytes32 addressPermissions,
         bytes32 permissionRequired

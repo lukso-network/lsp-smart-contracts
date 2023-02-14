@@ -350,7 +350,7 @@ abstract contract LSP6KeyManagerCore is
     function _nonReentrantBefore(address from) internal virtual {
         if (_reentrancyStatus) {
             // CHECK the caller has REENTRANCY permission
-            requirePermissions(
+            _requirePermissions(
                 from,
                 ERC725Y(_target).getPermissionsFor(from),
                 _PERMISSION_REENTRANCY
@@ -376,11 +376,11 @@ abstract contract LSP6KeyManagerCore is
      * @param addressPermissions the caller's permissions BitArray
      * @param permissionRequired the required permission
      */
-    function requirePermissions(
+    function _requirePermissions(
         address controller,
         bytes32 addressPermissions,
         bytes32 permissionRequired
     ) internal pure override(LSP6ExecuteModule, LSP6SetDataModule) {
-        LSP6ExecuteModule.requirePermissions(controller, addressPermissions, permissionRequired);
+        LSP6ExecuteModule._requirePermissions(controller, addressPermissions, permissionRequired);
     }
 }
