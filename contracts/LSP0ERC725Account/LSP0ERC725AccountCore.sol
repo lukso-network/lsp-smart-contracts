@@ -55,7 +55,7 @@ abstract contract LSP0ERC725AccountCore is
     ILSP1UniversalReceiver
 {
     using ERC165Checker for address;
-    using LSP1Utils for *;
+    using LSP1Utils for address;
     using Address for address;
 
     /**
@@ -239,7 +239,7 @@ abstract contract LSP0ERC725AccountCore is
         returns (bytes memory returnedValues)
     {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        bytes memory lsp1DelegateValue = _store.getLSP1DelegateValue();
+        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         bytes memory resultDefaultDelegate;
 
         if (lsp1DelegateValue.length >= 20) {
@@ -256,7 +256,12 @@ abstract contract LSP0ERC725AccountCore is
             }
         }
 
-        bytes memory lsp1TypeIdDelegateValue = _store.getLSP1DelegateValueForTypeId(typeId);
+        bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+            bytes20(typeId)
+        );
+
+        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
         if (lsp1TypeIdDelegateValue.length >= 20) {
