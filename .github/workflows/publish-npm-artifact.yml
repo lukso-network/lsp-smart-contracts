@@ -6,7 +6,7 @@ on:
     types: [trigger-release]
 
 jobs:
-  npm-build-artifacts:
+  publish-npm-artifacts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

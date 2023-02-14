@@ -28,27 +28,42 @@ jobs:
           node-version: "16.15.0"
           cache: "npm"
 
-      - run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
       # Android artifacts
 
-      - name: Install Web3j
-        run: curl -L get.web3j.io | sh && source ~/.web3j/source.sh
+      # TODO: disabled until Web3j issue solved with `gradle build`
+      # see: https://github.com/web3j/web3j/issues/1855
 
-      - name: Generate Android artifacts
-        run: npx ts-node ./scripts/android-artifacts.ts
+      # - name: Install Web3j
+      #   run: curl -L get.web3j.io | sh && source $HOME/.web3j/source.sh
 
-      - name: Set up our JDK environment
-        uses: actions/setup-java@v1.4.3
-        with:
-          java-version: 1.11
+      # - name: Generate Smart Contracts ABI + Binaries
+      #   run: npx ts-node ./scripts/android-artifacts.ts
 
-      - name: Grant rights
-        run: chmod +x java/build.gradle
+      # - name: Generate Java wrappers
+      #   run: |
+      #     for FILE in *;
+      #     for file in ./android/; do
+      #         web3j generate solidity \
+      #             --abiFile="$file.abi" \
+      #             --binFile="$file.bin" \
+      #             -o ./scripts/java/src/main/java/network/lukso/up/contracts \
+      #             -p network.lukso.up.contracts
+      #     done
 
-      - name: Build jar
-        working-directory: ./java
-        run: gradle build
+      # - name: Set up our JDK environment
+      #   uses: actions/setup-java@v3
+      #   with:
+      #     java-version: "11"
+      #     distribution: "adopt"
+
+      # - name: Build jar
+      #   working-directory: ./scripts/java
+      #   run: |
+      #     chmod +x build.gradle
+      #     gradle build
 
       # iOS artifacts
       - name: Generate iOS artifacts
@@ -56,7 +71,7 @@ jobs:
           mkdir ios
           npx ts-node ./scripts/ios-artifacts.ts
 
-      # Upload Arifacts
+      # Upload Artifacts
       - name: Upload iOS Artifact
         uses: actions/upload-artifact@v2
         if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
