@@ -6,7 +6,6 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP8IdentifiableDigitalAsset} from "./ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {GasLib} from "../Utils/GasLib.sol";
@@ -30,7 +29,6 @@ import {_TYPEID_LSP8_TOKENSSENDER, _TYPEID_LSP8_TOKENSRECIPIENT} from "./LSP8Con
 abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAsset {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
-    using Address for address;
 
     // --- Storage
 
@@ -427,7 +425,7 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
             bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
             ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, packedData);
         } else if (!allowNonLSP1Recipient) {
-            if (to.isContract()) {
+            if (to.code.length > 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP8NotifyTokenReceiverIsEOA(to);

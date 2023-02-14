@@ -1,7 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { encodeData, flattenEncodedData } from "@erc725/erc725.js";
+import {
+  encodeData,
+  flattenEncodedData,
+  ERC725JSONSchema,
+} from "@erc725/erc725.js";
 
 import { Executor, Executor__factory } from "../../../types";
 
@@ -10,7 +14,6 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-  BasicUPSetup_Schema,
   OPERATION_TYPES,
 } from "../../../constants";
 
@@ -24,8 +27,31 @@ import {
   getRandomAddresses,
   combinePermissions,
   encodeCompactBytesArray,
-  abiCoder,
 } from "../../utils/helpers";
+
+const BasicUPSetup_Schema: ERC725JSONSchema[] = [
+  {
+    name: "LSP3Profile",
+    key: ERC725YDataKeys.LSP3["LSP3Profile"],
+    keyType: "Singleton",
+    valueContent: "JSONURL",
+    valueType: "bytes",
+  },
+  {
+    name: "LSP1UniversalReceiverDelegate",
+    key: ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+    keyType: "Singleton",
+    valueContent: "Address",
+    valueType: "address",
+  },
+  {
+    name: "LSP12IssuedAssets[]",
+    key: ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
+    keyType: "Array",
+    valueContent: "Number",
+    valueType: "uint256",
+  },
+];
 
 export const shouldBehaveLikePermissionSetData = (
   buildContext: () => Promise<LSP6TestContext>
