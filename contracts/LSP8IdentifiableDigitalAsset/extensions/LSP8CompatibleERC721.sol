@@ -8,7 +8,6 @@ import {ILSP8CompatibleERC721} from "./ILSP8CompatibleERC721.sol";
 import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
 
 // libraries
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
@@ -36,7 +35,6 @@ abstract contract LSP8CompatibleERC721 is
     LSP4Compatibility,
     LSP8IdentifiableDigitalAsset
 {
-    using Address for address;
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /**
@@ -276,7 +274,7 @@ abstract contract LSP8CompatibleERC721 is
         uint256 tokenId,
         bytes memory data
     ) private returns (bool) {
-        if (to.isContract()) {
+        if (to.code.length > 0) {
             try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data) returns (
                 bytes4 retval
             ) {

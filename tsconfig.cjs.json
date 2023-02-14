@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "common",
+    "declaration": true
+  },
+  "files": ["./constants.ts"]
+}

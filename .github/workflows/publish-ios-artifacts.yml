@@ -33,7 +33,7 @@ jobs:
             git push origin --delete abi-update-release
           fi
           git checkout -b abi-update-release
-          cp ../ios/UPContractsAbi.swift Sources/UniversalProfile/UpContractsAbi.swift
+          cp ../ios/UPContractsAbi.swift Sources/UniversalProfile/UPContractsAbi.swift
           git add .
           current_version=$(git describe --tags --abbrev=0)
           git commit -m "ci: automatic publish of new contracts ABIs ($current_version) from lukso-network/lsp-smart-contracts"
