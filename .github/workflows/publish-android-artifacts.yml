@@ -1,6 +1,6 @@
 # This workflow publishes Android artifacts to Github Packages
 # See: https://docs.github.com/en/actions/publishing-packages/publishing-java-packages-with-gradle#publishing-packages-to-github-packages
-name: Upload Android Github artifacts CD
+name: Upload Android GitHub artifacts
 
 on:
   repository_dispatch:
@@ -23,7 +23,7 @@ jobs:
           distribution: "adopt"
 
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+        uses: gradle/wrapper-validation-action@v1.0.5
 
       - name: Download Android artifacts
         uses: dawidd6/action-download-artifact@v2
@@ -37,7 +37,7 @@ jobs:
 
       - name: Publish to Github Packages
         working-directory: ./scripts/java
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        uses: gradle/gradle-build-action@v2.3.3
         with:
           arguments: publish
         env:
