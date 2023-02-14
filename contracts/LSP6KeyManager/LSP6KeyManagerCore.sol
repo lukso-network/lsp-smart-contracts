@@ -9,9 +9,9 @@ import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {LSP6SetDataLogicModule} from "./LSP6LogicModules/LSP6SetDataLogicModule.sol";
-import {LSP6ExecuteLogicModule} from "./LSP6LogicModules/LSP6ExecuteLogicModule.sol";
-import {LSP6OwnershipLogicModule} from "./LSP6LogicModules/LSP6OwnershipLogicModule.sol";
+import {LSP6SetDataModule} from "./LSP6Modules/LSP6SetDataModule.sol";
+import {LSP6ExecuteModule} from "./LSP6Modules/LSP6ExecuteModule.sol";
+import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
 
 // libraries
 import {GasLib} from "../Utils/GasLib.sol";
@@ -30,7 +30,8 @@ import {
     InvalidPayload,
     InvalidRelayNonce,
     NoPermissionsSet,
-    InvalidERC725Function
+    InvalidERC725Function,
+    NotAuthorised
 } from "./LSP6Errors.sol";
 
 // constants
@@ -60,9 +61,9 @@ import {
 abstract contract LSP6KeyManagerCore is
     ERC165,
     ILSP6KeyManager,
-    LSP6SetDataLogicModule,
-    LSP6ExecuteLogicModule,
-    LSP6OwnershipLogicModule
+    LSP6SetDataModule,
+    LSP6ExecuteModule,
+    LSP6OwnershipModule
 {
     using LSP6Utils for *;
     using ECDSA for bytes32;
@@ -310,7 +311,7 @@ abstract contract LSP6KeyManagerCore is
         if (erc725Function == SETDATA_SELECTOR) {
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(payload[4:], (bytes32, bytes));
 
-            _verifyCanSetData(_target, from, permissions, inputKey, inputValue);
+            LSP6SetDataModule._verifyCanSetData(_target, from, permissions, inputKey, inputValue);
 
             // ERC725Y.setData(bytes32[],bytes[])
         } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
@@ -319,16 +320,16 @@ abstract contract LSP6KeyManagerCore is
                 (bytes32[], bytes[])
             );
 
-            _verifyCanSetData(_target, from, permissions, inputKeys, inputValues);
+            LSP6SetDataModule._verifyCanSetData(_target, from, permissions, inputKeys, inputValues);
 
             // ERC725X.execute(uint256,address,uint256,bytes)
         } else if (erc725Function == EXECUTE_SELECTOR) {
-            _verifyCanExecute(_target, from, permissions, payload);
+            LSP6ExecuteModule._verifyCanExecute(_target, from, permissions, payload);
         } else if (
             erc725Function == ILSP14Ownable2Step.transferOwnership.selector ||
             erc725Function == ILSP14Ownable2Step.acceptOwnership.selector
         ) {
-            _verifyOwnershipPermissions(from, permissions);
+            LSP6OwnershipModule._verifyOwnershipPermissions(from, permissions);
         } else {
             revert InvalidERC725Function(erc725Function);
         }
@@ -349,7 +350,7 @@ abstract contract LSP6KeyManagerCore is
     function _nonReentrantBefore(address from) internal virtual {
         if (_reentrancyStatus) {
             // CHECK the caller has REENTRANCY permission
-            LSP6Utils.requirePermissions(
+            requirePermissions(
                 from,
                 ERC725Y(_target).getPermissionsFor(from),
                 _PERMISSION_REENTRANCY
@@ -367,5 +368,19 @@ abstract contract LSP6KeyManagerCore is
         // By storing the original value once again, a refund is triggered (see
         // https://eips.ethereum.org/EIPS/eip-2200)
         _reentrancyStatus = false;
+    }
+
+    /**
+     * @dev revert if `controller`'s `addressPermissions` doesn't contain `permissionsRequired`
+     * @param controller the caller address
+     * @param addressPermissions the caller's permissions BitArray
+     * @param permissionRequired the required permission
+     */
+    function requirePermissions(
+        address controller,
+        bytes32 addressPermissions,
+        bytes32 permissionRequired
+    ) internal pure override(LSP6ExecuteModule, LSP6SetDataModule) {
+        LSP6ExecuteModule.requirePermissions(controller, addressPermissions, permissionRequired);
     }
 }

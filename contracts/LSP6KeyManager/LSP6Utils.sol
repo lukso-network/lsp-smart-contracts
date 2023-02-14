@@ -226,21 +226,4 @@ library LSP6Utils {
         if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
         if (permission == _PERMISSION_SIGN) return "SIGN";
     }
-
-    /**
-     * @dev revert if `controller`'s `addressPermissions` doesn't contain `permissionsRequired`
-     * @param controller the caller address
-     * @param addressPermissions the caller's permissions BitArray
-     * @param permissionRequired the required permission
-     */
-    function requirePermissions(
-        address controller,
-        bytes32 addressPermissions,
-        bytes32 permissionRequired
-    ) internal pure {
-        if (!hasPermission(addressPermissions, permissionRequired)) {
-            string memory permissionErrorString = getPermissionName(permissionRequired);
-            revert NotAuthorised(controller, permissionErrorString);
-        }
-    }
 }

@@ -38,10 +38,11 @@ import {
     InvalidEncodedAllowedCalls,
     InvalidEncodedAllowedERC725YDataKeys,
     NoERC725YDataKeysAllowed,
-    NotAllowedERC725YDataKey
+    NotAllowedERC725YDataKey,
+    NotAuthorised
 } from "../LSP6Errors.sol";
 
-abstract contract LSP6SetDataLogicModule {
+abstract contract LSP6SetDataModule {
     using LSP6Utils for *;
 
     /**
@@ -70,11 +71,7 @@ abstract contract LSP6SetDataLogicModule {
             // Skip if caller has SUPER permissions
             if (controllerPermissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
-            LSP6Utils.requirePermissions(
-                controllerAddress,
-                controllerPermissions,
-                _PERMISSION_SETDATA
-            );
+            requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_SETDATA);
 
             _verifyAllowedERC725YSingleKey(
                 controllerAddress,
@@ -83,11 +80,7 @@ abstract contract LSP6SetDataLogicModule {
             );
         } else {
             // Otherwise CHECK the required permission if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-            LSP6Utils.requirePermissions(
-                controllerAddress,
-                controllerPermissions,
-                requiredPermission
-            );
+            requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
         }
     }
 
@@ -123,11 +116,7 @@ abstract contract LSP6SetDataLogicModule {
                 isSettingERC725YKeys = true;
             } else {
                 // CHECK the required permissions if setting LSP6 permissions, LSP1 Delegate or LSP17 Extensions.
-                LSP6Utils.requirePermissions(
-                    controllerAddress,
-                    controllerPermissions,
-                    requiredPermission
-                );
+                requirePermissions(controllerAddress, controllerPermissions, requiredPermission);
                 validatedInputDataKeys[ii] = true;
             }
 
@@ -139,11 +128,7 @@ abstract contract LSP6SetDataLogicModule {
             // Skip if caller has SUPER permissions
             if (controllerPermissions.hasPermission(_PERMISSION_SUPER_SETDATA)) return;
 
-            LSP6Utils.requirePermissions(
-                controllerAddress,
-                controllerPermissions,
-                _PERMISSION_SETDATA
-            );
+            requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_SETDATA);
 
             _verifyAllowedERC725YDataKeys(
                 controllerAddress,
@@ -599,6 +584,23 @@ abstract contract LSP6SetDataLogicModule {
             if (!validatedInputKeys[jj]) {
                 revert NotAllowedERC725YDataKey(controllerAddress, inputDataKeys[jj]);
             }
+        }
+    }
+
+    /**
+     * @dev revert if `controller`'s `addressPermissions` doesn't contain `permissionsRequired`
+     * @param controller the caller address
+     * @param addressPermissions the caller's permissions BitArray
+     * @param permissionRequired the required permission
+     */
+    function requirePermissions(
+        address controller,
+        bytes32 addressPermissions,
+        bytes32 permissionRequired
+    ) internal pure virtual {
+        if (!LSP6Utils.hasPermission(addressPermissions, permissionRequired)) {
+            string memory permissionErrorString = LSP6Utils.getPermissionName(permissionRequired);
+            revert NotAuthorised(controller, permissionErrorString);
         }
     }
 }

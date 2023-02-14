@@ -35,10 +35,11 @@ import {
     NoCallsAllowed,
     NotAllowedCall,
     InvalidEncodedAllowedCalls,
-    InvalidWhitelistedCall
+    InvalidWhitelistedCall,
+    NotAuthorised
 } from "../LSP6Errors.sol";
 
-abstract contract LSP6ExecuteLogicModule {
+abstract contract LSP6ExecuteModule {
     using ERC165Checker for address;
     using LSP6Utils for *;
 
@@ -79,7 +80,7 @@ abstract contract LSP6ExecuteLogicModule {
         // CHECK if we are doing an empty call, as the receive() or fallback() function
         // of the controlledContract could run some code.
         if (!hasSuperOperation && !isCallDataPresent && value == 0) {
-            LSP6Utils.requirePermissions(
+            requirePermissions(
                 controllerAddress,
                 controllerPermissions,
                 _extractPermissionFromOperation(operationType)
@@ -87,7 +88,7 @@ abstract contract LSP6ExecuteLogicModule {
         }
 
         if (isCallDataPresent && !hasSuperOperation) {
-            LSP6Utils.requirePermissions(
+            requirePermissions(
                 controllerAddress,
                 controllerPermissions,
                 _extractPermissionFromOperation(operationType)
@@ -99,11 +100,7 @@ abstract contract LSP6ExecuteLogicModule {
         );
 
         if (value != 0 && !hasSuperTransferValue) {
-            LSP6Utils.requirePermissions(
-                controllerAddress,
-                controllerPermissions,
-                _PERMISSION_TRANSFERVALUE
-            );
+            requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_TRANSFERVALUE);
         }
 
         // Skip on contract creation (CREATE or CREATE2)
@@ -207,5 +204,22 @@ abstract contract LSP6ExecuteLogicModule {
         if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
         else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
         else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
+    }
+
+    /**
+     * @dev revert if `controller`'s `addressPermissions` doesn't contain `permissionsRequired`
+     * @param controller the caller address
+     * @param addressPermissions the caller's permissions BitArray
+     * @param permissionRequired the required permission
+     */
+    function requirePermissions(
+        address controller,
+        bytes32 addressPermissions,
+        bytes32 permissionRequired
+    ) internal pure virtual {
+        if (!LSP6Utils.hasPermission(addressPermissions, permissionRequired)) {
+            string memory permissionErrorString = LSP6Utils.getPermissionName(permissionRequired);
+            revert NotAuthorised(controller, permissionErrorString);
+        }
     }
 }
