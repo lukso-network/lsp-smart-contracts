@@ -46,6 +46,7 @@ import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.
 
 // errors
 import "./LSP9Errors.sol";
+import "../LSP17ContractExtension/LSP17Errors.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of ERC725, LSP1UniversalReceiver
@@ -74,10 +75,91 @@ contract LSP9VaultCore is
     /**
      * @dev Emits an event when receiving native tokens
      *
-     * Executed when receiving native tokens with empty calldata.
+     * Executed when receiving a call with empty calldata.
      */
     receive() external payable virtual {
         if (msg.value > 0) emit ValueReceived(msg.sender, msg.value);
+    }
+
+    // solhint-disable no-complex-fallback
+
+    /**
+     * @dev Emits an event when receiving native tokens
+     *
+     * Forwards the call to an extension contract (address). This address can be retrieved from
+     * the ERC725Y data key-value store using the data key below (function selector appended to the prefix):
+     *_LSP17_FALLBACK_EXTENSIONS_HANDLER_ + <function-selector>
+     * If there is no extension stored under the data key, return.
+     *
+     * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
+     * Returns the return value on success and revert in case of failure.
+     *
+     * If the msg.data is shorter than 4 bytes do not check for an extension and return
+     *
+     * Executed when:
+     * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
+     * - receiving native tokens with some calldata.
+     */
+    fallback() external payable virtual {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        if (msg.data.length < 4) return;
+
+        _fallbackLSP17Extendable();
+    }
+
+    /**
+     * @dev Forwards the call to an extension mapped to a function selector. If no extension address
+     * is mapped to the function selector (address(0)), then revert.
+     *
+     * The bytes4(0) msg.sig is an exception, the function won't revert if there is no extension found
+     * mapped to bytes4(0), but will execute the call to the extension in case it existed.
+     *
+     * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
+     * Returns the return value on success and revert in case of failure.
+     *
+     * As the function uses assembly {return()/revert()} to terminate the call, it cannot be
+     * called before other codes in fallback().
+     *
+     * Otherwise, the codes after _fallbackLSP17Extendable() may never be reached.
+     */
+    function _fallbackLSP17Extendable() internal virtual override {
+        // If there is a function selector
+        address extension = _getExtension(msg.sig);
+
+        // if no extension was found for bytes4(0) return don't revert
+        if (msg.sig == bytes4(0) && extension == address(0)) return;
+
+        // if no extension was found, revert
+        if (extension == address(0)) revert NoExtensionFoundForFunctionSelector(msg.sig);
+
+        // solhint-disable no-inline-assembly
+        // if the extension was found, call the extension with the msg.data
+        // appended with bytes20(address) and bytes32(msg.value)
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+
+            // The msg.sender address is shifted to the left by 12 bytes to remove the padding
+            // Then the address without padding is stored right after the calldata
+            mstore(calldatasize(), shl(96, caller()))
+
+            // The msg.value is stored right after the calldata + msg.sender
+            mstore(add(calldatasize(), 20), callvalue())
+
+            // Add 52 bytes for the msg.sender and msg.value appended at the end of the calldata
+            let success := call(gas(), extension, 0, 0, add(calldatasize(), 52), 0, 0)
+
+            // Copy the returned data
+            returndatacopy(0, 0, returndatasize())
+
+            switch success
+            // call returns 0 on failed calls
+            case 0 {
+                revert(0, returndatasize())
+            }
+            default {
+                return(0, returndatasize())
+            }
+        }
     }
 
     /**
@@ -102,30 +184,6 @@ contract LSP9VaultCore is
         address extension = address(bytes20(_getData(mappedExtensionDataKey)));
 
         return extension;
-    }
-
-    // solhint-disable no-complex-fallback
-
-    /**
-     * @dev Emits an event when receiving native tokens
-     *
-     * Forwards the call to an extension (address) stored under a _LSP17_FALLBACK_EXTENSIONS_HANDLER_ appended
-     * to a function selector. If there is no extension stored under the data key, return.
-     *
-     * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
-     * Returns the return value on success and revert in case of failure.
-     *
-     * If the msg.data is shorter than 4 bytes or the first 4 bytes are 0s
-     * do not check for an extension and return
-     *
-     * Executed when:
-     * - the first 4 bytes of the calldata do not match any publicly callable functions from the contract ABI.
-     * - receiving native tokens with some calldata.
-     */
-    fallback() external payable virtual {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        if (msg.data.length < 4 || msg.sig == bytes4(0)) return;
-        _fallbackLSP17Extendable();
     }
 
     /**
