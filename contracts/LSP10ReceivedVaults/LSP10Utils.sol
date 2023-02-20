@@ -54,13 +54,11 @@ library LSP10Utils {
      * @param vault The address of the vault being received
      * @param vaultMapKey The map key of the vault being received containing the interfaceId of the
      * vault and the index in the array
-     * @param interfaceID The interfaceID of the vault being received
      */
     function generateReceivedVaultKeys(
         address receiver,
         address vault,
-        bytes32 vaultMapKey,
-        bytes4 interfaceID
+        bytes32 vaultMapKey
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         keys = new bytes32[](3);
         values = new bytes[](3);
@@ -77,7 +75,7 @@ library LSP10Utils {
             values[1] = bytes.concat(bytes20(vault));
 
             keys[2] = vaultMapKey;
-            values[2] = bytes.concat(interfaceID, bytes8(0));
+            values[2] = bytes.concat(_INTERFACEID_LSP9, bytes8(0));
 
             // If the storage is already initiated
         } else if (encodedArrayLength.length == 32) {
@@ -98,7 +96,7 @@ library LSP10Utils {
             values[1] = bytes.concat(bytes20(vault));
 
             keys[2] = vaultMapKey;
-            values[2] = bytes.concat(interfaceID, bytes8(uint64(oldArrayLength)));
+            values[2] = bytes.concat(_INTERFACEID_LSP9, bytes8(uint64(oldArrayLength)));
         } else {
             revert InvalidLSP10ReceivedVaultsArrayLength(
                 encodedArrayLength,
