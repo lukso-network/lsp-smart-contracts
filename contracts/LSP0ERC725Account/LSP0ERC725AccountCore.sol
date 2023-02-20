@@ -71,7 +71,9 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @dev Emits an event when receiving native tokens
      *
-     * Executed when receiving a call with empty calldata.
+     * Executed:
+     *     - when receiving some native tokens without any additional data.
+     *     - on empty calls to the contract.
      */
     receive() external payable virtual {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
@@ -113,7 +115,7 @@ abstract contract LSP0ERC725AccountCore is
      * The call to the extension is appended with bytes20 (msg.sender) and bytes32 (msg.value).
      * Returns the return value on success and revert in case of failure.
      *
-     * As the function uses assembly {return()/revert()} to terminate the call, it cannot be
+     * Because the function uses assembly {return()/revert()} to terminate the call, it cannot be
      * called before other codes in fallback().
      *
      * Otherwise, the codes after _fallbackLSP17Extendable() may never be reached.
