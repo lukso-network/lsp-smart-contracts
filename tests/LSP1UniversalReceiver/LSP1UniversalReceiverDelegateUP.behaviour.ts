@@ -15,6 +15,8 @@ import {
   LSP9Vault__factory,
   LSP0ERC725Account,
   LSP0ERC725Account__factory,
+  GenericExecutor,
+  GenericExecutor__factory,
 } from "../../types";
 
 // helpers
@@ -39,6 +41,7 @@ import {
   getLSP10MapAndArrayKeysValue,
   getLSP5MapAndArrayKeysValue,
 } from "../utils/fixtures";
+import { Contract } from "ethers";
 
 export type LSP1TestAccounts = {
   owner1: SignerWithAddress;
@@ -1529,7 +1532,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     });
   });
 
-  describe("when testing LSP9-Vault", () => {
+  describe.only("when testing LSP9-Vault", () => {
     let lsp9VaultA: LSP9Vault, lsp9VaultB: LSP9Vault, lsp9VaultC: LSP9Vault;
 
     before(async () => {
@@ -1915,6 +1918,72 @@ export const shouldBehaveLikeLSP1Delegate = (
         expect(interfaceId).to.equal(INTERFACE_IDS.LSP9Vault);
         expect(arrayLength).to.equal(ARRAY_LENGTH.TWO);
         expect(elementAddress).to.equal(lsp9VaultD.address);
+      });
+    });
+
+    describe.only("when a non-LSP9 contract calls the `universalReceiver(...)` with a LSP9 typeId", () => {
+      let notVaultContract: GenericExecutor;
+
+      before(async () => {
+        // use a generic executor mock contract
+        notVaultContract = await new GenericExecutor__factory(
+          context.accounts.random
+        ).deploy();
+      });
+
+      [
+        {
+          typeIdHex: LSP1_TYPE_IDS.LSP9OwnershipTransferred_SenderNotification,
+          typeIdName: "LSP9OwnershipTransferred_SenderNotification",
+        },
+        {
+          typeIdHex:
+            LSP1_TYPE_IDS.LSP9OwnershipTransferred_RecipientNotification,
+          typeIdName: "LSP9OwnershipTransferred_RecipientNotification",
+        },
+      ].forEach((testCase) => {
+        it(`should not revert and return 'not a LSP9Vault ownership transfer' with typeId == ${testCase.typeIdName}`, async () => {
+          const universalReceiverPayload =
+            context.universalProfile1.interface.encodeFunctionData(
+              "universalReceiver",
+              [testCase.typeIdHex, "0x"]
+            );
+
+          // check that it does not revert
+          await expect(
+            await notVaultContract.call(
+              context.universalProfile1.address,
+              0,
+              universalReceiverPayload
+            )
+          ).to.not.be.reverted;
+
+          // check that it returns the correct string from the default LSP1Delegate
+          const universalReceiverResult =
+            await notVaultContract.callStatic.call(
+              context.universalProfile1.address,
+              0,
+              universalReceiverPayload
+            );
+
+          const [genericExecutorResult] = abiCoder.decode(
+            ["bytes"],
+            universalReceiverResult
+          );
+
+          const [resultDelegate, resultTypeID] = abiCoder.decode(
+            ["bytes", "bytes"],
+            genericExecutorResult
+          );
+
+          expect(resultDelegate).to.equal(
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes(
+                "LSP1: not an LSP9Vault ownership transfer"
+              )
+            )
+          );
+        });
       });
     });
   });
