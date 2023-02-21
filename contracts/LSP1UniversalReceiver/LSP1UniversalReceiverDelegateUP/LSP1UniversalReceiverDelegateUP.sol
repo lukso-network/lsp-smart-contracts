@@ -12,7 +12,6 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 
 // libraries
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "../LSP1Utils.sol";
 import {LSP2Utils} from "../../LSP2ERC725YJSONSchema/LSP2Utils.sol";
@@ -43,7 +42,6 @@ import "../LSP1Errors.sol";
  */
 contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     using ERC165Checker for address;
-    using Address for address;
 
     /**
      * @inheritdoc ILSP1UniversalReceiver
@@ -74,7 +72,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
 
         // if the contract being transferred doesn't support LSP9, do not register it as a received vault
         if (mapPrefix == _LSP10_VAULTS_MAP_KEY_PREFIX) {
-            if (notifier.isContract()) {
+            if (notifier.code.length > 0) {
                 if (!notifier.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP9))
                     return "LSP1: not an LSP9Vault ownership transfer";
             }
@@ -124,7 +122,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         } else {
             (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
-                .generateReceivedVaultKeys(msg.sender, notifier, notifierMapKey, interfaceID);
+                .generateReceivedVaultKeys(msg.sender, notifier, notifierMapKey);
 
             result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         }

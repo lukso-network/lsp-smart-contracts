@@ -276,6 +276,19 @@ export const shouldBehaveLikeLSP7 = (
           );
         });
       });
+
+      describe("when operator is the token owner", () => {
+        it("should revert", async () => {
+          const operator = context.accounts.owner.address;
+
+          await expect(
+            context.lsp7.authorizeOperator(operator, context.initialSupply)
+          ).to.be.revertedWithCustomError(
+            context.lsp7,
+            "LSP7TokenOwnerCannotBeOperator"
+          );
+        });
+      });
     });
   });
 
@@ -314,6 +327,19 @@ export const shouldBehaveLikeLSP7 = (
         ).to.be.revertedWithCustomError(
           context.lsp7,
           "LSP7CannotUseAddressZeroAsOperator"
+        );
+      });
+    });
+
+    describe("when operator is the token owner", () => {
+      it("should revert", async () => {
+        const operator = context.accounts.owner.address;
+
+        await expect(
+          context.lsp7.revokeOperator(operator)
+        ).to.be.revertedWithCustomError(
+          context.lsp7,
+          "LSP7TokenOwnerCannotBeOperator"
         );
       });
     });

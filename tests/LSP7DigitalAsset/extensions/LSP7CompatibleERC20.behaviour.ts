@@ -15,7 +15,7 @@ import {
   TokenReceiverWithoutLSP1,
   TokenReceiverWithoutLSP1__factory,
 } from "../../../types";
-import { ERC725YDataKeys } from "../../../constants.js";
+import { ERC725YDataKeys } from "../../../constants";
 
 type LSP7CompatibleERC20TestAccounts = {
   owner: SignerWithAddress;

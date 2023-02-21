@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "module": "ES2015",
+    "outDir": "module",
+    "declaration": true
+  },
+  "files": ["./constants.ts"]
+}

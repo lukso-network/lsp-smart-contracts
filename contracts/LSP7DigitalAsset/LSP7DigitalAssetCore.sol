@@ -6,7 +6,6 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // libraries
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {GasLib} from "../Utils/GasLib.sol";
 
@@ -30,8 +29,6 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
  * This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
-    using Address for address;
-
     // --- Storage
 
     bool internal _isNonDivisible;
@@ -186,9 +183,8 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             revert LSP7CannotUseAddressZeroAsOperator();
         }
 
-        // tokenOwner is always their own operator, no update required
         if (operator == tokenOwner) {
-            return;
+            revert LSP7TokenOwnerCannotBeOperator();
         }
 
         _operatorAuthorizedAmount[tokenOwner][operator] = amount;
@@ -373,7 +369,7 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
             bytes memory packedData = abi.encodePacked(from, to, amount, data);
             ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP7_TOKENSRECIPIENT, packedData);
         } else if (!allowNonLSP1Recipient) {
-            if (to.isContract()) {
+            if (to.code.length > 0) {
                 revert LSP7NotifyTokenReceiverContractMissingLSP1Interface(to);
             } else {
                 revert LSP7NotifyTokenReceiverIsEOA(to);

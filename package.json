@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp-smart-contracts",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "The reference implementation for universal profiles smart contracts",
   "directories": {
     "test": "test"
@@ -9,11 +9,32 @@
     "contracts/**/*.sol",
     "!contracts/Mocks/**/*.sol",
     "artifacts/*.json",
-    "constants.js",
+    "module",
+    "common",
     "README.md",
     "CONTRIBUTING.md",
     "LICENSE"
   ],
+  "main": "./common/constants.js",
+  "module": "./module/constants.js",
+  "typings": "./common/constants.d.ts",
+  "exports": {
+    ".": {
+      "import": "./module/constants.js",
+      "require": "./common/constant.js",
+      "types": "./common/constants.d.ts"
+    },
+    "./constants.js": {
+      "import": "./module/constants.js",
+      "require": "./common/constant.js",
+      "types": "./common/constants.d.ts"
+    },
+    "./constants": {
+      "import": "./module/constants.js",
+      "require": "./common/constant.js",
+      "types": "./common/constants.d.ts"
+    }
+  },
   "scripts": {
     "test": "hardhat test",
     "test:benchmark": "hardhat test --no-compile tests/Benchmark.test.ts",
@@ -32,9 +53,10 @@
     "test:universalfactory": "hardhat test --no-compile tests/LSP16UniversalFactory/LSP16UniversalFactory.test.ts",
     "test:foundry": "forge test --no-match-test Skip -vvv --gas-report > gasreport.ansi",
     "build": "hardhat compile",
+    "build:tsc": "tsc --project tsconfig.cjs.json && tsc --project tsconfig.module.json",
     "package": "hardhat prepare-package",
     "release": "run-s clean build package && standard-version",
-    "clean": "hardhat clean",
+    "clean": "hardhat clean && rm -rf module common",
     "generate-types": "run-p generate-types:*",
     "generate-types:web3": "typechain --target=web3-v1 'artifacts/**/*.json'",
     "generate-types:ethers": "typechain --target=ethers-v5 'artifacts/**/*.json'",
@@ -97,7 +119,7 @@
     "standard-version": "^9.3.1",
     "ts-node": "^10.2.0",
     "typechain": "^8.0.0",
-    "typescript": "^4.3.5",
+    "typescript": "^4.9.5",
     "web3": "^1.5.2"
   }
 }
