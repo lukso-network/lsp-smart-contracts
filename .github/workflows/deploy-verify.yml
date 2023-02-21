@@ -87,4 +87,4 @@ jobs:
         run: npm ci
 
       - name: Deploy + Verify ${{ matrix.contracts }} on L16
-        run: sh ./scripts/ci/deploy_verify.sh -n luksoL16 -c ${{ matrix.contracts }}
+        run: sh ./scripts/ci/deploy-verify.sh -n luksoL16 -c ${{ matrix.contracts }}
