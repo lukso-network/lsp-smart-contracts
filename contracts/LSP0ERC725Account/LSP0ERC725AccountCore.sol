@@ -12,6 +12,7 @@ import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165C
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 import {LSP2Utils} from "../LSP2ERC725YJSONSchema/LSP2Utils.sol";
+import {GasLib} from "../Utils/GasLib.sol";
 
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
@@ -182,6 +183,33 @@ abstract contract LSP0ERC725AccountCore is
                 _owner == ECDSA.recover(dataHash, signature)
                     ? _ERC1271_MAGICVALUE
                     : _ERC1271_FAILVALUE;
+        }
+    }
+
+    /**
+     * @dev Receives and executes a batch of function calls on this contract.
+     */
+    function batchCalls(bytes[] calldata data) external returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i; i < data.length; i = GasLib.uncheckedIncrement(i)) {
+            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+
+            if (!success) {
+                // Look for revert reason and bubble it up if present
+                if (result.length > 0) {
+                    // The easiest way to bubble the revert reason is using memory via assembly
+                    // solhint-disable no-inline-assembly
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert("LSP0: batchCalls reverted");
+                }
+            }
+
+            results[i] = result;
         }
     }
 
