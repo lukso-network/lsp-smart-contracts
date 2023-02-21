@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.1](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.8.0...v0.8.1) (2023-02-21)
+
+### Features
+
+- create `LSP0Utils` library with functions to retrieve LSP1 addresses ([#466](https://github.com/lukso-network/lsp-smart-contracts/issues/466)) ([a51883e](https://github.com/lukso-network/lsp-smart-contracts/commit/a51883eabe22109c17cc9740af46cd8c7495a467))
+- Support LSP17 Extension in LSP0/LSP9 for `bytes4(0)` function selector ([#473](https://github.com/lukso-network/lsp-smart-contracts/pull/473))
+- Seperate LSP6 Core contract in logic modules ([#461](https://github.com/lukso-network/lsp-smart-contracts/pull/461))
+
+### Bug Fixes
+
+- Add typescript transpilation and hook in package.json exports ([#470](https://github.com/lukso-network/lsp-smart-contracts/issues/470)) ([66fe41e](https://github.com/lukso-network/lsp-smart-contracts/commit/66fe41e3ea72460f47d6942c227f7569015d078c))
+- Revert in LSP7/LSP8 to prevent a token owner to approve itself ([#465](https://github.com/lukso-network/lsp-smart-contracts/commit/f85b1931bb8153c3368287b494952cc659b9424e))
+
+### build
+
 ## [0.8.0](https://github.com/lukso-network/lsp-smart-contracts/compare/v0.7.0...v0.8.0) (2023-01-24)
 
 ### ⚠ BREAKING CHANGES
