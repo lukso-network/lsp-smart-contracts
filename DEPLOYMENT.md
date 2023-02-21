@@ -79,7 +79,7 @@ npx hardhat deploy --network luksoL16 --tags UniversalProfile --reset
 
 We recommend using [`@nomiclabs/hardhat-etherscan`](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan) plugin to verify the lsp-smart-contracts deployed on L16 network.
 
-### 1. add the LUKSO L16 network in your hardhat config under `etherscan`
+### 1. add the LUKSO L16 network in your hardhat config under `etherscan`
 
 In your hardhat config file, under the `etherscan` property, add the following configurations for the [LUKSO L16 network](https://docs.lukso.tech/networks/l16-testnet/parameters).
 
