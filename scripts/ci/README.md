@@ -8,6 +8,8 @@ The following folder contains 3 files intended to be used as part of the CI/CD o
 - `ios-artifacts.ts`: used to generate the contract ABIs so that they can be used via Web3 Swift.
 - `deploy-verify.sh`: shell utility command to deploy + verify a smart contract on a specified network.
 
+## `deploy-verify.sh`
+
 The `deploy-verify.sh` command can also be used standalone (outside of the CI) from the root folder of the repository as follow.
 
 ```
