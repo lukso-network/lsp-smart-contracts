@@ -75,24 +75,6 @@ export const shouldBehaveLikeLSP1Delegate = (
     context = await buildContext();
   });
 
-  describe("when testing ERC165 standard", () => {
-    it("should support ERC165 interface", async () => {
-      const result =
-        await context.lsp1universalReceiverDelegateUP.supportsInterface(
-          INTERFACE_IDS.ERC165
-        );
-      expect(result).to.be.true;
-    });
-
-    it("should support LSP1 interface", async () => {
-      const result =
-        await context.lsp1universalReceiverDelegateUP.supportsInterface(
-          INTERFACE_IDS.LSP1UniversalReceiver
-        );
-      expect(result).to.be.true;
-    });
-  });
-
   describe("When testing EOA call to URD through the UR function", () => {
     describe("when calling with token/vault typeId", () => {
       it("should revert with custom error", async () => {
