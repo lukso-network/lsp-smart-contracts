@@ -914,10 +914,116 @@ export const shouldBehaveLikeLSP1Delegate = (
         expect(arrayLengthUP2).to.equal(ARRAY_LENGTH.ZERO);
       });
     });
+
+    describe("when UP does not have any balance of a LSP7 token and transfer with amount == 0", () => {
+      let lsp7Token: LSP7Tester;
+
+      before(async () => {
+        lsp7Token = await new LSP7Tester__factory(
+          context.accounts.random
+        ).deploy("Example LSP7 token", "EL7T", context.accounts.random.address);
+      });
+
+      it("should not revert and return 'LSP1: asset sent is not registered' with empty LSP7 token transfer", async () => {
+        const emptyTokenTransferPayload =
+          lsp7Token.interface.encodeFunctionData("transfer", [
+            context.universalProfile1.address,
+            context.accounts.random.address,
+            0,
+            true,
+            "0x",
+          ]);
+
+        const executePayload =
+          context.universalProfile1.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              lsp7Token.address,
+              0,
+              emptyTokenTransferPayload,
+            ]
+          );
+
+        await expect(
+          await context.lsp6KeyManager1
+            .connect(context.accounts.owner1)
+            ["execute(bytes)"](executePayload)
+        ).to.not.be.reverted;
+      });
+    });
+
+    describe("when a non-LSP7 token contract calls the `universalReceiver(...)` function", () => {
+      let notTokenContract: GenericExecutor;
+
+      before(async () => {
+        notTokenContract = await new GenericExecutor__factory(
+          context.accounts.random
+        ).deploy();
+      });
+
+      it("should not revert and return 'LSP1: asset sent is not registered' when calling with typeId == LSP7Tokens_SenderNotification", async () => {
+        const universalReceiverPayload =
+          context.universalProfile1.interface.encodeFunctionData(
+            "universalReceiver",
+            [LSP1_TYPE_IDS.LSP7Tokens_SenderNotification, "0x"]
+          );
+
+        // check that it does not revert
+        await expect(
+          await notTokenContract.call(
+            context.universalProfile1.address,
+            0,
+            universalReceiverPayload
+          )
+        ).to.not.be.reverted;
+
+        // check that it returns the correct string
+        const universalReceiverResult = await notTokenContract.callStatic.call(
+          context.universalProfile1.address,
+          0,
+          universalReceiverPayload
+        );
+
+        const [genericExecutorResult] = abiCoder.decode(
+          ["bytes"],
+          universalReceiverResult
+        );
+
+        const [resultDelegate, resultTypeID] = abiCoder.decode(
+          ["bytes", "bytes"],
+          genericExecutorResult
+        );
+
+        expect(resultDelegate).to.equal(
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("LSP1: asset sent is not registered")
+          )
+        );
+
+        // check that the correct string is emitted in the event
+        await expect(
+          notTokenContract.call(
+            context.universalProfile1.address,
+            0,
+            universalReceiverPayload
+          )
+        )
+          .to.emit(context.universalProfile1, "UniversalReceiver")
+          .withArgs(
+            notTokenContract.address,
+            0,
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            "0x",
+            genericExecutorResult
+          );
+      });
+    });
   });
 
   describe("when testing LSP8-IdentifiableDigitalAsset", () => {
     let lsp8TokenA: LSP8Tester, lsp8TokenB: LSP8Tester, lsp8TokenC: LSP8Tester;
+
     before(async () => {
       lsp8TokenA = await new LSP8Tester__factory(
         context.accounts.random
@@ -1530,9 +1636,76 @@ export const shouldBehaveLikeLSP1Delegate = (
         });
       });
     });
+
+    describe("when a non-LSP8 token contract calls the `universalReceiver(...)` function", () => {
+      let notTokenContract: GenericExecutor;
+
+      before(async () => {
+        notTokenContract = await new GenericExecutor__factory(
+          context.accounts.random
+        ).deploy();
+      });
+
+      it("should not revert and return 'LSP1: asset sent is not registered' when calling with typeId == LSP8Tokens_SenderNotification", async () => {
+        const universalReceiverPayload =
+          context.universalProfile1.interface.encodeFunctionData(
+            "universalReceiver",
+            [LSP1_TYPE_IDS.LSP8Tokens_SenderNotification, "0x"]
+          );
+
+        // check that it does not revert
+        await expect(
+          await notTokenContract.call(
+            context.universalProfile1.address,
+            0,
+            universalReceiverPayload
+          )
+        ).to.not.be.reverted;
+
+        // check that it returns the correct string
+        const universalReceiverResult = await notTokenContract.callStatic.call(
+          context.universalProfile1.address,
+          0,
+          universalReceiverPayload
+        );
+
+        const [genericExecutorResult] = abiCoder.decode(
+          ["bytes"],
+          universalReceiverResult
+        );
+
+        const [resultDelegate, resultTypeID] = abiCoder.decode(
+          ["bytes", "bytes"],
+          genericExecutorResult
+        );
+
+        expect(resultDelegate).to.equal(
+          ethers.utils.hexlify(
+            ethers.utils.toUtf8Bytes("LSP1: asset sent is not registered")
+          )
+        );
+
+        // check that the correct string is emitted in the event
+        await expect(
+          await notTokenContract.call(
+            context.universalProfile1.address,
+            0,
+            universalReceiverPayload
+          )
+        )
+          .to.emit(context.universalProfile1, "UniversalReceiver")
+          .withArgs(
+            notTokenContract.address,
+            0,
+            LSP1_TYPE_IDS.LSP8Tokens_SenderNotification,
+            "0x",
+            genericExecutorResult
+          );
+      });
+    });
   });
 
-  describe.only("when testing LSP9-Vault", () => {
+  describe("when testing LSP9-Vault", () => {
     let lsp9VaultA: LSP9Vault, lsp9VaultB: LSP9Vault, lsp9VaultC: LSP9Vault;
 
     before(async () => {
@@ -1921,7 +2094,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
     });
 
-    describe.only("when a non-LSP9 contract calls the `universalReceiver(...)` with a LSP9 typeId", () => {
+    describe("when a non-LSP9 contract calls the `universalReceiver(...)` with a LSP9 typeId", () => {
       let notVaultContract: GenericExecutor;
 
       before(async () => {
@@ -1983,6 +2156,23 @@ export const shouldBehaveLikeLSP1Delegate = (
               )
             )
           );
+
+          // check that it emits the correct string in the event
+          await expect(
+            notVaultContract.call(
+              context.universalProfile1.address,
+              0,
+              universalReceiverPayload
+            )
+          )
+            .to.emit(context.universalProfile1, "UniversalReceiver")
+            .withArgs(
+              notVaultContract.address,
+              0,
+              testCase.typeIdHex,
+              "0x",
+              genericExecutorResult
+            );
         });
       });
     });
