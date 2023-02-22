@@ -22,7 +22,7 @@ import {
   transferValueTestCases,
   setDataTestCases,
   addPermissionsTestCases,
-  changePermissionsTestCases,
+  editPermissionsTestCases,
   addUniversalReceiverDelegateTestCases,
   changeUniversalReceiverDelegateTestCases,
   // Functions
@@ -303,7 +303,7 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       await generateBatchRelayPayload(
         context.universalProfile,
         context.keyManager,
-        "CHANGEPERMISSIONS",
+        "EDITPERMISSIONS",
         reentrancyContext.batchReentarncyRelayer,
         reentrancyContext.reentrantSigner,
         reentrancyContext.newControllerAddress,
@@ -311,10 +311,10 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       );
     });
 
-    changePermissionsTestCases.NotAuthorised.forEach((testCase) => {
+    editPermissionsTestCases.NotAuthorised.forEach((testCase) => {
       it(`should revert if the reentrant signer has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
-          "CHANGEPERMISSIONS",
+          "EDITPERMISSIONS",
           testCase,
           context,
           reentrancyContext.reentrantSigner.address,
@@ -334,10 +334,10 @@ export const testSingleExecuteToBatchExecuteRelayCall = (
       });
     });
 
-    it("should pass if the reentrant signer has the following permissions: REENTRANCY, CHANGEPERMISSIONS", async () => {
+    it("should pass if the reentrant signer has the following permissions: REENTRANCY, EDITPERMISSIONS", async () => {
       await loadTestCase(
-        "CHANGEPERMISSIONS",
-        changePermissionsTestCases.ValidCase,
+        "EDITPERMISSIONS",
+        editPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantSigner.address,
         reentrancyContext.batchReentarncyRelayer.address

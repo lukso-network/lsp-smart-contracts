@@ -209,7 +209,7 @@ library LSP6Utils {
         returns (string memory errorMessage)
     {
         if (permission == _PERMISSION_CHANGEOWNER) return "TRANSFEROWNERSHIP";
-        if (permission == _PERMISSION_CHANGEPERMISSIONS) return "CHANGEPERMISSIONS";
+        if (permission == _PERMISSION_EDITPERMISSIONS) return "EDITPERMISSIONS";
         if (permission == _PERMISSION_ADDCONTROLLER) return "ADDCONTROLLER";
         if (permission == _PERMISSION_ADDEXTENSIONS) return "ADDEXTENSIONS";
         if (permission == _PERMISSION_CHANGEEXTENSIONS) return "CHANGEEXTENSIONS";
