@@ -1,0 +1,30 @@
+import { ethers, config } from "hardhat";
+import { config as dotenvConfig } from "dotenv";
+import { resolve } from "path";
+
+dotenvConfig({ path: resolve(__dirname, "./.env") });
+
+const wallet = new ethers.Wallet(process.env.CONTRACT_VERIFICATION_PK);
+
+const provider = new ethers.providers.JsonRpcProvider(
+  config.networks.luksoL16["url"]
+);
+
+// the CI deploys all the contracts, so we need to make sure that the deployer has enough balance
+const MINIMUM_DEPLOYER_BALANCE = ethers.utils.parseUnits("1.0", "ether");
+
+async function main() {
+  const deployerBalance = await provider.getBalance(wallet.address);
+
+  if (deployerBalance.lt(MINIMUM_DEPLOYER_BALANCE)) {
+    throw new Error(
+      `❌ Deployer balance is too low. Please fund the deployer with at least ${MINIMUM_DEPLOYER_BALANCE} LYXe`
+    );
+  } else {
+    console.log(
+      `✅ Deployer balance sufficient to deploy + verify contracts. 
+      Balance: ${ethers.utils.formatEther(deployerBalance)} LYXe`
+    );
+  }
+}
+main();
