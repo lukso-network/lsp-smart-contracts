@@ -14,7 +14,9 @@ const provider = new ethers.providers.JsonRpcProvider(
 const MINIMUM_DEPLOYER_BALANCE = ethers.utils.parseUnits("1.0", "ether");
 
 async function main() {
-  const deployerBalance = await provider.getBalance(wallet.address);
+  const deployerBalance = await provider.getBalance(
+    "0xb873C3987112b0043A5C441722097C13F2dd5E78"
+  );
 
   if (deployerBalance.lt(MINIMUM_DEPLOYER_BALANCE)) {
     throw new Error(

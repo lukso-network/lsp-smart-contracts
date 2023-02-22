@@ -26,14 +26,14 @@ do
     esac
 done
 
-if [ ${contract}="" ]
+if [ -z "$contract" ]
   then
-    echo $error_header"error: No contract named specified. Use the option below:\n"
+    echo $error_header"error: No contract name specified. Use the option below:\n"
     echo "    -c: name of the contract to deploy + verify\n"
     exit 1
 fi
 
-if [ ${network}="" ]
+if [ -z "$network" ]
   then
     echo $error_header"error: No network specified. Use the option below:\n"
     echo "    -n: network to deploy + verify the contract on\n"
