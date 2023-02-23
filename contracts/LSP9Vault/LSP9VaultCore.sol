@@ -154,7 +154,7 @@ contract LSP9VaultCore is
     /**
      * @dev Receives and executes a batch of function calls on this contract.
      */
-    function batchCalls(bytes[] calldata data) external returns (bytes[] memory results) {
+    function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i; i < data.length; i = GasLib.uncheckedIncrement(i)) {
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
