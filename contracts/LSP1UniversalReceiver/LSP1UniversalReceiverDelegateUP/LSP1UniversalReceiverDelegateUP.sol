@@ -70,83 +70,92 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         (address keyManager, bool ownerIsKeyManager) = _validateCallerViaKeyManager();
         if (!ownerIsKeyManager) return "LSP1: account owner is not a LSP6KeyManager";
 
-        bytes32 notifierMapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(notifier));
-        bytes memory notifierMapValue = IERC725Y(msg.sender).getData(notifierMapKey);
-
         // if the contract being transferred doesn't support LSP9, do not register it as a received vault
         if (mapPrefix == _LSP10_VAULTS_MAP_KEY_PREFIX) {
-            if (
-                notifier.code.length > 0 &&
-                !notifier.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP9)
-            ) {
-                return "LSP1: not an LSP9Vault ownership transfer";
+            if (notifier.code.length > 0) {
+                if (!notifier.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP9))
+                    return "LSP1: not an LSP9Vault ownership transfer";
             }
-
-            (bytes32[] memory dataKeys, bytes[] memory dataValues) = isReceiving
-                ? LSP10Utils.generateReceivedVaultKeys(msg.sender, notifier, notifierMapKey)
-                : LSP10Utils.generateSentVaultKeys(msg.sender, notifierMapKey, notifierMapValue);
-
-            return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         }
+
+        bytes32 notifierMapKey = LSP2Utils.generateMappingKey(mapPrefix, bytes20(notifier));
+        bytes memory notifierMapValue = IERC725Y(msg.sender).getData(notifierMapKey);
 
         if (isReceiving) {
             // if the map value is already set, then do nothing
             if (bytes12(notifierMapValue) != bytes12(0))
                 return "LSP1: asset received is already registered";
 
-            return _addLSP5ReceivedAsset(notifier, keyManager, notifierMapKey, interfaceID);
+            result = _whenReceiving(typeId, notifier, keyManager, notifierMapKey, interfaceID);
         } else {
             // if there is no map value for the asset/vault to remove, then do nothing
             if (bytes12(notifierMapValue) == bytes12(0))
                 return "LSP1: asset sent is not registered";
 
-            return _removeLSP5ReceivedAsset(notifier, keyManager, notifierMapKey, notifierMapValue);
+            result = _whenSending(typeId, notifier, keyManager, notifierMapKey, notifierMapValue);
         }
     }
 
     // --- Internal functions
 
     /**
-     * @dev Generate the keys/values of the LSP5 Asset received to be set + set it via the Key Manager
+     * @dev To avoid stack too deep error
+     * Generate the keys/values of the asset/vault received to set and set them
+     * on the Key Manager depending on the type of the transfer (asset/vault)
      */
-    function _addLSP5ReceivedAsset(
-        address assetNotifier,
+    function _whenReceiving(
+        bytes32 typeId,
+        address notifier,
         address keyManager,
         bytes32 notifierMapKey,
         bytes4 interfaceID
     ) internal virtual returns (bytes memory result) {
         // if it's a token transfer (LSP7/LSP8)
-        // if the amount sent is 0, then do not update the keys
-        uint256 balance = ILSP7DigitalAsset(assetNotifier).balanceOf(msg.sender);
-        if (balance == 0) return "LSP1: balance not updated";
+        if (typeId != _TYPEID_LSP9_OwnershipTransferred_RecipientNotification) {
+            // if the amount sent is 0, then do not update the keys
+            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
+            if (balance == 0) return "LSP1: balance not updated";
 
-        (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
-            .generateReceivedAssetKeys(msg.sender, assetNotifier, notifierMapKey, interfaceID);
+            (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
+                .generateReceivedAssetKeys(msg.sender, notifier, notifierMapKey, interfaceID);
 
-        result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+            result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+        } else {
+            (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
+                .generateReceivedVaultKeys(msg.sender, notifier, notifierMapKey);
+
+            result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+        }
     }
 
     /**
-     * @dev Generate the keys/values of the LSP5 Asset to be removed + unset it via the Key Manager
+     * @dev To avoid stack too deep error
+     * Generate the keys/values of the asset/vault sent to set and set them
+     * on the Key Manager depending on the type of the transfer (asset/vault)
      */
-    function _removeLSP5ReceivedAsset(
-        address assetNotifier,
+    function _whenSending(
+        bytes32 typeId,
+        address notifier,
         address keyManager,
         bytes32 notifierMapKey,
         bytes memory notifierMapValue
     ) internal virtual returns (bytes memory result) {
         // if it's a token transfer (LSP7/LSP8)
-        // if the amount sent is not the full balance, then do not update the keys
-        uint256 balance = ILSP7DigitalAsset(assetNotifier).balanceOf(msg.sender);
-        if (balance != 0) return "LSP1: full balance is not sent";
+        if (typeId != _TYPEID_LSP9_OwnershipTransferred_SenderNotification) {
+            // if the amount sent is not the full balance, then do not update the keys
+            uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
+            if (balance != 0) return "LSP1: full balance is not sent";
 
-        (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils.generateSentAssetKeys(
-            msg.sender,
-            notifierMapKey,
-            notifierMapValue
-        );
+            (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
+                .generateSentAssetKeys(msg.sender, notifierMapKey, notifierMapValue);
 
-        result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+            result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+        } else {
+            (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
+                .generateSentVaultKeys(msg.sender, notifierMapKey, notifierMapValue);
+
+            result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+        }
     }
 
     /**
