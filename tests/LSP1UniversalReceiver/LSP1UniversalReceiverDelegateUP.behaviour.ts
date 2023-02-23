@@ -949,11 +949,29 @@ export const shouldBehaveLikeLSP1Delegate = (
             ]
           );
 
-        await expect(
-          await context.lsp6KeyManager1
-            .connect(context.accounts.owner1)
-            ["execute(bytes)"](executePayload)
-        ).to.not.be.reverted;
+        const tx = context.lsp6KeyManager1
+          .connect(context.accounts.owner1)
+          ["execute(bytes)"](executePayload);
+
+        const expectedReturnedValues = abiCoder.encode(
+          ["bytes", "bytes"],
+          [
+            ethers.utils.hexlify(
+              ethers.utils.toUtf8Bytes("LSP1: asset sent is not registered")
+            ),
+            "0x",
+          ]
+        );
+
+        await expect(tx)
+          .to.emit(context.universalProfile1, "UniversalReceiver")
+          .withArgs(
+            lsp7Token.address,
+            0,
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            "0x5fbdb2315678afecb367f032d93f642f64180aa33c44cdddb6a900fa2b585dd299e03d12fa4293bc0000000000000000000000000000000000000000000000000000000000000000",
+            expectedReturnedValues
+          );
       });
     });
 
