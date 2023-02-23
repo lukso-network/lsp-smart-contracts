@@ -637,7 +637,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         });
       });
 
-      describe("when caller is an address with permission CHANGEPERMISSION", () => {
+      describe("when caller is an address with permission EDITPERMISSIONS", () => {
         it("should not be allowed to ADD a permission", async () => {
           let newController = ethers.Wallet.createRandom();
 
@@ -2435,7 +2435,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
       });
     });
 
-    describe("when caller has CHANGEPERMISSION", () => {
+    describe("when caller has EDITPERMISSIONS", () => {
       it("should fail when beneficiary had no values set under AddressPermissions:AllowedCalls:...", async () => {
         let newController = ethers.Wallet.createRandom();
 

@@ -417,7 +417,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
       });
 
-      it("should revert if caller doesn't have CHANGEPERMISSION permission", async () => {
+      it("should revert if caller doesn't have EDITPERMISSIONS permission", async () => {
         const key =
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2);
