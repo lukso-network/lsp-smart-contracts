@@ -48,8 +48,8 @@ export async function deployProxy(
 
 export async function setupKeyManager(
   _context: LSP6TestContext,
-  _permissionsKeys: string[],
-  _permissionsValues: string[]
+  _dataKeys: string[],
+  _dataValues: string[]
 ) {
   await _context.universalProfile
     .connect(_context.owner)
@@ -60,9 +60,9 @@ export async function setupKeyManager(
         // when trying to setup the KeyManager
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           _context.owner.address.substring(2),
-        ..._permissionsKeys,
+        ..._dataKeys,
       ],
-      [ALL_PERMISSIONS, ..._permissionsValues]
+      [ALL_PERMISSIONS, ..._dataValues]
     );
 
   await _context.universalProfile
