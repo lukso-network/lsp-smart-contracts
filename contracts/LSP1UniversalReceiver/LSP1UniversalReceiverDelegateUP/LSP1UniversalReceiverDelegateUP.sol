@@ -122,7 +122,7 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         } else {
             (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
-                .generateReceivedVaultKeys(msg.sender, notifier, notifierMapKey, interfaceID);
+                .generateReceivedVaultKeys(msg.sender, notifier, notifierMapKey);
 
             result = LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         }

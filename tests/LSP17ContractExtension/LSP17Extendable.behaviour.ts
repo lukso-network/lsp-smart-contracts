@@ -719,71 +719,128 @@ export const shouldBehaveLikeLSP17 = (
       });
 
       describe("when calling with a payload preprended with 4 bytes of 0", () => {
-        describe("when the payload is `0x00000000`", () => {
-          describe("with sending value", () => {
-            it("should pass and emit ValueReceived value", async () => {
-              const amountSent = 2;
-              await expect(
-                context.accounts[0].sendTransaction({
-                  to: context.contract.address,
-                  data: "0x00000000",
-                  value: amountSent,
-                })
-              )
-                .to.emit(context.contract, "ValueReceived")
-                .withArgs(context.accounts[0].address, amountSent);
+        describe("when no extension is set for bytes4(0)", () => {
+          describe("when the payload is `0x00000000`", () => {
+            describe("with sending value", () => {
+              it("should pass and emit ValueReceived value", async () => {
+                const amountSent = 2;
+                await expect(
+                  context.accounts[0].sendTransaction({
+                    to: context.contract.address,
+                    data: "0x00000000",
+                    value: amountSent,
+                  })
+                )
+                  .to.emit(context.contract, "ValueReceived")
+                  .withArgs(context.accounts[0].address, amountSent);
+              });
+            });
+            describe("without sending value", () => {
+              it("should pass", async () => {
+                await expect(
+                  context.accounts[0].sendTransaction({
+                    to: context.contract.address,
+                    data: "0x00000000",
+                  })
+                ).to.not.be.reverted;
+              });
             });
           });
-          describe("without sending value", () => {
-            it("should pass", async () => {
-              await expect(
-                context.accounts[0].sendTransaction({
-                  to: context.contract.address,
-                  data: "0x00000000",
-                })
-              ).to.not.be.reverted;
+          describe("when the payload is `0x00000000` + some random data ('graffiti')", () => {
+            describe("with sending value", () => {
+              it("should pass and emit ValueReceived value", async () => {
+                const amountSent = 2;
+                const graffiti =
+                  "0x00000000" +
+                  ethers.utils
+                    .hexlify(
+                      ethers.utils.toUtf8Bytes("This is a small tip for you!")
+                    )
+                    .substring(2);
+
+                await expect(
+                  context.accounts[0].sendTransaction({
+                    to: context.contract.address,
+                    data: graffiti,
+                    value: amountSent,
+                  })
+                )
+                  .to.emit(context.contract, "ValueReceived")
+                  .withArgs(context.accounts[0].address, amountSent);
+              });
+            });
+            describe("without sending value", () => {
+              it("should pass", async () => {
+                const graffiti =
+                  "0x00000000" +
+                  ethers.utils
+                    .hexlify(
+                      ethers.utils.toUtf8Bytes(
+                        "Sending a decentralized message"
+                      )
+                    )
+                    .substring(2);
+
+                await expect(
+                  context.accounts[0].sendTransaction({
+                    to: context.contract.address,
+                    data: graffiti,
+                  })
+                ).to.not.be.reverted;
+              });
             });
           });
         });
-        describe("when the payload is `0x00000000` + some random data ('graffiti')", () => {
-          describe("with sending value", () => {
-            it("should pass and emit ValueReceived value", async () => {
-              const amountSent = 2;
-              const graffiti =
-                "0x00000000" +
-                ethers.utils
-                  .hexlify(
-                    ethers.utils.toUtf8Bytes("This is a small tip for you!")
-                  )
-                  .substring(2);
+        describe("when there is an extension set for bytes4(0)", () => {
+          describe("when setting an extension that reverts", () => {
+            let revertFallbackExtension: RevertFallbackExtension;
+            beforeEach(async () => {
+              revertFallbackExtension =
+                await new RevertFallbackExtension__factory(
+                  context.accounts[0]
+                ).deploy();
 
-              await expect(
-                context.accounts[0].sendTransaction({
-                  to: context.contract.address,
-                  data: graffiti,
-                  value: amountSent,
-                })
-              )
-                .to.emit(context.contract, "ValueReceived")
-                .withArgs(context.accounts[0].address, amountSent);
+              const bytes1ZeroPaddedExtensionHandlerKey =
+                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
+                "00000000" +
+                "00000000000000000000000000000000"; // zero padded
+
+              await context.contract
+                .connect(context.deployParams.owner)
+                ["setData(bytes32,bytes)"](
+                  bytes1ZeroPaddedExtensionHandlerKey,
+                  revertFallbackExtension.address
+                );
             });
-          });
-          describe("without sending value", () => {
-            it("should pass", async () => {
-              const graffiti =
-                "0x00000000" +
-                ethers.utils
-                  .hexlify(
-                    ethers.utils.toUtf8Bytes("Sending a decentralized message")
-                  )
-                  .substring(2);
+            describe("when the payload is `0x00000000`", () => {
+              it("should revert", async () => {
+                await expect(
+                  context.accounts[0].sendTransaction({
+                    to: context.contract.address,
+                    data: "0x00000000",
+                  })
+                ).to.be.reverted;
+              });
+            });
+            describe("when the payload is `0x00000000` + some random data ('graffiti')", () => {
+              it("should revert", async () => {
+                const graffiti =
+                  "0x00000000" +
+                  ethers.utils
+                    .hexlify(
+                      ethers.utils.toUtf8Bytes(
+                        "Sending a decentralized message"
+                      )
+                    )
+                    .substring(2);
 
-              await expect(
-                context.accounts[0].sendTransaction({
-                  to: context.contract.address,
-                  data: graffiti,
-                })
-              ).to.not.be.reverted;
+                await expect(
+                  context.accounts[0].sendTransaction({
+                    to: context.contract.address,
+                    data: graffiti,
+                  })
+                ).to.be.reverted;
+              });
             });
           });
         });

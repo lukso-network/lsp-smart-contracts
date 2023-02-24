@@ -18,7 +18,7 @@ import {
   transferValueTestCases,
   setDataTestCases,
   addPermissionsTestCases,
-  changePermissionsTestCases,
+  editPermissionsTestCases,
   addUniversalReceiverDelegateTestCases,
   changeUniversalReceiverDelegateTestCases,
   // Functions
@@ -341,7 +341,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       const executePayload = generateExecutePayload(
         context.keyManager.address,
         reentrancyContext.reentrantContract.address,
-        "CHANGEPERMISSIONS"
+        "EDITPERMISSIONS"
       );
 
       relayCallParams = await generateRelayCall(
@@ -351,10 +351,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       );
     });
 
-    changePermissionsTestCases.NotAuthorised.forEach((testCase) => {
+    editPermissionsTestCases.NotAuthorised.forEach((testCase) => {
       it(`should revert if the reentrant contract has the following permission set: PRESENT - ${testCase.permissionsText}; MISSING - ${testCase.missingPermission};`, async () => {
         await loadTestCase(
-          "CHANGEPERMISSIONS",
+          "EDITPERMISSIONS",
           testCase,
           context,
           reentrancyContext.reentrantContract.address,
@@ -378,10 +378,10 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       });
     });
 
-    it("should pass if the reentrant contract has the following permissions: REENTRANCY, CHANGEPERMISSIONS", async () => {
+    it("should pass if the reentrant contract has the following permissions: REENTRANCY, EDITPERMISSIONS", async () => {
       await loadTestCase(
-        "CHANGEPERMISSIONS",
-        changePermissionsTestCases.ValidCase,
+        "EDITPERMISSIONS",
+        editPermissionsTestCases.ValidCase,
         context,
         reentrancyContext.reentrantContract.address,
         reentrancyContext.reentrantContract.address

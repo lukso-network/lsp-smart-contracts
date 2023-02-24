@@ -766,7 +766,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       describe("when caller is an address with ADD/CHANGE Extensions permission ", () => {
         describe("when adding a ExtensionHandler, AddressPermission and ERC725Y Data Key", () => {
-          it("should revert because of caller don't have CHANGEPERMISSIONS Permission", async () => {
+          it("should revert because of caller don't have EDITPERMISSIONS Permission", async () => {
             const payloadParam = {
               dataKeys: [
                 extensionHandlerKey5,
@@ -794,7 +794,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
                 context.keyManager,
                 "NotAuthorised"
               )
-              .withArgs(canAddAndChangeExtensions.address, "CHANGEPERMISSIONS");
+              .withArgs(canAddAndChangeExtensions.address, "EDITPERMISSIONS");
           });
         });
 
