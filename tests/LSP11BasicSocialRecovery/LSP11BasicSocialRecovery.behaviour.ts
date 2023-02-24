@@ -15,8 +15,8 @@ import {
   INTERFACE_IDS,
 } from "../../constants";
 
-import { ARRAY_LENGTH } from "../utils/helpers";
 import { callPayload } from "../utils/fixtures";
+import { abiCoder } from "../utils/helpers";
 
 export type LSP11TestAccounts = {
   owner: SignerWithAddress;
@@ -267,7 +267,10 @@ export const shouldBehaveLikeLSP11 = (
             txParams.permissionMap,
           ]);
 
-          expect(permissionArrayLength).to.equal(ARRAY_LENGTH.FOUR);
+          // TODO: Change value type set under AddressPermissions[] to `uint128`
+          expect(permissionArrayLength).to.equal(
+            abiCoder.encode(["uint128"], [4])
+          );
           expect(ethers.utils.getAddress(controllerAddress)).to.equal(
             context.accounts.addressASelected.address
           );
@@ -1165,7 +1168,10 @@ export const shouldBehaveLikeLSP11 = (
             txParams.permissionMap,
           ]);
 
-          expect(permissionArrayLength).to.equal(ARRAY_LENGTH.FOUR);
+          // TODO: Change the value type set under `AddressPermissions[]` to `uint128` instead of `uint256`
+          expect(permissionArrayLength).to.equal(
+            abiCoder.encode(["uint128"], [4])
+          );
           expect(ethers.utils.getAddress(controllerAddress)).to.equal(
             context.accounts.addressASelected.address
           );

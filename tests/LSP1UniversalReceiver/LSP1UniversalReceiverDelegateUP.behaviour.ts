@@ -963,6 +963,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               callPayload(context.universalProfile1, lsp8TokenA.address, abi)
             );
         });
+
         it("should register lsp5keys: arrayLength 1, index 0, tokenA address in UP1", async () => {
           const [indexInMap, interfaceId, arrayLength, elementAddress] =
             await getLSP5MapAndArrayKeysValue(

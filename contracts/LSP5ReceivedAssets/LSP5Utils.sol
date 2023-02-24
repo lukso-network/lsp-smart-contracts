@@ -14,19 +14,19 @@ import "../LSP7DigitalAsset/LSP7Constants.sol";
 
 /**
  * @dev reverts when the value stored under the 'LSP5ReceivedAssets[]' data key is not valid.
- *      The value stored under this data key should be exactly 32 bytes long.
+ *      The value stored under this data key should be exactly 16 bytes long.
  *
  *      Only possible valid values are:
- *      - any valid uint256 values
- *          i.e. 0x0000000000000000000000000000000000000000000000000000000000000000 (zero), meaning empty array, no assets received.
- *          i.e. 0x0000000000000000000000000000000000000000000000000000000000000005 (non-zero), meaning 5 array elements, 5 assets received.
+ *      - any valid uint128 values
+ *          i.e. 0x00000000000000000000000000000000 (zero), empty array, no assets received.
+ *          i.e. 0x00000000000000000000000000000005 (non-zero), 5 array elements, 5 assets received.
  *
  *      - 0x (nothing stored under this data key, equivalent to empty array)
  *
- * @param invalidValue the invalid value stored under the LSP5ReceivedAssets[] data key
- * @param invalidValueLength the invalid number of bytes stored under the LSP5ReceivedAssets[] data key (MUST be 32)
+ * @param invalidValueStored the invalid value stored under the LSP5ReceivedAssets[] data key
+ * @param invalidValueLength the invalid number of bytes stored under the LSP5ReceivedAssets[] data key (MUST be exactly 16 bytes long)
  */
-error InvalidLSP5ReceivedAssetsArrayLength(bytes invalidValue, uint256 invalidValueLength);
+error InvalidLSP5ReceivedAssetsArrayLength(bytes invalidValueStored, uint256 invalidValueLength);
 
 /**
  * @dev reverts when the received assets index is superior to uint64
@@ -68,10 +68,10 @@ library LSP5Utils {
         IERC725Y account = IERC725Y(receiver);
         bytes memory encodedArrayLength = getLSP5ReceivedAssetsCount(account);
 
-        // If it's the first asset to receive
+        // If it's the first asset received
         if (encodedArrayLength.length == 0) {
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(uint256(1)));
+            values[0] = bytes.concat(bytes16(uint128(1)));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(_LSP5_RECEIVED_ASSETS_ARRAY_KEY, 0);
             values[1] = bytes.concat(bytes20(asset));
@@ -80,31 +80,29 @@ library LSP5Utils {
             values[2] = bytes.concat(interfaceID, bytes8(0));
 
             // If the storage is already initiated
-        } else if (encodedArrayLength.length == 32) {
-            uint256 oldArrayLength = uint256(bytes32(encodedArrayLength));
+        } else if (encodedArrayLength.length == 16) {
+            uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
 
             if (oldArrayLength + 1 >= type(uint64).max) {
                 revert ReceivedAssetsIndexSuperiorToUint64(oldArrayLength);
             }
 
-            uint128 oldArrayLength128 = uint128(oldArrayLength);
-
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(oldArrayLength + 1));
+            values[0] = bytes.concat(bytes16(oldArrayLength + 1));
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                oldArrayLength128
+                oldArrayLength
             );
             values[1] = bytes.concat(bytes20(asset));
 
             keys[2] = assetMapKey;
             values[2] = bytes.concat(interfaceID, bytes8(uint64(oldArrayLength)));
         } else {
-            revert InvalidLSP5ReceivedAssetsArrayLength(
-                encodedArrayLength,
-                encodedArrayLength.length
-            );
+            revert InvalidLSP5ReceivedAssetsArrayLength({
+                invalidValueStored: encodedArrayLength,
+                invalidValueLength: encodedArrayLength.length
+            });
         }
     }
 
@@ -123,8 +121,8 @@ library LSP5Utils {
         IERC725Y account = IERC725Y(sender);
 
         // Updating the number of the received assets
-        uint256 oldArrayLength = uint256(bytes32(getLSP5ReceivedAssetsCount(account)));
-        uint256 newArrayLength = oldArrayLength - 1;
+        uint128 oldArrayLength = uint128(bytes16(getLSP5ReceivedAssetsCount(account)));
+        uint128 newArrayLength = oldArrayLength - 1;
 
         uint64 index = extractIndexFromMap(assetInterfaceIdAndIndex);
         bytes32 assetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
@@ -143,7 +141,7 @@ library LSP5Utils {
             values = new bytes[](3);
 
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(newArrayLength));
+            values[0] = bytes.concat(bytes16(newArrayLength));
 
             keys[1] = assetInArrayKey;
             values[1] = "";
@@ -166,7 +164,7 @@ library LSP5Utils {
             values = new bytes[](5);
 
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes32(newArrayLength));
+            values[0] = bytes.concat(bytes16(newArrayLength));
 
             keys[1] = assetMapKey;
             values[1] = "";
@@ -175,13 +173,11 @@ library LSP5Utils {
                 revert ReceivedAssetsIndexSuperiorToUint128(newArrayLength);
             }
 
-            uint128 newArrayLength128 = uint128(newArrayLength);
-
             // Generate all data Keys/values of the last element in Array to swap
             // with data Keys/values of the asset to remove
             bytes32 lastAssetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                newArrayLength128
+                newArrayLength
             );
 
             bytes20 lastAssetInArrayAddress = bytes20(account.getData(lastAssetInArrayKey));

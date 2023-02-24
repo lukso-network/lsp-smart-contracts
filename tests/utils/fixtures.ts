@@ -11,7 +11,7 @@ import {
 import { PERMISSIONS, ERC725YDataKeys, ALL_PERMISSIONS } from "../../constants";
 
 // helpers
-import { ARRAY_LENGTH, combinePermissions } from "../utils/helpers";
+import { abiCoder, combinePermissions } from "../utils/helpers";
 
 import { LSP6TestContext, LSP6InternalsTestContext } from "./context";
 
@@ -119,30 +119,29 @@ export async function setupProfileWithKeyManagerWithURD(
   const lsp1universalReceiverDelegateUP =
     await new LSP1UniversalReceiverDelegateUP__factory(EOA).deploy();
 
-  await universalProfile
-    .connect(EOA)
-    ["setData(bytes32[],bytes[])"](
-      [
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000000",
-        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          "00000000000000000000000000000001",
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          EOA.address.substring(2),
-        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          lsp1universalReceiverDelegateUP.address.substr(2),
-        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-      ],
-      [
-        ARRAY_LENGTH.TWO,
-        EOA.address,
-        lsp1universalReceiverDelegateUP.address,
-        ALL_PERMISSIONS,
-        combinePermissions(PERMISSIONS.SUPER_SETDATA, PERMISSIONS.REENTRANCY),
-        lsp1universalReceiverDelegateUP.address,
-      ]
-    );
+  await universalProfile.connect(EOA)["setData(bytes32[],bytes[])"](
+    [
+      ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+      ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+        "00000000000000000000000000000000",
+      ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+        "00000000000000000000000000000001",
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+        EOA.address.substring(2),
+      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+        lsp1universalReceiverDelegateUP.address.substr(2),
+      ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+    ],
+    [
+      // TODO: update to use type `uint128` for the value stored under `AddressPermissions[]`
+      abiCoder.encode(["uint256"], [2]),
+      EOA.address,
+      lsp1universalReceiverDelegateUP.address,
+      ALL_PERMISSIONS,
+      combinePermissions(PERMISSIONS.SUPER_SETDATA, PERMISSIONS.REENTRANCY),
+      lsp1universalReceiverDelegateUP.address,
+    ]
+  );
 
   await universalProfile.connect(EOA).transferOwnership(lsp6KeyManager.address);
 
