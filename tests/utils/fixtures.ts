@@ -11,7 +11,7 @@ import {
 import { PERMISSIONS, ERC725YDataKeys, ALL_PERMISSIONS } from "../../constants";
 
 // helpers
-import { abiCoder, combinePermissions } from "../utils/helpers";
+import { combinePermissions } from "../utils/helpers";
 
 import { LSP6TestContext, LSP6InternalsTestContext } from "./context";
 

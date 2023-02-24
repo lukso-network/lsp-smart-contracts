@@ -16,7 +16,6 @@ import {
 } from "../../constants";
 
 import { callPayload } from "../utils/fixtures";
-import { abiCoder } from "../utils/helpers";
 
 export type LSP11TestAccounts = {
   owner: SignerWithAddress;
