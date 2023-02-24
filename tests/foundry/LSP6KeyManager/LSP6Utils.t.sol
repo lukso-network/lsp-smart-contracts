@@ -299,7 +299,7 @@ contract LSP6UtilsTests is Test {
         bytes32[19] memory normalPermissions = [
             _PERMISSION_CHANGEOWNER,
             _PERMISSION_ADDCONTROLLER,
-            _PERMISSION_CHANGEPERMISSIONS,
+            _PERMISSION_EDITPERMISSIONS,
             _PERMISSION_ADDEXTENSIONS,
             _PERMISSION_CHANGEEXTENSIONS,
             _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,
@@ -343,7 +343,7 @@ contract LSP6UtilsTests is Test {
         bytes32[19] memory normalPermissions = [
             _PERMISSION_CHANGEOWNER,
             _PERMISSION_ADDCONTROLLER,
-            _PERMISSION_CHANGEPERMISSIONS,
+            _PERMISSION_EDITPERMISSIONS,
             _PERMISSION_ADDEXTENSIONS,
             _PERMISSION_CHANGEEXTENSIONS,
             _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,

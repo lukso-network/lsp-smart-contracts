@@ -94,7 +94,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
   let anotherNewOwner: SignerWithAddress;
 
   let addressCanChangeOwner: SignerWithAddress;
-  let addressCanChangePermissions: SignerWithAddress;
+  let addressCanEditPermissions: SignerWithAddress;
   let addressCanAddController: SignerWithAddress;
   let addressCanSetData: SignerWithAddress;
   let addressCanSign: SignerWithAddress;
@@ -106,7 +106,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
     anotherNewOwner = context.accounts[2];
 
     addressCanChangeOwner = context.accounts[1];
-    addressCanChangePermissions = context.accounts[2];
+    addressCanEditPermissions = context.accounts[2];
     addressCanAddController = context.accounts[3];
     addressCanSetData = context.accounts[4];
     addressCanSign = context.accounts[5];
@@ -342,11 +342,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
 
         expect(
           context.keyManager
-            .connect(addressCanChangePermissions)
+            .connect(addressCanEditPermissions)
             ["execute(bytes)"](transferOwnershipPayload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NoPermissionsSet")
-          .withArgs(addressCanChangePermissions.address);
+          .withArgs(addressCanEditPermissions.address);
       });
 
       it("should change the owner of LSP7 contract when using `transferOwnership(..)`", async () => {
@@ -371,14 +371,14 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
       });
     });
 
-    describe("testing CHANGEPERMISSIONS permission", () => {
+    describe("testing EDITPERMISSIONS permission", () => {
       before(async () => {
         await addControllerWithPermission(
           context,
-          addressCanChangePermissions,
+          addressCanEditPermissions,
           ARRAY_LENGTH.THREE,
           "0".repeat(31) + "2",
-          PERMISSIONS.CHANGEPERMISSIONS
+          PERMISSIONS.EDITPERMISSIONS
         );
       });
 
@@ -400,16 +400,16 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            addressCanChangePermissions.address.substring(2),
+            addressCanEditPermissions.address.substring(2),
         ];
         const values = [
           ARRAY_LENGTH.THREE,
           context.owner.address,
           addressCanChangeOwner.address,
-          addressCanChangePermissions.address,
+          addressCanEditPermissions.address,
           ALL_PERMISSIONS,
           PERMISSIONS.CHANGEOWNER,
-          PERMISSIONS.CHANGEPERMISSIONS,
+          PERMISSIONS.EDITPERMISSIONS,
         ];
 
         expect(await context.token["getData(bytes32[])"](keys)).to.deep.equal(
@@ -417,7 +417,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
       });
 
-      it("should revert if caller doesn't have CHANGEPERMISSION permission", async () => {
+      it("should revert if caller doesn't have EDITPERMISSIONS permission", async () => {
         const key =
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
           context.owner.address.substring(2);
@@ -433,7 +433,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCanChangeOwner.address, "CHANGEPERMISSIONS");
+          .withArgs(addressCanChangeOwner.address, "EDITPERMISSIONS");
       });
 
       it("should change ALL_PERMISSIONS to CALL permission of the address", async () => {
@@ -447,7 +447,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
 
         await context.keyManager
-          .connect(addressCanChangePermissions)
+          .connect(addressCanEditPermissions)
           ["execute(bytes)"](payload);
 
         expect(await context.token["getData(bytes32)"](key)).to.equal(value);
@@ -464,7 +464,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
         );
 
         await context.keyManager
-          .connect(addressCanChangePermissions)
+          .connect(addressCanEditPermissions)
           ["execute(bytes)"](payload);
 
         expect(await context.token["getData(bytes32)"](key)).to.equal(value);
@@ -503,7 +503,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            addressCanChangePermissions.address.substring(2),
+            addressCanEditPermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanAddController.address.substring(2),
         ];
@@ -511,11 +511,11 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ARRAY_LENGTH.FOUR,
           context.owner.address,
           addressCanChangeOwner.address,
-          addressCanChangePermissions.address,
+          addressCanEditPermissions.address,
           addressCanAddController.address,
           ALL_PERMISSIONS,
           PERMISSIONS.CHANGEOWNER,
-          PERMISSIONS.CHANGEPERMISSIONS,
+          PERMISSIONS.EDITPERMISSIONS,
           PERMISSIONS.ADDCONTROLLER,
         ];
 
@@ -557,7 +557,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
             ["execute(bytes)"](payload)
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-          .withArgs(addressCanAddController.address, "CHANGEPERMISSIONS");
+          .withArgs(addressCanAddController.address, "EDITPERMISSIONS");
       });
 
       after(async () => {
@@ -621,7 +621,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            addressCanChangePermissions.address.substring(2),
+            addressCanEditPermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanAddController.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -631,12 +631,12 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ARRAY_LENGTH.FIVE,
           context.owner.address,
           addressCanChangeOwner.address,
-          addressCanChangePermissions.address,
+          addressCanEditPermissions.address,
           addressCanAddController.address,
           addressCanSetData.address,
           ALL_PERMISSIONS,
           PERMISSIONS.CHANGEOWNER,
-          PERMISSIONS.CHANGEPERMISSIONS,
+          PERMISSIONS.EDITPERMISSIONS,
           PERMISSIONS.ADDCONTROLLER,
           PERMISSIONS.SETDATA,
         ];
@@ -835,7 +835,7 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanChangeOwner.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-            addressCanChangePermissions.address.substring(2),
+            addressCanEditPermissions.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
             addressCanAddController.address.substring(2),
           ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -847,13 +847,13 @@ describe("When deploying LSP7 with LSP6 as owner", () => {
           ARRAY_LENGTH.SIX,
           context.owner.address,
           addressCanChangeOwner.address,
-          addressCanChangePermissions.address,
+          addressCanEditPermissions.address,
           addressCanAddController.address,
           addressCanSetData.address,
           addressCanSign.address,
           ALL_PERMISSIONS,
           PERMISSIONS.CHANGEOWNER,
-          PERMISSIONS.CHANGEPERMISSIONS,
+          PERMISSIONS.EDITPERMISSIONS,
           PERMISSIONS.ADDCONTROLLER,
           PERMISSIONS.SETDATA,
           PERMISSIONS.SIGN,
