@@ -929,13 +929,21 @@ export const shouldBehaveLikeLSP1Delegate = (
       });
 
       it("should not revert and return 'LSP1: asset sent is not registered' with empty LSP7 token transfer", async () => {
+        const txParams = {
+          from: context.universalProfile1.address,
+          to: context.accounts.random.address,
+          amount: 0,
+          allowedNonLSP1Recipient: true,
+          data: "0x",
+        };
+
         const emptyTokenTransferPayload =
           lsp7Token.interface.encodeFunctionData("transfer", [
-            context.universalProfile1.address,
-            context.accounts.random.address,
-            0,
-            true,
-            "0x",
+            txParams.from,
+            txParams.to,
+            txParams.amount,
+            txParams.allowedNonLSP1Recipient,
+            txParams.data,
           ]);
 
         const executePayload =
@@ -963,20 +971,24 @@ export const shouldBehaveLikeLSP1Delegate = (
           ]
         );
 
-        await expect(tx).to.emit(
-          context.universalProfile1,
-          "UniversalReceiver"
+        // the call to the universalReceiver(...) in LSP7 sends the transfer details as `data` argument
+        // all the params are packed/concatenated together.
+        const expectedReceivedData = ethers.utils.solidityPack(
+          ["address", "address", "uint256", "bytes"],
+          [txParams.from, txParams.to, txParams.amount, txParams.data]
         );
-        // TODO: debug the 4th argument for the receivedData: why is it not empty?
-        // expectedData = 0xa513e6e4b8f2a923d98304ec87f64353c4d5c8533c44cdddb6a900fa2b585dd299e03d12fa4293bc0000000000000000000000000000000000000000000000000000000000000000
 
-        // .withArgs(
-        //   lsp7Token.address,
-        //   0,
-        //   LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
-        //   "0x",
-        //   expectedReturnedValues
-        // );
+        // TODO: debug the 4th argument for the receivedData: why is it not empty?
+        // receivedData = 0xa513e6e4b8f2a923d98304ec87f64353c4d5c8533c44cdddb6a900fa2b585dd299e03d12fa4293bc0000000000000000000000000000000000000000000000000000000000000000
+        await expect(tx)
+          .to.emit(context.universalProfile1, "UniversalReceiver")
+          .withArgs(
+            lsp7Token.address,
+            0,
+            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
+            expectedReceivedData,
+            expectedReturnedValues
+          );
       });
     });
 
