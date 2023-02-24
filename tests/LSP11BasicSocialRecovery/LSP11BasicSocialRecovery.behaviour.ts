@@ -267,9 +267,8 @@ export const shouldBehaveLikeLSP11 = (
             txParams.permissionMap,
           ]);
 
-          // TODO: Change value type set under AddressPermissions[] to `uint128`
           expect(permissionArrayLength).to.equal(
-            abiCoder.encode(["uint128"], [4])
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16)
           );
           expect(ethers.utils.getAddress(controllerAddress)).to.equal(
             context.accounts.addressASelected.address
@@ -1168,9 +1167,8 @@ export const shouldBehaveLikeLSP11 = (
             txParams.permissionMap,
           ]);
 
-          // TODO: Change the value type set under `AddressPermissions[]` to `uint128` instead of `uint256`
           expect(permissionArrayLength).to.equal(
-            abiCoder.encode(["uint128"], [4])
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16)
           );
           expect(ethers.utils.getAddress(controllerAddress)).to.equal(
             context.accounts.addressASelected.address

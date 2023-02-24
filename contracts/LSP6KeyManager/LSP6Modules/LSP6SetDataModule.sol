@@ -238,10 +238,10 @@ abstract contract LSP6SetDataModule {
 
         // AddressPermissions[] -> array length
         if (inputDataKey == _LSP6KEY_ADDRESSPERMISSIONS_ARRAY) {
-            uint256 newLength = uint256(bytes32(inputDataValue));
+            uint128 newLength = uint128(bytes16(inputDataValue));
 
             return
-                newLength > uint256(bytes32(currentValue))
+                newLength > uint128(bytes16(currentValue))
                     ? _PERMISSION_ADDCONTROLLER
                     : _PERMISSION_EDITPERMISSIONS;
         }

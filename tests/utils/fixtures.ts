@@ -119,29 +119,30 @@ export async function setupProfileWithKeyManagerWithURD(
   const lsp1universalReceiverDelegateUP =
     await new LSP1UniversalReceiverDelegateUP__factory(EOA).deploy();
 
-  await universalProfile.connect(EOA)["setData(bytes32[],bytes[])"](
-    [
-      ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-      ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-        "00000000000000000000000000000000",
-      ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-        "00000000000000000000000000000001",
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        EOA.address.substring(2),
-      ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-        lsp1universalReceiverDelegateUP.address.substr(2),
-      ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-    ],
-    [
-      // TODO: update to use type `uint128` for the value stored under `AddressPermissions[]`
-      abiCoder.encode(["uint256"], [2]),
-      EOA.address,
-      lsp1universalReceiverDelegateUP.address,
-      ALL_PERMISSIONS,
-      combinePermissions(PERMISSIONS.SUPER_SETDATA, PERMISSIONS.REENTRANCY),
-      lsp1universalReceiverDelegateUP.address,
-    ]
-  );
+  await universalProfile
+    .connect(EOA)
+    ["setData(bytes32[],bytes[])"](
+      [
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+          "00000000000000000000000000000000",
+        ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
+          "00000000000000000000000000000001",
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          EOA.address.substring(2),
+        ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
+          lsp1universalReceiverDelegateUP.address.substring(2),
+        ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
+      ],
+      [
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(2), 16),
+        EOA.address,
+        lsp1universalReceiverDelegateUP.address,
+        ALL_PERMISSIONS,
+        combinePermissions(PERMISSIONS.SUPER_SETDATA, PERMISSIONS.REENTRANCY),
+        lsp1universalReceiverDelegateUP.address,
+      ]
+    );
 
   await universalProfile.connect(EOA).transferOwnership(lsp6KeyManager.address);
 
@@ -179,7 +180,7 @@ export async function grantPermissionViaKeyManager(
   const newPermissionArrayLength = permissionArrayLength + 1;
   const newRawPermissionArrayLength = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(newPermissionArrayLength),
-    32
+    16
   );
 
   const payload = universalProfile.interface.encodeFunctionData(
@@ -188,9 +189,9 @@ export async function grantPermissionViaKeyManager(
       [
         ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
         ERC725YDataKeys.LSP6["AddressPermissions[]"].index +
-          rawPermissionArrayLength.substring(34, 66),
+          rawPermissionArrayLength.substring(2),
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
-          addressToGrant.substr(2),
+          addressToGrant.substring(2),
       ],
       [newRawPermissionArrayLength, addressToGrant, permissions],
     ]
@@ -222,11 +223,11 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
   const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
   const rawIndexInArray = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(indexInNumber),
-    32
+    16
   );
   const elementInArrayKey =
     ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
-    rawIndexInArray.substr(34);
+    rawIndexInArray.substring(2);
   let arrayKey = ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length;
   let [arrayLength, elementAddress] = await account["getData(bytes32[])"]([
     arrayKey,
