@@ -86,5 +86,8 @@ jobs:
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Verify Deployer Balance
+        run: npx ts-node ./scripts/ci/check-deployer-balance.ts
+
       - name: Deploy + Verify ${{ matrix.contracts }} on L16
         run: sh ./scripts/ci/deploy-verify.sh -n luksoL16 -c ${{ matrix.contracts }}

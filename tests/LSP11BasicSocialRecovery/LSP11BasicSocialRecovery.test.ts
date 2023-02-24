@@ -47,7 +47,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
 
       const lsp11Permissions = combinePermissions(
         PERMISSIONS.ADDCONTROLLER,
-        PERMISSIONS.CHANGEPERMISSIONS
+        PERMISSIONS.EDITPERMISSIONS
       );
 
       await grantPermissionViaKeyManager(
@@ -122,7 +122,7 @@ describe("LSP11BasicSocialRecovery contract", () => {
 
       const lsp11Permissions = combinePermissions(
         PERMISSIONS.ADDCONTROLLER,
-        PERMISSIONS.CHANGEPERMISSIONS
+        PERMISSIONS.EDITPERMISSIONS
       );
 
       await grantPermissionViaKeyManager(

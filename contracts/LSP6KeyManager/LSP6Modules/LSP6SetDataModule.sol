@@ -19,7 +19,7 @@ import {
     _PERMISSION_SETDATA,
     _PERMISSION_SUPER_SETDATA,
     _PERMISSION_ADDCONTROLLER,
-    _PERMISSION_CHANGEPERMISSIONS,
+    _PERMISSION_EDITPERMISSIONS,
     _PERMISSION_ADDEXTENSIONS,
     _PERMISSION_CHANGEEXTENSIONS,
     _PERMISSION_ADDUNIVERSALRECEIVERDELEGATE,
@@ -243,7 +243,7 @@ abstract contract LSP6SetDataModule {
             return
                 newLength > uint256(bytes32(currentValue))
                     ? _PERMISSION_ADDCONTROLLER
-                    : _PERMISSION_CHANGEPERMISSIONS;
+                    : _PERMISSION_EDITPERMISSIONS;
         }
 
         // AddressPermissions[index] -> array index
@@ -253,7 +253,7 @@ abstract contract LSP6SetDataModule {
             revert AddressPermissionArrayIndexValueNotAnAddress(inputDataKey, inputDataValue);
         }
 
-        return currentValue.length == 0 ? _PERMISSION_ADDCONTROLLER : _PERMISSION_CHANGEPERMISSIONS;
+        return currentValue.length == 0 ? _PERMISSION_ADDCONTROLLER : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -271,7 +271,7 @@ abstract contract LSP6SetDataModule {
             // if there are already some permissions set under the data key, we are trying to CHANGE the permissions of a controller.
             bytes32(ERC725Y(controlledContract).getData(inputPermissionDataKey)) == bytes32(0)
                 ? _PERMISSION_ADDCONTROLLER
-                : _PERMISSION_CHANGEPERMISSIONS;
+                : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -298,7 +298,7 @@ abstract contract LSP6SetDataModule {
         return
             ERC725Y(controlledContract).getData(dataKey).length == 0
                 ? _PERMISSION_ADDCONTROLLER
-                : _PERMISSION_CHANGEPERMISSIONS;
+                : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
@@ -325,7 +325,7 @@ abstract contract LSP6SetDataModule {
         return
             ERC725Y(controlledContract).getData(dataKey).length == 0
                 ? _PERMISSION_ADDCONTROLLER
-                : _PERMISSION_CHANGEPERMISSIONS;
+                : _PERMISSION_EDITPERMISSIONS;
     }
 
     /**
