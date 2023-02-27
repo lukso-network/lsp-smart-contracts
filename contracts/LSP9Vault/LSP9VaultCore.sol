@@ -212,6 +212,33 @@ contract LSP9VaultCore is
     }
 
     /**
+     * @dev Receives and executes a batch of function calls on this contract.
+     */
+    function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i; i < data.length; i = GasLib.uncheckedIncrement(i)) {
+            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+
+            if (!success) {
+                // Look for revert reason and bubble it up if present
+                if (result.length > 0) {
+                    // The easiest way to bubble the revert reason is using memory via assembly
+                    // solhint-disable no-inline-assembly
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert("LSP9: batchCalls reverted");
+                }
+            }
+
+            results[i] = result;
+        }
+    }
+
+    /**
      * @inheritdoc IERC725X
      * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3
      * @dev Executes any other smart contract.
