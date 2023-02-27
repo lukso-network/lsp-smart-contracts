@@ -616,8 +616,7 @@ describe("⛽📊 Gas Benchmark", () => {
         encodeCompactBytesArray(allowedERC725YDataKeys),
         combinePermissions(PERMISSIONS.SETDATA, PERMISSIONS.ADDCONTROLLER),
         encodeCompactBytesArray(allowedERC725YDataKeys),
-        //   ethers.utils.hexZeroPad("0x03", 32),
-        "0x0000000000000000000000000000000000000000000000000000000000000003",
+        ethers.utils.hexZeroPad(ethers.BigNumber.from(3).toHexString(), 16),
         context.owner.address,
         controllerCanSetData.address,
         controllerCanSetDataAndAddController.address,
@@ -671,7 +670,7 @@ describe("⛽📊 Gas Benchmark", () => {
 
         // prettier-ignore
         const dataValues = [
-          ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).add(1).toHexString(), 32),
+          ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).add(1).toHexString(), 16),
           newController.address,
           combinePermissions(PERMISSIONS.SETDATA),
         ];
@@ -803,7 +802,7 @@ describe("⛽📊 Gas Benchmark", () => {
 
         // prettier-ignore
         const dataValues = [
-          ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).sub(1).toHexString(), 32),
+          ethers.utils.hexZeroPad(ethers.BigNumber.from(AddressPermissionsArrayLength).sub(1).toHexString(), 16),
           "0x",
           "0x",
         ];

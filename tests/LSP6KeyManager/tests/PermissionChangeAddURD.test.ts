@@ -140,7 +140,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       ];
 
       permissionArrayValues = [
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
         context.owner.address,
         canAddAndChangeUniversalReceiverDelegate.address,
         canOnlyAddUniversalReceiverDelegate.address,
@@ -708,7 +708,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             ],
             dataValues: [
               universalReceiverDelegateA,
-              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
               "0xaabbccdd",
             ],
           };
@@ -738,7 +738,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             ],
             dataValues: [
               universalReceiverDelegateB,
-              ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 32),
+              ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 16),
               "0xaabb",
             ],
           };
@@ -768,7 +768,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             ],
             dataValues: [
               "0x",
-              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
               "0x",
             ],
           };
@@ -801,7 +801,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               ],
               dataValues: [
                 universalReceiverDelegateA,
-                ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+                ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
                 "0xaabbccdd",
               ],
             };
