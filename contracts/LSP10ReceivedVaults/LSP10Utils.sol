@@ -91,7 +91,7 @@ library LSP10Utils {
 
             keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
                 _LSP10_VAULTS_ARRAY_KEY,
-                uint128(oldArrayLength)
+                oldArrayLength
             );
             values[1] = bytes.concat(bytes20(vault));
 
@@ -126,7 +126,7 @@ library LSP10Utils {
             revert VaultIndexSuperiorToUint128(oldArrayLength);
         }
 
-        uint128 newArrayLength = uint128(oldArrayLength) - 1;
+        uint128 newArrayLength = oldArrayLength - 1;
 
         uint64 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
         bytes32 vaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
