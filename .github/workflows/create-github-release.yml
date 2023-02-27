@@ -32,6 +32,8 @@ jobs:
           git tag -a ${{ env.APP_VERSION }} -m "Release Version ${{ env.APP_VERSION }}"
           git push --set-upstream origin develop tag ${{ env.APP_VERSION }}
 
+      # https://app.clickup.com/t/862j8da4t
+      #
       # - name: Download Android artifact
       #   uses: dawidd6/action-download-artifact@v2
       #   with:
