@@ -15,6 +15,8 @@ import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {IERC223} from "./Tokens/IERC223.sol";
 
 // LSPs interfaces
+
+import {ILSP0ERC725Account} from "../LSP0ERC725Account/ILSP0ERC725Account.sol";
 import {ILSP1UniversalReceiver as ILSP1} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
 
 import {ILSP6KeyManager as ILSP6} from "../LSP6KeyManager/ILSP6KeyManager.sol";
@@ -22,6 +24,8 @@ import {ILSP7DigitalAsset as ILSP7} from "../LSP7DigitalAsset/ILSP7DigitalAsset.
 import {
     ILSP8IdentifiableDigitalAsset as ILSP8
 } from "../LSP8IdentifiableDigitalAsset/ILSP8IdentifiableDigitalAsset.sol";
+
+import {ILSP9Vault} from "../LSP9Vault/ILSP9Vault.sol";
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 
@@ -54,6 +58,7 @@ contract CalculateLSPInterfaces {
     function calculateInterfaceLSP0() public pure returns (bytes4) {
         // prettier-ignore
         bytes4 interfaceId =
+            ILSP0ERC725Account.batchCalls.selector ^
             type(IERC725Y).interfaceId ^
             type(IERC725X).interfaceId ^
             type(IERC1271).interfaceId ^
@@ -112,6 +117,7 @@ contract CalculateLSPInterfaces {
     function calculateInterfaceLSP9() public pure returns (bytes4) {
         // prettier-ignore
         bytes4 interfaceId =
+            ILSP9Vault.batchCalls.selector ^
             type(IERC725X).interfaceId ^
             type(IERC725Y).interfaceId ^
             type(ILSP1).interfaceId ^
