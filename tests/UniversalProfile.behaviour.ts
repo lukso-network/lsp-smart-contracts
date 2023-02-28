@@ -410,6 +410,162 @@ export const shouldBehaveLikeLSP3 = (
       });
     });
   });
+
+  describe("when using batchCalls function", () => {
+    describe("when non-owner is calling", () => {
+      it("shoud revert", async () => {
+        let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+        let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+        let setDataPayload =
+          context.universalProfile.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [key, value]
+          );
+
+        await expect(
+          context.universalProfile
+            .connect(context.accounts[4])
+            .batchCalls([setDataPayload])
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+
+    describe("when the owner is calling", () => {
+      describe("when executing one function", () => {
+        describe("setData", () => {
+          it("should pass", async () => {
+            let key = ethers.utils.keccak256(
+              ethers.utils.toUtf8Bytes("My Key")
+            );
+            let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+            let setDataPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
+
+            await context.universalProfile
+              .connect(context.deployParams.owner)
+              .batchCalls([setDataPayload]);
+
+            const result = await context.universalProfile["getData(bytes32)"](
+              key
+            );
+            expect(result).to.equal(value);
+          });
+        });
+
+        describe("execute", () => {
+          it("should pass", async () => {
+            let amount = 20;
+            let executePayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [0, context.accounts[4].address, amount, "0x"]
+              );
+
+            await expect(() =>
+              context.universalProfile
+                .connect(context.deployParams.owner)
+                .batchCalls([executePayload])
+            ).to.changeEtherBalances(
+              [context.universalProfile.address, context.accounts[4].address],
+              [`-${amount}`, amount]
+            );
+          });
+        });
+      });
+
+      describe("when executing several functions", () => {
+        describe("When transfering lyx, setting data, transferring ownership", () => {
+          it("should pass", async () => {
+            let amount = 20;
+            let executePayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [0, context.accounts[5].address, amount, "0x"]
+              );
+
+            let key = ethers.utils.keccak256(
+              ethers.utils.toUtf8Bytes("A new key")
+            );
+            let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+
+            let setDataPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
+
+            let transferOwnershipPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "transferOwnership",
+                [context.accounts[8].address]
+              );
+
+            expect(
+              await context.universalProfile.callStatic.pendingOwner()
+            ).to.equal(ethers.constants.AddressZero);
+
+            await expect(() =>
+              context.universalProfile
+                .connect(context.deployParams.owner)
+                .batchCalls([
+                  executePayload,
+                  setDataPayload,
+                  transferOwnershipPayload,
+                ])
+            ).to.changeEtherBalances(
+              [context.universalProfile.address, context.accounts[5].address],
+              [`-${amount}`, amount]
+            );
+
+            const result = await context.universalProfile["getData(bytes32)"](
+              key
+            );
+            expect(result).to.equal(value);
+
+            expect(
+              await context.universalProfile.callStatic.pendingOwner()
+            ).to.equal(context.accounts[8].address);
+          });
+        });
+
+        describe("When setting data and transferring value in staticcall operation", () => {
+          it("should revert", async () => {
+            let amount = 100;
+            let executePayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "execute(uint256,address,uint256,bytes)",
+                [3, context.accounts[5].address, amount, "0x"]
+              );
+
+            let key = ethers.utils.keccak256(
+              ethers.utils.toUtf8Bytes("Another key")
+            );
+            let value = ethers.utils.hexlify(ethers.utils.randomBytes(10));
+
+            let setDataPayload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
+
+            await expect(
+              context.universalProfile
+                .connect(context.deployParams.owner)
+                .batchCalls([setDataPayload, executePayload])
+            ).to.be.revertedWithCustomError(
+              context.universalProfile,
+              "ERC725X_MsgValueDisallowedInStaticCall"
+            );
+          });
+        });
+      });
+    });
+  });
 };
 
 export const shouldInitializeLikeLSP3 = (
