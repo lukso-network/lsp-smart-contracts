@@ -181,15 +181,15 @@ library LSP6Utils {
         keys = new bytes32[](3);
         values = new bytes[](3);
 
-        uint256 arrayLength = uint256(bytes32(_account.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY)));
-        uint256 newArrayLength = arrayLength + 1;
+        uint128 arrayLength = uint128(bytes16(_account.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY)));
+        uint128 newArrayLength = arrayLength + 1;
 
         keys[0] = _LSP6KEY_ADDRESSPERMISSIONS_ARRAY;
         values[0] = abi.encodePacked(newArrayLength);
 
         keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
-            uint128(arrayLength)
+            arrayLength
         );
         values[1] = abi.encodePacked(_address);
 

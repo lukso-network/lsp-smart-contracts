@@ -141,7 +141,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       ];
 
       permissionArrayValues = [
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
         context.owner.address,
         canAddAndChangeExtensions.address,
         canOnlyAddExtensions.address,
@@ -682,7 +682,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ],
             dataValues: [
               extensionA,
-              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
               "0xaabbccdd",
             ],
           };
@@ -742,7 +742,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             ],
             dataValues: [
               "0x",
-              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+              ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
               "0x",
             ],
           };
@@ -775,7 +775,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               ],
               dataValues: [
                 extensionA,
-                ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+                ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 16),
                 "0xaabbccdd",
               ],
             };

@@ -58,17 +58,17 @@ contract SetDataUnrestrictedController is UniversalProfileTestsHelper {
         bytes32[] memory keys = new bytes32[](3);
         bytes[] memory values = new bytes[](3);
 
-        uint256 arrayLength = uint256(
-            bytes32(mainUniversalProfile.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY))
+        uint128 arrayLength = uint128(
+            bytes16(mainUniversalProfile.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY))
         );
-        uint256 newArrayLength = arrayLength + 1;
+        uint128 newArrayLength = arrayLength + 1;
 
         keys[0] = _LSP6KEY_ADDRESSPERMISSIONS_ARRAY;
         values[0] = abi.encodePacked(newArrayLength);
 
         keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
-            uint128(arrayLength)
+            arrayLength
         );
         values[1] = abi.encodePacked(permissionsReceiver);
 

@@ -89,7 +89,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
       ];
 
       permissionArrayValues = [
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(6), 32),
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(6), 16),
         context.owner.address,
         canOnlyAddController.address,
         canOnlyEditPermissions.address,
@@ -150,13 +150,26 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         describe("when editing `AddressPermissions[]` array length", () => {
           it("should be allowed to increment the length", async () => {
-            let key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
-            let value = ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 32);
+            const key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
+            const currentLength = await context.universalProfile[
+              "getData(bytes32)"
+            ](key);
+
+            const newLength = ethers.BigNumber.from(currentLength)
+              .add(1)
+              .toNumber();
+
+            const value = ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newLength),
+              16
             );
+
+            const payload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
 
             await context.keyManager
               .connect(context.owner)
@@ -169,12 +182,25 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           it("should be allowed to decrement the length", async () => {
             let key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
-            let value = ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 32);
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
+            let currentLength = await context.universalProfile[
+              "getData(bytes32)"
+            ](key);
+
+            const newLength = ethers.BigNumber.from(currentLength)
+              .sub(1)
+              .toNumber();
+
+            const value = ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newLength),
+              16
             );
+
+            const payload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
 
             await context.keyManager
               .connect(context.owner)
@@ -438,13 +464,26 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         describe("when editing `AddressPermissions[]` array length", () => {
           it("should be allowed to increment the length", async () => {
-            let key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
-            let value = ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 32);
+            const key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
+            const currentLength = await context.universalProfile[
+              "getData(bytes32)"
+            ](key);
+
+            const newLength = ethers.BigNumber.from(currentLength)
+              .add(1)
+              .toNumber();
+
+            const value = ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newLength),
+              16
             );
+
+            const payload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
 
             await context.keyManager
               .connect(canOnlyAddController)
@@ -456,8 +495,20 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           });
 
           it("should not be allowed to decrement the length", async () => {
-            let key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
-            let value = ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 32);
+            const key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
+
+            const currentLength = await context.universalProfile[
+              "getData(bytes32)"
+            ](key);
+
+            const newLength = ethers.BigNumber.from(currentLength)
+              .sub(1)
+              .toNumber();
+
+            let value = ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newLength),
+              16
+            );
 
             let payload = context.universalProfile.interface.encodeFunctionData(
               "setData(bytes32,bytes)",
@@ -704,8 +755,20 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         describe("when editing `AddressPermissions[]` array length", () => {
           it("should not be allowed to increment the 'AddressPermissions[]' key (length)", async () => {
-            let key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
-            let value = ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 32);
+            const key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
+
+            const currentLength = await context.universalProfile[
+              "getData(bytes32)"
+            ](key);
+
+            const newLength = ethers.BigNumber.from(currentLength)
+              .add(1)
+              .toNumber();
+
+            let value = ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newLength),
+              16
+            );
 
             let payload = context.universalProfile.interface.encodeFunctionData(
               "setData(bytes32,bytes)",
@@ -725,8 +788,20 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           });
 
           it("should be allowed to decrement the 'AddressPermissions[]' key (length)", async () => {
-            let key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
-            let value = ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 32);
+            const key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
+
+            const currentLength = await context.universalProfile[
+              "getData(bytes32)"
+            ](key);
+
+            const newLength = ethers.BigNumber.from(currentLength)
+              .sub(1)
+              .toNumber();
+
+            const value = ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newLength),
+              32
+            );
 
             let payload = context.universalProfile.interface.encodeFunctionData(
               "setData(bytes32,bytes)",
@@ -966,13 +1041,26 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
         describe("when editing `AddressPermissions[]` array length", () => {
           it("should not be allowed to increment the length", async () => {
-            let key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
-            let value = ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 32);
+            const key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
 
-            let payload = context.universalProfile.interface.encodeFunctionData(
-              "setData(bytes32,bytes)",
-              [key, value]
+            const currentLength = await context.universalProfile[
+              "getData(bytes32)"
+            ](key);
+
+            const newLength = ethers.BigNumber.from(currentLength)
+              .add(1)
+              .toNumber();
+
+            const value = ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newLength),
+              16
             );
+
+            const payload =
+              context.universalProfile.interface.encodeFunctionData(
+                "setData(bytes32,bytes)",
+                [key, value]
+              );
 
             await expect(
               context.keyManager
@@ -988,7 +1076,19 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
 
           it("should not be allowed to decrement the length", async () => {
             let key = ERC725YDataKeys.LSP6["AddressPermissions[]"].length;
-            let value = ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 32);
+
+            const currentLength = await context.universalProfile[
+              "getData(bytes32)"
+            ](key);
+
+            const newLength = ethers.BigNumber.from(currentLength)
+              .sub(1)
+              .toNumber();
+
+            let value = ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newLength),
+              16
+            );
 
             let payload = context.universalProfile.interface.encodeFunctionData(
               "setData(bytes32,bytes)",
@@ -3044,7 +3144,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         PERMISSIONS.TRANSFERVALUE,
         PERMISSIONS.TRANSFERVALUE,
         // AddressPermissions[].length
-        ethers.utils.hexZeroPad(ethers.utils.hexlify(6), 32),
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(5), 16),
       ];
 
       await setupKeyManager(context, permissionKeys, permissionValues);
@@ -3191,6 +3291,16 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         });
 
         it("(should pass): 2 x allowed data keys + add 2 x new controllers + increment AddressPermissions[].length by +2", async () => {
+          const currentPermissionsArrayLength = await context.universalProfile[
+            "getData(bytes32)"
+          ](ERC725YDataKeys.LSP6["AddressPermissions[]"].length);
+
+          const newPermissionsArrayLength = ethers.BigNumber.from(
+            currentPermissionsArrayLength
+          )
+            .add(1)
+            .toNumber();
+
           let newControllerKeyOne = ethers.Wallet.createRandom();
           let newControllerKeyTwo = ethers.Wallet.createRandom();
 
@@ -3209,7 +3319,10 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
             PERMISSIONS.SETDATA,
             PERMISSIONS.SETDATA,
-            ethers.utils.hexZeroPad(ethers.utils.hexlify(8), 32),
+            ethers.utils.hexZeroPad(
+              ethers.utils.hexlify(newPermissionsArrayLength),
+              16
+            ),
           ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -3245,7 +3358,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
             PERMISSIONS.SETDATA,
             PERMISSIONS.SETDATA,
-            ethers.utils.hexZeroPad(ethers.utils.hexlify(5), 32),
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(5), 16),
           ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -3392,7 +3505,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
             "0x0000000000000000000000000000000000000000000000000000000000000000",
             "0x0000000000000000000000000000000000000000000000000000000000000000",
-            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 32),
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(4), 16),
           ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
@@ -3475,6 +3588,14 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
         });
 
         it("(should fail): 2 x allowed data keys + increment AddressPermissions[].length by +1", async () => {
+          const currentArrayLength = await context.universalProfile[
+            "getData(bytes32)"
+          ](ERC725YDataKeys.LSP6["AddressPermissions[]"].length);
+
+          const newArrayLength = ethers.BigNumber.from(currentArrayLength)
+            .add(1)
+            .toNumber();
+
           let keys = [
             allowedERC725YDataKeys[0],
             allowedERC725YDataKeys[1],
@@ -3484,7 +3605,7 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
           let values = [
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My First Value")),
             ethers.utils.hexlify(ethers.utils.toUtf8Bytes("My Second Value")),
-            ethers.utils.hexZeroPad(ethers.utils.hexlify(7), 32),
+            ethers.utils.hexZeroPad(ethers.utils.hexlify(newArrayLength), 16),
           ];
 
           let payload = context.universalProfile.interface.encodeFunctionData(
