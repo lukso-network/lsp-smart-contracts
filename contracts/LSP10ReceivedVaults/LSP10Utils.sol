@@ -118,7 +118,7 @@ library LSP10Utils {
         bytes memory vaultInterfaceIdAndIndex
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         IERC725Y account = IERC725Y(sender);
-        bytes memory lsp10VaultsCountValue = account.getData(_LSP10_VAULTS_ARRAY_KEY);
+        bytes memory lsp10VaultsCountValue = getLSP10ReceivedVaultsCount(account);
 
         if (lsp10VaultsCountValue.length != 16) {
             revert InvalidLSP10ReceivedVaultsArrayLength({

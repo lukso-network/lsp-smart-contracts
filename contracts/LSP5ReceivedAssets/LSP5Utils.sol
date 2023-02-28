@@ -119,9 +119,17 @@ library LSP5Utils {
         bytes memory assetInterfaceIdAndIndex
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         IERC725Y account = IERC725Y(sender);
+        bytes memory lsp5ReceivedAssetsCountValue = getLSP5ReceivedAssetsCount(account);
+
+        if (lsp5ReceivedAssetsCountValue.length != 16) {
+            revert InvalidLSP5ReceivedAssetsArrayLength({
+                invalidValueStored: lsp5ReceivedAssetsCountValue,
+                invalidValueLength: lsp5ReceivedAssetsCountValue.length
+            });
+        }
 
         // Updating the number of the received assets
-        uint128 oldArrayLength = uint128(bytes16(getLSP5ReceivedAssetsCount(account)));
+        uint128 oldArrayLength = uint128(bytes16(lsp5ReceivedAssetsCountValue));
         uint128 newArrayLength = oldArrayLength - 1;
 
         uint64 index = extractIndexFromMap(assetInterfaceIdAndIndex);
