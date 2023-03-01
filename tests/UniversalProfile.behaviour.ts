@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
@@ -34,6 +34,241 @@ export const shouldBehaveLikeLSP3 = (
 
   before(async () => {
     context = await buildContext(100);
+  });
+
+  describe("when testing lsp20 integration", () => {
+    describe("when owner is an EOA", () => {
+      describe("setData", () => {
+        const dataKey = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("RandomKey1")
+        );
+        const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+        it("should pass when owner calls", async () => {
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            ["setData(bytes32,bytes)"](dataKey, dataValue);
+
+          expect(
+            await context.universalProfile["getData(bytes32)"](dataKey)
+          ).to.equal(dataValue);
+        });
+
+        it("should revert when non-owner calls", async () => {
+          await expect(
+            context.universalProfile
+              .connect(context.accounts[1])
+              ["setData(bytes32,bytes)"](dataKey, dataValue)
+          )
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs("0x");
+        });
+      });
+      describe("setData array", () => {
+        const dataKey = ethers.utils.keccak256(
+          ethers.utils.toUtf8Bytes("RandomKey2")
+        );
+        const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+        it("should pass when owner calls", async () => {
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            ["setData(bytes32[],bytes[])"]([dataKey], [dataValue]);
+
+          expect(
+            await context.universalProfile["getData(bytes32[])"]([dataKey])
+          ).to.deep.equal([dataValue]);
+        });
+
+        it("should revert when non-owner calls", async () => {
+          await expect(
+            context.universalProfile
+              .connect(context.accounts[1])
+              ["setData(bytes32[],bytes[])"]([dataKey], [dataValue])
+          )
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs("0x");
+        });
+      });
+
+      describe("execute", () => {
+        it("should pass when owner calls", async () => {
+          const executeParams = {
+            operation: OPERATION_TYPES.CALL,
+            address: context.accounts[1].address,
+            value: 0,
+            data: "0x",
+          };
+
+          await expect(
+            context.universalProfile
+              .connect(context.deployParams.owner)
+              ["execute(uint256,address,uint256,bytes)"](
+                executeParams.operation,
+                executeParams.address,
+                executeParams.value,
+                executeParams.data
+              )
+          )
+            .to.emit(context.universalProfile, "Executed")
+            .withArgs(
+              OPERATION_TYPES.CALL,
+              context.accounts[1].address,
+              0,
+              "0x00000000"
+            );
+        });
+
+        it("should revert when non-owner calls", async () => {
+          const executeParams = {
+            operation: OPERATION_TYPES.CALL,
+            address: context.accounts[1].address,
+            value: 0,
+            data: "0x",
+          };
+
+          await expect(
+            context.universalProfile
+              .connect(context.accounts[1])
+              ["execute(uint256,address,uint256,bytes)"](
+                executeParams.operation,
+                executeParams.address,
+                executeParams.value,
+                executeParams.data
+              )
+          )
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs("0x");
+        });
+      });
+      describe("execute Array", () => {
+        it("should pass when the owner is calling", async () => {
+          const operationsType = [OPERATION_TYPES.CALL];
+          const recipients = [context.accounts[1].address];
+          const values = [0];
+          const datas = ["0x"];
+
+          const tx = await context.universalProfile
+            .connect(context.deployParams.owner)
+            ["execute(uint256[],address[],uint256[],bytes[])"](
+              operationsType,
+              recipients,
+              values,
+              datas
+            );
+
+          await expect(tx)
+            .to.emit(context.universalProfile, "Executed")
+            .withArgs(
+              OPERATION_TYPES.CALL,
+              context.accounts[1].address,
+              0,
+              "0x00000000"
+            );
+        });
+
+        it("should pass when the non-owner is calling", async () => {
+          const operationsType = [OPERATION_TYPES.CALL];
+          const recipients = [context.accounts[1].address];
+          const values = [ethers.BigNumber.from("0")];
+          const datas = ["0x"];
+
+          await expect(
+            context.universalProfile
+              .connect(context.accounts[3])
+              ["execute(uint256[],address[],uint256[],bytes[])"](
+                operationsType,
+                recipients,
+                values,
+                datas
+              )
+          )
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs("0x");
+        });
+      });
+      describe("transferOwnership", () => {
+        it("should pass when the owner is calling", async () => {
+          const newOwner = context.accounts[1].address;
+
+          await expect(
+            context.universalProfile
+              .connect(context.deployParams.owner)
+              .transferOwnership(newOwner)
+          ).to.emit(context.universalProfile, "OwnershipTransferStarted");
+        });
+
+        it("should pass when the non-owner is calling", async () => {
+          const newOwner = context.accounts[1].address;
+
+          await expect(
+            context.universalProfile
+              .connect(context.accounts[3])
+              .transferOwnership(newOwner)
+          )
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs("0x");
+        });
+      });
+      describe("renounceOwnership", () => {
+        it("should pass when the owner is calling", async () => {
+          await network.provider.send("hardhat_mine", [
+            ethers.utils.hexValue(500),
+          ]);
+
+          await expect(
+            context.universalProfile
+              .connect(context.deployParams.owner)
+              .renounceOwnership()
+          ).to.emit(context.universalProfile, "RenounceOwnershipStarted");
+        });
+
+        it("should pass when the non-owner is calling", async () => {
+          await network.provider.send("hardhat_mine", [
+            ethers.utils.hexValue(100),
+          ]);
+
+          await expect(
+            context.universalProfile
+              .connect(context.accounts[3])
+              .renounceOwnership()
+          )
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs("0x");
+        });
+      });
+    });
+
+    describe("when the owner is a contract", () => {
+      describe("Contract 1 (That doesn't have the verifyCall function)", () => {});
+      describe("Contract 2 (That have the fallback that doesn't return anything", () => {});
+      describe("Contract 3 (That have the fallback that return valid magicValue", () => {});
+      describe("Contract 4 (That implement verifyCall but return bytes32)", () => {});
+      describe("Contract 5 (That implements verifyCall but return not a valid magicValue)", () => {});
+      describe("Contract 6 (That implements verifyCall and return valid magicValue)", () => {});
+      describe("Contract 7 (That implements verifyCall that return valid magicValue but does not invoke verifyCallResult )", () => {});
+      describe("Contract 8 (That implements verifyCall that return valid magicValue and invoke verifyCallResult that returns a valid magicValue )", () => {});
+      describe("Contract 9 (That implements verifyCall that return valid magicValue but verifyCallResult doesn't return valid magicValue)", () => {});
+      describe("Contract 10 (That implements verifyCall that return valid magicValue but verifyCallResult return bytes32)", () => {});
+    });
   });
 
   describe("when using `isValidSignature()` from ERC1271", () => {
