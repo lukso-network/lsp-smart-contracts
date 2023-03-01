@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
+import {ILSP20ReverseVerification} from "../LSP20ReverseVerification/ILSP20ReverseVerification.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -107,6 +108,278 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
+     * @dev Receives and executes a batch of function calls on this contract.
+     */
+    function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i; i < data.length; i = GasLib.uncheckedIncrement(i)) {
+            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+
+            if (!success) {
+                // Look for revert reason and bubble it up if present
+                if (result.length > 0) {
+                    // The easiest way to bubble the revert reason is using memory via assembly
+                    // solhint-disable no-inline-assembly
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        let returndata_size := mload(result)
+                        revert(add(32, result), returndata_size)
+                    }
+                } else {
+                    revert("LSP0: batchCalls reverted");
+                }
+            }
+
+            results[i] = result;
+        }
+    }
+
+    /**
+     * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3 DELEGATECALL = 4
+     * @param target The smart contract or address to interact with, `to` will be unused if a contract is created (operation 1 and 2)
+     * @param value The amount of native tokens to transfer (in Wei).
+     * @param data The call data, or the bytecode of the contract to deploy
+     * @dev Executes any other smart contract.
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
+     * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
+     * Emits a {ValueReceived} event, when receives native token
+     */
+    function execute(
+        uint256 operationType,
+        address target,
+        uint256 value,
+        bytes memory data
+    ) public payable virtual override returns (bytes memory) {
+        address _owner = owner();
+        bool verifyAfter = _reverseVerificationBefore(_owner);
+
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        bytes memory result = _execute(operationType, target, value, data);
+
+        if (verifyAfter) _reverseVerificationAfter(_owner, result);
+
+        return result;
+    }
+
+    /**
+     * @inheritdoc ERC725XCore
+     *
+     * @dev Emits a {ValueReceived} event when receiving native tokens.
+     */
+    function execute(
+        uint256[] memory operationsType,
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory datas
+    ) public payable virtual override returns (bytes[] memory) {
+        address _owner = owner();
+        bool verifyAfter = _reverseVerificationBefore(_owner);
+
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        bytes[] memory results = _execute(operationsType, targets, values, datas);
+
+        if (verifyAfter) _reverseVerificationAfter(_owner, abi.encode(results));
+
+        return results;
+    }
+
+    /**
+     * @notice Sets singular data for a given `dataKey`
+     * @param dataKey The key to retrieve stored value
+     * @param dataValue The value to set
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * Emits a {DataChanged} event.
+     */
+    function setData(bytes32 dataKey, bytes memory dataValue) public virtual override {
+        address _owner = owner();
+        bool verifyAfter = _reverseVerificationBefore(_owner);
+
+        _setData(dataKey, dataValue);
+
+        if (verifyAfter) _reverseVerificationAfter(_owner, "");
+    }
+
+    /**
+     * @param dataKeys The array of data keys for values to set
+     * @param dataValues The array of values to set
+     * @dev Sets array of data for multiple given `dataKeys`
+     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * Emits a {DataChanged} event.
+     */
+    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues) public virtual override {
+        address _owner = owner();
+        bool verifyAfter = _reverseVerificationBefore(_owner);
+
+        if (dataKeys.length != dataValues.length) {
+            revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
+        }
+
+        for (uint256 i = 0; i < dataKeys.length; i = _uncheckedIncrementERC725Y(i)) {
+            _setData(dataKeys[i], dataValues[i]);
+        }
+
+        if (verifyAfter) _reverseVerificationAfter(_owner, "");
+    }
+
+    /**
+     * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
+     * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
+     * Key and the typeId Key (param) respectively. The call will be discarded if no addresses were set.
+     *
+     * @param typeId The type of call received.
+     * @param receivedData The data received.
+     * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
+     * and the LSP1TypeIdDelegate call.
+     */
+    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
+        public
+        payable
+        virtual
+        returns (bytes memory returnedValues)
+    {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
+        bytes memory resultDefaultDelegate;
+
+        if (lsp1DelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
+
+            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+                resultDefaultDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
+            }
+        }
+
+        bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
+            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+            bytes20(typeId)
+        );
+
+        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
+        bytes memory resultTypeIdDelegate;
+
+        if (lsp1TypeIdDelegateValue.length >= 20) {
+            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
+
+            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
+                resultTypeIdDelegate = universalReceiverDelegate
+                    .callUniversalReceiverWithCallerInfos(
+                        typeId,
+                        receivedData,
+                        msg.sender,
+                        msg.value
+                    );
+            }
+        }
+
+        returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
+        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
+    }
+
+    /**
+     * @dev Sets the pending owner and notifies the pending owner
+     *
+     * @param _newOwner The address nofied and set as `pendingOwner`
+     */
+    function transferOwnership(address _newOwner)
+        public
+        virtual
+        override(LSP14Ownable2Step, OwnableUnset)
+    {
+        address _owner = owner();
+        bool verifyAfter = _reverseVerificationBefore(_owner);
+
+        LSP14Ownable2Step._transferOwnership(_newOwner);
+
+        if (!verifyAfter) _reverseVerificationAfter(_owner, "");
+    }
+
+    /**
+     * @dev Renounce ownership of the contract in a 2-step process
+     */
+    function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) {
+        address _owner = owner();
+        bool verifyAfter = _reverseVerificationBefore(_owner);
+
+        LSP14Ownable2Step._renounceOwnership();
+
+        if (verifyAfter) _reverseVerificationAfter(_owner, "");
+    }
+
+    /**
+     * @dev Returns true if this contract implements the interface defined by
+     * `interfaceId`.
+     *
+     * If the contract doesn't support the `interfaceId`, it forwards the call to the
+     * `supportsInterface` extension according to LSP17, and checks if the extension
+     * implements the interface defined by `interfaceId`.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore, LSP17Extendable)
+        returns (bool)
+    {
+        return
+            interfaceId == _INTERFACEID_ERC1271 ||
+            interfaceId == _INTERFACEID_LSP0 ||
+            interfaceId == _INTERFACEID_LSP1 ||
+            interfaceId == _INTERFACEID_LSP14 ||
+            super.supportsInterface(interfaceId) ||
+            _supportsInterfaceInERC165Extension(interfaceId);
+    }
+
+    /**
+     * @notice Checks if an owner signed `_data`.
+     * ERC1271 interface.
+     *
+     * @param dataHash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
+     * @param signature owner's signature(s) of the data
+     */
+    function isValidSignature(bytes32 dataHash, bytes memory signature)
+        public
+        view
+        virtual
+        returns (bytes4 magicValue)
+    {
+        address _owner = owner();
+
+        // If owner is a contract
+        if (_owner.code.length > 0) {
+            (bool success, bytes memory result) = _owner.staticcall(
+                abi.encodeWithSelector(IERC1271.isValidSignature.selector, dataHash, signature)
+            );
+
+            bool isValid = (success &&
+                result.length == 32 &&
+                abi.decode(result, (bytes32)) == bytes32(_ERC1271_MAGICVALUE));
+
+            return isValid ? _ERC1271_MAGICVALUE : _ERC1271_FAILVALUE;
+        }
+        // If owner is an EOA
+        else {
+            return
+                _owner == ECDSA.recover(dataHash, signature)
+                    ? _ERC1271_MAGICVALUE
+                    : _ERC1271_FAILVALUE;
+        }
+    }
+
+    // Internal functions
+
+    // Fallback
+
+    /**
      * @dev Forwards the call to an extension mapped to a function selector. If no extension address
      * is mapped to the function selector (address(0)), then revert.
      *
@@ -185,215 +458,66 @@ abstract contract LSP0ERC725AccountCore is
         return extension;
     }
 
-    /**
-     * @dev Returns true if this contract implements the interface defined by
-     * `interfaceId`.
-     *
-     * If the contract doesn't support the `interfaceId`, it forwards the call to the
-     * `supportsInterface` extension according to LSP17, and checks if the extension
-     * implements the interface defined by `interfaceId`.
-     */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore, LSP17Extendable)
-        returns (bool)
-    {
-        return
-            interfaceId == _INTERFACEID_ERC1271 ||
-            interfaceId == _INTERFACEID_LSP0 ||
-            interfaceId == _INTERFACEID_LSP1 ||
-            interfaceId == _INTERFACEID_LSP14 ||
-            super.supportsInterface(interfaceId) ||
-            _supportsInterfaceInERC165Extension(interfaceId);
-    }
+    // LSP20
 
-    /**
-     * @notice Checks if an owner signed `_data`.
-     * ERC1271 interface.
-     *
-     * @param dataHash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
-     * @param signature owner's signature(s) of the data
-     */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        virtual
-        returns (bytes4 magicValue)
-    {
-        address _owner = owner();
+    error LSP20InvalidMagicValue(bytes returnedData);
 
-        // If owner is a contract
-        if (_owner.code.length > 0) {
-            (bool success, bytes memory result) = _owner.staticcall(
-                abi.encodeWithSelector(IERC1271.isValidSignature.selector, dataHash, signature)
+    function _reverseVerificationBefore(address logicVerifier)
+        internal
+        virtual
+        returns (bool verifyAfter)
+    {
+        if (msg.sender != logicVerifier) {
+            (bool success, bytes memory returnedData) = logicVerifier.call(
+                abi.encodeWithSelector(
+                    ILSP20ReverseVerification.lsp20VerifyCall.selector,
+                    msg.sender,
+                    msg.value,
+                    msg.data
+                )
             );
 
-            bool isValid = (success &&
-                result.length == 32 &&
-                abi.decode(result, (bytes32)) == bytes32(_ERC1271_MAGICVALUE));
+            Address.verifyCallResult(
+                success,
+                returnedData,
+                "LSP20: owner does not support Reverse Verification"
+            );
 
-            return isValid ? _ERC1271_MAGICVALUE : _ERC1271_FAILVALUE;
-        }
-        // If owner is an EOA
-        else {
-            return
-                _owner == ECDSA.recover(dataHash, signature)
-                    ? _ERC1271_MAGICVALUE
-                    : _ERC1271_FAILVALUE;
-        }
-    }
+            if (returnedData.length < 32) revert LSP20InvalidMagicValue(returnedData);
 
-    /**
-     * @dev Receives and executes a batch of function calls on this contract.
-     */
-    function batchCalls(bytes[] calldata data) public returns (bytes[] memory results) {
-        results = new bytes[](data.length);
-        for (uint256 i; i < data.length; i = GasLib.uncheckedIncrement(i)) {
-            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+            bytes4 magicValue = abi.decode(returnedData, (bytes4));
 
-            if (!success) {
-                // Look for revert reason and bubble it up if present
-                if (result.length > 0) {
-                    // The easiest way to bubble the revert reason is using memory via assembly
-                    // solhint-disable no-inline-assembly
-                    /// @solidity memory-safe-assembly
-                    assembly {
-                        let returndata_size := mload(result)
-                        revert(add(32, result), returndata_size)
-                    }
-                } else {
-                    revert("LSP0: batchCalls reverted");
-                }
-            }
+            if (bytes3(magicValue) != bytes3(ILSP20ReverseVerification.lsp20VerifyCall.selector))
+                revert LSP20InvalidMagicValue(returnedData);
 
-            results[i] = result;
+            return bytes1(magicValue[3]) == 0x01 ? true : false;
         }
     }
 
-    /**
-     * @param operationType The operation to execute: CALL = 0 CREATE = 1 CREATE2 = 2 STATICCALL = 3 DELEGATECALL = 4
-     * @param target The smart contract or address to interact with, `to` will be unused if a contract is created (operation 1 and 2)
-     * @param value The amount of native tokens to transfer (in Wei).
-     * @param data The call data, or the bytecode of the contract to deploy
-     * @dev Executes any other smart contract.
-     * SHOULD only be callable by the owner of the contract set via ERC173
-     *
-     * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
-     * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
-     * Emits a {ValueReceived} event, when receives native token
-     */
-    function execute(
-        uint256 operationType,
-        address target,
-        uint256 value,
-        bytes memory data
-    ) public payable virtual override onlyOwner returns (bytes memory) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        return _execute(operationType, target, value, data);
-    }
-
-    /**
-     * @inheritdoc ERC725XCore
-     *
-     * @dev Emits a {ValueReceived} event when receiving native tokens.
-     */
-    function execute(
-        uint256[] memory operationsType,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory datas
-    ) public payable virtual override onlyOwner returns (bytes[] memory) {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        return _execute(operationsType, targets, values, datas);
-    }
-
-    /**
-     * @notice Triggers the UniversalReceiver event when this function gets executed successfully.
-     * Forwards the call to the addresses stored in the ERC725Y storage under the LSP1UniversalReceiverDelegate
-     * Key and the typeId Key (param) respectively. The call will be discarded if no addresses were set.
-     *
-     * @param typeId The type of call received.
-     * @param receivedData The data received.
-     * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
-     * and the LSP1TypeIdDelegate call.
-     */
-    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
-        public
-        payable
+    function _reverseVerificationAfter(address logicVerifier, bytes memory callResult)
+        internal
         virtual
-        returns (bytes memory returnedValues)
     {
-        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
-        bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
-        bytes memory resultDefaultDelegate;
-
-        if (lsp1DelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(lsp1DelegateValue));
-
-            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
-                resultDefaultDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
-                        msg.sender,
-                        msg.value
-                    );
-            }
-        }
-
-        bytes32 lsp1typeIdDelegateKey = LSP2Utils.generateMappingKey(
-            _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
-            bytes20(typeId)
+        (bool success, bytes memory returnedData) = logicVerifier.call(
+            abi.encodeWithSelector(
+                ILSP20ReverseVerification.lsp20VerifyCallResult.selector,
+                keccak256(abi.encodePacked(msg.sender, msg.value, msg.data)),
+                callResult
+            )
         );
 
-        bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
-        bytes memory resultTypeIdDelegate;
+        Address.verifyCallResult(success, returnedData, "Error on the owner");
 
-        if (lsp1TypeIdDelegateValue.length >= 20) {
-            address universalReceiverDelegate = address(bytes20(lsp1TypeIdDelegateValue));
-
-            if (universalReceiverDelegate.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP1)) {
-                resultTypeIdDelegate = universalReceiverDelegate
-                    .callUniversalReceiverWithCallerInfos(
-                        typeId,
-                        receivedData,
-                        msg.sender,
-                        msg.value
-                    );
-            }
-        }
-
-        returnedValues = abi.encode(resultDefaultDelegate, resultTypeIdDelegate);
-        emit UniversalReceiver(msg.sender, msg.value, typeId, receivedData, returnedValues);
+        require(
+            success &&
+                returnedData.length == 32 &&
+                abi.decode(returnedData, (bytes32)) ==
+                bytes32(ILSP20ReverseVerification.lsp20VerifyCallResult.selector),
+            "LSP20: Caller is not allowed"
+        );
     }
 
-    /**
-     * @dev Sets the pending owner and notifies the pending owner
-     *
-     * @param _newOwner The address nofied and set as `pendingOwner`
-     */
-    function transferOwnership(address _newOwner)
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-        onlyOwner
-    {
-        LSP14Ownable2Step._transferOwnership(_newOwner);
-    }
-
-    /**
-     * @dev Renounce ownership of the contract in a 2-step process
-     */
-    function renounceOwnership()
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-        onlyOwner
-    {
-        LSP14Ownable2Step._renounceOwnership();
-    }
+    // ERC725Y
 
     /**
      * @dev SAVE GAS by emitting the DataChanged event with only the first 256 bytes of dataValue
@@ -406,7 +530,7 @@ abstract contract LSP0ERC725AccountCore is
         );
     }
 
-    // --- LSP14 URD Hooks
+    // LSP14
 
     /**
      * @dev Calls the universalReceiver function of the sender when ownerhsip transfer starts
