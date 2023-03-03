@@ -7,6 +7,21 @@ import {
   UniversalProfile,
   GenericExecutor__factory,
   ERC1271MaliciousMock__factory,
+  FirstCallReturnMagicValue__factory,
+  FirstCallReturnMagicValue,
+  BothCallReturnMagicValue__factory,
+  BothCallReturnMagicValue,
+  SecondCallReturnFailureValue__factory,
+  SecondCallReturnFailureValue,
+  SecondCallReturnExpandedValue__factory,
+  SecondCallReturnExpandedValue,
+} from "../types";
+
+import {
+  LSP0ERC725Account,
+  UniversalProfileInit__factory,
+  UniversalProfile__factory,
+  UniversalReceiverTester__factory,
 } from "../types";
 
 // helpers
@@ -263,11 +278,122 @@ export const shouldBehaveLikeLSP3 = (
       describe("Contract 3 (That have the fallback that return valid magicValue", () => {});
       describe("Contract 4 (That implement verifyCall but return bytes32)", () => {});
       describe("Contract 5 (That implements verifyCall but return not a valid magicValue)", () => {});
-      describe("Contract 6 (That implements verifyCall and return valid magicValue)", () => {});
-      describe("Contract 7 (That implements verifyCall that return valid magicValue but does not invoke verifyCallResult )", () => {});
-      describe("Contract 8 (That implements verifyCall that return valid magicValue and invoke verifyCallResult that returns a valid magicValue )", () => {});
-      describe("Contract 9 (That implements verifyCall that return valid magicValue but verifyCallResult doesn't return valid magicValue)", () => {});
-      describe("Contract 10 (That implements verifyCall that return valid magicValue but verifyCallResult return bytes32)", () => {});
+      describe.only("Contract 7 (That implements verifyCall that return valid magicValue but does not invoke verifyCallResult )", () => {
+        let firstCallReturnMagicValueContract: FirstCallReturnMagicValue;
+        let newUniversalProfile: UniversalProfile;
+        before(async () => {
+          firstCallReturnMagicValueContract =
+            await new FirstCallReturnMagicValue__factory(
+              context.accounts[0]
+            ).deploy();
+
+          newUniversalProfile = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(firstCallReturnMagicValueContract.address);
+        });
+
+        it("should pass when anyone is calling the function of LSP0", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          await expect(
+            newUniversalProfile
+              .connect(context.accounts[3])
+              ["setData(bytes32,bytes)"](key, value)
+          )
+            .to.emit(newUniversalProfile, "DataChanged")
+            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+          const result = await newUniversalProfile["getData(bytes32)"](key);
+          expect(result).to.equal(value);
+        });
+      });
+      describe.only("Contract 8 (That implements verifyCall that return valid magicValue and invoke verifyCallResult that returns a valid magicValue )", () => {
+        let bothCallReturnMagicValueContract: BothCallReturnMagicValue;
+        let newUniversalProfile: UniversalProfile;
+        before(async () => {
+          bothCallReturnMagicValueContract =
+            await new BothCallReturnMagicValue__factory(
+              context.accounts[0]
+            ).deploy();
+
+          newUniversalProfile = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(bothCallReturnMagicValueContract.address);
+        });
+
+        it("should pass when anyone is calling the function of LSP0", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          await expect(
+            newUniversalProfile
+              .connect(context.accounts[3])
+              ["setData(bytes32,bytes)"](key, value)
+          )
+            .to.emit(newUniversalProfile, "DataChanged")
+            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+          const result = await newUniversalProfile["getData(bytes32)"](key);
+          expect(result).to.equal(value);
+        });
+      });
+
+      describe.only("Contract 9 (That implements verifyCall that return valid magicValue but verifyCallResult doesn't return valid magicValue)", () => {
+        let secondCallReturnFailureContract: SecondCallReturnFailureValue;
+        let newUniversalProfile: UniversalProfile;
+        before(async () => {
+          secondCallReturnFailureContract =
+            await new SecondCallReturnFailureValue__factory(
+              context.accounts[0]
+            ).deploy();
+
+          newUniversalProfile = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(secondCallReturnFailureContract.address);
+        });
+
+        it("should fail when anyone is calling the function of LSP0", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          await expect(
+            newUniversalProfile
+              .connect(context.accounts[3])
+              ["setData(bytes32,bytes)"](key, value)
+          ).to.be.revertedWith("LSP20: Caller is not allowed");
+        });
+      });
+      describe.only("Contract 10 (That implements verifyCall that return valid magicValue but verifyCallResult return bytes32)", () => {
+        let secondCallReturnExpandedValueContract: SecondCallReturnExpandedValue;
+        let newUniversalProfile: UniversalProfile;
+        before(async () => {
+          secondCallReturnExpandedValueContract =
+            await new SecondCallReturnExpandedValue__factory(
+              context.accounts[0]
+            ).deploy();
+
+          newUniversalProfile = await new UniversalProfile__factory(
+            context.accounts[0]
+          ).deploy(secondCallReturnExpandedValueContract.address);
+        });
+
+        it("should pass when anyone is calling the function of LSP0", async () => {
+          let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
+          let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
+
+          await expect(
+            newUniversalProfile
+              .connect(context.accounts[3])
+              ["setData(bytes32,bytes)"](key, value)
+          )
+            .to.emit(newUniversalProfile, "DataChanged")
+            .withArgs(key, ethers.utils.hexDataSlice(value, 0, 256));
+
+          const result = await newUniversalProfile["getData(bytes32)"](key);
+          expect(result).to.equal(value);
+        });
+      });
     });
   });
 
