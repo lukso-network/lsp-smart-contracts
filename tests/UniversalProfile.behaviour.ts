@@ -7,6 +7,16 @@ import {
   UniversalProfile,
   GenericExecutor__factory,
   ERC1271MaliciousMock__factory,
+  LSP20Owner1,
+  LSP20Owner1__factory,
+  LSP20Owner2,
+  LSP20Owner2__factory,
+  LSP20Owner3,
+  LSP20Owner3__factory,
+  LSP20Owner4,
+  LSP20Owner4__factory,
+  LSP20Owner5,
+  LSP20Owner5__factory,
 } from "../types";
 
 // helpers
@@ -257,14 +267,213 @@ export const shouldBehaveLikeLSP3 = (
       });
     });
 
-    describe("when the owner is a contract", () => {
-      describe("Contract 1 (That doesn't have the verifyCall function)", () => {});
-      describe("Contract 2 (That have the fallback that doesn't return anything", () => {});
-      describe("Contract 3 (That have the fallback that return valid magicValue", () => {});
-      describe("Contract 4 (That implement verifyCall but return bytes32)", () => {});
-      describe("Contract 5 (That implements verifyCall but return not a valid magicValue)", () => {});
+    describe.only("when the owner is a contract", () => {
+      describe("Contract 1 (That doesn't have the verifyCall function)", () => {
+        let ownerContract: LSP20Owner1;
+        before("deploying a new owner", async () => {
+          ownerContract = await new LSP20Owner1__factory(
+            context.deployParams.owner
+          ).deploy();
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .transferOwnership(ownerContract.address);
+
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .acceptOwnership(context.universalProfile.address);
+        });
+
+        it("should revert", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(
+            context.universalProfile["setData(bytes32,bytes)"](
+              dataKey,
+              dataValue
+            )
+          ).to.be.revertedWith(
+            "LSP20: owner does not support Reverse Verification"
+          );
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
+        });
+      });
+      describe("Contract 2 (That have the fallback that doesn't return anything)", () => {
+        let ownerContract: LSP20Owner2;
+        before("deploying a new owner", async () => {
+          ownerContract = await new LSP20Owner2__factory(
+            context.deployParams.owner
+          ).deploy();
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .transferOwnership(ownerContract.address);
+
+          await ownerContract.acceptOwnership(context.universalProfile.address);
+        });
+
+        it("should revert", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(
+            context.universalProfile["setData(bytes32,bytes)"](
+              dataKey,
+              dataValue
+            )
+          )
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs("0x");
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
+        });
+      });
+      describe("Contract 3 (That have the fallback that return valid magicValue)", () => {
+        let ownerContract: LSP20Owner3;
+        before("deploying a new owner", async () => {
+          ownerContract = await new LSP20Owner3__factory(
+            context.deployParams.owner
+          ).deploy();
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .transferOwnership(ownerContract.address);
+
+          await ownerContract.acceptOwnership(context.universalProfile.address);
+        });
+
+        it("should revert", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(
+            context.universalProfile["setData(bytes32,bytes)"](
+              dataKey,
+              dataValue
+            )
+          ).to.emit(ownerContract, "FallbackCalled");
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
+        });
+      });
+      describe("Contract 4 (That implement verifyCall but return bytes32)", () => {
+        let ownerContract: LSP20Owner4;
+        before("deploying a new owner", async () => {
+          ownerContract = await new LSP20Owner4__factory(
+            context.deployParams.owner
+          ).deploy();
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .transferOwnership(ownerContract.address);
+
+          await ownerContract.acceptOwnership(context.universalProfile.address);
+        });
+
+        it("should revert", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(
+            context.universalProfile["setData(bytes32,bytes)"](
+              dataKey,
+              dataValue
+            )
+          ).to.be.revertedWithoutReason();
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
+        });
+      });
+      describe("Contract 5 (That implements verifyCall but return not a valid magicValue)", () => {
+        let ownerContract: LSP20Owner5;
+        before("deploying a new owner", async () => {
+          ownerContract = await new LSP20Owner5__factory(
+            context.deployParams.owner
+          ).deploy();
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .transferOwnership(ownerContract.address);
+
+          await ownerContract.acceptOwnership(context.universalProfile.address);
+        });
+
+        it("should revert", async () => {
+          const dataKey = ethers.utils.keccak256(
+            ethers.utils.toUtf8Bytes("RandomKey1")
+          );
+          const dataValue = ethers.utils.hexlify(ethers.utils.randomBytes(50));
+
+          await expect(
+            context.universalProfile["setData(bytes32,bytes)"](
+              dataKey,
+              dataValue
+            )
+          )
+            .to.be.revertedWithCustomError(
+              context.universalProfile,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs("0xaabbccdd" + "0".repeat(56));
+        });
+
+        after("reverting to previous owner", async () => {
+          await ownerContract
+            .connect(context.deployParams.owner)
+            .transferOwnership(context.deployParams.owner.address);
+
+          await context.universalProfile
+            .connect(context.deployParams.owner)
+            .acceptOwnership();
+        });
+      });
       describe("Contract 6 (That implements verifyCall and return valid magicValue)", () => {});
-      describe("Contract 7 (That implements verifyCall that return valid magicValue but does not invoke verifyCallResult )", () => {});
+      describe("Contract 7 (That implements verifyCall that return valid magicValue but does not invoke verifyCallResult)", () => {});
       describe("Contract 8 (That implements verifyCall that return valid magicValue and invoke verifyCallResult that returns a valid magicValue )", () => {});
       describe("Contract 9 (That implements verifyCall that return valid magicValue but verifyCallResult doesn't return valid magicValue)", () => {});
       describe("Contract 10 (That implements verifyCall that return valid magicValue but verifyCallResult return bytes32)", () => {});
