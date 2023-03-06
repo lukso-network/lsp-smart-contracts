@@ -6,12 +6,14 @@
 // ERC165
 // ---------
 
+type Erc165InterfaceId = { [key: string]: string };
+
 /**
  * @dev ERC165 interface IDs for the LSP interface standards + some backward compatible ERC token standards.
  * These `bytes4` values can be used to detect if a contract implements a specific interface
  * with `supportsInterface(interfaceId)`.
  */
-export const INTERFACE_IDS = {
+export const INTERFACE_IDS: Erc165InterfaceId = {
   ERC165: "0x01ffc9a7",
   ERC1271: "0x1626ba7e",
   ERC20: "0x36372b07",
@@ -37,11 +39,13 @@ export const INTERFACE_IDS = {
 // ERC1271
 // ----------
 
+type erc1271Values = { MAGIC_VALUE: "0x1626ba7e"; FAIL_VALUE: "0xffffffff" };
+
 /**
  * @dev values returned by the `isValidSignature` function of the ERC1271 standard.
  * Can be used to check if a signature is valid or not.
  */
-export const ERC1271_VALUES = {
+export const ERC1271_VALUES: erc1271Values = {
   MAGIC_VALUE: "0x1626ba7e",
   FAIL_VALUE: "0xffffffff",
 };
@@ -49,11 +53,13 @@ export const ERC1271_VALUES = {
 // ERC725X
 // ----------
 
+type ERC725XOperationTypes = { [key: string]: number };
+
 /**
  * @dev list of ERC725X operation types.
  * @see https://github.com/ERC725Alliance/ERC725/blob/develop/docs/ERC-725.md#execute
  */
-export const OPERATION_TYPES = {
+export const OPERATION_TYPES: ERC725XOperationTypes = {
   CALL: 0,
   CREATE: 1,
   CREATE2: 2,
@@ -64,12 +70,27 @@ export const OPERATION_TYPES = {
 // ERC725Y
 // ----------
 
+type LSP2ArrayKey = { length: string; index: string };
+
+type ERC725YDataKey = {
+  [lspStandard: string]: {
+    [key: string]: string | LSP2ArrayKey | SupportedStandardsDataKey;
+  };
+};
+
+type SupportedStandardsDataKey = {
+  [lspStandard: string]: {
+    key: string;
+    value: string;
+  };
+};
+
 /**
  * @dev list of ERC725Y keys from the LSP standards.
  * Can be used to detect if a contract implements a specific LSP Metadata standard
  * and contain a set of pre-defined ERC725Y Data Keys.
  */
-export const SupportedStandards = {
+export const SupportedStandards: SupportedStandardsDataKey = {
   LSP3UniversalProfile: {
     key: "0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38",
     value: "0xabe425d6",
@@ -88,7 +109,7 @@ export const SupportedStandards = {
  * @dev list of ERC725Y Metadata keys from the LSP standards.
  * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
  */
-export const ERC725YDataKeys = {
+export const ERC725YDataKeys: ERC725YDataKey = {
   LSP1: {
     // bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0)
     LSP1UniversalReceiverDelegatePrefix: "0x0cfc51aec37c55a4d0b10000",
@@ -197,19 +218,23 @@ export const ERC725YDataKeys = {
  * @dev LSP6 version number for signing `executeRelayCall(...)` transaction using EIP191
  * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executerelaycall
  */
-export const LSP6_VERSION = 6;
+export const LSP6_VERSION: number = 6;
 
 /**
  * @dev `bytes32` hex value for all the LSP6 permissions excluding REENTRANCY, DELEGATECALL and SUPER_DELEGATECALL for security (these should be set manually)
  */
-export const ALL_PERMISSIONS =
+export const ALL_PERMISSION: string =
   "0x00000000000000000000000000000000000000000000000000000000003f3f7f";
+
+type LSP6Permissions = {
+  [key: string]: string;
+};
 
 /**
  * @dev List of `bytes32` permissions from LSP6 Key Manager Standard
  */
 // prettier-ignore
-export const PERMISSIONS = {
+export const PERMISSIONS: LSP6Permissions = {
 	CHANGEOWNER                      :"0x0000000000000000000000000000000000000000000000000000000000000001",
 	ADDCONTROLLER                    :"0x0000000000000000000000000000000000000000000000000000000000000002",
 	EDITPERMISSIONS                  :"0x0000000000000000000000000000000000000000000000000000000000000004",
@@ -234,12 +259,16 @@ export const PERMISSIONS = {
 	SIGN                             :"0x0000000000000000000000000000000000000000000000000000000000200000",
 }
 
+type LSP1Hooks = {
+  [key: string]: string;
+};
+
 /**
  * @dev list of standard type IDs ("hooks") defined in the LSPs that can be used to notify
  * a LSP1 compliant contract about certain type of transactions or information
  * (e.g: token transfer, vault transfer, ownership transfer, etc...)
  */
-export const LSP1_TYPE_IDS = {
+export const LSP1_TYPE_IDS: LSP1Hooks = {
   // keccak256('LSP0OwnershipTransferStarted')
   LSP0OwnershipTransferStarted:
     "0xe17117c9d2665d1dbeb479ed8058bbebde3c50ac50e2e65619f60006caac6926",
@@ -293,7 +322,16 @@ export const LSP1_TYPE_IDS = {
     "0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c",
 };
 
-export const Errors = {
+type LSPCustomErrors = {
+  [key: string]: {
+    [key: string]: {
+      error: string;
+      message: string;
+    };
+  };
+};
+
+export const Errors: LSPCustomErrors = {
   LSP1: {
     "0xa5295345": {
       error: "CannotRegisterEOAsAsAssets(address)",
@@ -604,7 +642,13 @@ export const Errors = {
   },
 };
 
-export const EventSignatures = {
+type LSPEvents = {
+  [contractName: string]: {
+    [eventName: string]: string;
+  };
+};
+
+export const EventSignatures: LSPEvents = {
   ERC173: {
     /**
      * event OwnershipTransferred(
