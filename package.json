@@ -33,7 +33,8 @@
       "import": "./module/constants.js",
       "require": "./common/constant.js",
       "types": "./common/constants.d.ts"
-    }
+    },
+    "./artifacts/*": "./artifacts/*"
   },
   "scripts": {
     "test": "hardhat test",
