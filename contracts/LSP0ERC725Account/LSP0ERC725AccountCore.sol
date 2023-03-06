@@ -21,10 +21,10 @@ import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
+import {LSP20ReverseVerification} from "../LSP20ReverseVerification/LSP20ReverseVerification.sol";
 
 // constants
 import "@erc725/smart-contracts/contracts/constants.sol";
-import "@erc725/smart-contracts/contracts/errors.sol";
 import {
     _INTERFACEID_LSP0,
     _INTERFACEID_ERC1271,
@@ -44,6 +44,7 @@ import {_INTERFACEID_LSP14} from "../LSP14Ownable2Step/LSP14Constants.sol";
 import {_LSP17_EXTENSION_PREFIX} from "../LSP17ContractExtension/LSP17Constants.sol";
 
 // errors
+import "@erc725/smart-contracts/contracts/errors.sol";
 import "../LSP17ContractExtension/LSP17Errors.sol";
 
 /**
@@ -56,6 +57,7 @@ abstract contract LSP0ERC725AccountCore is
     ERC725YCore,
     LSP14Ownable2Step,
     LSP17Extendable,
+    LSP20ReverseVerification,
     IERC1271,
     ILSP1UniversalReceiver
 {
@@ -300,7 +302,7 @@ abstract contract LSP0ERC725AccountCore is
 
         LSP14Ownable2Step._transferOwnership(_newOwner);
 
-        if (!verifyAfter) _reverseVerificationAfter(_owner, "");
+        if (verifyAfter) _reverseVerificationAfter(_owner, "");
     }
 
     /**
@@ -456,65 +458,6 @@ abstract contract LSP0ERC725AccountCore is
         address extension = address(bytes20(_getData(mappedExtensionDataKey)));
 
         return extension;
-    }
-
-    // LSP20
-
-    error LSP20InvalidMagicValue(bytes returnedData);
-
-    function _reverseVerificationBefore(address logicVerifier)
-        internal
-        virtual
-        returns (bool verifyAfter)
-    {
-        if (msg.sender != logicVerifier) {
-            (bool success, bytes memory returnedData) = logicVerifier.call(
-                abi.encodeWithSelector(
-                    ILSP20ReverseVerification.lsp20VerifyCall.selector,
-                    msg.sender,
-                    msg.value,
-                    msg.data
-                )
-            );
-
-            Address.verifyCallResult(
-                success,
-                returnedData,
-                "LSP20: owner does not support Reverse Verification"
-            );
-
-            if (returnedData.length < 32) revert LSP20InvalidMagicValue(returnedData);
-
-            bytes4 magicValue = abi.decode(returnedData, (bytes4));
-
-            if (bytes3(magicValue) != bytes3(ILSP20ReverseVerification.lsp20VerifyCall.selector))
-                revert LSP20InvalidMagicValue(returnedData);
-
-            return bytes1(magicValue[3]) == 0x01 ? true : false;
-        }
-    }
-
-    function _reverseVerificationAfter(address logicVerifier, bytes memory callResult)
-        internal
-        virtual
-    {
-        (bool success, bytes memory returnedData) = logicVerifier.call(
-            abi.encodeWithSelector(
-                ILSP20ReverseVerification.lsp20VerifyCallResult.selector,
-                keccak256(abi.encodePacked(msg.sender, msg.value, msg.data)),
-                callResult
-            )
-        );
-
-        Address.verifyCallResult(success, returnedData, "Error on the owner");
-
-        require(
-            success &&
-                returnedData.length == 32 &&
-                abi.decode(returnedData, (bytes32)) ==
-                bytes32(ILSP20ReverseVerification.lsp20VerifyCallResult.selector),
-            "LSP20: Caller is not allowed"
-        );
     }
 
     // ERC725Y
