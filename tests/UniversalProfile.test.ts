@@ -24,6 +24,11 @@ import {
 } from "./LSP17ContractExtension/LSP17Extendable.behaviour";
 
 import {
+  LSP20TestContext,
+  shouldBehaveLikeLSP20,
+} from "./LSP20ReverseVerification/LSP20ReverseVerification.behaviour";
+
+import {
   LSP3TestContext,
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
@@ -95,6 +100,18 @@ describe("UniversalProfile", () => {
       return { accounts, contract, deployParams };
     };
 
+    const buildLSP20TestContext = async (): Promise<LSP20TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = {
+        owner: accounts[0],
+      };
+      const universalProfile = await new UniversalProfile__factory(
+        accounts[0]
+      ).deploy(deployParams.owner.address);
+
+      return { accounts, universalProfile, deployParams };
+    };
+
     [
       { initialFunding: undefined },
       { initialFunding: 0 },
@@ -133,6 +150,7 @@ describe("UniversalProfile", () => {
       shouldBehaveLikeLSP1(buildLSP1TestContext);
       shouldBehaveLikeLSP14(buildLSP14TestContext);
       shouldBehaveLikeLSP17(buildLSP17TestContext);
+      shouldBehaveLikeLSP20(buildLSP20TestContext);
     });
   });
 
@@ -246,6 +264,28 @@ describe("UniversalProfile", () => {
       return { accounts, contract: universalProfile, deployParams };
     };
 
+    const buildLSP20TestContext = async (): Promise<LSP20TestContext> => {
+      const accounts = await ethers.getSigners();
+      const deployParams = {
+        owner: accounts[0],
+      };
+
+      const universalProfileInit = await new UniversalProfileInit__factory(
+        accounts[0]
+      ).deploy();
+
+      const universalProfileProxy = await deployProxy(
+        universalProfileInit.address,
+        accounts[0]
+      );
+
+      const universalProfile = universalProfileInit.attach(
+        universalProfileProxy
+      );
+
+      return { accounts, universalProfile: universalProfile, deployParams };
+    };
+
     describe("when deploying the base implementation contract", () => {
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
         const accounts = await ethers.getSigners();
@@ -335,6 +375,19 @@ describe("UniversalProfile", () => {
         });
 
         return fallbackExtensionContext;
+      });
+
+      shouldBehaveLikeLSP20(async () => {
+        let reverseVerificationContext = await buildLSP20TestContext();
+
+        await initializeProxy({
+          accounts: reverseVerificationContext.accounts,
+          universalProfile:
+            reverseVerificationContext.universalProfile as LSP0ERC725Account,
+          deployParams: reverseVerificationContext.deployParams,
+        });
+
+        return reverseVerificationContext;
       });
     });
   });
