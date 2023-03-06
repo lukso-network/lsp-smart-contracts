@@ -218,7 +218,7 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
   let mapKey =
     ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap + token.address.substr(2);
   const mapValue = await account["getData(bytes32)"](mapKey);
-  const indexInHex = "0x" + mapValue.substr(10, 16);
+  const indexInHex = "0x" + mapValue.substr(10, mapValue.length);
   const interfaceId = mapValue.substr(0, 10);
   const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
   const rawIndexInArray = ethers.utils.hexZeroPad(
@@ -247,15 +247,15 @@ export async function getLSP10MapAndArrayKeysValue(account, lsp9Vault) {
   let mapKey =
     ERC725YDataKeys.LSP10.LSP10VaultsMap + lsp9Vault.address.substr(2);
   const mapValue = await account["getData(bytes32)"](mapKey);
-  const indexInHex = "0x" + mapValue.substr(10, 16);
+  const indexInHex = "0x" + mapValue.substr(10, mapValue.length);
   const interfaceId = mapValue.substr(0, 10);
   const indexInNumber = ethers.BigNumber.from(indexInHex).toNumber();
   const rawIndexInArray = ethers.utils.hexZeroPad(
     ethers.utils.hexValue(indexInNumber),
-    32
+    16
   );
   const elementInArrayKey =
-    ERC725YDataKeys.LSP10["LSP10Vaults[]"].index + rawIndexInArray.substr(34);
+    ERC725YDataKeys.LSP10["LSP10Vaults[]"].index + rawIndexInArray.substring(2);
   let arrayKey = ERC725YDataKeys.LSP10["LSP10Vaults[]"].length;
   let [arrayLength, elementAddress] = await account["getData(bytes32[])"]([
     arrayKey,

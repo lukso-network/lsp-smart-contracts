@@ -181,6 +181,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
   describe("when testing LSP7-DigitalAsset", () => {
     let lsp7TokenA: LSP7Tester, lsp7TokenB: LSP7Tester, lsp7TokenC: LSP7Tester;
+
     before(async () => {
       lsp7TokenA = await new LSP7Tester__factory(
         context.accounts.random
@@ -197,7 +198,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
     describe("when minting tokens", () => {
       describe("when calling `mint(...)` with `amount == 0` and a `to == universalProfile`", () => {
-        it("should revert and not register any LSP5ReceivedAssets[]", async () => {
+        it("should not revert, not register any LSP5ReceivedAssets[] and just emit the `UniversalReceiver` event on the UP", async () => {
           await expect(
             lsp7TokenA
               .connect(context.accounts.random)
@@ -236,6 +237,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               callPayload(context.universalProfile1, lsp7TokenA.address, abi)
             );
         });
+
         it("should register lsp5keys: arrayLength 1, index 0, tokenA address in UP1", async () => {
           const [indexInMap, interfaceId, arrayLength, elementAddress] =
             await getLSP5MapAndArrayKeysValue(
@@ -1057,6 +1059,159 @@ export const shouldBehaveLikeLSP1Delegate = (
             genericExecutorResult
           );
       });
+    });
+  });
+
+  describe("testing values set under `LSP5ReceivedAssets[]`", () => {
+    let context;
+    let token: LSP7Tester;
+
+    before(async () => {
+      // start with a fresh empty context
+      context = await buildContext();
+
+      token = await new LSP7Tester__factory(context.accounts.random).deploy(
+        "Example LSP7 token",
+        "EL7T",
+        context.accounts.random.address
+      );
+    });
+
+    describe("when `LSP5ReceivedAssets[]` length value is `max(uint128)`", () => {
+      const lsp5ArrayLengthDataKey =
+        ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length;
+
+      // set the `LSP5ReceivedAssets[]` length value to the max(uint128)`
+      const lsp5ArrayLengthDataValue = ethers.BigNumber.from(2).pow(128).sub(1);
+
+      before(async () => {
+        const setDataPayload =
+          context.universalProfile1.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [lsp5ArrayLengthDataKey, lsp5ArrayLengthDataValue]
+          );
+
+        await context.lsp6KeyManager1
+          .connect(context.accounts.owner1)
+          ["execute(bytes)"](setDataPayload);
+
+        // check that the value was set correctly
+        expect(
+          await context.universalProfile1["getData(bytes32)"](
+            lsp5ArrayLengthDataKey
+          )
+        ).to.equal(lsp5ArrayLengthDataValue);
+      });
+
+      it("should revert when trying to transfer some tokens to UP but UP cannot register any more tokens", async () => {
+        const lsp1DelegateAddress = await context.universalProfile1[
+          "getData(bytes32)"
+        ](ERC725YDataKeys.LSP1["LSP1UniversalReceiverDelegate"]);
+
+        const lsp1DelegateInstance =
+          await new LSP1UniversalReceiverDelegateUP__factory(
+            context.accounts.random
+          ).attach(lsp1DelegateAddress);
+
+        // try to transfer (= mint) some tokens to the UP
+        // this should revert because the UP cannot register any more tokens
+        await expect(
+          token.mint(context.universalProfile1.address, 10_000, false, "0x")
+        )
+          .to.be.revertedWithCustomError(
+            lsp1DelegateInstance,
+            "MaxLSP5ReceivedAssetsCountReached"
+          )
+          .withArgs(token.address);
+      });
+    });
+
+    describe("when `LSP5ReceivedAssets[]` length value is `max(uint128) - 1`", () => {
+      const lsp5ArrayLengthDataKey =
+        ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length;
+
+      // set the `LSP5ReceivedAssets[]` length value to the max(uint128)`
+      const lsp5ArrayLengthDataValue = ethers.BigNumber.from(2).pow(128).sub(2);
+
+      before(async () => {
+        const setDataPayload =
+          context.universalProfile1.interface.encodeFunctionData(
+            "setData(bytes32,bytes)",
+            [lsp5ArrayLengthDataKey, lsp5ArrayLengthDataValue]
+          );
+
+        await context.lsp6KeyManager1
+          .connect(context.accounts.owner1)
+          ["execute(bytes)"](setDataPayload);
+
+        // check that the value was set correctly
+        expect(
+          await context.universalProfile1["getData(bytes32)"](
+            lsp5ArrayLengthDataKey
+          )
+        ).to.equal(lsp5ArrayLengthDataValue);
+      });
+
+      it("should not revert when trying to transfer some tokens to UP and UP (can register ONLY ONE MORE more tokens)", async () => {
+        // try to transfer (= mint) some tokens to the UP
+        // this should not revert because the UP can register one more asset
+        await token.mint(
+          context.universalProfile1.address,
+          10_000,
+          false,
+          "0x"
+        );
+
+        // check the `LSP5ReceivedAssets[]` length value was set correctly
+        expect(
+          await context.universalProfile1["getData(bytes32)"](
+            lsp5ArrayLengthDataKey
+          )
+        ).to.equal(lsp5ArrayLengthDataValue.add(1));
+
+        const index = lsp5ArrayLengthDataValue.toHexString();
+
+        const lsp5ArrayIndexDataKey =
+          ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].index +
+          index.substring(2);
+
+        // checksummed address of the token
+        const storedAssetAddress = ethers.utils.getAddress(
+          await context.universalProfile1["getData(bytes32)"](
+            lsp5ArrayIndexDataKey
+          )
+        );
+
+        // Check the address of the token was added to the `LSP5ReceivedAssets[maxLength - 1]` key
+        expect(storedAssetAddress).to.equal(token.address);
+
+        // Check that the correct tuple (interfaceId, index) was set under LSP5ReceivedAssetsMap + token address
+        expect(
+          await context.universalProfile1["getData(bytes32)"](
+            ERC725YDataKeys.LSP5["LSP5ReceivedAssetsMap"] +
+              token.address.substring(2)
+          )
+        ).to.equal(
+          ethers.utils.solidityPack(
+            ["bytes4", "uint128"],
+            [INTERFACE_IDS.LSP7DigitalAsset, index]
+          )
+        );
+      });
+    });
+
+    afterEach(async () => {
+      // cleanup adn reset the `LSP5ReceivedAssets[]` length value to 0
+      // set the `LSP5ReceivedAssets[]` length value to the max(uint128)`
+      const setDataPayload =
+        context.universalProfile1.interface.encodeFunctionData(
+          "setData(bytes32,bytes)",
+          [ERC725YDataKeys.LSP5["LSP5ReceivedAssets[]"].length, "0x"]
+        );
+
+      await context.lsp6KeyManager1
+        .connect(context.accounts.owner1)
+        ["execute(bytes)"](setDataPayload);
     });
   });
 
@@ -2214,6 +2369,58 @@ export const shouldBehaveLikeLSP1Delegate = (
               genericExecutorResult
             );
         });
+      });
+    });
+
+    describe("testing values stored under `LSP10Vaults[]` array length", () => {
+      before(async () => {
+        // start with a new setup
+        context = await buildContext();
+      });
+
+      it("should revert if `LSP10Vaults[]` vault value is the max `uint128`", async () => {
+        const maxUint128 = ethers.BigNumber.from(2)
+          .pow(128)
+          .sub(1)
+          .toHexString();
+
+        const key = ERC725YDataKeys.LSP10["LSP10Vaults[]"].length;
+        const value = maxUint128;
+
+        // force settingup on the UP
+        await context.lsp6KeyManager1
+          .connect(context.accounts.owner1)
+          ["execute(bytes)"](
+            context.universalProfile1.interface.encodeFunctionData(
+              "setData(bytes32,bytes)",
+              [key, value]
+            )
+          );
+
+        // check that LSP10Vaults[] length is set to maxUint128
+        expect(
+          await context.universalProfile1["getData(bytes32)"](key)
+        ).to.equal(maxUint128);
+
+        // deploy a Vault setting the UP as owner
+        // this should revert because the UP has already the max number of vaults allowed
+        const lsp1DelegateAddress = await context.universalProfile1[
+          "getData(bytes32)"
+        ](ERC725YDataKeys.LSP1["LSP1UniversalReceiverDelegate"]);
+
+        const lsp1DelegateInstance =
+          await new LSP1UniversalReceiverDelegateUP__factory(
+            context.accounts.random
+          ).attach(lsp1DelegateAddress);
+
+        await expect(
+          new LSP9Vault__factory(context.accounts.random).deploy(
+            context.universalProfile1.address
+          )
+        ).to.be.revertedWithCustomError(
+          lsp1DelegateInstance,
+          "MaxLSP10VaultsCountReached"
+        );
       });
     });
   });
