@@ -29,10 +29,10 @@ import "../LSP9Vault/LSP9Constants.sol";
 error InvalidLSP10ReceivedVaultsArrayLength(bytes invalidValueStored, uint256 invalidValueLength);
 
 /**
- * @dev reverts when the vault index is superior to uint64
- * @param index the vault index
+ * @dev reverts when the `LSP10Vaults[]` array reaches its maximum limit (max(uint128))
+ * @param notRegisteredVault the address of the vault that could not be registered
  */
-error VaultIndexSuperiorToUint64(uint256 index);
+error MaxLSP10VaultsCountReached(address notRegisteredVault);
 
 /**
  * @dev reverts when the vault index is superior to uint128
@@ -75,16 +75,17 @@ library LSP10Utils {
             values[1] = bytes.concat(bytes20(vault));
 
             keys[2] = vaultMapKey;
-            values[2] = bytes.concat(_INTERFACEID_LSP9, bytes8(0));
+            values[2] = bytes.concat(_INTERFACEID_LSP9, bytes16(0));
 
             // If the storage is already initiated
         } else if (encodedArrayLength.length == 16) {
             uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
-            uint128 newArrayLength = oldArrayLength + 1;
 
-            if (newArrayLength > type(uint64).max) {
-                revert VaultIndexSuperiorToUint64(newArrayLength);
+            if (oldArrayLength == type(uint128).max) {
+                revert MaxLSP10VaultsCountReached({notRegisteredVault: vault});
             }
+
+            uint128 newArrayLength = oldArrayLength + 1;
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
             values[0] = bytes.concat(bytes16(newArrayLength));
@@ -96,7 +97,7 @@ library LSP10Utils {
             values[1] = bytes.concat(bytes20(vault));
 
             keys[2] = vaultMapKey;
-            values[2] = bytes.concat(_INTERFACEID_LSP9, bytes8(uint64(oldArrayLength)));
+            values[2] = bytes.concat(_INTERFACEID_LSP9, bytes16(oldArrayLength));
         } else {
             revert InvalidLSP10ReceivedVaultsArrayLength({
                 invalidValueStored: encodedArrayLength,
@@ -136,7 +137,7 @@ library LSP10Utils {
 
         uint128 newArrayLength = oldArrayLength - 1;
 
-        uint64 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
+        uint128 index = extractIndexFromMap(vaultInterfaceIdAndIndex);
         bytes32 vaultInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP10_VAULTS_ARRAY_KEY,
             index
@@ -153,7 +154,7 @@ library LSP10Utils {
             values = new bytes[](3);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes16(oldArrayLength - 1));
+            values[0] = bytes.concat(bytes16(newArrayLength));
 
             keys[1] = vaultInArrayKey;
             values[1] = "";
@@ -176,7 +177,7 @@ library LSP10Utils {
             values = new bytes[](5);
 
             keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes16(oldArrayLength - 1));
+            values[0] = bytes.concat(bytes16(newArrayLength));
 
             keys[1] = vaultMapKey;
             values[1] = "";
@@ -202,7 +203,7 @@ library LSP10Utils {
             values[3] = "";
 
             keys[4] = lastVaultInArrayMapKey;
-            values[4] = bytes.concat(_INTERFACEID_LSP9, bytes8(index));
+            values[4] = bytes.concat(_INTERFACEID_LSP9, bytes16(index));
         }
     }
 
@@ -211,10 +212,10 @@ library LSP10Utils {
     }
 
     /**
-     * @dev returns the index from a maping
+     * @dev returns the index from the LSP10VaultMap
      */
-    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint64) {
-        bytes memory val = BytesLib.slice(mapValue, 4, 8);
-        return BytesLib.toUint64(val, 0);
+    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint128) {
+        bytes memory val = BytesLib.slice(mapValue, 4, 16);
+        return BytesLib.toUint128(val, 0);
     }
 }

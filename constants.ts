@@ -326,11 +326,6 @@ export const Errors = {
       error: "InvalidLSP5ReceivedAssetsArrayLength(bytes,uint256)",
       message: "LSP5: Invalid value for `LSP5ReceivedAssets[]` (array length)",
     },
-    "0x1c458e39": {
-      error: "ReceivedAssetsIndexSuperiorToUint64(uint256)",
-      message:
-        "LSP5: The index of the received assets cannot be registered if superior to uint64",
-    },
     "0xe8a4fba": {
       error: "ReceivedAssetsIndexSuperiorToUint128(uint256)",
       message:

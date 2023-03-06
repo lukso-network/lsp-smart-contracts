@@ -29,10 +29,10 @@ import "../LSP7DigitalAsset/LSP7Constants.sol";
 error InvalidLSP5ReceivedAssetsArrayLength(bytes invalidValueStored, uint256 invalidValueLength);
 
 /**
- * @dev reverts when the received assets index is superior to uint64
- * @param index the received assets index
+ * @dev reverts when the `LSP5ReceivedAssets[]` array reaches its maximum limit (max(uint128))
+ * @param notRegisteredAsset the address of the asset that could not be registered
  */
-error ReceivedAssetsIndexSuperiorToUint64(uint256 index);
+error MaxLSP5ReceivedAssetsCountReached(address notRegisteredAsset);
 
 /**
  * @dev reverts when the received assets index is superior to uint128
@@ -77,14 +77,14 @@ library LSP5Utils {
             values[1] = bytes.concat(bytes20(asset));
 
             keys[2] = assetMapKey;
-            values[2] = bytes.concat(interfaceID, bytes8(0));
+            values[2] = bytes.concat(interfaceID, bytes16(0));
 
             // If the storage is already initiated
         } else if (encodedArrayLength.length == 16) {
             uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
 
-            if (oldArrayLength + 1 >= type(uint64).max) {
-                revert ReceivedAssetsIndexSuperiorToUint64(oldArrayLength);
+            if (oldArrayLength == type(uint128).max) {
+                revert MaxLSP5ReceivedAssetsCountReached({notRegisteredAsset: asset});
             }
 
             keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
@@ -97,7 +97,7 @@ library LSP5Utils {
             values[1] = bytes.concat(bytes20(asset));
 
             keys[2] = assetMapKey;
-            values[2] = bytes.concat(interfaceID, bytes8(uint64(oldArrayLength)));
+            values[2] = bytes.concat(interfaceID, bytes16(oldArrayLength));
         } else {
             revert InvalidLSP5ReceivedAssetsArrayLength({
                 invalidValueStored: encodedArrayLength,
@@ -132,7 +132,7 @@ library LSP5Utils {
         uint128 oldArrayLength = uint128(bytes16(lsp5ReceivedAssetsCountValue));
         uint128 newArrayLength = oldArrayLength - 1;
 
-        uint64 index = extractIndexFromMap(assetInterfaceIdAndIndex);
+        uint128 index = extractIndexFromMap(assetInterfaceIdAndIndex);
         bytes32 assetInArrayKey = LSP2Utils.generateArrayElementKeyAtIndex(
             _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
             index
@@ -205,7 +205,7 @@ library LSP5Utils {
             values[3] = "";
 
             keys[4] = lastAssetInArrayMapKey;
-            values[4] = bytes.concat(interfaceID, bytes8(index));
+            values[4] = bytes.concat(interfaceID, bytes16(index));
         }
     }
 
@@ -214,10 +214,10 @@ library LSP5Utils {
     }
 
     /**
-     * @dev returns the index from a maping
+     * @dev returns the index from the LSP5ReceivedAssetMap
      */
-    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint64) {
-        bytes memory val = BytesLib.slice(mapValue, 4, 8);
-        return BytesLib.toUint64(val, 0);
+    function extractIndexFromMap(bytes memory mapValue) internal pure returns (uint128) {
+        bytes memory val = BytesLib.slice(mapValue, 4, 16);
+        return BytesLib.toUint128(val, 0);
     }
 }
