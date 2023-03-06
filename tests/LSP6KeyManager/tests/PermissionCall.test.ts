@@ -463,6 +463,29 @@ export const shouldBehaveLikePermissionCall = (
       await setupKeyManager(context, permissionKeys, permissionsValues);
     });
 
+    describe("when the 'offset' of the `data` payload is not `0x00...80`", () => {
+      it("should revert", async () => {
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, "0xcafecafe"]
+        );
+
+        // edit the `data` offset
+        payload = payload.replace(
+          "0000000000000000000000000000000000000000000000000000000000000080",
+          "0000000000000000000000000000000000000000000000000000000000000040"
+        );
+
+        await expect(
+          context.keyManager
+            .connect(addressCanMakeCallWithAllowedCalls)
+            ["execute(bytes)"](payload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
+          .withArgs(payload);
+      });
+    });
+
     describe("when interacting via `execute(...)`", () => {
       describe("when caller has ALL PERMISSIONS", () => {
         it("should pass and change state at the target contract", async () => {

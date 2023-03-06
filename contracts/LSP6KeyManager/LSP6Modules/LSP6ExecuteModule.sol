@@ -36,7 +36,8 @@ import {
     NotAllowedCall,
     InvalidEncodedAllowedCalls,
     InvalidWhitelistedCall,
-    NotAuthorised
+    NotAuthorised,
+    InvalidPayload
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6ExecuteModule {
@@ -68,6 +69,25 @@ abstract contract LSP6ExecuteModule {
 
         // prettier-ignore
         bool isContractCreation = operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2;
+
+        // CHECK the offset of `data` is not pointing to the previous parameters
+        if (
+            bytes32(payload[100:132]) !=
+            0x0000000000000000000000000000000000000000000000000000000000000080
+        ) {
+            revert InvalidPayload(payload);
+        }
+
+        // NB: all the parameters are abi-encoded (padded to 32 bytes words)
+        //
+        //    4 (ERC725X.execute selector)
+        // + 32 (uint256 operationType)
+        // + 32 (address to/target)
+        // + 32 (uint256 value)
+        // + 32 (`data` offset)
+        // + 32 (`data` length)
+        // --------------------
+        // = 164 bytes in total
         bool isCallDataPresent = payload.length > 164;
 
         // SUPER operation only applies to contract call, not contract creation
