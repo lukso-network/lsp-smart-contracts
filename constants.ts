@@ -72,12 +72,6 @@ export const OPERATION_TYPES: ERC725XOperationTypes = {
 
 type LSP2ArrayKey = { length: string; index: string };
 
-type ERC725YDataKey = {
-  [lspStandard: string]: {
-    [key: string]: string | LSP2ArrayKey | SupportedStandardsDataKey;
-  };
-};
-
 type SupportedStandardsDataKey = {
   [lspStandard: string]: {
     key: string;
@@ -109,7 +103,7 @@ export const SupportedStandards: SupportedStandardsDataKey = {
  * @dev list of ERC725Y Metadata keys from the LSP standards.
  * @see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md
  */
-export const ERC725YDataKeys: ERC725YDataKey = {
+export const ERC725YDataKeys = {
   LSP1: {
     // bytes10(keccak256('LSP1UniversalReceiverDelegate')) + bytes2(0)
     LSP1UniversalReceiverDelegatePrefix: "0x0cfc51aec37c55a4d0b10000",
@@ -148,7 +142,7 @@ export const ERC725YDataKeys: ERC725YDataKey = {
       length:
         "0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7",
       index: "0x114bd03b3a46d48759680d81ebb2b414",
-    },
+    } as LSP2ArrayKey,
   },
   LSP5: {
     // LSP5ReceivedAssetsMap:<address>  + bytes2(0)
@@ -159,7 +153,7 @@ export const ERC725YDataKeys: ERC725YDataKey = {
       length:
         "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
       index: "0x6460ee3c0aac563ccbf76d6e1d07bada",
-    },
+    } as LSP2ArrayKey,
   },
   LSP6: {
     // keccak256('AddressPermissions[]')
@@ -167,7 +161,7 @@ export const ERC725YDataKeys: ERC725YDataKey = {
       length:
         "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
       index: "0xdf30dba06db6a30e65354d9a64c60986",
-    },
+    } as LSP2ArrayKey,
 
     AddressPermissionsPrefix: "0x4b80742de2bf",
 
@@ -192,7 +186,7 @@ export const ERC725YDataKeys: ERC725YDataKey = {
       length:
         "0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
       index: "0x55482936e01da86729a45d2b87a6b1d3",
-    },
+    } as LSP2ArrayKey,
   },
   LSP12: {
     // LSP12IssuedAssetsMap:<address>  + bytes2(0)
@@ -203,7 +197,7 @@ export const ERC725YDataKeys: ERC725YDataKey = {
       length:
         "0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd",
       index: "0x7c8c3416d6cda87cd42c71ea1843df28",
-    },
+    } as LSP2ArrayKey,
   },
   LSP17: {
     // bytes10(keccak256('LSP17Extension')) + bytes2(0)
@@ -223,7 +217,7 @@ export const LSP6_VERSION: number = 6;
 /**
  * @dev `bytes32` hex value for all the LSP6 permissions excluding REENTRANCY, DELEGATECALL and SUPER_DELEGATECALL for security (these should be set manually)
  */
-export const ALL_PERMISSION: string =
+export const ALL_PERMISSIONS: string =
   "0x00000000000000000000000000000000000000000000000000000000003f3f7f";
 
 type LSP6Permissions = {
