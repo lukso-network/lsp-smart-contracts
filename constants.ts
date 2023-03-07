@@ -208,6 +208,8 @@ export const LSP6_VERSION: number = 6;
 export const ALL_PERMISSIONS: string =
   "0x00000000000000000000000000000000000000000000000000000000003f3f7f";
 
+export type PermissionName = keyof typeof PERMISSIONS;
+
 /**
  * @dev List of `bytes32` permissions from LSP6 Key Manager Standard
  */
