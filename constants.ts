@@ -6,14 +6,12 @@
 // ERC165
 // ---------
 
-export type Erc165InterfaceId = { [key: string]: string };
-
 /**
  * @dev ERC165 interface IDs for the LSP interface standards + some backward compatible ERC token standards.
  * These `bytes4` values can be used to detect if a contract implements a specific interface
  * with `supportsInterface(interfaceId)`.
  */
-export const INTERFACE_IDS: Erc165InterfaceId = {
+export const INTERFACE_IDS = {
   ERC165: "0x01ffc9a7",
   ERC1271: "0x1626ba7e",
   ERC20: "0x36372b07",
@@ -39,16 +37,11 @@ export const INTERFACE_IDS: Erc165InterfaceId = {
 // ERC1271
 // ----------
 
-export type erc1271Values = {
-  MAGIC_VALUE: "0x1626ba7e";
-  FAIL_VALUE: "0xffffffff";
-};
-
 /**
  * @dev values returned by the `isValidSignature` function of the ERC1271 standard.
  * Can be used to check if a signature is valid or not.
  */
-export const ERC1271_VALUES: erc1271Values = {
+export const ERC1271_VALUES = {
   MAGIC_VALUE: "0x1626ba7e",
   FAIL_VALUE: "0xffffffff",
 };
@@ -56,13 +49,11 @@ export const ERC1271_VALUES: erc1271Values = {
 // ERC725X
 // ----------
 
-export type ERC725XOperationTypes = { [key: string]: number };
-
 /**
  * @dev list of ERC725X operation types.
  * @see https://github.com/ERC725Alliance/ERC725/blob/develop/docs/ERC-725.md#execute
  */
-export const OPERATION_TYPES: ERC725XOperationTypes = {
+export const OPERATION_TYPES = {
   CALL: 0,
   CREATE: 1,
   CREATE2: 2,
@@ -74,32 +65,26 @@ export const OPERATION_TYPES: ERC725XOperationTypes = {
 // ----------
 
 export type LSP2ArrayKey = { length: string; index: string };
-
-export type SupportedStandardsDataKey = {
-  [lspStandard: string]: {
-    key: string;
-    value: string;
-  };
-};
+export type LSPSupportedStandard = { key: string; value: string };
 
 /**
  * @dev list of ERC725Y keys from the LSP standards.
  * Can be used to detect if a contract implements a specific LSP Metadata standard
  * and contain a set of pre-defined ERC725Y Data Keys.
  */
-export const SupportedStandards: SupportedStandardsDataKey = {
+export const SupportedStandards = {
   LSP3UniversalProfile: {
     key: "0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38",
     value: "0xabe425d6",
-  },
+  } as LSPSupportedStandard,
   LSP4DigitalAsset: {
     key: "0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c",
     value: "0xa4d96624",
-  },
+  } as LSPSupportedStandard,
   LSP9Vault: {
     key: "0xeafec4d89fa9619884b600007c0334a14085fefa8b51ae5a40895018882bdb90",
     value: "0x7c0334a1",
-  },
+  } as LSPSupportedStandard,
 };
 
 /**
@@ -223,15 +208,11 @@ export const LSP6_VERSION: number = 6;
 export const ALL_PERMISSIONS: string =
   "0x00000000000000000000000000000000000000000000000000000000003f3f7f";
 
-export type LSP6Permissions = {
-  [key: string]: string;
-};
-
 /**
  * @dev List of `bytes32` permissions from LSP6 Key Manager Standard
  */
 // prettier-ignore
-export const PERMISSIONS: LSP6Permissions = {
+export const PERMISSIONS = {
 	CHANGEOWNER                      :"0x0000000000000000000000000000000000000000000000000000000000000001",
 	ADDCONTROLLER                    :"0x0000000000000000000000000000000000000000000000000000000000000002",
 	EDITPERMISSIONS                  :"0x0000000000000000000000000000000000000000000000000000000000000004",
@@ -256,16 +237,12 @@ export const PERMISSIONS: LSP6Permissions = {
 	SIGN                             :"0x0000000000000000000000000000000000000000000000000000000000200000",
 }
 
-export type LSP1Hooks = {
-  [key: string]: string;
-};
-
 /**
  * @dev list of standard type IDs ("hooks") defined in the LSPs that can be used to notify
  * a LSP1 compliant contract about certain type of transactions or information
  * (e.g: token transfer, vault transfer, ownership transfer, etc...)
  */
-export const LSP1_TYPE_IDS: LSP1Hooks = {
+export const LSP1_TYPE_IDS = {
   // keccak256('LSP0OwnershipTransferStarted')
   LSP0OwnershipTransferStarted:
     "0xe17117c9d2665d1dbeb479ed8058bbebde3c50ac50e2e65619f60006caac6926",
@@ -319,16 +296,12 @@ export const LSP1_TYPE_IDS: LSP1Hooks = {
     "0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c",
 };
 
-export type LSPCustomErrors = {
-  [key: string]: {
-    [key: string]: {
-      error: string;
-      message: string;
-    };
-  };
+export type LSPErrorInfo = {
+  error: string;
+  message: string;
 };
 
-export const Errors: LSPCustomErrors = {
+export const Errors = {
   LSP1: {
     "0xa5295345": {
       error: "CannotRegisterEOAsAsAssets(address)",
@@ -345,7 +318,7 @@ export const Errors: LSPCustomErrors = {
       message:
         "LSP1: Cannot send native tokens to the UniversalReceiverDelegate",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP4: {
     "0x85c169bd": {
       error: "LSP4TokenNameNotEditable()",
@@ -355,7 +328,7 @@ export const Errors: LSPCustomErrors = {
       error: "LSP4TokenSymbolNotEditable()",
       message: "LSP4: Token symbol cannot be edited",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP5: {
     "0xecba7af8": {
       error: "InvalidLSP5ReceivedAssetsArrayLength(bytes,uint256)",
@@ -366,7 +339,7 @@ export const Errors: LSPCustomErrors = {
       message:
         "LSP5: The index of the received assets cannot be registered if superior to uint128",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP6: {
     "0xf292052a": {
       error: "NoPermissionsSet(address)",
@@ -452,7 +425,7 @@ export const Errors: LSPCustomErrors = {
       error: "InvalidPayload(bytes)",
       message: "LSP6: Invalid Payload",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP7: {
     "0x08d47949": {
       error: "LSP7AmountExceedsBalance(uint256,address,uint256)",
@@ -491,7 +464,7 @@ export const Errors: LSPCustomErrors = {
       error: "LSP7TokenOwnerCannotBeOperator()",
       message: "LSP7: token owner cannot be an operator.",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP7CappedSupply: {
     "0xacf1d8c5": {
       error: "LSP7CappedSupplyRequired()",
@@ -501,7 +474,7 @@ export const Errors: LSPCustomErrors = {
       error: "LSP7CappedSupplyCannotMintOverCap()",
       message: "LSP7CappedSupply: cannot mint over the max cap supply",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP8: {
     "0xae8f9a36": {
       error: "LSP8NonExistentTokenId(bytes32)",
@@ -558,7 +531,7 @@ export const Errors: LSPCustomErrors = {
       error: "LSP8TokenOwnerCannotBeOperator()",
       message: "LSP8: Cannot authorize the token owner as an operator.",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP8CappedSupply: {
     "0x38d9fc30": {
       error: "LSP8CappedSupplyRequired()",
@@ -568,14 +541,14 @@ export const Errors: LSPCustomErrors = {
       error: "LSP8CappedSupplyCannotMintOverCap()",
       message: "LSP8CappedSupply: cannot mint over the max cap supply",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP9: {
     "0x199611f": {
       error: "LSP1DelegateNotAllowedToSetDataKey(bytes32)",
       message:
         "The UniversalReceiverDelegate is not allowed to set this data key",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP11: {
     "0x5560e16": {
       error: "CallerIsNotGuardian(address)",
@@ -618,7 +591,7 @@ export const Errors: LSPCustomErrors = {
       message:
         "LSP11: The address zero is not allowed to call recoverOwnership function",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP14Ownable2Step: {
     "0x8b9bf507": {
       error: "NotInRenounceOwnershipInterval(uint256,uint256)",
@@ -629,23 +602,17 @@ export const Errors: LSPCustomErrors = {
       error: "CannotTransferOwnershipToSelf()",
       message: "LSP14: Cannot transfer ownership to address(this)",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP17ContractExtension: {
     "0xbb370b2b": {
       error: "NoExtensionFoundForFunctionSelector(bytes4)",
       message:
         "The function being called on the contract is not supported and there is no extension for it",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
 };
 
-export type LSPEvents = {
-  [contractName: string]: {
-    [eventName: string]: string;
-  };
-};
-
-export const EventSignatures: LSPEvents = {
+export const EventSignatures = {
   ERC173: {
     /**
      * event OwnershipTransferred(
