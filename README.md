@@ -101,7 +101,7 @@ import {
   LSP6Permissions,
   LSP1Hooks,
   LSPCustomErrors,
-} from "@lukso/lsp-smart-contracts/module/constant.d.ts";
+} from "@lukso/lsp-smart-contracts/constant";
 ```
 
 ## Audits
