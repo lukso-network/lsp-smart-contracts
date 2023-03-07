@@ -87,20 +87,15 @@ It also includes constant values [Array data keys](https://github.com/lukso-netw
 },
 ```
 
-### Typescript types
+### Typescript types
 
-The typescript types for the constant values are also available.
+The following additional typescript types are also available.
 
 ```ts
 import {
-  Erc165InterfaceId,
-  erc1271Values,
-  ERC725XOperationTypes,
   LSP2ArrayKey,
-  SupportedStandardsDataKey,
-  LSP6Permissions,
-  LSP1Hooks,
-  LSPCustomErrors,
+  LSPSupportedStandard,
+  LSPErrorInfo,
 } from "@lukso/lsp-smart-contracts/constant";
 ```
 
