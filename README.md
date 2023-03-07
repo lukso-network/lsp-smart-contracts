@@ -95,8 +95,9 @@ The following additional typescript types are also available.
 import {
   LSP2ArrayKey,
   LSPSupportedStandard,
+  LSP6PermissionName,
   LSPErrorInfo,
-} from "@lukso/lsp-smart-contracts/constant";
+} from "@lukso/lsp-smart-contracts/constants";
 ```
 
 ## Audits
