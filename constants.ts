@@ -64,6 +64,9 @@ export const OPERATION_TYPES = {
 // ERC725Y
 // ----------
 
+export type LSP2ArrayKey = { length: string; index: string };
+export type LSPSupportedStandard = { key: string; value: string };
+
 /**
  * @dev list of ERC725Y keys from the LSP standards.
  * Can be used to detect if a contract implements a specific LSP Metadata standard
@@ -73,15 +76,15 @@ export const SupportedStandards = {
   LSP3UniversalProfile: {
     key: "0xeafec4d89fa9619884b60000abe425d64acd861a49b8ddf5c0b6962110481f38",
     value: "0xabe425d6",
-  },
+  } as LSPSupportedStandard,
   LSP4DigitalAsset: {
     key: "0xeafec4d89fa9619884b60000a4d96624a38f7ac2d8d9a604ecf07c12c77e480c",
     value: "0xa4d96624",
-  },
+  } as LSPSupportedStandard,
   LSP9Vault: {
     key: "0xeafec4d89fa9619884b600007c0334a14085fefa8b51ae5a40895018882bdb90",
     value: "0x7c0334a1",
-  },
+  } as LSPSupportedStandard,
 };
 
 /**
@@ -127,7 +130,7 @@ export const ERC725YDataKeys = {
       length:
         "0x114bd03b3a46d48759680d81ebb2b414fda7d030a7105a851867accf1c2352e7",
       index: "0x114bd03b3a46d48759680d81ebb2b414",
-    },
+    } as LSP2ArrayKey,
   },
   LSP5: {
     // LSP5ReceivedAssetsMap:<address>  + bytes2(0)
@@ -138,7 +141,7 @@ export const ERC725YDataKeys = {
       length:
         "0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b",
       index: "0x6460ee3c0aac563ccbf76d6e1d07bada",
-    },
+    } as LSP2ArrayKey,
   },
   LSP6: {
     // keccak256('AddressPermissions[]')
@@ -146,7 +149,7 @@ export const ERC725YDataKeys = {
       length:
         "0xdf30dba06db6a30e65354d9a64c609861f089545ca58c6b4dbe31a5f338cb0e3",
       index: "0xdf30dba06db6a30e65354d9a64c60986",
-    },
+    } as LSP2ArrayKey,
 
     AddressPermissionsPrefix: "0x4b80742de2bf",
 
@@ -171,7 +174,7 @@ export const ERC725YDataKeys = {
       length:
         "0x55482936e01da86729a45d2b87a6b1d3bc582bea0ec00e38bdb340e3af6f9f06",
       index: "0x55482936e01da86729a45d2b87a6b1d3",
-    },
+    } as LSP2ArrayKey,
   },
   LSP12: {
     // LSP12IssuedAssetsMap:<address>  + bytes2(0)
@@ -182,7 +185,7 @@ export const ERC725YDataKeys = {
       length:
         "0x7c8c3416d6cda87cd42c71ea1843df28ac4850354f988d55ee2eaa47b6dc05cd",
       index: "0x7c8c3416d6cda87cd42c71ea1843df28",
-    },
+    } as LSP2ArrayKey,
   },
   LSP17: {
     // bytes10(keccak256('LSP17Extension')) + bytes2(0)
@@ -197,13 +200,15 @@ export const ERC725YDataKeys = {
  * @dev LSP6 version number for signing `executeRelayCall(...)` transaction using EIP191
  * @see for details see: https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md#executerelaycall
  */
-export const LSP6_VERSION = 6;
+export const LSP6_VERSION: number = 6;
 
 /**
  * @dev `bytes32` hex value for all the LSP6 permissions excluding REENTRANCY, DELEGATECALL and SUPER_DELEGATECALL for security (these should be set manually)
  */
-export const ALL_PERMISSIONS =
+export const ALL_PERMISSIONS: string =
   "0x00000000000000000000000000000000000000000000000000000000003f3f7f";
+
+export type LSP6PermissionName = keyof typeof PERMISSIONS;
 
 /**
  * @dev List of `bytes32` permissions from LSP6 Key Manager Standard
@@ -293,6 +298,11 @@ export const LSP1_TYPE_IDS = {
     "0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c",
 };
 
+export type LSPErrorInfo = {
+  error: string;
+  message: string;
+};
+
 export const Errors = {
   LSP1: {
     "0xa5295345": {
@@ -310,7 +320,7 @@ export const Errors = {
       message:
         "LSP1: Cannot send native tokens to the UniversalReceiverDelegate",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP4: {
     "0x85c169bd": {
       error: "LSP4TokenNameNotEditable()",
@@ -320,7 +330,7 @@ export const Errors = {
       error: "LSP4TokenSymbolNotEditable()",
       message: "LSP4: Token symbol cannot be edited",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP5: {
     "0xecba7af8": {
       error: "InvalidLSP5ReceivedAssetsArrayLength(bytes,uint256)",
@@ -331,7 +341,7 @@ export const Errors = {
       message:
         "LSP5: The index of the received assets cannot be registered if superior to uint128",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP6: {
     "0xf292052a": {
       error: "NoPermissionsSet(address)",
@@ -417,7 +427,7 @@ export const Errors = {
       error: "InvalidPayload(bytes)",
       message: "LSP6: Invalid Payload",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP7: {
     "0x08d47949": {
       error: "LSP7AmountExceedsBalance(uint256,address,uint256)",
@@ -456,7 +466,7 @@ export const Errors = {
       error: "LSP7TokenOwnerCannotBeOperator()",
       message: "LSP7: token owner cannot be an operator.",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP7CappedSupply: {
     "0xacf1d8c5": {
       error: "LSP7CappedSupplyRequired()",
@@ -466,7 +476,7 @@ export const Errors = {
       error: "LSP7CappedSupplyCannotMintOverCap()",
       message: "LSP7CappedSupply: cannot mint over the max cap supply",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP8: {
     "0xae8f9a36": {
       error: "LSP8NonExistentTokenId(bytes32)",
@@ -523,7 +533,7 @@ export const Errors = {
       error: "LSP8TokenOwnerCannotBeOperator()",
       message: "LSP8: Cannot authorize the token owner as an operator.",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP8CappedSupply: {
     "0x38d9fc30": {
       error: "LSP8CappedSupplyRequired()",
@@ -533,14 +543,14 @@ export const Errors = {
       error: "LSP8CappedSupplyCannotMintOverCap()",
       message: "LSP8CappedSupply: cannot mint over the max cap supply",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP9: {
     "0x199611f": {
       error: "LSP1DelegateNotAllowedToSetDataKey(bytes32)",
       message:
         "The UniversalReceiverDelegate is not allowed to set this data key",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP11: {
     "0x5560e16": {
       error: "CallerIsNotGuardian(address)",
@@ -583,7 +593,7 @@ export const Errors = {
       message:
         "LSP11: The address zero is not allowed to call recoverOwnership function",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP14Ownable2Step: {
     "0x8b9bf507": {
       error: "NotInRenounceOwnershipInterval(uint256,uint256)",
@@ -594,14 +604,14 @@ export const Errors = {
       error: "CannotTransferOwnershipToSelf()",
       message: "LSP14: Cannot transfer ownership to address(this)",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
   LSP17ContractExtension: {
     "0xbb370b2b": {
       error: "NoExtensionFoundForFunctionSelector(bytes4)",
       message:
         "The function being called on the contract is not supported and there is no extension for it",
     },
-  },
+  } as Record<string, LSPErrorInfo>,
 };
 
 export const EventSignatures = {
