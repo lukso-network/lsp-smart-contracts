@@ -58,7 +58,7 @@ contract MyAccount is LSP0ERC725Account {
 
 You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./DEPLOYMENT.md) page.
 
-## Available Constants
+## Available Constants & Types
 
 The [`@lukso/lsp-smart-contracts` npm package](https://www.npmjs.com/package/@lukso/lsp-smart-contracts) contains useful constants such as Interface IDs or ERC725Y Data Keys related to the LSP Standards. You can import and access them as follow:
 
@@ -85,6 +85,23 @@ It also includes constant values [Array data keys](https://github.com/lukso-netw
     length: '0x6460ee3c0aac563ccbf76d6e1d07bada78e3a9514e6382b736ed3f478ab7b90b',
     index: '0x6460ee3c0aac563ccbf76d6e1d07bada',
 },
+```
+
+### Typescript types
+
+The typescript types for the constant values are also available.
+
+```ts
+import {
+  Erc165InterfaceId,
+  erc1271Values,
+  ERC725XOperationTypes,
+  LSP2ArrayKey,
+  SupportedStandardsDataKey,
+  LSP6Permissions,
+  LSP1Hooks,
+  LSPCustomErrors,
+} from "@lukso/lsp-smart-contracts/module/constant.d.ts";
 ```
 
 ## Audits

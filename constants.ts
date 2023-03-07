@@ -6,7 +6,7 @@
 // ERC165
 // ---------
 
-type Erc165InterfaceId = { [key: string]: string };
+export type Erc165InterfaceId = { [key: string]: string };
 
 /**
  * @dev ERC165 interface IDs for the LSP interface standards + some backward compatible ERC token standards.
@@ -39,7 +39,10 @@ export const INTERFACE_IDS: Erc165InterfaceId = {
 // ERC1271
 // ----------
 
-type erc1271Values = { MAGIC_VALUE: "0x1626ba7e"; FAIL_VALUE: "0xffffffff" };
+export type erc1271Values = {
+  MAGIC_VALUE: "0x1626ba7e";
+  FAIL_VALUE: "0xffffffff";
+};
 
 /**
  * @dev values returned by the `isValidSignature` function of the ERC1271 standard.
@@ -53,7 +56,7 @@ export const ERC1271_VALUES: erc1271Values = {
 // ERC725X
 // ----------
 
-type ERC725XOperationTypes = { [key: string]: number };
+export type ERC725XOperationTypes = { [key: string]: number };
 
 /**
  * @dev list of ERC725X operation types.
@@ -70,9 +73,9 @@ export const OPERATION_TYPES: ERC725XOperationTypes = {
 // ERC725Y
 // ----------
 
-type LSP2ArrayKey = { length: string; index: string };
+export type LSP2ArrayKey = { length: string; index: string };
 
-type SupportedStandardsDataKey = {
+export type SupportedStandardsDataKey = {
   [lspStandard: string]: {
     key: string;
     value: string;
@@ -220,7 +223,7 @@ export const LSP6_VERSION: number = 6;
 export const ALL_PERMISSIONS: string =
   "0x00000000000000000000000000000000000000000000000000000000003f3f7f";
 
-type LSP6Permissions = {
+export type LSP6Permissions = {
   [key: string]: string;
 };
 
@@ -253,7 +256,7 @@ export const PERMISSIONS: LSP6Permissions = {
 	SIGN                             :"0x0000000000000000000000000000000000000000000000000000000000200000",
 }
 
-type LSP1Hooks = {
+export type LSP1Hooks = {
   [key: string]: string;
 };
 
@@ -316,7 +319,7 @@ export const LSP1_TYPE_IDS: LSP1Hooks = {
     "0xe32c7debcb817925ba4883fdbfc52797187f28f73f860641dab1a68d9b32902c",
 };
 
-type LSPCustomErrors = {
+export type LSPCustomErrors = {
   [key: string]: {
     [key: string]: {
       error: string;
@@ -636,7 +639,7 @@ export const Errors: LSPCustomErrors = {
   },
 };
 
-type LSPEvents = {
+export type LSPEvents = {
   [contractName: string]: {
     [eventName: string]: string;
   };
