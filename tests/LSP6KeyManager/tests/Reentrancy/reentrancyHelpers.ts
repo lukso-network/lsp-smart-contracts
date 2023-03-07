@@ -694,12 +694,7 @@ export const loadTestCase = async (
     }
   }
 
-  const permissionsPayload =
-    new UniversalProfile__factory().interface.encodeFunctionData(
-      "setData(bytes32[],bytes[])",
-      [permissionKeys, permissionValues]
-    );
-  await context.keyManager
+  await context.universalProfile
     .connect(context.owner)
-    ["execute(bytes)"](permissionsPayload);
+    ["setData(bytes32[],bytes[])"](permissionKeys, permissionValues);
 };

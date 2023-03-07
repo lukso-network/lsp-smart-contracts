@@ -22,9 +22,12 @@ import {
   addUniversalReceiverDelegateTestCases,
   changeUniversalReceiverDelegateTestCases,
   // Functions
-  generateExecutePayload,
   loadTestCase,
 } from "./reentrancyHelpers";
+import {
+  ReentrantContract__factory,
+  UniversalProfile__factory,
+} from "../../../../types";
 
 export const testSingleExecuteToBatchExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
@@ -41,12 +44,19 @@ export const testSingleExecuteToBatchExecute = (
   });
 
   describe("when reentering and transferring value", () => {
-    let executePayload: BytesLike;
+    let batchCall: BytesLike;
     before(async () => {
-      executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
-        "TRANSFERVALUE"
+      batchCall = new UniversalProfile__factory().interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          0,
+          reentrancyContext.reentrantContract.address,
+          0,
+          new ReentrantContract__factory().interface.encodeFunctionData(
+            "callThatReenters",
+            ["TRANSFERVALUE"]
+          ),
+        ]
       );
     });
 
@@ -65,9 +75,9 @@ export const testSingleExecuteToBatchExecute = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],bytes[])"]([0], [executePayload])
+            .batchCalls([batchCall])
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -87,9 +97,9 @@ export const testSingleExecuteToBatchExecute = (
       );
 
       await expect(
-        context.keyManager
+        context.universalProfile
           .connect(reentrancyContext.caller)
-          ["execute(uint256[],bytes[])"]([0], [executePayload])
+          .batchCalls([batchCall])
       ).to.be.revertedWithCustomError(context.keyManager, "NoCallsAllowed");
     });
 
@@ -108,9 +118,9 @@ export const testSingleExecuteToBatchExecute = (
         )
       ).to.equal(ethers.utils.parseEther("10"));
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],bytes[])"]([0], [executePayload]);
+        .batchCalls([batchCall]);
 
       expect(
         await context.universalProfile.provider.getBalance(
@@ -127,12 +137,19 @@ export const testSingleExecuteToBatchExecute = (
   });
 
   describe("when reentering and setting data", () => {
-    let executePayload: BytesLike;
+    let batchCall: BytesLike;
     before(async () => {
-      executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
-        "SETDATA"
+      batchCall = new UniversalProfile__factory().interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          0,
+          reentrancyContext.reentrantContract.address,
+          0,
+          new ReentrantContract__factory().interface.encodeFunctionData(
+            "callThatReenters",
+            ["SETDATA"]
+          ),
+        ]
       );
     });
 
@@ -151,9 +168,9 @@ export const testSingleExecuteToBatchExecute = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],bytes[])"]([0], [executePayload])
+            .batchCalls([batchCall])
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -173,9 +190,9 @@ export const testSingleExecuteToBatchExecute = (
       );
 
       await expect(
-        context.keyManager
+        context.universalProfile
           .connect(reentrancyContext.caller)
-          ["execute(uint256[],bytes[])"]([0], [executePayload])
+          .batchCalls([batchCall])
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "NoERC725YDataKeysAllowed"
@@ -191,9 +208,9 @@ export const testSingleExecuteToBatchExecute = (
         reentrancyContext.reentrantContract.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],bytes[])"]([0], [executePayload]);
+        .batchCalls([batchCall]);
 
       const hardcodedKey = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes("SomeRandomTextUsed")
@@ -209,12 +226,19 @@ export const testSingleExecuteToBatchExecute = (
   });
 
   describe("when reentering and adding permissions", () => {
-    let executePayload: BytesLike;
+    let batchCall: BytesLike;
     before(async () => {
-      executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
-        "ADDCONTROLLER"
+      batchCall = new UniversalProfile__factory().interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          0,
+          reentrancyContext.reentrantContract.address,
+          0,
+          new ReentrantContract__factory().interface.encodeFunctionData(
+            "callThatReenters",
+            ["ADDCONTROLLER"]
+          ),
+        ]
       );
     });
 
@@ -229,9 +253,9 @@ export const testSingleExecuteToBatchExecute = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],bytes[])"]([0], [executePayload])
+            .batchCalls([batchCall])
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -250,9 +274,9 @@ export const testSingleExecuteToBatchExecute = (
         reentrancyContext.reentrantContract.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],bytes[])"]([0], [executePayload]);
+        .batchCalls([batchCall]);
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -269,12 +293,19 @@ export const testSingleExecuteToBatchExecute = (
   });
 
   describe("when reentering and changing permissions", () => {
-    let executePayload: BytesLike;
+    let batchCall: BytesLike;
     before(async () => {
-      executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
-        "EDITPERMISSIONS"
+      batchCall = new UniversalProfile__factory().interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          0,
+          reentrancyContext.reentrantContract.address,
+          0,
+          new ReentrantContract__factory().interface.encodeFunctionData(
+            "callThatReenters",
+            ["EDITPERMISSIONS"]
+          ),
+        ]
       );
     });
 
@@ -289,9 +320,9 @@ export const testSingleExecuteToBatchExecute = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],bytes[])"]([0], [executePayload])
+            .batchCalls([batchCall])
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -310,9 +341,9 @@ export const testSingleExecuteToBatchExecute = (
         reentrancyContext.reentrantContract.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],bytes[])"]([0], [executePayload]);
+        .batchCalls([batchCall]);
 
       const hardcodedPermissionKey =
         ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] +
@@ -328,12 +359,19 @@ export const testSingleExecuteToBatchExecute = (
   });
 
   describe("when reentering and adding URD", () => {
-    let executePayload: BytesLike;
+    let batchCall: BytesLike;
     before(async () => {
-      executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
-        "ADDUNIVERSALRECEIVERDELEGATE"
+      batchCall = new UniversalProfile__factory().interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          0,
+          reentrancyContext.reentrantContract.address,
+          0,
+          new ReentrantContract__factory().interface.encodeFunctionData(
+            "callThatReenters",
+            ["ADDUNIVERSALRECEIVERDELEGATE"]
+          ),
+        ]
       );
     });
 
@@ -348,9 +386,9 @@ export const testSingleExecuteToBatchExecute = (
         );
 
         await expect(
-          context.keyManager
+          context.universalProfile
             .connect(reentrancyContext.caller)
-            ["execute(uint256[],bytes[])"]([0], [executePayload])
+            .batchCalls([batchCall])
         )
           .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
           .withArgs(
@@ -369,9 +407,9 @@ export const testSingleExecuteToBatchExecute = (
         reentrancyContext.reentrantContract.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],bytes[])"]([0], [executePayload]);
+        .batchCalls([batchCall]);
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
@@ -386,12 +424,19 @@ export const testSingleExecuteToBatchExecute = (
   });
 
   describe("when reentering and changing URD", () => {
-    let executePayload: BytesLike;
+    let batchCall: BytesLike;
     before(async () => {
-      executePayload = generateExecutePayload(
-        context.keyManager.address,
-        reentrancyContext.reentrantContract.address,
-        "CHANGEUNIVERSALRECEIVERDELEGATE"
+      batchCall = new UniversalProfile__factory().interface.encodeFunctionData(
+        "execute(uint256,address,uint256,bytes)",
+        [
+          0,
+          reentrancyContext.reentrantContract.address,
+          0,
+          new ReentrantContract__factory().interface.encodeFunctionData(
+            "callThatReenters",
+            ["CHANGEUNIVERSALRECEIVERDELEGATE"]
+          ),
+        ]
       );
     });
 
@@ -407,9 +452,9 @@ export const testSingleExecuteToBatchExecute = (
           );
 
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(reentrancyContext.caller)
-              ["execute(uint256[],bytes[])"]([0], [executePayload])
+              .batchCalls([batchCall])
           )
             .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
             .withArgs(
@@ -429,9 +474,9 @@ export const testSingleExecuteToBatchExecute = (
         reentrancyContext.reentrantContract.address
       );
 
-      await context.keyManager
+      await context.universalProfile
         .connect(reentrancyContext.caller)
-        ["execute(uint256[],bytes[])"]([0], [executePayload]);
+        .batchCalls([batchCall]);
 
       const hardcodedLSP1Key =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
