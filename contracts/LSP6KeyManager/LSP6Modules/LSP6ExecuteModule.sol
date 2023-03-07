@@ -94,10 +94,18 @@ abstract contract LSP6ExecuteModule {
         }
 
         // if it is a message call
-        (bytes32 executePermission, bytes32 superOperationPermission) = operationType ==
-            OPERATION_0_CALL
-            ? (_PERMISSION_CALL, _PERMISSION_SUPER_CALL)
-            : (_PERMISSION_STATICCALL, _PERMISSION_SUPER_STATICCALL);
+        bytes32 executePermission;
+        bytes32 superOperationPermission;
+
+        if (operationType == OPERATION_0_CALL) {
+            // prettier-ignore
+            (executePermission, superOperationPermission) = (_PERMISSION_CALL, _PERMISSION_SUPER_CALL);
+        }
+
+        if (operationType == OPERATION_3_STATICCALL) {
+            // prettier-ignore
+            (executePermission, superOperationPermission) = (_PERMISSION_STATICCALL, _PERMISSION_SUPER_STATICCALL);
+        }
 
         // NB: all the parameters are abi-encoded (padded to 32 bytes words)
         //
