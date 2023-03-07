@@ -613,26 +613,6 @@ export const generateBatchRelayPayload = async (
   );
 };
 
-export const generateExecutePayload = (
-  keyManagerAddress: string,
-  reentrantContractAddress: string,
-  payloadType: string
-) => {
-  const reentrantPayload =
-    new ReentrantContract__factory().interface.encodeFunctionData(
-      "callThatReenters",
-      [keyManagerAddress, payloadType]
-    );
-
-  const executePayload =
-    new UniversalProfile__factory().interface.encodeFunctionData(
-      "execute(uint256,address,uint256,bytes)",
-      [0, reentrantContractAddress, 0, reentrantPayload]
-    );
-
-  return executePayload;
-};
-
 export const loadTestCase = async (
   payloadType: string,
   testCase: TransferValueTestCase | SetDataTestCase | SimplePermissionTestCase,

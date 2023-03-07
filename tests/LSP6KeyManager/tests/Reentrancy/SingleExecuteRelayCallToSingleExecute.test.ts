@@ -23,9 +23,32 @@ import {
   changeUniversalReceiverDelegateTestCases,
   // Functions
   generateRelayCall,
-  generateExecutePayload,
   loadTestCase,
 } from "./reentrancyHelpers";
+import {
+  ReentrantContract__factory,
+  UniversalProfile__factory,
+} from "../../../../types";
+
+const generateExecutePayload = (
+  keyManagerAddress: string,
+  reentrantContractAddress: string,
+  payloadType: string
+) => {
+  const reentrantPayload =
+    new ReentrantContract__factory().interface.encodeFunctionData(
+      "callThatReenters",
+      [keyManagerAddress, payloadType]
+    );
+
+  const executePayload =
+    new UniversalProfile__factory().interface.encodeFunctionData(
+      "execute(uint256,address,uint256,bytes)",
+      [0, reentrantContractAddress, 0, reentrantPayload]
+    );
+
+  return executePayload;
+};
 
 export const testSingleExecuteRelayCallToSingleExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
