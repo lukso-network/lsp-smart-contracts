@@ -400,9 +400,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @dev Sets the pending owner and notify the pending owner
-     *
-     * @param newOwner The address nofied and set as `pendingOwner`
+     * @inheritdoc LSP14Ownable2Step
      */
     function transferOwnership(address newOwner)
         public
@@ -423,6 +421,9 @@ contract LSP9VaultCore is
         );
     }
 
+    /**
+     * @inheritdoc LSP14Ownable2Step
+     */
     function acceptOwnership() public virtual override {
         address previousOwner = owner();
 
@@ -440,7 +441,7 @@ contract LSP9VaultCore is
     }
 
     /**
-     * @dev Renounce ownership of the contract in a 2-step process
+     * @inheritdoc LSP14Ownable2Step
      */
     function renounceOwnership()
         public

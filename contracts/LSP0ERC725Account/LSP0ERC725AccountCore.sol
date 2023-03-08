@@ -370,9 +370,12 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @dev Sets the pending owner and notifies the pending owner
+     * @inheritdoc LSP14Ownable2Step
      *
-     * @param newOwner The address nofied and set as `pendingOwner`
+     * @dev same as ILSP14.transferOwnership with the additional requirement:
+     *
+     * Requirements:
+     *  - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted')
      */
     function transferOwnership(address newOwner)
         public
@@ -393,6 +396,9 @@ abstract contract LSP0ERC725AccountCore is
         );
     }
 
+    /**
+     * @inheritdoc LSP14Ownable2Step
+     */
     function acceptOwnership() public virtual override {
         address previousOwner = owner();
 
@@ -410,7 +416,7 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @dev Renounce ownership of the contract in a 2-step process
+     * @inheritdoc LSP14Ownable2Step
      */
     function renounceOwnership()
         public
