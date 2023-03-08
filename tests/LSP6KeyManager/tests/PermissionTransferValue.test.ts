@@ -977,7 +977,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           ]
         );
 
-        await expect(() =>
+        await expect(
           context.keyManager.connect(caller)["execute(bytes)"](executePayload)
         ).to.changeEtherBalances(
           [context.universalProfile.address, targetContract.address],
@@ -986,6 +986,40 @@ export const shouldBehaveLikePermissionTransferValue = (
 
         const result = await targetContract.value();
         expect(result).to.equal(newValue);
+      });
+
+      it("should not be allowed to interact with a not allowed contract + send some LYX while calling the function", async () => {
+        const newValue = 8910;
+        const lyxAmount = ethers.utils.parseEther("3");
+
+        const randomTargetContract = await new TargetPayableContract__factory(
+          context.accounts[0]
+        ).deploy();
+
+        let targetContractPayload =
+          randomTargetContract.interface.encodeFunctionData("updateState", [
+            newValue,
+          ]);
+
+        let executePayload = universalProfileInterface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [
+            OPERATION_TYPES.CALL,
+            randomTargetContract.address,
+            lyxAmount,
+            targetContractPayload,
+          ]
+        );
+
+        await expect(
+          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
+          .withArgs(
+            caller.address,
+            randomTargetContract.address,
+            randomTargetContract.interface.getSighash("updateState")
+          );
       });
     });
   });
