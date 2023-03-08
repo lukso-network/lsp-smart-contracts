@@ -9,6 +9,9 @@ import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalRec
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
+// libraries
+import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+
 // errors
 import "./LSP14Errors.sol";
 
@@ -28,6 +31,8 @@ import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
  *      transferring ownership of the contract, where the control of the contract could be lost forever.
  */
 abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
+    using LSP1Utils for address;
+
     /**
      * @dev The number of block that MUST pass before one is able to
      *  confirm renouncing ownership
@@ -72,13 +77,34 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         onlyOwner
     {
         _transferOwnership(newOwner);
+
+        address currentOwner = owner();
+        emit OwnershipTransferStarted(currentOwner, newOwner);
+
+        newOwner.tryNotifyUniversalReceiver(_TYPEID_LSP14_OwnershipTransferStarted, "");
+        require(
+            currentOwner == owner(),
+            "LSP14: newOwner MUST accept ownership in a separate transaction"
+        );
     }
 
     /**
      * @inheritdoc ILSP14Ownable2Step
      */
     function acceptOwnership() public virtual {
+        address previousOwner = owner();
+
         _acceptOwnership();
+
+        previousOwner.tryNotifyUniversalReceiver(
+            _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
+            ""
+        );
+
+        msg.sender.tryNotifyUniversalReceiver(
+            _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
+            ""
+        );
     }
 
     /**
@@ -107,14 +133,6 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
 
         _pendingOwner = newOwner;
         delete _renounceOwnershipStartedAt;
-        address currentOwner = owner();
-        emit OwnershipTransferStarted(currentOwner, newOwner);
-
-        _notifyLSP1SenderOnOwnershipTransferStart(newOwner, "");
-        require(
-            currentOwner == owner(),
-            "LSP14: newOwner MUST accept ownership in a separate transaction"
-        );
     }
 
     /**
@@ -124,12 +142,8 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
     function _acceptOwnership() internal virtual {
         require(msg.sender == pendingOwner(), "LSP14: caller is not the pendingOwner");
 
-        address previousOwner = owner();
         _setOwner(msg.sender);
         delete _pendingOwner;
-
-        _notifyLSP1SenderOnOwnershipTransferCompletion(previousOwner, "");
-        _notifyLSP1RecipientOnOwnershipTransferCompletion(msg.sender, "");
     }
 
     /**
@@ -158,55 +172,5 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, OwnableUnset {
         delete _renounceOwnershipStartedAt;
         delete _pendingOwner;
         emit OwnershipRenounced();
-    }
-
-    // --- URD Hooks
-
-    /**
-     * @dev Calls the universalReceiver function of the sender when ownership transfer starts
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1SenderOnOwnershipTransferStart(address notifiedContract, bytes memory data)
-        internal
-        virtual
-    {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP14_OwnershipTransferStarted,
-                data
-            );
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the sender when ownerhsip transfer is complete
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1SenderOnOwnershipTransferCompletion(
-        address notifiedContract,
-        bytes memory data
-    ) internal virtual {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP14_OwnershipTransferred_SenderNotification,
-                data
-            );
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the recipient when ownerhsip transfer is complete
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1RecipientOnOwnershipTransferCompletion(
-        address notifiedContract,
-        bytes memory data
-    ) internal virtual {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP14_OwnershipTransferred_RecipientNotification,
-                data
-            );
-        }
     }
 }

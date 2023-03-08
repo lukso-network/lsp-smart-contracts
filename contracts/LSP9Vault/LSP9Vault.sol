@@ -9,12 +9,16 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
+// libraries
+import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
     _INTERFACEID_LSP9,
     _LSP9_SUPPORTED_STANDARDS_KEY,
-    _LSP9_SUPPORTED_STANDARDS_VALUE
+    _LSP9_SUPPORTED_STANDARDS_VALUE,
+    _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
 } from "../LSP9Vault/LSP9Constants.sol";
 
 /**
@@ -23,6 +27,8 @@ import {
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 contract LSP9Vault is LSP9VaultCore {
+    using LSP1Utils for address;
+
     /**
      * @notice Sets the owner of the contract and sets the SupportedStandards:LSP9Vault key
      * @param newOwner the owner of the contract
@@ -35,6 +41,9 @@ contract LSP9Vault is LSP9VaultCore {
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
-        _notifyLSP1RecipientOnOwnershipTransferCompletion(newOwner, "");
+        msg.sender.tryNotifyUniversalReceiver(
+            _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
+            ""
+        );
     }
 }
