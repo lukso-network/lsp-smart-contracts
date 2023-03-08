@@ -398,6 +398,12 @@ abstract contract LSP0ERC725AccountCore is
 
     /**
      * @inheritdoc LSP14Ownable2Step
+     *
+     * @dev same as ILSP14.acceptOwnership with the additional requirement:
+     *
+     * Requirements:
+     * - when notifying the previous owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferred_SenderNotification')
+     * - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferred_RecipientNotification')
      */
     function acceptOwnership() public virtual override {
         address previousOwner = owner();
