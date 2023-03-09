@@ -8,6 +8,7 @@ import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 // libraries
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {GasLib} from "../Utils/GasLib.sol";
+import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
 
 // modules
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -29,6 +30,8 @@ import {_TYPEID_LSP7_TOKENSSENDER, _TYPEID_LSP7_TOKENSRECIPIENT} from "./LSP7Con
  * This contract implement the core logic of the functions for the {ILSP7DigitalAsset} interface.
  */
 abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
+    using LSP1Utils for address;
+
     // --- Storage
 
     bool internal _isNonDivisible;
@@ -275,7 +278,10 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         emit Transfer(operator, from, address(0), amount, false, data);
 
         bytes memory lsp1Data = abi.encodePacked(from, address(0), amount, data);
-        _notifyTokenSender(from, lsp1Data);
+
+        /// @dev An attempt is made to notify the token sender about
+        /// the `amount` of tokens being burnt using LSP1.
+        from.tryNotifyUniversalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
     }
 
     /**
@@ -318,7 +324,9 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
 
         bytes memory lsp1Data = abi.encodePacked(from, to, amount, data);
 
-        _notifyTokenSender(from, lsp1Data);
+        /// @dev An attempt is made to notify the token sender and recipients about
+        /// the `amount` of tokens changing owners using LSP1.
+        from.tryNotifyUniversalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
         _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
     }
 
@@ -339,16 +347,6 @@ abstract contract LSP7DigitalAssetCore is ILSP7DigitalAsset {
         address to,
         uint256 amount
     ) internal virtual {}
-
-    /**
-     * @dev An attempt is made to notify the token sender about the `amount` tokens changing owners using
-     * LSP1 interface.
-     */
-    function _notifyTokenSender(address from, bytes memory lsp1Data) internal virtual {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(from, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(from).universalReceiver(_TYPEID_LSP7_TOKENSSENDER, lsp1Data);
-        }
-    }
 
     /**
      * @dev An attempt is made to notify the token receiver about the `amount` tokens changing owners
