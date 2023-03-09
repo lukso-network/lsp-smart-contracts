@@ -3,7 +3,6 @@ import { expect } from "chai";
 import { BytesLike } from "ethers";
 import { LSP6InternalsTestContext } from "../../utils/context";
 import { encodeCompactBytesArray } from "../../utils/helpers";
-import { PANIC_CODES } from "@nomicfoundation/hardhat-chai-matchers/panic";
 
 export type DataKey = {
   length: BytesLike;
@@ -584,7 +583,6 @@ export const testAllowedERC725YDataKeysInternals = (
           }
         });
 
-        // TODO: investigate the Panic revert reason
         it("should revert if compactBytesArray length element is superior at 32", async () => {
           const dynamicKeyOfLength33 = ethers.utils.hexlify(
             ethers.utils.randomBytes(33)
@@ -603,7 +601,12 @@ export const testAllowedERC725YDataKeysInternals = (
               dataKeys.firstFixedKey.key,
               compactBytesArray_with_invalid_length
             )
-          ).to.be.revertedWithPanic(PANIC_CODES.ARITHMETIC_UNDER_OR_OVERFLOW);
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "AllowedERC725YDataKeysContainsElementBiggerThan32Bytes"
+            )
+            .withArgs(compactBytesArray_with_invalid_length);
         });
       });
     });
@@ -829,7 +832,6 @@ export const testAllowedERC725YDataKeysInternals = (
       });
     });
 
-    // TODO: investigate the Panic revert reason
     describe("_verifyAllowedERC725YSingleKey", () => {
       it("should revert if compactBytesArray length element is superior at 32", async () => {
         const dynamicKeyOfLength33 = ethers.utils.hexlify(
@@ -847,7 +849,12 @@ export const testAllowedERC725YDataKeysInternals = (
             dataKeys.firstFixedKey.key,
             compactBytesArray_with_33_length
           )
-        ).to.be.revertedWithPanic(PANIC_CODES.ARITHMETIC_UNDER_OR_OVERFLOW);
+        )
+          .to.be.revertedWithCustomError(
+            context.keyManagerInternalTester,
+            "AllowedERC725YDataKeysContainsElementBiggerThan32Bytes"
+          )
+          .withArgs(compactBytesArray_with_33_length);
       });
     });
   });

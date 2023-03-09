@@ -385,6 +385,11 @@ export const Errors = {
       message:
         "LSP6: Invalid Encoding for the Compact Bytes Array of Allowed ERC725Y Data Keys.",
     },
+    "0xdd0c7f23": {
+      error: "AllowedERC725YDataKeysContainsElementBiggerThan32Bytes(bytes)",
+      message:
+        "LSP6: Allowed ERC725Y Data Keys contain an element which has a length superior to 32 bytes.",
+    },
     "0x8f4afa38": {
       error: "AddressPermissionArrayIndexValueNotAnAddress(bytes32,bytes)",
       message:

@@ -39,6 +39,7 @@ import {
     InvalidEncodedAllowedERC725YDataKeys,
     NoERC725YDataKeysAllowed,
     NotAllowedERC725YDataKey,
+    AllowedERC725YDataKeysContainsElementBiggerThan32Bytes,
     NotAuthorised
 } from "../LSP6Errors.sol";
 
@@ -415,6 +416,17 @@ abstract contract LSP6SetDataModule {
             );
 
             /**
+             * The length of a data key is 32 bytes.
+             * Therefore we can have a fixed allowed data key which has
+             * a length of 32 bytes or we can have a dynamic data key
+             * which can have a length of up to 31 bytes.
+             */
+            if (length > 32)
+                revert AllowedERC725YDataKeysContainsElementBiggerThan32Bytes(
+                    allowedERC725YDataKeysCompacted
+                );
+
+            /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
              * It is used to compare only the relevant parts of each input data key against dynamic allowed data keys.
              *
@@ -518,6 +530,17 @@ abstract contract LSP6SetDataModule {
                     )
                 )
             );
+
+            /**
+             * The length of a data key is 32 bytes.
+             * Therefore we can have a fixed allowed data key which has
+             * a length of 32 bytes or we can have a dynamic data key
+             * which can have a length of up to 31 bytes.
+             */
+            if (length > 32)
+                revert AllowedERC725YDataKeysContainsElementBiggerThan32Bytes(
+                    allowedERC725YDataKeysCompacted
+                );
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &

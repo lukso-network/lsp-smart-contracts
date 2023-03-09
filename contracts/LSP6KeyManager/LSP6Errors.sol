@@ -92,6 +92,12 @@ error NoCallsAllowed(address from);
 error InvalidEncodedAllowedERC725YDataKeys(bytes value);
 
 /**
+ * @dev reverts when `value` contains an element of length superior to 32 bytes
+ * @param value the value to check for an CompactBytesArray
+ */
+error AllowedERC725YDataKeysContainsElementBiggerThan32Bytes(bytes value);
+
+/**
  * @dev a `from` address is not allowed to have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff
  * in its list of AddressPermissions:AllowedCalls:<address>, as this allows any STANDARD:ADDRESS:FUNCTION.
  * This is equivalent to granting the SUPER permission and should never be valid.
