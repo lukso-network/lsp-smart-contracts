@@ -346,7 +346,7 @@ export const shouldBehaveLikePermissionCall = (
       });
     });
 
-    describe("when call has permission SUPER_CALL", () => {
+    describe("when caller has permission SUPER_CALL", () => {
       it("should pass and allow to call an EOA", async () => {
         const targetEOA = ethers.Wallet.createRandom().address;
 
@@ -360,7 +360,6 @@ export const shouldBehaveLikePermissionCall = (
           ["execute(bytes)"](payload);
       });
 
-      // 5 contracts
       describe("when `to` is a contract", () => {
         describe("if the `fallback()` function of `to` update some state", () => {
           it("should pass and update `to` contract's storage", async () => {
