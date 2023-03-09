@@ -88,14 +88,9 @@ error NoCallsAllowed(address from);
 /**
  * @dev reverts when `value` is not encoded properly using the CompactBytesArray
  * @param value the value to check for an CompactBytesArray
+ * @param context a brief description of where the error occured
  */
-error InvalidEncodedAllowedERC725YDataKeys(bytes value);
-
-/**
- * @dev reverts when `value` contains an element of length superior to 32 bytes
- * @param value the value to check for an CompactBytesArray
- */
-error AllowedERC725YDataKeysContainsElementBiggerThan32Bytes(bytes value);
+error InvalidEncodedAllowedERC725YDataKeys(bytes value, string context);
 
 /**
  * @dev a `from` address is not allowed to have 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff

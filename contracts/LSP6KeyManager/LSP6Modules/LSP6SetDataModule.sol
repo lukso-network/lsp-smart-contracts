@@ -39,7 +39,6 @@ import {
     InvalidEncodedAllowedERC725YDataKeys,
     NoERC725YDataKeysAllowed,
     NotAllowedERC725YDataKey,
-    AllowedERC725YDataKeysContainsElementBiggerThan32Bytes,
     NotAuthorised
 } from "../LSP6Errors.sol";
 
@@ -315,7 +314,10 @@ abstract contract LSP6SetDataModule {
         bytes memory dataValue
     ) internal view returns (bytes32) {
         if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(dataValue)) {
-            revert InvalidEncodedAllowedERC725YDataKeys(dataValue);
+            revert InvalidEncodedAllowedERC725YDataKeys(
+                dataValue,
+                "couldn't VALIDATE the data value"
+            );
         }
 
         // if there is nothing stored under the Allowed ERC725Y Data Keys of the controller,
@@ -422,8 +424,9 @@ abstract contract LSP6SetDataModule {
              * which can have a length of up to 31 bytes.
              */
             if (length > 32)
-                revert AllowedERC725YDataKeysContainsElementBiggerThan32Bytes(
-                    allowedERC725YDataKeysCompacted
+                revert InvalidEncodedAllowedERC725YDataKeys(
+                    allowedERC725YDataKeysCompacted,
+                    "couldn't DECODE from storage"
                 );
 
             /**
@@ -538,8 +541,9 @@ abstract contract LSP6SetDataModule {
              * which can have a length of up to 31 bytes.
              */
             if (length > 32)
-                revert AllowedERC725YDataKeysContainsElementBiggerThan32Bytes(
-                    allowedERC725YDataKeysCompacted
+                revert InvalidEncodedAllowedERC725YDataKeys(
+                    allowedERC725YDataKeysCompacted,
+                    "couldn't DECODE from storage"
                 );
 
             /**

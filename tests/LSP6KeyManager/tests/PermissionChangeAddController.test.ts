@@ -2884,10 +2884,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             context.keyManager
               .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(value, "couldn't VALIDATE the data value");
         });
       });
 
@@ -2938,10 +2940,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             context.keyManager
               .connect(canOnlyAddController)
               ["execute(bytes)"](payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(value, "couldn't VALIDATE the data value");
         });
       });
     });
@@ -3035,10 +3039,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             context.keyManager
               .connect(canOnlyEditPermissions)
               ["execute(bytes)"](payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(value, "couldn't VALIDATE the data value");
         });
       });
 
@@ -3087,10 +3093,12 @@ export const shouldBehaveLikePermissionChangeOrAddController = (
             context.keyManager
               .connect(canOnlyEditPermissions)
               ["execute(bytes)"](payload)
-          ).to.be.revertedWithCustomError(
-            context.keyManager,
-            "InvalidEncodedAllowedERC725YDataKeys"
-          );
+          )
+            .to.be.revertedWithCustomError(
+              context.keyManager,
+              "InvalidEncodedAllowedERC725YDataKeys"
+            )
+            .withArgs(value, "couldn't VALIDATE the data value");
         });
       });
     });

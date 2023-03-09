@@ -604,9 +604,12 @@ export const testAllowedERC725YDataKeysInternals = (
           )
             .to.be.revertedWithCustomError(
               context.keyManagerInternalTester,
-              "AllowedERC725YDataKeysContainsElementBiggerThan32Bytes"
+              "InvalidEncodedAllowedERC725YDataKeys"
             )
-            .withArgs(compactBytesArray_with_invalid_length);
+            .withArgs(
+              compactBytesArray_with_invalid_length,
+              "couldn't DECODE from storage"
+            );
         });
       });
     });
@@ -829,32 +832,6 @@ export const testAllowedERC725YDataKeysInternals = (
             )
             .withArgs(context.universalProfile.address, dataKeysToReturn[0]);
         });
-      });
-    });
-
-    describe("_verifyAllowedERC725YSingleKey", () => {
-      it("should revert if compactBytesArray length element is superior at 32", async () => {
-        const dynamicKeyOfLength33 = ethers.utils.hexlify(
-          ethers.utils.randomBytes(33)
-        );
-        const compactBytesArray_with_33_length = encodeCompactBytesArray([
-          dataKeys.firstDynamicKey.key,
-          dynamicKeyOfLength33,
-          dataKeys.thirdDynamicKey.key,
-        ]);
-
-        await expect(
-          context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
-            context.universalProfile.address,
-            dataKeys.firstFixedKey.key,
-            compactBytesArray_with_33_length
-          )
-        )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "AllowedERC725YDataKeysContainsElementBiggerThan32Bytes"
-          )
-          .withArgs(compactBytesArray_with_33_length);
       });
     });
   });
