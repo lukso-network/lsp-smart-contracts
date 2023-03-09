@@ -9,12 +9,16 @@ import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnse
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
+// libraries
+import {LSP1Utils} from "../LSP1UniversalReceiver/LSP1Utils.sol";
+
 // constants
 import {_INTERFACEID_LSP1} from "../LSP1UniversalReceiver/LSP1Constants.sol";
 import {
     _INTERFACEID_LSP9,
     _LSP9_SUPPORTED_STANDARDS_KEY,
-    _LSP9_SUPPORTED_STANDARDS_VALUE
+    _LSP9_SUPPORTED_STANDARDS_VALUE,
+    _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
 } from "../LSP9Vault/LSP9Constants.sol";
 
 /**
@@ -23,6 +27,8 @@ import {
  * @dev Could be owned by a UniversalProfile and able to register received asset with UniversalReceiverDelegateVault
  */
 abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
+    using LSP1Utils for address;
+
     function _initialize(address newOwner) internal virtual onlyInitializing {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         OwnableUnset._setOwner(newOwner);
@@ -30,6 +36,9 @@ abstract contract LSP9VaultInitAbstract is Initializable, LSP9VaultCore {
         // set key SupportedStandards:LSP9Vault
         _setData(_LSP9_SUPPORTED_STANDARDS_KEY, _LSP9_SUPPORTED_STANDARDS_VALUE);
 
-        _notifyLSP1RecipientOnOwnershipTransferCompletion(newOwner, "");
+        newOwner.tryNotifyUniversalReceiver(
+            _TYPEID_LSP9_OwnershipTransferred_RecipientNotification,
+            ""
+        );
     }
 }
