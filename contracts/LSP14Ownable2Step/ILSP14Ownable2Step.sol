@@ -32,22 +32,45 @@ interface ILSP14Ownable2Step {
      */
 
     /**
-     * @dev Returns the address of the current pending owner.
+     * @dev The address that ownership of the contract is transferred to.
+     * This address may use `acceptOwnership()` to gain ownership of the contract.
      */
     function pendingOwner() external view returns (address);
 
     /**
-     * @dev Initiate the process of transferring ownership of the contract by setting the pending owner.
+     * @dev Initiate the process of transferring ownership of the contract by setting the new owner as the pending owner.
+     *
+     * If the new owner is a contract that supports + implements LSP1, this will also attempt to notify the new owner that
+     * ownership has been transferred to them by calling the `universalReceiver(...)` function on the `newOwner` contract.
+     *
+     * @param newOwner the address of the new owner.
+     *
+     * Requirements:
+     * - `newOwner` MUST NOT accept ownership of the contract in the same transaction.
      */
     function transferOwnership(address newOwner) external;
 
     /**
-     * @dev Complete the process of transferring ownership. MUST be called by the pendingOwner.
+     * @dev Transfer ownership of the contract from the current `owner()` to the `pendingOwner()`.
+     *
+     * Once this function is called:
+     * - the current `owner()` will loose access to the functions restricted to the `owner()` only.
+     * - the `pendingOwner()` will gain access to the functions restricted to the `owner()` only.
+     *
+     * Requirements:
+     * - MUST be called by the pendingOwner.
      */
     function acceptOwnership() external;
 
     /**
-     * @dev Initiate the process of renouncing ownerhsip on the first call and confirm the renouncement of the ownership on the second call.
+     * @dev Renounce ownership of the contract in a 2-step process.
+     *
+     * 1. the first call will initiate the process of renouncing ownership.
+     * 2. the second is used as a confirmation and will leave the contract without an owner.
+     *
+     * WARNING: once ownership of the contract has been renounced, any functions
+     * that are restricted to be called by the owner will be permanently inaccessible,
+     * making these functions not callable anymore and unusable.
      */
     function renounceOwnership() external;
 }

@@ -14,7 +14,7 @@ contract FallbackReturnMagicValue {
 
     address public target;
 
-    fallback(bytes calldata) external returns(bytes memory) {
+    fallback(bytes calldata) external returns (bytes memory) {
         emit FallbackCalled(msg.data);
 
         return bytes.concat(ILSP20ReverseVerification.lsp20VerifyCall.selector, bytes28(0));

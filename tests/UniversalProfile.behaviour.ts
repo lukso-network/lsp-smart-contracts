@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // types
@@ -427,7 +427,12 @@ export const shouldBehaveLikeLSP3 = (
           context.universalProfile
             .connect(context.accounts[4])
             .batchCalls([setDataPayload])
-        ).to.be.revertedWith("Ownable: caller is not the owner");
+        )
+          .to.be.revertedWithCustomError(
+            context.universalProfile,
+            "LSP20InvalidMagicValue"
+          )
+          .withArgs(true, "0x");
       });
     });
 

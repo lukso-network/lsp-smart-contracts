@@ -36,7 +36,8 @@ import {
     NotAllowedCall,
     InvalidEncodedAllowedCalls,
     InvalidWhitelistedCall,
-    NotAuthorised
+    NotAuthorised,
+    InvalidPayload
 } from "../LSP6Errors.sol";
 
 abstract contract LSP6ExecuteModule {
@@ -66,35 +67,6 @@ abstract contract LSP6ExecuteModule {
 
         uint256 value = uint256(bytes32(payload[68:100]));
 
-        // prettier-ignore
-        bool isContractCreation = operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2;
-        bool isCallDataPresent = payload.length > 164;
-
-        // SUPER operation only applies to contract call, not contract creation
-        bool hasSuperOperation = isContractCreation
-            ? false
-            : controllerPermissions.hasPermission(
-                _extractSuperPermissionFromOperation(operationType)
-            );
-
-        // CHECK if we are doing an empty call, as the receive() or fallback() function
-        // of the controlledContract could run some code.
-        if (!hasSuperOperation && !isCallDataPresent && value == 0) {
-            _requirePermissions(
-                controllerAddress,
-                controllerPermissions,
-                _extractPermissionFromOperation(operationType)
-            );
-        }
-
-        if (isCallDataPresent && !hasSuperOperation) {
-            _requirePermissions(
-                controllerAddress,
-                controllerPermissions,
-                _extractPermissionFromOperation(operationType)
-            );
-        }
-
         bool hasSuperTransferValue = controllerPermissions.hasPermission(
             _PERMISSION_SUPER_TRANSFERVALUE
         );
@@ -107,8 +79,57 @@ abstract contract LSP6ExecuteModule {
             );
         }
 
-        // Skip on contract creation (CREATE or CREATE2)
-        if (isContractCreation) return;
+        // CHECK the offset of `data` is not pointing to the previous parameters
+        if (
+            bytes32(payload[100:132]) !=
+            0x0000000000000000000000000000000000000000000000000000000000000080
+        ) {
+            revert InvalidPayload(payload);
+        }
+
+        // if it is a contract creation
+        if (operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2) {
+            _requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_DEPLOY);
+            return;
+        }
+
+        // if it is a message call
+        bytes32 executePermission;
+        bytes32 superOperationPermission;
+
+        if (operationType == OPERATION_0_CALL) {
+            // prettier-ignore
+            (executePermission, superOperationPermission) = (_PERMISSION_CALL, _PERMISSION_SUPER_CALL);
+        }
+
+        if (operationType == OPERATION_3_STATICCALL) {
+            // prettier-ignore
+            (executePermission, superOperationPermission) = (_PERMISSION_STATICCALL, _PERMISSION_SUPER_STATICCALL);
+        }
+
+        // NB: all the parameters are abi-encoded (padded to 32 bytes words)
+        //
+        //    4 (ERC725X.execute selector)
+        // + 32 (uint256 operationType)
+        // + 32 (address to/target)
+        // + 32 (uint256 value)
+        // + 32 (`data` offset)
+        // + 32 (`data` length)
+        // --------------------
+        // = 164 bytes in total
+        bool isCallDataPresent = payload.length > 164;
+
+        bool hasSuperOperation = controllerPermissions.hasPermission(superOperationPermission);
+
+        // CHECK if we are doing an empty call, as the receive() or fallback() function
+        // of the controlledContract could run some code.
+        if (!hasSuperOperation && !isCallDataPresent && value == 0) {
+            _requirePermissions(controllerAddress, controllerPermissions, executePermission);
+        }
+
+        if (isCallDataPresent && !hasSuperOperation) {
+            _requirePermissions(controllerAddress, controllerPermissions, executePermission);
+        }
 
         // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
         if (hasSuperOperation && value == 0) return;
@@ -175,39 +196,6 @@ abstract contract LSP6ExecuteModule {
         }
 
         revert NotAllowedCall(controllerAddress, to, selector);
-    }
-
-    /**
-     * @dev extract the required permission + a descriptive string, based on the `_operationType`
-     * being run via ERC725Account.execute(...)
-     * @param operationType 0 = CALL, 1 = CREATE, 2 = CREATE2, etc... See ERC725X docs for more infos.
-     * @return permissionsRequired (bytes32) the permission associated with the `_operationType`
-     */
-    function _extractPermissionFromOperation(uint256 operationType)
-        internal
-        pure
-        virtual
-        returns (bytes32 permissionsRequired)
-    {
-        if (operationType == OPERATION_0_CALL) return _PERMISSION_CALL;
-        else if (operationType == OPERATION_1_CREATE) return _PERMISSION_DEPLOY;
-        else if (operationType == OPERATION_2_CREATE2) return _PERMISSION_DEPLOY;
-        else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_STATICCALL;
-        else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_DELEGATECALL;
-    }
-
-    /**
-     * @dev returns the `superPermission` needed for a specific `operationType` of the `execute(..)`
-     */
-    function _extractSuperPermissionFromOperation(uint256 operationType)
-        internal
-        pure
-        virtual
-        returns (bytes32 superPermission)
-    {
-        if (operationType == OPERATION_0_CALL) return _PERMISSION_SUPER_CALL;
-        else if (operationType == OPERATION_3_STATICCALL) return _PERMISSION_SUPER_STATICCALL;
-        else if (operationType == OPERATION_4_DELEGATECALL) return _PERMISSION_SUPER_DELEGATECALL;
     }
 
     /**

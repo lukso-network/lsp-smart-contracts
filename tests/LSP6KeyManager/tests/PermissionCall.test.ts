@@ -346,7 +346,7 @@ export const shouldBehaveLikePermissionCall = (
       });
     });
 
-    describe("when call has permission SUPER_CALL", () => {
+    describe("when caller has permission SUPER_CALL", () => {
       it("should pass and allow to call an EOA", async () => {
         const targetEOA = ethers.Wallet.createRandom().address;
 
@@ -360,7 +360,6 @@ export const shouldBehaveLikePermissionCall = (
           ["execute(bytes)"](payload);
       });
 
-      // 5 contracts
       describe("when `to` is a contract", () => {
         describe("if the `fallback()` function of `to` update some state", () => {
           it("should pass and update `to` contract's storage", async () => {
@@ -461,6 +460,29 @@ export const shouldBehaveLikePermissionCall = (
       ];
 
       await setupKeyManager(context, permissionKeys, permissionsValues);
+    });
+
+    describe("when the 'offset' of the `data` payload is not `0x00...80`", () => {
+      it("should revert", async () => {
+        let payload = context.universalProfile.interface.encodeFunctionData(
+          "execute(uint256,address,uint256,bytes)",
+          [OPERATION_TYPES.CALL, targetContract.address, 0, "0xcafecafe"]
+        );
+
+        // edit the `data` offset
+        payload = payload.replace(
+          "0000000000000000000000000000000000000000000000000000000000000080",
+          "0000000000000000000000000000000000000000000000000000000000000040"
+        );
+
+        await expect(
+          context.keyManager
+            .connect(addressCanMakeCallWithAllowedCalls)
+            ["execute(bytes)"](payload)
+        )
+          .to.be.revertedWithCustomError(context.keyManager, "InvalidPayload")
+          .withArgs(payload);
+      });
     });
 
     describe("when interacting via `execute(...)`", () => {
