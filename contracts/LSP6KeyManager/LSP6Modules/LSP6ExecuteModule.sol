@@ -47,14 +47,14 @@ abstract contract LSP6ExecuteModule {
     /**
      * @dev verify if `controllerAddress` has the required permissions to interact with other addresses using the controlledContract.
      * @param controlledContract the address of the ERC725 contract where the payload is executed and where the permissions are verified.
-     * @param controllerAddress the address who want to run the execute function on the ERC725Account.
-     * @param controllerPermissions the permissions of the controller address.
+     * @param controller the address who want to run the execute function on the ERC725Account.
+     * @param permissions the permissions of the controller address.
      * @param payload the ABI encoded payload `controlledContract.execute(...)`.
      */
     function _verifyCanExecute(
         address controlledContract,
-        address controllerAddress, // TODO: simplify naming by renaming to `controller` and `permissions` only
-        bytes32 controllerPermissions,
+        address controller,
+        bytes32 permissions,
         bytes calldata payload
     ) internal view virtual {
         // CHECK the offset of `data` is not pointing to the previous parameters
@@ -70,13 +70,7 @@ abstract contract LSP6ExecuteModule {
 
         // if it is a message call
         if (operationType == OPERATION_0_CALL) {
-            return
-                _verifyCanCall(
-                    controlledContract,
-                    controllerAddress,
-                    controllerPermissions,
-                    payload
-                );
+            return _verifyCanCall(controlledContract, controller, permissions, payload);
         }
 
         // if it is a contract creation
@@ -85,25 +79,14 @@ abstract contract LSP6ExecuteModule {
             // the contract on deployment via a payable constructor
             bool isFundingContract = uint256(bytes32(payload[68:100])) != 0;
 
-            return
-                _verifyCanDeployContract(
-                    controllerAddress,
-                    controllerPermissions,
-                    isFundingContract
-                );
+            return _verifyCanDeployContract(controller, permissions, isFundingContract);
         }
 
         // if it is a STATICALL
         // we do not check for TRANSFERVALUE permission,
         // as ERC725X will revert if a value is provided with operation type STATICCALL.
         if (operationType == OPERATION_3_STATICCALL) {
-            return
-                _verifyCanStaticCall(
-                    controlledContract,
-                    controllerAddress,
-                    controllerPermissions,
-                    payload
-                );
+            return _verifyCanStaticCall(controlledContract, controller, permissions, payload);
         }
 
         // DELEGATECALL is disallowed by default on the Key Manager.
@@ -192,14 +175,6 @@ abstract contract LSP6ExecuteModule {
 
         _verifyAllowedCall(controlledContract, controller, payload);
     }
-
-    // we need informations from two places:
-    // - infos about the controllerAddress (permissions)
-    //     -> what are the permissions of the controllerAddress?
-    //     -> what are the allowed calls for the controlledAddress?
-
-    // - infos about the interaction (payload)
-    //     -> what type of interaction is being done?
 
     function _verifyAllowedCall(
         address controlledContract,
