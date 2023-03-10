@@ -8,7 +8,7 @@ contract LSP16Mock is LSP16UniversalFactory {
         bool initializable,
         bytes memory initializeCallData,
         bytes32 providedSalt
-    ) public pure virtual returns (bytes32) {
-        return _generateSalt(initializable, initializeCallData, providedSalt);
+    ) public pure virtual override returns (bytes32) {
+        return generateSalt(initializable, initializeCallData, providedSalt);
     }
 }
