@@ -1,10 +1,6 @@
 name: Foundry tests & Report gas diff
 
-on:
-  pull_request:
-    branches: [develop]
-  push:
-    branches: [develop]
+on: pull_request
 
 jobs:
   foundry-tests:
