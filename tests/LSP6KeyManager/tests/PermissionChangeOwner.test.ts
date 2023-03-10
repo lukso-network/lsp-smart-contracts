@@ -354,7 +354,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     });
 
     describe("old KeyManager should not be allowed to call onlyOwner functions anymore", () => {
-      it("should revert when calling `setData(...)`", async () => {
+      it("should revert with error `NoPermissionsSet` when calling `setData(...)`", async () => {
         const key =
           "0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe";
         const value = "0xabcd";
@@ -366,10 +366,12 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await expect(
           oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
-        ).to.be.revertedWith("Ownable: caller is not the owner");
+        )
+          .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
+          .withArgs(oldKeyManager.address);
       });
 
-      it("should revert when calling `execute(...)`", async () => {
+      it("should revert with error `NoPermissionsSet` when calling `execute(...)`", async () => {
         let recipient = context.accounts[3];
         let amount = ethers.utils.parseEther("3");
 
@@ -380,7 +382,9 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         await expect(
           oldKeyManager.connect(context.owner)["execute(bytes)"](payload)
-        ).to.be.revertedWith("Ownable: caller is not the owner");
+        )
+          .to.be.revertedWithCustomError(newKeyManager, "NoPermissionsSet")
+          .withArgs(oldKeyManager.address);
       });
     });
 
