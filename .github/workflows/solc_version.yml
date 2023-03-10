@@ -2,11 +2,7 @@
 # with different Solidity 0.8.x versions
 name: Solidity Compiler Versions
 
-on:
-  pull_request:
-    branches:
-      - "main"
-      - "develop"
+on: pull_request
 
 jobs:
   solc_version:

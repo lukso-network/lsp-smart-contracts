@@ -237,12 +237,10 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
      * and the LSP1TypeIdDelegate call.
      */
-    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
-        public
-        payable
-        virtual
-        returns (bytes memory returnedValues)
-    {
+    function universalReceiver(
+        bytes32 typeId,
+        bytes calldata receivedData
+    ) public payable virtual returns (bytes memory returnedValues) {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         bytes memory resultDefaultDelegate;
@@ -288,25 +286,61 @@ abstract contract LSP0ERC725AccountCore is
     }
 
     /**
-     * @dev Sets the pending owner and notifies the pending owner
+     * @inheritdoc LSP14Ownable2Step
      *
-     * @param _newOwner The address nofied and set as `pendingOwner`
+     * @dev same as ILSP14.transferOwnership with the additional requirement:
+     *
+     * Requirements:
+     *  - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted')
      */
-    function transferOwnership(address _newOwner)
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-    {
+    function transferOwnership(
+        address newOwner
+    ) public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address _owner = owner();
         bool verifyAfter = _reverseVerificationBefore(_owner);
 
-        LSP14Ownable2Step._transferOwnership(_newOwner);
+        LSP14Ownable2Step._transferOwnership(newOwner);
+
+        address currentOwner = owner();
+        emit OwnershipTransferStarted(currentOwner, newOwner);
+
+        newOwner.tryNotifyUniversalReceiver(_TYPEID_LSP0_OwnershipTransferStarted, "");
+
+        require(
+            currentOwner == owner(),
+            "LSP14: newOwner MUST accept ownership in a separate transaction"
+        );
 
         if (verifyAfter) _reverseVerificationAfter(_owner, "");
     }
 
     /**
-     * @dev Renounce ownership of the contract in a 2-step process
+     * @inheritdoc LSP14Ownable2Step
+     *
+     * @dev same as ILSP14.acceptOwnership with the additional requirement:
+     *
+     * Requirements:
+     * - when notifying the previous owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferred_SenderNotification')
+     * - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferred_RecipientNotification')
+     */
+    function acceptOwnership() public virtual override {
+        address previousOwner = owner();
+
+        _acceptOwnership();
+
+        previousOwner.tryNotifyUniversalReceiver(
+            _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
+            ""
+        );
+
+        msg.sender.tryNotifyUniversalReceiver(
+            _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
+            ""
+        );
+    }
+
+    /**
+     * @inheritdoc LSP14Ownable2Step
      */
     function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address _owner = owner();
@@ -325,13 +359,9 @@ abstract contract LSP0ERC725AccountCore is
      * `supportsInterface` extension according to LSP17, and checks if the extension
      * implements the interface defined by `interfaceId`.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore, LSP17Extendable)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC725XCore, ERC725YCore, LSP17Extendable) returns (bool) {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
@@ -348,12 +378,10 @@ abstract contract LSP0ERC725AccountCore is
      * @param dataHash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
      * @param signature owner's signature(s) of the data
      */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        virtual
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(
+        bytes32 dataHash,
+        bytes memory signature
+    ) public view virtual returns (bytes4 magicValue) {
         address _owner = owner();
 
         // If owner is a contract
@@ -442,13 +470,9 @@ abstract contract LSP0ERC725AccountCore is
      *
      * If no extension is stored, returns the address(0)
      */
-    function _getExtension(bytes4 functionSelector)
-        internal
-        view
-        virtual
-        override
-        returns (address)
-    {
+    function _getExtension(
+        bytes4 functionSelector
+    ) internal view virtual override returns (address) {
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector
@@ -471,56 +495,5 @@ abstract contract LSP0ERC725AccountCore is
             dataKey,
             dataValue.length <= 256 ? dataValue : BytesLib.slice(dataValue, 0, 256)
         );
-    }
-
-    // LSP14
-
-    /**
-     * @dev Calls the universalReceiver function of the sender when ownerhsip transfer starts
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1SenderOnOwnershipTransferStart(address notifiedContract, bytes memory data)
-        internal
-        virtual
-        override
-    {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP0_OwnershipTransferStarted,
-                data
-            );
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the sender when ownerhsip transfer is complete
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1SenderOnOwnershipTransferCompletion(
-        address notifiedContract,
-        bytes memory data
-    ) internal virtual override {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP0_OwnershipTransferred_SenderNotification,
-                data
-            );
-        }
-    }
-
-    /**
-     * @dev Calls the universalReceiver function of the recipient when ownerhsip transfer is complete
-     * if supports LSP1 InterfaceId
-     */
-    function _notifyLSP1RecipientOnOwnershipTransferCompletion(
-        address notifiedContract,
-        bytes memory data
-    ) internal virtual override {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(notifiedContract, _INTERFACEID_LSP1)) {
-            ILSP1UniversalReceiver(notifiedContract).universalReceiver(
-                _TYPEID_LSP0_OwnershipTransferred_RecipientNotification,
-                data
-            );
-        }
     }
 }
