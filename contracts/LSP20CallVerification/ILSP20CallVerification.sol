@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 /**
  * @dev Interface for reverse verification
  */
-interface ILSP20ReverseVerification {
+interface ILSP20CallVerification {
     function lsp20VerifyCall(
         address caller,
         uint256 value,

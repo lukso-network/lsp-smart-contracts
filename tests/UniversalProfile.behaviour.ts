@@ -432,7 +432,7 @@ export const shouldBehaveLikeLSP3 = (
             context.universalProfile,
             "LSP20InvalidMagicValue"
           )
-          .withArgs(true, "0x");
+          .withArgs(false, "0x");
       });
     });
 

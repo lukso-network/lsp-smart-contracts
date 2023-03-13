@@ -172,7 +172,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
           context.contract,
           "LSP20InvalidMagicValue"
         )
-        .withArgs(true, "0x");
+        .withArgs(false, "0x");
     });
   });
 
@@ -236,7 +236,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
               context.contract,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
 
         it("should revert when calling `execute(...)`", async () => {
@@ -257,7 +257,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
               context.contract,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
 
         it("should revert when calling `renounceOwnership(...)`", async () => {
@@ -268,7 +268,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
               context.contract,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
       });
 
@@ -330,7 +330,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
             context.contract,
             "LSP20InvalidMagicValue"
           )
-          .withArgs(true, "0x");
+          .withArgs(false, "0x");
       });
     });
 
@@ -564,7 +564,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
                 context.contract,
                 "LSP20InvalidMagicValue"
               )
-              .withArgs(true, "0x");
+              .withArgs(false, "0x");
           });
 
           it("transfer LYX via `execute(...)`", async () => {
@@ -595,7 +595,7 @@ export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
                 context.contract,
                 "LSP20InvalidMagicValue"
               )
-              .withArgs(true, "0x");
+              .withArgs(false, "0x");
           });
         });
       });

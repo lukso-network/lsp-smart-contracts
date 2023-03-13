@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP1UniversalReceiver} from "../LSP1UniversalReceiver/ILSP1UniversalReceiver.sol";
-import {ILSP20ReverseVerification} from "../LSP20ReverseVerification/ILSP20ReverseVerification.sol";
+import {ILSP20CallVerification} from "../LSP20CallVerification/ILSP20CallVerification.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -21,7 +21,7 @@ import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {LSP14Ownable2Step} from "../LSP14Ownable2Step/LSP14Ownable2Step.sol";
 import {LSP17Extendable} from "../LSP17ContractExtension/LSP17Extendable.sol";
-import {LSP20ReverseVerification} from "../LSP20ReverseVerification/LSP20ReverseVerification.sol";
+import {LSP20CallVerification} from "../LSP20CallVerification/LSP20CallVerification.sol";
 
 // constants
 import "@erc725/smart-contracts/contracts/constants.sol";
@@ -57,7 +57,7 @@ abstract contract LSP0ERC725AccountCore is
     ERC725YCore,
     LSP14Ownable2Step,
     LSP17Extendable,
-    LSP20ReverseVerification,
+    LSP20CallVerification,
     IERC1271,
     ILSP1UniversalReceiver
 {
@@ -155,12 +155,12 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory data
     ) public payable virtual override returns (bytes memory) {
         address _owner = owner();
-        bool verifyAfter = _reverseVerificationBefore(_owner);
+        bool verifyAfter = _verifyCall(_owner);
 
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory result = _execute(operationType, target, value, data);
 
-        if (verifyAfter) _reverseVerificationAfter(_owner, result);
+        if (verifyAfter) _verifyCallResult(_owner, result);
 
         return result;
     }
@@ -177,12 +177,12 @@ abstract contract LSP0ERC725AccountCore is
         bytes[] memory datas
     ) public payable virtual override returns (bytes[] memory) {
         address _owner = owner();
-        bool verifyAfter = _reverseVerificationBefore(_owner);
+        bool verifyAfter = _verifyCall(_owner);
 
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes[] memory results = _execute(operationsType, targets, values, datas);
 
-        if (verifyAfter) _reverseVerificationAfter(_owner, abi.encode(results));
+        if (verifyAfter) _verifyCallResult(_owner, abi.encode(results));
 
         return results;
     }
@@ -197,11 +197,11 @@ abstract contract LSP0ERC725AccountCore is
      */
     function setData(bytes32 dataKey, bytes memory dataValue) public virtual override {
         address _owner = owner();
-        bool verifyAfter = _reverseVerificationBefore(_owner);
+        bool verifyAfter = _verifyCall(_owner);
 
         _setData(dataKey, dataValue);
 
-        if (verifyAfter) _reverseVerificationAfter(_owner, "");
+        if (verifyAfter) _verifyCallResult(_owner, "");
     }
 
     /**
@@ -214,7 +214,7 @@ abstract contract LSP0ERC725AccountCore is
      */
     function setData(bytes32[] memory dataKeys, bytes[] memory dataValues) public virtual override {
         address _owner = owner();
-        bool verifyAfter = _reverseVerificationBefore(_owner);
+        bool verifyAfter = _verifyCall(_owner);
 
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
@@ -224,7 +224,7 @@ abstract contract LSP0ERC725AccountCore is
             _setData(dataKeys[i], dataValues[i]);
         }
 
-        if (verifyAfter) _reverseVerificationAfter(_owner, "");
+        if (verifyAfter) _verifyCallResult(_owner, "");
     }
 
     /**
@@ -237,12 +237,10 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
      * and the LSP1TypeIdDelegate call.
      */
-    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
-        public
-        payable
-        virtual
-        returns (bytes memory returnedValues)
-    {
+    function universalReceiver(
+        bytes32 typeId,
+        bytes calldata receivedData
+    ) public payable virtual returns (bytes memory returnedValues) {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         bytes memory resultDefaultDelegate;
@@ -295,13 +293,11 @@ abstract contract LSP0ERC725AccountCore is
      * Requirements:
      *  - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted')
      */
-    function transferOwnership(address newOwner)
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-    {
+    function transferOwnership(
+        address newOwner
+    ) public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address _owner = owner();
-        bool verifyAfter = _reverseVerificationBefore(_owner);
+        bool verifyAfter = _verifyCall(_owner);
 
         LSP14Ownable2Step._transferOwnership(newOwner);
 
@@ -315,7 +311,7 @@ abstract contract LSP0ERC725AccountCore is
             "LSP14: newOwner MUST accept ownership in a separate transaction"
         );
 
-        if (verifyAfter) _reverseVerificationAfter(_owner, "");
+        if (verifyAfter) _verifyCallResult(_owner, "");
     }
 
     /**
@@ -348,11 +344,11 @@ abstract contract LSP0ERC725AccountCore is
      */
     function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address _owner = owner();
-        bool verifyAfter = _reverseVerificationBefore(_owner);
+        bool verifyAfter = _verifyCall(_owner);
 
         LSP14Ownable2Step._renounceOwnership();
 
-        if (verifyAfter) _reverseVerificationAfter(_owner, "");
+        if (verifyAfter) _verifyCallResult(_owner, "");
     }
 
     /**
@@ -363,13 +359,9 @@ abstract contract LSP0ERC725AccountCore is
      * `supportsInterface` extension according to LSP17, and checks if the extension
      * implements the interface defined by `interfaceId`.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore, LSP17Extendable)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC725XCore, ERC725YCore, LSP17Extendable) returns (bool) {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
@@ -386,12 +378,10 @@ abstract contract LSP0ERC725AccountCore is
      * @param dataHash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
      * @param signature owner's signature(s) of the data
      */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        virtual
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(
+        bytes32 dataHash,
+        bytes memory signature
+    ) public view virtual returns (bytes4 magicValue) {
         address _owner = owner();
 
         // If owner is a contract
@@ -480,13 +470,9 @@ abstract contract LSP0ERC725AccountCore is
      *
      * If no extension is stored, returns the address(0)
      */
-    function _getExtension(bytes4 functionSelector)
-        internal
-        view
-        virtual
-        override
-        returns (address)
-    {
+    function _getExtension(
+        bytes4 functionSelector
+    ) internal view virtual override returns (address) {
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector

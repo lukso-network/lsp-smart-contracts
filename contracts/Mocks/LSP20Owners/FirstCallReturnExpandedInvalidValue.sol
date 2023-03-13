@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {
-    ILSP20ReverseVerification
-} from "../../LSP20ReverseVerification/ILSP20ReverseVerification.sol";
+import {ILSP20CallVerification} from "../../LSP20CallVerification/ILSP20CallVerification.sol";
 import {ILSP14Ownable2Step} from "../../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**

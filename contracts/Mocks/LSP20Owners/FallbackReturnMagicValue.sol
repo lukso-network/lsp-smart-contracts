@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {
-    ILSP20ReverseVerification
-} from "../../LSP20ReverseVerification/ILSP20ReverseVerification.sol";
+import {ILSP20CallVerification} from "../../LSP20CallVerification/ILSP20CallVerification.sol";
 import {ILSP14Ownable2Step} from "../../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**
@@ -17,7 +15,7 @@ contract FallbackReturnMagicValue {
     fallback(bytes calldata) external returns (bytes memory) {
         emit FallbackCalled(msg.data);
 
-        return bytes.concat(ILSP20ReverseVerification.lsp20VerifyCall.selector, bytes28(0));
+        return bytes.concat(ILSP20CallVerification.lsp20VerifyCall.selector, bytes28(0));
     }
 
     function acceptOwnership(address newTarget) external {

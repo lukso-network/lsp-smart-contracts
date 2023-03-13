@@ -21,7 +21,7 @@ import {
 import {
   LSP20TestContext,
   shouldBehaveLikeLSP20,
-} from "./LSP20ReverseVerification/LSP20ReverseVerification.behaviour";
+} from "./LSP20CallVerification/LSP20CallVerification.behaviour";
 
 import {
   LSP3TestContext,
@@ -33,7 +33,7 @@ import { BigNumber } from "ethers";
 import {
   LSP14CombinedWithLSP20TestContext,
   shouldBehaveLikeLSP14CombinedWithLSP20,
-} from "./LSP20ReverseVerification/LSP14CombinedWithLSP20.behaviour";
+} from "./LSP20CallVerification/LSP14CombinedWithLSP20.behaviour";
 
 describe("UniversalProfile", () => {
   describe("when using UniversalProfile contract with constructor", () => {

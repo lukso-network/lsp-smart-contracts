@@ -73,7 +73,7 @@ export const shouldBehaveLikeLSP20 = (
               context.universalProfile,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
       });
       describe("when calling setData array", () => {
@@ -102,7 +102,7 @@ export const shouldBehaveLikeLSP20 = (
               context.universalProfile,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
       });
 
@@ -156,7 +156,7 @@ export const shouldBehaveLikeLSP20 = (
               context.universalProfile,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
       });
       describe("when calling execute Array", () => {
@@ -205,7 +205,7 @@ export const shouldBehaveLikeLSP20 = (
               context.universalProfile,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
       });
 
@@ -232,7 +232,7 @@ export const shouldBehaveLikeLSP20 = (
               context.universalProfile,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
       });
 
@@ -263,7 +263,7 @@ export const shouldBehaveLikeLSP20 = (
               context.universalProfile,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
       });
     });
@@ -299,9 +299,9 @@ export const shouldBehaveLikeLSP20 = (
           )
             .to.be.revertedWithCustomError(
               context.universalProfile,
-              "LSP20CallingOwnerFailed"
+              "LSP20CallingVerifierFailed"
             )
-            .withArgs(true);
+            .withArgs(false);
         });
 
         after("reverting to previous owner", async () => {
@@ -344,7 +344,7 @@ export const shouldBehaveLikeLSP20 = (
               context.universalProfile,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0x");
+            .withArgs(false, "0x");
         });
 
         after("reverting to previous owner", async () => {
@@ -467,7 +467,7 @@ export const shouldBehaveLikeLSP20 = (
               context.universalProfile,
               "LSP20InvalidMagicValue"
             )
-            .withArgs(true, "0xaabbccdd" + "0".repeat(56));
+            .withArgs(false, "0xaabbccdd" + "0".repeat(56));
         });
 
         after("reverting to previous owner", async () => {
