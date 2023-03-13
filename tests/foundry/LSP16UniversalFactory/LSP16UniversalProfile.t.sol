@@ -6,14 +6,14 @@ import "forge-std/console.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
-import "./LSP16Mock.sol";
+import "../../../contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol";
 import "../../../contracts/Mocks/NonPayableFallback.sol";
 import "../../../contracts/Mocks/FallbackInitializer.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725AccountInit.sol";
 
 contract LSP16UniversalProfileTest is Test {
-    LSP16Mock public lsp16;
+    LSP16UniversalFactory public lsp16;
     NonPayableFallback public nonPayableFallbackContract;
     FallbackInitializer public fallbackInitializer;
     LSP0ERC725Account public lsp0;
@@ -30,7 +30,7 @@ contract LSP16UniversalProfileTest is Test {
     uint256 public testCounter;
 
     function setUp() public {
-        lsp16 = new LSP16Mock();
+        lsp16 = new LSP16UniversalFactory();
 
         nonPayableFallbackContract = new NonPayableFallback();
         fallbackInitializer = new FallbackInitializer();

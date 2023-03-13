@@ -5,7 +5,6 @@ name: 🆙 📊 Universal Profile Benchmark
 on:
   pull_request:
     types: [opened]
-    branches: ["develop"]
 
 jobs:
   benchmark:
