@@ -67,9 +67,6 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         // solhint-disable avoid-tx-origin
         if (notifier == tx.origin) revert CannotRegisterEOAsAsAssets(notifier);
 
-        (address keyManager, bool ownerIsKeyManager) = _validateCallerViaKeyManager();
-        if (!ownerIsKeyManager) return "LSP1: account owner is not a LSP6KeyManager";
-
         // if the contract being transferred doesn't support LSP9, do not register it as a received vault
         if (
             mapPrefix == _LSP10_VAULTS_MAP_KEY_PREFIX &&
@@ -86,11 +83,11 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         if (isReceiving) {
             if (isMapValueSet) return "LSP1: asset received is already registered";
 
-            return _whenReceiving(typeId, notifier, keyManager, notifierMapKey, interfaceID);
+            return _whenReceiving(typeId, notifier, notifierMapKey, interfaceID);
         } else {
             if (!isMapValueSet) return "LSP1: asset sent is not registered";
 
-            return _whenSending(typeId, notifier, keyManager, notifierMapKey, notifierMapValue);
+            return _whenSending(typeId, notifier, notifierMapKey, notifierMapValue);
         }
     }
 
@@ -104,7 +101,6 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     function _whenReceiving(
         bytes32 typeId,
         address notifier,
-        address keyManager,
         bytes32 notifierMapKey,
         bytes4 interfaceID
     ) internal virtual returns (bytes memory) {
@@ -117,12 +113,14 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
                 .generateReceivedAssetKeys(msg.sender, notifier, notifierMapKey, interfaceID);
 
-            return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            return "";
         } else {
             (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
                 .generateReceivedVaultKeys(msg.sender, notifier, notifierMapKey);
 
-            return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            return "";
         }
     }
 
@@ -134,7 +132,6 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
     function _whenSending(
         bytes32 typeId,
         address notifier,
-        address keyManager,
         bytes32 notifierMapKey,
         bytes memory notifierMapValue
     ) internal virtual returns (bytes memory) {
@@ -147,36 +144,15 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
             (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
                 .generateSentAssetKeys(msg.sender, notifierMapKey, notifierMapValue);
 
-            return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            return "";
         } else {
             (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
                 .generateSentVaultKeys(msg.sender, notifierMapKey, notifierMapValue);
 
-            return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
+            IERC725Y(msg.sender).setData(dataKeys, dataValues);
+            return "";
         }
-    }
-
-    /**
-     * @dev Check if the caller is owned by an LSP6KeyManager and linked to
-     * the owner returned
-     */
-    function _validateCallerViaKeyManager()
-        internal
-        view
-        virtual
-        returns (address accountOwner, bool ownerIsKeyManager)
-    {
-        accountOwner = ERC725Y(msg.sender).owner();
-
-        if (accountOwner.supportsERC165InterfaceUnchecked(_INTERFACEID_LSP6)) {
-            address target = ILSP6KeyManager(accountOwner).target();
-            // check if the caller is the same account controlled by the keyManager
-            if (target != msg.sender) revert CallerNotLSP6LinkedTarget(msg.sender, target);
-
-            return (accountOwner, true);
-        }
-
-        return (accountOwner, false);
     }
 
     // --- Overrides
