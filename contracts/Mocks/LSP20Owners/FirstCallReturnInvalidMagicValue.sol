@@ -12,7 +12,11 @@ contract FirstCallReturnInvalidMagicValue {
 
     address public target;
 
-    function lsp20VerifyCall(address, uint256, bytes memory) external returns (bytes4) {
+    function lsp20VerifyCall(
+        address,
+        uint256,
+        bytes memory
+    ) external returns (bytes4) {
         emit CallVerified();
 
         return 0xaabbccdd;
