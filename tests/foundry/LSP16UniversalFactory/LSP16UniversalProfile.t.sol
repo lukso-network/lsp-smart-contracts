@@ -6,14 +6,14 @@ import "forge-std/console.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
-import "./LSP16Mock.sol";
+import "../../../contracts/LSP16UniversalFactory/LSP16UniversalFactory.sol";
 import "../../../contracts/Mocks/NonPayableFallback.sol";
 import "../../../contracts/Mocks/FallbackInitializer.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725Account.sol";
 import "../../../contracts/LSP0ERC725Account/LSP0ERC725AccountInit.sol";
 
 contract LSP16UniversalProfileTest is Test {
-    LSP16Mock public lsp16;
+    LSP16UniversalFactory public lsp16;
     NonPayableFallback public nonPayableFallbackContract;
     FallbackInitializer public fallbackInitializer;
     LSP0ERC725Account public lsp0;
@@ -30,7 +30,7 @@ contract LSP16UniversalProfileTest is Test {
     uint256 public testCounter;
 
     function setUp() public {
-        lsp16 = new LSP16Mock();
+        lsp16 = new LSP16UniversalFactory();
 
         nonPayableFallbackContract = new NonPayableFallback();
         fallbackInitializer = new FallbackInitializer();
@@ -64,10 +64,9 @@ contract LSP16UniversalProfileTest is Test {
     }
 
     // testing that with when initializeCallDataBytes is different salt cannot be the same
-    function testSaltAlwaysUniqueWithDifferentRandomBytes(bytes memory initializeCallData)
-        public
-        view
-    {
+    function testSaltAlwaysUniqueWithDifferentRandomBytes(
+        bytes memory initializeCallData
+    ) public view {
         if (keccak256(initializeCallDataBytes) == keccak256(initializeCallData)) return;
         bytes32 salt = lsp16.generateSalt(true, initializeCallData, randomBytes32ForSalt);
         assert(salt != uniqueInitializableSalt);
@@ -152,9 +151,9 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testDeployCreate2ProxyShouldNotKeepValueWithNonPayableFallback(uint256 valueToTransfer)
-        public
-    {
+    function testDeployCreate2ProxyShouldNotKeepValueWithNonPayableFallback(
+        uint256 valueToTransfer
+    ) public {
         vm.deal(address(this), valueToTransfer);
 
         assert(address(this).balance == valueToTransfer);
@@ -198,9 +197,9 @@ contract LSP16UniversalProfileTest is Test {
         require(address(lsp16).balance == 0, "LSP16 should not have any balance");
     }
 
-    function testDeployCreate2ShouldNotKeepValueWithNonPayableFallback(uint256 valueToTransfer)
-        public
-    {
+    function testDeployCreate2ShouldNotKeepValueWithNonPayableFallback(
+        uint256 valueToTransfer
+    ) public {
         vm.deal(address(this), valueToTransfer);
 
         assert(address(this).balance == valueToTransfer);
