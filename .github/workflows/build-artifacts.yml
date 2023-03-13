@@ -2,13 +2,10 @@
 name: Build Artifacts
 
 on:
-  pull_request:
-    branches:
-      - "main"
-      - "develop"
   push:
     branches:
       - "main"
+  pull_request:
 
 jobs:
   build-artifacts:

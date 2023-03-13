@@ -19,6 +19,8 @@ import {
   FallbackInitializer__factory,
 } from "../../types";
 
+import web3 from "web3";
+
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { provider, AddressOffset } from "../utils/helpers";
@@ -1186,6 +1188,54 @@ describe("UniversalFactory contract", () => {
 
           expect(equalAddresses).to.be.true;
         });
+      });
+    });
+
+    describe("`generateSalt(...)`", () => {
+      it("should generate the same salt as with `ethers.utils.keccak256`", async () => {
+        const providedSalt =
+          "0x7d1f4b76de4cdffc4ebac16883d3a7c9cbd95b6130494c4ad48e6a8e24083572";
+
+        const initializeCallData =
+          "0xc4d66de8000000000000000000000000d208a16f18a3bab276dff0b62ef591a846c86cba";
+
+        const generatedSalt = ethers.utils.keccak256(
+          ethers.utils.solidityPack(
+            ["bool", "bytes", "bytes32"],
+            [true, initializeCallData, providedSalt]
+          )
+        );
+
+        expect(
+          await context.universalFactory.generateSalt(
+            true,
+            initializeCallData,
+            providedSalt
+          )
+        ).to.equal(generatedSalt);
+      });
+
+      it("should generate the same salt as with `web3.utils.keccak256`", async () => {
+        const providedSalt =
+          "0x7d1f4b76de4cdffc4ebac16883d3a7c9cbd95b6130494c4ad48e6a8e24083572";
+
+        const initializeCallData =
+          "0xc4d66de8000000000000000000000000d208a16f18a3bab276dff0b62ef591a846c86cba";
+
+        const generatedSalt = web3.utils.keccak256(
+          ethers.utils.solidityPack(
+            ["bool", "bytes", "bytes32"],
+            [true, initializeCallData, providedSalt]
+          )
+        );
+
+        expect(
+          await context.universalFactory.generateSalt(
+            true,
+            initializeCallData,
+            providedSalt
+          )
+        ).to.equal(generatedSalt);
       });
     });
   });

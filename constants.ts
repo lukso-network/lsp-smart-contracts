@@ -380,8 +380,8 @@ export const Errors = {
       error: "NoERC725YDataKeysAllowed(address)",
       message: "LSP6: caller has no AllowedERC725YDataKeys",
     },
-    "0x4f0dfdda": {
-      error: "InvalidEncodedAllowedERC725YDataKeys(bytes)",
+    "0xae6cbd37": {
+      error: "InvalidEncodedAllowedERC725YDataKeys(bytes,string)",
       message:
         "LSP6: Invalid Encoding for the Compact Bytes Array of Allowed ERC725Y Data Keys.",
     },

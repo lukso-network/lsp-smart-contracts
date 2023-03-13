@@ -314,7 +314,10 @@ abstract contract LSP6SetDataModule {
         bytes memory dataValue
     ) internal view returns (bytes32) {
         if (!LSP6Utils.isCompactBytesArrayOfAllowedERC725YDataKeys(dataValue)) {
-            revert InvalidEncodedAllowedERC725YDataKeys(dataValue);
+            revert InvalidEncodedAllowedERC725YDataKeys(
+                dataValue,
+                "couldn't VALIDATE the data value"
+            );
         }
 
         // if there is nothing stored under the Allowed ERC725Y Data Keys of the controller,
@@ -413,6 +416,18 @@ abstract contract LSP6SetDataModule {
                     )
                 )
             );
+
+            /**
+             * The length of a data key is 32 bytes.
+             * Therefore we can have a fixed allowed data key which has
+             * a length of 32 bytes or we can have a dynamic data key
+             * which can have a length of up to 31 bytes.
+             */
+            if (length > 32)
+                revert InvalidEncodedAllowedERC725YDataKeys(
+                    allowedERC725YDataKeysCompacted,
+                    "couldn't DECODE from storage"
+                );
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &
@@ -518,6 +533,18 @@ abstract contract LSP6SetDataModule {
                     )
                 )
             );
+
+            /**
+             * The length of a data key is 32 bytes.
+             * Therefore we can have a fixed allowed data key which has
+             * a length of 32 bytes or we can have a dynamic data key
+             * which can have a length of up to 31 bytes.
+             */
+            if (length > 32)
+                revert InvalidEncodedAllowedERC725YDataKeys(
+                    allowedERC725YDataKeysCompacted,
+                    "couldn't DECODE from storage"
+                );
 
             /**
              * The bitmask discard the last `32 - length` bytes of the input data key via ANDing &

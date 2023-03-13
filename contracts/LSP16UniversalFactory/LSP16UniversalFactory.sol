@@ -64,7 +64,7 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes calldata initializeCallData
     ) public view virtual returns (address) {
-        bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
+        bytes32 generatedSalt = generateSalt(initializable, initializeCallData, providedSalt);
         return Create2.computeAddress(generatedSalt, byteCodeHash);
     }
 
@@ -78,7 +78,7 @@ contract LSP16UniversalFactory {
         bool initializable,
         bytes calldata initializeCallData
     ) public view virtual returns (address) {
-        bytes32 generatedSalt = _generateSalt(initializable, initializeCallData, providedSalt);
+        bytes32 generatedSalt = generateSalt(initializable, initializeCallData, providedSalt);
         return Clones.predictDeterministicAddress(baseContract, generatedSalt);
     }
 
@@ -99,7 +99,7 @@ contract LSP16UniversalFactory {
         virtual
         returns (address)
     {
-        bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
+        bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
         address contractCreated = Create2.deploy(msg.value, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, false, _EMPTY_BYTE);
 
@@ -132,7 +132,7 @@ contract LSP16UniversalFactory {
         if (constructorMsgValue + initializeCalldataMsgValue != msg.value)
             revert InvalidMsgValueDistribution();
 
-        bytes32 generatedSalt = _generateSalt(true, initializeCalldata, providedSalt);
+        bytes32 generatedSalt = generateSalt(true, initializeCalldata, providedSalt);
         address contractCreated = Create2.deploy(constructorMsgValue, generatedSalt, byteCode);
         emit ContractCreated(contractCreated, providedSalt, true, initializeCalldata);
 
@@ -163,7 +163,7 @@ contract LSP16UniversalFactory {
         virtual
         returns (address)
     {
-        bytes32 generatedSalt = _generateSalt(false, _EMPTY_BYTE, providedSalt);
+        bytes32 generatedSalt = generateSalt(false, _EMPTY_BYTE, providedSalt);
 
         address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
         emit ContractCreated(proxy, providedSalt, false, _EMPTY_BYTE);
@@ -190,7 +190,7 @@ contract LSP16UniversalFactory {
         bytes32 providedSalt,
         bytes calldata initializeCalldata
     ) public payable virtual returns (address) {
-        bytes32 generatedSalt = _generateSalt(true, initializeCalldata, providedSalt);
+        bytes32 generatedSalt = generateSalt(true, initializeCalldata, providedSalt);
 
         address proxy = Clones.cloneDeterministic(baseContract, generatedSalt);
         emit ContractCreated(proxy, providedSalt, true, initializeCalldata);
@@ -211,11 +211,11 @@ contract LSP16UniversalFactory {
      * to deploy the same bytecode + the same salt to get the same address of the contract on
      * another chain without applying the effect of initializing.
      */
-    function _generateSalt(
+    function generateSalt(
         bool initializable,
         bytes memory initializeCallData,
         bytes32 providedSalt
-    ) internal pure virtual returns (bytes32) {
+    ) public pure virtual returns (bytes32) {
         if (initializable) {
             return keccak256(abi.encodePacked(initializable, initializeCallData, providedSalt));
         } else {
