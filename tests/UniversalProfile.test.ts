@@ -14,11 +14,6 @@ import {
 } from "./LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour";
 
 import {
-  LSP14TestContext,
-  shouldBehaveLikeLSP14,
-} from "./LSP14Ownable2Step/LSP14Ownable2Step.behaviour";
-
-import {
   LSP17TestContext,
   shouldBehaveLikeLSP17,
 } from "./LSP17ContractExtension/LSP17Extendable.behaviour";
@@ -35,6 +30,10 @@ import {
 } from "./UniversalProfile.behaviour";
 import { provider } from "./utils/helpers";
 import { BigNumber } from "ethers";
+import {
+  LSP14CombinedWithLSP20TestContext,
+  shouldBehaveLikeLSP14CombinedWithLSP20,
+} from "./LSP20ReverseVerification/LSP14CombinedWithLSP20.behaviour";
 
 describe("UniversalProfile", () => {
   describe("when using UniversalProfile contract with constructor", () => {
@@ -69,9 +68,9 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildLSP14TestContext = async (
+    const buildLSP14CombinedWithLSP20TestContext = async (
       initialFunding?: number | BigNumber
-    ): Promise<LSP14TestContext> => {
+    ): Promise<LSP14CombinedWithLSP20TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
@@ -148,7 +147,9 @@ describe("UniversalProfile", () => {
     describe("when testing deployed contract", () => {
       shouldBehaveLikeLSP3(buildLSP3TestContext);
       shouldBehaveLikeLSP1(buildLSP1TestContext);
-      shouldBehaveLikeLSP14(buildLSP14TestContext);
+      shouldBehaveLikeLSP14CombinedWithLSP20(
+        buildLSP14CombinedWithLSP20TestContext
+      );
       shouldBehaveLikeLSP17(buildLSP17TestContext);
       shouldBehaveLikeLSP20(buildLSP20TestContext);
     });
@@ -210,9 +211,9 @@ describe("UniversalProfile", () => {
       return { accounts, lsp1Implementation, lsp1Checker };
     };
 
-    const buildLSP14TestContext = async (
+    const buildLSP14CombinedWithLSP20TestContext = async (
       initialFunding?: number | BigNumber
-    ): Promise<LSP14TestContext> => {
+    ): Promise<LSP14CombinedWithLSP20TestContext> => {
       const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
@@ -352,17 +353,21 @@ describe("UniversalProfile", () => {
         return lsp1Context;
       });
 
-      shouldBehaveLikeLSP14(async (initialFunding?: number | BigNumber) => {
-        let claimOwnershipContext = await buildLSP14TestContext(initialFunding);
+      shouldBehaveLikeLSP14CombinedWithLSP20(
+        async (initialFunding?: number | BigNumber) => {
+          let claimOwnershipContext =
+            await buildLSP14CombinedWithLSP20TestContext(initialFunding);
 
-        await initializeProxy({
-          accounts: claimOwnershipContext.accounts,
-          universalProfile: claimOwnershipContext.contract as LSP0ERC725Account,
-          deployParams: claimOwnershipContext.deployParams,
-        });
+          await initializeProxy({
+            accounts: claimOwnershipContext.accounts,
+            universalProfile:
+              claimOwnershipContext.contract as LSP0ERC725Account,
+            deployParams: claimOwnershipContext.deployParams,
+          });
 
-        return claimOwnershipContext;
-      });
+          return claimOwnershipContext;
+        }
+      );
 
       shouldBehaveLikeLSP17(async () => {
         let fallbackExtensionContext = await buildLSP17TestContext();
