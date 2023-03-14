@@ -141,8 +141,10 @@ abstract contract LSP0ERC725AccountCore is
      * @param target The smart contract or address to interact with, `to` will be unused if a contract is created (operation 1 and 2)
      * @param value The amount of native tokens to transfer (in Wei).
      * @param data The call data, or the bytecode of the contract to deploy
-     * @dev Executes any other smart contract.
-     * SHOULD only be callable by the owner of the contract set via ERC173
+     * @dev Executes any call on other addresses.
+     *
+     * MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
@@ -170,7 +172,10 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @inheritdoc ERC725XCore
      *
-     * @dev Emits a {ValueReceived} event when receiving native tokens.
+     * @dev MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
+     *
+     * Emits a {ValueReceived} event when receiving native tokens.
      */
     function execute(
         uint256[] memory operationsType,
@@ -195,7 +200,9 @@ abstract contract LSP0ERC725AccountCore is
      * @notice Sets singular data for a given `dataKey`
      * @param dataKey The key to retrieve stored value
      * @param dataValue The value to set
-     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * @dev MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
      *
      * Emits a {DataChanged} event.
      */
@@ -214,7 +221,9 @@ abstract contract LSP0ERC725AccountCore is
      * @param dataKeys The array of data keys for values to set
      * @param dataValues The array of values to set
      * @dev Sets array of data for multiple given `dataKeys`
-     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * @dev MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
      *
      * Emits a {DataChanged} event.
      */
@@ -245,12 +254,10 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
      * and the LSP1TypeIdDelegate call.
      */
-    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
-        public
-        payable
-        virtual
-        returns (bytes memory returnedValues)
-    {
+    function universalReceiver(
+        bytes32 typeId,
+        bytes calldata receivedData
+    ) public payable virtual returns (bytes memory returnedValues) {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         bytes memory resultDefaultDelegate;
@@ -299,15 +306,16 @@ abstract contract LSP0ERC725AccountCore is
      * @inheritdoc LSP14Ownable2Step
      *
      * @dev same as ILSP14.transferOwnership with the additional requirement:
-     *
      * Requirements:
-     *  - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted')
+     *
+     * - MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
+     *
+     * - When notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted')
      */
-    function transferOwnership(address newOwner)
-        public
-        virtual
-        override(LSP14Ownable2Step, OwnableUnset)
-    {
+    function transferOwnership(
+        address newOwner
+    ) public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address _owner = owner();
 
         bool verifyAfter;
@@ -355,6 +363,9 @@ abstract contract LSP0ERC725AccountCore is
 
     /**
      * @inheritdoc LSP14Ownable2Step
+     *
+     * @dev MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
      */
     function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address _owner = owner();
@@ -375,13 +386,9 @@ abstract contract LSP0ERC725AccountCore is
      * `supportsInterface` extension according to LSP17, and checks if the extension
      * implements the interface defined by `interfaceId`.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725XCore, ERC725YCore, LSP17Extendable)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC725XCore, ERC725YCore, LSP17Extendable) returns (bool) {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
@@ -398,12 +405,10 @@ abstract contract LSP0ERC725AccountCore is
      * @param dataHash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
      * @param signature owner's signature(s) of the data
      */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        virtual
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(
+        bytes32 dataHash,
+        bytes memory signature
+    ) public view virtual returns (bytes4 magicValue) {
         address _owner = owner();
 
         // If owner is a contract
@@ -492,13 +497,9 @@ abstract contract LSP0ERC725AccountCore is
      *
      * If no extension is stored, returns the address(0)
      */
-    function _getExtension(bytes4 functionSelector)
-        internal
-        view
-        virtual
-        override
-        returns (address)
-    {
+    function _getExtension(
+        bytes4 functionSelector
+    ) internal view virtual override returns (address) {
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector
