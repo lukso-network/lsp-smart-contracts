@@ -141,3 +141,8 @@ error DelegateCallDisallowedViaKeyManager();
  * @dev reverts when the payload is invalid.
  */
 error InvalidPayload(bytes payload);
+
+/**
+ * @dev reverts when the caller is not the linked target
+ */
+error CallerIsNotTheTarget(address caller);

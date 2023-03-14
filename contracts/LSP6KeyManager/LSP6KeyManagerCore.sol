@@ -32,7 +32,8 @@ import {
     InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
-    NotAuthorised
+    NotAuthorised,
+    CallerIsNotTheTarget
 } from "./LSP6Errors.sol";
 
 // constants
@@ -84,23 +85,31 @@ abstract contract LSP6KeyManagerCore is
         return _target;
     }
 
+    /**
+     * @inheritdoc ILSP20CallVerification
+     */
     function lsp20VerifyCall(
         address caller,
-        uint256, /*value*/
+        uint256 value,
         bytes calldata data
     ) external returns (bytes4) {
-        if (msg.sender != _target) revert("Caller is not the target");
+        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
         _nonReentrantBefore(caller);
         _verifyPermissions(caller, data);
+        emit VerifiedCall(msg.sender, value, bytes4(data));
+
         return
             bytes4(bytes.concat(bytes3(ILSP20CallVerification.lsp20VerifyCall.selector), hex"01"));
     }
 
+    /**
+     * @inheritdoc ILSP20CallVerification
+     */
     function lsp20VerifyCallResult(
         bytes32, /*callHash*/
         bytes memory /*result*/
     ) external returns (bytes4) {
-        if (msg.sender != _target) revert("Caller is not the target");
+        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
         _nonReentrantAfter();
         return ILSP20CallVerification.lsp20VerifyCallResult.selector;
     }
@@ -234,7 +243,10 @@ abstract contract LSP6KeyManagerCore is
         }
 
         _nonReentrantBefore(msg.sender);
+
         _verifyPermissions(msg.sender, payload);
+        emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
+
         bytes memory result = _executePayload(msgValue, payload);
         _nonReentrantAfter();
         return result;
@@ -272,6 +284,7 @@ abstract contract LSP6KeyManagerCore is
         _nonceStore[signer][nonce >> 128]++;
 
         _verifyPermissions(signer, payload);
+        emit VerifiedCall(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
@@ -290,8 +303,6 @@ abstract contract LSP6KeyManagerCore is
         virtual
         returns (bytes memory)
     {
-        emit Executed(bytes4(payload), msgValue);
-
         (bool success, bytes memory returnData) = _target.call{value: msgValue, gas: gasleft()}(
             payload
         );
