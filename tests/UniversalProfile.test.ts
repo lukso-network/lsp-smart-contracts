@@ -156,17 +156,22 @@ describe("UniversalProfile", () => {
   });
 
   describe("when using UniversalProfile contract with proxy", () => {
+    let universalProfileInit;
+    let accounts;
+    before(async () => {
+      accounts = await ethers.getSigners();
+      universalProfileInit = await new UniversalProfileInit__factory(
+        accounts[0]
+      ).deploy();
+    });
+
     const buildLSP3TestContext = async (
       initialFunding?: number
     ): Promise<LSP3TestContext> => {
-      const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
         initialFunding,
       };
-      const universalProfileInit = await new UniversalProfileInit__factory(
-        accounts[0]
-      ).deploy();
 
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
@@ -188,11 +193,6 @@ describe("UniversalProfile", () => {
     };
 
     const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
-      const accounts = await ethers.getSigners();
-
-      const universalProfileInit = await new UniversalProfileInit__factory(
-        accounts[0]
-      ).deploy();
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
         accounts[0]
@@ -214,15 +214,10 @@ describe("UniversalProfile", () => {
     const buildLSP14CombinedWithLSP20TestContext = async (
       initialFunding?: number | BigNumber
     ): Promise<LSP14CombinedWithLSP20TestContext> => {
-      const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
         initialFunding: initialFunding,
       };
-
-      const universalProfileInit = await new UniversalProfileInit__factory(
-        accounts[0]
-      ).deploy();
 
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
@@ -244,14 +239,9 @@ describe("UniversalProfile", () => {
     };
 
     const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
-      const accounts = await ethers.getSigners();
       const deployParams = {
         owner: accounts[0],
       };
-
-      const universalProfileInit = await new UniversalProfileInit__factory(
-        accounts[0]
-      ).deploy();
 
       const universalProfileProxy = await deployProxy(
         universalProfileInit.address,
@@ -289,12 +279,6 @@ describe("UniversalProfile", () => {
 
     describe("when deploying the base implementation contract", () => {
       it("prevent any address from calling the initialize(...) function on the implementation", async () => {
-        const accounts = await ethers.getSigners();
-
-        const universalProfileInit = await new UniversalProfileInit__factory(
-          accounts[0]
-        ).deploy();
-
         const randomCaller = accounts[1];
 
         await expect(
@@ -387,8 +371,7 @@ describe("UniversalProfile", () => {
 
         await initializeProxy({
           accounts: reverseVerificationContext.accounts,
-          universalProfile:
-            reverseVerificationContext.universalProfile as LSP0ERC725Account,
+          universalProfile: reverseVerificationContext.universalProfile,
           deployParams: reverseVerificationContext.deployParams,
         });
 
