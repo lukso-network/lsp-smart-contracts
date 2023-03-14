@@ -192,7 +192,7 @@ abstract contract LSP11BasicSocialRecoveryCore is OwnableUnset, ERC165, ILSP11Ba
 
         // Setting permissions for `recoverer`
         (bytes32[] memory keys, bytes[] memory values) = LSP6Utils
-            .generatePermissionsKeysForController(
+            .generatePermissionsKeysForNewController(
                 ERC725(target_),
                 recoverer,
                 ALL_REGULAR_PERMISSIONS
