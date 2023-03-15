@@ -102,11 +102,9 @@ abstract contract LSP6ExecuteModule {
     ) internal view virtual {
         _requirePermissions(controller, permissions, _PERMISSION_DEPLOY);
 
-        bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
-
         // CHECK if we are funding the contract
-        if (isFundingContract && !hasSuperTransferValue) {
-            _requirePermissions(controller, permissions, _PERMISSION_TRANSFERVALUE);
+        if (isFundingContract) {
+            _requirePermissions(controller, permissions, _PERMISSION_SUPER_TRANSFERVALUE);
         }
     }
 
