@@ -12,23 +12,23 @@ import "../../LSP6KeyManager/LSP6Constants.sol";
 
 contract ReentrantContract {
     event ValueReceived(uint256);
-    mapping(string => function() internal returns (bytes memory)) private functionCall;
+    mapping(string => function() internal returns (bytes memory)) private _functionCall;
 
-    address newControllerAddress;
-    bytes32 newURDTypeId;
-    address newURDAddress;
+    address private _newControllerAddress;
+    bytes32 private _newURDTypeId;
+    address private _newURDAddress;
 
-    constructor(address newControllerAddress_, bytes32 newURDTypeId_, address newURDAddress_) {
-        newControllerAddress = newControllerAddress_;
-        newURDTypeId = newURDTypeId_;
-        newURDAddress = newURDAddress_;
+    constructor(address _newControllerAddress_, bytes32 _newURDTypeId_, address _newURDAddress_) {
+        _newControllerAddress = _newControllerAddress_;
+        _newURDTypeId = _newURDTypeId_;
+        _newURDAddress = _newURDAddress_;
 
-        functionCall["TRANSFERVALUE"] = transferValue;
-        functionCall["SETDATA"] = setData;
-        functionCall["ADDCONTROLLER"] = addController;
-        functionCall["EDITPERMISSIONS"] = editPermissions;
-        functionCall["ADDUNIVERSALRECEIVERDELEGATE"] = addUniversalReceiverDelegate;
-        functionCall["CHANGEUNIVERSALRECEIVERDELEGATE"] = changeUniversalReceiverDelegate;
+        _functionCall["TRANSFERVALUE"] = _transferValue;
+        _functionCall["SETDATA"] = _setData;
+        _functionCall["ADDCONTROLLER"] = _addController;
+        _functionCall["EDITPERMISSIONS"] = _editPermissions;
+        _functionCall["ADDUNIVERSALRECEIVERDELEGATE"] = _addUniversalReceiverDelegate;
+        _functionCall["CHANGEUNIVERSALRECEIVERDELEGATE"] = _changeUniversalReceiverDelegate;
     }
 
     receive() external payable {
@@ -36,16 +36,16 @@ contract ReentrantContract {
     }
 
     function callThatReenters(string memory payloadType) external returns (bytes memory) {
-        return functionCall[payloadType]();
+        return _functionCall[payloadType]();
     }
 
     // --- Internal Methods
 
-    function transferValue() internal returns (bytes memory) {
+    function _transferValue() internal returns (bytes memory) {
         return IERC725X(msg.sender).execute(0, address(this), 1 ether, "");
     }
 
-    function setData() internal returns (bytes memory) {
+    function _setData() internal returns (bytes memory) {
         IERC725Y(msg.sender).setData(
             keccak256(bytes("SomeRandomTextUsed")),
             bytes("SomeRandomTextUsed")
@@ -54,13 +54,13 @@ contract ReentrantContract {
         return "";
     }
 
-    function addController() internal returns (bytes memory) {
+    function _addController() internal returns (bytes memory) {
         IERC725Y(msg.sender).setData(
             bytes32(
                 bytes.concat(
                     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
                     bytes2(0),
-                    bytes20(newControllerAddress)
+                    bytes20(_newControllerAddress)
                 )
             ),
             bytes.concat(bytes32(uint256(16)))
@@ -69,13 +69,13 @@ contract ReentrantContract {
         return "";
     }
 
-    function editPermissions() internal returns (bytes memory) {
+    function _editPermissions() internal returns (bytes memory) {
         IERC725Y(msg.sender).setData(
             bytes32(
                 bytes.concat(
                     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
                     bytes2(0),
-                    bytes20(newControllerAddress)
+                    bytes20(_newControllerAddress)
                 )
             ),
             ""
@@ -84,28 +84,28 @@ contract ReentrantContract {
         return "";
     }
 
-    function addUniversalReceiverDelegate() internal returns (bytes memory) {
+    function _addUniversalReceiverDelegate() internal returns (bytes memory) {
         IERC725Y(msg.sender).setData(
             bytes32(
                 bytes.concat(
                     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
                     bytes2(0),
-                    bytes20(newURDTypeId)
+                    bytes20(_newURDTypeId)
                 )
             ),
-            bytes.concat(bytes20(newURDAddress))
+            bytes.concat(bytes20(_newURDAddress))
         );
 
         return "";
     }
 
-    function changeUniversalReceiverDelegate() internal returns (bytes memory) {
+    function _changeUniversalReceiverDelegate() internal returns (bytes memory) {
         IERC725Y(msg.sender).setData(
             bytes32(
                 bytes.concat(
                     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
                     bytes2(0),
-                    bytes20(newURDTypeId)
+                    bytes20(_newURDTypeId)
                 )
             ),
             ""

@@ -28,7 +28,7 @@ import {
 import {
   ReentrantContract__factory,
   UniversalProfile__factory,
-} from "../../../../types";
+} from "../../../../../types";
 
 const generateExecutePayload = (
   keyManagerAddress: string,

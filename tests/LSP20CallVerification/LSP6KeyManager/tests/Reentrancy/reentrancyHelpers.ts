@@ -13,17 +13,17 @@ import {
   SingleReentrancyRelayer__factory,
   BatchReentrancyRelayer__factory,
   UniversalProfile__factory,
-} from "../../../../types";
+} from "../../../../../types";
 
 // constants
 import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-} from "../../../../constants";
+} from "../../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
+import { LSP6TestContext } from "../../../../utils/context";
 
 // helpers
 import {
@@ -32,8 +32,8 @@ import {
   LOCAL_PRIVATE_KEYS,
   signLSP6ExecuteRelayCall,
   encodeCompactBytesArray,
-} from "../../../utils/helpers";
-import { setupKeyManager } from "../../../utils/fixtures";
+} from "../../../../utils/helpers";
+import { setupKeyManager } from "../../../../utils/fixtures";
 
 // Complex permission as it has AllowedCalls
 export type TransferValueTestCase = {

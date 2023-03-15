@@ -29,6 +29,7 @@ import {
 
 // constants
 import { OPERATION_TYPES } from "../../constants";
+import { testReentrancyScenarios } from "./LSP6KeyManager/tests/Reentrancy.test";
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];
