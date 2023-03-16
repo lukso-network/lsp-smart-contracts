@@ -9,8 +9,6 @@ import {LSP6Utils} from "../LSP6Utils.sol";
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
-import "hardhat/console.sol";
-
 // constants
 import {
     _PERMISSION_TRANSFERVALUE,
@@ -203,15 +201,7 @@ abstract contract LSP6ExecuteModule {
             revert NoCallsAllowed(controllerAddress);
         }
 
-        bytes4 requiredCallTypes = _extractCallType(operationType);
-
-        // if there is value being transferred, add the extra bit
-        // for the first bit for Value Transfer in the `requiredCallTypes`
-        if (value != 0) {
-            requiredCallTypes |= _ALLOWEDCALLS_VALUE;
-        }
-
-        console.logBytes4(requiredCallTypes);
+        bytes4 requiredCallTypes = _extractCallType(operationType, selector, value);
 
         bool isAllowedCallType;
         bool isAllowedAddress;
@@ -249,12 +239,6 @@ abstract contract LSP6ExecuteModule {
             isAllowedStandard = _isAllowedStandard(allowedCall, to);
             isAllowedFunction = _isAllowedFunction(allowedCall, selector);
 
-            console.log(isAllowedCallType);
-            console.log(isAllowedAddress);
-            console.log(isAllowedStandard);
-            console.log(isAllowedFunction);
-            console.log("---------");
-
             if (isAllowedStandard && isAllowedAddress && isAllowedFunction && isAllowedCallType)
                 return;
         }
@@ -267,11 +251,35 @@ abstract contract LSP6ExecuteModule {
      * @param operationType 0 = CALL, 3 = STATICCALL or 3 = DELEGATECALL
      * @return a bytes4 value containing a single 1 bit for the callType
      */
-    function _extractCallType(uint256 operationType) internal pure returns (bytes4) {
-        if (operationType == OPERATION_0_CALL) return _ALLOWEDCALLS_WRITE;
-        if (operationType == OPERATION_3_STATICCALL) return _ALLOWEDCALLS_READ;
-        if (operationType == OPERATION_4_DELEGATECALL) return _ALLOWEDCALLS_EXECUTE;
-        return bytes4(0);
+    function _extractCallType(
+        uint256 operationType,
+        bytes4 selector,
+        uint256 value
+    ) internal pure returns (bytes4) {
+        bytes4 requiredCallTypes;
+
+        if (operationType == OPERATION_0_CALL) {
+            if (
+                // CHECK if we are doing an empty call
+                (selector == bytes4(0) && value == 0) ||
+                // we do not require callType CALL
+                // if we are just transferring value without `data`
+                selector != bytes4(0)
+            ) {
+                requiredCallTypes = _ALLOWEDCALLS_WRITE;
+            }
+        }
+
+        if (operationType == OPERATION_3_STATICCALL) requiredCallTypes = _ALLOWEDCALLS_READ;
+        if (operationType == OPERATION_4_DELEGATECALL) requiredCallTypes = _ALLOWEDCALLS_EXECUTE;
+
+        // if there is value being transferred, add the extra bit
+        // for the first bit for Value Transfer in the `requiredCallTypes`
+        if (value != 0) {
+            requiredCallTypes |= _ALLOWEDCALLS_VALUE;
+        }
+
+        return requiredCallTypes;
     }
 
     function _extractExecuteParameters(bytes calldata executeCalldata)
