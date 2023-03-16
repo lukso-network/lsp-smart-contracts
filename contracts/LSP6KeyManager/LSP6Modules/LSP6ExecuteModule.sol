@@ -203,11 +203,6 @@ abstract contract LSP6ExecuteModule {
 
         bytes4 requiredCallTypes = _extractCallType(operationType, selector, value);
 
-        bool isAllowedCallType;
-        bool isAllowedAddress;
-        bool isAllowedStandard;
-        bool isAllowedFunction;
-
         for (uint256 ii; ii < allowedCalls.length; ii += 34) {
             /// @dev structure of an AllowedCall
             //
@@ -234,13 +229,12 @@ abstract contract LSP6ExecuteModule {
                 revert InvalidWhitelistedCall(controllerAddress);
             }
 
-            isAllowedCallType = _isAllowedCallType(allowedCall, requiredCallTypes);
-            isAllowedAddress = _isAllowedAddress(allowedCall, to);
-            isAllowedStandard = _isAllowedStandard(allowedCall, to);
-            isAllowedFunction = _isAllowedFunction(allowedCall, selector);
-
-            if (isAllowedStandard && isAllowedAddress && isAllowedFunction && isAllowedCallType)
-                return;
+            if (
+                _isAllowedCallType(allowedCall, requiredCallTypes) &&
+                _isAllowedAddress(allowedCall, to) &&
+                _isAllowedStandard(allowedCall, to) &&
+                _isAllowedFunction(allowedCall, selector)
+            ) return;
         }
 
         revert NotAllowedCall(controllerAddress, to, selector);
