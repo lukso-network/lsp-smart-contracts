@@ -20,6 +20,7 @@ import {
   INTERFACE_IDS,
   OPERATION_TYPES,
   PERMISSIONS,
+  CALLTYPE,
 } from "../constants";
 import { LSP6TestContext } from "./utils/context";
 import {
@@ -404,9 +405,9 @@ describe("⛽📊 Gas Benchmark", () => {
               PERMISSIONS.TRANSFERVALUE,
               PERMISSIONS.CALL,
               PERMISSIONS.CALL,
-              combineAllowedCalls(["0xffffffff"], [allowedAddressToTransferValue], ["0xffffffff"]),
-              combineAllowedCalls([INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.LSP7DigitalAsset], [lsp7MetaCoin.address, lsp7LyxDai.address], ["0xffffffff", "0xffffffff"]),
-              combineAllowedCalls([INTERFACE_IDS.LSP8IdentifiableDigitalAsset, INTERFACE_IDS.LSP8IdentifiableDigitalAsset], [lsp8MetaNFT.address, lsp8LyxPunks.address], ["0xffffffff", "0xffffffff"])
+              combineAllowedCalls([CALLTYPE.VALUE], [allowedAddressToTransferValue], ["0xffffffff"], ["0xffffffff"]),
+              combineAllowedCalls([CALLTYPE.WRITE], [lsp7MetaCoin.address, lsp7LyxDai.address], [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.LSP7DigitalAsset], ["0xffffffff", "0xffffffff"]),
+              combineAllowedCalls([CALLTYPE.WRITE], [lsp8MetaNFT.address, lsp8LyxPunks.address], [INTERFACE_IDS.LSP8IdentifiableDigitalAsset, INTERFACE_IDS.LSP8IdentifiableDigitalAsset], ["0xffffffff", "0xffffffff"])
           ]
           )
       });
@@ -755,8 +756,9 @@ describe("⛽📊 Gas Benchmark", () => {
         const dataKey = ERC725YDataKeys.LSP6["AddressPermissions:AllowedCalls"] + controllerToEdit.address.substring(2)
 
         const dataValue = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff", "0xffffffff"],
+          [CALLTYPE.WRITE, CALLTYPE.WRITE, CALLTYPE.WRITE],
           [allowedAddresses[0], allowedAddresses[1], allowedAddresses[2]],
+          ["0xffffffff", "0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff", "0xffffffff"]
         );
 

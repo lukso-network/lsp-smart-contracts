@@ -19,6 +19,7 @@ import {
   LSP6_VERSION,
   PERMISSIONS,
   INTERFACE_IDS,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -61,8 +62,9 @@ export const shouldBehaveLikeAllowedFunctions = (
       PERMISSIONS.CALL,
       PERMISSIONS.CALL,
       combineAllowedCalls(
-        ["0xffffffff"],
+        [CALLTYPE.WRITE],
         ["0xffffffffffffffffffffffffffffffffffffffff"],
+        ["0xffffffff"],
         [targetContract.interface.getSighash("setName")]
       ),
     ];
@@ -398,20 +400,22 @@ export const shouldBehaveLikeAllowedFunctions = (
         PERMISSIONS.CALL,
         // LSP8:ANY:transfer(…)
         combineAllowedCalls(
-          [INTERFACE_IDS.LSP8IdentifiableDigitalAsset],
+          [CALLTYPE.WRITE],
           ["0xffffffffffffffffffffffffffffffffffffffff"],
+          [INTERFACE_IDS.LSP8IdentifiableDigitalAsset],
           [lsp8Contract.interface.getSighash("transfer")]
         ),
         PERMISSIONS.CALL,
         // LSP7:ANY:ANY + LSP8:ANY: authorizeOperator(…)
         combineAllowedCalls(
+          [CALLTYPE.WRITE, CALLTYPE.WRITE],
+          [
+            "0xffffffffffffffffffffffffffffffffffffffff",
+            "0xffffffffffffffffffffffffffffffffffffffff",
+          ],
           [
             INTERFACE_IDS.LSP7DigitalAsset,
             INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
-          ],
-          [
-            "0xffffffffffffffffffffffffffffffffffffffff",
-            "0xffffffffffffffffffffffffffffffffffffffff",
           ],
           ["0xffffffff", lsp8Contract.interface.getSighash("authorizeOperator")]
         ),

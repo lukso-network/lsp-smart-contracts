@@ -33,6 +33,7 @@ import {
   PERMISSIONS,
   OPERATION_TYPES,
   LSP1_TYPE_IDS,
+  CALLTYPE,
 } from "../../constants";
 import { BigNumber } from "ethers";
 
@@ -754,7 +755,6 @@ export const shouldBehaveLikeLSP9 = (
 
     describe("when restricitng address to only talk to the vault", () => {
       before(async () => {
-        let abiCoder = await ethers.utils.defaultAbiCoder;
         let friendPermissions = PERMISSIONS.CALL;
         const payload = context.universalProfile.interface.encodeFunctionData(
           "setData(bytes32[],bytes[])",
@@ -768,8 +768,10 @@ export const shouldBehaveLikeLSP9 = (
             [
               friendPermissions,
               combineAllowedCalls(
-                ["0xffffffff"],
+                // TODO: is the bit permission CALL in the allowed call enough for this test?
+                [CALLTYPE.WRITE],
                 [context.lsp9Vault.address],
+                ["0xffffffff"],
                 ["0xffffffff"]
               ),
             ],

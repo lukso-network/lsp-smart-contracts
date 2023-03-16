@@ -14,6 +14,7 @@ import {
   ERC725YDataKeys,
   OPERATION_TYPES,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -21,7 +22,11 @@ import { LSP6InternalsTestContext } from "../../utils/context";
 import { setupKeyManagerHelper } from "../../utils/fixtures";
 
 // helpers
-import { combinePermissions, combineAllowedCalls } from "../../utils/helpers";
+import {
+  combinePermissions,
+  combineAllowedCalls,
+  combineCallTypes,
+} from "../../utils/helpers";
 
 export const testAllowedCallsInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>
@@ -34,10 +39,11 @@ export const testAllowedCallsInternals = (
 
   describe("`isCompactBytesArrayOfAllowedCalls`", () => {
     describe("when passing a compact bytes array with 1 element", () => {
-      it("should return `true` if element is 28 bytes long", async () => {
+      it("should return `true` if element is 32 bytes long", async () => {
         const allowedCalls = combineAllowedCalls(
-          ["0xffffffff"],
+          [CALLTYPE.VALUE],
           [context.accounts[5].address],
+          ["0xffffffff"],
           ["0xffffffff"]
         );
 
@@ -89,12 +95,13 @@ export const testAllowedCallsInternals = (
     describe("when passing a compact bytes array with 3 x elements", () => {
       it("should pass if all elements are 28 bytes long", async () => {
         const allowedCalls = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             context.accounts[5].address,
             context.accounts[6].address,
             context.accounts[7].address,
           ],
+          ["0xffffffff", "0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
@@ -108,12 +115,13 @@ export const testAllowedCallsInternals = (
 
       it("should fail if one of the element is not 28 bytes long", async () => {
         const allowedCalls = combineAllowedCalls(
-          ["0xffffffff", "0xffffffff", "0xffffffff"],
+          [CALLTYPE.VALUE, CALLTYPE.VALUE, CALLTYPE.VALUE],
           [
             context.accounts[5].address,
             ethers.utils.hexlify(ethers.utils.randomBytes(27)),
             context.accounts[7].address,
           ],
+          ["0xffffffff", "0xffffffff", "0xffffffff"],
           ["0xffffffff", "0xffffffff", "0xffffffff", "0xffffffff"]
         );
 
@@ -153,9 +161,19 @@ export const testAllowedCallsInternals = (
         context.accounts[0]
       ).deploy();
 
+      // addresses need to be put in lower case for the encoding otherwise:
+      //  - the encoding will return them checksummed
+      //  - reading the AllowedCalls from storage will return them lowercase
       encodedAllowedCalls = combineAllowedCalls(
+        [
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+          combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE),
+        ],
+        [
+          allowedEOA.address.toLowerCase(),
+          allowedTargetContract.address.toLowerCase(),
+        ],
         ["0xffffffff", "0xffffffff"],
-        [allowedEOA.address, allowedTargetContract.address],
         ["0xffffffff", "0xffffffff"]
       );
 
@@ -205,88 +223,98 @@ export const testAllowedCallsInternals = (
     });
 
     describe("`verifyAllowedCall(...)`", () => {
-      it("should not revert when payload = send 1 LYX to an address listed in allowed calls list", async () => {
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            allowedEOA.address,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]
-        );
-
-        await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            canCallOnlyTwoAddresses.address,
-            payload
-          )
-        ).to.not.be.reverted;
-
-        await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            canCallOnlyTwoAddresses.address,
-            payload
-          )
-        ).to.not.be.reverted;
-      });
-
-      it("should revert when payload = send 1 LYX to an address not listed in allowed calls list", async () => {
-        let disallowedAddress = ethers.utils.getAddress(
-          "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
-        );
-
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            disallowedAddress,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]
-        );
-
-        await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            canCallOnlyTwoAddresses.address,
-            payload
-          )
-        )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NotAllowedCall"
-          )
-          .withArgs(
-            canCallOnlyTwoAddresses.address,
-            disallowedAddress,
-            "0x00000000"
+      describe("when the ERC725X payload (transfer 1 LYX) is for an address listed in the allowed calls", () => {
+        it("should pass", async () => {
+          console.log("encodedAllowedCalls: ", encodedAllowedCalls);
+          const payload = context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              allowedEOA.address,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
           );
+
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedCall(
+              canCallOnlyTwoAddresses.address,
+              payload
+            )
+          ).to.not.be.reverted;
+        });
       });
 
-      it("should revert when payload = send 1 LYX, and caller has no bytes stored under AllowedCalls (= all addresses whitelisted)", async () => {
-        let randomAddress = ethers.Wallet.createRandom().address;
+      describe("when the ERC725X payload (transfer 1 LYX)  is for an address not listed in the allowed calls", () => {
+        it("should revert", async () => {
+          let disallowedAddress = ethers.utils.getAddress(
+            "0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead"
+          );
 
-        const payload = context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
-            OPERATION_TYPES.CALL,
-            randomAddress,
-            ethers.utils.parseEther("1"),
-            "0x",
-          ]
-        );
+          const payload = context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              disallowedAddress,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
 
-        await expect(
-          context.keyManagerInternalTester.verifyAllowedCall(
-            canCallNoAllowedCalls.address,
-            payload
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedCall(
+              canCallOnlyTwoAddresses.address,
+              payload
+            )
           )
-        )
-          .to.be.revertedWithCustomError(
-            context.keyManagerInternalTester,
-            "NoCallsAllowed"
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NotAllowedCall"
+            )
+            .withArgs(
+              canCallOnlyTwoAddresses.address,
+              disallowedAddress,
+              "0x00000000"
+            );
+        });
+      });
+
+      describe("when there is nothing stored under `AllowedCalls` for a controller", () => {
+        it("should revert", async () => {
+          let randomAddress = ethers.Wallet.createRandom().address;
+
+          const payload = context.universalProfile.interface.encodeFunctionData(
+            "execute(uint256,address,uint256,bytes)",
+            [
+              OPERATION_TYPES.CALL,
+              randomAddress,
+              ethers.utils.parseEther("1"),
+              "0x",
+            ]
+          );
+
+          await expect(
+            context.keyManagerInternalTester.verifyAllowedCall(
+              canCallNoAllowedCalls.address,
+              payload
+            )
           )
-          .withArgs(canCallNoAllowedCalls.address);
+            .to.be.revertedWithCustomError(
+              context.keyManagerInternalTester,
+              "NoCallsAllowed"
+            )
+            .withArgs(canCallNoAllowedCalls.address);
+        });
+      });
+    });
+  });
+
+  describe.skip("`verifyAllowedCall(...)` with `rvwx` permissions per Allowed Call", () => {
+    describe("when controller has permission CALL", () => {
+      describe("when the allowed address has `w` permission (Write = CALL)", () => {
+        it("should pass when making a CALL", async () => {
+          // ...
+        });
       });
     });
   });
@@ -623,8 +651,13 @@ export const testAllowedCallsInternals = (
         ALL_PERMISSIONS,
         combinePermissions(PERMISSIONS.CALL, PERMISSIONS.TRANSFERVALUE),
         combineAllowedCalls(
-          ["0xffffffff"],
+          // we do not consider the first 4 bytes (32 bits) of the allowed call
+          // as they are for the call types
+          // the test below should revert regardless of the call type
+          // TODO: is this the correct behaviour?
+          ["0x00000000"],
           ["0xffffffffffffffffffffffffffffffffffffffff"],
+          ["0xffffffff"],
           ["0xffffffff"]
         ),
       ];

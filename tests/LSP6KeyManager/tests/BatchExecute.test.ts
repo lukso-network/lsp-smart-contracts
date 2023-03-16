@@ -9,6 +9,7 @@ import {
   INTERFACE_IDS,
   OPERATION_TYPES,
   PERMISSIONS,
+  CALLTYPE,
 } from "../../../constants";
 
 // setup
@@ -1113,8 +1114,9 @@ export const shouldBehaveLikeBatchExecute = (
             [
               PERMISSIONS.CALL,
               combineAllowedCalls(
-                [INTERFACE_IDS.LSP7DigitalAsset],
+                [CALLTYPE.WRITE],
                 [tokenContract.address],
+                [INTERFACE_IDS.LSP7DigitalAsset],
                 [tokenContract.interface.getSighash("mint")]
               ),
             ],
