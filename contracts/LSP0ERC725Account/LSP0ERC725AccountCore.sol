@@ -231,10 +231,12 @@ abstract contract LSP0ERC725AccountCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(
-        bytes32[] memory dataKeys,
-        bytes[] memory dataValues
-    ) public payable virtual override {
+    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
+        public
+        payable
+        virtual
+        override
+    {
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
         }
@@ -269,10 +271,12 @@ abstract contract LSP0ERC725AccountCore is
      * @return returnedValues The ABI encoded return value of the LSP1UniversalReceiverDelegate call
      * and the LSP1TypeIdDelegate call.
      */
-    function universalReceiver(
-        bytes32 typeId,
-        bytes calldata receivedData
-    ) public payable virtual returns (bytes memory returnedValues) {
+    function universalReceiver(bytes32 typeId, bytes calldata receivedData)
+        public
+        payable
+        virtual
+        returns (bytes memory returnedValues)
+    {
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory lsp1DelegateValue = _getData(_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         bytes memory resultDefaultDelegate;
@@ -328,9 +332,11 @@ abstract contract LSP0ERC725AccountCore is
      *
      * - When notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted')
      */
-    function transferOwnership(
-        address newOwner
-    ) public virtual override(LSP14Ownable2Step, OwnableUnset) {
+    function transferOwnership(address newOwner)
+        public
+        virtual
+        override(LSP14Ownable2Step, OwnableUnset)
+    {
         address currentOwner = owner();
 
         if (msg.sender == currentOwner) {
@@ -409,9 +415,13 @@ abstract contract LSP0ERC725AccountCore is
      * `supportsInterface` extension according to LSP17, and checks if the extension
      * implements the interface defined by `interfaceId`.
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(ERC725XCore, ERC725YCore, LSP17Extendable) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725XCore, ERC725YCore, LSP17Extendable)
+        returns (bool)
+    {
         return
             interfaceId == _INTERFACEID_ERC1271 ||
             interfaceId == _INTERFACEID_LSP0 ||
@@ -428,10 +438,12 @@ abstract contract LSP0ERC725AccountCore is
      * @param dataHash hash of the data signed//Arbitrary length data signed on the behalf of address(this)
      * @param signature owner's signature(s) of the data
      */
-    function isValidSignature(
-        bytes32 dataHash,
-        bytes memory signature
-    ) public view virtual returns (bytes4 magicValue) {
+    function isValidSignature(bytes32 dataHash, bytes memory signature)
+        public
+        view
+        virtual
+        returns (bytes4 magicValue)
+    {
         address _owner = owner();
 
         // If owner is a contract
@@ -520,9 +532,13 @@ abstract contract LSP0ERC725AccountCore is
      *
      * If no extension is stored, returns the address(0)
      */
-    function _getExtension(
-        bytes4 functionSelector
-    ) internal view virtual override returns (address) {
+    function _getExtension(bytes4 functionSelector)
+        internal
+        view
+        virtual
+        override
+        returns (address)
+    {
         bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
             _LSP17_EXTENSION_PREFIX,
             functionSelector

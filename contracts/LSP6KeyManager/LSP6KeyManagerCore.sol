@@ -108,7 +108,7 @@ abstract contract LSP6KeyManagerCore is
      * @inheritdoc ILSP20
      */
     function lsp20VerifyCallResult(
-        bytes32 /*callHash*/,
+        bytes32, /*callHash*/
         bytes memory /*result*/
     ) external returns (bytes4) {
         if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
@@ -137,10 +137,11 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc IERC1271
      */
-    function isValidSignature(
-        bytes32 dataHash,
-        bytes memory signature
-    ) public view returns (bytes4 magicValue) {
+    function isValidSignature(bytes32 dataHash, bytes memory signature)
+        public
+        view
+        returns (bytes4 magicValue)
+    {
         address recoveredAddress = dataHash.recover(signature);
 
         return (
@@ -160,10 +161,12 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(
-        uint256[] calldata values,
-        bytes[] calldata payloads
-    ) public payable virtual returns (bytes[] memory) {
+    function execute(uint256[] calldata values, bytes[] calldata payloads)
+        public
+        payable
+        virtual
+        returns (bytes[] memory)
+    {
         if (values.length != payloads.length) {
             revert BatchExecuteParamsLengthMismatch();
         }
@@ -232,10 +235,11 @@ abstract contract LSP6KeyManagerCore is
         return results;
     }
 
-    function _execute(
-        uint256 msgValue,
-        bytes calldata payload
-    ) internal virtual returns (bytes memory) {
+    function _execute(uint256 msgValue, bytes calldata payload)
+        internal
+        virtual
+        returns (bytes memory)
+    {
         if (payload.length < 4) {
             revert InvalidPayload(payload);
         }
@@ -296,10 +300,11 @@ abstract contract LSP6KeyManagerCore is
      * @param payload the abi-encoded function call to execute on the target.
      * @return bytes the result from calling the target with `payload`
      */
-    function _executePayload(
-        uint256 msgValue,
-        bytes calldata payload
-    ) internal virtual returns (bytes memory) {
+    function _executePayload(uint256 msgValue, bytes calldata payload)
+        internal
+        virtual
+        returns (bytes memory)
+    {
         (bool success, bytes memory returnData) = _target.call{value: msgValue, gas: gasleft()}(
             payload
         );
