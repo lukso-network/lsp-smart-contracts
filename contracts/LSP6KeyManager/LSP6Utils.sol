@@ -223,7 +223,6 @@ library LSP6Utils {
         if (permission == _PERMISSION_STATICCALL) return "STATICCALL";
         if (permission == _PERMISSION_DELEGATECALL) return "DELEGATECALL";
         if (permission == _PERMISSION_DEPLOY) return "DEPLOY";
-        if (permission == _PERMISSION_SUPER_TRANSFERVALUE) return "SUPER_TRANSFERVALUE";
         if (permission == _PERMISSION_TRANSFERVALUE) return "TRANSFERVALUE";
         if (permission == _PERMISSION_SIGN) return "SIGN";
     }
