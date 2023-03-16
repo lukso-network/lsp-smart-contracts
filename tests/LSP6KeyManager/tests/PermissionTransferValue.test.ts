@@ -115,7 +115,7 @@ export const shouldBehaveLikePermissionTransferValue = (
              * verify that balances have been updated
              * @see https://hardhat.org/hardhat-chai-matchers/docs/reference#.changeetherbalances
              */
-            await expect(() =>
+            await expect(
               context.keyManager
                 .connect(context.owner)
                 ["execute(bytes)"](transferPayload)
@@ -133,7 +133,7 @@ export const shouldBehaveLikePermissionTransferValue = (
               [OPERATION_TYPES.CALL, recipient.address, amount, data]
             );
 
-            await expect(() =>
+            await expect(
               context.keyManager
                 .connect(canTransferValue)
                 ["execute(bytes)"](transferPayload)

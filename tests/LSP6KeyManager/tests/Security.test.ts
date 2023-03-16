@@ -353,7 +353,7 @@ export const testSecurityScenarios = (
               ),
               combineAllowedCalls(
                 [combineCallTypes(CALLTYPE.VALUE, CALLTYPE.WRITE)],
-                [URDDummy.address.substring(2)],
+                [URDDummy.address],
                 ["0xffffffff"],
                 ["0xffffffff"]
               ),

@@ -28,6 +28,7 @@ import { setupKeyManager } from "../../utils/fixtures";
 import {
   abiCoder,
   combineAllowedCalls,
+  combineCallTypes,
   combinePermissions,
 } from "../../utils/helpers";
 import { ethers } from "ethers";
@@ -81,7 +82,11 @@ export const shouldBehaveLikePermissionStaticCall = (
       ALL_PERMISSIONS,
       PERMISSIONS.STATICCALL,
       combineAllowedCalls(
-        [CALLTYPE.READ, CALLTYPE.READ, CALLTYPE.READ],
+        [
+          combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
+          combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
+          combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
+        ],
         [
           targetContract.address,
           signatureValidator.address,
@@ -877,7 +882,10 @@ export const shouldBehaveLikePermissionStaticCall = (
       const permissionValues = [
         combinePermissions(PERMISSIONS.SUPER_CALL, PERMISSIONS.STATICCALL),
         combineAllowedCalls(
-          [CALLTYPE.READ, CALLTYPE.READ],
+          [
+            combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
+            combineCallTypes(CALLTYPE.READ, CALLTYPE.VALUE),
+          ],
           [
             allowedTargetContracts[0].address,
             allowedTargetContracts[1].address,

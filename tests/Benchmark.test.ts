@@ -406,10 +406,20 @@ describe("⛽📊 Gas Benchmark", () => {
               PERMISSIONS.CALL,
               PERMISSIONS.CALL,
               combineAllowedCalls([CALLTYPE.VALUE], [allowedAddressToTransferValue], ["0xffffffff"], ["0xffffffff"]),
-              combineAllowedCalls([CALLTYPE.WRITE], [lsp7MetaCoin.address, lsp7LyxDai.address], [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.LSP7DigitalAsset], ["0xffffffff", "0xffffffff"]),
-              combineAllowedCalls([CALLTYPE.WRITE], [lsp8MetaNFT.address, lsp8LyxPunks.address], [INTERFACE_IDS.LSP8IdentifiableDigitalAsset, INTERFACE_IDS.LSP8IdentifiableDigitalAsset], ["0xffffffff", "0xffffffff"])
+              combineAllowedCalls(
+                [CALLTYPE.WRITE, CALLTYPE.WRITE], 
+                [lsp7MetaCoin.address, lsp7LyxDai.address], 
+                [INTERFACE_IDS.LSP7DigitalAsset, INTERFACE_IDS.LSP7DigitalAsset], 
+                ["0xffffffff", "0xffffffff"]
+            ),
+              combineAllowedCalls(
+                [CALLTYPE.WRITE, CALLTYPE.WRITE], 
+                [lsp8MetaNFT.address, lsp8LyxPunks.address], 
+                [INTERFACE_IDS.LSP8IdentifiableDigitalAsset, INTERFACE_IDS.LSP8IdentifiableDigitalAsset], 
+                ["0xffffffff", "0xffffffff"]
+            )
           ]
-          )
+        )
       });
 
       it("transfer some LYXes to an EOA - restricted to 1 x allowed address only (TRANSFERVALUE + 1x AllowedCalls)", async () => {

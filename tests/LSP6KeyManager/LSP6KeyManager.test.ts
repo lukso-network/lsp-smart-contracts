@@ -20,7 +20,7 @@ import {
 } from "./LSP6KeyManager.behaviour";
 
 describe("LSP6KeyManager", () => {
-  describe.only("when using LSP6KeyManager with constructor", () => {
+  describe("when using LSP6KeyManager with constructor", () => {
     const buildTestContext = async (
       initialFunding?: BigNumber
     ): Promise<LSP6TestContext> => {
