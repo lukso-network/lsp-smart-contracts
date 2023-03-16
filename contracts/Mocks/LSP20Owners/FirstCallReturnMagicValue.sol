@@ -6,8 +6,8 @@ pragma solidity ^0.8.4;
  */
 contract FirstCallReturnMagicValue {
     function lsp20VerifyCall(
-        address, /*caller*/
-        uint256, /*value*/
+        address /*caller*/,
+        uint256 /*value*/,
         bytes memory /*data*/
     ) external pure returns (bytes4 magicValue) {
         return
@@ -23,9 +23,9 @@ contract FirstCallReturnMagicValue {
      * @dev should not be called
      */
     function lsp20VerifyCallResult(
-        bytes32, /*callHash*/
+        bytes32 /*callHash*/,
         bytes memory /*result*/
     ) external pure returns (bytes4) {
-        revert();
+        revert("This revert will not be triggered");
     }
 }

@@ -12,6 +12,8 @@ contract FallbackReturnMagicValue {
 
     address public target;
 
+    // solhint-disable payable-fallback
+    // solhint-disable no-complex-fallback
     fallback(bytes calldata) external returns (bytes memory) {
         emit FallbackCalled(msg.data);
 

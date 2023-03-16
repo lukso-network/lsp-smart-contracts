@@ -11,6 +11,7 @@ contract ImplementingFallback {
 
     address public target;
 
+    // solhint-disable-next-line payable-fallback
     fallback() external {
         emit FallbackCalled(msg.data);
     }
