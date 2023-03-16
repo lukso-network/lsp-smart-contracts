@@ -531,7 +531,10 @@ export const shouldBehaveLikeBatchExecute = (
                   [firstSetDataPayload, secondSetDataPayload],
                   { value: amountToFund }
                 )
-            ).to.be.revertedWith("LSP6: failed executing payload");
+            ).to.be.revertedWithCustomError(
+              context.keyManager,
+              "CannotSendValueToSetData"
+            );
 
             const keyManagerBalanceAfter = await ethers.provider.getBalance(
               context.keyManager.address
@@ -633,7 +636,10 @@ export const shouldBehaveLikeBatchExecute = (
                 ["execute(uint256[],bytes[])"](msgValues, payloads, {
                   value: totalValues,
                 })
-            ).to.be.revertedWith("LSP6: failed executing payload");
+            ).to.be.revertedWithCustomError(
+              context.keyManager,
+              "CannotSendValueToSetData"
+            );
           });
         });
       });
