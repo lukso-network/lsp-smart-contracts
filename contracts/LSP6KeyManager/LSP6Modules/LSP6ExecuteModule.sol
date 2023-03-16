@@ -106,7 +106,7 @@ abstract contract LSP6ExecuteModule {
 
         // CHECK if we are funding the contract
         if (isFundingContract && !hasSuperTransferValue) {
-            _requirePermissions(controller, permissions, _PERMISSION_TRANSFERVALUE);
+            revert NotAuthorised(controller, "SUPER_TRANSFERVALUE");
         }
     }
 
