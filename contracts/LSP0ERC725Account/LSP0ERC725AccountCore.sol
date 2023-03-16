@@ -141,8 +141,10 @@ abstract contract LSP0ERC725AccountCore is
      * @param target The smart contract or address to interact with, `to` will be unused if a contract is created (operation 1 and 2)
      * @param value The amount of native tokens to transfer (in Wei).
      * @param data The call data, or the bytecode of the contract to deploy
-     * @dev Executes any other smart contract.
-     * SHOULD only be callable by the owner of the contract set via ERC173
+     * @dev Executes any call on other addresses.
+     *
+     * MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
      *
      * Emits a {Executed} event, when a call is executed under `operationType` 0, 3 and 4
      * Emits a {ContractCreated} event, when a contract is created under `operationType` 1 and 2
@@ -155,7 +157,9 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory data
     ) public payable virtual override returns (bytes memory) {
         address _owner = owner();
-        bool verifyAfter = _verifyCall(_owner);
+
+        bool verifyAfter;
+        if (msg.sender != _owner) verifyAfter = _verifyCall(_owner);
 
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes memory result = _execute(operationType, target, value, data);
@@ -168,7 +172,10 @@ abstract contract LSP0ERC725AccountCore is
     /**
      * @inheritdoc ERC725XCore
      *
-     * @dev Emits a {ValueReceived} event when receiving native tokens.
+     * @dev MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
+     *
+     * Emits a {ValueReceived} event when receiving native tokens.
      */
     function execute(
         uint256[] memory operationsType,
@@ -177,7 +184,9 @@ abstract contract LSP0ERC725AccountCore is
         bytes[] memory datas
     ) public payable virtual override returns (bytes[] memory) {
         address _owner = owner();
-        bool verifyAfter = _verifyCall(_owner);
+
+        bool verifyAfter;
+        if (msg.sender != _owner) verifyAfter = _verifyCall(_owner);
 
         if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         bytes[] memory results = _execute(operationsType, targets, values, datas);
@@ -191,13 +200,17 @@ abstract contract LSP0ERC725AccountCore is
      * @notice Sets singular data for a given `dataKey`
      * @param dataKey The key to retrieve stored value
      * @param dataValue The value to set
-     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * @dev MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
      *
      * Emits a {DataChanged} event.
      */
     function setData(bytes32 dataKey, bytes memory dataValue) public virtual override {
         address _owner = owner();
-        bool verifyAfter = _verifyCall(_owner);
+
+        bool verifyAfter;
+        if (msg.sender != _owner) verifyAfter = _verifyCall(_owner);
 
         _setData(dataKey, dataValue);
 
@@ -208,13 +221,17 @@ abstract contract LSP0ERC725AccountCore is
      * @param dataKeys The array of data keys for values to set
      * @param dataValues The array of values to set
      * @dev Sets array of data for multiple given `dataKeys`
-     * SHOULD only be callable by the owner of the contract set via ERC173
+     *
+     * @dev MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
      *
      * Emits a {DataChanged} event.
      */
     function setData(bytes32[] memory dataKeys, bytes[] memory dataValues) public virtual override {
         address _owner = owner();
-        bool verifyAfter = _verifyCall(_owner);
+
+        bool verifyAfter;
+        if (msg.sender != _owner) verifyAfter = _verifyCall(_owner);
 
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
@@ -291,9 +308,12 @@ abstract contract LSP0ERC725AccountCore is
      * @inheritdoc LSP14Ownable2Step
      *
      * @dev same as ILSP14.transferOwnership with the additional requirement:
-     *
      * Requirements:
-     *  - when notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted')
+     *
+     * - MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
+     *
+     * - When notifying the new owner via LSP1, the typeId used MUST be keccak256('LSP0OwnershipTransferStarted')
      */
     function transferOwnership(address newOwner)
         public
@@ -301,7 +321,9 @@ abstract contract LSP0ERC725AccountCore is
         override(LSP14Ownable2Step, OwnableUnset)
     {
         address _owner = owner();
-        bool verifyAfter = _verifyCall(_owner);
+
+        bool verifyAfter;
+        if (msg.sender != _owner) verifyAfter = _verifyCall(_owner);
 
         LSP14Ownable2Step._transferOwnership(newOwner);
 
@@ -345,10 +367,15 @@ abstract contract LSP0ERC725AccountCore is
 
     /**
      * @inheritdoc LSP14Ownable2Step
+     *
+     * @dev MUST pass when called by the owner or by an address allowed by the owner as per
+     * LSP20 - CallVerification specification
      */
     function renounceOwnership() public virtual override(LSP14Ownable2Step, OwnableUnset) {
         address _owner = owner();
-        bool verifyAfter = _verifyCall(_owner);
+
+        bool verifyAfter;
+        if (msg.sender != _owner) verifyAfter = _verifyCall(_owner);
 
         LSP14Ownable2Step._renounceOwnership();
 

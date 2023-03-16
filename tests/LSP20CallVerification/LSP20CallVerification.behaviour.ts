@@ -25,6 +25,7 @@ import {
   FirstCallReturnExpandedInvalidValue__factory,
   FirstCallReturnInvalidMagicValue,
   FirstCallReturnInvalidMagicValue__factory,
+  LSP0ERC725Account,
 } from "../../types";
 
 // constants
@@ -33,7 +34,7 @@ import { testReentrancyScenarios } from "./LSP6KeyManager/tests/Reentrancy.test"
 
 export type LSP20TestContext = {
   accounts: SignerWithAddress[];
-  universalProfile: UniversalProfile;
+  universalProfile: UniversalProfile | LSP0ERC725Account;
   deployParams: { owner: SignerWithAddress };
 };
 
@@ -411,7 +412,7 @@ export const shouldBehaveLikeLSP20 = (
           await ownerContract.acceptOwnership(context.universalProfile.address);
         });
 
-        it("should revert when calling LSP0 functions", async () => {
+        it("should revert when calling `setData(bytes32,bytes)`", async () => {
           const dataKey = ethers.utils.keccak256(
             ethers.utils.toUtf8Bytes("RandomKey1")
           );
@@ -452,7 +453,7 @@ export const shouldBehaveLikeLSP20 = (
           await ownerContract.acceptOwnership(context.universalProfile.address);
         });
 
-        it("should revert when calling LSP0 functions", async () => {
+        it("should revert when calling `setData(bytes32,bytes)`", async () => {
           const dataKey = ethers.utils.keccak256(
             ethers.utils.toUtf8Bytes("RandomKey1")
           );
@@ -495,7 +496,7 @@ export const shouldBehaveLikeLSP20 = (
           ).deploy(firstCallReturnMagicValueContract.address);
         });
 
-        it("should pass when calling LSP0 functions", async () => {
+        it("should pass when calling `setData(bytes32,bytes)`", async () => {
           let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
@@ -526,7 +527,7 @@ export const shouldBehaveLikeLSP20 = (
           ).deploy(bothCallReturnMagicValueContract.address);
         });
 
-        it("should pass when calling LSP0 functions", async () => {
+        it("should pass when calling `setData(bytes32,bytes)`", async () => {
           let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
@@ -557,7 +558,7 @@ export const shouldBehaveLikeLSP20 = (
           ).deploy(secondCallReturnFailureContract.address);
         });
 
-        it("should revert when calling LSP0 functions", async () => {
+        it("should revert when calling `setData(bytes32,bytes)`", async () => {
           let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
@@ -575,6 +576,7 @@ export const shouldBehaveLikeLSP20 = (
       describe("that implements verifyCallResult but return an expanded magic value", () => {
         let secondCallReturnExpandedValueContract: SecondCallReturnExpandedValue;
         let newUniversalProfile: UniversalProfile;
+
         before(async () => {
           secondCallReturnExpandedValueContract =
             await new SecondCallReturnExpandedValue__factory(
@@ -586,7 +588,7 @@ export const shouldBehaveLikeLSP20 = (
           ).deploy(secondCallReturnExpandedValueContract.address);
         });
 
-        it("should pass when calling LSP0 functions", async () => {
+        it("should pass when calling `setData(bytes32,bytes)`", async () => {
           let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
           let value = ethers.utils.hexlify(ethers.utils.randomBytes(500));
 
