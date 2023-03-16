@@ -427,7 +427,12 @@ export const shouldBehaveLikeLSP3 = (
           context.universalProfile
             .connect(context.accounts[4])
             .batchCalls([setDataPayload])
-        ).to.be.revertedWith("Ownable: caller is not the owner");
+        )
+          .to.be.revertedWithCustomError(
+            context.universalProfile,
+            "LSP20InvalidMagicValue"
+          )
+          .withArgs(false, "0x");
       });
     });
 

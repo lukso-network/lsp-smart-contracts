@@ -4,6 +4,9 @@ pragma solidity ^0.8.5;
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
+import {
+    ILSP20CallVerification as ILSP20
+} from "../LSP20CallVerification/ILSP20CallVerification.sol";
 
 // modules
 import {ILSP14Ownable2Step} from "../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
@@ -31,7 +34,8 @@ import {
     InvalidRelayNonce,
     NoPermissionsSet,
     InvalidERC725Function,
-    NotAuthorised
+    NotAuthorised,
+    CallerIsNotTheTarget
 } from "./LSP6Errors.sol";
 
 // constants
@@ -61,6 +65,7 @@ import {
 abstract contract LSP6KeyManagerCore is
     ERC165,
     ILSP6KeyManager,
+    ILSP20,
     LSP6SetDataModule,
     LSP6ExecuteModule,
     LSP6OwnershipModule
@@ -80,6 +85,34 @@ abstract contract LSP6KeyManagerCore is
 
     function target() public view returns (address) {
         return _target;
+    }
+
+    /**
+     * @inheritdoc ILSP20
+     */
+    function lsp20VerifyCall(
+        address caller,
+        uint256 value,
+        bytes calldata data
+    ) external returns (bytes4) {
+        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
+        _nonReentrantBefore(caller);
+        _verifyPermissions(caller, data);
+        emit VerifiedCall(msg.sender, value, bytes4(data));
+
+        return bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
+    }
+
+    /**
+     * @inheritdoc ILSP20
+     */
+    function lsp20VerifyCallResult(
+        bytes32, /*callHash*/
+        bytes memory /*result*/
+    ) external returns (bytes4) {
+        if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
+        _nonReentrantAfter();
+        return ILSP20.lsp20VerifyCallResult.selector;
     }
 
     /**
@@ -211,7 +244,10 @@ abstract contract LSP6KeyManagerCore is
         }
 
         _nonReentrantBefore(msg.sender);
+
         _verifyPermissions(msg.sender, payload);
+        emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
+
         bytes memory result = _executePayload(msgValue, payload);
         _nonReentrantAfter();
         return result;
@@ -249,6 +285,7 @@ abstract contract LSP6KeyManagerCore is
         _nonceStore[signer][nonce >> 128]++;
 
         _verifyPermissions(signer, payload);
+        emit VerifiedCall(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
 
@@ -267,8 +304,6 @@ abstract contract LSP6KeyManagerCore is
         virtual
         returns (bytes memory)
     {
-        emit Executed(bytes4(payload), msgValue);
-
         (bool success, bytes memory returnData) = _target.call{value: msgValue, gas: gasleft()}(
             payload
         );

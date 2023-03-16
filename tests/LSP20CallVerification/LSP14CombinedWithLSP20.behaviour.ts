@@ -3,31 +3,31 @@ import { ethers, network } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
-  LSP9Vault,
+  LSP0ERC725Account,
   UPWithInstantAcceptOwnership__factory,
   UPWithInstantAcceptOwnership,
 } from "../../types";
 
 // constants
-import { INTERFACE_IDS, OPERATION_TYPES } from "../../constants";
+import { OPERATION_TYPES } from "../../constants";
 
 // helpers
 import { provider } from "../utils/helpers";
 import { BigNumber, ContractTransaction } from "ethers";
 
-export type LSP14TestContext = {
+export type LSP14CombinedWithLSP20TestContext = {
   accounts: SignerWithAddress[];
-  contract: LSP9Vault;
+  contract: LSP0ERC725Account;
   deployParams: { owner: SignerWithAddress };
   onlyOwnerRevertString: string;
 };
 
-export const shouldBehaveLikeLSP14 = (
+export const shouldBehaveLikeLSP14CombinedWithLSP20 = (
   buildContext: (
     initialFunding?: number | BigNumber
-  ) => Promise<LSP14TestContext>
+  ) => Promise<LSP14CombinedWithLSP20TestContext>
 ) => {
-  let context: LSP14TestContext;
+  let context: LSP14CombinedWithLSP20TestContext;
   let newOwner: SignerWithAddress;
 
   before(async () => {
@@ -167,7 +167,12 @@ export const shouldBehaveLikeLSP14 = (
         context.contract
           .connect(randomAddress)
           .transferOwnership(randomAddress.address)
-      ).to.be.revertedWith("Ownable: caller is not the owner");
+      )
+        .to.be.revertedWithCustomError(
+          context.contract,
+          "LSP20InvalidMagicValue"
+        )
+        .withArgs(false, "0x");
     });
   });
 
@@ -226,7 +231,12 @@ export const shouldBehaveLikeLSP14 = (
             context.contract
               .connect(previousOwner)
               ["setData(bytes32,bytes)"](key, value)
-          ).to.be.revertedWith(context.onlyOwnerRevertString);
+          )
+            .to.be.to.be.revertedWithCustomError(
+              context.contract,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs(false, "0x");
         });
 
         it("should revert when calling `execute(...)`", async () => {
@@ -242,13 +252,23 @@ export const shouldBehaveLikeLSP14 = (
                 amount,
                 "0x"
               )
-          ).to.be.revertedWith("Ownable: caller is not the owner");
+          )
+            .to.be.revertedWithCustomError(
+              context.contract,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs(false, "0x");
         });
 
         it("should revert when calling `renounceOwnership(...)`", async () => {
           await expect(
             context.contract.connect(previousOwner).renounceOwnership()
-          ).to.be.revertedWith("Ownable: caller is not the owner");
+          )
+            .to.be.revertedWithCustomError(
+              context.contract,
+              "LSP20InvalidMagicValue"
+            )
+            .withArgs(false, "0x");
         });
       });
 
@@ -305,7 +325,12 @@ export const shouldBehaveLikeLSP14 = (
           .connect(context.accounts[5])
           .renounceOwnership();
 
-        await expect(tx).to.be.revertedWith("Ownable: caller is not the owner");
+        await expect(tx)
+          .to.be.revertedWithCustomError(
+            context.contract,
+            "LSP20InvalidMagicValue"
+          )
+          .withArgs(false, "0x");
       });
     });
 
@@ -534,9 +559,12 @@ export const shouldBehaveLikeLSP14 = (
               context.contract
                 .connect(context.deployParams.owner)
                 ["setData(bytes32,bytes)"](key, value)
-            ).to.be.revertedWith(
-              "Only Owner or reentered Universal Receiver Delegate allowed"
-            );
+            )
+              .to.be.revertedWithCustomError(
+                context.contract,
+                "LSP20InvalidMagicValue"
+              )
+              .withArgs(false, "0x");
           });
 
           it("transfer LYX via `execute(...)`", async () => {
@@ -562,7 +590,12 @@ export const shouldBehaveLikeLSP14 = (
                   amount,
                   "0x"
                 )
-            ).to.be.revertedWith("Ownable: caller is not the owner");
+            )
+              .to.be.revertedWithCustomError(
+                context.contract,
+                "LSP20InvalidMagicValue"
+              )
+              .withArgs(false, "0x");
           });
         });
       });
