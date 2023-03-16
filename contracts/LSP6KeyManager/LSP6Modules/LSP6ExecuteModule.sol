@@ -304,7 +304,9 @@ abstract contract LSP6ExecuteModule {
         // <offset>v----------------address---------------v
         // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
         address allowedAddress = address(bytes20(bytes32(allowedCall) << 32));
-        return allowedAddress == 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF || to == allowedAddress;
+
+        // ANY address = 0xffffffffffffffffffffffffffffffffffffffff
+        return allowedAddress == address(bytes20(type(uint160).max)) || to == allowedAddress;
     }
 
     function _isAllowedStandard(bytes memory allowedCall, address to) internal view returns (bool) {
@@ -314,8 +316,11 @@ abstract contract LSP6ExecuteModule {
         // <----------------<offset>---------------------->v------v
         // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
         bytes4 allowedStandard = bytes4(bytes32(allowedCall) << 192);
+
+        // ANY Standard = 0xffffffff
         return
-            allowedStandard == 0xffffffff || to.supportsERC165InterfaceUnchecked(allowedStandard);
+            allowedStandard == bytes4(type(uint32).max) ||
+            to.supportsERC165InterfaceUnchecked(allowedStandard);
     }
 
     function _isAllowedFunction(bytes memory allowedCall, bytes4 requiredFunction)
@@ -330,9 +335,12 @@ abstract contract LSP6ExecuteModule {
         // 0000000ncafecafecafecafecafecafecafecafecafecafe5a5a5a5af1f1f1f1
         bytes4 allowedFunction = bytes4(bytes32(allowedCall) << 224);
 
+        bool isFunctionCall = requiredFunction != bytes4(0);
+
+        // ANY function = 0xffffffff
         return
-            allowedFunction == 0xffffffff ||
-            ((requiredFunction != bytes4(0)) && (requiredFunction == allowedFunction));
+            allowedFunction == bytes4(type(uint32).max) ||
+            (isFunctionCall && (requiredFunction == allowedFunction));
     }
 
     function _isAllowedCallType(bytes memory allowedCall, bytes4 requiredCallTypes)
