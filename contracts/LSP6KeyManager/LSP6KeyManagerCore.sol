@@ -35,7 +35,8 @@ import {
     NoPermissionsSet,
     InvalidERC725Function,
     NotAuthorised,
-    CallerIsNotTheTarget
+    CallerIsNotTheTarget,
+    CannotSendValueToSetData
 } from "./LSP6Errors.sol";
 
 // constants
@@ -97,7 +98,7 @@ abstract contract LSP6KeyManagerCore is
     ) external returns (bytes4) {
         if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
         _nonReentrantBefore(caller);
-        _verifyPermissions(caller, data);
+        _verifyPermissions(caller, value, data);
         emit VerifiedCall(msg.sender, value, bytes4(data));
 
         return bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
@@ -107,7 +108,7 @@ abstract contract LSP6KeyManagerCore is
      * @inheritdoc ILSP20
      */
     function lsp20VerifyCallResult(
-        bytes32, /*callHash*/
+        bytes32 /*callHash*/,
         bytes memory /*result*/
     ) external returns (bytes4) {
         if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
@@ -136,11 +137,10 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc IERC1271
      */
-    function isValidSignature(bytes32 dataHash, bytes memory signature)
-        public
-        view
-        returns (bytes4 magicValue)
-    {
+    function isValidSignature(
+        bytes32 dataHash,
+        bytes memory signature
+    ) public view returns (bytes4 magicValue) {
         address recoveredAddress = dataHash.recover(signature);
 
         return (
@@ -160,12 +160,10 @@ abstract contract LSP6KeyManagerCore is
     /**
      * @inheritdoc ILSP6KeyManager
      */
-    function execute(uint256[] calldata values, bytes[] calldata payloads)
-        public
-        payable
-        virtual
-        returns (bytes[] memory)
-    {
+    function execute(
+        uint256[] calldata values,
+        bytes[] calldata payloads
+    ) public payable virtual returns (bytes[] memory) {
         if (values.length != payloads.length) {
             revert BatchExecuteParamsLengthMismatch();
         }
@@ -234,18 +232,17 @@ abstract contract LSP6KeyManagerCore is
         return results;
     }
 
-    function _execute(uint256 msgValue, bytes calldata payload)
-        internal
-        virtual
-        returns (bytes memory)
-    {
+    function _execute(
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal virtual returns (bytes memory) {
         if (payload.length < 4) {
             revert InvalidPayload(payload);
         }
 
         _nonReentrantBefore(msg.sender);
 
-        _verifyPermissions(msg.sender, payload);
+        _verifyPermissions(msg.sender, msgValue, payload);
         emit VerifiedCall(msg.sender, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
@@ -284,7 +281,7 @@ abstract contract LSP6KeyManagerCore is
         // increase nonce after successful verification
         _nonceStore[signer][nonce >> 128]++;
 
-        _verifyPermissions(signer, payload);
+        _verifyPermissions(signer, msgValue, payload);
         emit VerifiedCall(signer, msgValue, bytes4(payload));
 
         bytes memory result = _executePayload(msgValue, payload);
@@ -299,11 +296,10 @@ abstract contract LSP6KeyManagerCore is
      * @param payload the abi-encoded function call to execute on the target.
      * @return bytes the result from calling the target with `payload`
      */
-    function _executePayload(uint256 msgValue, bytes calldata payload)
-        internal
-        virtual
-        returns (bytes memory)
-    {
+    function _executePayload(
+        uint256 msgValue,
+        bytes calldata payload
+    ) internal virtual returns (bytes memory) {
         (bool success, bytes memory returnData) = _target.call{value: msgValue, gas: gasleft()}(
             payload
         );
@@ -336,7 +332,11 @@ abstract contract LSP6KeyManagerCore is
      * @param from either the caller of `execute(...)` or the signer of `executeRelayCall(...)`.
      * @param payload the payload to execute on the `target`.
      */
-    function _verifyPermissions(address from, bytes calldata payload) internal view virtual {
+    function _verifyPermissions(
+        address from,
+        uint256 value,
+        bytes calldata payload
+    ) internal view virtual {
         bytes32 permissions = ERC725Y(_target).getPermissionsFor(from);
         if (permissions == bytes32(0)) revert NoPermissionsSet(from);
 
@@ -344,12 +344,14 @@ abstract contract LSP6KeyManagerCore is
 
         // ERC725Y.setData(bytes32,bytes)
         if (erc725Function == SETDATA_SELECTOR) {
+            if (value != 0) revert CannotSendValueToSetData();
             (bytes32 inputKey, bytes memory inputValue) = abi.decode(payload[4:], (bytes32, bytes));
 
             LSP6SetDataModule._verifyCanSetData(_target, from, permissions, inputKey, inputValue);
 
             // ERC725Y.setData(bytes32[],bytes[])
         } else if (erc725Function == SETDATA_ARRAY_SELECTOR) {
+            if (value != 0) revert CannotSendValueToSetData();
             (bytes32[] memory inputKeys, bytes[] memory inputValues) = abi.decode(
                 payload[4:],
                 (bytes32[], bytes[])

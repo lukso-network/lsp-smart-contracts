@@ -147,3 +147,8 @@ error InvalidPayload(bytes payload);
  * @param caller The address calling lsp20 related functions
  */
 error CallerIsNotTheTarget(address caller);
+
+/**
+ * @dev reverts when sending value to the `setData(..)` functions
+ */
+error CannotSendValueToSetData();
