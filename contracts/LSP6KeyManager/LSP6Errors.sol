@@ -144,5 +144,6 @@ error InvalidPayload(bytes payload);
 
 /**
  * @dev reverts when the caller is not the linked target
+ * @param caller The address calling lsp20 related functions
  */
 error CallerIsNotTheTarget(address caller);
