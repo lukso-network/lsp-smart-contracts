@@ -4,8 +4,8 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber, BytesLike, Wallet } from "ethers";
 import {
-  ReentrantContract__factory,
-  ReentrantContract,
+  LSP20ReentrantContract__factory,
+  LSP20ReentrantContract,
   LSP6KeyManager,
   UniversalProfile,
   BatchReentrancyRelayer,
@@ -64,7 +64,7 @@ export type ReentrancyContext = {
   signer: Wallet;
   newControllerAddress: string;
   newURDAddress: string;
-  reentrantContract: ReentrantContract;
+  reentrantContract: LSP20ReentrantContract;
   reentrantSigner: Wallet;
   singleReentarncyRelayer: SingleReentrancyRelayer;
   batchReentarncyRelayer: BatchReentrancyRelayer;
@@ -328,7 +328,9 @@ export const buildReentrancyContext = async (context: LSP6TestContext) => {
   const newControllerAddress = context.accounts[3].address;
   const newURDAddress = context.accounts[4].address;
 
-  const reentrantContract = await new ReentrantContract__factory(owner).deploy(
+  const reentrantContract = await new LSP20ReentrantContract__factory(
+    owner
+  ).deploy(
     newControllerAddress,
     ethers.utils.keccak256(ethers.utils.toUtf8Bytes("RandomLSP1TypeId")),
     newURDAddress
@@ -619,7 +621,7 @@ export const generateExecutePayload = (
   payloadType: string
 ) => {
   const reentrantPayload =
-    new ReentrantContract__factory().interface.encodeFunctionData(
+    new LSP20ReentrantContract__factory().interface.encodeFunctionData(
       "callThatReenters",
       [keyManagerAddress, payloadType]
     );

@@ -26,7 +26,7 @@ import {
   loadTestCase,
 } from "./reentrancyHelpers";
 import {
-  ReentrantContract__factory,
+  LSP20ReentrantContract__factory,
   UniversalProfile__factory,
 } from "../../../../../types";
 
@@ -36,7 +36,7 @@ const generateExecutePayload = (
   payloadType: string
 ) => {
   const reentrantPayload =
-    new ReentrantContract__factory().interface.encodeFunctionData(
+    new LSP20ReentrantContract__factory().interface.encodeFunctionData(
       "callThatReenters",
       [keyManagerAddress, payloadType]
     );

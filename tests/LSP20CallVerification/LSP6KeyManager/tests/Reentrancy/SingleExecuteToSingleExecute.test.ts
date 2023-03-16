@@ -24,7 +24,7 @@ import {
   // Functions
   loadTestCase,
 } from "./reentrancyHelpers";
-import { ReentrantContract__factory } from "../../../../../types";
+import { LSP20ReentrantContract__factory } from "../../../../../types";
 
 export const testSingleExecuteToSingleExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
@@ -49,7 +49,7 @@ export const testSingleExecuteToSingleExecute = (
     };
     before(async () => {
       const reentrantCall =
-        new ReentrantContract__factory().interface.encodeFunctionData(
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
           "callThatReenters",
           ["TRANSFERVALUE"]
         );
@@ -162,7 +162,7 @@ export const testSingleExecuteToSingleExecute = (
     };
     before(async () => {
       const reentrantCall =
-        new ReentrantContract__factory().interface.encodeFunctionData(
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
           "callThatReenters",
           ["SETDATA"]
         );
@@ -271,7 +271,7 @@ export const testSingleExecuteToSingleExecute = (
     };
     before(async () => {
       const reentrantCall =
-        new ReentrantContract__factory().interface.encodeFunctionData(
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
           "callThatReenters",
           ["ADDCONTROLLER"]
         );
@@ -353,7 +353,7 @@ export const testSingleExecuteToSingleExecute = (
     };
     before(async () => {
       const reentrantCall =
-        new ReentrantContract__factory().interface.encodeFunctionData(
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
           "callThatReenters",
           ["EDITPERMISSIONS"]
         );
@@ -434,7 +434,7 @@ export const testSingleExecuteToSingleExecute = (
     };
     before(async () => {
       const reentrantCall =
-        new ReentrantContract__factory().interface.encodeFunctionData(
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
           "callThatReenters",
           ["ADDUNIVERSALRECEIVERDELEGATE"]
         );
@@ -514,7 +514,7 @@ export const testSingleExecuteToSingleExecute = (
     };
     before(async () => {
       const reentrantCall =
-        new ReentrantContract__factory().interface.encodeFunctionData(
+        new LSP20ReentrantContract__factory().interface.encodeFunctionData(
           "callThatReenters",
           ["CHANGEUNIVERSALRECEIVERDELEGATE"]
         );

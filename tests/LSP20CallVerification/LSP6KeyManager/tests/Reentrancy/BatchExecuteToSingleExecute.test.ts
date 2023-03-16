@@ -24,7 +24,7 @@ import {
   // Functions
   loadTestCase,
 } from "./reentrancyHelpers";
-import { ReentrantContract__factory } from "../../../../../types";
+import { LSP20ReentrantContract__factory } from "../../../../../types";
 import { Interface } from "ethers/lib/utils";
 
 export const testBatchExecuteToSingleExecute = (
@@ -40,7 +40,8 @@ export const testBatchExecuteToSingleExecute = (
   before(async () => {
     context = await buildContext(ethers.utils.parseEther("10"));
     reentrancyContext = await buildReentrancyContext(context);
-    reentrantContractInterface = new ReentrantContract__factory().interface;
+    reentrantContractInterface = new LSP20ReentrantContract__factory()
+      .interface;
   });
 
   describe("when reentering and transferring value", () => {

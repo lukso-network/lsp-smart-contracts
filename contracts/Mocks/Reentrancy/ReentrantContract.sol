@@ -3,8 +3,6 @@ pragma solidity ^0.8.4;
 
 // interfaces
 import {ILSP6KeyManager} from "../../LSP6KeyManager/ILSP6KeyManager.sol";
-import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 
 // constants
 import "../../LSP1UniversalReceiver/LSP1Constants.sol";
@@ -12,109 +10,79 @@ import "../../LSP6KeyManager/LSP6Constants.sol";
 
 contract ReentrantContract {
     event ValueReceived(uint256);
-    mapping(string => function() internal returns (bytes memory)) private _functionCall;
-
-    address private _newControllerAddress;
-    bytes32 private _newURDTypeId;
-    address private _newURDAddress;
+    mapping(string => bytes) private _payloads;
 
     constructor(
-        address _newControllerAddress_,
-        bytes32 _newURDTypeId_,
-        address _newURDAddress_
+        address newControllerAddress,
+        bytes32 newURDTypeId,
+        address newURDAddress
     ) {
-        _newControllerAddress = _newControllerAddress_;
-        _newURDTypeId = _newURDTypeId_;
-        _newURDAddress = _newURDAddress_;
-
-        _functionCall["TRANSFERVALUE"] = _transferValue;
-        _functionCall["SETDATA"] = _setData;
-        _functionCall["ADDCONTROLLER"] = _addController;
-        _functionCall["EDITPERMISSIONS"] = _editPermissions;
-        _functionCall["ADDUNIVERSALRECEIVERDELEGATE"] = _addUniversalReceiverDelegate;
-        _functionCall["CHANGEUNIVERSALRECEIVERDELEGATE"] = _changeUniversalReceiverDelegate;
+        _payloads["TRANSFERVALUE"] = abi.encodeWithSignature(
+            "execute(uint256,address,uint256,bytes)",
+            0,
+            address(this),
+            1 ether,
+            ""
+        );
+        _payloads["SETDATA"] = abi.encodeWithSignature(
+            "setData(bytes32,bytes)",
+            keccak256(bytes("SomeRandomTextUsed")),
+            bytes("SomeRandomTextUsed")
+        );
+        _payloads["ADDCONTROLLER"] = abi.encodeWithSignature(
+            "setData(bytes32,bytes)",
+            bytes32(
+                bytes.concat(
+                    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+                    bytes2(0),
+                    bytes20(newControllerAddress)
+                )
+            ),
+            bytes.concat(bytes32(uint256(16)))
+        );
+        _payloads["EDITPERMISSIONS"] = abi.encodeWithSignature(
+            "setData(bytes32,bytes)",
+            bytes32(
+                bytes.concat(
+                    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
+                    bytes2(0),
+                    bytes20(newControllerAddress)
+                )
+            ),
+            ""
+        );
+        _payloads["ADDUNIVERSALRECEIVERDELEGATE"] = abi.encodeWithSignature(
+            "setData(bytes32,bytes)",
+            bytes32(
+                bytes.concat(
+                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+                    bytes2(0),
+                    bytes20(newURDTypeId)
+                )
+            ),
+            bytes.concat(bytes20(newURDAddress))
+        );
+        _payloads["CHANGEUNIVERSALRECEIVERDELEGATE"] = abi.encodeWithSignature(
+            "setData(bytes32,bytes)",
+            bytes32(
+                bytes.concat(
+                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
+                    bytes2(0),
+                    bytes20(newURDTypeId)
+                )
+            ),
+            ""
+        );
     }
 
     receive() external payable {
         emit ValueReceived(msg.value);
     }
 
-    function callThatReenters(string memory payloadType) external returns (bytes memory) {
-        return _functionCall[payloadType]();
-    }
-
-    // --- Internal Methods
-
-    function _transferValue() internal returns (bytes memory) {
-        return IERC725X(msg.sender).execute(0, address(this), 1 ether, "");
-    }
-
-    function _setData() internal returns (bytes memory) {
-        IERC725Y(msg.sender).setData(
-            keccak256(bytes("SomeRandomTextUsed")),
-            bytes("SomeRandomTextUsed")
-        );
-
-        return "";
-    }
-
-    function _addController() internal returns (bytes memory) {
-        IERC725Y(msg.sender).setData(
-            bytes32(
-                bytes.concat(
-                    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
-                    bytes2(0),
-                    bytes20(_newControllerAddress)
-                )
-            ),
-            bytes.concat(bytes32(uint256(16)))
-        );
-
-        return "";
-    }
-
-    function _editPermissions() internal returns (bytes memory) {
-        IERC725Y(msg.sender).setData(
-            bytes32(
-                bytes.concat(
-                    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
-                    bytes2(0),
-                    bytes20(_newControllerAddress)
-                )
-            ),
-            ""
-        );
-
-        return "";
-    }
-
-    function _addUniversalReceiverDelegate() internal returns (bytes memory) {
-        IERC725Y(msg.sender).setData(
-            bytes32(
-                bytes.concat(
-                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
-                    bytes2(0),
-                    bytes20(_newURDTypeId)
-                )
-            ),
-            bytes.concat(bytes20(_newURDAddress))
-        );
-
-        return "";
-    }
-
-    function _changeUniversalReceiverDelegate() internal returns (bytes memory) {
-        IERC725Y(msg.sender).setData(
-            bytes32(
-                bytes.concat(
-                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
-                    bytes2(0),
-                    bytes20(_newURDTypeId)
-                )
-            ),
-            ""
-        );
-
-        return "";
+    function callThatReenters(address keyManagerAddress, string memory payloadType)
+        external
+        returns (bytes memory)
+    {
+        return ILSP6KeyManager(keyManagerAddress).execute(_payloads[payloadType]);
     }
 }
