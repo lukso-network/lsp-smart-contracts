@@ -297,7 +297,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
 
         emit Transfer(operator, address(0), to, tokenId, allowNonLSP1Recipient, data);
 
-        _notifyTokenReceiver(address(0), to, tokenId, allowNonLSP1Recipient, data);
+        bytes memory lsp1Data = abi.encodePacked(address(0), to, tokenId, data);
+        _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
     }
 
     /**
@@ -325,7 +326,8 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
 
         emit Transfer(operator, tokenOwner, address(0), tokenId, false, data);
 
-        _notifyTokenSender(tokenOwner, address(0), tokenId, data);
+        bytes memory lsp1Data = abi.encodePacked(tokenOwner, address(0), tokenId, data);
+        _notifyTokenSender(tokenOwner, lsp1Data);
     }
 
     /**
@@ -370,8 +372,10 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
 
         emit Transfer(operator, from, to, tokenId, allowNonLSP1Recipient, data);
 
-        _notifyTokenSender(from, to, tokenId, data);
-        _notifyTokenReceiver(from, to, tokenId, allowNonLSP1Recipient, data);
+        bytes memory lsp1Data = abi.encodePacked(from, to, tokenId, data);
+
+        _notifyTokenSender(from, lsp1Data);
+        _notifyTokenReceiver(to, allowNonLSP1Recipient, lsp1Data);
     }
 
     /**
@@ -396,15 +400,9 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
      * @dev An attempt is made to notify the token sender about the `tokenId` changing owners using
      * LSP1 interface.
      */
-    function _notifyTokenSender(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bytes memory data
-    ) internal virtual {
+    function _notifyTokenSender(address from, bytes memory lsp1Data) internal virtual {
         if (ERC165Checker.supportsERC165InterfaceUnchecked(from, _INTERFACEID_LSP1)) {
-            bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
-            ILSP1UniversalReceiver(from).universalReceiver(_TYPEID_LSP8_TOKENSSENDER, packedData);
+            ILSP1UniversalReceiver(from).universalReceiver(_TYPEID_LSP8_TOKENSSENDER, lsp1Data);
         }
     }
 
@@ -415,15 +413,12 @@ abstract contract LSP8IdentifiableDigitalAssetCore is ILSP8IdentifiableDigitalAs
      * The receiver may revert when the token being sent is not wanted.
      */
     function _notifyTokenReceiver(
-        address from,
         address to,
-        bytes32 tokenId,
         bool allowNonLSP1Recipient,
-        bytes memory data
+        bytes memory lsp1Data
     ) internal virtual {
         if (ERC165Checker.supportsERC165InterfaceUnchecked(to, _INTERFACEID_LSP1)) {
-            bytes memory packedData = abi.encodePacked(from, to, tokenId, data);
-            ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, packedData);
+            ILSP1UniversalReceiver(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, lsp1Data);
         } else if (!allowNonLSP1Recipient) {
             if (to.code.length > 0) {
                 revert LSP8NotifyTokenReceiverContractMissingLSP1Interface(to);
