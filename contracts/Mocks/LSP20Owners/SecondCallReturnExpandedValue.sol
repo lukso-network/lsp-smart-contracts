@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev sample contract used for testing
+ * @title sample contract used for testing
  */
 contract SecondCallReturnExpandedValue {
     function lsp20VerifyCall(
