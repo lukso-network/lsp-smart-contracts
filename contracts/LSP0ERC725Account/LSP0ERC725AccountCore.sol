@@ -208,7 +208,8 @@ abstract contract LSP0ERC725AccountCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32 dataKey, bytes memory dataValue) public virtual override {
+    function setData(bytes32 dataKey, bytes memory dataValue) public payable virtual override {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
         address _owner = owner();
 
         if (msg.sender == _owner) return _setData(dataKey, dataValue);
@@ -231,7 +232,14 @@ abstract contract LSP0ERC725AccountCore is
      *
      * Emits a {DataChanged} event.
      */
-    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues) public virtual override {
+    function setData(bytes32[] memory dataKeys, bytes[] memory dataValues)
+        public
+        payable
+        virtual
+        override
+    {
+        if (msg.value != 0) emit ValueReceived(msg.sender, msg.value);
+
         if (dataKeys.length != dataValues.length) {
             revert ERC725Y_DataKeysValuesLengthMismatch(dataKeys.length, dataValues.length);
         }
