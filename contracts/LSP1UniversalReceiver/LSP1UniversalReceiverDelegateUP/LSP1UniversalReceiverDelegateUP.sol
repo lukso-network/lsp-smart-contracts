@@ -108,19 +108,29 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         bytes32 notifierMapKey,
         bytes4 interfaceID
     ) internal virtual returns (bytes memory) {
+        bytes32[] memory dataKeys;
+        bytes[] memory dataValues;
+
         // if it's a token transfer (LSP7/LSP8)
         if (typeId != _TYPEID_LSP9_OwnershipTransferred_RecipientNotification) {
             // if the amount sent is 0, then do not update the keys
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
             if (balance == 0) return "LSP1: balance not updated";
 
-            (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
-                .generateReceivedAssetKeys(msg.sender, notifier, notifierMapKey, interfaceID);
+            (dataKeys, dataValues) = LSP5Utils.generateReceivedAssetKeys(
+                msg.sender,
+                notifier,
+                notifierMapKey,
+                interfaceID
+            );
 
             return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         } else {
-            (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
-                .generateReceivedVaultKeys(msg.sender, notifier, notifierMapKey);
+            (dataKeys, dataValues) = LSP10Utils.generateReceivedVaultKeys(
+                msg.sender,
+                notifier,
+                notifierMapKey
+            );
 
             return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         }
@@ -138,19 +148,28 @@ contract LSP1UniversalReceiverDelegateUP is ERC165, ILSP1UniversalReceiver {
         bytes32 notifierMapKey,
         bytes memory notifierMapValue
     ) internal virtual returns (bytes memory) {
+        bytes32[] memory dataKeys;
+        bytes[] memory dataValues;
+
         // if it's a token transfer (LSP7/LSP8)
         if (typeId != _TYPEID_LSP9_OwnershipTransferred_SenderNotification) {
             // if the amount sent is not the full balance, then do not update the keys
             uint256 balance = ILSP7DigitalAsset(notifier).balanceOf(msg.sender);
             if (balance != 0) return "LSP1: full balance is not sent";
 
-            (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP5Utils
-                .generateSentAssetKeys(msg.sender, notifierMapKey, notifierMapValue);
+            (dataKeys, dataValues) = LSP5Utils.generateSentAssetKeys(
+                msg.sender,
+                notifierMapKey,
+                notifierMapValue
+            );
 
             return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         } else {
-            (bytes32[] memory dataKeys, bytes[] memory dataValues) = LSP10Utils
-                .generateSentVaultKeys(msg.sender, notifierMapKey, notifierMapValue);
+            (dataKeys, dataValues) = LSP10Utils.generateSentVaultKeys(
+                msg.sender,
+                notifierMapKey,
+                notifierMapValue
+            );
 
             return LSP6Utils.setDataViaKeyManager(keyManager, dataKeys, dataValues);
         }
