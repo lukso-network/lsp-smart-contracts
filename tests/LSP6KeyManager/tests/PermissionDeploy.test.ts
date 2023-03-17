@@ -273,7 +273,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
     });
 
-    it("should revert with error `NotAuthorised(TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE", async () => {
+    it("should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE", async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
       const initialUpOwner = context.owner.address;
 
@@ -299,7 +299,7 @@ export const shouldBehaveLikePermissionDeploy = (
         context.keyManager.connect(addressCanDeploy)["execute(bytes)"](payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-        .withArgs(addressCanDeploy.address, "TRANSFERVALUE");
+        .withArgs(addressCanDeploy.address, "SUPER_TRANSFERVALUE");
     });
 
     it("should be allowed to deploy a contract with CREATE2", async () => {
@@ -335,7 +335,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
     });
 
-    it("should revert with error `NotAuthorised(TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE2", async () => {
+    it("should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE2", async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
       const initialUpOwner = context.owner.address;
 
@@ -364,7 +364,7 @@ export const shouldBehaveLikePermissionDeploy = (
         context.keyManager.connect(addressCanDeploy)["execute(bytes)"](payload)
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
-        .withArgs(addressCanDeploy.address, "TRANSFERVALUE");
+        .withArgs(addressCanDeploy.address, "SUPER_TRANSFERVALUE");
     });
   });
 
@@ -402,7 +402,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
     });
 
-    it("should be allowed to deploy + fund a contract with CREATE", async () => {
+    it("should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE", async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
       const initialUpOwner = context.owner.address;
 
@@ -424,35 +424,16 @@ export const shouldBehaveLikePermissionDeploy = (
         ]
       );
 
-      // do first a callstatic to retrieve the address of the contract expected to be deployed
-      // so we can check it against the address emitted in the ContractCreated event
-      const expectedContractAddress = await context.keyManager
-        .connect(addressCanDeployAndTransferValue)
-        .callStatic["execute(bytes)"](payload);
-
       await expect(
         context.keyManager
           .connect(addressCanDeployAndTransferValue)
           ["execute(bytes)"](payload)
       )
-        .to.emit(context.universalProfile, "ContractCreated")
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(
-          OPERATION_TYPES.CREATE,
-          ethers.utils.getAddress(expectedContractAddress),
-          fundingAmount,
-          ethers.utils.hexZeroPad("0x00", 32)
+          addressCanDeployAndTransferValue.address,
+          "SUPER_TRANSFERVALUE"
         );
-
-      // check that the newly deployed contract (UP) has the correct owner
-      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
-        expectedContractAddress
-      );
-      expect(await newUp.owner()).to.equal(initialUpOwner);
-
-      // check that the newly deployed contract (UP) has beedn funded with the correct balance
-      expect(await provider.getBalance(expectedContractAddress)).to.equal(
-        fundingAmount
-      );
     });
 
     it("should be allowed to deploy a contract with CREATE2", async () => {
@@ -490,7 +471,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
     });
 
-    it("should be allowed to deploy + fund a contract with CREATE2", async () => {
+    it("should revert with error `NotAuthorised(SUPER_TRANSFERVALUE)` when trying to deploy + fund a contract with CREATE2", async () => {
       // deploy a UP from another UP and check that the new UP is funded + its owner was set
       const initialUpOwner = context.owner.address;
 
@@ -515,36 +496,16 @@ export const shouldBehaveLikePermissionDeploy = (
         ]
       );
 
-      let preComputedAddress = calculateCreate2(
-        context.universalProfile.address,
-        salt,
-        contractBytecodeToDeploy
-      ).toLowerCase();
-
       await expect(
         context.keyManager
           .connect(addressCanDeployAndTransferValue)
           ["execute(bytes)"](payload)
       )
-        .to.emit(context.universalProfile, "ContractCreated")
+        .to.be.revertedWithCustomError(context.keyManager, "NotAuthorised")
         .withArgs(
-          OPERATION_TYPES.CREATE2,
-          ethers.utils.getAddress(preComputedAddress),
-          fundingAmount,
-          salt
+          addressCanDeployAndTransferValue.address,
+          "SUPER_TRANSFERVALUE"
         );
-
-      // check that the newly deployed contract (UP) has the correct owner
-      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
-        preComputedAddress
-      );
-
-      expect(await newUp.owner()).to.equal(initialUpOwner);
-
-      // check that the newly deployed contract (UP) has beedn funded with the correct balance
-      expect(await provider.getBalance(preComputedAddress)).to.equal(
-        fundingAmount
-      );
     });
   });
 
