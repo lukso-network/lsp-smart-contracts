@@ -5,22 +5,22 @@ import {ILSP20CallVerification} from "../../LSP20CallVerification/ILSP20CallVeri
 import {ILSP14Ownable2Step} from "../../LSP14Ownable2Step/ILSP14Ownable2Step.sol";
 
 /**
- * @dev sample contract used for testing
+ * @title sample contract used for testing
  */
 contract FallbackReturnMagicValue {
     event FallbackCalled(bytes data);
 
     address public target;
 
+    // solhint-disable payable-fallback
+    // solhint-disable no-complex-fallback
     fallback(bytes calldata) external returns (bytes memory) {
         emit FallbackCalled(msg.data);
-
         return bytes.concat(ILSP20CallVerification.lsp20VerifyCall.selector, bytes28(0));
     }
 
     function acceptOwnership(address newTarget) external {
         target = newTarget;
-
         ILSP14Ownable2Step(target).acceptOwnership();
     }
 
