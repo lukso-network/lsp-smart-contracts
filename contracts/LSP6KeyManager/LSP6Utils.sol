@@ -188,7 +188,7 @@ library LSP6Utils {
      *  - values[1] = the address of the controller
      *  - values[2] = the `permissions` passed as param
      */
-    function generatePermissionsKeysForNewController(
+    function generateNewPermissionsKeys(
         IERC725Y account,
         address controller,
         bytes32 permissions
