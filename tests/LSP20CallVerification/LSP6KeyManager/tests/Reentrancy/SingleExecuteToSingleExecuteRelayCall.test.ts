@@ -6,7 +6,7 @@ import { BigNumber, BytesLike } from "ethers";
 import { SingleReentrancyRelayer__factory } from "../../../../../types";
 
 // constants
-import { ERC725YDataKeys } from "../../../../../constants";
+import { ERC725YDataKeys, OPERATION_TYPES } from "../../../../../constants";
 
 // setup
 import { LSP6TestContext } from "../../../../utils/context";
@@ -53,7 +53,7 @@ export const testSingleExecuteToSingleExecuteRelayCall = (
       );
 
     executeCalldata = {
-      operationType: 0,
+      operationType: OPERATION_TYPES.CALL,
       to: reentrancyContext.singleReentarncyRelayer.address,
       value: 0,
       data: reentrantCall,
