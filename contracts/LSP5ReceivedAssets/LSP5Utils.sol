@@ -68,42 +68,32 @@ library LSP5Utils {
         IERC725Y account = IERC725Y(receiver);
         bytes memory encodedArrayLength = getLSP5ReceivedAssetsCount(account);
 
-        // If it's the first asset received
-        if (encodedArrayLength.length == 0) {
-            keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes16(uint128(1)));
-
-            keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(_LSP5_RECEIVED_ASSETS_ARRAY_KEY, 0);
-            values[1] = bytes.concat(bytes20(asset));
-
-            keys[2] = assetMapKey;
-            values[2] = bytes.concat(interfaceID, bytes16(0));
-
-            // If the storage is already initiated
-        } else if (encodedArrayLength.length == 16) {
-            uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
-
-            if (oldArrayLength == type(uint128).max) {
-                revert MaxLSP5ReceivedAssetsCountReached({notRegisteredAsset: asset});
-            }
-
-            keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes16(oldArrayLength + 1));
-
-            keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
-                _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
-                oldArrayLength
-            );
-            values[1] = bytes.concat(bytes20(asset));
-
-            keys[2] = assetMapKey;
-            values[2] = bytes.concat(interfaceID, bytes16(oldArrayLength));
-        } else {
+        // CHECK it's either the first asset received,
+        // or the storage is already set with a valid `uint128` value
+        if (encodedArrayLength.length != 0 && encodedArrayLength.length != 16) {
             revert InvalidLSP5ReceivedAssetsArrayLength({
                 invalidValueStored: encodedArrayLength,
                 invalidValueLength: encodedArrayLength.length
             });
         }
+
+        uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
+
+        if (oldArrayLength == type(uint128).max) {
+            revert MaxLSP5ReceivedAssetsCountReached({notRegisteredAsset: asset});
+        }
+
+        keys[0] = _LSP5_RECEIVED_ASSETS_ARRAY_KEY;
+        values[0] = bytes.concat(bytes16(oldArrayLength + 1));
+
+        keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
+            _LSP5_RECEIVED_ASSETS_ARRAY_KEY,
+            oldArrayLength
+        );
+        values[1] = bytes.concat(bytes20(asset));
+
+        keys[2] = assetMapKey;
+        values[2] = bytes.concat(interfaceID, bytes16(oldArrayLength));
     }
 
     /**

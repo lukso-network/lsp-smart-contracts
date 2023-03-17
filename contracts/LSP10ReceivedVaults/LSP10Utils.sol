@@ -66,44 +66,31 @@ library LSP10Utils {
         IERC725Y account = IERC725Y(receiver);
         bytes memory encodedArrayLength = getLSP10ReceivedVaultsCount(account);
 
-        // If it's the first vault to receive
-        if (encodedArrayLength.length == 0) {
-            keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes16(uint128(1)));
-
-            keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(_LSP10_VAULTS_ARRAY_KEY, 0);
-            values[1] = bytes.concat(bytes20(vault));
-
-            keys[2] = vaultMapKey;
-            values[2] = bytes.concat(_INTERFACEID_LSP9, bytes16(0));
-
-            // If the storage is already initiated
-        } else if (encodedArrayLength.length == 16) {
-            uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
-
-            if (oldArrayLength == type(uint128).max) {
-                revert MaxLSP10VaultsCountReached({notRegisteredVault: vault});
-            }
-
-            uint128 newArrayLength = oldArrayLength + 1;
-
-            keys[0] = _LSP10_VAULTS_ARRAY_KEY;
-            values[0] = bytes.concat(bytes16(newArrayLength));
-
-            keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(
-                _LSP10_VAULTS_ARRAY_KEY,
-                oldArrayLength
-            );
-            values[1] = bytes.concat(bytes20(vault));
-
-            keys[2] = vaultMapKey;
-            values[2] = bytes.concat(_INTERFACEID_LSP9, bytes16(oldArrayLength));
-        } else {
+        // CHECK it's either the first vault received,
+        // or the storage is already set with a valid `uint128` value
+        if (encodedArrayLength.length != 0 && encodedArrayLength.length != 16) {
             revert InvalidLSP10ReceivedVaultsArrayLength({
                 invalidValueStored: encodedArrayLength,
                 invalidValueLength: encodedArrayLength.length
             });
         }
+
+        uint128 oldArrayLength = uint128(bytes16(encodedArrayLength));
+
+        if (oldArrayLength == type(uint128).max) {
+            revert MaxLSP10VaultsCountReached({notRegisteredVault: vault});
+        }
+
+        uint128 newArrayLength = oldArrayLength + 1;
+
+        keys[0] = _LSP10_VAULTS_ARRAY_KEY;
+        values[0] = bytes.concat(bytes16(newArrayLength));
+
+        keys[1] = LSP2Utils.generateArrayElementKeyAtIndex(_LSP10_VAULTS_ARRAY_KEY, oldArrayLength);
+        values[1] = bytes.concat(bytes20(vault));
+
+        keys[2] = vaultMapKey;
+        values[2] = bytes.concat(_INTERFACEID_LSP9, bytes16(oldArrayLength));
     }
 
     /**
