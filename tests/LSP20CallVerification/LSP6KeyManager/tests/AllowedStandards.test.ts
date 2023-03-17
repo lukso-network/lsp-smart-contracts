@@ -11,7 +11,7 @@ import {
   UniversalProfile__factory,
   LSP7Mintable,
   LSP7Mintable__factory,
-} from "../../../types";
+} from "../../../../types";
 
 // constants
 import {
@@ -21,11 +21,11 @@ import {
   INTERFACE_IDS,
   OPERATION_TYPES,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
@@ -33,7 +33,7 @@ import {
   provider,
   combinePermissions,
   combineAllowedCalls,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 
 export const shouldBehaveLikeAllowedStandards = (
   buildContext: () => Promise<LSP6TestContext>

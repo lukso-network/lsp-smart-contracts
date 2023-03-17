@@ -7,14 +7,14 @@ import {
   ALL_PERMISSIONS,
   ERC725YDataKeys,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6InternalsTestContext } from "../../utils/context";
-import { setupKeyManagerHelper } from "../../utils/fixtures";
+import { LSP6InternalsTestContext } from "../../../utils/context";
+import { setupKeyManagerHelper } from "../../../utils/fixtures";
 
 // helpers
-import { abiCoder, combinePermissions } from "../../utils/helpers";
+import { abiCoder, combinePermissions } from "../../../utils/helpers";
 
 export const testReadingPermissionsInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>

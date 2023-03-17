@@ -1,18 +1,18 @@
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { TargetContract__factory, TargetContract } from "../../../types";
+import { TargetContract__factory, TargetContract } from "../../../../types";
 
 // constants
 import {
   ALL_PERMISSIONS,
   ERC725YDataKeys,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 export const otherTestScenarios = (
   buildContext: () => Promise<LSP6TestContext>

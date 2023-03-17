@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { TargetContract, TargetContract__factory } from "../../../types";
+import { TargetContract, TargetContract__factory } from "../../../../types";
 
 // constants
 import {
@@ -9,14 +9,14 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
-import { abiCoder, combineAllowedCalls } from "../../utils/helpers";
+import { abiCoder, combineAllowedCalls } from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>

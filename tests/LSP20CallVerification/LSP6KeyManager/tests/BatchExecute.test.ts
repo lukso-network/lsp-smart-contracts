@@ -9,23 +9,23 @@ import {
   INTERFACE_IDS,
   OPERATION_TYPES,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 import {
   abiCoder,
   combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
   provider,
   signLSP6ExecuteRelayCall,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 import {
   LSP7Mintable,
   LSP7MintableInit__factory,
   LSP7Mintable__factory,
-} from "../../../types";
+} from "../../../../types";
 import { BigNumber } from "ethers";
 import { EIP191Signer } from "@lukso/eip191-signer.js";
 

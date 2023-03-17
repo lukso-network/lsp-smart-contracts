@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { EIP191Signer } from "@lukso/eip191-signer.js";
 
-import { TargetContract, TargetContract__factory } from "../../../types";
+import { TargetContract, TargetContract__factory } from "../../../../types";
 
 // constants
 import {
@@ -12,15 +12,18 @@ import {
   OPERATION_TYPES,
   LSP6_VERSION,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // helpers
-import { combineAllowedCalls, combinePermissions } from "../../utils/helpers";
+import {
+  combineAllowedCalls,
+  combinePermissions,
+} from "../../../utils/helpers";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
-import { provider, LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
+import { provider, LOCAL_PRIVATE_KEYS } from "../../../utils/helpers";
 
 export const shouldBehaveLikeExecuteRelayCall = (
   buildContext: () => Promise<LSP6TestContext>

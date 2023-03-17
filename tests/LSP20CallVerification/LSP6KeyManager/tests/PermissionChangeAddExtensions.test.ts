@@ -7,18 +7,18 @@ import {
   ERC725YDataKeys,
   ALL_PERMISSIONS,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
   combinePermissions,
   encodeCompactBytesArray,
   getRandomAddresses,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOrAddExtensions = (
   buildContext: () => Promise<LSP6TestContext>

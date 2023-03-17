@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   ERC725YDelegateCall,
   ERC725YDelegateCall__factory,
-} from "../../../types";
+} from "../../../../types";
 
 // constants
 import {
@@ -12,14 +12,14 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
-import { combineAllowedCalls } from "../../utils/helpers";
+import { combineAllowedCalls } from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionDelegateCall = (
   buildContext: () => Promise<LSP6TestContext>

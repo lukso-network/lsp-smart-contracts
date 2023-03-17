@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { BytesLike } from "ethers";
-import { LSP6InternalsTestContext } from "../../utils/context";
-import { encodeCompactBytesArray } from "../../utils/helpers";
+import { LSP6InternalsTestContext } from "../../../utils/context";
+import { encodeCompactBytesArray } from "../../../utils/helpers";
 import { PANIC_CODES } from "@nomicfoundation/hardhat-chai-matchers/panic";
 
 export type DataKey = {

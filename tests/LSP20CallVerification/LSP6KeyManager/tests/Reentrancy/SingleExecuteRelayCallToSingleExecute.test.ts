@@ -31,14 +31,13 @@ import {
 } from "../../../../../types";
 
 const generateExecutePayload = (
-  keyManagerAddress: string,
   reentrantContractAddress: string,
   payloadType: string
 ) => {
   const reentrantPayload =
     new LSP20ReentrantContract__factory().interface.encodeFunctionData(
       "callThatReenters",
-      [keyManagerAddress, payloadType]
+      [payloadType]
     );
 
   const executePayload =
@@ -72,7 +71,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     };
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "TRANSFERVALUE"
       );
@@ -180,7 +178,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     };
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "SETDATA"
       );
@@ -284,7 +281,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     };
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "ADDCONTROLLER"
       );
@@ -362,7 +358,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     };
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "EDITPERMISSIONS"
       );
@@ -439,7 +434,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     };
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "ADDUNIVERSALRECEIVERDELEGATE"
       );
@@ -515,7 +509,6 @@ export const testSingleExecuteRelayCallToSingleExecute = (
     };
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "CHANGEUNIVERSALRECEIVERDELEGATE"
       );

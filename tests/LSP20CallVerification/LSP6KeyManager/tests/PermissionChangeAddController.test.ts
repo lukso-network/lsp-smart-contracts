@@ -8,18 +8,18 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   INTERFACE_IDS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
   combinePermissions,
   combineAllowedCalls,
   encodeCompactBytesArray,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionChangeOrAddController = (
   buildContext: () => Promise<LSP6TestContext>

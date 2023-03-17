@@ -9,13 +9,13 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   ERC1271_VALUES,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
-import { LOCAL_PRIVATE_KEYS } from "../../utils/helpers";
+import { LOCAL_PRIVATE_KEYS } from "../../../utils/helpers";
 
 export const shouldBehaveLikePermissionSign = (
   buildContext: () => Promise<LSP6TestContext>
