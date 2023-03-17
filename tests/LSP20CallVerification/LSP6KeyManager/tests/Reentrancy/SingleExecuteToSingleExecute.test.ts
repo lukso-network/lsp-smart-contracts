@@ -47,6 +47,7 @@ export const testSingleExecuteToSingleExecute = (
       value: number;
       data: BytesLike;
     };
+
     before(async () => {
       const reentrantCall =
         new LSP20ReentrantContract__factory().interface.encodeFunctionData(
@@ -160,6 +161,7 @@ export const testSingleExecuteToSingleExecute = (
       value: number;
       data: BytesLike;
     };
+
     before(async () => {
       const reentrantCall =
         new LSP20ReentrantContract__factory().interface.encodeFunctionData(
@@ -269,6 +271,7 @@ export const testSingleExecuteToSingleExecute = (
       value: number;
       data: BytesLike;
     };
+
     before(async () => {
       const reentrantCall =
         new LSP20ReentrantContract__factory().interface.encodeFunctionData(
@@ -351,6 +354,7 @@ export const testSingleExecuteToSingleExecute = (
       value: number;
       data: BytesLike;
     };
+
     before(async () => {
       const reentrantCall =
         new LSP20ReentrantContract__factory().interface.encodeFunctionData(
@@ -432,6 +436,7 @@ export const testSingleExecuteToSingleExecute = (
       value: number;
       data: BytesLike;
     };
+
     before(async () => {
       const reentrantCall =
         new LSP20ReentrantContract__factory().interface.encodeFunctionData(
@@ -512,6 +517,7 @@ export const testSingleExecuteToSingleExecute = (
       value: number;
       data: BytesLike;
     };
+
     before(async () => {
       const reentrantCall =
         new LSP20ReentrantContract__factory().interface.encodeFunctionData(

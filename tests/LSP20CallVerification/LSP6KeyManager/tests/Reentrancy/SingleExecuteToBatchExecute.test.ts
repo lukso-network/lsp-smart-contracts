@@ -42,6 +42,7 @@ export const testSingleExecuteToBatchExecute = (
 
   describe("when reentering and transferring value", () => {
     let executePayload: BytesLike;
+
     before(async () => {
       executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -128,6 +129,7 @@ export const testSingleExecuteToBatchExecute = (
 
   describe("when reentering and setting data", () => {
     let executePayload: BytesLike;
+
     before(async () => {
       executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -210,6 +212,7 @@ export const testSingleExecuteToBatchExecute = (
 
   describe("when reentering and adding permissions", () => {
     let executePayload: BytesLike;
+
     before(async () => {
       executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -270,6 +273,7 @@ export const testSingleExecuteToBatchExecute = (
 
   describe("when reentering and changing permissions", () => {
     let executePayload: BytesLike;
+
     before(async () => {
       executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -329,6 +333,7 @@ export const testSingleExecuteToBatchExecute = (
 
   describe("when reentering and adding URD", () => {
     let executePayload: BytesLike;
+
     before(async () => {
       executePayload = generateExecutePayload(
         context.keyManager.address,
@@ -387,6 +392,7 @@ export const testSingleExecuteToBatchExecute = (
 
   describe("when reentering and changing URD", () => {
     let executePayload: BytesLike;
+
     before(async () => {
       executePayload = generateExecutePayload(
         context.keyManager.address,

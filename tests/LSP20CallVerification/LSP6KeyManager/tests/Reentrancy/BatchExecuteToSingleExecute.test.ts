@@ -46,6 +46,7 @@ export const testBatchExecuteToSingleExecute = (
 
   describe("when reentering and transferring value", () => {
     let reentrantCall: BytesLike;
+
     before(async () => {
       reentrantCall = reentrantContractInterface.encodeFunctionData(
         "callThatReenters",
@@ -146,6 +147,7 @@ export const testBatchExecuteToSingleExecute = (
 
   describe("when reentering and setting data", () => {
     let reentrantCall: BytesLike;
+
     before(async () => {
       reentrantCall = reentrantContractInterface.encodeFunctionData(
         "callThatReenters",
@@ -242,6 +244,7 @@ export const testBatchExecuteToSingleExecute = (
 
   describe("when reentering and adding permissions", () => {
     let reentrantCall: BytesLike;
+
     before(async () => {
       reentrantCall = reentrantContractInterface.encodeFunctionData(
         "callThatReenters",
@@ -311,6 +314,7 @@ export const testBatchExecuteToSingleExecute = (
 
   describe("when reentering and changing permissions", () => {
     let reentrantCall: BytesLike;
+
     before(async () => {
       reentrantCall = reentrantContractInterface.encodeFunctionData(
         "callThatReenters",
@@ -379,6 +383,7 @@ export const testBatchExecuteToSingleExecute = (
 
   describe("when reentering and adding URD", () => {
     let reentrantCall: BytesLike;
+
     before(async () => {
       reentrantCall = reentrantContractInterface.encodeFunctionData(
         "callThatReenters",
@@ -446,6 +451,7 @@ export const testBatchExecuteToSingleExecute = (
 
   describe("when reentering and changing URD", () => {
     let reentrantCall: BytesLike;
+
     before(async () => {
       reentrantCall = reentrantContractInterface.encodeFunctionData(
         "callThatReenters",
