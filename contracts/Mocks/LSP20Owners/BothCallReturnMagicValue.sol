@@ -2,12 +2,12 @@
 pragma solidity ^0.8.4;
 
 /**
- * @dev sample contract used for testing
+ * @title sample contract used for testing
  */
 contract BothCallReturnMagicValue {
     function lsp20VerifyCall(
-        address, /*caller*/
-        uint256, /*value*/
+        address /*caller*/,
+        uint256 /*value*/,
         bytes memory /*data*/
     ) external pure returns (bytes4 magicValue) {
         return
@@ -17,7 +17,7 @@ contract BothCallReturnMagicValue {
     }
 
     function lsp20VerifyCallResult(
-        bytes32, /*callHash*/
+        bytes32 /*callHash*/,
         bytes memory /*result*/
     ) external pure returns (bytes4) {
         return BothCallReturnMagicValue.lsp20VerifyCallResult.selector;

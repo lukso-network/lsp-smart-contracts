@@ -61,6 +61,7 @@ abstract contract LSP20CallVerification {
         // Look for revert reason and bubble it up if present
         if (returnedData.length > 0) {
             // The easiest way to bubble the revert reason is using memory via assembly
+            // solhint-disable no-inline-assembly
             /// @solidity memory-safe-assembly
             assembly {
                 let returndata_size := mload(returnedData)
