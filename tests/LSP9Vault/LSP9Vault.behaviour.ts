@@ -541,7 +541,7 @@ export const shouldBehaveLikeLSP9 = (
 
     describe("When sending value to setData", () => {
       it("should revert when sending value to setData(..)", async () => {
-        let value = 100;
+        let value = ethers.utils.parseEther("2");
         const txParams = {
           dataKey: ethers.utils.solidityKeccak256(["string"], ["FirstDataKey"]),
           dataValue: "0xaabbccdd",
@@ -560,7 +560,7 @@ export const shouldBehaveLikeLSP9 = (
       });
 
       it("should revert when sending value to setData(..) Array", async () => {
-        let value = 100;
+        let value = ethers.utils.parseEther("2");
         const txParams = {
           dataKey: [
             ethers.utils.solidityKeccak256(["string"], ["FirstDataKey"]),

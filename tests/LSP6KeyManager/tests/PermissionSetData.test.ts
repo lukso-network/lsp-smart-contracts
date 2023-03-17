@@ -203,7 +203,7 @@ export const shouldBehaveLikePermissionSetData = (
       });
 
       describe("when sending value while setting data", async () => {
-        it("should revert", async () => {
+        it("should revert with Key Manager error `CannotSendValueToSetData`", async () => {
           let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
           let value = ethers.utils.hexlify(
             ethers.utils.toUtf8Bytes("Hello Lukso!!!")
@@ -626,7 +626,7 @@ export const shouldBehaveLikePermissionSetData = (
       });
 
       describe("when sending value while setting data", async () => {
-        it("should revert", async () => {
+        it("should revert with Key Manager error `CannotSendValueToSetData`", async () => {
           let key = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("My Key"));
           let elements = {
             MyFirstKey: "aaaaaaaaaa",

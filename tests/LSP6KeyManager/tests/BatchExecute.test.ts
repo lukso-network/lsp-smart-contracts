@@ -496,7 +496,7 @@ export const shouldBehaveLikeBatchExecute = (
         });
 
         describe("if specifying some value for each values[index]", () => {
-          it("should revert LSP6 `_executePayload` error since `setData(...)` is not payable", async () => {
+          it("should revert with Key Manager error `CannotSendValueToSetData` when sending value while setting data", async () => {
             const amountToFund = ethers.utils.parseEther("2");
 
             const dataKeys = [
