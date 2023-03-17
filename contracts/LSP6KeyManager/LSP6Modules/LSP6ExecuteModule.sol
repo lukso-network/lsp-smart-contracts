@@ -47,38 +47,16 @@ abstract contract LSP6ExecuteModule {
     /**
      * @dev verify if `controllerAddress` has the required permissions to interact with other addresses using the controlledContract.
      * @param controlledContract the address of the ERC725 contract where the payload is executed and where the permissions are verified.
-     * @param controllerAddress the address who want to run the execute function on the ERC725Account.
-     * @param controllerPermissions the permissions of the controller address.
+     * @param controller the address who want to run the execute function on the ERC725Account.
+     * @param permissions the permissions of the controller address.
      * @param payload the ABI encoded payload `controlledContract.execute(...)`.
      */
     function _verifyCanExecute(
         address controlledContract,
-        address controllerAddress,
-        bytes32 controllerPermissions,
+        address controller,
+        bytes32 permissions,
         bytes calldata payload
     ) internal view virtual {
-        // MUST be one of the ERC725X operation types.
-        uint256 operationType = uint256(bytes32(payload[4:36]));
-
-        // DELEGATECALL is disallowed by default on the LSP6 Key Manager.
-        if (operationType == OPERATION_4_DELEGATECALL) {
-            revert DelegateCallDisallowedViaKeyManager();
-        }
-
-        uint256 value = uint256(bytes32(payload[68:100]));
-
-        bool hasSuperTransferValue = controllerPermissions.hasPermission(
-            _PERMISSION_SUPER_TRANSFERVALUE
-        );
-
-        if (value != 0 && !hasSuperTransferValue) {
-            _requirePermissions(
-                controllerAddress,
-                controllerPermissions,
-                _PERMISSION_TRANSFERVALUE
-            );
-        }
-
         // CHECK the offset of `data` is not pointing to the previous parameters
         if (
             bytes32(payload[100:132]) !=
@@ -87,27 +65,78 @@ abstract contract LSP6ExecuteModule {
             revert InvalidPayload(payload);
         }
 
-        // if it is a contract creation
-        if (operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2) {
-            _requirePermissions(controllerAddress, controllerPermissions, _PERMISSION_DEPLOY);
-            return;
-        }
+        // MUST be one of the ERC725X operation types.
+        uint256 operationType = uint256(bytes32(payload[4:36]));
 
         // if it is a message call
-        bytes32 executePermission;
-        bytes32 superOperationPermission;
-
         if (operationType == OPERATION_0_CALL) {
-            // prettier-ignore
-            (executePermission, superOperationPermission) = (_PERMISSION_CALL, _PERMISSION_SUPER_CALL);
+            return _verifyCanCall(controlledContract, controller, permissions, payload);
         }
 
+        // if it is a contract creation
+        if (operationType == OPERATION_1_CREATE || operationType == OPERATION_2_CREATE2) {
+            // required to check for permission TRANSFERVALUE if we are funding
+            // the contract on deployment via a payable constructor
+            bool isFundingContract = uint256(bytes32(payload[68:100])) != 0;
+
+            return _verifyCanDeployContract(controller, permissions, isFundingContract);
+        }
+
+        // if it is a STATICALL
+        // we do not check for TRANSFERVALUE permission,
+        // as ERC725X will revert if a value is provided with operation type STATICCALL.
         if (operationType == OPERATION_3_STATICCALL) {
-            // prettier-ignore
-            (executePermission, superOperationPermission) = (_PERMISSION_STATICCALL, _PERMISSION_SUPER_STATICCALL);
+            return _verifyCanStaticCall(controlledContract, controller, permissions, payload);
         }
 
-        // NB: all the parameters are abi-encoded (padded to 32 bytes words)
+        // DELEGATECALL is disallowed by default on the Key Manager.
+        if (operationType == OPERATION_4_DELEGATECALL) {
+            revert DelegateCallDisallowedViaKeyManager();
+        }
+    }
+
+    function _verifyCanDeployContract(
+        address controller,
+        bytes32 permissions,
+        bool isFundingContract
+    ) internal view virtual {
+        _requirePermissions(controller, permissions, _PERMISSION_DEPLOY);
+
+        bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
+
+        // CHECK if we are funding the contract
+        if (isFundingContract && !hasSuperTransferValue) {
+            revert NotAuthorised(controller, "SUPER_TRANSFERVALUE");
+        }
+    }
+
+    function _verifyCanStaticCall(
+        address controlledContract,
+        address controller,
+        bytes32 permissions,
+        bytes calldata payload
+    ) internal view virtual {
+        bool hasSuperStaticCall = permissions.hasPermission(_PERMISSION_SUPER_STATICCALL);
+
+        // Skip if caller has SUPER permission for static calls
+        if (hasSuperStaticCall) return;
+
+        _requirePermissions(controller, permissions, _PERMISSION_STATICCALL);
+
+        _verifyAllowedCall(controlledContract, controller, payload);
+    }
+
+    function _verifyCanCall(
+        address controlledContract,
+        address controller,
+        bytes32 permissions,
+        bytes calldata payload
+    ) internal view virtual {
+        bool isTransferingValue = uint256(bytes32(payload[68:100])) != 0;
+
+        bool hasSuperTransferValue = permissions.hasPermission(_PERMISSION_SUPER_TRANSFERVALUE);
+
+        // all the parameters are abi-encoded (padded to 32 bytes words)
         //
         //    4 (ERC725X.execute selector)
         // + 32 (uint256 operationType)
@@ -119,28 +148,32 @@ abstract contract LSP6ExecuteModule {
         // = 164 bytes in total
         bool isCallDataPresent = payload.length > 164;
 
-        bool hasSuperOperation = controllerPermissions.hasPermission(superOperationPermission);
+        bool hasSuperCall = permissions.hasPermission(_PERMISSION_SUPER_CALL);
+
+        if (isTransferingValue && !hasSuperTransferValue) {
+            _requirePermissions(controller, permissions, _PERMISSION_TRANSFERVALUE);
+        }
 
         // CHECK if we are doing an empty call, as the receive() or fallback() function
         // of the controlledContract could run some code.
-        if (!hasSuperOperation && !isCallDataPresent && value == 0) {
-            _requirePermissions(controllerAddress, controllerPermissions, executePermission);
+        if (!hasSuperCall && !isCallDataPresent && !isTransferingValue) {
+            _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
 
-        if (isCallDataPresent && !hasSuperOperation) {
-            _requirePermissions(controllerAddress, controllerPermissions, executePermission);
+        if (isCallDataPresent && !hasSuperCall) {
+            _requirePermissions(controller, permissions, _PERMISSION_CALL);
         }
 
         // Skip if caller has SUPER permissions for external calls, with or without calldata (empty calls)
-        if (hasSuperOperation && value == 0) return;
+        if (hasSuperCall && !isTransferingValue) return;
 
         // Skip if caller has SUPER permission for value transfers
-        if (hasSuperTransferValue && !isCallDataPresent && value != 0) return;
+        if (hasSuperTransferValue && !isCallDataPresent && isTransferingValue) return;
 
         // Skip if both SUPER permissions are present
-        if (hasSuperOperation && hasSuperTransferValue) return;
+        if (hasSuperCall && hasSuperTransferValue) return;
 
-        _verifyAllowedCall(controlledContract, controllerAddress, payload);
+        _verifyAllowedCall(controlledContract, controller, payload);
     }
 
     function _verifyAllowedCall(
