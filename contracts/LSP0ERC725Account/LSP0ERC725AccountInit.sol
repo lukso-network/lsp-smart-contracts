@@ -11,7 +11,7 @@ import {LSP0ERC725AccountInitAbstract} from "./LSP0ERC725AccountInitAbstract.sol
  */
 contract LSP0ERC725AccountInit is LSP0ERC725AccountInitAbstract {
     /**
-     * @dev @dev initialize (= lock) base implementation contract on deployment
+     * @dev initialize (= lock) base implementation contract on deployment
      */
     constructor() {
         _disableInitializers();

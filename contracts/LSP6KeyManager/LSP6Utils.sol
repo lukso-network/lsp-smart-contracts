@@ -162,26 +162,41 @@ library LSP6Utils {
     /**
      * @dev combine multiple permissions into a single bytes32
      * Make sure that the sum of the values of the input array is less than 2^256-1 to avoid overflow.
-     * @param _permissions the array of permissions to combine
+     * @param permissions the array of permissions to combine
      * @return a bytes32 containing the combined permissions
      */
-    function combinePermissions(bytes32[] memory _permissions) internal pure returns (bytes32) {
+    function combinePermissions(bytes32[] memory permissions) internal pure returns (bytes32) {
         uint256 result = 0;
-        for (uint256 i = 0; i < _permissions.length; i++) {
-            result += uint256(_permissions[i]);
+        for (uint256 i = 0; i < permissions.length; i++) {
+            result += uint256(permissions[i]);
         }
         return bytes32(result);
     }
 
-    function generatePermissionsKeysForController(
-        IERC725Y _account,
-        address _address,
+    /**
+     * @dev Generate a new set of 3 x LSP6 permission data keys to add a new `controller` on `account`
+     * @param account the ERC725Y contract to add the controller into (used to fetch the `LSP6Permissions[]` length)
+     * @param controller the address of the controller to grant permissions to
+     * @param permissions the BitArray of permissions to grant to the controller
+     * @return keys an array of 3 x data keys containing:
+     *  - keys[0] = `AddressPermissions[]` (array length)
+     *  - keys[1] = `AddressPermissions[index]` (where to store the controller address)
+     *  - keys[2] = `AddressPermissions:Permissions:<controller>`
+     *
+     * @return values : an array of 3 x data values containing:
+     *  - values[0] = the new array length of `AddressPermissions[]`
+     *  - values[1] = the address of the controller
+     *  - values[2] = the `permissions` passed as param
+     */
+    function generateNewPermissionsKeys(
+        IERC725Y account,
+        address controller,
         bytes32 permissions
     ) internal view returns (bytes32[] memory keys, bytes[] memory values) {
         keys = new bytes32[](3);
         values = new bytes[](3);
 
-        uint128 arrayLength = uint128(bytes16(_account.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY)));
+        uint128 arrayLength = uint128(bytes16(account.getData(_LSP6KEY_ADDRESSPERMISSIONS_ARRAY)));
         uint128 newArrayLength = arrayLength + 1;
 
         keys[0] = _LSP6KEY_ADDRESSPERMISSIONS_ARRAY;
@@ -191,11 +206,11 @@ library LSP6Utils {
             _LSP6KEY_ADDRESSPERMISSIONS_ARRAY,
             arrayLength
         );
-        values[1] = abi.encodePacked(_address);
+        values[1] = abi.encodePacked(controller);
 
         keys[2] = LSP2Utils.generateMappingWithGroupingKey(
             _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
-            bytes20(_address)
+            bytes20(controller)
         );
         values[2] = abi.encodePacked(permissions);
     }
