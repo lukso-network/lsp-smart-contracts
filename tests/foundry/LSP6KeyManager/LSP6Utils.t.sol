@@ -67,7 +67,8 @@ contract LSP6UtilsTests is Test {
     }
 
     function testIsCBAOfAllowedCallsWithBiggerAllowedCall(uint8 numberOfAllowedCalls) public view {
-        uint8 allowedCallLength = (numberOfAllowedCalls % (255 - 28)) + 29;
+        // 251 = type(uint8).max - 4 (the 4 bytes of the callTypes)
+        uint8 allowedCallLength = (numberOfAllowedCalls % (251 - 28)) + 29;
         if (allowedCallLength == 28) {
             allowedCallLength = allowedCallLength + 1;
         }
@@ -81,7 +82,8 @@ contract LSP6UtilsTests is Test {
         public
         view
     {
-        uint8 allowedCallLength = (numberOfAllowedCalls % (255 - 28)) + 29;
+        // 251 = type(uint8).max - 4 (the 4 bytes of the callTypes)
+        uint8 allowedCallLength = (numberOfAllowedCalls % (251 - 28)) + 29;
         if (allowedCallLength == 28) {
             allowedCallLength = allowedCallLength + 1;
         }
@@ -97,7 +99,8 @@ contract LSP6UtilsTests is Test {
         public
         view
     {
-        uint8 allowedCallLength = (numberOfAllowedCalls % (255 - 28)) + 29;
+        // 251 = type(uint8).max - 4 (the 4 bytes of the callTypes)
+        uint8 allowedCallLength = (numberOfAllowedCalls % (251 - 28)) + 29;
         if (allowedCallLength == 28) {
             allowedCallLength = allowedCallLength + 1;
         }
@@ -118,7 +121,8 @@ contract LSP6UtilsTests is Test {
         public
         view
     {
-        uint8 allowedCallLength = (numberOfAllowedCalls % (255 - 28)) + 29;
+        // 251 = type(uint8).max - 4 (the 4 bytes of the callTypes)
+        uint8 allowedCallLength = (numberOfAllowedCalls % (251 - 28)) + 29;
 
         bytes memory allowedCallsEnd = _generateAllowedCalls(1, allowedCallLength);
         bytes memory validAllowedCall = _generateAllowedCalls(1, 28);
@@ -461,12 +465,15 @@ contract LSP6UtilsTests is Test {
     {
         bytes memory allowedCalls;
         for (uint8 i = 0; i < numberOfAllowedCalls; i++) {
+            bytes4 callTypes = 0x000000ff;
+            uint256 allowedCallLengthWithCallTypesLength = allowedCallLength + 4;
             bytes memory allowedCall = _generateRandomBytes(allowedCallLength);
-            bytes memory allowedCallallowedCall = abi.encodePacked(
-                bytes2(uint16(allowedCallLength)),
+            bytes memory allowedCallallowedCalls = abi.encodePacked(
+                bytes2(uint16(allowedCallLengthWithCallTypesLength)),
+                callTypes,
                 allowedCall
             );
-            allowedCalls = abi.encodePacked(allowedCalls, allowedCallallowedCall);
+            allowedCalls = abi.encodePacked(allowedCalls, allowedCallallowedCalls);
         }
         return allowedCalls;
     }
