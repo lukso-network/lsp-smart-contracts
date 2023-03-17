@@ -99,10 +99,9 @@ abstract contract LSP6KeyManagerCore is
         if (msg.sender != _target) revert CallerIsNotTheTarget(msg.sender);
         _nonReentrantBefore(caller);
         _verifyPermissions(caller, msgValue, data);
-        emit VerifiedCall(msg.sender, value, bytes4(data));
+        emit VerifiedCall(msg.sender, msgValue, bytes4(data));
 
-        return
-            bytes4(bytes.concat(bytes3(ILSP20CallVerification.lsp20VerifyCall.selector), hex"01"));
+        return bytes4(bytes.concat(bytes3(ILSP20.lsp20VerifyCall.selector), hex"01"));
     }
 
     /**
