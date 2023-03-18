@@ -7,7 +7,7 @@ import {
   ERC725JSONSchema,
 } from "@erc725/erc725.js";
 
-import { Executor, Executor__factory } from "../../../types";
+import { Executor, Executor__factory } from "../../../../types";
 
 // constants
 import {
@@ -15,11 +15,11 @@ import {
   ALL_PERMISSIONS,
   PERMISSIONS,
   OPERATION_TYPES,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../utils/context";
-import { setupKeyManager } from "../../utils/fixtures";
+import { LSP6TestContext } from "../../../utils/context";
+import { setupKeyManager } from "../../../utils/fixtures";
 
 // helpers
 import {
@@ -27,7 +27,7 @@ import {
   getRandomAddresses,
   combinePermissions,
   encodeCompactBytesArray,
-} from "../../utils/helpers";
+} from "../../../utils/helpers";
 
 const BasicUPSetup_Schema: ERC725JSONSchema[] = [
   {

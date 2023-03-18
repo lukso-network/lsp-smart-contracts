@@ -6,7 +6,7 @@ import {
   TargetContract,
   TargetContract__factory,
   UniversalProfile__factory,
-} from "../../../types";
+} from "../../../../types";
 
 // constants
 import {
@@ -14,14 +14,17 @@ import {
   ERC725YDataKeys,
   OPERATION_TYPES,
   PERMISSIONS,
-} from "../../../constants";
+} from "../../../../constants";
 
 // setup
-import { LSP6InternalsTestContext } from "../../utils/context";
-import { setupKeyManagerHelper } from "../../utils/fixtures";
+import { LSP6InternalsTestContext } from "../../../utils/context";
+import { setupKeyManagerHelper } from "../../../utils/fixtures";
 
 // helpers
-import { combinePermissions, combineAllowedCalls } from "../../utils/helpers";
+import {
+  combinePermissions,
+  combineAllowedCalls,
+} from "../../../utils/helpers";
 
 export const testAllowedCallsInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>

@@ -6,13 +6,13 @@ import { BigNumber, BytesLike } from "ethers";
 import {
   SingleReentrancyRelayer__factory,
   UniversalProfile__factory,
-} from "../../../../types";
+} from "../../../../../types";
 
 // constants
-import { ERC725YDataKeys } from "../../../../constants";
+import { ERC725YDataKeys } from "../../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
+import { LSP6TestContext } from "../../../../utils/context";
 
 // helpers
 import {
@@ -68,6 +68,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -180,6 +181,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -288,6 +290,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -370,6 +373,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -451,6 +455,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,
@@ -531,6 +536,7 @@ export const testSingleExecuteRelayCallToSingleExecuteRelayCall = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       relayCallParams = await generateRelayCall(
         context.keyManager,

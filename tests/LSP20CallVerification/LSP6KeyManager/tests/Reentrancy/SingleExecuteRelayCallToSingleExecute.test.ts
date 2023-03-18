@@ -5,10 +5,10 @@ import { ethers } from "hardhat";
 import { BigNumber, BytesLike } from "ethers";
 
 // constants
-import { ERC725YDataKeys } from "../../../../constants";
+import { ERC725YDataKeys } from "../../../../../constants";
 
 // setup
-import { LSP6TestContext } from "../../../utils/context";
+import { LSP6TestContext } from "../../../../utils/context";
 
 // helpers
 import {
@@ -23,9 +23,31 @@ import {
   changeUniversalReceiverDelegateTestCases,
   // Functions
   generateRelayCall,
-  generateExecutePayload,
   loadTestCase,
 } from "./reentrancyHelpers";
+import {
+  LSP20ReentrantContract__factory,
+  UniversalProfile__factory,
+} from "../../../../../types";
+
+const generateExecutePayload = (
+  reentrantContractAddress: string,
+  payloadType: string
+) => {
+  const reentrantPayload =
+    new LSP20ReentrantContract__factory().interface.encodeFunctionData(
+      "callThatReenters",
+      [payloadType]
+    );
+
+  const executePayload =
+    new UniversalProfile__factory().interface.encodeFunctionData(
+      "execute(uint256,address,uint256,bytes)",
+      [0, reentrantContractAddress, 0, reentrantPayload]
+    );
+
+  return executePayload;
+};
 
 export const testSingleExecuteRelayCallToSingleExecute = (
   buildContext: (initialFunding?: BigNumber) => Promise<LSP6TestContext>,
@@ -47,9 +69,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "TRANSFERVALUE"
       );
@@ -155,9 +177,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "SETDATA"
       );
@@ -259,9 +281,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "ADDCONTROLLER"
       );
@@ -337,9 +359,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "EDITPERMISSIONS"
       );
@@ -414,9 +436,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "ADDUNIVERSALRECEIVERDELEGATE"
       );
@@ -490,9 +512,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
       nonce: BigNumber;
       payload: BytesLike;
     };
+
     before(async () => {
       const executePayload = generateExecutePayload(
-        context.keyManager.address,
         reentrancyContext.reentrantContract.address,
         "CHANGEUNIVERSALRECEIVERDELEGATE"
       );

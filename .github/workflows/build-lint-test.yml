@@ -54,6 +54,7 @@ jobs:
             "lsp8",
             "lsp9",
             "lsp11",
+            "lsp20",
             "universalfactory",
             "mocks",
           ]
