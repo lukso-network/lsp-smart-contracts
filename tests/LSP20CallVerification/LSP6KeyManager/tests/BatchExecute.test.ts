@@ -495,7 +495,7 @@ export const shouldBehaveLikeBatchExecute = (
           });
         });
 
-        describe.only("if specifying some value for each values[index]", () => {
+        describe("if specifying some value for each values[index]", () => {
           it("should revert with Key Manager error `CannotSendValueToSetData` when sending value while setting data", async () => {
             const amountToFund = ethers.utils.parseEther("2");
 
@@ -539,7 +539,7 @@ export const shouldBehaveLikeBatchExecute = (
         });
       });
 
-      describe.only("when sending 2x payloads, 1st for `setData`, 2nd for `execute`", () => {
+      describe("when sending 2x payloads, 1st for `setData`, 2nd for `execute`", () => {
         describe("when `msgValues[1]` is zero for `setData(...)`", () => {
           it("should pass", async () => {
             const recipient = context.accounts[5].address;
