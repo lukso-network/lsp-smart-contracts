@@ -80,21 +80,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
           [key, value]
         );
 
-      let executePayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
+      await expect(
+        context.universalProfile
+          .connect(context.owner)
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.DELEGATECALL,
             erc725YDelegateCallContract.address,
             0,
-            delegateCallPayload,
-          ]
-        );
-
-      await expect(
-        context.keyManager
-          .connect(context.owner)
-          ["execute(bytes)"](executePayload)
+            delegateCallPayload
+          )
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "DelegateCallDisallowedViaKeyManager"
@@ -121,21 +115,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
           [key, value]
         );
 
-      let executePayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
+      await expect(
+        context.universalProfile
+          .connect(addressCanDelegateCall)
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.DELEGATECALL,
             erc725YDelegateCallContract.address,
             0,
-            delegateCallPayload,
-          ]
-        );
-
-      await expect(
-        context.keyManager
-          .connect(addressCanDelegateCall)
-          ["execute(bytes)"](executePayload)
+            delegateCallPayload
+          )
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "DelegateCallDisallowedViaKeyManager"
@@ -162,21 +150,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
           [[key], [value]]
         );
 
-      let executePayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
+      await expect(
+        context.universalProfile
+          .connect(addressCannotDelegateCall)
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.DELEGATECALL,
             erc725YDelegateCallContract.address,
             0,
-            delegateCallPayload,
-          ]
-        );
-
-      await expect(
-        context.keyManager
-          .connect(addressCannotDelegateCall)
-          ["execute(bytes)"](executePayload)
+            delegateCallPayload
+          )
       ).to.be.revertedWithCustomError(
         context.keyManager,
         "DelegateCallDisallowedViaKeyManager"
@@ -270,21 +252,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
                 value,
               ]);
 
-            let executePayload =
-              context.universalProfile.interface.encodeFunctionData(
-                "execute(uint256,address,uint256,bytes)",
-                [
+            await expect(
+              context.universalProfile
+                .connect(caller)
+                ["execute(uint256,address,uint256,bytes)"](
                   OPERATION_TYPES.DELEGATECALL,
                   randomContracts[ii].address,
                   0,
-                  delegateCallPayload,
-                ]
-              );
-
-            await expect(
-              context.keyManager
-                .connect(caller)
-                ["execute(bytes)"](executePayload)
+                  delegateCallPayload
+                )
             ).to.be.revertedWithCustomError(
               context.keyManager,
               "DelegateCallDisallowedViaKeyManager"
@@ -317,19 +293,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
             value,
           ]);
 
-        let executePayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
+        await expect(
+          context.universalProfile
+            .connect(caller)
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.DELEGATECALL,
               allowedDelegateCallContracts[0].address,
               0,
-              delegateCallPayload,
-            ]
-          );
-
-        await expect(
-          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+              delegateCallPayload
+            )
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "DelegateCallDisallowedViaKeyManager"
@@ -356,19 +328,15 @@ export const shouldBehaveLikePermissionDelegateCall = (
             value,
           ]);
 
-        let executePayload =
-          context.universalProfile.interface.encodeFunctionData(
-            "execute(uint256,address,uint256,bytes)",
-            [
+        await expect(
+          context.universalProfile
+            .connect(caller)
+            ["execute(uint256,address,uint256,bytes)"](
               OPERATION_TYPES.DELEGATECALL,
               allowedDelegateCallContracts[1].address,
               0,
-              delegateCallPayload,
-            ]
-          );
-
-        await expect(
-          context.keyManager.connect(caller)["execute(bytes)"](executePayload)
+              delegateCallPayload
+            )
         ).to.be.revertedWithCustomError(
           context.keyManager,
           "DelegateCallDisallowedViaKeyManager"

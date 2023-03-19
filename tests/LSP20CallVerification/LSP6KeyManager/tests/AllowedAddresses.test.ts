@@ -104,15 +104,14 @@ export const shouldBehaveLikeAllowedAddresses = (
 
           let amount = ethers.utils.parseEther("1");
 
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, recipient, amount, EMPTY_PAYLOAD]
-            );
-
-          await context.keyManager
+          await context.universalProfile
             .connect(context.owner)
-            ["execute(bytes)"](transferPayload);
+            ["execute(uint256,address,uint256,bytes)"](
+              OPERATION_TYPES.CALL,
+              recipient,
+              amount,
+              EMPTY_PAYLOAD
+            );
 
           let newBalanceUP = await provider.getBalance(
             context.universalProfile.address
@@ -135,15 +134,14 @@ export const shouldBehaveLikeAllowedAddresses = (
 
       let amount = ethers.utils.parseEther("1");
 
-      let transferPayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [OPERATION_TYPES.CALL, allowedEOA.address, amount, EMPTY_PAYLOAD]
-        );
-
-      await context.keyManager
+      await context.universalProfile
         .connect(canCallOnlyTwoAddresses)
-        ["execute(bytes)"](transferPayload);
+        ["execute(uint256,address,uint256,bytes)"](
+          OPERATION_TYPES.CALL,
+          allowedEOA.address,
+          amount,
+          EMPTY_PAYLOAD
+        );
 
       let newBalanceUP = await provider.getBalance(
         context.universalProfile.address
@@ -162,19 +160,14 @@ export const shouldBehaveLikeAllowedAddresses = (
           argument,
         ]);
 
-      let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
+      await context.universalProfile
+        .connect(canCallOnlyTwoAddresses)
+        ["execute(uint256,address,uint256,bytes)"](
           OPERATION_TYPES.CALL,
           allowedTargetContract.address,
           0,
-          targetContractPayload,
-        ]
-      );
-
-      await context.keyManager
-        .connect(canCallOnlyTwoAddresses)
-        ["execute(bytes)"](payload);
+          targetContractPayload
+        );
 
       const result = await allowedTargetContract.callStatic.getName();
       expect(result).to.equal(argument);
@@ -188,21 +181,15 @@ export const shouldBehaveLikeAllowedAddresses = (
         notAllowedEOA.address
       );
 
-      let transferPayload =
-        context.universalProfile.interface.encodeFunctionData(
-          "execute(uint256,address,uint256,bytes)",
-          [
+      await expect(
+        context.universalProfile
+          .connect(canCallOnlyTwoAddresses)
+          ["execute(uint256,address,uint256,bytes)"](
             OPERATION_TYPES.CALL,
             notAllowedEOA.address,
             ethers.utils.parseEther("1"),
-            EMPTY_PAYLOAD,
-          ]
-        );
-
-      await expect(
-        context.keyManager
-          .connect(canCallOnlyTwoAddresses)
-          ["execute(bytes)"](transferPayload)
+            EMPTY_PAYLOAD
+          )
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
@@ -230,20 +217,15 @@ export const shouldBehaveLikeAllowedAddresses = (
           argument,
         ]);
 
-      let payload = context.universalProfile.interface.encodeFunctionData(
-        "execute(uint256,address,uint256,bytes)",
-        [
-          OPERATION_TYPES.CALL,
-          notAllowedTargetContract.address,
-          0,
-          targetContractPayload,
-        ]
-      );
-
       await expect(
-        context.keyManager
+        context.universalProfile
           .connect(canCallOnlyTwoAddresses)
-          ["execute(bytes)"](payload)
+          ["execute(uint256,address,uint256,bytes)"](
+            OPERATION_TYPES.CALL,
+            notAllowedTargetContract.address,
+            0,
+            targetContractPayload
+          )
       )
         .to.be.revertedWithCustomError(context.keyManager, "NotAllowedCall")
         .withArgs(
@@ -265,16 +247,15 @@ export const shouldBehaveLikeAllowedAddresses = (
 
           let amount = ethers.utils.parseEther("1");
 
-          let transferPayload =
-            context.universalProfile.interface.encodeFunctionData(
-              "execute(uint256,address,uint256,bytes)",
-              [OPERATION_TYPES.CALL, recipient, amount, EMPTY_PAYLOAD]
-            );
-
           await expect(
-            context.keyManager
+            context.universalProfile
               .connect(invalidEncodedAllowedCalls)
-              ["execute(bytes)"](transferPayload)
+              ["execute(uint256,address,uint256,bytes)"](
+                OPERATION_TYPES.CALL,
+                recipient,
+                amount,
+                EMPTY_PAYLOAD
+              )
           )
             .to.be.revertedWithCustomError(
               context.keyManager,
